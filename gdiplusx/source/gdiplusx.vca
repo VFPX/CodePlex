@@ -1,0 +1,850 @@
+SCCTEXT Version 4.0.0.2
+PLATFORM C(8,0),UNIQUEID C(10,0),TIMESTAMP N(10,0),CLASS M(4,0),CLASSLOC M(4,0),BASECLASS M(4,0),OBJNAME M(4,0),PARENT M(4,0),PROPERTIES M(4,0),PROTECTED M(4,0),METHODS M(4,0),OBJCODE M(4,0),OLE M(4,0),OLE2 M(4,0),RESERVED1 M(4,0),RESERVED2 M(4,0),RESERVED3 M(4,0),RESERVED4 M(4,0),RESERVED5 M(4,0),RESERVED6 M(4,0),RESERVED7 M(4,0),RESERVED8 M(4,0),USER M(4,0)
+1252
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] Class     
+[START RESERVED1]
+VERSION =   3.00[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1SM0PX95U
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] imgcanvas
+[START PROPERTIES]
+Height = 162
+Width = 182
+ogfx = (NULL)
+hdc = 0
+_memberdata =      487<VFPData><memberdata name="beforedraw" type="method" display="BeforeDraw"/><memberdata name="hdc" type="property" display="HDC"/><memberdata name="ogfx" type="property" display="oGfx"/><memberdata name="refresh" type="method" display="Refresh"/><memberdata name="clear" type="method" display="Clear"/><memberdata name="draw" type="method" display="Draw"/><memberdata name="controls" type="property" display="Controls"/><memberdata name="setup" type="method" display="SetUp"/></VFPData>
+
+controls = (NULL)
+bmpwidth = 0
+bmpheight = 0
+usememory = .T.
+_tempfile = 
+rectangle = (NULL)
+smoothingmode = 4
+textrenderinghint = 3
+interpolationmode = 7
+Name = "imgcanvas"
+[END PROPERTIES]
+[START PROTECTED]
+bmpwidth
+bmpheight
+_tempfile
+deleteosb
+renderosb
+declaredll
+createosb
+[END PROTECTED]
+[START METHODS]
+PROCEDURE Destroy
+This.Controls.Remove(-1)
+This.Controls = NULL
+This.DeleteOSB()
+ENDPROC
+PROCEDURE Init
+This.DeclareDLL()
+
+IF VARTYPE(_SCREEN.System) <> "O"
+	ADDPROPERTY(_SCREEN, "System", NEWOBJECT("xfcSystem","System"))
+ENDIF
+
+This.CreateOSB()
+This.Controls=CREATEOBJECT("Collection")
+This.Setup()
+*! ToDo: We may not want to draw here. If there are other objects on the form
+** that have not fully initialized yet, and we are making a reference to
+** them, we will get an error. We may need to bind to the forms init or
+** find some other way to handle this
+This.Draw()
+
+BINDEVENT(This.Parent, "Resize", This, "Resize")
+ENDPROC
+PROCEDURE Move
+LPARAMETERS nLeft, nTop, nWidth, nHeight
+
+** We need to create a new bitmap and graphics object whenever the
+** control resizes.
+**
+*!ToDo: We are hooking in here because we don't have a resize event
+** however, this doesn't always get called, like on a form maximize
+** with anchoring. We need to find a better way of hooking into this
+** control's resize.
+** Plus...This.Width and This.Height have not been set yet...
+** we really need another place to hook into for resizes
+
+*!*	IF This.Stretch = 0 AND (m.nWidth <> This.Width OR m.nHeight <> This.Height)
+*!*	*	This.CreateOSB()
+*!*		This.Draw()
+*!*	ENDIF
+ENDPROC
+PROCEDURE clear
+LPARAMETERS eColor
+
+** eColor can be RGB, ARGB or Color object
+
+DO CASE
+CASE VARTYPE(m.eColor) = "O"
+	This.oGfx.Clear(m.eColor)
+CASE VARTYPE(m.eColor) = "N" AND BITAND(m.eColor,0xFF000000) = 0
+	This.oGfx.Clear(_SCREEN.System.Drawing.Color.FromRGB(m.eColor))
+CASE VARTYPE(m.eColor) = "N"
+	This.oGfx.Clear(_SCREEN.System.Drawing.Color.FromARGB(m.eColor))
+OTHERWISE
+	This.oGfx.Clear(_SCREEN.System.Drawing.Color.FromRGB(ThisForm.BackColor))
+ENDCASE
+
+
+
+
+
+ENDPROC
+PROCEDURE createosb
+
+LOCAL hdc, hdcMem, hBitmap, iWidth, iHeight
+
+This.DeleteOSB()
+
+This.BMPWidth = This.Width
+This.BMPHeight = This.Height
+
+m.iWidth = This.Width
+m.iHeight = This.Height
+
+m.hdc = GetDC(0)
+m.hdcMem = CreateCompatibleDC(m.hdc)
+m.hBitmap = CreateCompatibleBitmap(m.hdc, m.iWidth, m.iHeight)
+IF m.hBitmap <> 0
+	SelectObject(m.hdcMem, m.hBitmap)
+ENDIF
+*	BitBlt(hdcMem, 0, 0, iWidth, iHeight, hdc, 0, 0, SRCCOPY)
+ReleaseDC(0,m.hdc)
+**DeleteObject(m.hBitmap)
+
+This.HDC = m.hdcMem
+This.oGfx = _SCREEN.System.Drawing.Graphics.FromHDC(This.hDC)
+
+This.oGfx.SmoothingMode = This.SmoothingMode
+This.oGfx.TextRenderingHint = This.TextRenderingHint
+This.oGfx.InterpolationMode = This.InterpolationMode
+
+ENDPROC
+PROCEDURE declaredll
+DECLARE Long GetDC IN WIN32API Long
+DECLARE Long ReleaseDC IN WIN32API Long, Long
+DECLARE Long DeleteDC IN WIN32API Long
+DECLARE Long CreateCompatibleDC IN WIN32API Long hdc
+DECLARE Long CreateCompatibleBitmap IN WIN32API Long hdc, Long width, Long height
+DECLARE Long SelectObject IN WIN32API Long, Long
+DECLARE Long DeleteObject IN WIN32API Long
+DECLARE Long GetCurrentObject IN WIN32API Long, Integer
+DECLARE Long GetStockObject IN WIN32API Integer
+DECLARE Long GetObjectA IN WIN32API Long, Integer, String@
+
+DECLARE Long GetDIBits IN WIN32API Long hdc, Long hBitmap, Integer, Integer, Long, String@, Integer
+
+DECLARE Long SelectPalette IN WIN32API I Long hdc, Long hpalette, Long bool
+DECLARE Long RealizePalette IN WIN32API Long hdc
+
+DECLARE Long GlobalAlloc IN WIN32API Long, Long
+DECLARE Long GlobalUnlock IN WIN32API Long
+DECLARE Long GlobalFree IN WIN32API Long
+
+ENDPROC
+PROCEDURE deleteosb
+LOCAL hBitmap
+IF This.HDC <> 0
+	hBitmap = GetCurrentObject(This.HDC, OBJ_BITMAP)
+	DeleteObject(hBitmap)
+	DeleteDC(This.HDC)
+	This.HDC = 0
+ENDIF
+ENDPROC
+PROCEDURE draw
+IF This.BMPWidth <> This.Width OR This.BMPHeight <> This.Height
+	This.CreateOSB()
+ENDIF
+This.BeforeDraw()
+This.RenderOSB()
+
+ENDPROC
+PROCEDURE interpolationmode_assign
+LPARAMETERS vNewVal
+*To do: Modify this routine for the Assign method
+THIS.InterpolationMode = m.vNewVal
+This.oGfx.InterpolationMode = m.vNewVal
+
+ENDPROC
+PROCEDURE rectangle_access
+
+IF VARTYPE(THIs.Rectangle) <> "O"
+	This.Rectangle = _SCREEN.System.Drawing.Rectangle.New(0,0,This.Width,This.Height)
+ELSE
+	This.Rectangle.Width = This.Width
+	This.Rectangle.Height = This.Height
+ENDIF
+
+RETURN This.Rectangle
+
+ENDPROC
+PROCEDURE renderosb
+** Create BMP file data from our OSB and assign it to the PictureVal
+** This routine keeps the entire process in memory so there is no disk I/O
+** This is also 20x to 30x faster than using the Bitmap.Save to Stream method
+
+LOCAL hBitmap, hdcMem, hdib
+LOCAL bm, bmWidth, bmHeight, bmPlanes, bmBitsPixel
+LOCAL bih, biSizeImage, biBitCount
+LOCAL hdib
+LOCAL hdc, hdc2, hdc3, hr
+
+m.hdc = This.HDC
+m.hBitmap = GetCurrentObject(m.hdc, OBJ_BITMAP)
+
+m.qBitmap = REPLICATE(0h00, SIZEOF_BITMAP)
+GetObjectA(m.hBitmap, SIZEOF_BITMAP, @qBitmap)
+
+m.bmWidth = CTOBIN(SUBSTR(m.qBitmap,5,4),"4rs")
+m.bmHeight = CTOBIN(SUBSTR(m.qBitmap,9,4),"4rs")
+m.bmPlanes = CTOBIN(SUBSTR(m.qBitmap,17,2),"2rs")
+m.bmBitsPixel = CTOBIN(SUBSTR(m.qBitmap,19,2),"2rs")
+
+m.biBitCount = m.bmPlanes * m.bmBitsPixel
+m.biSizeImage = BITLSHIFT(BITRSHIFT((m.bmWidth*m.biBitCount)+31,5),2) * m.bmHeight
+
+m.bih = ;
+    BINTOC(SIZEOF_BITMAPINFOHEADER,"4rs")+;	&& biSize
+    BINTOC(m.bmWidth,"4rs")+;	&& biWidth
+    BINTOC(m.bmHeight,"4rs")+;	&& biHeight
+    BINTOC(1,"2rs")+;			&& biPlanes
+    BINTOC(m.biBitCount,"2rs")+;&& biBitCount
+    BINTOC(BI_RGB,"4rs")+;		&& biCompression
+    0h00000000+;				&& biSizeImage
+    0h00000000+;				&& biXPelsPerMeter
+    0h00000000+;				&& biYPelsPerMeter
+    0h00000000+;				&& biClrUsed
+    0h00000000					&& biClrImportant
+
+m.hdib = GlobalAlloc(GPTR, m.biSizeImage)
+
+m.hdc2 = GetDC(0)
+m.hdc3 = CreateCompatibleDC(hdc2)
+ReleaseDC(0,m.hdc2)
+m.hr = GetDIBits(m.hdc3, m.hBitmap, 0, m.bmHeight, m.hdib, @bih, DIB_RGB_COLORS)
+
+*!ToDo: We are currently not handling any palette stuff.
+** This will only work for 24bpp and 32bpp.
+m.bfOffBits = SIZEOF_BITMAPFILEHEADER + SIZEOF_BITMAPINFOHEADER && + size of palette
+m.bfSize = bfOffBits+biSizeImage
+m.bfh = ;
+	[BM]+;						&& bfType
+	BINTOC(m.bfSize,"4rs")+;	&& bfSize
+	0h0000+;					&& bfReserved1
+	0h0000+;					&& bfReserved2
+	BINTOC(m.bfOffBits,"4rs")	&& bfOffBits
+
+IF This.UseMemory
+	This.PictureVal = m.bfh+m.bih+SYS(2600, m.hdib, m.biSizeImage)
+ELSE
+	IF EMPTY(This._tempfile)
+		This._tempfile = ADDBS(SYS(2023))+SYS(2015)+".bmp"
+	ELSE
+		DELETE FILE (This._tempfile)
+		CLEAR RESOURCES (This._tempfile)
+		This._tempfile = ADDBS(SYS(2023))+SYS(2015)+".bmp"
+	ENDIF
+	
+	nH = FCREATE(This._tempfile)
+	FWRITE(nH, m.bfh+m.bih+SYS(2600, m.hdib, m.biSizeImage))
+	FCLOSE(nH)
+	This.Picture = (This._tempfile)
+ENDIF
+
+GlobalFree(m.hdib)
+
+RETURN
+
+ENDPROC
+PROCEDURE resize
+
+IF This.Stretch = 0 AND This.Anchor > 0 && AND (m.nWidth <> This.Width OR m.nHeight <> This.Height)
+*	This.CreateOSB()
+	This.Draw()
+ENDIF
+ENDPROC
+PROCEDURE smoothingmode_assign
+LPARAMETERS vNewVal
+*To do: Modify this routine for the Assign method
+THIS.SmoothingMode = m.vNewVal
+This.oGfx.SmoothingMode = m.vNewVal
+
+
+ENDPROC
+PROCEDURE textrenderinghint_assign
+LPARAMETERS vNewVal
+*To do: Modify this routine for the Assign method
+THIS.TextRenderingHint = m.vNewVal
+This.oGfx.TextRenderingHint = m.vNewVal
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+ogfx
+hdc
+_memberdata XML Metadata for customizable properties
+controls An array for accessing the controls in a container object.
+bmpwidth
+bmpheight
+usememory
+_tempfile
+rectangle
+smoothingmode
+textrenderinghint
+interpolationmode
+*draw Repaints a Form object.
+*clear Clears the contents of a ComboBox or ListBox control.
+*beforedraw 
+*deleteosb 
+*renderosb 
+*declaredll 
+*createosb 
+*refresh Repaints a Form or control and refreshes any values.
+*setup 
+*resize Occurs when an object is resized.
+*rectangle_access 
+*smoothingmode_assign 
+*textrenderinghint_assign 
+*interpolationmode_assign 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+drawing.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] imgcanvas
+[START RESERVED1]
+ 	 drawing.hÆ½xÎ4 system.hÎ¾wÎ4 gdiplusconstants.hÖ¿¡„Í4[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1SZ0XT1S0
+[CLASS] checkbox
+[BASECLASS] checkbox
+[OBJNAME] temp
+[START PROPERTIES]
+Height = 17
+Width = 60
+Alignment = 0
+Caption = "Check1"
+Name = "temp"
+[END PROPERTIES]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] temp
+[START PROPERTIES]
+Arial, 0, 9, 5, 15, 12, 32, 3, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1SZ0Y2C1V
+[CLASS] imgcanvas
+[CLASSLOC] gdiplusx.vcx
+[BASECLASS] image
+[OBJNAME] imgthemebase
+[START PROPERTIES]
+themestate = 0
+themepart = 0
+themeclass = 
+Name = "imgthemebase"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE beforedraw
+*!* Here's a super simple example
+*!* There's more to this obviously, such as printing text on certain controls like Tabs or Buttons
+*!* Anyways, I wanted to get most of the grunt work out of the way, now we can play
+
+*!* Also, if you're wondering where I got all this stuff... I ripped and figured it out from a very impressive sample
+*!* VB 6.0 application that Explores all of the stuff in uxtheme.dll
+*!*	http://www.vbaccelerator.com/home/vb/code/libraries/XP_Visual_Styles/Drawing_with_XP_Visual_Styles/article.asp
+*!*	I'd like us to make an example like what that guy did for this... only make it even better. :)
+
+LOCAL System AS xfcSystem, lcThemeClass, ;
+	lnHDC, lnTheme, lqRectStruct
+System = _SCREEN.System	&& NEWOBJECT("xfcSystem","System")
+
+This.Clear()
+
+WITH _SCREEN.System
+	m.lnTheme = OpenThemeData(0, This.ThemeClass) && Get ready to draw some theme stuff
+	IF m.lnTheme > 0
+		m.lnHDC = This.oGfx.GetHDC()
+		m.lqRectStruct = 0h00000000+0h00000000+BINTOC(This.Width,"4rs")+BINTOC(This.Height,"4rs")
+		hr=DrawThemeParentBackground(ThisForm.HWnd, m.lnHDC, @lqRectStruct)
+	**	hr=DrawThemeBackground(lnTheme, lnHDC, EBP_NORMALGROUPCOLLAPSE, EBNGC_NORMAL, @lcRectStruct, @lcRectStruct)
+		hr=DrawThemeBackground(m.lnTheme, m.lnHDC, This.ThemePart, This.ThemeState, m.lqRectStruct, m.lqRectStruct)
+		This.oGfx.ReleaseHDC(m.lnHDC)
+		CloseThemeData(m.lnTheme)
+	ENDIF
+ENDWITH
+
+*!* One thing to keep in mind here is that we aren't anti-aliasing yet
+*!* (VB 6.0 application didn't either) so the rendered controls look a little rough.
+ENDPROC
+PROCEDURE declaredll
+DODEFAULT()
+
+TRY
+
+imgThemeBaseDeclareDLL(0)
+
+CATCH
+
+DECLARE Long Sleep IN WIN32API AS imgThemeBaseDeclareDLL Long
+
+*!* Here are the declares, as I haven't tested all of them there may be some that need adjusting
+*!* most notably will be some of the ones that have a "LONG @" which may actually be STRING @ since
+*!* they are looking for a structure
+
+DECLARE LONG CloseThemeData IN UXTHEME LONG hTheme
+DECLARE LONG DrawThemeBackground IN UXTHEME LONG hTheme, LONG hdc, LONG iPartId, LONG iStateId, STRING @pRect, STRING @pClipRect
+DECLARE LONG DrawThemeBackgroundEx IN UXTHEME LONG hTheme, LONG hdc, LONG iPartId, LONG iStateId, LONG @pRect, STRING @poptions
+DECLARE LONG DrawThemeEdge IN UXTHEME LONG hTheme, LONG hdc, LONG iPartId, LONG iStateId, LONG @pDestRect, uint egde, uint flags, LONG @pRect
+DECLARE LONG DrawThemeIcon IN UXTHEME LONG hTheme, LONG hdc, LONG iPartId, LONG iStateId, LONG @pRect, LONG himl, LONG iImageIndex
+DECLARE LONG DrawThemeParentBackground IN UXTHEME LONG hWnd, LONG hdc, STRING @pRect
+DECLARE LONG DrawThemeText IN UXTHEME LONG hTheme, LONG hdc, LONG iPartId, LONG iStateId, STRING text, LONG textLength, LONG textFlags, LONG textFlags2, LONG @pRect
+DECLARE LONG EnableThemeDialogTexture IN UXTHEME LONG hWnd, STRING flags
+DECLARE LONG EnableTheming IN UXTHEME LONG fEnable
+DECLARE LONG GetCurrentThemeName IN UXTHEME STRING stringThemeName, LONG lengthThemeName, STRING stringColorName, LONG lengthColorName, STRING stringSizeName, LONG lengthSizeName
+DECLARE STRING GetThemeAppProperties IN UXTHEME
+DECLARE LONG GetThemeBackgroundContentRect IN UXTHEME LONG hTheme, LONG hdc, LONG iPartId, LONG iStateId, LONG @pBoundingRect, LONG @pContentRect
+DECLARE LONG GetThemeBackgroundExtent IN UXTHEME LONG hTheme, LONG hdc, LONG iPartId, LONG iStateId, LONG @pRect, LONG @pClipRect
+DECLARE LONG GetThemeBackgroundRegion IN UXTHEME LONG hTheme, LONG hdc, LONG iPartId, LONG iStateId, LONG @pRect, LONG @pRegion
+DECLARE LONG GetThemeBool IN UXTHEME LONG hTheme, LONG iPartId, LONG iStateId, LONG iPropId, LONG @pfVal
+DECLARE LONG GetThemeColor IN UXTHEME LONG hTheme, LONG iPartId, LONG iStateId, LONG iPropId, LONG @pColor
+DECLARE LONG GetThemeDocumentationProperty IN UXTHEME STRING stringThemeName, STRING stringPropertyName, STRING @stringValue, LONG lengthValue
+DECLARE LONG GetThemeEnumValue IN UXTHEME LONG hTheme, LONG iPartId, LONG iStateId, LONG iPropId, LONG @piVal
+DECLARE LONG GetThemeFilename IN UXTHEME LONG hTheme, LONG iPartId, LONG iStateId, LONG iPropId, STRING themeFileName, LONG themeFileNameLength
+DECLARE LONG GetThemeFont IN UXTHEME LONG hTheme, LONG hdc, LONG iPartId, LONG iStateId, LONG iPropId, LONG @pFont
+DECLARE LONG GetThemeInt IN UXTHEME LONG hTheme, LONG iPartId, LONG iStateId, LONG iPropId, LONG @piVal
+DECLARE LONG GetThemeIntList IN UXTHEME LONG hTheme, LONG iPartId, LONG iStateId, LONG iPropId, LONG @pIntList
+DECLARE LONG GetThemeMargins IN UXTHEME LONG hTheme, LONG hdc, LONG iPartId, LONG iStateId, LONG iPropId, LONG @pMargins
+DECLARE LONG GetThemeMetric IN UXTHEME LONG hTheme, LONG hDC, LONG iPartId, LONG iStateId, LONG iPropId, LONG @piVal
+DECLARE LONG GetThemePartSize IN UXTHEME LONG hTheme, LONG hdc, LONG iPartId, LONG iStateId, LONG @pRect, STRING eSize, STRING @size
+DECLARE LONG GetThemePosition IN UXTHEME LONG hTheme, LONG iPartId, LONG iStateId, LONG iPropId, LONG @pPoint
+DECLARE LONG GetThemePropertyOrigin IN UXTHEME LONG hTheme, LONG iPartId, LONG iStateId, LONG iPropId, LONG @pOrigin
+DECLARE LONG GetThemeRect IN UXTHEME LONG hTheme, LONG iPartId, LONG iStateId, LONG iPropId, LONG @pRect
+DECLARE LONG GetThemeString IN UXTHEME LONG hTheme, LONG iPartId, LONG iStateId, LONG iPropId, STRING @themeString, LONG themeStringLength
+DECLARE LONG GetThemeSysBool IN UXTHEME LONG hTheme, LONG iBoolId
+DECLARE LONG GetThemeSysBrush IN UXTHEME LONG hTheme, LONG iColorId
+DECLARE LONG GetThemeSysColor IN UXTHEME LONG hTheme, LONG iColorId
+DECLARE LONG GetThemeSysFont IN UXTHEME LONG hTheme, LONG iFontId, LONG @plf
+DECLARE LONG GetThemeSysInt IN UXTHEME LONG hTheme, LONG iIntId, LONG @piVal
+DECLARE LONG GetThemeSysSize IN UXTHEME LONG hTheme, LONG iSizeId
+DECLARE LONG GetThemeSysString IN UXTHEME LONG hTheme, LONG iStringId, STRING @stringSys, LONG stringSysLength
+DECLARE LONG GetThemeTextExtent IN UXTHEME LONG hTheme, LONG hdc, LONG iPartId, LONG iStateId, STRING text, LONG textLength, LONG textFlags, LONG @boundingRect, STRING @extentRect
+DECLARE LONG GetThemeTextMetrics IN UXTHEME LONG hTheme, LONG hdc, LONG iPartId, LONG iStateId, STRING @textMetric
+DECLARE LONG GetWindowTheme IN UXTHEME LONG hWnd
+DECLARE LONG HitTestThemeBackground IN UXTHEME LONG hTheme, LONG hdc, LONG iPartId, LONG iStateId, LONG dwOptions, LONG @pRect, LONG hrgn, POINT ptTest, STRING @code
+DECLARE LONG IsAppThemed IN UXTHEME
+DECLARE LONG IsThemeActive IN UXTHEME
+DECLARE LONG IsThemeBackgroundPartiallyTransparent IN UXTHEME LONG hTheme, LONG iPartId, LONG iStateId
+DECLARE LONG IsThemeDialogTextureEnabled IN UXTHEME LONG hWnd
+DECLARE LONG IsThemePartDefined IN UXTHEME LONG hTheme, LONG iPartId, LONG iStateId
+DECLARE LONG OpenThemeData IN UXTHEME LONG hWnd, STRING classList
+DECLARE LONG SetSystemVisualStyle IN UXTHEME STRING pszFilename, STRING pszColor, STRING pszSize, LONG dwReserved
+DECLARE SetThemeAppProperties IN UXTHEME STRING props
+DECLARE LONG SetWindowTheme IN UXTHEME LONG hWnd, STRING textSubAppName, STRING textSubIdList
+
+ENDTRY
+
+ENDPROC
+PROCEDURE themestate_assign
+LPARAMETERS vNewVal
+THIS.themestate = m.vNewVal
+This.Draw()
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+themestate
+themepart
+themeclass
+*themestate_assign 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] imgthemebase
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1SZ0YMNIB
+[CLASS] imgthemebase
+[CLASSLOC] gdiplusx.vcx
+[BASECLASS] image
+[OBJNAME] imgthemebutton
+[START PROPERTIES]
+Height = 29
+Width = 114
+themestate = 1
+themeclass = (STRCONV("Button"+0h00,5))
+themepart = 1
+Name = "imgthemebutton"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE MouseDown
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+This.ThemeState = 3
+ENDPROC
+PROCEDURE MouseEnter
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+This.ThemeState = 2
+ENDPROC
+PROCEDURE MouseLeave
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+This.ThemeState = 1
+ENDPROC
+PROCEDURE MouseUp
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+This.ThemeState = 2
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] imgthemebutton
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1SZ0YVE5L
+[CLASS] imgthemebase
+[CLASSLOC] gdiplusx.vcx
+[BASECLASS] image
+[OBJNAME] imgthemetoolbarbutton
+[START PROPERTIES]
+Height = 37
+Width = 37
+themestate = 1
+themeclass = (STRCONV("Toolbar"+0h00,5))
+themepart = 1
+Name = "imgthemetoolbarbutton"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE MouseDown
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+This.ThemeState = 3
+ENDPROC
+PROCEDURE MouseEnter
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+This.ThemeState = 2
+ENDPROC
+PROCEDURE MouseLeave
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+This.ThemeState = 1
+ENDPROC
+PROCEDURE MouseUp
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+This.ThemeState = 2
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] imgthemetoolbarbutton
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1SZ0Z0B1N
+[CLASS] imgthemebase
+[CLASSLOC] gdiplusx.vcx
+[BASECLASS] image
+[OBJNAME] imgthemeprogressbar
+[START PROPERTIES]
+Height = 20
+Width = 207
+themestate = 1
+themeclass = (STRCONV("Progress"+0h00,5))
+themepart = 1
+Name = "imgthemeprogressbar"
+[END PROPERTIES]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] imgthemeprogressbar
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1SZ0Z2FEC
+[CLASS] control
+[BASECLASS] control
+[OBJNAME] ctlthemeprogressbar
+[START PROPERTIES]
+Width = 296
+Height = 28
+min = 0
+max = 100
+value = 0
+orientation = 0
+Name = "ctlthemeprogressbar"
+[END PROPERTIES]
+[START PROTECTED]
+updatecontrol
+[END PROTECTED]
+[START METHODS]
+PROCEDURE Init
+This.UpdateControl()
+ENDPROC
+PROCEDURE orientation_assign
+LPARAMETERS tnOrientation
+
+IF BETWEEN(m.tnOrientation, 0, 1)
+	This.Orientation = m.tnOrientation
+	This.Value = This.Value
+ENDIF
+
+ENDPROC
+PROCEDURE updatecontrol
+
+WITH This.imgthemebase1
+	.Top = 0
+	.Left = 0
+	.Width = This.Width
+	.Height = This.Height
+
+	IF This.Orientation = 0	&& Horizontal
+		.ThemePart = 1
+	ELSE
+		.ThemePart = 2
+	ENDIF
+	
+	.Draw()
+ENDWITH
+
+WITH This.imgthemebase2
+	.Top = 4
+	.Left = 4
+
+	m.lnPct = (This.Value-This.Min)/(This.Max-This.Min)
+	IF This.Orientation = 0	&& Horizontal
+		.Width = (This.Width-8)*m.lnPct
+		.Height = This.Height-8
+		.ThemePart = 3
+	ELSE
+		.Width = This.Width-8
+		.Height = (This.Height-8)*m.lnPct
+		.Top = This.Height-4-.Height
+		.ThemePart = 4
+	ENDIF
+	
+	.Draw()
+ENDWITH
+
+ENDPROC
+PROCEDURE value_assign
+LPARAMETERS tnValue
+LOCAL lnPct
+IF BETWEEN(m.tnValue, This.Min, This.Max)
+	This.Value = m.tnValue
+	This.UpdateControl()
+ENDIF
+	
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+3[END RESERVED2]
+[START RESERVED3]
+min
+max
+value Specifies the current state of a control.
+orientation
+*value_assign 
+*orientation_assign 
+*updatecontrol 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1SZ0XT1S0
+[CLASS] imgthemebase
+[CLASSLOC] gdiplusx.vcx
+[BASECLASS] image
+[OBJNAME] Imgthemebase1
+[PARENT] ctlthemeprogressbar
+[START PROPERTIES]
+Height = 21
+Left = 3
+Top = 3
+Width = 57
+themeclass = (STRCONV("Progress"+0h00,5))
+themepart = 1
+Name = "Imgthemebase1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1SZ0ZA5BZ
+[CLASS] imgthemebase
+[CLASSLOC] gdiplusx.vcx
+[BASECLASS] image
+[OBJNAME] Imgthemebase2
+[PARENT] ctlthemeprogressbar
+[START PROPERTIES]
+Height = 21
+Left = 62
+Top = 3
+Width = 57
+themeclass = (STRCONV("Progress"+0h00,5))
+themepart = 1
+Name = "Imgthemebase2"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] ctlthemeprogressbar
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1SZ13URAM
+[CLASS] imgthemebase
+[CLASSLOC] gdiplusx.vcx
+[BASECLASS] image
+[OBJNAME] imgthemeclock
+[START PROPERTIES]
+Height = 94
+Width = 99
+themeclass = (STRCONV("Clock"+0h00,5))
+themepart = 1
+themestate = 1
+Name = "imgthemeclock"
+[END PROPERTIES]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] imgthemeclock
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1TO03WFQY
+[CLASS] control
+[BASECLASS] control
+[OBJNAME] ctlcanvas
+[START PROPERTIES]
+Width = 348
+Height = 252
+BackStyle = 0
+BorderWidth = 0
+ogfx = (NULL)
+Name = "ctlcanvas"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+This.imgcanvas1.Width = This.Width
+This.imgCanvas1.Height = This.Height
+This.imgCanvas1.Anchor = 15
+ENDPROC
+PROCEDURE Resize
+
+This.imgcanvas1.Resize()
+ENDPROC
+PROCEDURE clear
+LPARAMETERS eColor
+
+This.imgcanvas1.Clear(eColor)
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+2[END RESERVED2]
+[START RESERVED3]
+ogfx
+*beforedraw 
+*setup 
+*clear 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1TO040VN1
+[CLASS] imgcanvas
+[CLASSLOC] gdiplusx.vcx
+[BASECLASS] image
+[OBJNAME] Imgcanvas1
+[PARENT] ctlcanvas
+[START PROPERTIES]
+Height = 252
+Left = 0
+Top = 0
+Width = 348
+Name = "Imgcanvas1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] ctlcanvas
+[EOF]
