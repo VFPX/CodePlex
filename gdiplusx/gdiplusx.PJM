@@ -24,4 +24,27 @@ AutoIncrement=.F.
 [OLEServers]
 [OLEServersEnd]
 [ProjectFiles]
+ 883402552,V,source\drawing2d.vcx,.F.,.F.,1252,,,
+ 883402553,V,source\drawing.vcx,.F.,.F.,1252,,,
+ 883402555,V,source\imaging.vcx,.F.,.F.,1252,,,
+ 883402556,V,source\system.vcx,.F.,.F.,1252,,,
+ 883402563,V,source\text.vcx,.F.,.F.,1252,,,
+ 883402565,P,samples\demo.prg,.F.,.T.,1252,,,
+ 883492042,V,samples\gdipsamples.vcx,.F.,.F.,0,,,
+ 884082124,V,source\gdiplusx.vcx,.F.,.F.,0,,,
+ 885916544,K,samples\form1.scx,.F.,.F.,1252,,,
+ 885916544,K,samples\form2.scx,.F.,.F.,1252,,,
+ 885916544,K,samples\form3.scx,.F.,.F.,1252,,,
+ 885916544,K,samples\form4.scx,.F.,.F.,1252,,,
+ 885916544,K,samples\form5.scx,.F.,.F.,1252,,,
+ 885916544,K,samples\form6.scx,.F.,.F.,1252,,,
+ 885916544,K,samples\form7.scx,.F.,.F.,1252,,,
+ 885916544,K,samples\form8.scx,.F.,.F.,1252,,,
+ 885916544,K,samples\form9.scx,.F.,.F.,1252,,,
+ 885916544,K,samples\form10.scx,.F.,.F.,1252,,,
+ 885916544,K,samples\form11.scx,.F.,.F.,1252,,,
+ 885916544,K,samples\form12.scx,.F.,.F.,1252,,,
+ 885916544,K,samples\form13.scx,.F.,.F.,1252,,,
+ 885916544,K,samples\form14.scx,.F.,.F.,1252,,,
+ 885916544,K,samples\form15.scx,.F.,.F.,1252,,,
 [EOF]
