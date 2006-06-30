@@ -1,5 +1,5 @@
 PUBLIC goGDIPlusXSamples
-
+*!* Testing Source Control
 LOCAL lcPath
 
 lcPath = ADDBS(JUSTPATH(SYS(16)))
