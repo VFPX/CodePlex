@@ -369,9 +369,9 @@ drawing.h[END RESERVED8]
 [START PROPERTIES]
 newcolor = 0
 oldcolor = 0
+basename = ColorMap
 _memberdata =      597<VFPData><memberdata name="equals" type="method" display="Equals"/><memberdata name="gethashcode" type="method" display="GetHashCode"/><memberdata name="gettype" type="method" display="GetType"/><memberdata name="tostring" type="method" display="ToString"/><memberdata name="finalize" type="method" display="Finalize"/><memberdata name="memberwiseclone" type="method" display="MemberwiseClone"/><memberdata name="newcolor" type="property" display="NewColor"/><memberdata name="oldcolor" type="property" display="OldColor"/><memberdata name="tostruct" type="method" display="ToStruct"/></VFPData>
 
-basename = ColorMap
 Name = "xfccolormap"
 [END PROPERTIES]
 [START PROTECTED]
@@ -390,6 +390,7 @@ PROCEDURE Init
 *********************************************************************
 
 *!ToDo: Test this function
+*!ToDo: This need to accept Color objects, not just integers
 
 LOCAL loExc AS Exception
 TRY
@@ -456,10 +457,8 @@ Class[END RESERVED1]
 [START RESERVED3]
 newcolor Gets or sets the new Color structure to which to convert.
 oldcolor Gets or sets the existing Color structure to be converted.
-_memberdata XML Metadata for customizable properties
 basename
 *tostruct 
-*new 
 [END RESERVED3]
 [START RESERVED6]
 Pixels[END RESERVED6]
@@ -470,8 +469,6 @@ drawing.h[END RESERVED8]
 [PLATFORM] COMMENT 
 [UNIQUEID] RESERVED  
 [OBJNAME] xfccolormap
-[START RESERVED1]
- 	 drawing.hæõL>Ï4 system.hîöf‡Ù4 gdiplusconstants.hö÷¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
