@@ -269,7 +269,7 @@ RETURN NULL
 *********************************************************************
 
 ENDPROC
-PROCEDURE tostruct
+PROCEDURE tovarbinary
 
 RETURN ;
 	BINTOC(This._width, "4rs") + ;
@@ -345,7 +345,7 @@ _height
 *stride_assign 
 *width_access 
 *width_assign 
-*tostruct 
+*tovarbinary 
 [END RESERVED3]
 [START RESERVED6]
 Pixels[END RESERVED6]
@@ -357,7 +357,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcbitmapdata
 [START RESERVED1]
- 	 drawing.hæõL>Ï4 system.hîöf‡Ù4 gdiplusconstants.hö÷¹>Ï4[END RESERVED1]
+ 	 drawing.höŠ]¥ï4 system.hþ‹0¥ï4 gdiplusconstants.h¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -370,7 +370,7 @@ drawing.h[END RESERVED8]
 newcolor = 0
 oldcolor = 0
 basename = ColorMap
-_memberdata =      597<VFPData><memberdata name="equals" type="method" display="Equals"/><memberdata name="gethashcode" type="method" display="GetHashCode"/><memberdata name="gettype" type="method" display="GetType"/><memberdata name="tostring" type="method" display="ToString"/><memberdata name="finalize" type="method" display="Finalize"/><memberdata name="memberwiseclone" type="method" display="MemberwiseClone"/><memberdata name="newcolor" type="property" display="NewColor"/><memberdata name="oldcolor" type="property" display="OldColor"/><memberdata name="tostruct" type="method" display="ToStruct"/></VFPData>
+_memberdata =      603<VFPData><memberdata name="equals" type="method" display="Equals"/><memberdata name="gethashcode" type="method" display="GetHashCode"/><memberdata name="gettype" type="method" display="GetType"/><memberdata name="tostring" type="method" display="ToString"/><memberdata name="finalize" type="method" display="Finalize"/><memberdata name="memberwiseclone" type="method" display="MemberwiseClone"/><memberdata name="newcolor" type="property" display="NewColor"/><memberdata name="oldcolor" type="property" display="OldColor"/><memberdata name="tovarbinary" type="method" display="ToVarbinary"/></VFPData>
 
 Name = "xfccolormap"
 [END PROPERTIES]
@@ -412,9 +412,9 @@ ENDPROC
 PROCEDURE new
 RETURN This.CreateNew(This.Class)
 ENDPROC
-PROCEDURE tostruct
+PROCEDURE tovarbinary
 *********************************************************************
-** Method: ToStruct
+** Method: ToVarbinary
 **
 ** Returns a binary representation of this ColorMap structure
 **
@@ -435,13 +435,13 @@ CASE PCOUNT() = 0
 		
 CASE TYPE("taColorMap[1]") = "O"
 	FOR EACH loColorMap AS xfcColorMap IN taColorMap FOXOBJECT
-		m.lqBinary = m.lqBinary + m.loColorMap.ToStruct()
+		m.lqBinary = m.lqBinary + m.loColorMap.ToVarbinary()
 		m.tiCount = m.tiCount + 1
 	ENDFOR
 
 CASE VARTYPE(m.taPoint) = "O"
 	m.loColorMap = m.taColorMap
-	m.lqBinary = m.loColorMap.ToStruct()
+	m.lqBinary = m.loColorMap.ToVarbinary()
 	m.tiCount = 1
 	
 CASE VARTYPE(m.taColorMap) = "N"
@@ -460,7 +460,7 @@ Class[END RESERVED1]
 newcolor Gets or sets the new Color structure to which to convert.
 oldcolor Gets or sets the existing Color structure to be converted.
 basename
-*tostruct 
+*tovarbinary 
 [END RESERVED3]
 [START RESERVED6]
 Pixels[END RESERVED6]
@@ -471,6 +471,8 @@ drawing.h[END RESERVED8]
 [PLATFORM] COMMENT 
 [UNIQUEID] RESERVED  
 [OBJNAME] xfccolormap
+[START RESERVED1]
+ 	 drawing.höŠ]¥ï4 system.hþ‹0¥ï4 gdiplusconstants.h¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -506,7 +508,7 @@ matrix42 = 0
 matrix43 = 0
 matrix44 = 0
 basename = ColorMatrix
-_memberdata =     2177<VFPData><memberdata name="equals" type="method" display="Equals"/><memberdata name="gethashcode" type="method" display="GetHashCode"/><memberdata name="gettype" type="method" display="GetType"/><memberdata name="tostring" type="method" display="ToString"/><memberdata name="finalize" type="method" display="Finalize"/><memberdata name="memberwiseclone" type="method" display="MemberwiseClone"/><memberdata name="item" type="property" display="Item"/><memberdata name="matrix00" type="property" display="Matrix00"/><memberdata name="matrix01" type="property" display="Matrix01"/><memberdata name="matrix02" type="property" display="Matrix02"/><memberdata name="matrix03" type="property" display="Matrix03"/><memberdata name="matrix04" type="property" display="Matrix04"/><memberdata name="matrix10" type="property" display="Matrix10"/><memberdata name="matrix11" type="property" display="Matrix11"/><memberdata name="matrix12" type="property" display="Matrix12"/><memberdata name="matrix13" type="property" display="Matrix13"/><memberdata name="matrix14" type="property" display="Matrix14"/><memberdata name="matrix20" type="property" display="Matrix20"/><memberdata name="matrix21" type="property" display="Matrix21"/><memberdata name="matrix22" type="property" display="Matrix22"/><memberdata name="matrix23" type="property" display="Matrix23"/><memberdata name="matrix24" type="property" display="Matrix24"/><memberdata name="matrix30" type="property" display="Matrix30"/><memberdata name="matrix31" type="property" display="Matrix31"/><memberdata name="matrix32" type="property" display="Matrix32"/><memberdata name="matrix33" type="property" display="Matrix33"/><memberdata name="matrix34" type="property" display="Matrix34"/><memberdata name="matrix40" type="property" display="Matrix40"/><memberdata name="matrix41" type="property" display="Matrix41"/><memberdata name="matrix42" type="property" display="Matrix42"/><memberdata name="matrix43" type="property" display="Matrix43"/><memberdata name="matrix44" type="property" display="Matrix44"/><memberdata name="new" type="method" display="New"/><memberdata name="tostruct" type="method" display="ToStruct"/></VFPData>
+_memberdata =     2183<VFPData><memberdata name="equals" type="method" display="Equals"/><memberdata name="gethashcode" type="method" display="GetHashCode"/><memberdata name="gettype" type="method" display="GetType"/><memberdata name="tostring" type="method" display="ToString"/><memberdata name="finalize" type="method" display="Finalize"/><memberdata name="memberwiseclone" type="method" display="MemberwiseClone"/><memberdata name="item" type="property" display="Item"/><memberdata name="matrix00" type="property" display="Matrix00"/><memberdata name="matrix01" type="property" display="Matrix01"/><memberdata name="matrix02" type="property" display="Matrix02"/><memberdata name="matrix03" type="property" display="Matrix03"/><memberdata name="matrix04" type="property" display="Matrix04"/><memberdata name="matrix10" type="property" display="Matrix10"/><memberdata name="matrix11" type="property" display="Matrix11"/><memberdata name="matrix12" type="property" display="Matrix12"/><memberdata name="matrix13" type="property" display="Matrix13"/><memberdata name="matrix14" type="property" display="Matrix14"/><memberdata name="matrix20" type="property" display="Matrix20"/><memberdata name="matrix21" type="property" display="Matrix21"/><memberdata name="matrix22" type="property" display="Matrix22"/><memberdata name="matrix23" type="property" display="Matrix23"/><memberdata name="matrix24" type="property" display="Matrix24"/><memberdata name="matrix30" type="property" display="Matrix30"/><memberdata name="matrix31" type="property" display="Matrix31"/><memberdata name="matrix32" type="property" display="Matrix32"/><memberdata name="matrix33" type="property" display="Matrix33"/><memberdata name="matrix34" type="property" display="Matrix34"/><memberdata name="matrix40" type="property" display="Matrix40"/><memberdata name="matrix41" type="property" display="Matrix41"/><memberdata name="matrix42" type="property" display="Matrix42"/><memberdata name="matrix43" type="property" display="Matrix43"/><memberdata name="matrix44" type="property" display="Matrix44"/><memberdata name="new" type="method" display="New"/><memberdata name="tovarbinary" type="method" display="ToVarBinary"/></VFPData>
 
 Name = "xfccolormatrix"
 [END PROPERTIES]
@@ -1984,15 +1986,16 @@ ENDIF
 
 
 ENDPROC
-PROCEDURE tostruct
+PROCEDURE tovarbinary
 *********************************************************************
-** Method: ToStruct
+** Method: ToVarBinary
 **
 ** Creates a binary representation of this object as a string
 **
 ** History:
 **  2006/03/09: BDurban - Coded
 **	2006/05/02: BDurban - Tweaked
+**  2006/07/08: BDurban - Changed method name
 *********************************************************************
 *!ToDo: Test this function
 
@@ -2099,7 +2102,7 @@ basename
 *matrix44_assign 
 ^item_[5,5] 
 ^item[5,5] Returns a specified member of a Collection object.
-*tostruct 
+*tovarbinary 
 [END RESERVED3]
 [START RESERVED6]
 Pixels[END RESERVED6]
@@ -2111,7 +2114,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfccolormatrix
 [START RESERVED1]
- 	 drawing.hæõL>Ï4 system.hîöf‡Ù4 gdiplusconstants.hö÷¹>Ï4[END RESERVED1]
+ 	 drawing.höŠ]¥ï4 system.hþ‹0¥ï4 gdiplusconstants.h¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -2122,14 +2125,14 @@ drawing.h[END RESERVED8]
 [OBJNAME] xfccolorpalette
 [START PROPERTIES]
 flags = 0
-_memberdata =      525<VFPData><memberdata name="equals" type="method" display="Equals"/><memberdata name="gethashcode" type="method" display="GetHashCode"/><memberdata name="gettype" type="method" display="GetType"/><memberdata name="tostring" type="method" display="ToString"/><memberdata name="finalize" type="method" display="Finalize"/><memberdata name="memberwiseclone" type="method" display="MemberwiseClone"/><memberdata name="entries" type="property" display="Entries"/><memberdata name="flags" type="property" display="Flags"/></VFPData>
 basename = ColorPalette
 _binary = (NULL)
+_memberdata =      525<VFPData><memberdata name="equals" type="method" display="Equals"/><memberdata name="gethashcode" type="method" display="GetHashCode"/><memberdata name="gettype" type="method" display="GetType"/><memberdata name="tostring" type="method" display="ToString"/><memberdata name="finalize" type="method" display="Finalize"/><memberdata name="memberwiseclone" type="method" display="MemberwiseClone"/><memberdata name="entries" type="property" display="Entries"/><memberdata name="flags" type="property" display="Flags"/></VFPData>
 Name = "xfccolorpalette"
 [END PROPERTIES]
 [START PROTECTED]
-_memberdata
 _binary^
+_memberdata
 [END PROTECTED]
 [START METHODS]
 PROCEDURE Init
@@ -2142,27 +2145,40 @@ PROCEDURE Init
 ** History:
 **  2006/03/07: Auto Generated
 **	2006/05/03: BDurban - Coded
+**	2006/07/11: BDurban - Added support for an integer to be passed
 *********************************************************************
-LPARAMETERS tqBinary AS VarBinary
+LPARAMETERS tiCount
 
 *!ToDo: Test this function
 LOCAL loExc AS Exception
 TRY
-	LOCAL liCount
+	LOCAL lqBinary
 	DODEFAULT()
-	IF EMPTY(m.tqBinary)
+	
+	DO CASE
+	CASE VARTYPE(m.tiCount)="N"
+		*!ToDo: Verify the number is valid for a color palette
+		This._Binary = EMPTY_LONG+BINTOC(m.tiCount,"4rs")+REPLICATE(EMPTY_LONG, m.tiCount)
+		
+	CASE VARTYPE(m.tiCount)="Q"
+		*!ToDo: Verify the count matches the length of the binary data
+		This._Binary = m.tiCount
+		m.tiCount = CTOBIN(SUBSTR(This._Binary,5,4),"4rs")
+	
+	OTHERWISE
+		m.tiCount = 0
 		This._Binary = NULL
+	
+	ENDCASE
+		
+	IF m.tiCount > 0
+		DIMENSION This.Entries[m.tiCount]
+		This.Entries = NULL
 	ELSE
-		This._Binary = m.tqBinary
-		m.liCount = CTOBIN(SUBSTR(m.tqBinary,5,4),"4rs")
-		IF m.liCount > 0
-			DIMENSION This.Entries[m.liCount]
-			This.Entries = This.CreateNew("xfcColor")
-		ELSE
-			DIMENSION This.Entries[1]
-			This.Entries = .F.
-		ENDIF		
-	ENDIF
+		DIMENSION This.Entries[1]
+		This.Entries = .F.
+	ENDIF		
+
 CATCH TO loExc
 	THROW m.loExc
 ENDTRY
@@ -2172,7 +2188,6 @@ RETURN
 ** .NET Help ********************************************************
 ** http://msdn2.microsoft.com/en-us/library/System.Drawing.Imaging.ColorPalette%28vs.80%29.aspx
 ** Parameters:
-
 *********************************************************************
 
 ENDPROC
@@ -2185,10 +2200,10 @@ PROCEDURE entries_access
 ** History:
 **  2006/03/07: Auto Generated
 **	2006/05/03: BDurban - Coded
+**  2006/06/28: CChalom - Fixed and Tested
+**  2006/07/12: BDurban - Added support for returning varbinary data
 *********************************************************************
 LPARAMETERS tiIndex
-
-*!ToDo: Test this function
 
 LOCAL loColor, liArgb
 LOCAL lqArgbColor
@@ -2197,15 +2212,18 @@ m.loColor = NULL
 
 LOCAL loExc AS Exception
 TRY
-	m.tiIndex = EVL(m.tiIndex,1)
-	IF VARTYPE(This.Entries) = "O"
+	DO CASE
+	** If we passes a varbinary as the index, return the colors as varbinary
+	CASE VARTYPE(m.tiIndex) = "Q"
+		m.loColor = SUBSTR(This._Binary, 9)
+	OTHERWISE
+		m.tiIndex = EVL(m.tiIndex,1)
 		m.lqArgbColor = SUBSTR(This._Binary, (m.tiIndex+1)*4+1, 4)
 		m.liArgb = CTOBIN(m.lqArgbColor, "4rs")
-		m.loColor = This.CreateNew("xfcColor")
-		m.loColor.FromARGB(m.liArgb)
-	ENDIF
+		m.loColor = This.CreateNew("xfcColor", m.liArgb)
+	ENDCASE
 CATCH TO loExc
-	THROW m.loExc
+   THROW m.loExc
 ENDTRY
 RETURN m.loColor
 
@@ -2213,6 +2231,49 @@ RETURN m.loColor
 ** http://msdn2.microsoft.com/en-us/library/System.Drawing.Imaging.ColorPalette.Entries%28vs.80%29.aspx
 ** Returns: Color[]
 *********************************************************************
+
+ENDPROC
+PROCEDURE entries_assign
+*********************************************************************
+** Property: Entries (ASSIGN)
+**
+** Sets an array of Color structures.
+**
+** History:
+**	2006/07/11: BDurban - Coded
+*********************************************************************
+LPARAMETERS toColor AS xfcColor, tiIndex
+
+LOCAL lqColors, liCount, liFlags, liARGB
+*! ToDo: Error if tiIndex is outside of range?
+
+LOCAL loExc AS Exception
+TRY
+	DO CASE
+	CASE VARTYPE(m.toColor) = "Q"
+		m.lqColors = m.toColor
+		m.liCount = LEN(m.lqBinary)/4
+		m.lqFlags = NVL(LEFT(This._Binary, 4), EMPTY_LONG)
+		This._Binary = m.lqFlags+BINTOC(m.liCount,"4rs")+m.lqColors
+		DIMENSION This.Entries[m.liCount]
+		
+	CASE VARTYPE(m.toColor) = "O"
+		m.liARGB = m.toColor.ToArgb()
+		m.tiIndex = EVL(m.tiIndex,1)
+		This._Binary = STUFF(This._Binary, (m.tiIndex+1)*4+1, 4, BINTOC(m.liARGB,"4rs"))
+		
+	CASE VARTYPE(m.toColor) = "N"
+		m.liARGB = BITRSHIFT(m.toColor,0)	&& Makes sure we have a signed int
+		m.tiIndex = EVL(m.tiIndex,1)
+		This._Binary = STUFF(This._Binary, (m.tiIndex+1)*4+1, 4, BINTOC(m.liARGB,"4rs"))
+		
+	ENDCASE
+	
+CATCH TO loExc
+   THROW m.loExc
+ENDTRY
+RETURN
+
 
 ENDPROC
 PROCEDURE flags_access
@@ -2225,19 +2286,18 @@ PROCEDURE flags_access
 ** History:
 **  2006/03/07: Auto Generated
 **	2006/05/03: BDurban - Coded
+**  2006/06/28: CChalom - Fixed and tested
 *********************************************************************
-
-*!ToDo: Test this function
-
 LOCAL liValue
 m.liValue = 0
 
 LOCAL loExc AS Exception
 TRY
-	m.liValue = CTOBIN(SUBSTR(This._Binary,4),"4rs")
+	m.liValue = CTOBIN(SUBSTR(This._Binary,1,4),"4rs")
 CATCH TO loExc
-	THROW m.loExc
+THROW m.loExc
 ENDTRY
+
 RETURN m.liValue
 
 ** .NET Help ********************************************************
@@ -2246,12 +2306,35 @@ RETURN m.liValue
 *********************************************************************
 
 ENDPROC
-PROCEDURE new
-LPARAMETERS lqColorPalette
+PROCEDURE flags_assign
+*********************************************************************
+** Property: Flags (Assign)
+**
+** Sets a value that specifies how to interpret the color information in the array
+** of colors.
+**
+** History:
+**	2006/07/11: BDurban - Coded
+*********************************************************************
+LPARAMETERS tiValue
 
-RETURN This.CreateNew(This.Class, m.lqColorPalette)
+LOCAL loExc AS Exception
+TRY
+	This._Binary = STUFF(This._Binary,1,4,BINTOC(m.tiValue,"4rs"))
+CATCH TO loExc
+THROW m.loExc
+ENDTRY
+
+RETURN
+
+
 ENDPROC
-PROCEDURE tostruct
+PROCEDURE new
+LPARAMETERS tiCount
+
+RETURN This.CreateNew(This.Class, m.tiCount)
+ENDPROC
+PROCEDURE tovarbinary
 RETURN This._Binary
 ENDPROC
 [END METHODS]
@@ -2261,14 +2344,14 @@ Class[END RESERVED1]
 1[END RESERVED2]
 [START RESERVED3]
 flags Gets a value that specifies how to interpret the color information in the array of colors.
-_memberdata XML Metadata for customizable properties
 basename
 _binary
 *flags_access 
-*tostruct 
+*tovarbinary 
 ^entries[1,0] 
 *entries_access 
-*new 
+*entries_assign 
+*flags_assign 
 [END RESERVED3]
 [START RESERVED6]
 Pixels[END RESERVED6]
@@ -2280,7 +2363,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfccolorpalette
 [START RESERVED1]
- 	 drawing.hæõL>Ï4 system.hîöf‡Ù4 gdiplusconstants.hö÷¹>Ï4[END RESERVED1]
+ 	 drawing.höŠ]¥ï4 system.hþ‹0¥ï4 gdiplusconstants.h¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -2669,7 +2752,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcencoder
 [START RESERVED1]
- 	 drawing.hæõL>Ï4 system.hîöf‡Ù4 gdiplusconstants.hö÷¹>Ï4[END RESERVED1]
+ 	 drawing.höŠ]¥ï4 system.hþ‹0¥ï4 gdiplusconstants.h¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -2694,9 +2777,19 @@ Name = "xfcencoderparameter"
 _type
 _value
 _length
+_stringtohglobal
+_allochglobal
+_writehglobal
 _memberdata
 [END PROTECTED]
 [START METHODS]
+PROCEDURE Destroy
+
+
+IF This._value <> 0
+	LocalFree(This._value)
+ENDIF
+ENDPROC
 PROCEDURE Init
 *********************************************************************
 ** Method: EncoderParameter
@@ -2707,6 +2800,7 @@ PROCEDURE Init
 ** History:
 **  2006/03/07: Auto Generated
 **	2006/06/10: BDurban - Coded, partial
+**  2006/07/15: BDurban - Rewritten to use allocmemory
 *********************************************************************
 LPARAMETERS toEncoder AS xfcEncoder, teValue1, teValue2, teValue3, teValue4
 *********** toEncoder AS xfcEncoder, tiNumberOfValues, tiType, tiValue
@@ -2727,111 +2821,153 @@ LPARAMETERS toEncoder AS xfcEncoder, teValue1, teValue2, teValue3, teValue4
 
 *!ToDo: Test this function
 
-LOCAL lqBinary, liCount, liRow, lnValue, lcVarType
+LOCAL lqBinary, liCount, liRow, lnValue, lcVarType, lhPtr, liSize
 
 EXTERNAL ARRAY teValue1
+
+*! ToDo: Move these declares somewhere else
+DECLARE LONG LocalAlloc IN WIN32API LONG uFlags, LONG uBytes
+DECLARE LONG LocalFree IN WIN32API LONG HMEM
 
 LOCAL loExc AS Exception
 TRY
 	DODEFAULT()
 	
-	*!ToDo: Unhadled overloads: 3,4,12,13,14
-		
 	m.lcVarType = VARTYPE(m.teValue1)+VARTYPE(m.teValue2)+VARTYPE(m.teValue3)+VARTYPE(m.teValue4)
 	
+	** Initialize to an empty encoder
+	This._type = EncoderParameterValueTypeByte
+	This._length = 0
+	This._value = 0
+	
 	DO CASE
-	** Overloads: 7
+	** Overloads: 7 - String
 	CASE LEFT(m.lcVarType,1) == "C"
 		This._type = EncoderParameterValueTypeASCII
-		This._value = m.teValue1+0h00
 		This._length = LEN(m.teValue1)+1
+		This._value = This._StringToHGlobal(m.teValue1+0h00)
 		
-	** Overloads: 1,2,8,9
+	** Overloads: 1,2,8,9 - Byte or Byte[] AS VarBinary
 	CASE LEFT(m.lcVarType,1) == "Q"
-		This._type = EncoderParameterValueTypeByte
-		This._value = m.teValue1
+		This._type = IIF(m.teValue2, EncoderParameterValueTypeUndefined, EncoderParameterValueTypeByte)
 		This._length = LEN(m.teValue1)
-		IF m.teValue2 = .T.
-			This._type = EncoderParameterValueTypeUndefined
-		ENDIF
+		This._value = This._StringToHGlobal(m.teValue1)
 		
 	CASE TYPE("m.teValue1[1,1]") = "N"
 		DO CASE
-	** Overloads: 16
+	** Overloads: 16 - int[],int[],int[],int[] AS int[x,4]
 		CASE ALEN(m.teValue1,2) = 4
 			This._type = EncoderParameterValueTypeRationalRange
-			m.lqBinary = 0h
-			m.liCount = 0
-			FOR liRow = 1 TO ALEN(m.teValue1,1)
-				m.lnValue = m.teValue1[liRow,1]
-				IF VARTYPE(m.lnValue) = "N"
-					m.lqBinary = m.lqBinary + ;
-								BINTOC(m.lnValue,"4rs") + ;
-								BINTOC(m.teValue1[m.liRow,2],"4rs") + ;
-								BINTOC(m.teValue1[m.liRow,3],"4rs") + ;
-								BINTOC(m.teValue1[m.liRow,4],"4rs")
-					m.liCount = m.liCount + 1
-				ENDIF
-			ENDFOR
-			This._value = m.lqBinary
 			This._length = ALEN(m.teValue1,1)
+			This._value = This._AllocHGlobal(This._length*16)
+			m.lhPtr = This._value
+			FOR liRow = 1 TO ALEN(m.teValue1,1)
+				m.lhPtr = This._WriteHGlobal(m.lhPtr, ;
+								BINTOC(m.teValue1[m.liRow,1],"4rs")+;
+								BINTOC(m.teValue1[m.liRow,2],"4rs")+;
+								BINTOC(m.teValue1[m.liRow,3],"4rs")+;
+								BINTOC(m.teValue1[m.liRow,4],"4rs"))
+			ENDFOR
 		
-	** Overloads: 11
+	** Overloads: 11 - int[],int[] AS int[x,2]
 		CASE ALEN(m.teValue1,2) = 2
 			This._type = EncoderParameterValueTypeRational
-			m.lqBinary = 0h
-			m.liCount = 0
-			FOR liRow = 1 TO ALEN(m.teValue1,1)
-				m.lnValue = m.teValue1[liRow,1]
-				IF VARTYPE(m.lnValue) = "N"
-					m.lqBinary = m.lqBinary + ;
-								BINTOC(m.lnValue1,"4rs") + ;
-								BINTOC(m.teValue1[m.liRow,2],"4rs")
-					m.liCount = m.liCount + 1
-				ENDIF
-			ENDFOR
-			This._value = m.lqBinary
 			This._length = ALEN(m.teValue1,1)
+			This._value = This._AllocHGlobal(This._length*8)
+			m.lhPtr = This._value
+			FOR liRow = 1 TO ALEN(m.teValue1,1)
+				m.lhPtr = This._WriteHGlobal(m.lhPtr, ;
+								BINTOC(m.teValue1[m.liRow,1],"4rs")+;
+								BINTOC(m.teValue1[m.liRow,2],"4rs"))
+			ENDFOR
 		
-	** Overloads: 6
+	** Overloads: 6 - int[]
 		CASE ALEN(m.teValue1,2) < 2
 			This._type = EncoderParameterValueTypeLong
-			m.lqBinary = 0h
-			m.liCount = 0
-			FOR liRow = 1 TO ALEN(m.teValue1,1)
-				m.lnValue = m.teValue1[liRow,1]
-				IF VARTYPE(m.lnValue) = "N"
-					m.lqBinary = m.lqBinary + BINTOC(m.lnValue,"4rs")
-					m.liCount = m.liCount + 1
-				ENDIF
-			ENDFOR
-			This._value = m.lqBinary
 			This._length = ALEN(m.teValue1,1)
+			This._value = This._AllocHGlobal(This._length*4)
+			m.lhPtr = This._value
+			FOR liRow = 1 TO ALEN(m.teValue1,1)
+				m.lhPtr = This._WriteHGlobal(m.lhPtr, ;
+								BINTOC(m.teValue1[m.liRow],"4rs"))
+			ENDFOR
 			
 		ENDCASE
 		
 		This._value = m.lqBinary
 		This._length = m.liCount
 	
-	** Overloads: 15
+	** Overloads: 15 - int,int,int,int
 	CASE LEFT(m.lcVarType,4) == "NNNN"
 		This._type = EncoderParameterValueTypeRationalRange
-		This._value = BINTOC(m.teValue1,"4rs")+BINTOC(m.teValue2,"4rs")+;
-					  BINTOC(m.teValue3,"4rs")+BINTOC(m.teValue4,"4rs")
 		This._length = 1
-	
-	** Overloads: 10
+		This._value = This._AllocHGlobal(This._length*16)
+		m.lhPtr = This._value
+		FOR liRow = 1 TO ALEN(m.teValue1,1)
+			m.lhPtr = This._WriteHGlobal(m.lhPtr, ;
+						BINTOC(m.teValue1,"4rs")+BINTOC(m.teValue2,"4rs")+;
+						BINTOC(m.teValue3,"4rs")+BINTOC(m.teValue4,"4rs"))
+		ENDFOR
+		
+	** Overload: 14 - int,int,int		
+	CASE LEFT(m.lcVarType,3) == "NNN"
+		This._type = m.teValue2
+		This._length = m.teValue1
+		
+		m.liSize = This._length
+		DO CASE
+		CASE This._type = EncoderParameterValueTypeShort
+			m.liSize = m.liSize * 2
+		CASE This._type = EncoderParameterValueTypeLong
+			m.liSize = m.liSize * 4
+		CASE This._type = EncoderParameterValueTypeRational
+			m.liSize = m.liSize * 8
+		CASE This._type = EncoderParameterValueTypeLongRange
+			m.liSize = m.liSize * 8
+		CASE This._type = EncoderParameterValueTypeRationalRange
+			m.liSize = m.liSize * 16
+		ENDCASE
+		
+		*! ToDo: Find a better way to copy this memory
+		This._value = This._AllocHGlobal(m.liSize)
+		This._WriteHGlobal(This._value, SYS(2600,m.teValue3,m.liSize))
+			
+	** Overload: 14b - int,int,byte[]		
+	CASE LEFT(m.lcVarType,3) == "NNQ"
+		This._type = m.teValue2
+		This._length = m.teValue1
+		
+		m.liSize = LEN(m.teValue3)		
+		This._value = This._AllocHGlobal(m.liSize)
+		This._WriteHGlobal(This._value, m.teValue3)
+			
+	** Overloads: 10 - int,int
 	CASE LEFT(m.lcVarType,2) == "NN"
 		This._type = EncoderParameterValueTypeRational
-		This._value = BINTOC(m.teValue1,"4rs")+BINTOC(m.teValue2,"4rs")
 		This._length = 1
+		This._value = This._AllocHGlobal(This._length*8)
+		m.lhPtr = This._value
+		FOR liRow = 1 TO ALEN(m.teValue1,1)
+			m.lhPtr = This._WriteHGlobal(m.lhPtr, ;
+						BINTOC(m.teValue1,"4rs")+BINTOC(m.teValue2,"4rs"))
+		ENDFOR
 
-	** Overloads: 5
+	** Overloads: 5 - int
 	CASE LEFT(m.lcVarType,1) == "N"
 		This._type = EncoderParameterValueTypeLong
-		This._value = BINTOC(m.teValue1,"4rs")
 		This._length = 1
+		This._value = This._AllocHGlobal(This._length*4)
+		m.lhPtr = This._value
+		FOR liRow = 1 TO ALEN(m.teValue1,1)
+			m.lhPtr = This._WriteHGlobal(m.lhPtr, BINTOC(m.teValue1,"4rs"))
+		ENDFOR
 	
+	*!ToDo: Unhadled overloads: 3,4,12,13
+	** 3 - short
+	** 4 - short[]
+	** 12 - long,long
+	** 13 - long[],long[]
+	OTHERWISE
 	ENDCASE
 	
 *!*		EncoderParameterValueTypeASCII
@@ -2875,6 +3011,29 @@ RETURN
 **  Encoder encoder, int[] numerator1, int[] denominator1, int[] numerator2, int[] denominator2
 *********************************************************************
 
+ENDPROC
+PROCEDURE _allochglobal
+LPARAMETERS tiSize
+LOCAL lhPtr
+
+lhPtr = LocalAlloc(0x00, m.tiSize)
+*! ToDo: Generate an error if this is zero
+RETURN lhPtr
+ENDPROC
+PROCEDURE _stringtohglobal
+LPARAMETERS tcValue
+LOCAL lhPtr
+
+m.lhPtr = This._AllocHGlobal(LEN(m.tcValue)+1)
+SYS(2600, m.lhPtr, LEN(m.tcValue)+1, m.tcValue+0h00)
+
+RETURN m.lhPtr
+
+ENDPROC
+PROCEDURE _writehglobal
+LPARAMETERS thPtr, tqValue
+SYS(2600, thPtr, LEN(tqValue), tqValue)
+RETURN thPtr+LEN(tqValue)
 ENDPROC
 PROCEDURE dispose
 *********************************************************************
@@ -2997,6 +3156,14 @@ RETURN This._length
 *********************************************************************
 
 ENDPROC
+PROCEDURE tovarbinary
+
+RETURN ;
+	This.Encoder.Guid.ToByteArray()+;
+	BINTOC(This._length, "4rs")+;
+	BINTOC(This._type, "4rs")+;
+	BINTOC(This._value, "4rs")
+ENDPROC
 PROCEDURE type_access
 *********************************************************************
 ** Property: Type (Access)
@@ -3058,6 +3225,10 @@ _length
 *type_access 
 *valuetype_access 
 *getvalue 
+*_stringtohglobal 
+*_allochglobal 
+*_writehglobal 
+*tovarbinary 
 [END RESERVED3]
 [START RESERVED6]
 Pixels[END RESERVED6]
@@ -3069,7 +3240,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcencoderparameter
 [START RESERVED1]
- 	 drawing.hæõL>Ï4 system.hîöf‡Ù4 gdiplusconstants.hö÷¹>Ï4[END RESERVED1]
+ 	 drawing.höŠ]¥ï4 system.hþ‹0¥ï4 gdiplusconstants.h¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -3081,7 +3252,8 @@ drawing.h[END RESERVED8]
 [START PROPERTIES]
 basename = EncoderParameters
 _handle = 0
-_memberdata =      523<VFPData><memberdata name="dispose" type="method" display="Dispose"/><memberdata name="equals" type="method" display="Equals"/><memberdata name="gethashcode" type="method" display="GetHashCode"/><memberdata name="gettype" type="method" display="GetType"/><memberdata name="tostring" type="method" display="ToString"/><memberdata name="finalize" type="method" display="Finalize"/><memberdata name="memberwiseclone" type="method" display="MemberwiseClone"/><memberdata name="param" type="property" display="Param"/></VFPData>
+_memberdata =      599<VFPData><memberdata name="dispose" type="method" display="Dispose"/><memberdata name="equals" type="method" display="Equals"/><memberdata name="gethashcode" type="method" display="GetHashCode"/><memberdata name="gettype" type="method" display="GetType"/><memberdata name="tostring" type="method" display="ToString"/><memberdata name="finalize" type="method" display="Finalize"/><memberdata name="memberwiseclone" type="method" display="MemberwiseClone"/><memberdata name="param" type="property" display="Param"/><memberdata name="tomemoryhandle" type="method" display="ToMemoryHandle"/></VFPData>
+
 Name = "xfcencoderparameters"
 [END PROPERTIES]
 [START PROTECTED]
@@ -3102,13 +3274,14 @@ PROCEDURE Destroy
 
 LOCAL loExc AS Exception
 TRY
-	IF This._handle <> 0
-		LocalFree(This._handle)
+	IF This._Handle <> 0
+		LocalFree(This._Handle)
 	ENDIF
 CATCH TO loExc
 	THROW m.loExc
 ENDTRY
 RETURN
+
 ENDPROC
 PROCEDURE Init
 *********************************************************************
@@ -3121,16 +3294,54 @@ PROCEDURE Init
 **  2006/03/07: Auto Generated
 **	2006/05/08: BDurban - Coded
 *********************************************************************
-LPARAMETERS tiCount
+LPARAMETERS tiCount, tlIsMemoryHandle
 
 *!ToDo: Test this function
+
+LOCAL liPos, lqEncoder, liLength, liType, lhValue, lnLoop, lqBuffer
+LOCAL loParam AS xfcEncoderParameter
 
 LOCAL loExc AS Exception
 TRY
 	DODEFAULT()
-	m.tiCount = EVL(m.tiCount,1)
-	DIMENSION This.Param[m.tiCount]
-	This.Param = NULL
+	
+	DO CASE
+	CASE tlIsMemoryHandle
+		m.liPos = m.tiCount
+		m.tiCount = CTOBIN(SYS(2600, m.liPos, SIZEOF_LONG), "4rs")
+		m.liPos = m.liPos + SIZEOF_LONG
+		
+		*! ToDo: Check the validity of tiCount
+		
+		IF m.tiCount > 0
+			DIMENSION This.Param[m.tiCount]
+			
+			FOR lnLoop = 1 TO m.tiCount
+				m.lqEncoder = SYS(2600, m.liPos, SIZEOF_GUID)
+				m.liPos = m.liPos + SIZEOF_GUID
+				m.liLength = CTOBIN(SYS(2600, m.liPos, SIZEOF_LONG), "4rs")
+				m.liPos = m.liPos + SIZEOF_LONG
+				m.liType = CTOBIN(SYS(2600, m.liPos, SIZEOF_LONG), "4rs")
+				m.liPos = m.liPos + SIZEOF_LONG
+				m.lhValue = CTOBIN(SYS(2600, m.liPos, SIZEOF_PTR), "4rs")
+				m.liPos = m.liPos + SIZEOF_PTR
+				
+				m.loParam = This.CreateNew("xfcEncoderParameter", m.lqEncoder, m.liLength, m.liType, m.lhValue)
+				
+				This.Param[m.lnLoop] = m.loParam
+			ENDFOR
+		ELSE
+			DIMENSION This.Param[1]
+			This.Param = NULL
+		ENDIF
+		
+	OTHERWISE
+		m.tiCount = EVL(m.tiCount,1)
+		DIMENSION This.Param[m.tiCount]
+		This.Param = NULL
+		
+	ENDCASE	
+	
 CATCH TO loExc
 	THROW m.loExc
 ENDTRY
@@ -3170,7 +3381,7 @@ RETURN NULL
 
 ENDPROC
 PROCEDURE new
-LPARAMETERS tiCount
+LPARAMETERS tiCount, tlIsMemoryHandle
 
 RETURN This.CreateNew(This.Class, tiCount)
 ENDPROC
@@ -3209,41 +3420,30 @@ DECLARE LONG LocalAlloc IN WIN32API LONG uFlags, LONG uBytes
 DECLARE LONG LocalFree IN WIN32API LONG HMEM
 
 LOCAL loParam AS xfcEncoderParameter
-LOCAL lnParamCnt, lnLoop, lnDataLen, lnDataPos, lnPos, lqData, lqParam
+LOCAL lnParamCnt, lnLoop, lnPos
 
 IF This._handle <> 0
 	LocalFree(This._handle)
 ENDIF
 
-m.lnParamCnt = 0
-m.lnDataLen = 0
-FOR lnLoop = 1 TO ALEN(This.Param, 1)
+IF VARTYPE(This.Param[1]) <> "O"
+	RETURN 0
+ENDIF
+
+m.lnParamCnt = ALEN(This.Param,1)
+This._handle = LocalAlloc(0x0040, m.lnParamCnt*SIZEOF_ENCODERPARAMETER)
+m.lnPos = This._handle
+
+SYS(2600,This._handle, 4, BINTOC(m.lnParamCnt,"4rs"))
+m.lnPos = m.lnPos+4
+FOR lnLoop = 1 TO m.lnParamCnt
 	m.loParam = This.Param[m.lnLoop]
 	IF VARTYPE(m.loParam) = "O"
-		m.lnDataLen = m.lnDataLen + 28
-		m.lnDataLen = m.lnDataLen + LEN(m.loParam.GetValue())
-		m.lnParamCnt = m.lnParamCnt + 1
+		SYS(2600, m.lnPos, SIZEOF_ENCODERPARAMETER, m.loParam.ToVarBinary())
+	ELSE
+		SYS(2600, m.lnPos, SIZEOF_ENCODERPARAMETER, REPLICATE(0h00, SIZEOF_ENCODERPARAMETER))
 	ENDIF
-ENDFOR
-
-This._handle = LocalAlloc(0x0040, m.lnDataLen)
-
-SYS(2600,This._handle,4,BINTOC(m.lnParamCnt,"4rs"))
-m.lnPos = This._handle+4
-m.lnDataPos = m.lnPos+(m.lnParamCnt*28)
-FOR lnLoop = 1 TO ALEN(This.Param, 1)
-	m.loParam = This.Param[m.lnLoop]
-	IF VARTYPE(m.loParam) = "O"
-		m.lqData = m.loParam.GetValue()
-		SYS(2600, m.lnDataPos, LEN(m.lqData), m.lqData)
-		m.lqParam = m.loParam.Encoder.Guid.ToByteArray() + ;
-					BINTOC(m.loParam.NumberOfValues, "4rs") + ;
-					BINTOC(m.loParam.Type, "4rs") + ;
-					BINTOC(m.lnDataPos, "4rs")
-		SYS(2600, lnPos, 28, m.lqParam)
-		m.lnPos = m.lnPos + 28
-		m.lnDataPos = m.lnDataPos + LEN(m.lqData)
-	ENDIF
+	m.lnPos = m.lnPos + SIZEOF_ENCODERPARAMETER
 ENDFOR
 
 RETURN This._handle
@@ -3260,7 +3460,6 @@ _handle
 *dispose Releases all resources used by this EncoderParameters object.
 ^param[1,0] 
 *param_assign 
-*tostruct 
 *tomemoryhandle 
 [END RESERVED3]
 [START RESERVED6]
@@ -3273,13 +3472,13 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcencoderparameters
 [START RESERVED1]
- 	 drawing.hæõL>Ï4 system.hîöf‡Ù4 gdiplusconstants.hö÷¹>Ï4[END RESERVED1]
+ 	 drawing.höŠ]¥ï4 system.hþ‹0¥ï4 gdiplusconstants.h¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
 [UNIQUEID] _1QZ0NRXVH
 [CLASS] xfcdrawingbase
-[CLASSLOC] fromcraig\drawing.vcx
+[CLASSLOC] drawing.vcx
 [BASECLASS] custom
 [OBJNAME] xfcframedimension
 [START PROPERTIES]
@@ -3288,7 +3487,8 @@ page = 0
 resolution = 0
 time = 0
 basename = FrameDimension
-_memberdata =      641<VFPData><memberdata name="equals" type="method" display="Equals"/><memberdata name="gethashcode" type="method" display="GetHashCode"/><memberdata name="gettype" type="method" display="GetType"/><memberdata name="tostring" type="method" display="ToString"/><memberdata name="finalize" type="method" display="Finalize"/><memberdata name="memberwiseclone" type="method" display="MemberwiseClone"/><memberdata name="guid" type="property" display="Guid"/><memberdata name="page" type="property" display="Page"/><memberdata name="resolution" type="property" display="Resolution"/><memberdata name="time" type="property" display="Time"/></VFPData>
+_memberdata =      711<VFPData><memberdata name="equals" type="method" display="Equals"/><memberdata name="gethashcode" type="method" display="GetHashCode"/><memberdata name="gettype" type="method" display="GetType"/><memberdata name="tostring" type="method" display="ToString"/><memberdata name="finalize" type="method" display="Finalize"/><memberdata name="memberwiseclone" type="method" display="MemberwiseClone"/><memberdata name="guid" type="property" display="Guid"/><memberdata name="page" type="property" display="Page"/><memberdata name="resolution" type="property" display="Resolution"/><memberdata name="time" type="property" display="Time"/><memberdata name="tovarbinary" type="method" display="ToVarbinary"/></VFPData>
+
 Name = "xfcframedimension"
 [END PROPERTIES]
 [START PROTECTED]
@@ -3362,7 +3562,7 @@ LPARAMETERS toFD AS xfcFrameDimension
 LOCAL loExc AS Exception
 TRY
 	LOCAL llValue
-	m.llValue = This.ToStruct() == m.toFD.ToStruct()
+	m.llValue = This.ToVarBinary() == m.toFD.ToVarBinary()
 
 CATCH TO loExc
 	THROW m.loExc
@@ -3558,7 +3758,7 @@ RETURN m.lcValue
 *********************************************************************
 
 ENDPROC
-PROCEDURE tostruct
+PROCEDURE tovarbinary
 RETURN This.Guid.ToByteArray()
 ENDPROC
 [END METHODS]
@@ -3572,14 +3772,12 @@ page Gets the page dimension.
 resolution Gets the resolution dimension.
 time Gets the time dimension.
 basename
-*equals Returns a value that indicates whether the specified object is a FrameDimension equivalent to this FrameDimension object.
-*gethashcode Returns a hash code for this FrameDimension object.
 *tostring Converts this FrameDimension object to a human-readable string.
 *guid_access 
 *page_access 
 *resolution_access 
 *time_access 
-*tostruct 
+*tovarbinary 
 [END RESERVED3]
 [START RESERVED6]
 Pixels[END RESERVED6]
@@ -3591,7 +3789,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcframedimension
 [START RESERVED1]
- 	 drawing.hæõL>Ï4 system.hîöf‡Ù4 gdiplusconstants.hö÷¹>Ï4[END RESERVED1]
+ 	 drawing.höŠ]¥ï4 system.hþ‹0¥ï4 gdiplusconstants.h¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -3604,7 +3802,6 @@ drawing.h[END RESERVED8]
 basename = ImageAttributes
 _memberdata =     2121<VFPData><memberdata name="clearbrushremaptable" type="method" display="ClearBrushRemapTable"/><memberdata name="clearcolorkey" type="method" display="ClearColorKey"/><memberdata name="clearcolormatrix" type="method" display="ClearColorMatrix"/><memberdata name="cleargamma" type="method" display="ClearGamma"/><memberdata name="clearnoop" type="method" display="ClearNoOp"/><memberdata name="clearoutputchannel" type="method" display="ClearOutputChannel"/><memberdata name="clearoutputchannelcolorprofile" type="method" display="ClearOutputChannelColorProfile"/><memberdata name="clearremaptable" type="method" display="ClearRemapTable"/><memberdata name="clearthreshold" type="method" display="ClearThreshold"/><memberdata name="clone" type="method" display="Clone"/><memberdata name="dispose" type="method" display="Dispose"/><memberdata name="equals" type="method" display="Equals"/><memberdata name="getadjustedpalette" type="method" display="GetAdjustedPalette"/><memberdata name="gethashcode" type="method" display="GetHashCode"/><memberdata name="gettype" type="method" display="GetType"/><memberdata name="setbrushremaptable" type="method" display="SetBrushRemapTable"/><memberdata name="setcolorkey" type="method" display="SetColorKey"/><memberdata name="setcolormatrices" type="method" display="SetColorMatrices"/><memberdata name="setcolormatrix" type="method" display="SetColorMatrix"/><memberdata name="setgamma" type="method" display="SetGamma"/><memberdata name="setnoop" type="method" display="SetNoOp"/><memberdata name="setoutputchannel" type="method" display="SetOutputChannel"/><memberdata name="setoutputchannelcolorprofile" type="method" display="SetOutputChannelColorProfile"/><memberdata name="setremaptable" type="method" display="SetRemapTable"/><memberdata name="setthreshold" type="method" display="SetThreshold"/><memberdata name="setwrapmode" type="method" display="SetWrapMode"/><memberdata name="tostring" type="method" display="ToString"/><memberdata name="finalize" type="method" display="Finalize"/><memberdata name="memberwiseclone" type="method" display="MemberwiseClone"/></VFPData>
 lastresult = 0
-gphandle = 0
 Name = "xfcimageattributes"
 [END PROPERTIES]
 [START PROTECTED]
@@ -3624,7 +3821,7 @@ PROCEDURE Destroy
 
 LOCAL loExc AS Exception
 TRY
-	This.SetStatus(GdipDisposeImageAttributes(This.GpHandle))
+	This.SetStatus(GdipDisposeImageAttributes(This.Handle))
 CATCH TO loExc
 	THROW m.loExc
 ENDTRY
@@ -3650,7 +3847,7 @@ LOCAL loExc AS Exception
 TRY
 	DODEFAULT()
 	This.SetStatus(GdipCreateImageAttributes(@lhImageattr))
-	This.GPHandle = m.lhImageattr
+	This.Handle = m.lhImageattr
 CATCH TO loExc
 	THROW m.loExc
 ENDTRY
@@ -3702,7 +3899,7 @@ LPARAMETERS tiType AS EnumColorAdjustType
 LOCAL loExc AS Exception
 TRY
 	m.tiType = EVL(m.tiType, ColorAdjustTypeDefault)
-	This.SetStatus(GdipSetImageAttributesColorKeys(This.GpHandle, m.tiType, FALSE, 0x00, 0x00))
+	This.SetStatus(GdipSetImageAttributesColorKeys(This.Handle, m.tiType, FALSE, 0x00, 0x00))
 
 CATCH TO loExc
 	THROW m.loExc
@@ -3737,7 +3934,7 @@ LPARAMETERS tiType AS EnumColorAdjustType
 LOCAL loExc AS Exception
 TRY
 	m.tiType = EVL(m.tiType, ColorAdjustTypeDefault)
-	This.SetStatus(GdipSetImageAttributesColorMatrix(This.GpHandle, m.tiType, FALSE, NULL, NULL, ColorMatrixFlagsDefault))
+	This.SetStatus(GdipSetImageAttributesColorMatrix(This.Handle, m.tiType, FALSE, NULL, NULL, ColorMatrixFlagsDefault))
 CATCH TO loExc
 	THROW m.loExc
 ENDTRY
@@ -3771,7 +3968,7 @@ LPARAMETERS tiType AS EnumColorAdjustType
 LOCAL loExc AS Exception
 TRY
 	m.tiType = EVL(m.tiType, ColorAdjustTypeDefault)
-	This.SetStatus(GdipSetImageAttributesGamma(This.GpHandle, m.tiType, FALSE, 0.0))
+	This.SetStatus(GdipSetImageAttributesGamma(This.Handle, m.tiType, FALSE, 0.0))
 
 CATCH TO loExc
 	THROW m.loExc
@@ -3806,7 +4003,7 @@ LPARAMETERS tiType AS EnumColorAdjustType
 LOCAL loExc AS Exception
 TRY
 	m.tiType = EVL(m.tiType, ColorAdjustTypeDefault)
-	This.SetStatus(GdipSetImageAttributesNoOp(This.GpHandle, m.tiType, FLASE))
+	This.SetStatus(GdipSetImageAttributesNoOp(This.Handle, m.tiType, FLASE))
 CATCH TO loExc
 	THROW m.loExc
 ENDTRY
@@ -3840,7 +4037,7 @@ LPARAMETERS tiType AS EnumColorAdjustType
 LOCAL loExc AS Exception
 TRY
 	m.tiType = EVL(m.tiType, ColorAdjustTypeDefault)
-	This.SetStatus(GdipSetImageAttributesOutputChannel(This.GpHandle, m.tiType, FLASE, ColorChannelFlagsLast))
+	This.SetStatus(GdipSetImageAttributesOutputChannel(This.Handle, m.tiType, FLASE, ColorChannelFlagsLast))
 
 CATCH TO loExc
 	THROW m.loExc
@@ -3875,7 +4072,7 @@ LPARAMETERS tiType AS EnumColorAdjustType
 LOCAL loExc AS Exception
 TRY
 	m.tiType = EVL(m.tiType, ColorAdjustTypeDefault)
-	This.SetStatus(GdipSetImageAttributesOutputChannelColorProfile(This.GpHandle, m.tiType, FLASE, NULL))
+	This.SetStatus(GdipSetImageAttributesOutputChannelColorProfile(This.Handle, m.tiType, FLASE, NULL))
 
 CATCH TO loExc
 	THROW m.loExc
@@ -3910,7 +4107,7 @@ LPARAMETERS tiType AS EnumColorAdjustType
 LOCAL loExc AS Exception
 TRY
 	m.tiType = EVL(m.tiType, ColorAdjustTypeDefault)
-	This.SetStatus(GdipSetImageAttributesRemapTable(This.GpHandle, m.tiType, FALSE, 0, NULL))
+	This.SetStatus(GdipSetImageAttributesRemapTable(This.Handle, m.tiType, FALSE, 0, NULL))
 CATCH TO loExc
 	THROW m.loExc
 ENDTRY
@@ -3944,7 +4141,7 @@ LPARAMETERS tiType AS EnumColorAdjustType
 LOCAL loExc AS Exception
 TRY
 	m.tiType = EVL(m.tiType, ColorAdjustTypeDefault)
-	This.SetStatus(GdipSetImageAttributesThreshold(This.GpHandle, m.tiType, FALSE, 0.0))
+	This.SetStatus(GdipSetImageAttributesThreshold(This.Handle, m.tiType, FALSE, 0.0))
 
 CATCH TO loExc
 	THROW m.loExc
@@ -3980,10 +4177,10 @@ TRY
 	LOCAL loCloneImageattr, lhCloneImageattr
 	m.lhCloneImageattr = 0
 	m.loCloneImageattr = NULL
-	This.SetStatus(GdipCloneImageAttributes(This.GpHandle, @lhCloneImageattr))
+	This.SetStatus(GdipCloneImageAttributes(This.Handle, @lhCloneImageattr))
 	IF(m.lhCloneImageattr <> 0)
 		m.loCloneImageattr = This.CreateNew(This.Class)
-		m.loCloneImageattr.GpHandle = m.lhCloneImageattr
+		m.loCloneImageattr.Handle = m.lhCloneImageattr
 	ENDIF
 CATCH TO loExc
 	THROW m.loExc
@@ -4044,7 +4241,7 @@ LPARAMETERS toPalette AS xfcColorPalette, tiType AS EnumColorAdjustType
 
 LOCAL loExc AS Exception
 TRY
-	This.SetStatus(GdipGetImageAttributesAdjustedPalette(This.GpHandle, m.toPalette.ToStruct(), m.tiType))
+	This.SetStatus(GdipGetImageAttributesAdjustedPalette(This.Handle, m.toPalette.ToVarBinary(), m.tiType))
 CATCH TO loExc
 	THROW m.loExc
 ENDTRY
@@ -4105,7 +4302,7 @@ LPARAMETERS toColorLow AS xfcColor, toColorHigh AS xfcColor, ;
 LOCAL loExc AS Exception
 TRY
 	m.tiType = EVL(m.tiType, ColorAdjustTypeDefault)
-	This.SetStatus(GdipSetImageAttributesColorKeys(This.GpHandle, m.tiType, TRUE, m.toColorLow.Argb, m.toColorHigh.Argb))
+	This.SetStatus(GdipSetImageAttributesColorKeys(This.Handle, m.tiType, TRUE, m.toColorLow.Argb, m.toColorHigh.Argb))
 
 CATCH TO loExc
 	THROW m.loExc
@@ -4142,7 +4339,7 @@ LOCAL loExc AS Exception
 TRY
 	m.tiFlags = EVL(m.tiFlags, ColorMatrixFlagsDefault)
 	m.tiType = EVL(m.tiType, ColorAdjustTypeDefault)
-	This.SetStatus(GdipSetImageAttributesColorMatrix(This.GpHandle, m.tiType, TRUE, m.toNewColorMatrix.ToStruct(), toGrayMatrix.ToStruct(), m.tiFlags))
+	This.SetStatus(GdipSetImageAttributesColorMatrix(This.Handle, m.tiType, TRUE, m.toNewColorMatrix.ToVarBinary(), toGrayMatrix.ToVarBinary(), m.tiFlags))
 	
 CATCH TO loExc
 	THROW m.loExc
@@ -4180,7 +4377,7 @@ LOCAL loExc AS Exception
 TRY
 	m.tiFlags = EVL(m.tiFlags, ColorMatrixFlagsDefault)
 	m.tiType = EVL(m.tiType, ColorAdjustTypeDefault)
-	This.SetStatus(GdipSetImageAttributesColorMatrix(This.GpHandle, m.tiType, TRUE, m.toNewColorMatrix.ToStruct(), NULL, m.tiFlags))
+	This.SetStatus(GdipSetImageAttributesColorMatrix(This.Handle, m.tiType, TRUE, m.toNewColorMatrix.ToVarBinary(), NULL, m.tiFlags))
 
 CATCH TO loExc
 	THROW m.loExc
@@ -4217,7 +4414,7 @@ LPARAMETERS tnGamma, ;
 LOCAL loExc AS Exception
 TRY
 	m.tiType = EVL(m.tiType, ColorAdjustTypeDefault)
-	This.SetStatus(GdipSetImageAttributesGamma(This.GpHandle, m.tiType, TRUE, m.tnGamma))
+	This.SetStatus(GdipSetImageAttributesGamma(This.Handle, m.tiType, TRUE, m.tnGamma))
 
 CATCH TO loExc
 	THROW m.loExc
@@ -4252,7 +4449,7 @@ LPARAMETERS tiType AS EnumColorAdjustType
 LOCAL loExc AS Exception
 TRY
 	m.tiType = EVL(m.tiType, ColorAdjustTypeDefault)
-	This.SetStatus(GdipSetImageAttributesNoOp(This.GpHandle, m.tiType, TRUE))
+	This.SetStatus(GdipSetImageAttributesNoOp(This.Handle, m.tiType, TRUE))
 
 CATCH TO loExc
 	THROW m.loExc
@@ -4288,7 +4485,7 @@ LPARAMETERS tiFlags AS EnumColorChannelFlag, ;
 LOCAL loExc AS Exception
 TRY
 	m.tiType = EVL(m.tiType, ColorAdjustTypeDefault)
-	This.SetStatus(GdipSetImageAttributesOutputChannel(This.GpHandle, m.tiType, TRUE, m.tiFlags))
+	This.SetStatus(GdipSetImageAttributesOutputChannel(This.Handle, m.tiType, TRUE, m.tiFlags))
 
 CATCH TO loExc
 	THROW m.loExc
@@ -4324,7 +4521,7 @@ LPARAMETERS tcColorProfileFilename, ;
 LOCAL loExc AS Exception
 TRY
 	m.tiType = EVL(m.tiType, ColorAdjustTypeDefault)
-	This.SetStatus(GdipSetImageAttributesOutputChannelColorProfile(This.GpHandle, m.tiType, TRUE, STRCONV(tcColorProfileFilename+0h00,5)))
+	This.SetStatus(GdipSetImageAttributesOutputChannelColorProfile(This.Handle, m.tiType, TRUE, STRCONV(tcColorProfileFilename+0h00,5)))
 CATCH TO loExc
 	THROW m.loExc
 ENDTRY
@@ -4362,8 +4559,8 @@ TRY
 	m.tiType = EVL(m.tiType, ColorAdjustTypeDefault)
 	m.loColorMap = This.CreateNew("xfcColorMap")
 	m.liCount = 0
-	m.lqMap = m.loColorMap.ToStruct(@taoMap, @liCount)
-	This.SetStatus(GdipSetImageAttributesRemapTable(This.GpHandle, m.tiType, TRUE, m.liCount, m.lqMap))
+	m.lqMap = m.loColorMap.ToVarBinary(@taoMap, @liCount)
+	This.SetStatus(GdipSetImageAttributesRemapTable(This.Handle, m.tiType, TRUE, m.liCount, m.lqMap))
 
 CATCH TO loExc
 	THROW m.loExc
@@ -4399,7 +4596,7 @@ LPARAMETERS tnThreshold, ;
 LOCAL loExc AS Exception
 TRY
 	m.tiType = EVL(m.tiType, ColorAdjustTypeDefault)
-	This.SetStatus(GdipSetImageAttributesThreshold(This.GpHandle, m.tiType, TRUE, m.tnThreshold))
+	This.SetStatus(GdipSetImageAttributesThreshold(This.Handle, m.tiType, TRUE, m.tnThreshold))
 
 CATCH TO loExc
 	THROW m.loExc
@@ -4443,7 +4640,7 @@ TRY
 		m.liArgb = m.toColor.ToArgb()
 	ENDIF
 	
-	This.SetStatus(GdipSetImageAttributesWrapMode(This.GpHandle, m.tiMode, m.liArgb, m.liClamp))
+	This.SetStatus(GdipSetImageAttributesWrapMode(This.Handle, m.tiMode, m.liArgb, m.liClamp))
 CATCH TO loExc
 	THROW m.loExc
 ENDTRY
@@ -4501,7 +4698,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcimageattributes
 [START RESERVED1]
- 	 drawing.hæõL>Ï4 system.hîöf‡Ù4 gdiplusconstants.hö÷¹>Ï4[END RESERVED1]
+ 	 drawing.höŠ]¥ï4 system.hþ‹0¥ï4 gdiplusconstants.h¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -5329,7 +5526,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcimagecodecinfo
 [START RESERVED1]
- 	 drawing.hæõL>Ï4 system.hîöf‡Ù4 gdiplusconstants.hö÷¹>Ï4[END RESERVED1]
+ 	 drawing.höŠ]¥ï4 system.hþ‹0¥ï4 gdiplusconstants.h¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -5537,7 +5734,7 @@ TRY
 	** This.SetStatus(GdipSomeFunction???())
 		IF(m.lhImageFormat <> 0)
 			m.loImageFormat = This.CreateNew("xfcImageFormat")
-			m.loImageFormat.GpHandle = m.lhImageFormat
+			m.loImageFormat.Handle = m.lhImageFormat
 		ENDIF
 CATCH TO loExc
 	THROW m.loExc
@@ -5709,7 +5906,7 @@ TRY
 	** This.SetStatus(GdipSomeFunction???())
 		IF(m.lhImageFormat <> 0)
 			m.loImageFormat = This.CreateNew("xfcImageFormat")
-			m.loImageFormat.GpHandle = m.lhImageFormat
+			m.loImageFormat.Handle = m.lhImageFormat
 		ENDIF
 CATCH TO loExc
 	THROW m.loExc
@@ -5897,7 +6094,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcimageformat
 [START RESERVED1]
- 	 drawing.hæõL>Ï4 system.hîöf‡Ù4 gdiplusconstants.hö÷¹>Ï4[END RESERVED1]
+ 	 drawing.höŠ]¥ï4 system.hþ‹0¥ï4 gdiplusconstants.h¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -6416,7 +6613,7 @@ LOCAL loExc AS Exception
 TRY
 	m.lhMetaHeader = CTOBIN(SUBSTR(This._binary,41,4),"4rs")
 	m.loMetaHeader = This.CreateNew("xfcMetaHeader")
-	m.loMetaHeader.GpHandle = m.lhMetaHeader
+	m.loMetaHeader.Handle = m.lhMetaHeader
 CATCH TO loExc
 	THROW m.loExc
 ENDTRY
@@ -6475,7 +6672,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcmetafileheader
 [START RESERVED1]
- 	 drawing.hæõL>Ï4 system.hîöf‡Ù4 gdiplusconstants.hö÷¹>Ï4[END RESERVED1]
+ 	 drawing.höŠ]¥ï4 system.hþ‹0¥ï4 gdiplusconstants.h¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -6493,7 +6690,8 @@ size = 0
 type = 0
 version = 0
 basename = MetaHeader
-_memberdata =      851<VFPData><memberdata name="equals" type="method" display="Equals"/><memberdata name="gethashcode" type="method" display="GetHashCode"/><memberdata name="gettype" type="method" display="GetType"/><memberdata name="tostring" type="method" display="ToString"/><memberdata name="finalize" type="method" display="Finalize"/><memberdata name="memberwiseclone" type="method" display="MemberwiseClone"/><memberdata name="headersize" type="property" display="HeaderSize"/><memberdata name="maxrecord" type="property" display="MaxRecord"/><memberdata name="noobjects" type="property" display="NoObjects"/><memberdata name="noparameters" type="property" display="NoParameters"/><memberdata name="size" type="property" display="Size"/><memberdata name="type" type="property" display="Type"/><memberdata name="version" type="property" display="Version"/></VFPData>
+_memberdata =      921<VFPData><memberdata name="equals" type="method" display="Equals"/><memberdata name="gethashcode" type="method" display="GetHashCode"/><memberdata name="gettype" type="method" display="GetType"/><memberdata name="tostring" type="method" display="ToString"/><memberdata name="finalize" type="method" display="Finalize"/><memberdata name="memberwiseclone" type="method" display="MemberwiseClone"/><memberdata name="headersize" type="property" display="HeaderSize"/><memberdata name="maxrecord" type="property" display="MaxRecord"/><memberdata name="noobjects" type="property" display="NoObjects"/><memberdata name="noparameters" type="property" display="NoParameters"/><memberdata name="size" type="property" display="Size"/><memberdata name="type" type="property" display="Type"/><memberdata name="version" type="property" display="Version"/><memberdata name="tovarbinary" type="method" display="ToVarbinary"/></VFPData>
+
 Name = "xfcmetaheader"
 [END PROPERTIES]
 [START PROTECTED]
@@ -6720,7 +6918,7 @@ RETURN NULL
 *********************************************************************
 
 ENDPROC
-PROCEDURE tostruct
+PROCEDURE tovarbinary
 
 
 
@@ -6821,7 +7019,7 @@ basename
 *size_assign 
 *type_assign 
 *version_assign 
-*tostruct 
+*tovarbinary 
 [END RESERVED3]
 [START RESERVED6]
 Pixels[END RESERVED6]
@@ -6833,7 +7031,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcmetaheader
 [START RESERVED1]
- 	 drawing.hæõL>Ï4 system.hîöf‡Ù4 gdiplusconstants.hö÷¹>Ï4[END RESERVED1]
+ 	 drawing.höŠ]¥ï4 system.hþ‹0¥ï4 gdiplusconstants.h¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -6847,15 +7045,16 @@ id = 0
 len = 0
 type = 0
 value = 0
-_memberdata =      625<VFPData><memberdata name="equals" type="method" display="Equals"/><memberdata name="gethashcode" type="method" display="GetHashCode"/><memberdata name="gettype" type="method" display="GetType"/><memberdata name="tostring" type="method" display="ToString"/><memberdata name="finalize" type="method" display="Finalize"/><memberdata name="memberwiseclone" type="method" display="MemberwiseClone"/><memberdata name="id" type="property" display="Id"/><memberdata name="len" type="property" display="Len"/><memberdata name="type" type="property" display="Type"/><memberdata name="value" type="property" display="Value"/></VFPData>
 basename = PropertyItem
 hmemory = 0
+_memberdata =      695<VFPData><memberdata name="equals" type="method" display="Equals"/><memberdata name="gethashcode" type="method" display="GetHashCode"/><memberdata name="gettype" type="method" display="GetType"/><memberdata name="tostring" type="method" display="ToString"/><memberdata name="finalize" type="method" display="Finalize"/><memberdata name="memberwiseclone" type="method" display="MemberwiseClone"/><memberdata name="id" type="property" display="Id"/><memberdata name="len" type="property" display="Len"/><memberdata name="type" type="property" display="Type"/><memberdata name="value" type="property" display="Value"/><memberdata name="tovarbinary" type="method" display="ToVarbinary"/></VFPData>
+
 Name = "xfcpropertyitem"
 [END PROPERTIES]
 [START PROTECTED]
-_memberdata
 hmemory
 declaredll
+_memberdata
 [END PROTECTED]
 [START METHODS]
 PROCEDURE Destroy
@@ -7087,12 +7286,13 @@ RETURN m.lcString
 
 
 ENDPROC
-PROCEDURE tostruct
+PROCEDURE tovarbinary
 *********************************************************************
-** Method: ToStruct
+** Method: ToVarbinary
 **
 ** History:
 **  2006/04/17: BDurban - Coded
+**  2006/07/08: BDurban - Changed method name
 *********************************************************************
 LOCAL lqData, lqValue, lnStep
 
@@ -7243,7 +7443,6 @@ id Gets or sets the ID of the property.
 len Gets or sets the length of the property.
 type Gets or sets the type of the property.
 value Gets or sets the property value.
-_memberdata XML Metadata for customizable properties
 basename
 hmemory
 *id_access 
@@ -7254,9 +7453,8 @@ hmemory
 *type_assign 
 *value_access 
 *value_assign 
-*tostruct 
+*tovarbinary 
 *declaredll 
-*new 
 *frommemptr 
 *tostring 
 [END RESERVED3]
@@ -7270,7 +7468,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcpropertyitem
 [START RESERVED1]
- 	 drawing.hæõL>Ï4 system.hîöf‡Ù4 gdiplusconstants.hö÷¹>Ï4[END RESERVED1]
+ 	 drawing.höŠ]¥ï4 system.hþ‹0¥ï4 gdiplusconstants.h¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -7624,7 +7822,7 @@ RETURN NULL
 *********************************************************************
 
 ENDPROC
-PROCEDURE tostruct
+PROCEDURE tovarbinary
 
 RETURN ;
 	BINTOC(This.Key,        "4rs") + ;
@@ -7680,7 +7878,7 @@ basename
 *key_assign 
 *reserved_assign 
 *_calcchecksum 
-*tostruct 
+*tovarbinary 
 [END RESERVED3]
 [START RESERVED6]
 Pixels[END RESERVED6]
@@ -7692,7 +7890,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcwmfplaceablefileheader
 [START RESERVED1]
- 	 drawing.hæõL>Ï4 system.hîöf‡Ù4 gdiplusconstants.hö÷¹>Ï4[END RESERVED1]
+ 	 drawing.höŠ]¥ï4 system.hþ‹0¥ï4 gdiplusconstants.h¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -7705,7 +7903,6 @@ drawing.h[END RESERVED8]
 _memberdata =     2713<VFPData><memberdata name="clone" type="method" display="Clone"/><memberdata name="createobjref" type="method" display="CreateObjRef"/><memberdata name="dispose" type="method" display="Dispose"/><memberdata name="equals" type="method" display="Equals"/><memberdata name="getbounds" type="method" display="GetBounds"/><memberdata name="getencoderparameterlist" type="method" display="GetEncoderParameterList"/><memberdata name="getframecount" type="method" display="GetFrameCount"/><memberdata name="gethashcode" type="method" display="GetHashCode"/><memberdata name="gethenhmetafile" type="method" display="GetHenhmetafile"/><memberdata name="getlifetimeservice" type="method" display="GetLifetimeService"/><memberdata name="getmetafileheader" type="method" display="GetMetafileHeader"/><memberdata name="getpropertyitem" type="method" display="GetPropertyItem"/><memberdata name="getthumbnailimage" type="method" display="GetThumbnailImage"/><memberdata name="gettype" type="method" display="GetType"/><memberdata name="initializelifetimeservice" type="method" display="InitializeLifetimeService"/><memberdata name="playrecord" type="method" display="PlayRecord"/><memberdata name="removepropertyitem" type="method" display="RemovePropertyItem"/><memberdata name="rotateflip" type="method" display="RotateFlip"/><memberdata name="save" type="method" display="Save"/><memberdata name="saveadd" type="method" display="SaveAdd"/><memberdata name="selectactiveframe" type="method" display="SelectActiveFrame"/><memberdata name="setpropertyitem" type="method" display="SetPropertyItem"/><memberdata name="tostring" type="method" display="ToString"/><memberdata name="finalize" type="method" display="Finalize"/><memberdata name="memberwiseclone" type="method" display="MemberwiseClone"/><memberdata name="flags" type="property" display="Flags"/><memberdata name="framedimensionslist" type="property" display="FrameDimensionsList"/><memberdata name="height" type="property" display="Height"/><memberdata name="horizontalresolution" type="property" display="HorizontalResolution"/><memberdata name="palette" type="property" display="Palette"/><memberdata name="physicaldimension" type="property" display="PhysicalDimension"/><memberdata name="pixelformat" type="property" display="PixelFormat"/><memberdata name="propertyidlist" type="property" display="PropertyIdList"/><memberdata name="propertyitems" type="property" display="PropertyItems"/><memberdata name="rawformat" type="property" display="RawFormat"/><memberdata name="size" type="property" display="Size"/><memberdata name="verticalresolution" type="property" display="VerticalResolution"/><memberdata name="width" type="property" display="Width"/></VFPData>
 basename = Metafile
 lastresult = 0
-gphandle = 0
 Name = "xfcmetafile"
 [END PROPERTIES]
 [START METHODS]
@@ -7761,7 +7958,7 @@ TRY
 		ELSE
 			m.lnFunctionType = 8
 		ENDIF
-		m.lqFrameRect = m.toFrameRect.ToStruct()
+		m.lqFrameRect = m.toFrameRect.ToVarBinary()
 		IF VARTYPE(m.tiType)="C"
 			m.tcDescription = m.tiFrameUnit
 			m.tiFrameUnit = 0
@@ -7844,7 +8041,7 @@ TRY
 		This.SetStatus(GdipCreateMetafileFromStream(m.liStream, @lhMetafile))
 	ENDCASE
 	
-	This.GpHandle = m.lhMetafile
+	This.Handle = m.lhMetafile
 	
 CATCH TO loExc
 	THROW m.loExc
@@ -7950,7 +8147,7 @@ LOCAL loExc AS Exception
 TRY
 	LOCAL lHEmf
 	m.lHEmf = 0
-	This.SetStatus(GdipGetHemfFromMetafile(This.GpHandle, @lHEmf))
+	This.SetStatus(GdipGetHemfFromMetafile(This.Handle, @lHEmf))
 
 CATCH TO loExc
 	THROW m.loExc
@@ -8010,7 +8207,7 @@ TRY
 		This.SetStatus(GdipGetMetafileHeaderFromStream(m.liStream, @lqHeader))
 
 	OTHERWISE
-		This.SetStatus(GdipGetMetafileHeaderFromMetafile(This.GpHandle, @lqHeader))
+		This.SetStatus(GdipGetMetafileHeaderFromMetafile(This.Handle, @lqHeader))
 		
 	ENDCASE
 	
@@ -8064,7 +8261,7 @@ RETURN NULL
 LOCAL loExc AS Exception
 TRY
 
-	This.SetStatus(GdipPlayMetafileRecord(This.GpHandle, m.lcRecordType, m.liFlags, m.liDataSize, @lcData))
+	This.SetStatus(GdipPlayMetafileRecord(This.Handle, m.lcRecordType, m.liFlags, m.liDataSize, @lcData))
 
 CATCH TO loExc
 	THROW m.loExc
@@ -8101,5 +8298,5 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcmetafile
 [START RESERVED1]
- 	 drawing.hæõL>Ï4 system.hîöf‡Ù4 gdiplusconstants.hö÷¹>Ï4[END RESERVED1]
+ 	 drawing.höŠ]¥ï4 system.hþ‹0¥ï4 gdiplusconstants.h¹>Ï4[END RESERVED1]
 [EOF]
