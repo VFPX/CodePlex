@@ -282,7 +282,6 @@ _positions
 *factors_assign 
 *positions_access 
 *positions_assign 
-*tostruct 
 [END RESERVED3]
 [START RESERVED6]
 Pixels[END RESERVED6]
@@ -294,7 +293,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcblend
 [START RESERVED1]
- 	 drawing.hæõL>Ï4 system.hîöf‡Ù4 gdiplusconstants.hö÷¹>Ï4[END RESERVED1]
+ 	 drawing.höŠ]¥ï4 system.hþ‹0¥ï4 gdiplusconstants.h¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -560,7 +559,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfccolorblend
 [START RESERVED1]
- 	 drawing.hæõL>Ï4 system.hîöf‡Ù4 gdiplusconstants.hö÷¹>Ï4[END RESERVED1]
+ 	 drawing.höŠ]¥ï4 system.hþ‹0¥ï4 gdiplusconstants.h¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -578,7 +577,6 @@ basename = CustomLineCap
 _memberdata =     1231<VFPData><memberdata name="clone" type="method" display="Clone"/><memberdata name="createobjref" type="method" display="CreateObjRef"/><memberdata name="dispose" type="method" display="Dispose"/><memberdata name="equals" type="method" display="Equals"/><memberdata name="gethashcode" type="method" display="GetHashCode"/><memberdata name="getlifetimeservice" type="method" display="GetLifetimeService"/><memberdata name="getstrokecaps" type="method" display="GetStrokeCaps"/><memberdata name="gettype" type="method" display="GetType"/><memberdata name="initializelifetimeservice" type="method" display="InitializeLifetimeService"/><memberdata name="setstrokecaps" type="method" display="SetStrokeCaps"/><memberdata name="tostring" type="method" display="ToString"/><memberdata name="finalize" type="method" display="Finalize"/><memberdata name="memberwiseclone" type="method" display="MemberwiseClone"/><memberdata name="basecap" type="property" display="BaseCap"/><memberdata name="baseinset" type="property" display="BaseInset"/><memberdata name="strokejoin" type="property" display="StrokeJoin"/><memberdata name="widthscale" type="property" display="WidthScale"/><memberdata name="new" type="method" display="New"/></VFPData>
 
 lastresult = 0
-gphandle = 0
 Name = "xfccustomlinecap"
 [END PROPERTIES]
 [START PROTECTED]
@@ -598,7 +596,7 @@ PROCEDURE Destroy
 
 LOCAL loExc AS Exception
 TRY
-This.SetStatus(GdipDeleteCustomLineCap(This.GpHandle))
+This.SetStatus(GdipDeleteCustomLineCap(This.Handle))
 CATCH TO loExc
 	THROW m.loExc
 ENDTRY
@@ -635,8 +633,8 @@ TRY
 		m.tiBaseCap = EVL(m.tiBaseCap, LineCapFlat)
 		m.tnBaseInset = EVL(m.tnBaseInset, 0.00)
 	ENDIF
-	This.SetStatus(GdipCreateCustomLineCap(m.toFillPath.GpHandle, m.toStrokePath.GpHandle, m.liBaseCap, m.lnBaseInset, @lhCustomCap))
-	This.GpHandle = m.lhCustomCap
+	This.SetStatus(GdipCreateCustomLineCap(m.toFillPath.Handle, m.toStrokePath.Handle, m.liBaseCap, m.lnBaseInset, @lhCustomCap))
+	This.Handle = m.lhCustomCap
 CATCH TO loExc
 	THROW m.loExc
 ENDTRY
@@ -670,7 +668,7 @@ m.liLineCap = 0
 
 LOCAL loExc AS Exception
 TRY
-	This.SetStatus(GdipGetCustomLineCapBaseCap(This.GpHandle, @liLineCap))
+	This.SetStatus(GdipGetCustomLineCapBaseCap(This.Handle, @liLineCap))
 
 CATCH TO loExc
 	THROW m.loExc
@@ -699,7 +697,7 @@ LPARAMETERS tiLineCap
 
 LOCAL loExc AS Exception
 TRY
-	This.SetStatus(GdipSetCustomLineCapBaseCap(This.GpHandle, m.tiLineCap))
+	This.SetStatus(GdipSetCustomLineCapBaseCap(This.Handle, m.tiLineCap))
 CATCH TO loExc
 	THROW m.loExc
 ENDTRY
@@ -724,7 +722,7 @@ m.lnInset = 0.0
 
 LOCAL loExc AS Exception
 TRY
-	This.SetStatus(GdipGetCustomLineCapBaseInset(This.GpHandle, @lnInset))
+	This.SetStatus(GdipGetCustomLineCapBaseInset(This.Handle, @lnInset))
 
 CATCH TO loExc
 	THROW m.loExc
@@ -753,7 +751,7 @@ LPARAMETERS tnInset
 
 LOCAL loExc AS Exception
 TRY
-	This.SetStatus(GdipSetCustomLineCapBaseInset(This.GpHandle, m.tnInset))
+	This.SetStatus(GdipSetCustomLineCapBaseInset(This.Handle, m.tnInset))
 CATCH TO loExc
 	THROW m.loExc
 ENDTRY
@@ -778,10 +776,10 @@ TRY
 	LOCAL loClonedCap, lhClonedCap
 	m.lhClonedCap = 0
 	m.loClonedCap = NULL
-	This.SetStatus(GdipCloneCustomLineCap(This.GpHandle, @lhClonedCap))
+	This.SetStatus(GdipCloneCustomLineCap(This.Handle, @lhClonedCap))
 	IF(m.lhobject <> 0)
 		m.loClonedCap = This.CreateNew(This.Class)
-		m.loClonedCap.GpHandle = m.lhClonedCap
+		m.loClonedCap.Handle = m.lhClonedCap
 	ENDIF
 CATCH TO loExc
 	THROW m.loExc
@@ -841,7 +839,7 @@ LPARAMETERS tiStartCap AS EnumLineCap, tiEndCap AS EnumLineCap
 LOCAL loExc AS Exception
 TRY
 
-	This.SetStatus(GdipGetCustomLineCapStrokeCaps(This.GpHandle, @tiStartCap, @tiEndCap))
+	This.SetStatus(GdipGetCustomLineCapStrokeCaps(This.Handle, @tiStartCap, @tiEndCap))
 
 CATCH TO loExc
 	THROW m.loExc
@@ -882,7 +880,7 @@ LPARAMETERS tiStartCap AS EnumLineCap, tiEndCap AS EnumLineCap
 LOCAL loExc AS Exception
 TRY
 
-	This.SetStatus(GdipSetCustomLineCapStrokeCaps(This.GpHandle, m.tiStartCap, m.tiEndCap))
+	This.SetStatus(GdipSetCustomLineCapStrokeCaps(This.Handle, m.tiStartCap, m.tiEndCap))
 
 CATCH TO loExc
 	THROW m.loExc
@@ -918,7 +916,7 @@ m.liLineJoin = 0
 
 LOCAL loExc AS Exception
 TRY
-	This.SetStatus(GdipGetCustomLineCapStrokeJoin(This.GpHandle, @liLineJoin))
+	This.SetStatus(GdipGetCustomLineCapStrokeJoin(This.Handle, @liLineJoin))
 
 CATCH TO loExc
 	THROW m.loExc
@@ -948,7 +946,7 @@ LPARAMETERS tiLineJoin
 
 LOCAL loExc AS Exception
 TRY
-	This.SetStatus(GdipSetCustomLineCapStrokeJoin(This.GpHandle, m.tiLineJoin))
+	This.SetStatus(GdipSetCustomLineCapStrokeJoin(This.Handle, m.tiLineJoin))
 CATCH TO loExc
 	THROW m.loExc
 ENDTRY
@@ -974,7 +972,7 @@ m.lnWidthScale = 0.0
 
 LOCAL loExc AS Exception
 TRY
-	This.SetStatus(GdipGetCustomLineCapWidthScale(This.GpHandle, @lnWidthScale))
+	This.SetStatus(GdipGetCustomLineCapWidthScale(This.Handle, @lnWidthScale))
 
 CATCH TO loExc
 	THROW m.loExc
@@ -1004,7 +1002,7 @@ LPARAMETERS tnWidthScale
 
 LOCAL loExc AS Exception
 TRY
-	This.SetStatus(GdipSetCustomLineCapWidthScale(This.GpHandle, m.tnWidthScale))
+	This.SetStatus(GdipSetCustomLineCapWidthScale(This.Handle, m.tnWidthScale))
 CATCH TO loExc
 	THROW m.loExc
 ENDTRY
@@ -1044,7 +1042,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfccustomlinecap
 [START RESERVED1]
- 	 drawing.hæõL>Ï4 system.hîöf‡Ù4 gdiplusconstants.hö÷¹>Ï4[END RESERVED1]
+ 	 drawing.höŠ]¥ï4 system.hþ‹0¥ï4 gdiplusconstants.h¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -1054,9 +1052,9 @@ drawing.h[END RESERVED8]
 [BASECLASS] custom
 [OBJNAME] xfcgraphicscontainer
 [START PROPERTIES]
-_memberdata =      653<VFPData><memberdata name="createobjref" type="method" display="CreateObjRef"/><memberdata name="equals" type="method" display="Equals"/><memberdata name="gethashcode" type="method" display="GetHashCode"/><memberdata name="getlifetimeservice" type="method" display="GetLifetimeService"/><memberdata name="gettype" type="method" display="GetType"/><memberdata name="initializelifetimeservice" type="method" display="InitializeLifetimeService"/><memberdata name="tostring" type="method" display="ToString"/><memberdata name="finalize" type="method" display="Finalize"/><memberdata name="memberwiseclone" type="method" display="MemberwiseClone"/></VFPData>
 basename = GraphicsContainer
-gphandle = 0
+handle = 0
+_memberdata =      653<VFPData><memberdata name="createobjref" type="method" display="CreateObjRef"/><memberdata name="equals" type="method" display="Equals"/><memberdata name="gethashcode" type="method" display="GetHashCode"/><memberdata name="getlifetimeservice" type="method" display="GetLifetimeService"/><memberdata name="gettype" type="method" display="GetType"/><memberdata name="initializelifetimeservice" type="method" display="InitializeLifetimeService"/><memberdata name="tostring" type="method" display="ToString"/><memberdata name="finalize" type="method" display="Finalize"/><memberdata name="memberwiseclone" type="method" display="MemberwiseClone"/></VFPData>
 Name = "xfcgraphicscontainer"
 [END PROPERTIES]
 [START PROTECTED]
@@ -1124,9 +1122,8 @@ Class[END RESERVED1]
 [START RESERVED2]
 1[END RESERVED2]
 [START RESERVED3]
-_memberdata XML Metadata for customizable properties
 basename
-gphandle
+handle
 [END RESERVED3]
 [START RESERVED6]
 Pixels[END RESERVED6]
@@ -1138,7 +1135,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcgraphicscontainer
 [START RESERVED1]
- 	 drawing.hæõL>Ï4 system.hîöf‡Ù4 gdiplusconstants.hö÷¹>Ï4[END RESERVED1]
+ 	 drawing.höŠ]¥ï4 system.hþ‹0¥ï4 gdiplusconstants.h¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -1154,7 +1151,6 @@ pointcount = 0
 basename = GraphicsPath
 _memberdata =     2975<VFPData><memberdata name="addarc" type="method" display="AddArc"/><memberdata name="addbezier" type="method" display="AddBezier"/><memberdata name="addbeziers" type="method" display="AddBeziers"/><memberdata name="addclosedcurve" type="method" display="AddClosedCurve"/><memberdata name="addcurve" type="method" display="AddCurve"/><memberdata name="addellipse" type="method" display="AddEllipse"/><memberdata name="addline" type="method" display="AddLine"/><memberdata name="addlines" type="method" display="AddLines"/><memberdata name="addpath" type="method" display="AddPath"/><memberdata name="addpie" type="method" display="AddPie"/><memberdata name="addpolygon" type="method" display="AddPolygon"/><memberdata name="addrectangle" type="method" display="AddRectangle"/><memberdata name="addrectangles" type="method" display="AddRectangles"/><memberdata name="addstring" type="method" display="AddString"/><memberdata name="clearmarkers" type="method" display="ClearMarkers"/><memberdata name="clone" type="method" display="Clone"/><memberdata name="closeallfigures" type="method" display="CloseAllFigures"/><memberdata name="closefigure" type="method" display="CloseFigure"/><memberdata name="createobjref" type="method" display="CreateObjRef"/><memberdata name="dispose" type="method" display="Dispose"/><memberdata name="equals" type="method" display="Equals"/><memberdata name="flatten" type="method" display="Flatten"/><memberdata name="getbounds" type="method" display="GetBounds"/><memberdata name="gethashcode" type="method" display="GetHashCode"/><memberdata name="getlastpoint" type="method" display="GetLastPoint"/><memberdata name="getlifetimeservice" type="method" display="GetLifetimeService"/><memberdata name="gettype" type="method" display="GetType"/><memberdata name="initializelifetimeservice" type="method" display="InitializeLifetimeService"/><memberdata name="isoutlinevisible" type="method" display="IsOutlineVisible"/><memberdata name="isvisible" type="method" display="IsVisible"/><memberdata name="reset" type="method" display="Reset"/><memberdata name="reverse" type="method" display="Reverse"/><memberdata name="setmarkers" type="method" display="SetMarkers"/><memberdata name="startfigure" type="method" display="StartFigure"/><memberdata name="tostring" type="method" display="ToString"/><memberdata name="transform" type="method" display="Transform"/><memberdata name="warp" type="method" display="Warp"/><memberdata name="widen" type="method" display="Widen"/><memberdata name="finalize" type="method" display="Finalize"/><memberdata name="memberwiseclone" type="method" display="MemberwiseClone"/><memberdata name="fillmode" type="property" display="FillMode"/><memberdata name="pathdata" type="property" display="PathData"/><memberdata name="pathpoints" type="property" display="PathPoints"/><memberdata name="pathtypes" type="property" display="PathTypes"/><memberdata name="pointcount" type="property" display="PointCount"/></VFPData>
 lastresult = 0
-gphandle = 0
 Name = "xfcgraphicspath"
 [END PROPERTIES]
 [START PROTECTED]
@@ -1174,7 +1170,7 @@ PROCEDURE Destroy
 
 LOCAL loExc AS Exception
 TRY
-This.SetStatus(GdipDeletePath(This.GpHandle))
+This.SetStatus(GdipDeletePath(This.Handle))
 CATCH TO loExc
 	THROW m.loExc
 ENDTRY
@@ -1218,7 +1214,7 @@ TRY
 	DO CASE
 	CASE VARTYPE(m.taoPts)="O" AND m.taoPts.BaseName = "PointF"
 		m.loPoint = This.CreateNew("xfcPointF")
-		m.lqPoints = loPoint.ToStruct(@taoPts, @liCount)
+		m.lqPoints = loPoint.ToVarBinary(@taoPts, @liCount)
 		m.tiFillMode = EVL(m.tiFillMode, FillModeAlternate)
 		FOR lnCnt = 1 TO m.liCount
 			m.lqTypes = m.lqTypes + BINTOC(m.taiTypes[m.lnCnt],"4rs")
@@ -1227,7 +1223,7 @@ TRY
 		
 	CASE VARTYPE(m.taoPts)="O" AND m.taoPts.BaseName = "Point"
 		m.loPoint = This.CreateNew("xfcPointF")
-		m.lqPoints = loPoint.ToStruct(@taoPts, @liCount)
+		m.lqPoints = loPoint.ToVarBinary(@taoPts, @liCount)
 		m.tiFillMode = EVL(m.tiFillMode, FillModeAlternate)
 		FOR m.lnCnt = 1 TO m.liCount
 			m.lqTypes = m.lqTypes + BINTOC(m.taiTypes[m.lnCnt],"4rs")
@@ -1241,7 +1237,7 @@ TRY
 		
 	ENDCASE
 	
-	This.GpHandle = m.lhPath
+	This.Handle = m.lhPath
 	
 CATCH TO loExc
 	THROW m.loExc
@@ -1302,9 +1298,9 @@ TRY
 	ENDCASE
 	
 	IF llUsePrecision
-		This.SetStatus(GdipAddPathArc(This.GpHandle, m.tnX, m.tnY, m.tnWidth, m.tnHeight, m.tnStartAngle, m.tnSweepAngle))
+		This.SetStatus(GdipAddPathArc(This.Handle, m.tnX, m.tnY, m.tnWidth, m.tnHeight, m.tnStartAngle, m.tnSweepAngle))
 	ELSE
-		This.SetStatus(GdipAddPathArcI(m.This.GpHandle, m.tnX, m.tnY, m.tnWidth, m.tnHeight, m.tnStartAngle, m.tnSweepAngle))
+		This.SetStatus(GdipAddPathArcI(m.This.Handle, m.tnX, m.tnY, m.tnWidth, m.tnHeight, m.tnStartAngle, m.tnSweepAngle))
 	ENDIF
 
 CATCH TO loExc
@@ -1353,12 +1349,12 @@ TRY
 		m.loPt1.GetExtent(@tnX1,@tnY1)
 		m.loPt1.GetExtent(@tnX1,@tnY1)
 		IF m.loPt1.Basename=="PointF"
-			This.SetStatus(GdipAddPathBezier(This.GpHandle, m.tnX1, m.tnY1, m.tnX2, m.tnY2, m.tnX3, m.tnY3, m.tnX4, m.tnY4))
+			This.SetStatus(GdipAddPathBezier(This.Handle, m.tnX1, m.tnY1, m.tnX2, m.tnY2, m.tnX3, m.tnY3, m.tnX4, m.tnY4))
 		ELSE
-			This.SetStatus(GdipAddPathBezierI(This.GpHandle, m.tnX1, m.tnY1, m.tnX2, m.tnY2, m.tnX3, m.tnY3, m.tnX4, m.tnY4))
+			This.SetStatus(GdipAddPathBezierI(This.Handle, m.tnX1, m.tnY1, m.tnX2, m.tnY2, m.tnX3, m.tnY3, m.tnX4, m.tnY4))
 		ENDIF
 	OTHERWISE
-		This.SetStatus(GdipAddPathBezier(This.GpHandle, m.tnX1, m.tnY1, m.tnX2, m.tnY2, m.tnX3, m.tnY3, m.tnX4, m.tnY4))
+		This.SetStatus(GdipAddPathBezier(This.Handle, m.tnX1, m.tnY1, m.tnX2, m.tnY2, m.tnX3, m.tnY3, m.tnX4, m.tnY4))
 	ENDCASE
 
 CATCH TO loExc
@@ -1404,12 +1400,12 @@ TRY
 	** Check precision
 	IF m.taoPoints.BaseName = "PointF"
 		m.loPoint = This.CreateNew("xfcPointF")
-		m.lqPoints = m.loPoint.ToStruct(@taoPoints, @liCount)
-		This.SetStatus(GdipAddPathBeziers(This.GpHandle, @lqPoints, m.liCount))
+		m.lqPoints = m.loPoint.ToVarBinary(@taoPoints, @liCount)
+		This.SetStatus(GdipAddPathBeziers(This.Handle, @lqPoints, m.liCount))
 	ELSE
 		m.loPoint = This.CreateNew("xfcPoint")
-		m.lqPoints = m.loPoint.ToStruct(@taoPoints, @liCount)
-		This.SetStatus(GdipAddPathBeziersI(This.GpHandle, @lqPoints, m.liCount))
+		m.lqPoints = m.loPoint.ToVarBinary(@taoPoints, @liCount)
+		This.SetStatus(GdipAddPathBeziersI(This.Handle, @lqPoints, m.liCount))
 	ENDIF
 	
 CATCH TO loExc
@@ -1456,20 +1452,20 @@ TRY
 	DO CASE
 	CASE VARTYPE(taoPoints)="O" AND taoPoints.BaseName=="PointF"
 		m.loPoint = m.taoPoints
-		m.lqPoints = m.loPoint.ToStruct(@taoPoints, @liCount)
+		m.lqPoints = m.loPoint.ToVarBinary(@taoPoints, @liCount)
 		IF VARTYPE(m.tnTension)="N"
-			This.SetStatus(GdipAddPathClosedCurve(This.GpHandle, m.lqPoints, m.liCount))
+			This.SetStatus(GdipAddPathClosedCurve(This.Handle, m.lqPoints, m.liCount))
 		ELSE
-			This.SetStatus(GdipAddPathClosedCurve2(This.GpHandle, m.lqPoints, m.liCount, m.tnTension))
+			This.SetStatus(GdipAddPathClosedCurve2(This.Handle, m.lqPoints, m.liCount, m.tnTension))
 		ENDIF
 		
 	CASE VARTYPE(taoPoints)="O" AND taoPoints.BaseName=="Point"
 		m.loPoint = m.taoPoints
-		m.lqPoints = m.loPoint.ToStruct(@taoPoints, @liCount)
+		m.lqPoints = m.loPoint.ToVarBinary(@taoPoints, @liCount)
 		IF VARTYPE(m.tnTension)="N"
-			This.SetStatus(GdipAddPathClosedCurveI(This.GpHandle, m.lqPoints, m.liCount))
+			This.SetStatus(GdipAddPathClosedCurveI(This.Handle, m.lqPoints, m.liCount))
 		ELSE
-			This.SetStatus(GdipAddPathClosedCurve2I(This.GpHandle, m.lqPoints, m.liCount, m.tnTension))
+			This.SetStatus(GdipAddPathClosedCurve2I(This.Handle, m.lqPoints, m.liCount, m.tnTension))
 		ENDIF
 	ENDCASE
 
@@ -1520,11 +1516,11 @@ TRY
 	** Check precision
 	IF m.taoPoints.BaseName = "PointF"
 		m.loPoint = This.CreateNew("xfcPointF")
-		m.lqPoints = m.loPoint.ToStruct(@taoPoints, @liCount)
+		m.lqPoints = m.loPoint.ToVarBinary(@taoPoints, @liCount)
 		m.llUsePrecision = .T.
 	ELSE
 		m.loPoint = This.CreateNew("xfcPoint")
-		m.lqPoints = m.loPoint.ToStruct(@taoPoints, @liCount)
+		m.lqPoints = m.loPoint.ToVarBinary(@taoPoints, @liCount)
 		m.llUsePrecision = .F.
 	ENDIF
 
@@ -1535,24 +1531,24 @@ TRY
 	DO CASE
 	CASE VARTYPE(m.tiOffset)+VARTYPE(m.tiNumberOfSegments)+VARTYPE(m.tnTension)=="NNN"
 		IF m.llUsePrecision
-			This.SetStatus(GdipAddPathCurve3(This.GpHandle, @lqPoints, m.liCount, m.tiOffset, m.tiNumberOfSegments, m.tnTension))
+			This.SetStatus(GdipAddPathCurve3(This.Handle, @lqPoints, m.liCount, m.tiOffset, m.tiNumberOfSegments, m.tnTension))
 		ELSE
-			This.SetStatus(GdipAddPathCurve3I(This.GpHandle, @lqPoints, m.liCount, m.tiOffset, m.tiNumberOfSegments, m.tnTension))
+			This.SetStatus(GdipAddPathCurve3I(This.Handle, @lqPoints, m.liCount, m.tiOffset, m.tiNumberOfSegments, m.tnTension))
 		ENDIF
 		
 	CASE VARTYPE(m.tiOffset)=="N"
 		m.tnTension = m.tiOffset
 		IF m.llUsePrecision
-			This.SetStatus(GdipAddPathCurve2(This.GpHandle, @lqPoints, m.liCount, m.tnTension))
+			This.SetStatus(GdipAddPathCurve2(This.Handle, @lqPoints, m.liCount, m.tnTension))
 		ELSE
-			This.SetStatus(GdipAddPathCurve2I(This.GpHandle, @lqPoints, m.liCount, m.tnTension))
+			This.SetStatus(GdipAddPathCurve2I(This.Handle, @lqPoints, m.liCount, m.tnTension))
 		ENDIF
 	
 	OTHERWISE
 		IF m.llUsePrecision
-			This.SetStatus(GdipAddPathCurve(This.GpHandle, @lqPoints, m.liCount))
+			This.SetStatus(GdipAddPathCurve(This.Handle, @lqPoints, m.liCount))
 		ELSE
-			This.SetStatus(GdipAddPathCurveI(This.GpHandle, @lqPoints, m.liCount))
+			This.SetStatus(GdipAddPathCurveI(This.Handle, @lqPoints, m.liCount))
 		ENDIF
 	ENDCASE
 
@@ -1597,18 +1593,18 @@ TRY
 	CASE VARTYPE(m.tnX)="O" AND m.tnX.BaseName=="RectangleF"
 		m.loRect = m.tnX
 		m.loRect.GetExtent(@tnX,@tnY,@tnWidth,@tnHeight)
-		This.SetStatus(GdipAddPathEllipse(This.GpHandle, m.tnX, m.tnY, m.tnWidth, m.tnHeight))
+		This.SetStatus(GdipAddPathEllipse(This.Handle, m.tnX, m.tnY, m.tnWidth, m.tnHeight))
 		
 	CASE VARTYPE(m.tnX)="O" AND m.tnX.BaseName=="Rectangle"
 		m.loRect = m.tnX
 		m.loRect.GetExtent(@tnX,@tnY,@tnWidth,@tnHeight)
-		This.SetStatus(GdipAddPathEllipseI(This.GpHandle, m.tnX, m.tnY, m.tnWidth, m.tnHeight))
+		This.SetStatus(GdipAddPathEllipseI(This.Handle, m.tnX, m.tnY, m.tnWidth, m.tnHeight))
 		
 	CASE INT(m.tnX)=m.tnX AND INT(m.tnY)=m.tnY AND INT(m.tnWidth)=m.tnWidth AND INT(m.tnHeight)=m.tnHeight
-		This.SetStatus(GdipAddPathEllipseI(This.GpHandle, m.tnX, m.tnY, m.tnWidth, m.tnHeight))
+		This.SetStatus(GdipAddPathEllipseI(This.Handle, m.tnX, m.tnY, m.tnWidth, m.tnHeight))
 		
 	OTHERWISE
-		This.SetStatus(GdipAddPathEllipse(This.GpHandle, m.tnX, m.tnY, m.tnWidth, m.tnHeight))
+		This.SetStatus(GdipAddPathEllipse(This.Handle, m.tnX, m.tnY, m.tnWidth, m.tnHeight))
 	ENDCASE
 	
 CATCH TO loExc
@@ -1653,20 +1649,20 @@ TRY
 		m.loPoint2 = m.tnY1
 		m.loPoint1.GetExtent(@tnX1, @tnY1)
 		m.loPoint2.GetExtent(@tnX2, @tnY2)
-		This.SetStatus(GdipAddPathLine(This.GpHandle, m.tnX1, m.tnY1, m.tnX2, m.tnY2))
+		This.SetStatus(GdipAddPathLine(This.Handle, m.tnX1, m.tnY1, m.tnX2, m.tnY2))
 		
 	CASE VARTYPE("m.tnX1")="O" AND m.tnX1.BaseName="Point"
 		m.loPoint1 = m.tnX1
 		m.loPoint2 = m.tnY1
 		m.loPoint1.GetExtent(@tnX1, @tnY1)
 		m.loPoint2.GetExtent(@tnX2, @tnY2)
-		This.SetStatus(GdipAddPathLineI(This.GpHandle, m.tnX1, m.tnY1, m.tnX2, m.tnY2))
+		This.SetStatus(GdipAddPathLineI(This.Handle, m.tnX1, m.tnY1, m.tnX2, m.tnY2))
 		
 	CASE INT(m.tnX1)=m.tnX1 AND INT(m.tnY1)=m.tnY1 AND INT(m.tnX2)=m.tnX2 AND INT(m.tnY2)=m.tnY2
-		This.SetStatus(GdipAddPathLineI(This.GpHandle, m.tnX1, m.tnY1, m.tnX2, m.tnY2))
+		This.SetStatus(GdipAddPathLineI(This.Handle, m.tnX1, m.tnY1, m.tnX2, m.tnY2))
 		
 	OTHERWISE
-		This.SetStatus(GdipAddPathLine(This.GpHandle, m.tnX1, m.tnY1, m.tnX2, m.tnY2))
+		This.SetStatus(GdipAddPathLine(This.Handle, m.tnX1, m.tnY1, m.tnX2, m.tnY2))
 	ENDCASE
 
 CATCH TO loExc
@@ -1712,12 +1708,12 @@ TRY
 	** Check precision
 	IF m.taoPoints.BaseName = "PointF"
 		m.loPoint = This.CreateNew("xfcPointF")
-		m.lqPoints = m.loPoint.ToStruct(@taoPoints, @liCount)
-		This.SetStatus(GdipAddPathLine2(This.GpHandle, @lqPoints, m.liCount))
+		m.lqPoints = m.loPoint.ToVarBinary(@taoPoints, @liCount)
+		This.SetStatus(GdipAddPathLine2(This.Handle, @lqPoints, m.liCount))
 	ELSE
 		m.loPoint = This.CreateNew("xfcPoint")
-		m.lqPoints = m.loPoint.ToStruct(@taoPoints, @liCount)
-		This.SetStatus(GdipAddPathLine2I(This.GpHandle, @lqPoints, m.liCount))
+		m.lqPoints = m.loPoint.ToVarBinary(@taoPoints, @liCount)
+		This.SetStatus(GdipAddPathLine2I(This.Handle, @lqPoints, m.liCount))
 	ENDIF
 
 CATCH TO loExc
@@ -1753,8 +1749,8 @@ LPARAMETERS toAddingPath AS xfcGraphicsPath, tlConnect
 LOCAL loExc AS Exception
 TRY
 	LOCAL lhAddingPath
-	m.lhAddingPath = IIF(VARTYPE(m.toAddingPath)="O", m.toAddingPath.GpHandle, 0)
-	This.SetStatus(GdipAddPathPath(This.GpHandle, m.lhAddingPath, IIF(m.tlConnect,1,0)))
+	m.lhAddingPath = IIF(VARTYPE(m.toAddingPath)="O", m.toAddingPath.Handle, 0)
+	This.SetStatus(GdipAddPathPath(This.Handle, m.lhAddingPath, IIF(m.tlConnect,1,0)))
 
 CATCH TO loExc
 	THROW m.loExc
@@ -1779,7 +1775,7 @@ PROCEDURE addpie
 **
 ** History:
 **  2006/03/07: Auto Generated
-**	2006/05/08: BDurban = Coded
+**	2006/05/08: BDurban - Coded
 *********************************************************************
 LPARAMETERS tnX, tnY, tnWidth, tnHeight, tnStartAngle, tnSweepAngle
 *********** toRect AS xfcRectangle, tnStartAngle, tnSweepAngle
@@ -1796,12 +1792,12 @@ TRY
 		m.tnSweepAngle = m.tnWidth
 		m.loRect.GetExtent(@tnX, @tnY, @tnWidth, @tnHeight)
 		IF m.loRect.BaseName = "RectangleF"
-			This.SetStatus(GdipAddPathPie(This.GpHandle, m.tnX, m.tnY, m.tnWidth, m.tnHeight, m.tnStartAngle, m.tnSweepAngle))
+			This.SetStatus(GdipAddPathPie(This.Handle, m.tnX, m.tnY, m.tnWidth, m.tnHeight, m.tnStartAngle, m.tnSweepAngle))
 		ELSE
-			This.SetStatus(GdipAddPathPieI(This.GpHandle, m.tnX, m.tnY, m.tnWidth, m.tnHeight, m.tnStartAngle, m.tnSweepAngle))
+			This.SetStatus(GdipAddPathPieI(This.Handle, m.tnX, m.tnY, m.tnWidth, m.tnHeight, m.tnStartAngle, m.tnSweepAngle))
 		ENDIF
 	OTHERWISE
-		This.SetStatus(GdipAddPathPie(This.GpHandle, m.tnX, m.tnY, m.tnWidth, m.tnHeight, m.tnStartAngle, m.tnSweepAngle))
+		This.SetStatus(GdipAddPathPie(This.Handle, m.tnX, m.tnY, m.tnWidth, m.tnHeight, m.tnStartAngle, m.tnSweepAngle))
 	ENDCASE
 	
 CATCH TO loExc
@@ -1846,12 +1842,12 @@ TRY
 	** Check precision
 	IF m.taoPoints.BaseName = "PointF"
 		m.loPoint = This.CreateNew("xfcPointF")
-		m.lqPoints = m.loPoint.ToStruct(@taoPoints, @liCount)
-		This.SetStatus(GdipAddPathPolygon(This.GpHandle, @lqPoints, m.liCount))
+		m.lqPoints = m.loPoint.ToVarBinary(@taoPoints, @liCount)
+		This.SetStatus(GdipAddPathPolygon(This.Handle, @lqPoints, m.liCount))
 	ELSE
 		m.loPoint = This.CreateNew("xfcPoint")
-		m.lqPoints = m.loPoint.ToStruct(@taoPoints, @liCount)
-		This.SetStatus(GdipAddPathPolygonI(This.GpHandle, @lqPoints, m.liCount))
+		m.lqPoints = m.loPoint.ToVarBinary(@taoPoints, @liCount)
+		This.SetStatus(GdipAddPathPolygonI(This.Handle, @lqPoints, m.liCount))
 	ENDIF
 
 CATCH TO loExc
@@ -1892,15 +1888,15 @@ TRY
 	CASE VARTYPE(m.tnX)="O" AND m.tnX.BaseName = "RectangleF"
 		m.loRect = m.tnX
 		m.loRect.GetExtent(@tnX, @tnY, @tnWidth, @tnHeight)
-		This.SetStatus(GdipAddPathRectangle(This.GpHandle, m.tnX, m.tnY, m.tnWidth, m.tnHeight))
+		This.SetStatus(GdipAddPathRectangle(This.Handle, m.tnX, m.tnY, m.tnWidth, m.tnHeight))
 		
 	CASE VARTYPE(m.tnX)="O" AND m.tnX.BaseName = "Rectangle"
 		m.loRect = m.tnX
 		m.loRect.GetExtent(@tnX, @tnY, @tnWidth, @tnHeight)
-		This.SetStatus(GdipAddPathRectangleI(This.GpHandle, m.tnX, m.tnY, m.tnWidth, m.tnHeight))
+		This.SetStatus(GdipAddPathRectangleI(This.Handle, m.tnX, m.tnY, m.tnWidth, m.tnHeight))
 
 	OTHERWISE
-		This.SetStatus(GdipAddPathRectangleI(This.GpHandle, m.tnX, m.tnY, m.tnWidth, m.tnHeight))
+		This.SetStatus(GdipAddPathRectangleI(This.Handle, m.tnX, m.tnY, m.tnWidth, m.tnHeight))
 	ENDCASE
 
 CATCH TO loExc
@@ -1927,21 +1923,29 @@ PROCEDURE addrectangles
 **
 ** History:
 **  2006/03/07: Auto Generated
+**  2006/07/08: BDurban - Coded
 *********************************************************************
 LPARAMETERS taoRects AS xfcRectangle
 
-*!ToDo: Implement this function
 *!ToDo: Test this function
-ERROR 1999	&& Function not implemented
-RETURN NULL
 
 LOCAL loExc AS Exception
 TRY
 
-	IF This.UsePrecision
-		This.SetStatus(GdipAddPathRectangles(This.GpHandle, @lcRects, m.liCount))
+	LOCAL loRect AS xfcRect
+	LOCAL lqRects, liCount
+	m.loRects = 0h
+	m.liCount = 0
+
+	** Check precision
+	IF m.taoRects.BaseName = "RectangleF"
+		m.loRect = This.CreateNew("xfcRectangleF")
+		m.lqRects = m.loRect.ToVarBinary(@taoRects, @liCount)
+		This.SetStatus(GdipAddPathRectangles(This.Handle, @lqRects, m.liCount))
 	ELSE
-		This.SetStatus(GdipAddPathRectanglesI(This.GpHandle, @lcRects, m.liCount))
+		m.loRect = This.CreateNew("xfcRectangle")
+		m.lqRects = m.loRect.ToVarBinary(@taoRects, @liCount)
+		This.SetStatus(GdipAddPathRectanglesI(This.Handle, @lqRects, m.liCount))
 	ENDIF
 
 CATCH TO loExc
@@ -1949,7 +1953,6 @@ CATCH TO loExc
 ENDTRY
 
 RETURN NULL
-
 
 ** .NET Help ********************************************************
 ** http://msdn2.microsoft.com/en-us/library/System.Drawing.Drawing2D.GraphicsPath.AddRectangles%28vs.80%29.aspx
@@ -1979,8 +1982,8 @@ LOCAL loExc AS Exception
 TRY
 	LOCAL lhFamily, lhFormat, loPoint AS xfcPoint
 	** These 2 parameters can be NULL
-	m.lhFamily = IIF(VARTYPE(m.toFamily)="O", m.toFamily.GpHandle, 0)
-	m.lhFormat = IIF(VARTYPE(m.toFormat)="O", m.toFormat.GpHandle, 0)
+	m.lhFamily = IIF(VARTYPE(m.toFamily)="O", m.toFamily.Handle, 0)
+	m.lhFormat = IIF(VARTYPE(m.toFormat)="O", m.toFormat.Handle, 0)
 	
 	DO CASE
 	CASE VARTYPE(toLayoutRect) = "O" AND INLIST(m.toLayoutRect.BaseName, "PointF", "RectangleF")
@@ -1988,14 +1991,14 @@ TRY
 			m.loPoint = m.toLayoutRect
 			m.toLayoutRect = This.CreateNew("xfcRectangleF", m.loPoint.X, m.loPoint.Y, 0.00, 0.00)
 		ENDIF
-		This.SetStatus(GdipAddPathString(This.GpHandle, STRCONV(m.tcS+0h00,5), LEN(m.tcS), m.lhFamily, m.tiStyle, m.tnEmSize, m.toLayoutRect.ToStruct(), m.lhFormat))
+		This.SetStatus(GdipAddPathString(This.Handle, STRCONV(m.tcS+0h00,5), LEN(m.tcS), m.lhFamily, m.tiStyle, m.tnEmSize, m.toLayoutRect.ToVarBinary(), m.lhFormat))
 		
 	CASE VARTYPE(toLayoutRect) = "O" AND INLIST(m.toLayoutRect.BaseName, "Point", "Rectangle")
 		IF m.toLayoutRect.BaseName = "Point"
 			m.loPoint = m.toLayoutRect
 			m.toLayoutRect = This.CreateNew("xfcRectangle", m.loPoint.X, m.loPoint.Y, 0.00, 0.00)
 		ENDIF
-		This.SetStatus(GdipAddPathStringI(This.GpHandle, STRCONV(m.tcS+0h00,5), LEN(m.tcS), m.lhFamily, m.tiStyle, m.tnEmSize, m.toLayoutRect.ToStruct(), m.lhFormat))
+		This.SetStatus(GdipAddPathStringI(This.Handle, STRCONV(m.tcS+0h00,5), LEN(m.tcS), m.lhFamily, m.tiStyle, m.tnEmSize, m.toLayoutRect.ToVarBinary(), m.lhFormat))
 	ENDCASE
 
 CATCH TO loExc
@@ -2032,7 +2035,7 @@ PROCEDURE clearmarkers
 LOCAL loExc AS Exception
 TRY
 
-	This.SetStatus(GdipClearPathMarkers(This.GpHandle))
+	This.SetStatus(GdipClearPathMarkers(This.Handle))
 
 CATCH TO loExc
 	THROW m.loExc
@@ -2067,10 +2070,10 @@ TRY
 	LOCAL loClonePath, lhClonePath
 	m.lhClonePath = 0
 	m.loClonePath = NULL
-	This.SetStatus(GdipClonePath(This.GpHandle, @lhClonePath))
+	This.SetStatus(GdipClonePath(This.Handle, @lhClonePath))
 	IF(m.lhClonePath <> 0)
 		m.loClonePath = This.CreateNew(This.Class)
-		m.loClonePath.GpHandle = m.lhClonePath
+		m.loClonePath.Handle = m.lhClonePath
 	ENDIF
 CATCH TO loExc
 	THROW m.loExc
@@ -2104,7 +2107,7 @@ PROCEDURE closeallfigures
 LOCAL loExc AS Exception
 TRY
 
-	This.SetStatus(GdipClosePathFigures(This.GpHandle))
+	This.SetStatus(GdipClosePathFigures(This.Handle))
 
 CATCH TO loExc
 	THROW m.loExc
@@ -2139,7 +2142,7 @@ PROCEDURE closefigure
 LOCAL loExc AS Exception
 TRY
 
-	This.SetStatus(GdipClosePathFigure(This.GpHandle))
+	This.SetStatus(GdipClosePathFigure(This.Handle))
 
 CATCH TO loExc
 	THROW m.loExc
@@ -2241,7 +2244,7 @@ PROCEDURE fillmode_access
 **
 ** History:
 **  2006/03/07: Auto Generated
-**	2006/05/06: BDurban
+**	2006/05/06: BDurban - Coded
 *********************************************************************
 
 *!ToDo: Test this function
@@ -2251,7 +2254,7 @@ m.liFillMode = 0
 
 LOCAL loExc AS Exception
 TRY
-	This.SetStatus(GdipGetPathFillMode(This.GpHandle, m.liFillmode))
+	This.SetStatus(GdipGetPathFillMode(This.Handle, m.liFillmode))
 
 CATCH TO loExc
 	THROW m.loExc
@@ -2281,7 +2284,7 @@ LPARAMETERS tiFillMode
 
 LOCAL loExc AS Exception
 TRY
-	This.SetStatus(GdipSetPathFillMode(This.GpHandle, m.tiFillmode))
+	This.SetStatus(GdipSetPathFillMode(This.Handle, m.tiFillmode))
 CATCH TO loExc
 	THROW m.loExc
 ENDTRY
@@ -2306,7 +2309,7 @@ LPARAMETERS toMatrix AS xfcMatrix, ;
 LOCAL loExc AS Exception
 TRY
 	m.lnFlatness = EVL(m.lnFlatness, 0.00)
-	This.SetStatus(GdipFlattenPath(This.GpHandle, m.toMatrix.GpHandle, m.lnFlatness))
+	This.SetStatus(GdipFlattenPath(This.Handle, m.toMatrix.Handle, m.lnFlatness))
 
 CATCH TO loExc
 	THROW m.loExc
@@ -2350,11 +2353,11 @@ TRY
 	m.lqRect = EMPTY_RECTANGLEF
 
 	** Optional Parameters
-	m.lhMatrix = IIF(VARTYPE(m.toMatrix)="O", m.toMatrix.GpHandle, 0)
-	m.lhPen = IIF(VARTYPE(m.toPen)="O", m.toPen.GpHandle, 0)
+	m.lhMatrix = IIF(VARTYPE(m.toMatrix)="O", m.toMatrix.Handle, 0)
+	m.lhPen = IIF(VARTYPE(m.toPen)="O", m.toPen.Handle, 0)
 	
-	This.SetStatus(GdipGetPathWorldBounds(This.GpHandle, @lqRect, m.lhMatrix, m.lhPen))
-	*!*	This.SetStatus(GdipGetPathWorldBoundsI(This.GpHandle, @lcBounds, m.lhMatrix, m.lhPen))
+	This.SetStatus(GdipGetPathWorldBounds(This.Handle, @lqRect, m.lhMatrix, m.lhPen))
+	*!*	This.SetStatus(GdipGetPathWorldBoundsI(This.Handle, @lcBounds, m.lhMatrix, m.lhPen))
 	m.loRectangleF = This.CreateNew("xfcRectangleF", m.lqRect)
 CATCH TO loExc
 	THROW m.loExc
@@ -2390,8 +2393,8 @@ LOCAL loExc AS Exception
 TRY
 	LOCAL loPoint AS xfcPointF, lqLastPoint
 	m.loPoint = This.CreateNew("xfcPointF")
-	m.lqLastPoint = m.loPoint.ToStruct()
-	This.SetStatus(GdipGetPathLastPoint(This.GpHandle, @lqLastPoint))
+	m.lqLastPoint = m.loPoint.ToVarBinary()
+	This.SetStatus(GdipGetPathLastPoint(This.Handle, @lqLastPoint))
 	m.loPoint = m.loPoint.New(m.lqLastPoint)
 CATCH TO loExc
 	THROW m.loExc
@@ -2440,13 +2443,13 @@ TRY
 		m.llUsePrecision = NOT (INT(m.tnX)=m.tnX AND INT(m.tnY)=m.tnY)
 	ENDCASE
 	
-	m.lhGraphics = IIF(VARTYPE(m.toGraphics)="O", m.toGraphics.GPHandle, 0)
+	m.lhGraphics = IIF(VARTYPE(m.toGraphics)="O", m.toGraphics.Handle, 0)
 	m.liResult = 0
 	
 	IF llUsePrecision
-		This.SetStatus(GdipIsOutlineVisiblePathPoint(This.GpHandle, m.tnX, m.tnY, m.toPen.GPHandle, m.lhGraphics, @liResult))
+		This.SetStatus(GdipIsOutlineVisiblePathPoint(This.Handle, m.tnX, m.tnY, m.toPen.Handle, m.lhGraphics, @liResult))
 	ELSE
-		This.SetStatus(GdipIsOutlineVisiblePathPointI(This.GpHandle, m.tnX, m.tnY, m.toPen.GPHandle, m.lhGraphics, @liResult))
+		This.SetStatus(GdipIsOutlineVisiblePathPointI(This.Handle, m.tnX, m.tnY, m.toPen.Handle, m.lhGraphics, @liResult))
 	ENDIF
 
 CATCH TO loExc
@@ -2500,15 +2503,15 @@ TRY
 	ENDIF
 	
 	IF VARTYPE(m.toGraphics) = "O"
-		m.lhGraphics = m.toGraphics.GPHandle
+		m.lhGraphics = m.toGraphics.Handle
 	ELSE
 		m.lhGraphics = 0
 	ENDIF
 	
 	IF NOT (INT(m.tnX)=m.tnX AND INT(m.tnY)=m.tnY)
-		This.SetStatus(GdipIsVisiblePathPoint(This.GpHandle, m.tnX, m.tnY, m.lhGraphics, @liResult))
+		This.SetStatus(GdipIsVisiblePathPoint(This.Handle, m.tnX, m.tnY, m.lhGraphics, @liResult))
 	ELSE
-		This.SetStatus(GdipIsVisiblePathPointI(This.GpHandle, m.tnX, m.tnY, m.lhGraphics, @liResult))
+		This.SetStatus(GdipIsVisiblePathPointI(This.Handle, m.tnX, m.tnY, m.lhGraphics, @liResult))
 	ENDIF
 
 CATCH TO loExc
@@ -2562,10 +2565,10 @@ m.loPathData = NULL
 
 LOCAL loExc AS Exception
 TRY
-	This.SetStatus(GdipGetPathData(This.GpHandle, @lcPathData))
+	This.SetStatus(GdipGetPathData(This.Handle, @lcPathData))
 	IF(m.lhPathData <> 0)
 		m.loPathData = This.CreateNew("xfcPathData")
-		m.loPathData.GpHandle = m.lhPathData
+		m.loPathData.Handle = m.lhPathData
 	ENDIF
 CATCH TO loExc
 	THROW m.loExc
@@ -2599,7 +2602,7 @@ TRY
 	m.liCount = 0
 	m.loPoint = NULL
 	m.tiIndex = NVL(m.tiIndex, 1)
-	This.SetStatus(GdipGetPointCount(This.GpHandle, @liCount))
+	This.SetStatus(GdipGetPointCount(This.Handle, @liCount))
 	IF ALEN(This.PathPoints,1) <> m.liCount
 		DIMENSION This.PathPoints[MAX(m.liCount,1)]
 		This.PathPoints = NULL
@@ -2609,8 +2612,8 @@ TRY
 		m.loPoint = NULL
 	ELSE
 		m.lqPoints = REPLICATE(EMPTY_POINTF ,m.liCount)
-		This.SetStatus(GdipGetPathPoints(This.GpHandle, @lqPoints, m.liCount))
-		*!*This.SetStatus(GdipGetPathPointsI(This.GpHandle, @lcPoints, m.liCount))
+		This.SetStatus(GdipGetPathPoints(This.Handle, @lqPoints, m.liCount))
+		*!*This.SetStatus(GdipGetPathPointsI(This.Handle, @lcPoints, m.liCount))
 		m.lqPoint = SUBSTR(m.lqPoints, (m.tiIndex-1)*8+1, 8)
 		m.loPoint = This.CreateNew("xfcPointF", m.lqPoints, m.lqPoint)
 		This.PathPoints[m.tiIndex] = m.loPoint
@@ -2647,7 +2650,7 @@ TRY
 	m.liCount = 0
 	m.liByte = 0
 	m.tiIndex = NVL(m.tiIndex, 1)
-	This.SetStatus(GdipGetPointCount(This.GpHandle, @liCount))
+	This.SetStatus(GdipGetPointCount(This.Handle, @liCount))
 	IF ALEN(This.PathTypes,1) <> m.liCount
 		DIMENSION This.PathTypes[MAX(m.liCount,1)]
 		This.PathTypes = 0
@@ -2657,7 +2660,7 @@ TRY
 		m.liType = 0
 	ELSE
 		m.lqTypes = REPLICATE(0h00,m.liCount)
-		This.SetStatus(GdipGetPathTypes(This.GpHandle, @lqTypes, m.liCount))
+		This.SetStatus(GdipGetPathTypes(This.Handle, @lqTypes, m.liCount))
 		m.liType = ASC(SUBSTR(m.lqTypes, m.tiIndex, 1))
 		This.PathTypes[m.tiIndex] = m.liType
 	ENDIF
@@ -2690,7 +2693,7 @@ m.liCount = 0
 
 LOCAL loExc AS Exception
 TRY
-	This.SetStatus(GdipGetPointCount(This.GpHandle, @liCount))
+	This.SetStatus(GdipGetPointCount(This.Handle, @liCount))
 
 CATCH TO loExc
 	THROW m.loExc
@@ -2719,7 +2722,7 @@ PROCEDURE reset
 LOCAL loExc AS Exception
 TRY
 
-	This.SetStatus(GdipResetPath(This.GpHandle))
+	This.SetStatus(GdipResetPath(This.Handle))
 
 CATCH TO loExc
 	THROW m.loExc
@@ -2752,7 +2755,7 @@ PROCEDURE reverse
 LOCAL loExc AS Exception
 TRY
 
-	This.SetStatus(GdipReversePath(This.GpHandle))
+	This.SetStatus(GdipReversePath(This.Handle))
 
 CATCH TO loExc
 	THROW m.loExc
@@ -2785,7 +2788,7 @@ PROCEDURE setmarkers
 LOCAL loExc AS Exception
 TRY
 
-	This.SetStatus(GdipSetPathMarker(This.GpHandle))
+	This.SetStatus(GdipSetPathMarker(This.Handle))
 
 CATCH TO loExc
 	THROW m.loExc
@@ -2819,7 +2822,7 @@ PROCEDURE startfigure
 LOCAL loExc AS Exception
 TRY
 
-	This.SetStatus(GdipStartPathFigure(This.GpHandle))
+	This.SetStatus(GdipStartPathFigure(This.Handle))
 
 CATCH TO loExc
 	THROW m.loExc
@@ -2853,7 +2856,7 @@ LPARAMETERS toMatrix AS xfcMatrix
 LOCAL loExc AS Exception
 TRY
 
-	This.SetStatus(GdipTransformPath(This.GpHandle, m.toMatrix.GpHandle))
+	This.SetStatus(GdipTransformPath(This.Handle, m.toMatrix.Handle))
 
 CATCH TO loExc
 	THROW m.loExc
@@ -2895,16 +2898,16 @@ TRY
 	LOCAL lhMatrix
 	m.loPoint = taoDestPoints.New()
 	m.liCount = 0
-	m.tqPoints = m.loPoint.ToStruct(@taoDestPoints, @liCount)
+	m.tqPoints = m.loPoint.ToVarBinary(@taoDestPoints, @liCount)
 	m.toSrcRect.GetExtent(@lnSrcx, @lnSrcy, @lnSrcwidth, @lnSrcheight)
 	m.lhMatrix = 0
 	IF VARTYPE(m.toMatrix) = "O"
-		m.lhMatrix = m.toMatrix.GpHandle
+		m.lhMatrix = m.toMatrix.Handle
 	ENDIF
 	m.tnWarpMode = EVL(m.tnWarpMode, WarpModePerspective)
 	m.tnFlatness = EVL(m.tnFlatness, 0.00)
 	
-	This.SetStatus(GdipWarpPath(This.GpHandle, m.lhMatrix, mlqPoints, m.liCount, m.lnSrcx, m.lnSrcy, m.lnSrcwidth, m.lnSrcheight, m.tiWarpMode, m.tnFlatness))
+	This.SetStatus(GdipWarpPath(This.Handle, m.lhMatrix, mlqPoints, m.liCount, m.lnSrcx, m.lnSrcy, m.lnSrcwidth, m.lnSrcheight, m.tiWarpMode, m.tnFlatness))
 
 CATCH TO loExc
 	THROW m.loExc
@@ -2947,11 +2950,11 @@ TRY
 	m.lhMatrix = 0
 	
 	IF VARTYPE(m.toMatrix) = "O"
-		m.lhMatrix = m.tomatrix.GpHandle
+		m.lhMatrix = m.tomatrix.Handle
 	ENDIF
 	m.tnFlatness = EVL(m.tnFLatness, 0.00)
 	
-	This.SetStatus(GdipWidenPath(This.GpHandle, m.toPen.GpHandle, m.lhMatrix, m.tnFlatness))
+	This.SetStatus(GdipWidenPath(This.Handle, m.toPen.Handle, m.lhMatrix, m.tnFlatness))
 
 CATCH TO loExc
 	THROW m.loExc
@@ -3029,7 +3032,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcgraphicspath
 [START RESERVED1]
- 	 drawing.hæõL>Ï4 system.hîöf‡Ù4 gdiplusconstants.hö÷¹>Ï4[END RESERVED1]
+ 	 drawing.höŠ]¥ï4 system.hþ‹0¥ï4 gdiplusconstants.h¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -3044,7 +3047,6 @@ subpathcount = 0
 basename = GraphicsPathIterator
 _memberdata =     1293<VFPData><memberdata name="copydata" type="method" display="CopyData"/><memberdata name="createobjref" type="method" display="CreateObjRef"/><memberdata name="dispose" type="method" display="Dispose"/><memberdata name="enumerate" type="method" display="Enumerate"/><memberdata name="equals" type="method" display="Equals"/><memberdata name="gethashcode" type="method" display="GetHashCode"/><memberdata name="getlifetimeservice" type="method" display="GetLifetimeService"/><memberdata name="gettype" type="method" display="GetType"/><memberdata name="hascurve" type="method" display="HasCurve"/><memberdata name="initializelifetimeservice" type="method" display="InitializeLifetimeService"/><memberdata name="nextmarker" type="method" display="NextMarker"/><memberdata name="nextpathtype" type="method" display="NextPathType"/><memberdata name="nextsubpath" type="method" display="NextSubpath"/><memberdata name="rewind" type="method" display="Rewind"/><memberdata name="tostring" type="method" display="ToString"/><memberdata name="finalize" type="method" display="Finalize"/><memberdata name="memberwiseclone" type="method" display="MemberwiseClone"/><memberdata name="count" type="property" display="Count"/><memberdata name="subpathcount" type="property" display="SubpathCount"/></VFPData>
 lastresult = 0
-gphandle = 0
 Name = "xfcgraphicspathiterator"
 [END PROPERTIES]
 [START PROTECTED]
@@ -3064,7 +3066,7 @@ PROCEDURE Destroy
 
 LOCAL loExc AS Exception
 TRY
-This.SetStatus(GdipDeletePathIter(This.GpHandle))
+This.SetStatus(GdipDeletePathIter(This.Handle))
 CATCH TO loExc
 	THROW m.loExc
 ENDTRY
@@ -3088,9 +3090,9 @@ TRY
 	DODEFAULT()
 	LOCAL lhPath, lhIterator
 	m.lhIterator = 0
-	m.lhPath = IIF(VARTYPE(m.toPath)="O", m.toPath.GpHandle, 0)
+	m.lhPath = IIF(VARTYPE(m.toPath)="O", m.toPath.Handle, 0)
 	This.SetStatus(GdipCreatePathIter(@lhIterator, m.lhPath))
-	This.GpHandle = m.lhIterator
+	This.Handle = m.lhIterator
 CATCH TO loExc
 	THROW m.loExc
 ENDTRY
@@ -3125,7 +3127,7 @@ LOCAL loExc AS Exception
 TRY
 	LOCAL liValue
 	m.liValue = 0
-	This.SetStatus(GdipPathIterCopyData(This.GpHandle, @liResultCount, @lcPoints, @lcTypes, m.liStartIndex, m.liEndIndex))
+	This.SetStatus(GdipPathIterCopyData(This.Handle, @liResultCount, @lcPoints, @lcTypes, m.liStartIndex, m.liEndIndex))
 
 CATCH TO loExc
 	THROW m.loExc
@@ -3160,7 +3162,7 @@ m.liCount = 0
 
 LOCAL loExc AS Exception
 TRY
-	This.SetStatus(GdipPathIterGetCount(This.GpHandle, @liCount))
+	This.SetStatus(GdipPathIterGetCount(This.Handle, @liCount))
 
 CATCH TO loExc
 	THROW m.loExc
@@ -3220,7 +3222,7 @@ TRY
 	LOCAL liCount, liResultCount
 	m.liCount = 0
 	m.liResultCount = 0
-	This.SetStatus(GdipPathIterEnumerate(THIs.GpHandle, @liResultCount, @lcPoints, @lcTypes, m.liCount))
+	This.SetStatus(GdipPathIterEnumerate(THIs.Handle, @liResultCount, @lcPoints, @lcTypes, m.liCount))
 
 CATCH TO loExc
 	THROW m.loExc
@@ -3255,7 +3257,7 @@ LOCAL loExc AS Exception
 TRY
 	LOCAL liHasCurve
 	m.liHasCurve = FALSE
-	This.SetStatus(GdipPathIterHasCurve(This.GpHandle, @liHasCurve))
+	This.SetStatus(GdipPathIterHasCurve(This.Handle, @liHasCurve))
 
 CATCH TO loExc
 	THROW m.loExc
@@ -3300,10 +3302,10 @@ TRY
 	DO CASE
 	CASE VARTYPE(m.tiStartIndex)="O" AND m.tiStartIndex.BaseName == "GraphicsPath"
 		m.loPath = m.tiStartIndex
-		This.SetStatus(GdipPathIterNextMarkerPath(This.GpHandle, @liResultCount, m.loPath.GpHandle))
+		This.SetStatus(GdipPathIterNextMarkerPath(This.Handle, @liResultCount, m.loPath.Handle))
 		
 	OTHERWISE
-		This.SetStatus(GdipPathIterNextMarker(This.GpHandle, @liResultCount, @tiStartIndex, @tiEndIndex))
+		This.SetStatus(GdipPathIterNextMarker(This.Handle, @liResultCount, @tiStartIndex, @tiEndIndex))
 		
 	ENDCASE
 
@@ -3343,7 +3345,7 @@ TRY
 	LOCAL liResultCount, lqPathType
 	m.liResultCount = 0
 	m.lqPathType = 0h00
-	This.SetStatus(GdipPathIterNextPathType(This.GpHandle, @liResultCount, @lqPathType, @tiStartIndex, @tiEndIndex))
+	This.SetStatus(GdipPathIterNextPathType(This.Handle, @liResultCount, @lqPathType, @tiStartIndex, @tiEndIndex))
 	
 	m.tiPathType = ASC(lqPathType)
 
@@ -3387,11 +3389,11 @@ TRY
 	CASE VARTYPE(m.tiStartIndex)="O"
 		m.loPath = m.tiStartIndex
 		m.tlIsClosed = m.tiEndIndex
-		This.SetStatus(GdipPathIterNextSubpathPath(This.GpHandle, @liResultCount, m.lhPath, @liIsClosed))
+		This.SetStatus(GdipPathIterNextSubpathPath(This.Handle, @liResultCount, m.lhPath, @liIsClosed))
 		m.tlIsClosed = (m.liIsClosed=TRUE)
 	
 	OTHERWISE
-		This.SetStatus(GdipPathIterNextSubpath(This.GpHandle, @liResultCount, @tiStartIndex, @tiEndIndex, @liIsClosed))
+		This.SetStatus(GdipPathIterNextSubpath(This.Handle, @liResultCount, @tiStartIndex, @tiEndIndex, @liIsClosed))
 		m.tlIsClosed = (m.liIsClosed=TRUE)
 	ENDCASE
 
@@ -3427,7 +3429,7 @@ PROCEDURE rewind
 LOCAL loExc AS Exception
 TRY
 
-	This.SetStatus(GdipPathIterRewind(This.GpHandle))
+	This.SetStatus(GdipPathIterRewind(This.Handle))
 
 CATCH TO loExc
 	THROW m.loExc
@@ -3462,7 +3464,7 @@ m.liCount = 0
 
 LOCAL loExc AS Exception
 TRY
-	This.SetStatus(GdipPathIterGetSubpathCount(This.GpHandle, @liCount))
+	This.SetStatus(GdipPathIterGetSubpathCount(This.Handle, @liCount))
 
 CATCH TO loExc
 	THROW m.loExc
@@ -3504,7 +3506,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcgraphicspathiterator
 [START RESERVED1]
- 	 drawing.hæõL>Ï4 system.hîöf‡Ù4 gdiplusconstants.hö÷¹>Ï4[END RESERVED1]
+ 	 drawing.höŠ]¥ï4 system.hþ‹0¥ï4 gdiplusconstants.h¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -3514,9 +3516,9 @@ drawing.h[END RESERVED8]
 [BASECLASS] custom
 [OBJNAME] xfcgraphicsstate
 [START PROPERTIES]
-_memberdata =      653<VFPData><memberdata name="createobjref" type="method" display="CreateObjRef"/><memberdata name="equals" type="method" display="Equals"/><memberdata name="gethashcode" type="method" display="GetHashCode"/><memberdata name="getlifetimeservice" type="method" display="GetLifetimeService"/><memberdata name="gettype" type="method" display="GetType"/><memberdata name="initializelifetimeservice" type="method" display="InitializeLifetimeService"/><memberdata name="tostring" type="method" display="ToString"/><memberdata name="finalize" type="method" display="Finalize"/><memberdata name="memberwiseclone" type="method" display="MemberwiseClone"/></VFPData>
 basename = GraphicsState
-gphandle = 0
+handle = 0
+_memberdata =      653<VFPData><memberdata name="createobjref" type="method" display="CreateObjRef"/><memberdata name="equals" type="method" display="Equals"/><memberdata name="gethashcode" type="method" display="GetHashCode"/><memberdata name="getlifetimeservice" type="method" display="GetLifetimeService"/><memberdata name="gettype" type="method" display="GetType"/><memberdata name="initializelifetimeservice" type="method" display="InitializeLifetimeService"/><memberdata name="tostring" type="method" display="ToString"/><memberdata name="finalize" type="method" display="Finalize"/><memberdata name="memberwiseclone" type="method" display="MemberwiseClone"/></VFPData>
 Name = "xfcgraphicsstate"
 [END PROPERTIES]
 [START PROTECTED]
@@ -3558,9 +3560,8 @@ Class[END RESERVED1]
 [START RESERVED2]
 1[END RESERVED2]
 [START RESERVED3]
-_memberdata XML Metadata for customizable properties
 basename
-gphandle
+handle
 [END RESERVED3]
 [START RESERVED6]
 Pixels[END RESERVED6]
@@ -3572,7 +3573,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcgraphicsstate
 [START RESERVED1]
- 	 drawing.hæõL>Ï4 system.hîöf‡Ù4 gdiplusconstants.hö÷¹>Ï4[END RESERVED1]
+ 	 drawing.höŠ]¥ï4 system.hþ‹0¥ï4 gdiplusconstants.h¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -3590,7 +3591,6 @@ offsety = 0
 basename = Matrix
 _memberdata =     1723<VFPData><memberdata name="clone" type="method" display="Clone"/><memberdata name="createobjref" type="method" display="CreateObjRef"/><memberdata name="dispose" type="method" display="Dispose"/><memberdata name="equals" type="method" display="Equals"/><memberdata name="gethashcode" type="method" display="GetHashCode"/><memberdata name="getlifetimeservice" type="method" display="GetLifetimeService"/><memberdata name="gettype" type="method" display="GetType"/><memberdata name="initializelifetimeservice" type="method" display="InitializeLifetimeService"/><memberdata name="invert" type="method" display="Invert"/><memberdata name="multiply" type="method" display="Multiply"/><memberdata name="reset" type="method" display="Reset"/><memberdata name="rotate" type="method" display="Rotate"/><memberdata name="rotateat" type="method" display="RotateAt"/><memberdata name="scale" type="method" display="Scale"/><memberdata name="shear" type="method" display="Shear"/><memberdata name="tostring" type="method" display="ToString"/><memberdata name="transformpoints" type="method" display="TransformPoints"/><memberdata name="transformvectors" type="method" display="TransformVectors"/><memberdata name="translate" type="method" display="Translate"/><memberdata name="finalize" type="method" display="Finalize"/><memberdata name="memberwiseclone" type="method" display="MemberwiseClone"/><memberdata name="elements" type="property" display="Elements"/><memberdata name="isidentity" type="property" display="IsIdentity"/><memberdata name="isinvertible" type="property" display="IsInvertible"/><memberdata name="offsetx" type="property" display="OffsetX"/><memberdata name="offsety" type="property" display="OffsetY"/></VFPData>
 lastresult = 0
-gphandle = 0
 Name = "xfcmatrix"
 [END PROPERTIES]
 [START PROTECTED]
@@ -3610,7 +3610,7 @@ PROCEDURE Destroy
 
 LOCAL loExc AS Exception
 TRY
-This.SetStatus(GdipDeleteMatrix(This.GpHandle))
+This.SetStatus(GdipDeleteMatrix(This.Handle))
 CATCH TO loExc
 	THROW m.loExc
 ENDTRY
@@ -3647,17 +3647,17 @@ TRY
 	CASE VARTYPE(m.tnM11) = "O" AND m.tnM11.ClassName = "RectangleF" AND TYPE("m.tnM12[1]") = "O"
 		m.loRect = m.tnM11
 		m.loPoint = This.CreateNew("xfcPointF")
-		m.lqPoints = m.loPoint.ToStruct(@tnM12, @liCount)
+		m.lqPoints = m.loPoint.ToVarBinary(@tnM12, @liCount)
 		IF m.liCount = 3
-			This.SetStatus(GdipCreateMatrix3(m.loRect.ToStruct(), m.lqPoints, @lhMatrix))
+			This.SetStatus(GdipCreateMatrix3(m.loRect.ToVarBinary(), m.lqPoints, @lhMatrix))
 		ENDIF
 		
 	CASE VARTYPE(m.tnM11) = "O" AND m.tnM11.ClassName = "Rectangle" AND TYPE("m.tnM12[1]") = "O"
 		m.loRect = m.tnM11
 		m.loPoint = This.CreateNew("xfcPoint")
-		m.lqPoints = m.loPoint.ToStruct(@tnM12, @liCount)
+		m.lqPoints = m.loPoint.ToVarBinary(@tnM12, @liCount)
 		IF m.liCount = 3
-			This.SetStatus(GdipCreateMatrix3I(m.loRect.ToStruct(), m.lqPoints, @lhMatrix))
+			This.SetStatus(GdipCreateMatrix3I(m.loRect.ToVarBinary(), m.lqPoints, @lhMatrix))
 		ENDIF
 		
 	OTHERWISE
@@ -3665,7 +3665,7 @@ TRY
 		
 	ENDCASE
 	
-	This.GpHandle = m.lhMatrix
+	This.Handle = m.lhMatrix
 	
 CATCH TO loExc
 	THROW m.loExc
@@ -3701,10 +3701,10 @@ TRY
 	LOCAL loMatrix, lhMatrix
 	m.lhMatrix = 0
 	m.loMatrix = NULL
-	This.SetStatus(GdipCloneMatrix(This.GpHandle, @lhMatrix))
+	This.SetStatus(GdipCloneMatrix(This.Handle, @lhMatrix))
 	IF(m.lhMatrix <> 0)
 		m.loMatrix = This.CreateNew(This.Class)
-		m.loMatrix.GpHandle = m.lhMatrix
+		m.loMatrix.Handle = m.lhMatrix
 	ENDIF
 CATCH TO loExc
 	THROW m.loExc
@@ -3778,7 +3778,7 @@ m.lnValue = 0.0
 
 LOCAL loExc AS Exception
 TRY
-	This.SetStatus(GdipGetMatrixElements(This.GpHandle, @lnMatrixOut))
+	This.SetStatus(GdipGetMatrixElements(This.Handle, @lnMatrixOut))
 
 CATCH TO loExc
 	THROW m.loExc
@@ -3810,7 +3810,7 @@ LOCAL loExc AS Exception
 TRY
 	LOCAL liResult
 	m.liResult = FALSE
-	This.SetStatus(GdipIsMatrixEqual(This.GpHandle, m.toMatrix2.Gphandle, @liResult))
+	This.SetStatus(GdipIsMatrixEqual(This.Handle, m.toMatrix2.Handle, @liResult))
 
 CATCH TO loExc
 	THROW m.loExc
@@ -3880,7 +3880,7 @@ PROCEDURE invert
 LOCAL loExc AS Exception
 TRY
 
-	This.SetStatus(GdipInvertMatrix(This.GpHandle))
+	This.SetStatus(GdipInvertMatrix(This.Handle))
 
 CATCH TO loExc
 	THROW m.loExc
@@ -3915,7 +3915,7 @@ m.liResult = FALSE
 
 LOCAL loExc AS Exception
 TRY
-	This.SetStatus(GdipIsMatrixIdentity(This.GpHandle, @liResult))
+	This.SetStatus(GdipIsMatrixIdentity(This.Handle, @liResult))
 
 CATCH TO loExc
 	THROW m.loExc
@@ -3946,7 +3946,7 @@ m.liResult = FALSE
 
 LOCAL loExc AS Exception
 TRY
-	This.SetStatus(GdipIsMatrixInvertible(This.GpHandle, @liResult))
+	This.SetStatus(GdipIsMatrixInvertible(This.Handle, @liResult))
 
 CATCH TO loExc
 	THROW m.loExc
@@ -3977,7 +3977,7 @@ LPARAMETERS toMatrix AS xfcMatrix, tiOrder AS EnumMatrixOrder
 LOCAL loExc AS Exception
 TRY
 	m.tiOrder = EVL(tiOrder, 0)
-	This.SetStatus(GdipMultiplyMatrix(This.GpHandle, m.toMatrix.GPHandle, m.tiOrder))
+	This.SetStatus(GdipMultiplyMatrix(This.Handle, m.toMatrix.Handle, m.tiOrder))
 
 CATCH TO loExc
 	THROW m.loExc
@@ -4122,7 +4122,7 @@ LPARAMETERS tnAngle, ;
 LOCAL loExc AS Exception
 TRY
 	m.tiOrder = EVL(m.tiOrder, MatrixOrderPrepend)
-	This.SetStatus(GdipRotateMatrix(This.GpHandle, m.tnAngle, m.tiOrder))
+	This.SetStatus(GdipRotateMatrix(This.Handle, m.tnAngle, m.tiOrder))
 
 CATCH TO loExc
 	THROW m.loExc
@@ -4198,7 +4198,7 @@ LPARAMETERS tnScaleX, tnScaleY, ;
 LOCAL loExc AS Exception
 TRY
 	m.tiOrder = EVL(m.toOrder, MatrixOrderPrepend)
-	This.SetStatus(GdipScaleMatrix(This.GpHandle, m.tnScaleX, m.tnScaleY, m.tiOrder))
+	This.SetStatus(GdipScaleMatrix(This.Handle, m.tnScaleX, m.tnScaleY, m.tiOrder))
 
 CATCH TO loExc
 	THROW m.loExc
@@ -4234,7 +4234,7 @@ LPARAMETERS tnShearX, tnShearY, ;
 LOCAL loExc AS Exception
 TRY
 	m.tiOrder = EVL(m.tiOrder, MatrixOrderPrepend)
-	This.SetStatus(GdipShearMatrix(This.GpHandle, m.tnShearX, m.tnShearY, m.tiOrder))
+	This.SetStatus(GdipShearMatrix(This.Handle, m.tnShearX, m.tnShearY, m.tiOrder))
 
 CATCH TO loExc
 	THROW m.loExc
@@ -4272,13 +4272,13 @@ TRY
 	DO CASE
 	CASE VARTYPE(m.taoPts)="O" AND m.taoPts.BaseName == "PointF"
 		m.loPoint = This.CreateNew("xfcPointF")
-		m.lqPoints = m.loPoint.ToStruct(@m.taoPts, @liCount)
-		This.SetStatus(GdipTransformMatrixPoints(This.GpHandle, m.lqPoints, m.liCount))
+		m.lqPoints = m.loPoint.ToVarBinary(@m.taoPts, @liCount)
+		This.SetStatus(GdipTransformMatrixPoints(This.Handle, m.lqPoints, m.liCount))
 		
 	CASE VARTYPE(m.taoPts)="O" AND m.taoPts.BaseName == "Point"
 		m.loPoint = This.CreateNew("xfcPoint")
-		m.lqPoints = m.loPoint.ToStruct(@m.taoPts, @liCount)
-		This.SetStatus(GdipTransformMatrixPointsI(This.GpHandle, m.lqPoints, m.liCount))
+		m.lqPoints = m.loPoint.ToVarBinary(@m.taoPts, @liCount)
+		This.SetStatus(GdipTransformMatrixPointsI(This.Handle, m.lqPoints, m.liCount))
 	
 	OTHERWISE
 		*!ToDo: Error handling?
@@ -4323,13 +4323,13 @@ TRY
 	DO CASE
 	CASE VARTYPE(m.taoPts)="O" AND m.taoPts.BaseName == "PointF"
 		m.loPoint = This.CreateNew("xfcPointF")
-		m.lqPoints = m.loPoint.ToStruct(@m.taoPts, @liCount)
-		This.SetStatus(GdipVectorTransformMatrixPoints(This.GpHandle, m.lqPoints, m.liCount))
+		m.lqPoints = m.loPoint.ToVarBinary(@m.taoPts, @liCount)
+		This.SetStatus(GdipVectorTransformMatrixPoints(This.Handle, m.lqPoints, m.liCount))
 		
 	CASE VARTYPE(m.taoPts)="O" AND m.taoPts.BaseName == "Point"
 		m.loPoint = This.CreateNew("xfcPoint")
-		m.lqPoints = m.loPoint.ToStruct(@m.taoPts, @liCount)
-		This.SetStatus(GdipVectorTransformMatrixPointsI(This.GpHandle, m.lqPoints, m.liCount))
+		m.lqPoints = m.loPoint.ToVarBinary(@m.taoPts, @liCount)
+		This.SetStatus(GdipVectorTransformMatrixPointsI(This.Handle, m.lqPoints, m.liCount))
 	
 	OTHERWISE
 		*!ToDo: Error handling?
@@ -4371,7 +4371,7 @@ LPARAMETERS tnOffsetX, tnOffsetY, ;
 LOCAL loExc AS Exception
 TRY
 	m.tiOrder = EVL(m.tiOrder, MatrixOrderPrepend)
-	This.SetStatus(GdipTranslateMatrix(This.GpHandle, m.tnOffsetX, m.tnOffsetY, m.tiOrder))
+	This.SetStatus(GdipTranslateMatrix(This.Handle, m.tnOffsetX, m.tnOffsetY, m.tiOrder))
 
 CATCH TO loExc
 	THROW m.loExc
@@ -4430,7 +4430,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcmatrix
 [START RESERVED1]
- 	 drawing.hæõL>Ï4 system.hîöf‡Ù4 gdiplusconstants.hö÷¹>Ï4[END RESERVED1]
+ 	 drawing.höŠ]¥ï4 system.hþ‹0¥ï4 gdiplusconstants.h¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -4441,13 +4441,13 @@ drawing.h[END RESERVED8]
 [OBJNAME] xfcpathdata
 [START PROPERTIES]
 basename = PathData
-_memberdata =      523<VFPData><memberdata name="equals" type="method" display="Equals"/><memberdata name="gethashcode" type="method" display="GetHashCode"/><memberdata name="gettype" type="method" display="GetType"/><memberdata name="tostring" type="method" display="ToString"/><memberdata name="finalize" type="method" display="Finalize"/><memberdata name="memberwiseclone" type="method" display="MemberwiseClone"/><memberdata name="points" type="property" display="Points"/><memberdata name="types" type="property" display="Types"/></VFPData>
 _count = 0
+_memberdata =      523<VFPData><memberdata name="equals" type="method" display="Equals"/><memberdata name="gethashcode" type="method" display="GetHashCode"/><memberdata name="gettype" type="method" display="GetType"/><memberdata name="tostring" type="method" display="ToString"/><memberdata name="finalize" type="method" display="Finalize"/><memberdata name="memberwiseclone" type="method" display="MemberwiseClone"/><memberdata name="points" type="property" display="Points"/><memberdata name="types" type="property" display="Types"/></VFPData>
 Name = "xfcpathdata"
 [END PROPERTIES]
 [START PROTECTED]
-_memberdata
 _count
+_memberdata
 [END PROTECTED]
 [START METHODS]
 PROCEDURE Init
@@ -4556,14 +4556,15 @@ ENDTRY
 RETURN NULL
 
 ENDPROC
-PROCEDURE tostruct
+PROCEDURE tovarbinary
 *********************************************************************
-** Method: ToStruct
+** Method: ToVarbinary
 **
 ** Returns a binary representation of this PathData class
 **
 ** History:
 **  2006/05/11: BDurban - Coded
+**  2006/07/08: BDurban - Changed method name
 *********************************************************************
 LOCAL lqBinary, liCount, lnLoop, loPnt AS xfcPointF, liType AS Byte
 
@@ -4576,7 +4577,7 @@ TRY
 	m.lqBinary = BINTOC(m.liCount, "4rs")
 
 	FOR m.lnLoop = 1 TO m.liCount
-		m.lqBinary = m.lqBinary + This.Points[m.lnLoop].ToStruct()
+		m.lqBinary = m.lqBinary + This.Points[m.lnLoop].ToVarbinary()
 	ENDFOR
 
 	FOR m.lnLoop = 1 TO m.liCount
@@ -4627,7 +4628,7 @@ Class[END RESERVED1]
 [START RESERVED3]
 basename
 _count
-*tostruct 
+*tovarbinary 
 ^points[1,0] Gets or sets an array of PointF structures that represents the points through which the path is constructed.
 *points_assign 
 ^types[1,0] Gets or sets the types of the corresponding points in the path.
@@ -4643,7 +4644,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcpathdata
 [START RESERVED1]
- 	 drawing.hæõL>Ï4 system.hîöf‡Ù4 gdiplusconstants.hö÷¹>Ï4[END RESERVED1]
+ 	 drawing.höŠ]¥ï4 system.hþ‹0¥ï4 gdiplusconstants.h¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -4734,7 +4735,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcregiondata
 [START RESERVED1]
- 	 drawing.hæõL>Ï4 system.hîöf‡Ù4 gdiplusconstants.hö÷¹>Ï4[END RESERVED1]
+ 	 drawing.höŠ]¥ï4 system.hþ‹0¥ï4 gdiplusconstants.h¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -4749,7 +4750,6 @@ middleinset = 0
 lastresult = 0
 _memberdata =     1425<VFPData><memberdata name="clone" type="method" display="Clone"/><memberdata name="createobjref" type="method" display="CreateObjRef"/><memberdata name="dispose" type="method" display="Dispose"/><memberdata name="equals" type="method" display="Equals"/><memberdata name="gethashcode" type="method" display="GetHashCode"/><memberdata name="getlifetimeservice" type="method" display="GetLifetimeService"/><memberdata name="getstrokecaps" type="method" display="GetStrokeCaps"/><memberdata name="gettype" type="method" display="GetType"/><memberdata name="initializelifetimeservice" type="method" display="InitializeLifetimeService"/><memberdata name="setstrokecaps" type="method" display="SetStrokeCaps"/><memberdata name="tostring" type="method" display="ToString"/><memberdata name="finalize" type="method" display="Finalize"/><memberdata name="memberwiseclone" type="method" display="MemberwiseClone"/><memberdata name="basecap" type="property" display="BaseCap"/><memberdata name="baseinset" type="property" display="BaseInset"/><memberdata name="filled" type="property" display="Filled"/><memberdata name="height" type="property" display="Height"/><memberdata name="middleinset" type="property" display="MiddleInset"/><memberdata name="strokejoin" type="property" display="StrokeJoin"/><memberdata name="width" type="property" display="Width"/><memberdata name="widthscale" type="property" display="WidthScale"/></VFPData>
 basename = AdjustableArrowCap
-gphandle = 0
 Name = "xfcadjustablearrowcap"
 [END PROPERTIES]
 [START METHODS]
@@ -4777,7 +4777,7 @@ TRY
 	m.liIsFilled = IIF(tlIsFilled, TRUE, FALSE)
 	m.lhCap = 0
 	This.SetStatus(GdipCreateAdjustableArrowCap(m.tnHeight, m.tnWidth, m.liIsFilled, @lhCap))
-	This.GpHandle = m.lhCap
+	This.Handle = m.lhCap
 CATCH TO loExc
 	THROW m.loExc
 ENDTRY
@@ -4832,7 +4832,7 @@ m.liFillState = FALSE
 
 LOCAL loExc AS Exception
 TRY
-	This.SetStatus(GdipGetAdjustableArrowCapFillState(This.GpHandle, @liFillState))
+	This.SetStatus(GdipGetAdjustableArrowCapFillState(This.Handle, @liFillState))
 CATCH TO loExc
 	THROW m.loExc
 ENDTRY
@@ -4860,7 +4860,7 @@ LPARAMETERS tlFillState
 
 LOCAL loExc AS Exception
 TRY
-	This.SetStatus(GdipSetAdjustableArrowCapFillState(This.GpHandle, IIF(m.tlFillState, TRUE, FALSE)))
+	This.SetStatus(GdipSetAdjustableArrowCapFillState(This.Handle, IIF(m.tlFillState, TRUE, FALSE)))
 CATCH TO loExc
 	THROW m.loExc
 ENDTRY
@@ -4885,7 +4885,7 @@ m.lnHeight = 0.0
 
 LOCAL loExc AS Exception
 TRY
-	This.SetStatus(GdipGetAdjustableArrowCapHeight(This.GpHandle, @lnHeight))
+	This.SetStatus(GdipGetAdjustableArrowCapHeight(This.Handle, @lnHeight))
 
 CATCH TO loExc
 	THROW m.loExc
@@ -4914,7 +4914,7 @@ LPARAMETERS tnHeight
 
 LOCAL loExc AS Exception
 TRY
-	This.SetStatus(GdipSetAdjustableArrowCapHeight(This.GpHandle, m.tnHeight))
+	This.SetStatus(GdipSetAdjustableArrowCapHeight(This.Handle, m.tnHeight))
 CATCH TO loExc
 	THROW m.loExc
 ENDTRY
@@ -4939,7 +4939,7 @@ m.tnMiddleInset = 0.0
 
 LOCAL loExc AS Exception
 TRY
-	This.SetStatus(GdipGetAdjustableArrowCapMiddleInset(This.GpHandle, @tnMiddleInset))
+	This.SetStatus(GdipGetAdjustableArrowCapMiddleInset(This.Handle, @tnMiddleInset))
 
 CATCH TO loExc
 	THROW m.loExc
@@ -4968,7 +4968,7 @@ LPARAMETERS tnMiddleInset
 
 LOCAL loExc AS Exception
 TRY
-	This.SetStatus(GdipSetAdjustableArrowCapMiddleInset(This.GpHandle, m.tnMiddleInset))
+	This.SetStatus(GdipSetAdjustableArrowCapMiddleInset(This.Handle, m.tnMiddleInset))
 CATCH TO loExc
 	THROW m.loExc
 ENDTRY
@@ -4993,7 +4993,7 @@ m.lnWidth = 0.0
 
 LOCAL loExc AS Exception
 TRY
-	This.SetStatus(GdipGetAdjustableArrowCapWidth(This.GpHandle, @lnWidth))
+	This.SetStatus(GdipGetAdjustableArrowCapWidth(This.Handle, @lnWidth))
 
 CATCH TO loExc
 	THROW m.loExc
@@ -5022,7 +5022,7 @@ LPARAMETERS tnWidth
 
 LOCAL loExc AS Exception
 TRY
-	This.SetStatus(GdipSetAdjustableArrowCapWidth(This.GpHandle, m.tnWidth))
+	This.SetStatus(GdipSetAdjustableArrowCapWidth(This.Handle, m.tnWidth))
 CATCH TO loExc
 	THROW m.loExc
 ENDTRY
@@ -5056,7 +5056,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcadjustablearrowcap
 [START RESERVED1]
- 	 drawing.hæõL>Ï4 system.hîöf‡Ù4 gdiplusconstants.hö÷¹>Ï4[END RESERVED1]
+ 	 drawing.höŠ]¥ï4 system.hþ‹0¥ï4 gdiplusconstants.h¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -5072,7 +5072,6 @@ hatchstyle = 0
 _memberdata =      993<VFPData><memberdata name="clone" type="method" display="Clone"/><memberdata name="createobjref" type="method" display="CreateObjRef"/><memberdata name="dispose" type="method" display="Dispose"/><memberdata name="equals" type="method" display="Equals"/><memberdata name="gethashcode" type="method" display="GetHashCode"/><memberdata name="getlifetimeservice" type="method" display="GetLifetimeService"/><memberdata name="gettype" type="method" display="GetType"/><memberdata name="initializelifetimeservice" type="method" display="InitializeLifetimeService"/><memberdata name="tostring" type="method" display="ToString"/><memberdata name="finalize" type="method" display="Finalize"/><memberdata name="memberwiseclone" type="method" display="MemberwiseClone"/><memberdata name="backgroundcolor" type="property" display="BackgroundColor"/><memberdata name="foregroundcolor" type="property" display="ForegroundColor"/><memberdata name="hatchstyle" type="property" display="HatchStyle"/></VFPData>
 basename = HatchBrush
 lastresult = 0
-gphandle = 0
 Name = "xfchatchbrush"
 [END PROPERTIES]
 [START METHODS]
@@ -5118,7 +5117,7 @@ TRY
 			m.liColor2 = m.toBackColor.Argb
 		ENDIF
 		This.SetStatus(GdipCreateHatchBrush(m.tiHatchstyle, m.toForeColor.Argb, m.liColor2, @lhBrush))
-		This.GpHandle = m.lhBrush
+		This.Handle = m.lhBrush
 	ENDIF
 
 CATCH TO loExc
@@ -5154,7 +5153,7 @@ m.loColor = NULL
 
 LOCAL loExc AS Exception
 TRY
-	This.SetStatus(GdipGetHatchBackgroundColor(This.GpHandle, @liArgb))
+	This.SetStatus(GdipGetHatchBackgroundColor(This.Handle, @liArgb))
 		m.loColor = This.CreateNew("xfcColor")
 		m.loColor.FromARGB(m.liArgb)
 CATCH TO loExc
@@ -5219,7 +5218,7 @@ m.loColor = NULL
 
 LOCAL loExc AS Exception
 TRY
-	This.SetStatus(GdipGetHatchForegroundColor(This.GpHandle, @liArgb))
+	This.SetStatus(GdipGetHatchForegroundColor(This.Handle, @liArgb))
 		m.loColor = This.CreateNew("xfcColor")
 		m.loColor.FromARGB(m.liArgb)
 CATCH TO loExc
@@ -5258,7 +5257,7 @@ m.liHatchStyle = 0
 
 LOCAL loExc AS Exception
 TRY
-	This.SetStatus(GdipGetHatchStyle(This.GpHandle, @liHatchstyle))
+	This.SetStatus(GdipGetHatchStyle(This.Handle, @liHatchstyle))
 CATCH TO loExc
 	THROW m.loExc
 ENDTRY
@@ -5307,7 +5306,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfchatchbrush
 [START RESERVED1]
- 	 drawing.hæõL>Ï4 system.hîöf‡Ù4 gdiplusconstants.hö÷¹>Ï4[END RESERVED1]
+ 	 drawing.höŠ]¥ï4 system.hþ‹0¥ï4 gdiplusconstants.h¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -5326,7 +5325,6 @@ wrapmode = 0
 _memberdata =     1817<VFPData><memberdata name="clone" type="method" display="Clone"/><memberdata name="createobjref" type="method" display="CreateObjRef"/><memberdata name="dispose" type="method" display="Dispose"/><memberdata name="equals" type="method" display="Equals"/><memberdata name="gethashcode" type="method" display="GetHashCode"/><memberdata name="getlifetimeservice" type="method" display="GetLifetimeService"/><memberdata name="gettype" type="method" display="GetType"/><memberdata name="initializelifetimeservice" type="method" display="InitializeLifetimeService"/><memberdata name="multiplytransform" type="method" display="MultiplyTransform"/><memberdata name="resettransform" type="method" display="ResetTransform"/><memberdata name="rotatetransform" type="method" display="RotateTransform"/><memberdata name="scaletransform" type="method" display="ScaleTransform"/><memberdata name="setblendtriangularshape" type="method" display="SetBlendTriangularShape"/><memberdata name="setsigmabellshape" type="method" display="SetSigmaBellShape"/><memberdata name="tostring" type="method" display="ToString"/><memberdata name="translatetransform" type="method" display="TranslateTransform"/><memberdata name="finalize" type="method" display="Finalize"/><memberdata name="memberwiseclone" type="method" display="MemberwiseClone"/><memberdata name="blend" type="property" display="Blend"/><memberdata name="gammacorrection" type="property" display="GammaCorrection"/><memberdata name="interpolationcolors" type="property" display="InterpolationColors"/><memberdata name="linearcolors" type="property" display="LinearColors"/><memberdata name="rectangle" type="property" display="Rectangle"/><memberdata name="transform" type="property" display="Transform"/><memberdata name="wrapmode" type="property" display="WrapMode"/></VFPData>
 basename = LinearGradientBrush
 lastresult = 0
-gphandle = 0
 Name = "xfclineargradientbrush"
 [END PROPERTIES]
 [START METHODS]
@@ -5382,32 +5380,32 @@ TRY
 		m.loPoint2 = m.toColor1
 		m.toColor1 = m.toColor2
 		m.toColor2 = m.tnAngle
-		This.SetStatus(GdipCreateLineBrush(m.loPoint1.ToStruct(), m.loPoint1.ToStruct(), m.toColor1.Argb, m.toColor2.Argb, m.liWrapMode, @lhLineGradient))
+		This.SetStatus(GdipCreateLineBrush(m.loPoint1.ToVarBinary(), m.loPoint1.ToVarBinary(), m.toColor1.Argb, m.toColor2.Argb, m.liWrapMode, @lhLineGradient))
 		
 	CASE VARTYPE(toRect) == "O" AND toRect.BaseName = "Point"
 		m.loPoint1 = m.toRect
 		m.loPoint2 = m.toColor1
 		m.toColor1 = m.toColor2
 		m.toColor2 = m.tnAngle
-		This.SetStatus(GdipCreateLineBrushI(m.loPoint1.ToStruct(), m.loPoint1.ToStruct(), m.toColor1.Argb, m.toColor2.Argb, m.liWrapMode, @lhLineGradient))
+		This.SetStatus(GdipCreateLineBrushI(m.loPoint1.ToVarBinary(), m.loPoint1.ToVarBinary(), m.toColor1.Argb, m.toColor2.Argb, m.liWrapMode, @lhLineGradient))
 	
 	CASE VARTYPE(toRect) == "O" AND toRect.BaseName = "RectangleF" AND PCOUNT()=4
 		m.liLinearGradientMode = m.tnAngle
-		This.SetStatus(GdipCreateLineBrushFromRect(m.toRect.ToStruct(), m.toColor1.Argb, m.toColor2.Argb, m.liLinearGradientMode, m.liWrapMode, @lhLineGradient))
+		This.SetStatus(GdipCreateLineBrushFromRect(m.toRect.ToVarBinary(), m.toColor1.Argb, m.toColor2.Argb, m.liLinearGradientMode, m.liWrapMode, @lhLineGradient))
 	
 	CASE VARTYPE(toRect) == "O" AND toRect.BaseName = "Rectangle" AND PCOUNT()=4
 		m.liLinearGradientMode = m.tnAngle
-		This.SetStatus(GdipCreateLineBrushFromRectI(m.toRect.ToStruct(), m.toColor1.Argb, m.toColor2.Argb, m.liLinearGradientMode, m.liWrapMode, @lhLineGradient))
+		This.SetStatus(GdipCreateLineBrushFromRectI(m.toRect.ToVarBinary(), m.toColor1.Argb, m.toColor2.Argb, m.liLinearGradientMode, m.liWrapMode, @lhLineGradient))
 
 	CASE VARTYPE(toRect) == "O" AND toRect.BaseName = "RectangleF" AND PCOUNT()=5
-		This.SetStatus(GdipCreateLineBrushFromRectWithAngle(m.toRect.ToStruct(), m.toColor1.Argb, m.toColor2.Argb, m.tnAngle, IIF(m.tlIsAngleScaleable,1,0), m.liWrapMode, @lhLineGradient))
+		This.SetStatus(GdipCreateLineBrushFromRectWithAngle(m.toRect.ToVarBinary(), m.toColor1.Argb, m.toColor2.Argb, m.tnAngle, IIF(m.tlIsAngleScaleable,1,0), m.liWrapMode, @lhLineGradient))
 		
 	CASE VARTYPE(toRect) == "O" AND toRect.BaseName = "Rectangle" AND PCOUNT()=5
-		This.SetStatus(GdipCreateLineBrushFromRectWithAngleI(m.toRect.ToStruct(), m.toColor1.Argb, m.toColor2.Argb, m.tnAngle, IIF(m.tlIsAngleScaleable,1,0), m.liWrapMode, @lhLineGradient))
+		This.SetStatus(GdipCreateLineBrushFromRectWithAngleI(m.toRect.ToVarBinary(), m.toColor1.Argb, m.toColor2.Argb, m.tnAngle, IIF(m.tlIsAngleScaleable,1,0), m.liWrapMode, @lhLineGradient))
 		
 	ENDCASE
 	
-	This.GPHandle = m.lhLineGradient
+	This.Handle = m.lhLineGradient
 CATCH TO loExc
 	THROW m.loExc
 ENDTRY
@@ -5445,10 +5443,10 @@ LOCAL lqFactors, lqPositions, liCount, loBlend aS xfcBlend
 
 LOCAL loExc AS Exception
 TRY
-	This.SetStatus(GdipGetLineBlendCount(This.GpHandle, @liCount))
+	This.SetStatus(GdipGetLineBlendCount(This.Handle, @liCount))
 	m.lqFactors = REPLICATE(EMPTY_FLOAT, m.liCount)
 	m.lqPositions = REPLICATE(EMPTY_FLOAT, m.liCount)
-	This.SetStatus(GdipGetLineBlend(This.GpHandle, @lqFactors, @lqPositions, m.liCount))
+	This.SetStatus(GdipGetLineBlend(This.Handle, @lqFactors, @lqPositions, m.liCount))
 	m.loBlend = THIs.CreateNew("xfcBlend", m.liCount, m.lqFactors, m.lqPositions)
 CATCH TO loExc
 	THROW m.loExc
@@ -5483,7 +5481,7 @@ TRY
 		m.lqFactors = m.toBlend.Factors(0h)
 		m.lqPositions = m.toBlend.Positions(0h)
 		m.liCount = LEN(m.lqFactors)/4
-		This.SetStatus(GdipSetLineBlend(This.GpHandle, @lqFactors, @lqPositions, m.liCount))
+		This.SetStatus(GdipSetLineBlend(This.Handle, @lqFactors, @lqPositions, m.liCount))
 	ENDIF
 CATCH TO loExc
 	THROW m.loExc
@@ -5552,7 +5550,7 @@ m.liUseGammaCorrection = 0
 
 LOCAL loExc AS Exception
 TRY
-	This.SetStatus(GdipGetLineGammaCorrection(This.GpHandle, @liUseGammaCorrection))
+	This.SetStatus(GdipGetLineGammaCorrection(This.Handle, @liUseGammaCorrection))
 CATCH TO loExc
 	THROW m.loExc
 ENDTRY
@@ -5581,7 +5579,7 @@ LPARAMETERS tlValue
 
 LOCAL loExc AS Exception
 TRY
-	This.SetStatus(GdipSetLineGammaCorrection(This.GpHandle, IIF(m.tlValue, 1, 0)))
+	This.SetStatus(GdipSetLineGammaCorrection(This.Handle, IIF(m.tlValue, 1, 0)))
 CATCH TO loExc
 	THROW m.loExc
 ENDTRY
@@ -5605,10 +5603,10 @@ LOCAL lqColors, lqPositions, liCount, loBlend aS xfcColorBlend
 
 LOCAL loExc AS Exception
 TRY
-	This.SetStatus(GdipGetLinePresetBlendCount(This.GpHandle, @liCount))
+	This.SetStatus(GdipGetLinePresetBlendCount(This.Handle, @liCount))
 	m.lqColors = REPLICATE(EMPTY_LONG, m.liCount)
 	m.lqPositions = REPLICATE(EMPTY_FLOAT, m.liCount)
-	This.SetStatus(GdipGetLinePresetBlend(This.GpHandle, @lqColors, @lqPositions, m.liCount))
+	This.SetStatus(GdipGetLinePresetBlend(This.Handle, @lqColors, @lqPositions, m.liCount))
 	m.loBlend = THIs.CreateNew("xfcColorBlend", m.liCount, m.lqColors, m.lqPositions)
 CATCH TO loExc
 	THROW m.loExc
@@ -5642,7 +5640,7 @@ TRY
 		m.lqColors = m.toColorBlend.Colors(0h)
 		m.lqPositions = m.toColorBlend.Positions(0h)
 		m.liCount = LEN(m.lqColors)/4
-		This.SetStatus(GdipSetLinePresetBlend(This.GpHandle, m.lqColors, m.lqPositions, m.liCount))
+		This.SetStatus(GdipSetLinePresetBlend(This.Handle, m.lqColors, m.lqPositions, m.liCount))
 	ENDIF
 CATCH TO loExc
 	THROW m.loExc
@@ -5672,7 +5670,7 @@ m.lcColors = 0h0000000000000000
 LOCAL loExc AS Exception
 TRY
 	m.tnIndex = EVL(m.tnIndex, 1)
-	This.SetStatus(GdipGetLineColors(This.GpHandle, @lcColors))
+	This.SetStatus(GdipGetLineColors(This.Handle, @lcColors))
 	m.liArgb = CTOBIN(SUBSTR(m.lcColors,(tnIndex-1)*4+1,4),"4rs")
 	m.loColor = This.CreateNew("xfcColor", m.liArgb)
 CATCH TO loExc
@@ -5712,7 +5710,7 @@ TRY
 		m.loOtherColor = This.LinearColors_ACCESS[2]
 		m.liArgb2 = m.loOtherColor.ToArgb()
 	ENDIF
-	This.SetStatus(GdipSetLineColors(This.GpHandle, m.liArgb1, m.liArgb2))
+	This.SetStatus(GdipSetLineColors(This.Handle, m.liArgb1, m.liArgb2))
 CATCH TO loExc
 	THROW m.loExc
 ENDTRY
@@ -5739,7 +5737,7 @@ LPARAMETERS toMatrix AS xfcMatrix, ;
 LOCAL loExc AS Exception
 TRY
 	m.tiOrder = EVL(m.tiOrder, MatrixOrderPrepend)
-	This.SetStatus(GdipMultiplyLineTransform(This.GpHandle, m.toMatrix.GpHandle, m.tiOrder))
+	This.SetStatus(GdipMultiplyLineTransform(This.Handle, m.toMatrix.Handle, m.tiOrder))
 
 CATCH TO loExc
 	THROW m.loExc
@@ -5786,12 +5784,12 @@ m.loRectangleF = NULL
 LOCAL loExc AS Exception
 TRY
 	m.lqRect = 0h+REPLICATE(BINTOC(0.0,"F"),4)
-	This.SetStatus(GdipGetLineRect(This.GpHandle, @lqRect))
+	This.SetStatus(GdipGetLineRect(This.Handle, @lqRect))
 	** ToDo:
 	** Return a RectangleF here, the same as .NET, since we don't know the type
 	** Maybe we could hold on to the type used to create this object to determine
 	** the return type here
-	** This.SetStatus(GdipGetLineRectI(This.GpHandle, @lcRect))
+	** This.SetStatus(GdipGetLineRectI(This.Handle, @lcRect))
 	m.loRectangleF = This.CreateNew("xfcRectangleF", m.lqRect)
 CATCH TO loExc
 	THROW m.loExc
@@ -5819,7 +5817,7 @@ PROCEDURE resettransform
 
 LOCAL loExc AS Exception
 TRY
-	This.SetStatus(GdipResetLineTransform(This.GPHandle))
+	This.SetStatus(GdipResetLineTransform(This.Handle))
 CATCH TO loExc
 	THROW m.loExc
 ENDTRY
@@ -5854,7 +5852,7 @@ LPARAMETERS tnAngle ;
 LOCAL loExc AS Exception
 TRY
 	m.toOrder = EVL(m.tiOrder, MatrixOrderPrepend)
-	This.SetStatus(GdipRotateLineTransform(This.GPHandle, m.tnAngle, m.tiOrder))
+	This.SetStatus(GdipRotateLineTransform(This.Handle, m.tnAngle, m.tiOrder))
 CATCH TO loExc
 	THROW m.loExc
 ENDTRY
@@ -5926,7 +5924,7 @@ LPARAMETERS tnFocus ;
 LOCAL loExc AS Exception
 TRY
 	m.tnScale = EVL(m.tnScale, 0.0)
-	This.SetStatus(GdipSetLineLinearBlend(This.GpHandle, m.tnFocus, m.tnScale))
+	This.SetStatus(GdipSetLineLinearBlend(This.Handle, m.tnFocus, m.tnScale))
 CATCH TO loExc
 	THROW m.loExc
 ENDTRY
@@ -5961,7 +5959,7 @@ LPARAMETERS tnFocus ;
 LOCAL loExc AS Exception
 TRY
 	m.tnScale = EVL(m.tnScale, 0.0)
-	This.SetStatus(GdipSetLineSigmaBlend(This.GpHandle, m.tnFocus, m.tnScale))
+	This.SetStatus(GdipSetLineSigmaBlend(This.Handle, m.tnFocus, m.tnScale))
 
 CATCH TO loExc
 	THROW m.loExc
@@ -5999,10 +5997,10 @@ m.loMatrix = NULL
 
 LOCAL loExc AS Exception
 TRY
-	This.SetStatus(GdipGetLineTransform(This.GpHandle, @lhMatrix))
+	This.SetStatus(GdipGetLineTransform(This.Handle, @lhMatrix))
 	IF(m.lhMatrix <> 0)
 		m.loMatrix = This.CreateNew("xfcMatrix")
-		m.loMatrix.GpHandle = m.lhMatrix
+		m.loMatrix.Handle = m.lhMatrix
 	ENDIF
 CATCH TO loExc
 	THROW m.loExc
@@ -6032,7 +6030,7 @@ LPARAMETERS toMatrix AS xfcMatrix
 
 LOCAL loExc AS Exception
 TRY
-	This.SetStatus(GdipSetLineTransform(This.GpHandle, m.toMatrix.GpHandle))
+	This.SetStatus(GdipSetLineTransform(This.Handle, m.toMatrix.Handle))
 CATCH TO loExc
 	THROW m.loExc
 ENDTRY
@@ -6058,7 +6056,7 @@ LPARAMETERS tnDx, tnDy ;
 LOCAL loExc AS Exception
 TRY
 	m.tiOrder = EVL(m.tiOrder, MatrixOrderPrepend)
-	This.SetStatus(GdipTranslateLineTransform(This.GpHandle, m.tnDx, m.tnDy, m.tiOrder))
+	This.SetStatus(GdipTranslateLineTransform(This.Handle, m.tnDx, m.tnDy, m.tiOrder))
 CATCH TO loExc
 	THROW m.loExc
 ENDTRY
@@ -6093,7 +6091,7 @@ m.liWrapMode = 0
 
 LOCAL loExc AS Exception
 TRY
-	This.SetStatus(GdipGetLineWrapMode(This.GpHandle, @liWrapmode))
+	This.SetStatus(GdipGetLineWrapMode(This.Handle, @liWrapmode))
 
 CATCH TO loExc
 	THROW m.loExc
@@ -6122,7 +6120,7 @@ LPARAMETERS tiWrapMode
 
 LOCAL loExc AS Exception
 TRY
-	This.SetStatus(GdipSetLineWrapMode(This.GpHandle, m.tiWrapMode))
+	This.SetStatus(GdipSetLineWrapMode(This.Handle, m.tiWrapMode))
 CATCH TO loExc
 	THROW m.loExc
 ENDTRY
@@ -6173,7 +6171,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfclineargradientbrush
 [START RESERVED1]
- 	 drawing.hæõL>Ï4 system.hîöf‡Ù4 gdiplusconstants.hö÷¹>Ï4[END RESERVED1]
+ 	 drawing.höŠ]¥ï4 system.hþ‹0¥ï4 gdiplusconstants.h¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -6194,7 +6192,6 @@ wrapmode = 0
 _memberdata =     1953<VFPData><memberdata name="clone" type="method" display="Clone"/><memberdata name="createobjref" type="method" display="CreateObjRef"/><memberdata name="dispose" type="method" display="Dispose"/><memberdata name="equals" type="method" display="Equals"/><memberdata name="gethashcode" type="method" display="GetHashCode"/><memberdata name="getlifetimeservice" type="method" display="GetLifetimeService"/><memberdata name="gettype" type="method" display="GetType"/><memberdata name="initializelifetimeservice" type="method" display="InitializeLifetimeService"/><memberdata name="multiplytransform" type="method" display="MultiplyTransform"/><memberdata name="resettransform" type="method" display="ResetTransform"/><memberdata name="rotatetransform" type="method" display="RotateTransform"/><memberdata name="scaletransform" type="method" display="ScaleTransform"/><memberdata name="setblendtriangularshape" type="method" display="SetBlendTriangularShape"/><memberdata name="setsigmabellshape" type="method" display="SetSigmaBellShape"/><memberdata name="tostring" type="method" display="ToString"/><memberdata name="translatetransform" type="method" display="TranslateTransform"/><memberdata name="finalize" type="method" display="Finalize"/><memberdata name="memberwiseclone" type="method" display="MemberwiseClone"/><memberdata name="blend" type="property" display="Blend"/><memberdata name="centercolor" type="property" display="CenterColor"/><memberdata name="centerpoint" type="property" display="CenterPoint"/><memberdata name="focusscales" type="property" display="FocusScales"/><memberdata name="interpolationcolors" type="property" display="InterpolationColors"/><memberdata name="rectangle" type="property" display="Rectangle"/><memberdata name="surroundcolors" type="property" display="SurroundColors"/><memberdata name="transform" type="property" display="Transform"/><memberdata name="wrapmode" type="property" display="WrapMode"/></VFPData>
 basename = PathGradientBrush
 lastresult = 0
-gphandle = 0
 Name = "xfcpathgradientbrush"
 [END PROPERTIES]
 [START METHODS]
@@ -6225,21 +6222,21 @@ TRY
 	DO CASE
 	CASE VARTYPE(m.taoPoints)="O" AND m.taoPoints.BaseName = "PointF"
 		m.loPoint = This.CreateNew("xfcPointF")
-		m.lqPoints = m.loPoint.ToStruct(@taoPoints, @liCount)
+		m.lqPoints = m.loPoint.ToVarBinary(@taoPoints, @liCount)
 		This.SetStatus(GdipCreatePathGradient(@lqPoints, m.liCount, m.tiWrapMode, @lhPolyGradient))
 		
 	CASE VARTYPE(m.taoPoints)="O" AND m.taoPoints.BaseName = "Point"
 		m.loPoint = This.CreateNew("xfcPoint")
-		m.lqPoints = m.loPoint.ToStruct(@taoPoints, @liCount)
+		m.lqPoints = m.loPoint.ToVarBinary(@taoPoints, @liCount)
 		This.SetStatus(GdipCreatePathGradient(@lqPoints, m.liCount, m.tiWrapMode, @lhPolyGradient))
 	
 	CASE VARTYPE(m.taoPoints)="O" AND m.taoPoints.BaseName = "GraphicsPath"
 		m.loPath = m.taoPoints
-		This.SetStatus(GdipCreatePathGradientFromPath(m.loPath.GpHandle, @lhPolyGradient))
+		This.SetStatus(GdipCreatePathGradientFromPath(m.loPath.Handle, @lhPolyGradient))
 		
 	ENDCASE
 	
-	This.GpHandle = m.lhPolyGradient
+	This.Handle = m.lhPolyGradient
 	
 CATCH TO loExc
 	THROW m.loExc
@@ -6280,10 +6277,10 @@ m.loBlend = NULL
 LOCAL loExc AS Exception
 TRY
 	m.liCount = 0
-	This.SetStatus(GdipGetPathGradientBlendCount(This.GpHandle, @liCount))
+	This.SetStatus(GdipGetPathGradientBlendCount(This.Handle, @liCount))
 	m.lqFactors = REPLICATE(EMPTY_FLOAT, m.liCount)
 	m.lqPositions = REPLICATE(EMPTY_FLOAT, m.liCount)
-	IF This.SetStatus(GdipGetPathGradientBlend(This.GpHandle, @lqFactors, @lqPositions, m.liCount)) = StatusOk
+	IF This.SetStatus(GdipGetPathGradientBlend(This.Handle, @lqFactors, @lqPositions, m.liCount)) = StatusOk
 		m.loBlend = This.CreateNew("xfcBlend", m.liCount, m.lqFactors, m.lqPositions)
 	ENDIF
 CATCH TO loExc
@@ -6319,7 +6316,7 @@ TRY
 		m.lqFactors = m.toBlend.Factors(0h)
 		m.lqPositions = m.toBlend.Positions(0h)
 		m.liCount = LEN(m.lqFactors)/4
-		This.SetStatus(GdipSetPathGradientBlend(This.GpHandle, m.lqFactors, m.lqPositions, m.liCount))
+		This.SetStatus(GdipSetPathGradientBlend(This.Handle, m.lqFactors, m.lqPositions, m.liCount))
 	ENDIF
 CATCH TO loExc
 	THROW m.loExc
@@ -6347,7 +6344,7 @@ m.loColor = NULL
 
 LOCAL loExc AS Exception
 TRY
-	This.SetStatus(GdipGetPathGradientCenterColor(This.GpHandle, @liArgb))
+	This.SetStatus(GdipGetPathGradientCenterColor(This.Handle, @liArgb))
 	m.loColor = This.CreateNew("xfcColor", m.liArgb)
 CATCH TO loExc
 	THROW m.loExc
@@ -6376,7 +6373,7 @@ LPARAMETERS toColor
 
 LOCAL loExc AS Exception
 TRY
-	This.SetStatus(GdipSetPathGradientCenterColor(This.GpHandle, m.toColor.ToArgb()))
+	This.SetStatus(GdipSetPathGradientCenterColor(This.Handle, m.toColor.ToArgb()))
 CATCH TO loExc
 	THROW m.loExc
 ENDTRY
@@ -6402,8 +6399,8 @@ TRY
 	m.loPointF = NULL
 	m.lqPoint = EMPTY_POINTF
 
-	This.SetStatus(GdipGetPathGradientCenterPoint(This.GpHandle, @lqPoint))
-*!*	This.SetStatus(GdipGetPathGradientCenterPointI(This.GpHandle, @lcPoints))
+	This.SetStatus(GdipGetPathGradientCenterPoint(This.Handle, @lqPoint))
+*!*	This.SetStatus(GdipGetPathGradientCenterPointI(This.Handle, @lcPoints))
 	m.loPointF = This.CreateNew("xfcPointF", m.lqPoint)
 CATCH TO loExc
 	THROW m.loExc
@@ -6434,9 +6431,9 @@ LOCAL loExc AS Exception
 TRY
 	DO CASE
 	CASE m.toPointF.BaseName = "xfcPointF"
-		This.SetStatus(GdipSetPathGradientCenterPoint(This.GpHandle, m.toPoint.ToStruct()))
+		This.SetStatus(GdipSetPathGradientCenterPoint(This.Handle, m.toPoint.ToVarBinary()))
 	CASE m.toPointF.BaseName = "xfcPoint"
-		This.SetStatus(GdipSetPathGradientCenterPointI(This.GpHandle, m.toPoint.ToStruct()))
+		This.SetStatus(GdipSetPathGradientCenterPointI(This.Handle, m.toPoint.ToVarBinary()))
 	OTHERWISE
 		*!ToDo: Error handling?
 	ENDCASE
@@ -6517,7 +6514,7 @@ TRY
 	m.loPointF = NULL
 	STORE 0 TO m.lnXScale, m.lnYScale
 
-	This.SetStatus(GdipGetPathGradientFocusScales(This.GpHandle, @lnXScale, @lnYScale))
+	This.SetStatus(GdipGetPathGradientFocusScales(This.Handle, @lnXScale, @lnYScale))
 	m.loPointF = This.CreateNew("xfcPointF")
 CATCH TO loExc
 	THROW m.loExc
@@ -6549,7 +6546,7 @@ TRY
 	LOCAL lnXScale, lnYScale
 	STORE 0 TO m.lnXScale, m.lnYScale
 	m.toPointF.GetExtent(@lnXScale, @lnYScale)
-	This.SetStatus(GdipSetPathGradientFocusScales(This.GpHandle, m.lnXScale, m.lnYScale))
+	This.SetStatus(GdipSetPathGradientFocusScales(This.Handle, m.lnXScale, m.lnYScale))
 CATCH TO loExc
 	THROW m.loExc
 ENDTRY
@@ -6573,10 +6570,10 @@ LOCAL lqColors, lqPositions, liCount, loBlend aS xfcColorBlend
 
 LOCAL loExc AS Exception
 TRY
-	This.SetStatus(GdipGetPathGradientPresetBlendCount(This.GpHandle, @liCount))
+	This.SetStatus(GdipGetPathGradientPresetBlendCount(This.Handle, @liCount))
 	m.lqColors = REPLICATE(EMPTY_LONG, m.liCount)
 	m.lqPositions = REPLICATE(EMPTY_FLOAT, m.liCount)
-	This.SetStatus(GdipGetPathGradientPresetBlend(This.GpHandle, @lqColors, @lqPositions, m.liCount))
+	This.SetStatus(GdipGetPathGradientPresetBlend(This.Handle, @lqColors, @lqPositions, m.liCount))
 	m.loBlend = This.CreateNew("xfcColorBlend", m.liCount, m.lqColors, m.lqPositions)
 CATCH TO loExc
 	THROW m.loExc
@@ -6610,7 +6607,7 @@ TRY
 		m.lqColors = m.toColorBlend.Colors(0h)
 		m.lqPositions = m.toColorBlend.Positions(0h)
 		m.liCount = LEN(m.lqColors)/4
-		This.SetStatus(GdipSetPathGradientPresetBlend(This.GpHandle, m.lqColors, m.lqPositions, m.liCount))
+		This.SetStatus(GdipSetPathGradientPresetBlend(This.Handle, m.lqColors, m.lqPositions, m.liCount))
 	ENDIF
 CATCH TO loExc
 	THROW m.loExc
@@ -6638,7 +6635,7 @@ LPARAMETERS toMatrix AS xfcMatrix, ;
 LOCAL loExc AS Exception
 TRY
 	m.tiOrder = EVL(m.tiOrder, MatrixOrderPrepend)
-	This.SetStatus(GdipMultiplyPathGradientTransform(This.GpHandle, m.toMatrix.GpHandle, m.tiOrder))
+	This.SetStatus(GdipMultiplyPathGradientTransform(This.Handle, m.toMatrix.Handle, m.tiOrder))
 
 CATCH TO loExc
 	THROW m.loExc
@@ -6683,8 +6680,8 @@ LOCAL loExc AS Exception
 TRY
 	LOCAL lqRect
 	m.lqRect = EMPTY_RECTANGLE
-	This.SetStatus(GdipGetPathGradientRect(This.GpHandle, @lqRect))
-*!*	This.SetStatus(GdipGetPathGradientRectI(This.GpHandle, @lqRect))
+	This.SetStatus(GdipGetPathGradientRect(This.Handle, @lqRect))
+*!*	This.SetStatus(GdipGetPathGradientRectI(This.Handle, @lqRect))
 	m.loRectangleF = This.CreateNew("xfcRectangleF", lqRect)
 CATCH TO loExc
 	THROW m.loExc
@@ -6713,7 +6710,7 @@ PROCEDURE resettransform
 LOCAL loExc AS Exception
 TRY
 
-	This.SetStatus(GdipResetPathGradientTransform(This.GpHandle))
+	This.SetStatus(GdipResetPathGradientTransform(This.Handle))
 
 CATCH TO loExc
 	THROW m.loExc
@@ -6748,7 +6745,7 @@ LPARAMETERS tnAngle, ;
 LOCAL loExc AS Exception
 TRY
 	m.tiOrder = EVL(m.tiOrder, MatrixOrderPrepend)
-	This.SetStatus(GdipRotatePathGradientTransform(This.GpHandle, m.tnAngle, m.tiOrder))
+	This.SetStatus(GdipRotatePathGradientTransform(This.Handle, m.tnAngle, m.tiOrder))
 
 CATCH TO loExc
 	THROW m.loExc
@@ -6785,7 +6782,7 @@ LPARAMETERS tnSx, tnSy, ;
 LOCAL loExc AS Exception
 TRY
 	m.tiOrder = EVL(m.tiOrder, MatrixOrderPrepend)
-	This.SetStatus(GdipScalePathGradientTransform(This.GpHandle, m.tnSx, m.tnSy, m.tiOrder))
+	This.SetStatus(GdipScalePathGradientTransform(This.Handle, m.tnSx, m.tnSy, m.tiOrder))
 
 CATCH TO loExc
 	THROW m.loExc
@@ -6821,7 +6818,7 @@ LPARAMETERS tnFocus, ;
 LOCAL loExc AS Exception
 TRY
 	m.tnScale = EVL(m.tnScale, 0)
-	This.SetStatus(GdipSetPathGradientLinearBlend(This.GpHandle, m.tnFocus, m.tnScale))
+	This.SetStatus(GdipSetPathGradientLinearBlend(This.Handle, m.tnFocus, m.tnScale))
 
 CATCH TO loExc
 	THROW m.loExc
@@ -6858,7 +6855,7 @@ LPARAMETERS tnFocus, ;
 LOCAL loExc AS Exception
 TRY
 	m.tnScale = EVL(m.tnScale, 0.0)
-	This.SetStatus(GdipSetPathGradientSigmaBlend(This.GpHandle, m.tnFocus, m.tnScale))
+	This.SetStatus(GdipSetPathGradientSigmaBlend(This.Handle, m.tnFocus, m.tnScale))
 
 CATCH TO loExc
 	THROW m.loExc
@@ -6897,7 +6894,7 @@ LOCAL loExc AS Exception
 TRY
 	m.liCount = 0
 	m.loColor = NULL
-	This.SetStatus(GdipGetPathGradientSurroundColorCount(This.GpHandle, @liCount))
+	This.SetStatus(GdipGetPathGradientSurroundColorCount(This.Handle, @liCount))
 	
 	m.tiIndex = EVL(m.tiIndex, 1)
 	
@@ -6905,7 +6902,7 @@ TRY
 		*! ToDo ERROR
 	ELSE
 		m.lqColors = REPLICATE(0h00000000,liCount)
-		This.SetStatus(GdipGetPathGradientSurroundColorsWithCount(This.GpHandle, @lqColors, @liCount))
+		This.SetStatus(GdipGetPathGradientSurroundColorsWithCount(This.Handle, @lqColors, @liCount))
 		
 		m.liArgb = CTOBIN(SUBSTR(m.lqColors, (m.tiIndex-1)*4+1, 4), "4rs")
 		m.loColor = This.CreateNew("xfcColor", liArgb)
@@ -6929,9 +6926,9 @@ TRY
 	
 	DO CASE
 	CASE m.lnFunctionType = 1
-		This.SetStatus(GdipGetPathGradientSurroundColorsWithCount(This.GpHandle, @liColor, @liCount))
+		This.SetStatus(GdipGetPathGradientSurroundColorsWithCount(This.Handle, @liColor, @liCount))
 	CASE m.lnFunctionType = 2
-		This.SetStatus(GdipGetPathGradientSurroundColorCount(This.GpHandle, @liCount))
+		This.SetStatus(GdipGetPathGradientSurroundColorCount(This.Handle, @liCount))
 	ENDCASE
 		m.loColor[1] = This.CreateNew("xfcColor[]")
 		m.loColor[1].FromARGB(m.liArgb)
@@ -6966,15 +6963,15 @@ LOCAL liCount, lqColors
 LOCAL loExc AS Exception
 TRY
 	liCount = 0
-	This.SetStatus(GdipGetPathGradientSurroundColorCount(This.GpHandle, @liCount))
+	This.SetStatus(GdipGetPathGradientSurroundColorCount(This.Handle, @liCount))
 	
 	IF m.tiIndex > m.liCount
 		*! ToDo ERROR
 	ELSE
 		m.lqColors = REPLICATE(0h00000000,liCount)
-		This.SetStatus(GdipGetPathGradientSurroundColorsWithCount(This.GpHandle, @lqColors, @liCount))
+		This.SetStatus(GdipGetPathGradientSurroundColorsWithCount(This.Handle, @lqColors, @liCount))
 		m.lqColors = STUFF(m.lqColors, (m.tiIndex-1)*4+1, 4, BINTOC(toColor.ToArgb(),"4rs"))
-		This.SetStatus(GdipSetPathGradientSurroundColorsWithCount(This.GpHandle, @lqColors, @liCount))
+		This.SetStatus(GdipSetPathGradientSurroundColorsWithCount(This.Handle, @lqColors, @liCount))
 	ENDIF
 	
 CATCH TO loExc
@@ -7004,10 +7001,10 @@ m.loMatrix = NULL
 
 LOCAL loExc AS Exception
 TRY
-	This.SetStatus(GdipGetPathGradientTransform(This.GpHandle, m.lhMatrix))
+	This.SetStatus(GdipGetPathGradientTransform(This.Handle, m.lhMatrix))
 	IF(m.lhMatrix <> 0)
 		m.loMatrix = This.CreateNew("xfcMatrix")
-		m.loMatrix.GpHandle = m.lhMatrix
+		m.loMatrix.Handle = m.lhMatrix
 	ENDIF
 CATCH TO loExc
 	THROW m.loExc
@@ -7037,7 +7034,7 @@ LPARAMETERS toMatrix
 
 LOCAL loExc AS Exception
 TRY
-	This.SetStatus(GdipSetPathGradientTransform(This.GpHandle, m.toMatrix.GpHandle))
+	This.SetStatus(GdipSetPathGradientTransform(This.Handle, m.toMatrix.Handle))
 CATCH TO loExc
 	THROW m.loExc
 ENDTRY
@@ -7063,7 +7060,7 @@ LPARAMETERS tnDx, tnDy, ;
 LOCAL loExc AS Exception
 TRY
 	m.tiOrder = EVL(m.tiOrder, MatrixOrderPrepend)
-	This.SetStatus(GdipTranslatePathGradientTransform(This.GpHandle, m.tnDx, m.tnDy, m.tiOrder))
+	This.SetStatus(GdipTranslatePathGradientTransform(This.Handle, m.tnDx, m.tnDy, m.tiOrder))
 CATCH TO loExc
 	THROW m.loExc
 ENDTRY
@@ -7099,7 +7096,7 @@ m.liWrapMode = 0
 
 LOCAL loExc AS Exception
 TRY
-	This.SetStatus(GdipGetPathGradientWrapMode(This.GpHandle, @liWrapmode))
+	This.SetStatus(GdipGetPathGradientWrapMode(This.Handle, @liWrapmode))
 
 CATCH TO loExc
 	THROW m.loExc
@@ -7129,7 +7126,7 @@ LPARAMETERS tiWrapMode
 
 LOCAL loExc AS Exception
 TRY
-	This.SetStatus(GdipSetPathGradientWrapMode(This.GpHandle, m.tiWrapmode))
+	This.SetStatus(GdipSetPathGradientWrapMode(This.Handle, m.tiWrapmode))
 CATCH TO loExc
 	THROW m.loExc
 ENDTRY
@@ -7186,5 +7183,5 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcpathgradientbrush
 [START RESERVED1]
- 	 drawing.hæõL>Ï4 system.hîöf‡Ù4 gdiplusconstants.hö÷¹>Ï4[END RESERVED1]
+ 	 drawing.höŠ]¥ï4 system.hþ‹0¥ï4 gdiplusconstants.h¹>Ï4[END RESERVED1]
 [EOF]
