@@ -279,7 +279,7 @@ system.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcsystem
 [START RESERVED1]
-  system.h.vf‡Ù4[END RESERVED1]
+  system.hæ”f‡Ù4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -1263,7 +1263,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcdrawing
 [START RESERVED1]
- 	 drawing.hæõL>Ï4 system.hîöf‡Ù4 gdiplusconstants.hö÷¹>Ï4[END RESERVED1]
+ 	 drawing.h&L>Ï4 system.h.f‡Ù4 gdiplusconstants.h6¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -2375,7 +2375,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcdrawing2d
 [START RESERVED1]
- 	 drawing.hæõL>Ï4 system.hîöf‡Ù4 gdiplusconstants.hö÷¹>Ï4[END RESERVED1]
+ 	 drawing.h&L>Ï4 system.h.f‡Ù4 gdiplusconstants.h6¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -3354,7 +3354,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcimaging
 [START RESERVED1]
- 	 drawing.hæõL>Ï4 system.hîöf‡Ù4 gdiplusconstants.hö÷¹>Ï4[END RESERVED1]
+ 	 drawing.h&L>Ï4 system.h.f‡Ù4 gdiplusconstants.h6¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -3462,7 +3462,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfctext
 [START RESERVED1]
- 	 drawing.hæõL>Ï4 system.hîöf‡Ù4 gdiplusconstants.hö÷¹>Ï4[END RESERVED1]
+ 	 drawing.h&L>Ï4 system.h.f‡Ù4 gdiplusconstants.h6¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -3543,7 +3543,7 @@ StringFromGUID2(This._guid, @lcString, LEN(lcString))
 RETURN LEFT(STRCONV(lcString,6),38)
 
 ENDPROC
-PROCEDURE tostruct
+PROCEDURE tovarbinary
 RETURN This.ToByteArray()
 ENDPROC
 [END METHODS]
@@ -3557,16 +3557,13 @@ _guid
 basename
 *empty_access 
 *compareto 
-*equals 
-*gethashcode 
 *gettype 
 *newguid 
-*referenceequals 
 *tobytearray 
 *tostring 
 *op_equality 
 *op_inequality 
-*tostruct 
+*tovarbinary 
 [END RESERVED3]
 [START RESERVED6]
 Pixels[END RESERVED6]
@@ -3578,7 +3575,7 @@ system.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcguid
 [START RESERVED1]
-  system.h.vf‡Ù4[END RESERVED1]
+  system.h¾~f‡Ù4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -3885,5 +3882,5 @@ system.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcenum
 [START RESERVED1]
-  system.h¾lf‡Ù4[END RESERVED1]
+  system.hæ”f‡Ù4[END RESERVED1]
 [EOF]
