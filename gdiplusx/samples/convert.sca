@@ -1,0 +1,371 @@
+SCCTEXT Version 4.0.0.2
+PLATFORM C(8,0),UNIQUEID C(10,0),TIMESTAMP N(10,0),CLASS M(4,0),CLASSLOC M(4,0),BASECLASS M(4,0),OBJNAME M(4,0),PARENT M(4,0),PROPERTIES M(4,0),PROTECTED M(4,0),METHODS M(4,0),OBJCODE M(4,0),OLE M(4,0),OLE2 M(4,0),RESERVED1 M(4,0),RESERVED2 M(4,0),RESERVED3 M(4,0),RESERVED4 M(4,0),RESERVED5 M(4,0),RESERVED6 M(4,0),RESERVED7 M(4,0),RESERVED8 M(4,0),USER M(4,0)
+1252
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] Screen    
+[START RESERVED1]
+VERSION =   3.00[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1TP0L3VWK
+[CLASS] dataenvironment
+[BASECLASS] dataenvironment
+[OBJNAME] Dataenvironment
+[START PROPERTIES]
+Top = 220
+Left = 1
+Width = 520
+Height = 200
+DataSource = .NULL.
+Name = "Dataenvironment"
+[END PROPERTIES]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED4]
+1[END RESERVED4]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1TP0L3VWL
+[CLASS] form
+[BASECLASS] form
+[OBJNAME] Form1
+[START PROPERTIES]
+Top = 40
+Left = 86
+Height = 375
+Width = 516
+DoCreate = .T.
+Caption = "Change Color Intensities using LockBits"
+mode = 0
+Name = "Form1"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Load
+SET PATH TO "../source"
+ENDPROC
+[END METHODS]
+[START RESERVED3]
+mode
+[END RESERVED3]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1TZ0QGKPH
+[CLASS] imgcanvas
+[CLASSLOC] ..\source\gdiplusx.vcx
+[BASECLASS] image
+[OBJNAME] Imgcanvas1
+[PARENT] Form1
+[START PROPERTIES]
+Anchor = 15
+Height = 180
+Left = 264
+Top = 12
+Width = 240
+Name = "Imgcanvas1"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE beforedraw
+IF EMPTY(Thisform.txtFile.Value)
+	RETURN
+ENDIF
+
+
+LOCAL loBmp AS xfcBitmap
+LOCAL loRect AS xfcRectangle
+LOCAL loBmpData AS xfcBitmapData
+
+LOCAL nBytes, nCounter
+
+WITH _SCREEN.System.Drawing
+
+	WAIT WINDOW "Converting Image, Please Wait..." NOWAIT
+
+	This.Clear
+	loBmp = .Bitmap.New(Thisform.txtFile.Value)
+	loRect = .Rectangle.New(0, 0, loBmp.Width, loBmp.Height)
+	loBmpData = loBmp.LockBits(loRect, .Imaging.ImageLockMode.ReadWrite, loBmp.PixelFormat)
+	nBytes = loBmpData.Width * loBmpData.Height * 3
+
+
+	DO CASE
+
+	CASE Thisform.Mode = 0 && Original Picture
+
+	CASE Thisform.Mode = 1 && GreyScale
+		FOR nCounter = 0 TO (nBytes - 2) STEP 3
+			b = ASC(SYS(2600, loBmpData.Scan0+nCounter + 0, 1))
+			g = ASC(SYS(2600, loBmpData.Scan0+nCounter + 1, 1))
+			r = ASC(SYS(2600, loBmpData.Scan0+nCounter + 2, 1))
+			New = INT((r + g + b) / 3)
+			SYS(2600, loBmpData.Scan0+nCounter + 0, 1, CHR(New))
+			SYS(2600, loBmpData.Scan0+nCounter + 1, 1, CHR(New))
+			SYS(2600, loBmpData.Scan0+nCounter + 2, 1, CHR(New))
+		ENDFOR
+
+	CASE Thisform.Mode = 2 && Keep Red / Clear Green and Blue
+		FOR nCounter = 0 TO (nBytes - 2) STEP 3
+			SYS(2600, loBmpData.Scan0+nCounter + 0, 1, CHR(0))
+			SYS(2600, loBmpData.Scan0+nCounter + 1, 1, CHR(0))
+		ENDFOR
+
+	CASE Thisform.Mode = 3 && Keep Green / Clear Red and Blue
+		FOR nCounter = 0 TO (nBytes - 2) STEP 3
+			SYS(2600, loBmpData.Scan0+nCounter + 0, 1, CHR(0))
+			SYS(2600, loBmpData.Scan0+nCounter + 2, 1, CHR(0))
+		ENDFOR
+
+	CASE Thisform.Mode = 4 && Keep Blue / Clear Red and Green
+		FOR nCounter = 0 TO (nBytes - 2) STEP 3
+			SYS(2600, loBmpData.Scan0+nCounter + 1, 1, CHR(0))
+			SYS(2600, loBmpData.Scan0+nCounter + 2, 1, CHR(0))
+		ENDFOR
+
+	CASE Thisform.Mode = 5 && Negative
+		FOR nCounter = 0 TO (nBytes - 2) STEP 3
+			b = ASC(SYS(2600, loBmpData.Scan0+nCounter + 0, 1))
+			g = ASC(SYS(2600, loBmpData.Scan0+nCounter + 1, 1))
+			r = ASC(SYS(2600, loBmpData.Scan0+nCounter + 2, 1))
+			TRY
+				SYS(2600, loBmpData.Scan0+nCounter + 0, 1, CHR(256 - b + 1))
+				SYS(2600, loBmpData.Scan0+nCounter + 1, 1, CHR(256 - g + 1))
+				SYS(2600, loBmpData.Scan0+nCounter + 2, 1, CHR(256 - r + 1))
+			CATCH TO exception
+			ENDTRY
+		ENDFOR
+
+	ENDCASE
+	
+
+	loBmp.UnlockBits(loBmpData)
+	This.oGfx.DrawImage(loBmp,This.Rectangle)
+
+ENDWITH
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1U40L3TVG
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] Command3
+[PARENT] Form1
+[START PROPERTIES]
+Top = 204
+Left = 12
+Height = 25
+Width = 96
+Anchor = 12
+Caption = "Get Picture"
+Name = "Command3"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+lcFile = GETPICT("jpg")
+IF EMPTY(lcFile)
+	RETURN
+ENDIF
+
+Thisform.Container1.Visible = .T.
+Thisform.txtFile.Value = lcFile
+Thisform.Image1.Picture = lcFile
+Thisform.Mode = 0
+Thisform.Imgcanvas1.Draw()
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1U40L3TVH
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] txtFile
+[PARENT] Form1
+[START PROPERTIES]
+FontSize = 8
+Height = 25
+Left = 120
+Top = 204
+Width = 384
+Name = "txtFile"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1U40LO0FY
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] Image1
+[PARENT] Form1
+[START PROPERTIES]
+Stretch = 2
+Height = 180
+Left = 12
+Top = 12
+Width = 240
+Name = "Image1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1U40NTQI6
+[CLASS] container
+[BASECLASS] container
+[OBJNAME] Container1
+[PARENT] Form1
+[START PROPERTIES]
+Top = 252
+Left = 4
+Width = 360
+Height = 116
+BackStyle = 0
+BorderWidth = 0
+Visible = .F.
+Name = "Container1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1U40NTQI7
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] Command1
+[PARENT] Form1.Container1
+[START PROPERTIES]
+Top = 8
+Left = 8
+Height = 25
+Width = 96
+Anchor = 12
+Caption = "GreyScale"
+Name = "Command1"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+WITH Thisform
+	Thisform.Mode = 1 && GreyScale
+	.imgcanvas1.Draw()
+ENDWITH
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1U40NTQI8
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] Command2
+[PARENT] Form1.Container1
+[START PROPERTIES]
+Top = 44
+Left = 8
+Height = 25
+Width = 96
+Anchor = 12
+Caption = "Red"
+Name = "Command2"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+WITH Thisform
+	Thisform.Mode = 2 && Stay only Red
+	.imgcanvas1.Draw()
+ENDWITH
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1U40NTQI9
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] Command5
+[PARENT] Form1.Container1
+[START PROPERTIES]
+Top = 44
+Left = 128
+Height = 25
+Width = 96
+Anchor = 12
+Caption = "Green"
+Name = "Command5"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+WITH Thisform
+	Thisform.Mode = 3 && Stay only Green
+	.imgcanvas1.Draw()
+ENDWITH
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1U40NTQIA
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] Command6
+[PARENT] Form1.Container1
+[START PROPERTIES]
+Top = 44
+Left = 248
+Height = 25
+Width = 96
+Anchor = 12
+Caption = "Blue"
+Name = "Command6"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+WITH Thisform
+	Thisform.Mode = 4 && Stay only Blue
+	.imgcanvas1.Draw()
+ENDWITH
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1U40NTQIB
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] Command7
+[PARENT] Form1.Container1
+[START PROPERTIES]
+Top = 80
+Left = 8
+Height = 25
+Width = 96
+Anchor = 12
+Caption = "Negative"
+Name = "Command7"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+WITH Thisform
+	Thisform.Mode = 5 && Negative
+	.imgcanvas1.Draw()
+ENDWITH
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[START PROPERTIES]
+Arial, 0, 9, 5, 15, 12, 16, 3, 0
+Arial, 0, 8, 5, 14, 11, 14, 3, 0
+[END PROPERTIES]
+[EOF]
