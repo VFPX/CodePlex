@@ -357,7 +357,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcbitmapdata
 [START RESERVED1]
- 	 drawing.höŠ]¥ï4 system.hþ‹0¥ï4 gdiplusconstants.h¹>Ï4[END RESERVED1]
+ 	 drawing.hÑ]¥ï4 system.hÒ0¥ï4 gdiplusconstants.h&Ó¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -472,7 +472,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfccolormap
 [START RESERVED1]
- 	 drawing.höŠ]¥ï4 system.hþ‹0¥ï4 gdiplusconstants.h¹>Ï4[END RESERVED1]
+ 	 drawing.hÑ]¥ï4 system.hÒ0¥ï4 gdiplusconstants.h&Ó¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -2114,7 +2114,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfccolormatrix
 [START RESERVED1]
- 	 drawing.höŠ]¥ï4 system.hþ‹0¥ï4 gdiplusconstants.h¹>Ï4[END RESERVED1]
+ 	 drawing.hÑ]¥ï4 system.hÒ0¥ï4 gdiplusconstants.h&Ó¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -2363,7 +2363,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfccolorpalette
 [START RESERVED1]
- 	 drawing.höŠ]¥ï4 system.hþ‹0¥ï4 gdiplusconstants.h¹>Ï4[END RESERVED1]
+ 	 drawing.hÑ]¥ï4 system.hÒ0¥ï4 gdiplusconstants.h&Ó¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -2752,7 +2752,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcencoder
 [START RESERVED1]
- 	 drawing.höŠ]¥ï4 system.hþ‹0¥ï4 gdiplusconstants.h¹>Ï4[END RESERVED1]
+ 	 drawing.hÑ]¥ï4 system.hÒ0¥ï4 gdiplusconstants.h&Ó¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -3157,6 +3157,7 @@ RETURN This._length
 
 ENDPROC
 PROCEDURE tovarbinary
+*! ToDo: Check for valid properties and if object is null
 
 RETURN ;
 	This.Encoder.Guid.ToByteArray()+;
@@ -3240,7 +3241,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcencoderparameter
 [START RESERVED1]
- 	 drawing.höŠ]¥ï4 system.hþ‹0¥ï4 gdiplusconstants.h¹>Ï4[END RESERVED1]
+ 	 drawing.hÑ]¥ï4 system.hÒ0¥ï4 gdiplusconstants.h&Ó¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -3293,6 +3294,7 @@ PROCEDURE Init
 ** History:
 **  2006/03/07: Auto Generated
 **	2006/05/08: BDurban - Coded
+**	2006/07/15: BDurban - Added support for memory pointer as parameter
 *********************************************************************
 LPARAMETERS tiCount, tlIsMemoryHandle
 
@@ -3383,7 +3385,7 @@ ENDPROC
 PROCEDURE new
 LPARAMETERS tiCount, tlIsMemoryHandle
 
-RETURN This.CreateNew(This.Class, tiCount)
+RETURN This.CreateNew(This.Class, tiCount, tlIsMemoryHandle)
 ENDPROC
 PROCEDURE param_assign
 *********************************************************************
@@ -3472,7 +3474,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcencoderparameters
 [START RESERVED1]
- 	 drawing.höŠ]¥ï4 system.hþ‹0¥ï4 gdiplusconstants.h¹>Ï4[END RESERVED1]
+ 	 drawing.hÑ]¥ï4 system.hÒ0¥ï4 gdiplusconstants.h&Ó¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -3789,7 +3791,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcframedimension
 [START RESERVED1]
- 	 drawing.höŠ]¥ï4 system.hþ‹0¥ï4 gdiplusconstants.h¹>Ï4[END RESERVED1]
+ 	 drawing.hÑ]¥ï4 system.hÒ0¥ï4 gdiplusconstants.h&Ó¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -4698,7 +4700,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcimageattributes
 [START RESERVED1]
- 	 drawing.höŠ]¥ï4 system.hþ‹0¥ï4 gdiplusconstants.h¹>Ï4[END RESERVED1]
+ 	 drawing.h~ò]¥ï4 system.h†ó0¥ï4 gdiplusconstants.hŽô¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -5526,7 +5528,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcimagecodecinfo
 [START RESERVED1]
- 	 drawing.höŠ]¥ï4 system.hþ‹0¥ï4 gdiplusconstants.h¹>Ï4[END RESERVED1]
+ 	 drawing.hÑ]¥ï4 system.hÒ0¥ï4 gdiplusconstants.h&Ó¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -5619,22 +5621,20 @@ PROCEDURE bmp_access
 ** History:
 **  2006/03/07: Auto Generated
 **	2006/04/07: BDurban - Coded
+**	2006/07/17: BDurban - Modified to create cached object
 *********************************************************************
 
 *!ToDo: Test this function
 
-LOCAL loImageFormat
-m.loImageFormat = NULL
-
 LOCAL loExc AS Exception
 TRY
-	** {557CF400-1A04-11D3-9A73-0000F81EF32E}
-	loGuid = This.CreateNew("xfcGuid", 0h00F47C55041AD3119A730000F81EF32E)
-	m.loImageFormat = This.CreateNew(This.Class, loGuid)
+	IF ISNULL(This.Bmp)
+		This.Bmp = This.CreateNew(This.Class, This.CreateNew("xfcGuid", ImageFormatBMP))
+	ENDIF
 CATCH TO loExc
 	THROW m.loExc
 ENDTRY
-RETURN m.loImageFormat
+RETURN This.Bmp
 
 ** .NET Help ********************************************************
 ** http://msdn2.microsoft.com/en-us/library/System.Drawing.Imaging.ImageFormat.Bmp%28vs.80%29.aspx
@@ -5650,22 +5650,20 @@ PROCEDURE emf_access
 **
 ** History:
 **	2006/04/07: BDurban - Coded
+**	2006/07/17: BDurban - Modified to create cached object
 *********************************************************************
 
 *!ToDo: Test this function
 
-LOCAL loImageFormat
-m.loImageFormat = NULL
-
 LOCAL loExc AS Exception
 TRY
-	** {557cf403-1a04-11d3-9a73-0000f81ef32e}
-	loGuid = This.CreateNew("xfcGuid", 0h03F47C55041AD3119A730000F81EF32E)
-	m.loImageFormat = This.CreateNew(This.Class, loGuid)
+	IF ISNULL(This.Emf)
+		This.Emf = This.CreateNew(This.Class, This.CreateNew("xfcGuid", ImageFormatEMF))
+	ENDIF
 CATCH TO loExc
 	THROW m.loExc
 ENDTRY
-RETURN m.loImageFormat
+RETURN This.Emf
 
 ** .NET Help ********************************************************
 ** http://msdn2.microsoft.com/en-us/library/System.Drawing.Imaging.ImageFormat.Emf%28vs.80%29.aspx
@@ -5716,35 +5714,50 @@ PROCEDURE exif_access
 **
 ** History:
 **  2006/03/07: Auto Generated
+**	2006/07/17: BDurban - Coded. Modified to create cached object
 *********************************************************************
 
-******** DELETE THIS LINE TO PREVENT CODE FROM BEING OVERWRITTEN ********
-
-*!ToDo: Implement this function
 *!ToDo: Test this function
-ERROR 1999	&& Function not implemented
-RETURN NULL
-
-LOCAL loImageFormat, lhImageFormat
-m.lhImageFormat = 0
-m.loImageFormat = NULL
 
 LOCAL loExc AS Exception
 TRY
-	** This.SetStatus(GdipSomeFunction???())
-		IF(m.lhImageFormat <> 0)
-			m.loImageFormat = This.CreateNew("xfcImageFormat")
-			m.loImageFormat.Handle = m.lhImageFormat
-		ENDIF
+	IF ISNULL(This.Exif)
+		This.Exif = This.CreateNew(This.Class, This.CreateNew("xfcGuid", ImageFormatEXIF))
+	ENDIF
 CATCH TO loExc
 	THROW m.loExc
 ENDTRY
-RETURN m.loImageFormat
+RETURN This.Exif
 
 ** .NET Help ********************************************************
 ** http://msdn2.microsoft.com/en-us/library/System.Drawing.Imaging.ImageFormat.Exif%28vs.80%29.aspx
 ** Returns: ImageFormat
 *********************************************************************
+
+ENDPROC
+PROCEDURE findencoder
+
+
+LOCAL loInfoCol, loInfo AS xfcImageCodecInfo
+LOCAL loImgCodecInfo AS xfcImageCodecInfo
+LOCAL loEncoder AS xfcImageCodecInfo
+
+m.loEncoder = NULL
+
+m.loImgCodecInfo = This.CreateNew("xfcImageCodecInfo")
+m.loInfoCol = m.loImgCodecInfo.GetImageEncoders()
+FOR EACH m.loInfo IN m.loInfoCol FOXOBJECT
+	IF m.loInfo.FormatID.Equals(This.Guid)
+		m.loEncoder = m.loInfo
+		EXIT
+	ENDIF
+ENDFOR
+
+m.loInfoCol = NULL
+m.loInfo = NULL
+m.loImgCodecInfo = NULL
+
+RETURN m.loEncoder
 
 ENDPROC
 PROCEDURE gethashcode
@@ -5793,22 +5806,20 @@ PROCEDURE gif_access
 ** History:
 **  2006/03/07: Auto Generated
 **	2006/04/07: BDurban - Coded
+**	2006/07/17: BDurban - Modified to create cached object
 *********************************************************************
 
 *!ToDo: Test this function
 
-LOCAL loImageFormat
-m.loImageFormat = NULL
-
 LOCAL loExc AS Exception
 TRY
-	** {557cf402-1a04-11d3-9a73-0000f81ef32e}
-	loGuid = This.CreateNew("xfcGuid", 0h02F47C55041AD3119A730000F81EF32E)
-	m.loImageFormat = This.CreateNew(This.Class, loGuid)
+	IF ISNULL(This.Gif)
+		This.Gif = This.CreateNew(This.Class, This.CreateNew("xfcGuid", ImageFormatGIF))
+	ENDIF
 CATCH TO loExc
 	THROW m.loExc
 ENDTRY
-RETURN m.loImageFormat
+RETURN This.Gif
 
 ** .NET Help ********************************************************
 ** http://msdn2.microsoft.com/en-us/library/System.Drawing.Imaging.ImageFormat.Gif%28vs.80%29.aspx
@@ -5825,22 +5836,20 @@ PROCEDURE icon_access
 ** History:
 **  2006/03/07: Auto Generated
 **	2006/04/07: BDurban - Coded
+**	2006/07/17: BDurban - Modified to create cached object
 *********************************************************************
 
 *!ToDo: Test this function
 
-LOCAL loImageFormat
-m.loImageFormat = NULL
-
 LOCAL loExc AS Exception
 TRY
-	** {557cf407-1a04-11d3-9a73-0000f81ef32e}
-	loGuid = This.CreateNew("xfcGuid", 0h07F47C55041AD3119A730000F81EF32E)
-	m.loImageFormat = This.CreateNew(This.Class, loGuid)
+	IF ISNULL(This.Gif)
+		This.Gif = This.CreateNew(This.Class, This.CreateNew("xfcGuid", ImageFormatIcon))
+	ENDIF
 CATCH TO loExc
 	THROW m.loExc
 ENDTRY
-RETURN m.loImageFormat
+RETURN This.Gif
 
 ** .NET Help ********************************************************
 ** http://msdn2.microsoft.com/en-us/library/System.Drawing.Imaging.ImageFormat.Icon%28vs.80%29.aspx
@@ -5857,22 +5866,20 @@ PROCEDURE jpeg_access
 ** History:
 **  2006/03/07: Auto Generated
 **	2006/04/07: BDurban - Coded
+**	2006/07/17: BDurban - Modified to create cached object
 *********************************************************************
 
 *!ToDo: Test this function
 
-LOCAL loImageFormat
-m.loImageFormat = NULL
-
 LOCAL loExc AS Exception
 TRY
-	** {557cf401-1a04-11d3-9a73-0000f81ef32e}
-	loGuid = This.CreateNew("xfcGuid", 0h01F47C55041AD3119A730000F81EF32E)
-	m.loImageFormat = This.CreateNew(This.Class, loGuid)
+	IF ISNULL(This.Jpeg)
+		This.Jpeg = This.CreateNew(This.Class, This.CreateNew("xfcGuid", ImageFormatJPEG))
+	ENDIF
 CATCH TO loExc
 	THROW m.loExc
 ENDTRY
-RETURN m.loImageFormat
+RETURN This.Jpeg
 
 ** .NET Help ********************************************************
 ** http://msdn2.microsoft.com/en-us/library/System.Drawing.Imaging.ImageFormat.Jpeg%28vs.80%29.aspx
@@ -5888,30 +5895,20 @@ PROCEDURE memorybmp_access
 **
 ** History:
 **  2006/03/07: Auto Generated
+**	2006/07/17: BDurban - Coded and modified to create cached object
 *********************************************************************
 
-******** DELETE THIS LINE TO PREVENT CODE FROM BEING OVERWRITTEN ********
-
-*!ToDo: Implement this function
 *!ToDo: Test this function
-ERROR 1999	&& Function not implemented
-RETURN NULL
-
-LOCAL loImageFormat, lhImageFormat
-m.lhImageFormat = 0
-m.loImageFormat = NULL
 
 LOCAL loExc AS Exception
 TRY
-	** This.SetStatus(GdipSomeFunction???())
-		IF(m.lhImageFormat <> 0)
-			m.loImageFormat = This.CreateNew("xfcImageFormat")
-			m.loImageFormat.Handle = m.lhImageFormat
-		ENDIF
+	IF ISNULL(This.MemoryBmp)
+		This.MemoryBmp = This.CreateNew(This.Class, This.CreateNew("xfcGuid", ImageFormatMemoryBMP))
+	ENDIF
 CATCH TO loExc
 	THROW m.loExc
 ENDTRY
-RETURN m.loImageFormat
+RETURN This.MemoryBmp
 
 ** .NET Help ********************************************************
 ** http://msdn2.microsoft.com/en-us/library/System.Drawing.Imaging.ImageFormat.MemoryBmp%28vs.80%29.aspx
@@ -5928,22 +5925,20 @@ PROCEDURE png_access
 ** History:
 **  2006/03/07: Auto Generated
 **	2006/04/07: BDurban - Coded
+**	2006/07/17: BDurban - Modified to create cached object
 *********************************************************************
 
 *!ToDo: Test this function
 
-LOCAL loImageFormat
-m.loImageFormat = NULL
-
 LOCAL loExc AS Exception
 TRY
-	** {557cf406-1a04-11d3-9a73-0000f81ef32e}
-	loGuid = This.CreateNew("xfcGuid", 0h06F47C55041AD3119A730000F81EF32E)
-	m.loImageFormat = This.CreateNew(This.Class, loGuid)
+	IF ISNULL(This.Png)
+		This.Png = This.CreateNew(This.Class, This.CreateNew("xfcGuid", ImageFormatPNG))
+	ENDIF
 CATCH TO loExc
 	THROW m.loExc
 ENDTRY
-RETURN m.loImageFormat
+RETURN This.Png
 
 ** .NET Help ********************************************************
 ** http://msdn2.microsoft.com/en-us/library/System.Drawing.Imaging.ImageFormat.Png%28vs.80%29.aspx
@@ -5960,22 +5955,20 @@ PROCEDURE tiff_access
 ** History:
 **  2006/03/07: Auto Generated
 **	2006/04/07: BDurban - Coded
+**	2006/07/17: BDurban - Modified to create cached object
 *********************************************************************
 
 *!ToDo: Test this function
 
-LOCAL loImageFormat
-m.loImageFormat = NULL
-
 LOCAL loExc AS Exception
 TRY
-	** {557cf405-1a04-11d3-9a73-0000f81ef32e}
-	loGuid = This.CreateNew("xfcGuid", 0h05F47C55041AD3119A730000F81EF32E)
-	m.loImageFormat = This.CreateNew(This.Class, loGuid)
+	IF ISNULL(This.Tiff)
+		This.Tiff = This.CreateNew(This.Class, This.CreateNew("xfcGuid", ImageFormatTIFF))
+	ENDIF
 CATCH TO loExc
 	THROW m.loExc
 ENDTRY
-RETURN m.loImageFormat
+RETURN This.Tiff
 
 ** .NET Help ********************************************************
 ** http://msdn2.microsoft.com/en-us/library/System.Drawing.Imaging.ImageFormat.Tiff%28vs.80%29.aspx
@@ -5991,19 +5984,40 @@ PROCEDURE tostring
 **
 ** History:
 **  2006/03/07: Auto Generated
+**  2006/07/19: BDurban - Coded
 *********************************************************************
 
-
-*!ToDo: Implement this function
 *!ToDo: Test this function
-ERROR 1999	&& Function not implemented
-RETURN NULL
 
 LOCAL loExc AS Exception
 TRY
 	LOCAL lcValue
 	m.lcValue = ""
-	** This.SetStatus(GdipSomeFunction???())
+	
+	DO CASE
+	CASE This.Guid.ToString() = ImageFormatMemoryBMP
+		m.lcValue = "MemoryBMP"
+	CASE This.Guid.ToString() = ImageFormatBmp
+		m.lcValue = "Bmp"
+	CASE This.Guid.ToString() = ImageFormatEmf
+		m.lcValue = "Emf"
+	CASE This.Guid.ToString() = ImageFormatWmf
+		m.lcValue = "Wmf"
+	CASE This.Guid.ToString() = ImageFormatGif
+		m.lcValue = "Gif"
+	CASE This.Guid.ToString() = ImageFormatJpeg
+		m.lcValue = "Jpeg"
+	CASE This.Guid.ToString() = ImageFormatPng
+		m.lcValue = "Png"
+	CASE This.Guid.ToString() = ImageFormatTiff
+		m.lcValue = "Tiff"
+	CASE This.Guid.ToString() = ImageFormatExif
+		m.lcValue = "Exif"
+	CASE This.Guid.ToString() = ImageFormatIcon
+		m.lcValue = "Icon"
+	OTHERWISE
+		m.lcValue = "[ImageFormat: " + this.guid.ToString() + "]"
+	ENDCASE
 
 CATCH TO loExc
 	THROW m.loExc
@@ -6029,22 +6043,20 @@ PROCEDURE wmf_access
 ** History:
 **  2006/03/07: Auto Generated
 **	2006/04/07: BDurban - Coded
+**	2006/07/17: BDurban - Modified to create cached object
 *********************************************************************
 
 *!ToDo: Test this function
 
-LOCAL loImageFormat
-m.loImageFormat = NULL
-
 LOCAL loExc AS Exception
 TRY
-	** {557cf404-1a04-11d3-9a73-0000f81ef32e}
-	loGuid = This.CreateNew("xfcGuid", 0h04F47C55041AD3119A730000F81EF32E)
-	m.loImageFormat = This.CreateNew(This.Class, loGuid)
+	IF ISNULL(This.Wmf)
+		This.Wmf = This.CreateNew(This.Class, This.CreateNew("xfcGuid", ImageFormatWMF))
+	ENDIF
 CATCH TO loExc
 	THROW m.loExc
 ENDTRY
-RETURN m.loImageFormat
+RETURN This.Wmf
 
 ** .NET Help ********************************************************
 ** http://msdn2.microsoft.com/en-us/library/System.Drawing.Imaging.ImageFormat.Wmf%28vs.80%29.aspx
@@ -6070,8 +6082,6 @@ png Gets the W3C Portable Network Graphics (PNG) image format.
 tiff Gets the Tag Image File Format (TIFF) image format.
 wmf Gets the Windows metafile (WMF) image format.
 basename
-*equals Returns a value that indicates whether the specified object is an ImageFormat object that is equivalent to this ImageFormat object.
-*gethashcode Returns a hash code value that represents this object.
 *tostring Converts this ImageFormat object to a human-readable string.
 *bmp_access 
 *emf_access 
@@ -6083,6 +6093,7 @@ basename
 *png_access 
 *tiff_access 
 *wmf_access 
+*findencoder 
 [END RESERVED3]
 [START RESERVED6]
 Pixels[END RESERVED6]
@@ -6094,7 +6105,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcimageformat
 [START RESERVED1]
- 	 drawing.höŠ]¥ï4 system.hþ‹0¥ï4 gdiplusconstants.h¹>Ï4[END RESERVED1]
+ 	 drawing.hÑ]¥ï4 system.hÒ0¥ï4 gdiplusconstants.h&Ó¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -6672,7 +6683,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcmetafileheader
 [START RESERVED1]
- 	 drawing.höŠ]¥ï4 system.hþ‹0¥ï4 gdiplusconstants.h¹>Ï4[END RESERVED1]
+ 	 drawing.hÑ]¥ï4 system.hÒ0¥ï4 gdiplusconstants.h&Ó¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -7031,7 +7042,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcmetaheader
 [START RESERVED1]
- 	 drawing.höŠ]¥ï4 system.hþ‹0¥ï4 gdiplusconstants.h¹>Ï4[END RESERVED1]
+ 	 drawing.hÑ]¥ï4 system.hÒ0¥ï4 gdiplusconstants.h&Ó¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -7468,7 +7479,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcpropertyitem
 [START RESERVED1]
- 	 drawing.höŠ]¥ï4 system.hþ‹0¥ï4 gdiplusconstants.h¹>Ï4[END RESERVED1]
+ 	 drawing.hÑ]¥ï4 system.hÒ0¥ï4 gdiplusconstants.h&Ó¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -7890,7 +7901,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcwmfplaceablefileheader
 [START RESERVED1]
- 	 drawing.höŠ]¥ï4 system.hþ‹0¥ï4 gdiplusconstants.h¹>Ï4[END RESERVED1]
+ 	 drawing.hÑ]¥ï4 system.hÒ0¥ï4 gdiplusconstants.h&Ó¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -8298,5 +8309,5 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcmetafile
 [START RESERVED1]
- 	 drawing.höŠ]¥ï4 system.hþ‹0¥ï4 gdiplusconstants.h¹>Ï4[END RESERVED1]
+ 	 drawing.hÑ]¥ï4 system.hÒ0¥ï4 gdiplusconstants.h&Ó¹>Ï4[END RESERVED1]
 [EOF]
