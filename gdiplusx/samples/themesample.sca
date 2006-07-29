@@ -1,0 +1,143 @@
+SCCTEXT Version 4.0.0.2
+PLATFORM C(8,0),UNIQUEID C(10,0),TIMESTAMP N(10,0),CLASS M(4,0),CLASSLOC M(4,0),BASECLASS M(4,0),OBJNAME M(4,0),PARENT M(4,0),PROPERTIES M(4,0),PROTECTED M(4,0),METHODS M(4,0),OBJCODE M(4,0),OLE M(4,0),OLE2 M(4,0),RESERVED1 M(4,0),RESERVED2 M(4,0),RESERVED3 M(4,0),RESERVED4 M(4,0),RESERVED5 M(4,0),RESERVED6 M(4,0),RESERVED7 M(4,0),RESERVED8 M(4,0),USER M(4,0)
+1252
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] Screen    
+[START RESERVED1]
+VERSION =   3.00[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1V00L12JY
+[CLASS] dataenvironment
+[BASECLASS] dataenvironment
+[OBJNAME] Dataenvironment
+[START PROPERTIES]
+Top = 0
+Left = 0
+Width = 0
+Height = 0
+DataSource = .NULL.
+Name = "Dataenvironment"
+[END PROPERTIES]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED4]
+1[END RESERVED4]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1V00L12JZ
+[CLASS] form
+[BASECLASS] form
+[OBJNAME] Form1
+[START PROPERTIES]
+Height = 109
+Width = 363
+DoCreate = .T.
+AutoCenter = .T.
+Caption = "Theme Sample"
+Name = "Form1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1V00L12K0
+[CLASS] imgthemebutton
+[CLASSLOC] ..\source\gdiplusx.vcx
+[BASECLASS] image
+[OBJNAME] Imgthemebutton1
+[PARENT] Form1
+[START PROPERTIES]
+Height = 36
+Left = 48
+Top = 48
+Width = 108
+Name = "Imgthemebutton1"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+WITH This.Parent.ctlthemeprogressbar1
+	IF .Value > 90
+		.Value = 10
+	ELSE
+		.Value = .Value + 10
+	ENDIF
+	This.Parent.ctlthemeprogressbar2.Value = .Value
+ENDWITH
+ENDPROC
+PROCEDURE DblClick
+This.Click()
+ENDPROC
+PROCEDURE beforedraw
+
+** Draw the theme
+DODEFAULT()
+
+LOCAL oGfx AS xfcGraphics
+LOCAL loBrush, loFont
+LOCAL x, y
+
+WITH _SCREEN.System.Drawing
+	loFont = .Font.New("Arial", 9, 1)
+	x = 25+IIF(This.ThemeState = 3, 2, 0)
+	y = 10+IIF(This.ThemeState = 3, 2, 0)
+	loRect = .Rectangle.New(x,y,56,20)
+	loBrush = .Drawing2D.LinearGradientBrush.New(loRect, .Color.Red, .Color.Blue, 0)
+	This.oGfx.DrawString("Click Me", loFont, loBrush, x, y)
+	This.oGfx.DrawIcon(.SystemIcons.Asterisk, x-16, y, 16, 16)
+	This.oGfx.DrawIcon(.SystemIcons.Question, x+56, y, 16, 16)
+ENDWITH
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1V00L12KE
+[CLASS] ctlthemeprogressbar
+[CLASSLOC] ..\source\gdiplusx.vcx
+[BASECLASS] control
+[OBJNAME] Ctlthemeprogressbar1
+[PARENT] Form1
+[START PROPERTIES]
+Top = 12
+Left = 48
+Width = 296
+Height = 24
+value = 10
+max = 100
+Name = "Ctlthemeprogressbar1"
+Imgthemebase1.Name = "Imgthemebase1"
+Imgthemebase2.Name = "Imgthemebase2"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1V00L12NV
+[CLASS] ctlthemeprogressbar
+[CLASSLOC] ..\source\gdiplusx.vcx
+[BASECLASS] control
+[OBJNAME] Ctlthemeprogressbar2
+[PARENT] Form1
+[START PROPERTIES]
+Top = 12
+Left = 12
+Width = 24
+Height = 84
+value = 10
+orientation = 1
+Name = "Ctlthemeprogressbar2"
+Imgthemebase1.Name = "Imgthemebase1"
+Imgthemebase2.Name = "Imgthemebase2"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[START PROPERTIES]
+Arial, 0, 9, 5, 15, 12, 32, 3, 0
+[END PROPERTIES]
+[EOF]
