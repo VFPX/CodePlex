@@ -36,6 +36,8 @@ Name = "Dataenvironment"
 [START PROPERTIES]
 Top = -1
 Left = 0
+Height = 516
+Width = 611
 DoCreate = .T.
 Caption = "Transformations"
 WindowState = 2
@@ -61,10 +63,10 @@ moonangle
 [PARENT] Form1
 [START PROPERTIES]
 Anchor = 15
-Height = 252
+Height = 517
 Left = -1
 Top = -1
-Width = 377
+Width = 613
 Name = "Imgcanvas1"
 [END PROPERTIES]
 [START METHODS]
@@ -98,7 +100,7 @@ Top = 12
 Left = 24
 Height = 23
 Width = 23
-Interval = 100
+Interval = 250
 Name = "Timer1"
 [END PROPERTIES]
 [START METHODS]
