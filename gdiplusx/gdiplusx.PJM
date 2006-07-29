@@ -32,7 +32,7 @@ AutoIncrement=.F.
  883402565,P,samples\demo.prg,.F.,.T.,1252,,,
  883492042,V,samples\gdipsamples.vcx,.F.,.F.,0,,,
  884082124,V,source\gdiplusx.vcx,.F.,.F.,0,,,
- 885916544,K,samples\checkerboard.scx,.F.,.F.,0,,,
+ 885916544,K,samples\chessboard.scx,.F.,.F.,0,,,
  885916544,K,samples\form2.scx,.F.,.F.,0,,,
  885916544,K,samples\form3.scx,.F.,.F.,0,,,
  885916544,K,samples\form4.scx,.F.,.F.,0,,,
