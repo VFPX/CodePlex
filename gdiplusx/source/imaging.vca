@@ -334,7 +334,6 @@ pixelformat Gets or sets the format of the pixel information in the Bitmap objec
 reserved Reserved. Do not use.
 scan0 Gets or sets the address of the first pixel data in the bitmap. This can also be thought of as the first scan line in the bitmap.
 stride Gets or sets the stride width (also called scan width) of the Bitmap object.
-basename
 _width
 _height
 *height_access 
@@ -357,7 +356,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcbitmapdata
 [START RESERVED1]
- 	 drawing.hÑ]¥ï4 system.hÒ0¥ï4 gdiplusconstants.h&Ó¹>Ï4[END RESERVED1]
+ 	 drawing.hFi]¥ï4 system.hNj0¥ï4 gdiplusconstants.hVk¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -459,7 +458,6 @@ Class[END RESERVED1]
 [START RESERVED3]
 newcolor Gets or sets the new Color structure to which to convert.
 oldcolor Gets or sets the existing Color structure to be converted.
-basename
 *tovarbinary 
 [END RESERVED3]
 [START RESERVED6]
@@ -472,7 +470,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfccolormap
 [START RESERVED1]
- 	 drawing.hÑ]¥ï4 system.hÒ0¥ï4 gdiplusconstants.h&Ó¹>Ï4[END RESERVED1]
+ 	 drawing.hFi]¥ï4 system.hNj0¥ï4 gdiplusconstants.hVk¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -2049,7 +2047,6 @@ matrix41 Gets or sets the element at the 4th row and 1st column of this ColorMat
 matrix42 Gets or sets the element at the 4th row and 2nd column of this ColorMatrix object.
 matrix43 Gets or sets the element at the 4th row and 3rd column of this ColorMatrix object.
 matrix44 Gets or sets the element at the 4th row and 4th column of this ColorMatrix object.
-basename
 *matrix00_access 
 *matrix00_assign 
 *matrix01_access 
@@ -2114,7 +2111,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfccolormatrix
 [START RESERVED1]
- 	 drawing.hÑ]¥ï4 system.hÒ0¥ï4 gdiplusconstants.h&Ó¹>Ï4[END RESERVED1]
+ 	 drawing.hFi]¥ï4 system.hNj0¥ï4 gdiplusconstants.hVk¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -2344,7 +2341,6 @@ Class[END RESERVED1]
 1[END RESERVED2]
 [START RESERVED3]
 flags Gets a value that specifies how to interpret the color information in the array of colors.
-basename
 _binary
 *flags_access 
 *tovarbinary 
@@ -2363,7 +2359,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfccolorpalette
 [START RESERVED1]
- 	 drawing.hÑ]¥ï4 system.hÒ0¥ï4 gdiplusconstants.h&Ó¹>Ï4[END RESERVED1]
+ 	 drawing.hFi]¥ï4 system.hNj0¥ï4 gdiplusconstants.hVk¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -2718,7 +2714,6 @@ Class[END RESERVED1]
 1[END RESERVED2]
 [START RESERVED3]
 guid Gets a globally unique identifier (GUID) that identifies an image encoder parameter category.
-basename
 chrominancetable
 colordepth
 compression
@@ -2752,7 +2747,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcencoder
 [START RESERVED1]
- 	 drawing.hÑ]¥ï4 system.hÒ0¥ï4 gdiplusconstants.h&Ó¹>Ï4[END RESERVED1]
+ 	 drawing.hFi]¥ï4 system.hNj0¥ï4 gdiplusconstants.hVk¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -2903,11 +2898,9 @@ TRY
 		This._length = 1
 		This._value = This._AllocHGlobal(This._length*16)
 		m.lhPtr = This._value
-		FOR liRow = 1 TO ALEN(m.teValue1,1)
-			m.lhPtr = This._WriteHGlobal(m.lhPtr, ;
-						BINTOC(m.teValue1,"4rs")+BINTOC(m.teValue2,"4rs")+;
-						BINTOC(m.teValue3,"4rs")+BINTOC(m.teValue4,"4rs"))
-		ENDFOR
+		m.lhPtr = This._WriteHGlobal(m.lhPtr, ;
+					BINTOC(m.teValue1,"4rs")+BINTOC(m.teValue2,"4rs")+;
+					BINTOC(m.teValue3,"4rs")+BINTOC(m.teValue4,"4rs"))
 		
 	** Overload: 14 - int,int,int		
 	CASE LEFT(m.lcVarType,3) == "NNN"
@@ -2947,10 +2940,8 @@ TRY
 		This._length = 1
 		This._value = This._AllocHGlobal(This._length*8)
 		m.lhPtr = This._value
-		FOR liRow = 1 TO ALEN(m.teValue1,1)
-			m.lhPtr = This._WriteHGlobal(m.lhPtr, ;
-						BINTOC(m.teValue1,"4rs")+BINTOC(m.teValue2,"4rs"))
-		ENDFOR
+		m.lhPtr = This._WriteHGlobal(m.lhPtr, ;
+					BINTOC(m.teValue1,"4rs")+BINTOC(m.teValue2,"4rs"))
 
 	** Overloads: 5 - int
 	CASE LEFT(m.lcVarType,1) == "N"
@@ -2958,9 +2949,7 @@ TRY
 		This._length = 1
 		This._value = This._AllocHGlobal(This._length*4)
 		m.lhPtr = This._value
-		FOR liRow = 1 TO ALEN(m.teValue1,1)
-			m.lhPtr = This._WriteHGlobal(m.lhPtr, BINTOC(m.teValue1,"4rs"))
-		ENDFOR
+		m.lhPtr = This._WriteHGlobal(m.lhPtr, BINTOC(m.teValue1,"4rs"))
 	
 	*!ToDo: Unhadled overloads: 3,4,12,13
 	** 3 - short
@@ -3215,7 +3204,6 @@ encoder ect associated with this EncoderParameter object. The Encoder object enc
 numberofvalues Gets the number of elements in the array of values stored in this EncoderParameter object.
 type Gets the data type of the values stored in this EncoderParameter object.
 valuetype Gets the data type of the values stored in this EncoderParameter object.
-basename
 _type
 _value
 _length
@@ -3241,7 +3229,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcencoderparameter
 [START RESERVED1]
- 	 drawing.hÑ]¥ï4 system.hÒ0¥ï4 gdiplusconstants.h&Ó¹>Ï4[END RESERVED1]
+ 	 drawing.h6$]¥ï4 system.h>%0¥ï4 gdiplusconstants.hF&¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -3457,7 +3445,6 @@ Class[END RESERVED1]
 [START RESERVED2]
 1[END RESERVED2]
 [START RESERVED3]
-basename
 _handle
 *dispose Releases all resources used by this EncoderParameters object.
 ^param[1,0] 
@@ -3474,7 +3461,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcencoderparameters
 [START RESERVED1]
- 	 drawing.hÑ]¥ï4 system.hÒ0¥ï4 gdiplusconstants.h&Ó¹>Ï4[END RESERVED1]
+ 	 drawing.hFi]¥ï4 system.hNj0¥ï4 gdiplusconstants.hVk¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -3773,7 +3760,6 @@ guid Gets a globally unique identifier (GUID) that represents this FrameDimensio
 page Gets the page dimension.
 resolution Gets the resolution dimension.
 time Gets the time dimension.
-basename
 *tostring Converts this FrameDimension object to a human-readable string.
 *guid_access 
 *page_access 
@@ -3791,7 +3777,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcframedimension
 [START RESERVED1]
- 	 drawing.hÑ]¥ï4 system.hÒ0¥ï4 gdiplusconstants.h&Ó¹>Ï4[END RESERVED1]
+ 	 drawing.hFi]¥ï4 system.hNj0¥ï4 gdiplusconstants.hVk¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -4666,7 +4652,6 @@ Class[END RESERVED1]
 [START RESERVED2]
 1[END RESERVED2]
 [START RESERVED3]
-basename
 *clearbrushremaptable This method clears the brush color-remap table of this ImageAttributes object.
 *clearcolorkey Clears the color-key (transparency range).
 *clearcolormatrix Clears the color-adjustment matrix.
@@ -4700,12 +4685,12 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcimageattributes
 [START RESERVED1]
- 	 drawing.h~ò]¥ï4 system.h†ó0¥ï4 gdiplusconstants.hŽô¹>Ï4[END RESERVED1]
+ 	 drawing.hFi]¥ï4 system.hNj0¥ï4 gdiplusconstants.hVk¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
 [UNIQUEID] _1QZ0NRYOZ
-[CLASS] xfcgpobject
+[CLASS] xfcdrawingbase
 [CLASSLOC] drawing.vcx
 [BASECLASS] custom
 [OBJNAME] xfcimagecodecinfo
@@ -4725,6 +4710,7 @@ signaturecount = 0
 signaturesize = 0
 _memberdata =     1763<VFPData><memberdata name="equals" type="method" display="Equals"/><memberdata name="gethashcode" type="method" display="GetHashCode"/><memberdata name="getimagedecoders" type="method" display="GetImageDecoders"/><memberdata name="getimageencoders" type="method" display="GetImageEncoders"/><memberdata name="gettype" type="method" display="GetType"/><memberdata name="tostring" type="method" display="ToString"/><memberdata name="finalize" type="method" display="Finalize"/><memberdata name="memberwiseclone" type="method" display="MemberwiseClone"/><memberdata name="clsid" type="property" display="Clsid"/><memberdata name="codecname" type="property" display="CodecName"/><memberdata name="dllname" type="property" display="DllName"/><memberdata name="filenameextension" type="property" display="FilenameExtension"/><memberdata name="flags" type="property" display="Flags"/><memberdata name="formatdescription" type="property" display="FormatDescription"/><memberdata name="formatid" type="property" display="FormatID"/><memberdata name="mimetype" type="property" display="MimeType"/><memberdata name="signaturemasks" type="property" display="SignatureMasks"/><memberdata name="signaturepatterns" type="property" display="SignaturePatterns"/><memberdata name="version" type="property" display="Version"/><memberdata name="declaredll" type="method" display="DeclareDLL"/><memberdata name="_getendecoders" type="method" display="_GetEnDecoders"/><memberdata name="_readwstring" type="method" display="_ReadWString"/><memberdata name="_fillimagecodecinfo" type="method" display="_FillImageCodecInfo"/><memberdata name="signaturecount" type="property" display="SignatureCount"/><memberdata name="signaturesize" type="property" display="SignatureSize"/></VFPData>
 
+basename = ImageCodecInfo
 Name = "xfcimagecodecinfo"
 [END PROPERTIES]
 [START PROTECTED]
@@ -4732,6 +4718,7 @@ _getendecoders
 _readwstring
 _fillimagecodecinfo
 _memberdata
+declaredll
 [END PROTECTED]
 [START METHODS]
 PROCEDURE Destroy
@@ -5517,6 +5504,7 @@ signaturesize
 *signaturecount_assign 
 *signaturesize_access 
 *signaturesize_assign 
+*declaredll 
 [END RESERVED3]
 [START RESERVED6]
 Pixels[END RESERVED6]
@@ -5528,7 +5516,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcimagecodecinfo
 [START RESERVED1]
- 	 drawing.hÑ]¥ï4 system.hÒ0¥ï4 gdiplusconstants.h&Ó¹>Ï4[END RESERVED1]
+ 	 drawing.hæc]¥ï4 system.hîd0¥ï4 gdiplusconstants.höe¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -6081,7 +6069,6 @@ memorybmp Gets a memory bitmap image format.
 png Gets the W3C Portable Network Graphics (PNG) image format.
 tiff Gets the Tag Image File Format (TIFF) image format.
 wmf Gets the Windows metafile (WMF) image format.
-basename
 *tostring Converts this ImageFormat object to a human-readable string.
 *bmp_access 
 *emf_access 
@@ -6105,7 +6092,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcimageformat
 [START RESERVED1]
- 	 drawing.hÑ]¥ï4 system.hÒ0¥ï4 gdiplusconstants.h&Ó¹>Ï4[END RESERVED1]
+ 	 drawing.hFi]¥ï4 system.hNj0¥ï4 gdiplusconstants.hVk¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -6652,7 +6639,6 @@ metafilesize Gets the size, in bytes, of the associated Metafile object.
 type Gets the type of the associated Metafile object.
 version Gets the version number of the associated Metafile object.
 wmfheader Gets the WMF header file for the associated Metafile object.
-basename
 _binary
 *isdisplay Returns a value that indicates whether the associated Metafile object is device dependent.
 *isemf Returns a value that indicates whether the associated Metafile object is in the Windows enhanced metafile format.
@@ -6683,7 +6669,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcmetafileheader
 [START RESERVED1]
- 	 drawing.hÑ]¥ï4 system.hÒ0¥ï4 gdiplusconstants.h&Ó¹>Ï4[END RESERVED1]
+ 	 drawing.hFi]¥ï4 system.hNj0¥ï4 gdiplusconstants.hVk¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -7022,7 +7008,6 @@ noparameters Reserved.
 size Gets or sets the size, in bytes, of the associated Metafile object.
 type Gets or sets the type of the associated Metafile object.
 version Gets or sets the version number of the header format.
-basename
 *headersize_assign 
 *maxrecord_assign 
 *noobjects_assign 
@@ -7042,7 +7027,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcmetaheader
 [START RESERVED1]
- 	 drawing.hÑ]¥ï4 system.hÒ0¥ï4 gdiplusconstants.h&Ó¹>Ï4[END RESERVED1]
+ 	 drawing.hFi]¥ï4 system.hNj0¥ï4 gdiplusconstants.hVk¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -7454,7 +7439,6 @@ id Gets or sets the ID of the property.
 len Gets or sets the length of the property.
 type Gets or sets the type of the property.
 value Gets or sets the property value.
-basename
 hmemory
 *id_access 
 *id_assign 
@@ -7479,7 +7463,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcpropertyitem
 [START RESERVED1]
- 	 drawing.hÑ]¥ï4 system.hÒ0¥ï4 gdiplusconstants.h&Ó¹>Ï4[END RESERVED1]
+ 	 drawing.hFi]¥ï4 system.hNj0¥ï4 gdiplusconstants.hVk¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -7878,7 +7862,6 @@ hmf Gets or sets the handle of the metafile in memory.
 inch Gets or sets the number of twips per inch.
 key Gets or sets a value indicating the presence of a placeable metafile header.
 reserved Reserved. Do not use.
-basename
 *bboxbottom_assign 
 *bboxleft_assign 
 *bboxright_assign 
@@ -7901,7 +7884,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcwmfplaceablefileheader
 [START RESERVED1]
- 	 drawing.hÑ]¥ï4 system.hÒ0¥ï4 gdiplusconstants.h&Ó¹>Ï4[END RESERVED1]
+ 	 drawing.hFi]¥ï4 system.hNj0¥ï4 gdiplusconstants.hVk¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -8309,5 +8292,5 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcmetafile
 [START RESERVED1]
- 	 drawing.hÑ]¥ï4 system.hÒ0¥ï4 gdiplusconstants.h&Ó¹>Ï4[END RESERVED1]
+ 	 drawing.hFi]¥ï4 system.hNj0¥ï4 gdiplusconstants.hVk¹>Ï4[END RESERVED1]
 [EOF]
