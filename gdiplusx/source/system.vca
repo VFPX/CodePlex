@@ -279,7 +279,7 @@ system.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcsystem
 [START RESERVED1]
-  system.hæ”f‡Ù4[END RESERVED1]
+  system.h=0¥ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -322,7 +322,9 @@ stringdigitsubstitute = .NULL.
 stringalignment = .NULL.
 knowncolor = .NULL.
 fontstyle = .NULL.
-_memberdata =     2149<VFPData><memberdata name="bitmap" type="property" display="Bitmap"/><memberdata name="color" type="property" display="Color"/><memberdata name="drawing2d" type="property" display="Drawing2D"/><memberdata name="font" type="property" display="Font"/><memberdata name="fontfamily" type="property" display="FontFamily"/><memberdata name="graphics" type="property" display="Graphics"/><memberdata name="image" type="property" display="Image"/><memberdata name="imaging" type="property" display="Imaging"/><memberdata name="pen" type="property" display="Pen"/><memberdata name="point" type="property" display="Point"/><memberdata name="pointf" type="property" display="PointF"/><memberdata name="rectangle" type="property" display="Rectangle"/><memberdata name="rectanglef" type="property" display="RectangleF"/><memberdata name="solidbrush" type="property" display="SolidBrush"/><memberdata name="stringformat" type="property" display="StringFormat"/><memberdata name="size" type="property" display="Size"/><memberdata name="sizef" type="property" display="SizeF"/><memberdata name="pens" type="property" display="Pens"/><memberdata name="systembrushes" type="property" display="SystemBrushes"/><memberdata name="systemcolors" type="property" display="SystemColors"/><memberdata name="systemicons" type="property" display="SystemIcons"/><memberdata name="systempens" type="property" display="SystemPens"/><memberdata name="imageanimator" type="property" display="ImageAnimator"/><memberdata name="brushes" type="property" display="Brushes"/><memberdata name="fontstyle" type="property" display="FontStyle"/><memberdata name="hatchbrush" type="property" display="HatchBrush"/><memberdata name="knowncolor" type="property" display="KnownColor"/><memberdata name="stringalignment" type="property" display="StringAlignment"/><memberdata name="stringdigitsubstitute" type="property" display="StringDigitSubstitute"/><memberdata name="stringformatflags" type="property" display="StringFormatFlags"/><memberdata name="stringtrimming" type="property" display="StringTrimming"/><memberdata name="texturebrush" type="property" display="TextureBrush"/></VFPData>
+region = (NULL)
+characterrange = (NULL)
+_memberdata =     2285<VFPData><memberdata name="bitmap" type="property" display="Bitmap"/><memberdata name="color" type="property" display="Color"/><memberdata name="drawing2d" type="property" display="Drawing2D"/><memberdata name="font" type="property" display="Font"/><memberdata name="fontfamily" type="property" display="FontFamily"/><memberdata name="graphics" type="property" display="Graphics"/><memberdata name="image" type="property" display="Image"/><memberdata name="imaging" type="property" display="Imaging"/><memberdata name="pen" type="property" display="Pen"/><memberdata name="point" type="property" display="Point"/><memberdata name="pointf" type="property" display="PointF"/><memberdata name="rectangle" type="property" display="Rectangle"/><memberdata name="rectanglef" type="property" display="RectangleF"/><memberdata name="solidbrush" type="property" display="SolidBrush"/><memberdata name="stringformat" type="property" display="StringFormat"/><memberdata name="size" type="property" display="Size"/><memberdata name="sizef" type="property" display="SizeF"/><memberdata name="pens" type="property" display="Pens"/><memberdata name="systembrushes" type="property" display="SystemBrushes"/><memberdata name="systemcolors" type="property" display="SystemColors"/><memberdata name="systemicons" type="property" display="SystemIcons"/><memberdata name="systempens" type="property" display="SystemPens"/><memberdata name="imageanimator" type="property" display="ImageAnimator"/><memberdata name="brushes" type="property" display="Brushes"/><memberdata name="fontstyle" type="property" display="FontStyle"/><memberdata name="hatchbrush" type="property" display="HatchBrush"/><memberdata name="knowncolor" type="property" display="KnownColor"/><memberdata name="stringalignment" type="property" display="StringAlignment"/><memberdata name="stringdigitsubstitute" type="property" display="StringDigitSubstitute"/><memberdata name="stringformatflags" type="property" display="StringFormatFlags"/><memberdata name="stringtrimming" type="property" display="StringTrimming"/><memberdata name="texturebrush" type="property" display="TextureBrush"/><memberdata name="characterrange" type="property" display="CharacterRange"/><memberdata name="region" type="property" display="Region"/></VFPData>
 
 Name = "xfcdrawing"
 [END PROPERTIES]
@@ -366,6 +368,14 @@ IF VARTYPE(This.Brushes) <> "O"
 ENDIF
 
 RETURN THIS.Brushes
+ENDPROC
+PROCEDURE characterrange_access
+IF VARTYPE(This.CharacterRange) <> "O"
+	This.CharacterRange = This.CreateNew("xfcCharacterRange")
+ENDIF
+
+RETURN THIS.CharacterRange
+
 ENDPROC
 PROCEDURE color_access
 IF VARTYPE(This.Color) <> "O"
@@ -957,6 +967,14 @@ ENDIF
 RETURN THIS.RectangleF
 
 ENDPROC
+PROCEDURE region_access
+IF VARTYPE(This.Region) <> "O"
+	This.Region = This.CreateNew("xfcRegion")
+ENDIF
+
+RETURN THIS.Region
+
+ENDPROC
 PROCEDURE size_access
 IF VARTYPE(This.Size) <> "O"
 	This.Size = This.CreateNew("xfcSize")
@@ -1220,6 +1238,8 @@ stringdigitsubstitute The StringDigitSubstitute enumeration specifies how to sub
 stringalignment Specifies the alignment of a text string relative to its layout rectangle.
 knowncolor Specifies the known system colors.
 fontstyle Specifies style information applied to text.
+region
+characterrange
 *pointf_access 
 *point_access 
 *graphics_access 
@@ -1252,6 +1272,8 @@ fontstyle Specifies style information applied to text.
 *stringalignment_access 
 *knowncolor_access 
 *fontstyle_access 
+*region_access 
+*characterrange_access 
 [END RESERVED3]
 [START RESERVED6]
 Pixels[END RESERVED6]
@@ -1263,7 +1285,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcdrawing
 [START RESERVED1]
- 	 drawing.h&L>Ï4 system.h.f‡Ù4 gdiplusconstants.h6¹>Ï4[END RESERVED1]
+ 	 drawing.hÆ]¥ï4 system.hÎ0¥ï4 gdiplusconstants.hÖ¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -1299,10 +1321,15 @@ coordinatespace = .NULL.
 compositingquality = .NULL.
 compositingmode = .NULL.
 combinemode = .NULL.
-_memberdata =     2021<VFPData><memberdata name="graphicspath" type="property" display="GraphicsPath"/><memberdata name="hatchbrush" type="property" display="HatchBrush"/><memberdata name="lineargradientbrush" type="property" display="LinearGradientBrush"/><memberdata name="pathgradientbrush" type="property" display="PathGradientBrush"/><memberdata name="combinemode" type="property" display="CombineMode"/><memberdata name="compositingmode" type="property" display="CompositingMode"/><memberdata name="compositingquality" type="property" display="CompositingQuality"/><memberdata name="coordinatespace" type="property" display="CoordinateSpace"/><memberdata name="dashcap" type="property" display="DashCap"/><memberdata name="dashstyle" type="property" display="DashStyle"/><memberdata name="fillmode" type="property" display="FillMode"/><memberdata name="flushintention" type="property" display="FlushIntention"/><memberdata name="hatchstyle" type="property" display="HatchStyle"/><memberdata name="interpolationmode" type="property" display="InterpolationMode"/><memberdata name="lineargradientmode" type="property" display="LineargradientMode"/><memberdata name="linecap" type="property" display="LineCap"/><memberdata name="linejoin" type="property" display="LineJoin"/><memberdata name="matrixorder" type="property" display="MatrixOrder"/><memberdata name="pathpointtype" type="property" display="PathPointType"/><memberdata name="penalignment" type="property" display="PenAlignment"/><memberdata name="pentype" type="property" display="PenType"/><memberdata name="pixeloffsetmode" type="property" display="PixelOffsetMode"/><memberdata name="qualitymode" type="property" display="QualityMode"/><memberdata name="smoothingmode" type="property" display="SmoothingMode"/><memberdata name="warpmode" type="property" display="WarpMode"/><memberdata name="wrapmode" type="property" display="WrapMode"/><memberdata name="blend" type="property" display="Blend"/><memberdata name="colorblend" type="property" display="ColorBlend"/></VFPData>
-
 blend = (NULL)
 colorblend = (null)
+adjustablearrowcap = (NULL)
+customlinecap = (NULL)
+graphicspathiterator = (NULL)
+pathdata = (NULL)
+regiondata = (NULL)
+_memberdata =     2399<VFPData><memberdata name="graphicspath" type="property" display="GraphicsPath"/><memberdata name="hatchbrush" type="property" display="HatchBrush"/><memberdata name="lineargradientbrush" type="property" display="LinearGradientBrush"/><memberdata name="pathgradientbrush" type="property" display="PathGradientBrush"/><memberdata name="combinemode" type="property" display="CombineMode"/><memberdata name="compositingmode" type="property" display="CompositingMode"/><memberdata name="compositingquality" type="property" display="CompositingQuality"/><memberdata name="coordinatespace" type="property" display="CoordinateSpace"/><memberdata name="dashcap" type="property" display="DashCap"/><memberdata name="dashstyle" type="property" display="DashStyle"/><memberdata name="fillmode" type="property" display="FillMode"/><memberdata name="flushintention" type="property" display="FlushIntention"/><memberdata name="hatchstyle" type="property" display="HatchStyle"/><memberdata name="interpolationmode" type="property" display="InterpolationMode"/><memberdata name="lineargradientmode" type="property" display="LineargradientMode"/><memberdata name="linecap" type="property" display="LineCap"/><memberdata name="linejoin" type="property" display="LineJoin"/><memberdata name="matrixorder" type="property" display="MatrixOrder"/><memberdata name="pathpointtype" type="property" display="PathPointType"/><memberdata name="penalignment" type="property" display="PenAlignment"/><memberdata name="pentype" type="property" display="PenType"/><memberdata name="pixeloffsetmode" type="property" display="PixelOffsetMode"/><memberdata name="qualitymode" type="property" display="QualityMode"/><memberdata name="smoothingmode" type="property" display="SmoothingMode"/><memberdata name="warpmode" type="property" display="WarpMode"/><memberdata name="wrapmode" type="property" display="WrapMode"/><memberdata name="blend" type="property" display="Blend"/><memberdata name="colorblend" type="property" display="ColorBlend"/><memberdata name="adjustablearrowcap" type="property" display="AdjustableArrowCap"/><memberdata name="customlinecap" type="property" display="CustomLineCap"/><memberdata name="graphicspathiterator" type="property" display="GraphicsPathIterator"/><memberdata name="pathdata" type="property" display="PathData"/><memberdata name="regiondata" type="property" display="RegionData"/></VFPData>
+
 Name = "xfcdrawing2d"
 [END PROPERTIES]
 [START PROTECTED]
@@ -1345,6 +1372,14 @@ IF VARTYPE(_SCREEN.GDIPToken) <> "O"
 	ADDPROPERTY(_SCREEN, "GDIPToken", CREATEOBJECT("xfcGDIPToken"))
 ENDIF
 
+
+ENDPROC
+PROCEDURE adjustablearrowcap_access
+IF VARTYPE(This.AdjustableArrowCap) <> "O"
+	This.AdjustableArrowCap = This.CreateNew("xfcAdjustableArrowCap")
+ENDIF
+
+RETURN THIS.AdjustableArrowCap
 
 ENDPROC
 PROCEDURE blend_access
@@ -1505,6 +1540,14 @@ RETURN This.CoordinateSpace
 *********************************************************************
 
 ENDPROC
+PROCEDURE customlinecap_access
+IF VARTYPE(This.CustomLineCap) <> "O"
+	This.CustomLineCap = This.CreateNew("xfcCustomLineCap")
+ENDIF
+
+RETURN THIS.CustomLineCap
+
+ENDPROC
 PROCEDURE dashcap_access
 *********************************************************************
 ** Enumeration: DashCap (Access)
@@ -1641,16 +1684,23 @@ RETURN This.FlushIntention
 ENDPROC
 PROCEDURE graphicspath_access
 IF VARTYPE(This.GraphicsPath) <> "O"
-	This.GraphicsPath = CREATEOBJECT("xfcGraphicsPath")
+	This.GraphicsPath = This.CreateNew("xfcGraphicsPath")
 ENDIF
 
 RETURN THIS.GraphicsPath
 
 ENDPROC
+PROCEDURE graphicspathiterator_access
+IF VARTYPE(This.GraphicsPathIterator) <> "O"
+	This.GraphicsPathIterator = This.CreateNew("xfcGraphicsPathIterator")
+ENDIF
+
+RETURN THIS.GraphicsPathIterator
+
+ENDPROC
 PROCEDURE hatchbrush_access
-*To do: Modify this routine for the Access method
 IF VARTYPE(This.HatchBrush) <> "O"
-	This.HatchBrush = CREATEOBJECT("xfcHatchBrush")
+	This.HatchBrush = This.CreateNew("xfcHatchBrush")
 ENDIF
 
 RETURN THIS.HatchBrush
@@ -1844,7 +1894,7 @@ RETURN This.InterpolationMode
 ENDPROC
 PROCEDURE lineargradientbrush_access
 IF VARTYPE(This.LinearGradientBrush) <> "O"
-	This.LinearGradientBrush = CREATEOBJECT("xfcLinearGradientBrush")
+	This.LinearGradientBrush = This.CreateNew("xfcLinearGradientBrush")
 ENDIF
 
 RETURN THIS.LinearGradientBrush
@@ -2000,9 +2050,17 @@ RETURN This.MatrixOrder
 *********************************************************************
 
 ENDPROC
+PROCEDURE pathdata_access
+IF VARTYPE(This.PathData) <> "O"
+	This.PathData = This.CreateNew("xfcPathData")
+ENDIF
+
+RETURN THIS.PathData
+
+ENDPROC
 PROCEDURE pathgradientbrush_access
 IF VARTYPE(This.PathGradientBrush) <> "O"
-	This.PathGradientBrush = CREATEOBJECT("xfcPathGradientBrush")
+	This.PathGradientBrush = This.CreateNew("xfcPathGradientBrush")
 ENDIF
 
 RETURN THIS.PathGradientBrush
@@ -2195,6 +2253,14 @@ RETURN This.QualityMode
 *********************************************************************
 
 ENDPROC
+PROCEDURE regiondata_access
+IF VARTYPE(This.RegionData) <> "O"
+	This.RegionData = This.CreateNew("xfcRegionData")
+ENDIF
+
+RETURN THIS.RegionData
+
+ENDPROC
 PROCEDURE smoothingmode_access
 *********************************************************************
 ** Enumeration: SmoothingMode (Access)
@@ -2336,6 +2402,11 @@ compositingmode Specifies how the source colors are combined with the background
 combinemode Specifies how different clipping regions can be combined.
 blend
 colorblend
+adjustablearrowcap
+customlinecap
+graphicspathiterator
+pathdata
+regiondata
 *lineargradientbrush_access 
 *hatchbrush_access 
 *graphicspath_access 
@@ -2364,6 +2435,11 @@ colorblend
 *combinemode_access 
 *blend_access 
 *colorblend_access 
+*adjustablearrowcap_access 
+*customlinecap_access 
+*graphicspathiterator_access 
+*pathdata_access 
+*regiondata_access 
 [END RESERVED3]
 [START RESERVED6]
 Pixels[END RESERVED6]
@@ -2375,7 +2451,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcdrawing2d
 [START RESERVED1]
- 	 drawing.h&L>Ï4 system.h.f‡Ù4 gdiplusconstants.h6¹>Ï4[END RESERVED1]
+ 	 drawing.hÆ]¥ï4 system.hÎ0¥ï4 gdiplusconstants.hÖ¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -2412,8 +2488,12 @@ colormode = .NULL.
 colormatrixflag = .NULL.
 colorchannelflag = .NULL.
 coloradjusttype = .NULL.
-_memberdata =     2019<VFPData><memberdata name="imageformat" type="property" display="ImageFormat"/><memberdata name="propertyitem" type="property" display="PropertyItem"/><memberdata name="metafile" type="property" display="MetaFile"/><memberdata name="colormatrix" type="property" display="ColorMatrix"/><memberdata name="colormap" type="property" display="ColorMap"/><memberdata name="colorpalette" type="property" display="ColorPalette"/><memberdata name="encoder" type="property" display="Encoder"/><memberdata name="encoderparameter" type="property" display="EncoderParameter"/><memberdata name="framedimension" type="property" display="FrameDimension"/><memberdata name="imageattributes" type="property" display="ImageAttributes"/><memberdata name="coloradjusttype" type="property" display="ColorAdjustType"/><memberdata name="colorchannelflag" type="property" display="ColorChannelFlag"/><memberdata name="colormatrixflag" type="property" display="ColorMatrixFlag"/><memberdata name="colormode" type="property" display="ColorMode"/><memberdata name="emfplusrecordtype" type="property" display="EmfPlusRecordType"/><memberdata name="emftype" type="property" display="EmfType"/><memberdata name="encoderparameters" type="property" display="EncoderParameters"/><memberdata name="encoderparametervaluetype" type="property" display="EncoderParameterValueType"/><memberdata name="encodervalue" type="property" display="EncoderValue"/><memberdata name="imagecodecflags" type="property" display="ImageCodecFlags"/><memberdata name="imagecodecinfo" type="property" display="ImageCodecInfo"/><memberdata name="imageflags" type="property" display="ImageFlags"/><memberdata name="imagelockmode" type="property" display="ImageLockMode"/><memberdata name="metafileframeunit" type="property" display="MetafileFrameUnit"/><memberdata name="metafiletype" type="property" display="MetafileType"/><memberdata name="paletteflags" type="property" display="PaletteFlags"/><memberdata name="pixelformat" type="property" display="PixelFormat"/></VFPData>
+_memberdata =     2323<VFPData><memberdata name="imageformat" type="property" display="ImageFormat"/><memberdata name="propertyitem" type="property" display="PropertyItem"/><memberdata name="metafile" type="property" display="MetaFile"/><memberdata name="colormatrix" type="property" display="ColorMatrix"/><memberdata name="colormap" type="property" display="ColorMap"/><memberdata name="colorpalette" type="property" display="ColorPalette"/><memberdata name="encoder" type="property" display="Encoder"/><memberdata name="encoderparameter" type="property" display="EncoderParameter"/><memberdata name="framedimension" type="property" display="FrameDimension"/><memberdata name="imageattributes" type="property" display="ImageAttributes"/><memberdata name="coloradjusttype" type="property" display="ColorAdjustType"/><memberdata name="colorchannelflag" type="property" display="ColorChannelFlag"/><memberdata name="colormatrixflag" type="property" display="ColorMatrixFlag"/><memberdata name="colormode" type="property" display="ColorMode"/><memberdata name="emfplusrecordtype" type="property" display="EmfPlusRecordType"/><memberdata name="emftype" type="property" display="EmfType"/><memberdata name="encoderparameters" type="property" display="EncoderParameters"/><memberdata name="encoderparametervaluetype" type="property" display="EncoderParameterValueType"/><memberdata name="encodervalue" type="property" display="EncoderValue"/><memberdata name="imagecodecflags" type="property" display="ImageCodecFlags"/><memberdata name="imagecodecinfo" type="property" display="ImageCodecInfo"/><memberdata name="imageflags" type="property" display="ImageFlags"/><memberdata name="imagelockmode" type="property" display="ImageLockMode"/><memberdata name="metafileframeunit" type="property" display="MetafileFrameUnit"/><memberdata name="metafiletype" type="property" display="MetafileType"/><memberdata name="paletteflags" type="property" display="PaletteFlags"/><memberdata name="pixelformat" type="property" display="PixelFormat"/><memberdata name="bitmapdata" type="property" display="BitmapData"/><memberdata name="metafileheader" type="property" display="MetaFileHeader"/><memberdata name="metaheader" type="property" display="MetaHeader"/><memberdata name="wmfplaceablefileheader" type="property" display="WmfPlaceableFileHeader"/></VFPData>
 
+bitmapdata = (NULL)
+metafileheader = (NULL)
+metaheader = (NULL)
+wmfplaceablefileheader = (NULL)
 Name = "xfcimaging"
 [END PROPERTIES]
 [START PROTECTED]
@@ -2434,6 +2514,14 @@ colorchannelflag_access
 coloradjusttype_access
 [END PROTECTED]
 [START METHODS]
+PROCEDURE bitmapdata_access
+IF VARTYPE(This.BitmapData) <> "O"
+	This.BitmapData = This.CreateNew("xfcBitmapData")
+ENDIF
+
+RETURN THIS.BitmapData
+
+ENDPROC
 PROCEDURE coloradjusttype_access
 *********************************************************************
 ** Enumeration: ColorAdjustType (Access)
@@ -2514,7 +2602,7 @@ RETURN This.ColorChannelFlag
 ENDPROC
 PROCEDURE colormap_access
 IF VARTYPE(This.ColorMap) <> "O"
-	This.ColorMap = CREATEOBJECT("xfcColorMap")
+	This.ColorMap = This.CreateNew("xfcColorMap")
 ENDIF
 
 RETURN THIS.ColorMap
@@ -2522,7 +2610,7 @@ RETURN THIS.ColorMap
 ENDPROC
 PROCEDURE colormatrix_access
 IF VARTYPE(This.ColorMatrix) <> "O"
-	This.ColorMatrix = CREATEOBJECT("xfcColorMatrix")
+	This.ColorMatrix = This.CreateNew("xfcColorMatrix")
 ENDIF
 
 RETURN THIS.ColorMatrix
@@ -2594,7 +2682,7 @@ RETURN This.ColorMode
 ENDPROC
 PROCEDURE colorpalette_access
 IF VARTYPE(This.ColorPalette) <> "O"
-	This.ColorPalette = CREATEOBJECT("xfcColorPalette")
+	This.ColorPalette = This.CreateNew("xfcColorPalette")
 ENDIF
 
 RETURN THIS.ColorPalette
@@ -2792,7 +2880,7 @@ RETURN THIS.EncoderParameter
 ENDPROC
 PROCEDURE encoderparameters_access
 IF VARTYPE(This.EncoderParameters) <> "O"
-	This.EncoderParameters = CREATEOBJECT("xfcEncoderParameters")
+	This.EncoderParameters = This.CreateNew("xfcEncoderParameters")
 ENDIF
 
 RETURN THIS.EncoderParameters
@@ -2918,7 +3006,7 @@ RETURN This.EncoderValue
 ENDPROC
 PROCEDURE framedimension_access
 IF VARTYPE(This.FrameDimension) <> "O"
-	This.FrameDimension = CREATEOBJECT("xfcFrameDimension")
+	This.FrameDimension = This.CreateNew("xfcFrameDimension")
 ENDIF
 
 RETURN THIS.FrameDimension
@@ -2926,7 +3014,7 @@ RETURN THIS.FrameDimension
 ENDPROC
 PROCEDURE imageattributes_access
 IF VARTYPE(This.ImageAttributes) <> "O"
-	This.ImageAttributes = CREATEOBJECT("xfcImageAttributes")
+	This.ImageAttributes = This.CreateNew("xfcImageAttributes")
 ENDIF
 
 RETURN THIS.ImageAttributes
@@ -2979,7 +3067,7 @@ RETURN This.ImageCodecFlags
 ENDPROC
 PROCEDURE imagecodecinfo_access
 IF VARTYPE(This.ImageCodecInfo) <> "O"
-	This.ImageCodecInfo = CREATEOBJECT("xfcImageCodecInfo")
+	This.ImageCodecInfo = This.CreateNew("xfcImageCodecInfo")
 ENDIF
 
 RETURN THIS.ImageCodecInfo
@@ -3042,7 +3130,7 @@ RETURN This.ImageFlags
 ENDPROC
 PROCEDURE imageformat_access
 IF VARTYPE(This.ImageFormat) <> "O"
-	This.ImageFormat = CREATEOBJECT("xfcImageFormat")
+	This.ImageFormat = This.CreateNew("xfcImageFormat")
 ENDIF
 
 RETURN THIS.ImageFormat
@@ -3085,7 +3173,7 @@ RETURN This.ImageLockMode
 ENDPROC
 PROCEDURE metafile_access
 IF VARTYPE(This.MetaFile) <> "O"
-	This.MetaFile = CREATEOBJECT("xfcMetaFile")
+	This.MetaFile = This.CreateNew("xfcMetaFile")
 ENDIF
 
 RETURN THIS.MetaFile
@@ -3130,6 +3218,14 @@ RETURN This.MetafileFrameUnit
 *********************************************************************
 
 ENDPROC
+PROCEDURE metafileheader_access
+IF VARTYPE(This.MetaFileHeader) <> "O"
+	This.MetaFileHeader = This.CreateNew("xfcMetaFileHeader")
+ENDIF
+
+RETURN THIS.MetaFileHeader
+
+ENDPROC
 PROCEDURE metafiletype_access
 *********************************************************************
 ** Enumeration: MetafileType (Access)
@@ -3167,6 +3263,14 @@ RETURN This.MetafileType
 ** .NET Help ********************************************************
 ** http://msdn2.microsoft.com/en-us/library/System.Drawing.Imaging.MetafileType%28vs.80%29.aspx
 *********************************************************************
+
+ENDPROC
+PROCEDURE metaheader_access
+IF VARTYPE(This.MetaHeader) <> "O"
+	This.MetaHeader = This.CreateNew("xfcMetaHeader")
+ENDIF
+
+RETURN THIS.MetaHeader
 
 ENDPROC
 PROCEDURE paletteflags_access
@@ -3277,10 +3381,18 @@ RETURN This.PixelFormat
 ENDPROC
 PROCEDURE propertyitem_access
 IF VARTYPE(This.PropertyItem) <> "O"
-	This.PropertyItem = CREATEOBJECT("xfcPropertyItem")
+	This.PropertyItem = This.CreateNew("xfcPropertyItem")
 ENDIF
 
 RETURN THIS.PropertyItem
+
+ENDPROC
+PROCEDURE wmfplaceablefileheader_access
+IF VARTYPE(This.WMFPlaceableFileHeader) <> "O"
+	This.WMFPlaceableFileHeader = This.CreateNew("xfcWMFPlaceableFileHeader")
+ENDIF
+
+RETURN THIS.WMFPlaceableFileHeader
 
 ENDPROC
 [END METHODS]
@@ -3316,6 +3428,10 @@ colormode Specifies two modes for color component values.
 colormatrixflag Specifies the types of images and colors that will be affected by the color and grayscale adjustment settings of an ImageAttributes object.
 colorchannelflag Specifies individual channels in the CMYK (cyan, magenta, yellow, black) color space. This enumeration is used by the SetOutputChannel Methods.
 coloradjusttype Specifies which GDI+ objects use color adjustment information.
+bitmapdata
+metafileheader
+metaheader
+wmfplaceablefileheader
 *imageformat_access 
 *propertyitem_access 
 *colormatrix_access 
@@ -3343,6 +3459,10 @@ coloradjusttype Specifies which GDI+ objects use color adjustment information.
 *colormatrixflag_access 
 *colorchannelflag_access 
 *coloradjusttype_access 
+*bitmapdata_access 
+*metafileheader_access 
+*metaheader_access 
+*wmfplaceablefileheader_access 
 [END RESERVED3]
 [START RESERVED6]
 Pixels[END RESERVED6]
@@ -3354,7 +3474,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcimaging
 [START RESERVED1]
- 	 drawing.h&L>Ï4 system.h.f‡Ù4 gdiplusconstants.h6¹>Ï4[END RESERVED1]
+ 	 drawing.hÆ]¥ï4 system.hÎ0¥ï4 gdiplusconstants.hÖ¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -3366,6 +3486,11 @@ drawing.h[END RESERVED8]
 [START PROPERTIES]
 textrenderinghint = .NULL.
 hotkeyprefix = .NULL.
+fontcollection = (NULL)
+installedfontcollection = (NULL)
+privatefontcollection = (NULL)
+_memberdata =      435<VFPData><memberdata name="fontcollection" type="property" display="FontCollection"/><memberdata name="hotkeyprefix" type="property" display="HotKeyPrefix"/><memberdata name="installedfontcollection" type="property" display="InstalledFontCollection"/><memberdata name="privatefontcollection" type="property" display="PrivateFontCollection"/><memberdata name="textrenderinghint" type="property" display="TextRenderingHint"/></VFPData>
+
 Name = "xfctext"
 [END PROPERTIES]
 [START PROTECTED]
@@ -3373,6 +3498,14 @@ textrenderinghint_access
 hotkeyprefix_access
 [END PROTECTED]
 [START METHODS]
+PROCEDURE fontcollection_access
+IF VARTYPE(This.FontCollection) <> "O"
+	This.FontCollection = This.CreateNew("xfcFontCollection")
+ENDIF
+
+RETURN THIS.FontCollection
+
+ENDPROC
 PROCEDURE hotkeyprefix_access
 *********************************************************************
 ** Enumeration: HotkeyPrefix (Access)
@@ -3405,6 +3538,21 @@ RETURN This.HotkeyPrefix
 ** http://msdn2.microsoft.com/en-us/library/System.Drawing.Text.HotkeyPrefix%28vs.80%29.aspx
 *********************************************************************
 
+ENDPROC
+PROCEDURE installedfontcollection_access
+IF VARTYPE(This.InstalledFontCollection) <> "O"
+	This.InstalledFontCollection = This.CreateNew("xfcInstalledFontCollection")
+ENDIF
+
+RETURN THIS.InstalledFontCollection
+
+ENDPROC
+PROCEDURE privatefontcollection_access
+IF VARTYPE(This.PrivateFontCollection) <> "O"
+	This.PrivateFontCollection = This.CreateNew("xfcPrivateFontCollection")
+ENDIF
+
+RETURN THIS.PrivateFontCollection
 ENDPROC
 PROCEDURE textrenderinghint_access
 *********************************************************************
@@ -3449,8 +3597,14 @@ Class[END RESERVED1]
 [START RESERVED3]
 textrenderinghint Specifies the quality of text rendering.
 hotkeyprefix Specifies the type of display for hot-key prefixes that relate to text.
+fontcollection
+installedfontcollection
+privatefontcollection
 *textrenderinghint_access 
 *hotkeyprefix_access 
+*fontcollection_access 
+*installedfontcollection_access 
+*privatefontcollection_access 
 [END RESERVED3]
 [START RESERVED6]
 Pixels[END RESERVED6]
@@ -3462,7 +3616,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfctext
 [START RESERVED1]
- 	 drawing.h&L>Ï4 system.h.f‡Ù4 gdiplusconstants.h6¹>Ï4[END RESERVED1]
+ 	 drawing.h]¥ï4 system.h0¥ï4 gdiplusconstants.h¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -3575,7 +3729,7 @@ system.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcguid
 [START RESERVED1]
-  system.h¾~f‡Ù4[END RESERVED1]
+  system.h=0¥ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -3882,5 +4036,5 @@ system.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcenum
 [START RESERVED1]
-  system.hæ”f‡Ù4[END RESERVED1]
+  system.h=0¥ï4[END RESERVED1]
 [EOF]
