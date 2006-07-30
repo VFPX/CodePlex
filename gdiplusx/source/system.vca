@@ -15,8 +15,9 @@ VERSION =   3.00[END RESERVED1]
 [BASECLASS] custom
 [OBJNAME] xfcobject
 [START PROPERTIES]
-_memberdata =      415<VFPData><memberdata name="createnew" type="method" display="CreateNew"/><memberdata name="new" type="method" display="New"/><memberdata name="memberwiseclone" type="method" display="MemberwiseClone"/><memberdata name="gethashcode" type="method" display="GetHashCode"/><memberdata name="equals" type="method" display="Equals"/><memberdata name="referenceequals" type="method" display="ReferenceEquals"/></VFPData>
+_memberdata =      479<VFPData><memberdata name="createnew" type="method" display="CreateNew"/><memberdata name="new" type="method" display="New"/><memberdata name="memberwiseclone" type="method" display="MemberwiseClone"/><memberdata name="gethashcode" type="method" display="GetHashCode"/><memberdata name="equals" type="method" display="Equals"/><memberdata name="referenceequals" type="method" display="ReferenceEquals"/><memberdata name="basename" type="property" display="BaseName"/></VFPData>
 
+basename = Object
 Name = "xfcobject"
 [END PROPERTIES]
 [START METHODS]
@@ -176,6 +177,7 @@ Class[END RESERVED1]
 1[END RESERVED2]
 [START RESERVED3]
 _memberdata XML Metadata for customizable properties
+basename
 *createnew 
 *new 
 *memberwiseclone Creates a shallow copy of the current Object.
