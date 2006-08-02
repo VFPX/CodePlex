@@ -56,6 +56,7 @@ Width = 387
 DoCreate = .T.
 AutoCenter = .T.
 Caption = "GDIPlusX Samples"
+WindowType = 1
 Name = "Form1"
 [END PROPERTIES]
 [START METHODS]
@@ -109,7 +110,10 @@ Name = "Command1"
 [END PROPERTIES]
 [START METHODS]
 PROCEDURE Click
-EXECSCRIPT(gdiplusxsamples.runcmd)
+LOCAL lcCommand
+lcCommand = gdiplusxsamples.runcmd
+&lcCommand
+**EXECSCRIPT(gdiplusxsamples.runcmd)
 ENDPROC
 [END METHODS]
 
@@ -131,8 +135,11 @@ Name = "Command2"
 [END PROPERTIES]
 [START METHODS]
 PROCEDURE Click
+LOCAL lcCommand
 IF NOT EMPTY(gdiplusxsamples.editcmd)
-	EXECSCRIPT(gdiplusxsamples.editcmd)
+	lcCommand = gdiplusxsamples.editcmd
+	&lcCommand
+**	EXECSCRIPT(gdiplusxsamples.editcmd)
 ENDIF
 ENDPROC
 [END METHODS]
