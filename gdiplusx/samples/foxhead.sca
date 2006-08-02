@@ -34,8 +34,8 @@ Name = "Dataenvironment"
 [BASECLASS] form
 [OBJNAME] Form1
 [START PROPERTIES]
-Height = 346
-Width = 372
+Height = 453
+Width = 467
 DoCreate = .T.
 AutoCenter = .T.
 Caption = "Fox Head Line Cap"
@@ -52,10 +52,10 @@ Name = "Form1"
 [PARENT] Form1
 [START PROPERTIES]
 Anchor = 15
-Height = 324
+Height = 432
 Left = 12
 Top = 12
-Width = 348
+Width = 444
 Name = "Imgcanvas1"
 [END PROPERTIES]
 [START METHODS]
@@ -76,11 +76,14 @@ oPn = _screen.system.Drawing.Pens.Black
 
 CLEAR
 
+** Forehead
 oPath.StartFigure()
 oPath.AddBezier(101,65, 90,70, 90,70, 82,96)
+** Left Cheek
 oPath.StartFigure()
 oPath.AddBezier(124,129, 130,140, 132,151, 132,151)
 oPath.AddBezier(132,151, 100,160, 100,155, 77,161)
+** Head and ears
 oPath.StartFigure()
 oPath.AddBezier(102,212, 170,160, 170,120, 166,89)
 oPath.AddBezier(166,89, 180,60, 192,50, 191,2)
@@ -88,24 +91,28 @@ oPath.AddBezier(191,2, 150,20, 140,30, 120,51)
 oPath.AddBezier(120,51, 100,45, 75,44, 69,46)
 oPath.AddBezier(69,46, 50,14, 25,30, 6,2)
 oPath.AddBezier(6,2, 0,30, 0,40, 14,81)
+** Right cheek
 oPath.StartFigure()
 oPath.AddBezier(29,102, 16,118, 16,126, 28,146)
+** Nose
 oPath.StartFigure()
 oPath.AddBezier(45,150, 38,160, 38,160, 23,169)
 oPath.StartFigure()
 oPath.AddBezier(38,190, 60,190, 70,175, 82,177)
 oPath.StartFigure()
+oPath.AddBezier(16,173, 22,171, 25,171, 30,173)
+oPath.AddBezier(30,173, 32,182, 32,182, 23,189)
+oPath.AddBezier(23,189, 14,183, 14,183, 16,173)
+** Right eye
+oPath.StartFigure()
 oPath.AddBezier(36,114, 45,120, 50,120, 50,141)
 oPath.AddBezier(47,135, 38,130, 38,130, 40,121)
 oPath.CloseFigure()
+** Left eye
 oPath.StartFigure()
 oPath.AddBezier(103,120, 90,125, 70,140, 65,148)
 oPath.AddBezier(75,141, 85,140, 89,140, 92,130)
 oPath.CloseFigure()
-oPath.StartFigure()
-oPath.AddBezier(16,173, 22,171, 25,171, 30,173)
-oPath.AddBezier(30,173, 32,182, 32,182, 23,189)
-oPath.AddBezier(23,189, 14,183, 14,183, 16,173)
 
 oGfx.SmoothingMode = _screen.system.drawing.Drawing2D.SmoothingMode.AntiAlias
 oGfx.DrawPath(oPn, oPath)
