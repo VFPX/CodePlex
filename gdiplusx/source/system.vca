@@ -281,7 +281,7 @@ system.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcsystem
 [START RESERVED1]
-  system.h=0¥ï4[END RESERVED1]
+  system.hæä0¥ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -1287,7 +1287,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcdrawing
 [START RESERVED1]
- 	 drawing.hÆ]¥ï4 system.hÎ0¥ï4 gdiplusconstants.hÖ¹>Ï4[END RESERVED1]
+ 	 drawing.hî¼]¥ï4 system.hö½0¥ï4 gdiplusconstants.hþ¾¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -1332,6 +1332,7 @@ pathdata = (NULL)
 regiondata = (NULL)
 _memberdata =     2399<VFPData><memberdata name="graphicspath" type="property" display="GraphicsPath"/><memberdata name="hatchbrush" type="property" display="HatchBrush"/><memberdata name="lineargradientbrush" type="property" display="LinearGradientBrush"/><memberdata name="pathgradientbrush" type="property" display="PathGradientBrush"/><memberdata name="combinemode" type="property" display="CombineMode"/><memberdata name="compositingmode" type="property" display="CompositingMode"/><memberdata name="compositingquality" type="property" display="CompositingQuality"/><memberdata name="coordinatespace" type="property" display="CoordinateSpace"/><memberdata name="dashcap" type="property" display="DashCap"/><memberdata name="dashstyle" type="property" display="DashStyle"/><memberdata name="fillmode" type="property" display="FillMode"/><memberdata name="flushintention" type="property" display="FlushIntention"/><memberdata name="hatchstyle" type="property" display="HatchStyle"/><memberdata name="interpolationmode" type="property" display="InterpolationMode"/><memberdata name="lineargradientmode" type="property" display="LineargradientMode"/><memberdata name="linecap" type="property" display="LineCap"/><memberdata name="linejoin" type="property" display="LineJoin"/><memberdata name="matrixorder" type="property" display="MatrixOrder"/><memberdata name="pathpointtype" type="property" display="PathPointType"/><memberdata name="penalignment" type="property" display="PenAlignment"/><memberdata name="pentype" type="property" display="PenType"/><memberdata name="pixeloffsetmode" type="property" display="PixelOffsetMode"/><memberdata name="qualitymode" type="property" display="QualityMode"/><memberdata name="smoothingmode" type="property" display="SmoothingMode"/><memberdata name="warpmode" type="property" display="WarpMode"/><memberdata name="wrapmode" type="property" display="WrapMode"/><memberdata name="blend" type="property" display="Blend"/><memberdata name="colorblend" type="property" display="ColorBlend"/><memberdata name="adjustablearrowcap" type="property" display="AdjustableArrowCap"/><memberdata name="customlinecap" type="property" display="CustomLineCap"/><memberdata name="graphicspathiterator" type="property" display="GraphicsPathIterator"/><memberdata name="pathdata" type="property" display="PathData"/><memberdata name="regiondata" type="property" display="RegionData"/></VFPData>
 
+matrix = (NULL)
 Name = "xfcdrawing2d"
 [END PROPERTIES]
 [START PROTECTED]
@@ -2021,6 +2022,14 @@ RETURN This.LineJoin
 *********************************************************************
 
 ENDPROC
+PROCEDURE matrix_access
+IF VARTYPE(This.Matrix) <> "O"
+	This.Matrix = This.CreateNew("xfcMatrix")
+ENDIF
+
+RETURN THIS.Matrix
+
+ENDPROC
 PROCEDURE matrixorder_access
 *********************************************************************
 ** Enumeration: MatrixOrder (Access)
@@ -2409,6 +2418,7 @@ customlinecap
 graphicspathiterator
 pathdata
 regiondata
+matrix
 *lineargradientbrush_access 
 *hatchbrush_access 
 *graphicspath_access 
@@ -2442,6 +2452,7 @@ regiondata
 *graphicspathiterator_access 
 *pathdata_access 
 *regiondata_access 
+*matrix_access 
 [END RESERVED3]
 [START RESERVED6]
 Pixels[END RESERVED6]
@@ -2453,7 +2464,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcdrawing2d
 [START RESERVED1]
- 	 drawing.hÆ]¥ï4 system.hÎ0¥ï4 gdiplusconstants.hÖ¹>Ï4[END RESERVED1]
+ 	 drawing.h&]]¥ï4 system.h.^0¥ï4 gdiplusconstants.h6_¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -3476,7 +3487,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcimaging
 [START RESERVED1]
- 	 drawing.hÆ]¥ï4 system.hÎ0¥ï4 gdiplusconstants.hÖ¹>Ï4[END RESERVED1]
+ 	 drawing.hf]¥ï4 system.hn0¥ï4 gdiplusconstants.hv¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -3618,7 +3629,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfctext
 [START RESERVED1]
- 	 drawing.h]¥ï4 system.h0¥ï4 gdiplusconstants.h¹>Ï4[END RESERVED1]
+ 	 drawing.hî¼]¥ï4 system.hö½0¥ï4 gdiplusconstants.hþ¾¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -3731,7 +3742,7 @@ system.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcguid
 [START RESERVED1]
-  system.h=0¥ï4[END RESERVED1]
+  system.hæä0¥ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -4038,5 +4049,5 @@ system.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcenum
 [START RESERVED1]
-  system.h=0¥ï4[END RESERVED1]
+  system.hæä0¥ï4[END RESERVED1]
 [EOF]
