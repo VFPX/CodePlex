@@ -293,7 +293,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcblend
 [START RESERVED1]
- 	 drawing.höŠ]¥ï4 system.hþ‹0¥ï4 gdiplusconstants.h¹>Ï4[END RESERVED1]
+ 	 drawing.hf]¥ï4 system.hn0¥ï4 gdiplusconstants.hv¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -559,7 +559,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfccolorblend
 [START RESERVED1]
- 	 drawing.höŠ]¥ï4 system.hþ‹0¥ï4 gdiplusconstants.h¹>Ï4[END RESERVED1]
+ 	 drawing.h6¹]¥ï4 system.h>º0¥ï4 gdiplusconstants.hF»¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -573,9 +573,9 @@ basecap = 0
 baseinset = 0
 strokejoin = 0
 widthscale = 0
-basename = CustomLineCap
 _memberdata =     1231<VFPData><memberdata name="clone" type="method" display="Clone"/><memberdata name="createobjref" type="method" display="CreateObjRef"/><memberdata name="dispose" type="method" display="Dispose"/><memberdata name="equals" type="method" display="Equals"/><memberdata name="gethashcode" type="method" display="GetHashCode"/><memberdata name="getlifetimeservice" type="method" display="GetLifetimeService"/><memberdata name="getstrokecaps" type="method" display="GetStrokeCaps"/><memberdata name="gettype" type="method" display="GetType"/><memberdata name="initializelifetimeservice" type="method" display="InitializeLifetimeService"/><memberdata name="setstrokecaps" type="method" display="SetStrokeCaps"/><memberdata name="tostring" type="method" display="ToString"/><memberdata name="finalize" type="method" display="Finalize"/><memberdata name="memberwiseclone" type="method" display="MemberwiseClone"/><memberdata name="basecap" type="property" display="BaseCap"/><memberdata name="baseinset" type="property" display="BaseInset"/><memberdata name="strokejoin" type="property" display="StrokeJoin"/><memberdata name="widthscale" type="property" display="WidthScale"/><memberdata name="new" type="method" display="New"/></VFPData>
 
+basename = CustomLineCap
 lastresult = 0
 Name = "xfccustomlinecap"
 [END PROPERTIES]
@@ -619,22 +619,31 @@ LPARAMETERS toFillPath AS xfcGraphicsPath, toStrokePath AS xfcGraphicsPath, ;
 
 *!ToDo: Test this function
 
+IF PCOUNT() = 0
+	** Bypass for static object
+	RETURN
+ENDIF
+	
 LOCAL loExc AS Exception
 TRY
-	LOCAL lhCustomCap
+	LOCAL lhCustomCap, lhFillPath, lhStrokePath
 	DODEFAULT()
-	m.lhCustomCap = 0
+	STORE 0 TO m.lhCustomCap, m.lhFillPath, m.lhStrokePath
 	
-	IF PCOUNT() = 0
-		RETURN
+	IF VARTYPE(m.toFillPath)="O" AND m.toFillPath.BaseName=="GraphicsPath"
+		m.lhFillPath = m.toFillPath.Handle
 	ENDIF
 	
-	IF PCOUNT() >= 2
-		m.tiBaseCap = EVL(m.tiBaseCap, LineCapFlat)
-		m.tnBaseInset = EVL(m.tnBaseInset, 0.00)
+	IF VARTYPE(m.toStrokePath)="O" AND m.toStrokePath.BaseName=="GraphicsPath"
+		m.lhStrokePath = m.toStrokePath.Handle
 	ENDIF
-	This.SetStatus(GdipCreateCustomLineCap(m.toFillPath.Handle, m.toStrokePath.Handle, m.liBaseCap, m.lnBaseInset, @lhCustomCap))
+	
+	m.tiBaseCap = EVL(m.tiBaseCap, LineCapFlat)
+	m.tnBaseInset = EVL(m.tnBaseInset, 0.00)
+	
+	This.SetStatus(GdipCreateCustomLineCap(m.lhFillPath, m.lhStrokePath, m.tiBaseCap, m.tnBaseInset, @lhCustomCap))
 	This.Handle = m.lhCustomCap
+	
 CATCH TO loExc
 	THROW m.loExc
 ENDTRY
@@ -1019,7 +1028,6 @@ basecap Gets or sets the LineCap enumeration on which this CustomLineCap is base
 baseinset Gets or sets the distance between the cap and the line.
 strokejoin Gets or sets the LineJoin enumeration that determines how lines that compose this CustomLineCap object are joined.
 widthscale Gets or sets the amount by which to scale this CustomLineCap Class object with respect to the width of the Pen object.
-basename
 *clone Creates an exact copy of this CustomLineCap.
 *getstrokecaps Gets the caps used to start and end lines that make up this custom cap.
 *setstrokecaps Sets the caps used to start and end lines that make up this custom cap.
@@ -1042,7 +1050,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfccustomlinecap
 [START RESERVED1]
- 	 drawing.höŠ]¥ï4 system.hþ‹0¥ï4 gdiplusconstants.h¹>Ï4[END RESERVED1]
+ 	 drawing.hÞX]¥ï4 system.hæY0¥ï4 gdiplusconstants.hîZ¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -1135,7 +1143,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcgraphicscontainer
 [START RESERVED1]
- 	 drawing.höŠ]¥ï4 system.hþ‹0¥ï4 gdiplusconstants.h¹>Ï4[END RESERVED1]
+ 	 drawing.h6¹]¥ï4 system.h>º0¥ï4 gdiplusconstants.hF»¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -3032,7 +3040,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcgraphicspath
 [START RESERVED1]
- 	 drawing.höŠ]¥ï4 system.hþ‹0¥ï4 gdiplusconstants.h¹>Ï4[END RESERVED1]
+ 	 drawing.hö¼]¥ï4 system.hþ½0¥ï4 gdiplusconstants.h¿¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -3506,7 +3514,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcgraphicspathiterator
 [START RESERVED1]
- 	 drawing.höŠ]¥ï4 system.hþ‹0¥ï4 gdiplusconstants.h¹>Ï4[END RESERVED1]
+ 	 drawing.hö¼]¥ï4 system.hþ½0¥ï4 gdiplusconstants.h¿¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -3573,7 +3581,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcgraphicsstate
 [START RESERVED1]
- 	 drawing.höŠ]¥ï4 system.hþ‹0¥ï4 gdiplusconstants.h¹>Ï4[END RESERVED1]
+ 	 drawing.hf]¥ï4 system.hn0¥ï4 gdiplusconstants.hv¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -3588,8 +3596,8 @@ isidentity = 0
 isinvertible = 0
 offsetx = 0
 offsety = 0
-basename = Matrix
 _memberdata =     1723<VFPData><memberdata name="clone" type="method" display="Clone"/><memberdata name="createobjref" type="method" display="CreateObjRef"/><memberdata name="dispose" type="method" display="Dispose"/><memberdata name="equals" type="method" display="Equals"/><memberdata name="gethashcode" type="method" display="GetHashCode"/><memberdata name="getlifetimeservice" type="method" display="GetLifetimeService"/><memberdata name="gettype" type="method" display="GetType"/><memberdata name="initializelifetimeservice" type="method" display="InitializeLifetimeService"/><memberdata name="invert" type="method" display="Invert"/><memberdata name="multiply" type="method" display="Multiply"/><memberdata name="reset" type="method" display="Reset"/><memberdata name="rotate" type="method" display="Rotate"/><memberdata name="rotateat" type="method" display="RotateAt"/><memberdata name="scale" type="method" display="Scale"/><memberdata name="shear" type="method" display="Shear"/><memberdata name="tostring" type="method" display="ToString"/><memberdata name="transformpoints" type="method" display="TransformPoints"/><memberdata name="transformvectors" type="method" display="TransformVectors"/><memberdata name="translate" type="method" display="Translate"/><memberdata name="finalize" type="method" display="Finalize"/><memberdata name="memberwiseclone" type="method" display="MemberwiseClone"/><memberdata name="elements" type="property" display="Elements"/><memberdata name="isidentity" type="property" display="IsIdentity"/><memberdata name="isinvertible" type="property" display="IsInvertible"/><memberdata name="offsetx" type="property" display="OffsetX"/><memberdata name="offsety" type="property" display="OffsetY"/></VFPData>
+basename = Matrix
 lastresult = 0
 Name = "xfcmatrix"
 [END PROPERTIES]
@@ -4197,7 +4205,7 @@ LPARAMETERS tnScaleX, tnScaleY, ;
 
 LOCAL loExc AS Exception
 TRY
-	m.tiOrder = EVL(m.toOrder, MatrixOrderPrepend)
+	m.tiOrder = EVL(m.tiOrder, MatrixOrderPrepend)
 	This.SetStatus(GdipScaleMatrix(This.Handle, m.tnScaleX, m.tnScaleY, m.tiOrder))
 
 CATCH TO loExc
@@ -4400,10 +4408,7 @@ isidentity Gets a value indicating whether this Matrix object is the identity ma
 isinvertible Gets a value indicating whether this Matrix object is invertible.
 offsetx Gets the x translation value (the dx value, or the element in the third row and first column) of this Matrix object.
 offsety Gets the y translation value (the dy value, or the element in the third row and second column) of this Matrix.
-basename
 *clone Creates an exact copy of this Matrix object.
-*equals Tests whether the specified object is a Matrix object and is identical to this Matrix object.
-*gethashcode Returns a hash code.
 *invert Inverts this Matrix object, if it is invertible.
 *multiply Multiplies this Matrix object by the specified Matrix object by prepending the specified Matrix.
 *reset Resets this Matrix object to have the elements of the identity matrix.
@@ -4430,7 +4435,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcmatrix
 [START RESERVED1]
- 	 drawing.höŠ]¥ï4 system.hþ‹0¥ï4 gdiplusconstants.h¹>Ï4[END RESERVED1]
+ 	 drawing.hû]¥ï4 system.h&ü0¥ï4 gdiplusconstants.h.ý¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -4644,7 +4649,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcpathdata
 [START RESERVED1]
- 	 drawing.höŠ]¥ï4 system.hþ‹0¥ï4 gdiplusconstants.h¹>Ï4[END RESERVED1]
+ 	 drawing.hö¼]¥ï4 system.hþ½0¥ï4 gdiplusconstants.h¿¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -4735,7 +4740,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcregiondata
 [START RESERVED1]
- 	 drawing.höŠ]¥ï4 system.hþ‹0¥ï4 gdiplusconstants.h¹>Ï4[END RESERVED1]
+ 	 drawing.hö¼]¥ï4 system.hþ½0¥ï4 gdiplusconstants.h¿¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -5056,7 +5061,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcadjustablearrowcap
 [START RESERVED1]
- 	 drawing.höŠ]¥ï4 system.hþ‹0¥ï4 gdiplusconstants.h¹>Ï4[END RESERVED1]
+ 	 drawing.hf]¥ï4 system.hn0¥ï4 gdiplusconstants.hv¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -5306,7 +5311,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfchatchbrush
 [START RESERVED1]
- 	 drawing.höŠ]¥ï4 system.hþ‹0¥ï4 gdiplusconstants.h¹>Ï4[END RESERVED1]
+ 	 drawing.hö¼]¥ï4 system.hþ½0¥ï4 gdiplusconstants.h¿¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -6171,7 +6176,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfclineargradientbrush
 [START RESERVED1]
- 	 drawing.höŠ]¥ï4 system.hþ‹0¥ï4 gdiplusconstants.h¹>Ï4[END RESERVED1]
+ 	 drawing.hf]¥ï4 system.hn0¥ï4 gdiplusconstants.hv¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -7183,5 +7188,5 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcpathgradientbrush
 [START RESERVED1]
- 	 drawing.höŠ]¥ï4 system.hþ‹0¥ï4 gdiplusconstants.h¹>Ï4[END RESERVED1]
+ 	 drawing.hf]¥ï4 system.hn0¥ï4 gdiplusconstants.hv¹>Ï4[END RESERVED1]
 [EOF]
