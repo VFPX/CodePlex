@@ -293,7 +293,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcblend
 [START RESERVED1]
- 	 drawing.hf]¥ï4 system.hn0¥ï4 gdiplusconstants.hv¹>Ï4[END RESERVED1]
+ 	 drawing.h~]¥ï4 system.h†0¥ï4 gdiplusconstants.hŽ¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -559,7 +559,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfccolorblend
 [START RESERVED1]
- 	 drawing.h6¹]¥ï4 system.h>º0¥ï4 gdiplusconstants.hF»¹>Ï4[END RESERVED1]
+ 	 drawing.h~]¥ï4 system.h†0¥ï4 gdiplusconstants.hŽ¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -1050,7 +1050,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfccustomlinecap
 [START RESERVED1]
- 	 drawing.hÞX]¥ï4 system.hæY0¥ï4 gdiplusconstants.hîZ¹>Ï4[END RESERVED1]
+ 	 drawing.h~]¥ï4 system.h†0¥ï4 gdiplusconstants.hŽ¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -1143,7 +1143,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcgraphicscontainer
 [START RESERVED1]
- 	 drawing.h6¹]¥ï4 system.h>º0¥ï4 gdiplusconstants.hF»¹>Ï4[END RESERVED1]
+ 	 drawing.h~]¥ï4 system.h†0¥ï4 gdiplusconstants.hŽ¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -3040,7 +3040,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcgraphicspath
 [START RESERVED1]
- 	 drawing.hö¼]¥ï4 system.hþ½0¥ï4 gdiplusconstants.h¿¹>Ï4[END RESERVED1]
+ 	 drawing.h~]¥ï4 system.h†0¥ï4 gdiplusconstants.hŽ¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -3514,7 +3514,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcgraphicspathiterator
 [START RESERVED1]
- 	 drawing.hö¼]¥ï4 system.hþ½0¥ï4 gdiplusconstants.h¿¹>Ï4[END RESERVED1]
+ 	 drawing.h~]¥ï4 system.h†0¥ï4 gdiplusconstants.hŽ¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -3581,7 +3581,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcgraphicsstate
 [START RESERVED1]
- 	 drawing.hf]¥ï4 system.hn0¥ï4 gdiplusconstants.hv¹>Ï4[END RESERVED1]
+ 	 drawing.h~]¥ï4 system.h†0¥ï4 gdiplusconstants.hŽ¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -4083,19 +4083,13 @@ PROCEDURE reset
 **
 ** History:
 **  2006/03/07: Auto Generated
+**  2006/08/03: CChalom - Coded
 *********************************************************************
-
-
-*!ToDo: Implement this function
 *!ToDo: Test this function
-ERROR 1999	&& Function not implemented
-RETURN NULL
 
 LOCAL loExc AS Exception
 TRY
-
-	** This.SetStatus(GdipSomeFunction???())
-
+	This.SetStatus(GdipSetMatrixElements(This.Handle, 1, 0, 0, 1, 0, 0))
 CATCH TO loExc
 	THROW m.loExc
 ENDTRY
@@ -4435,7 +4429,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcmatrix
 [START RESERVED1]
- 	 drawing.hû]¥ï4 system.h&ü0¥ï4 gdiplusconstants.h.ý¹>Ï4[END RESERVED1]
+ 	 drawing.hö-]¥ï4 system.hþ.0¥ï4 gdiplusconstants.h0¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -4649,7 +4643,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcpathdata
 [START RESERVED1]
- 	 drawing.hö¼]¥ï4 system.hþ½0¥ï4 gdiplusconstants.h¿¹>Ï4[END RESERVED1]
+ 	 drawing.h~]¥ï4 system.h†0¥ï4 gdiplusconstants.hŽ¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -4740,7 +4734,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcregiondata
 [START RESERVED1]
- 	 drawing.hö¼]¥ï4 system.hþ½0¥ï4 gdiplusconstants.h¿¹>Ï4[END RESERVED1]
+ 	 drawing.h~]¥ï4 system.h†0¥ï4 gdiplusconstants.hŽ¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -5061,7 +5055,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcadjustablearrowcap
 [START RESERVED1]
- 	 drawing.hf]¥ï4 system.hn0¥ï4 gdiplusconstants.hv¹>Ï4[END RESERVED1]
+ 	 drawing.h~]¥ï4 system.h†0¥ï4 gdiplusconstants.hŽ¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -5311,7 +5305,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfchatchbrush
 [START RESERVED1]
- 	 drawing.hö¼]¥ï4 system.hþ½0¥ï4 gdiplusconstants.h¿¹>Ï4[END RESERVED1]
+ 	 drawing.h~]¥ï4 system.h†0¥ï4 gdiplusconstants.hŽ¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -6176,7 +6170,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfclineargradientbrush
 [START RESERVED1]
- 	 drawing.hf]¥ï4 system.hn0¥ï4 gdiplusconstants.hv¹>Ï4[END RESERVED1]
+ 	 drawing.h~]¥ï4 system.h†0¥ï4 gdiplusconstants.hŽ¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -7188,5 +7182,5 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcpathgradientbrush
 [START RESERVED1]
- 	 drawing.hf]¥ï4 system.hn0¥ï4 gdiplusconstants.hv¹>Ï4[END RESERVED1]
+ 	 drawing.h~]¥ï4 system.h†0¥ï4 gdiplusconstants.hŽ¹>Ï4[END RESERVED1]
 [EOF]
