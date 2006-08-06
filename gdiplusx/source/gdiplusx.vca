@@ -19,7 +19,7 @@ Height = 162
 Width = 182
 ogfx = (NULL)
 hdc = 0
-_memberdata =      487<VFPData><memberdata name="beforedraw" type="method" display="BeforeDraw"/><memberdata name="hdc" type="property" display="HDC"/><memberdata name="ogfx" type="property" display="oGfx"/><memberdata name="refresh" type="method" display="Refresh"/><memberdata name="clear" type="method" display="Clear"/><memberdata name="draw" type="method" display="Draw"/><memberdata name="controls" type="property" display="Controls"/><memberdata name="setup" type="method" display="SetUp"/></VFPData>
+_memberdata =      541<VFPData><memberdata name="beforedraw" type="method" display="BeforeDraw"/><memberdata name="hdc" type="property" display="HDC"/><memberdata name="ogfx" type="property" display="oGfx"/><memberdata name="refresh" type="method" display="Refresh"/><memberdata name="clear" type="method" display="Clear"/><memberdata name="draw" type="method" display="Draw"/><memberdata name="controls" type="property" display="Controls"/><memberdata name="setup" type="method" display="SetUp"/><memberdata name="save" type="method" display="Save"/></VFPData>
 
 controls = (NULL)
 bmpwidth = 0
@@ -277,6 +277,32 @@ IF This.Stretch = 0 AND This.Anchor > 0 && AND (m.nWidth <> This.Width OR m.nHei
 	This.Draw()
 ENDIF
 ENDPROC
+PROCEDURE save
+*********************************************************************
+** Method: Save
+**
+** Saves an image of the current canvas object
+**
+** History:
+**  2006/08/05: BDurban/CChalom - Added save method
+*********************************************************************
+LPARAMETERS tcFilename ;
+			, toEncoder AS xfcImageCodecInfo, toEncoderParams AS xfcEncoderParameters
+			
+LOCAL loExc
+TRY
+	m.hdc = This.HDC
+	m.hBitmap = GetCurrentObject(m.hdc, OBJ_BITMAP)
+
+	oImg = _SCREEN.System.Drawing.Image.FromHBitmap(m.hBitmap)
+	oImg.Save(m.tcFilename, m.toEncoder, m.toEncoderParams)
+	
+CATCH TO m.loExc
+	THROW m.loExc
+ENDTRY
+
+
+ENDPROC
 PROCEDURE smoothingmode_assign
 LPARAMETERS vNewVal
 *To do: Modify this routine for the Assign method
@@ -324,6 +350,7 @@ interpolationmode
 *smoothingmode_assign 
 *textrenderinghint_assign 
 *interpolationmode_assign 
+*save 
 [END RESERVED3]
 [START RESERVED6]
 Pixels[END RESERVED6]
@@ -335,7 +362,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] imgcanvas
 [START RESERVED1]
- 	 drawing.hÆ½xÎ4 system.hÎ¾wÎ4 gdiplusconstants.hÖ¿¡„Í4[END RESERVED1]
+ 	 drawing.hÖô]¥ï4 system.hÞõ0¥ï4 gdiplusconstants.hæö¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
