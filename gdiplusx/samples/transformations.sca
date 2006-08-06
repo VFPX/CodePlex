@@ -34,8 +34,8 @@ Name = "Dataenvironment"
 [BASECLASS] form
 [OBJNAME] Form1
 [START PROPERTIES]
-Top = 10
-Left = 20
+Top = 11
+Left = 133
 Height = 337
 Width = 516
 DoCreate = .T.
@@ -46,6 +46,7 @@ yshear = 0
 xscale = 0
 yscale = 0
 nrotate = 0
+ncenterrotate = 0
 Name = "Form1"
 [END PROPERTIES]
 [START RESERVED3]
@@ -55,6 +56,7 @@ yshear
 xscale
 yscale
 nrotate
+ncenterrotate
 [END RESERVED3]
 
 [ RECORD]
@@ -82,12 +84,20 @@ ENDIF
 This.Clear
 
 LOCAL loMatrix AS xfcMatrix
+LOCAL loPointF AS xfcPointF
 
 WITH _SCREEN.System.Drawing
 	loMatrix = .Drawing2D.Matrix.New()
 	loMatrix.Shear(Thisform.xShear, Thisform.yShear)
-	loMatrix.Rotate(Thisform.nRotate)
 	loMatrix.Scale(Thisform.xScale + 1, Thisform.yScale + 1)
+
+	DO CASE
+	CASE Thisform.nRotate <> 0
+		loMatrix.Rotate(Thisform.nRotate)
+	CASE Thisform.nCenterRotate <> 0
+		loPointF = _SCREEN.System.Drawing.PointF.New(This.Width / 2, This.Height / 2)
+		loMatrix.RotateAt(Thisform.nCenterRotate, loPointF)
+	ENDCASE
 
 	This.oGfx.MultiplyTransform(loMatrix)
 	This.oGfx.DrawImage(Thisform.oBmp, This.Rectangle)
@@ -99,6 +109,7 @@ WITH Thisform
 	.xShear = 0
 	.yShear = 0
 	.nRotate = 0
+	.nCenterRotate = 0
 ENDWITH
 ENDPROC
 [END METHODS]
@@ -161,16 +172,16 @@ Name = "Container1"
 
 [ RECORD]
 [PLATFORM] WINDOWS 
-[UNIQUEID] _1V60OXU45
+[UNIQUEID] _1TP0L3VWK
 [CLASS] container
 [BASECLASS] container
 [OBJNAME] Container3
 [PARENT] Form1.Container1
 [START PROPERTIES]
-Top = 7
+Top = 4
 Left = 386
 Width = 121
-Height = 72
+Height = 36
 SpecialEffect = 0
 Name = "Container3"
 [END PROPERTIES]
@@ -183,10 +194,10 @@ Name = "Container3"
 [OBJNAME] Container2
 [PARENT] Form1.Container1
 [START PROPERTIES]
-Top = 7
+Top = 4
 Left = 196
 Width = 168
-Height = 72
+Height = 78
 SpecialEffect = 0
 Name = "Container2"
 [END PROPERTIES]
@@ -199,10 +210,10 @@ Name = "Container2"
 [OBJNAME] Container1
 [PARENT] Form1.Container1
 [START PROPERTIES]
-Top = 7
+Top = 4
 Left = 4
 Width = 168
-Height = 72
+Height = 78
 SpecialEffect = 0
 Name = "Container1"
 [END PROPERTIES]
@@ -558,7 +569,7 @@ ENDPROC
 
 [ RECORD]
 [PLATFORM] WINDOWS 
-[UNIQUEID] _1V602AM6R
+[UNIQUEID] _1TP0L3VWL
 [CLASS] commandbutton
 [BASECLASS] commandbutton
 [OBJNAME] Command10
@@ -586,24 +597,115 @@ ENDPROC
 
 [ RECORD]
 [PLATFORM] WINDOWS 
-[UNIQUEID] _1V602AM6S
+[UNIQUEID] _1TP0L3VWK
 [CLASS] label
 [BASECLASS] label
 [OBJNAME] Label7
 [PARENT] Form1.Container1
 [START PROPERTIES]
 FontBold = .T.
-Caption = "Rotate"
-Height = 25
+WordWrap = .T.
+Caption = "Rotate (0,0)"
+Height = 29
 Left = 392
-Top = 12
+Top = 7
 Width = 36
 Name = "Label7"
 [END PROPERTIES]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
-[UNIQUEID] _1V60PJ5BK
+[UNIQUEID] _1V80M31JV
+[CLASS] container
+[BASECLASS] container
+[OBJNAME] Container4
+[PARENT] Form1.Container1
+[START PROPERTIES]
+Top = 45
+Left = 386
+Width = 121
+Height = 36
+SpecialEffect = 0
+Name = "Container4"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1V80M31JW
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] Command11
+[PARENT] Form1.Container1
+[START PROPERTIES]
+Top = 48
+Left = 440
+Height = 25
+Width = 24
+FontBold = .T.
+FontSize = 16
+Anchor = 12
+Caption = "-"
+Name = "Command11"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+WITH Thisform
+	.nCenterRotate = -10
+	.imgcanvas1.Draw()
+ENDWITH
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1V80M31JX
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] Command12
+[PARENT] Form1.Container1
+[START PROPERTIES]
+Top = 48
+Left = 476
+Height = 25
+Width = 24
+FontBold = .T.
+FontSize = 16
+Anchor = 12
+Caption = "+"
+Name = "Command12"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+WITH Thisform
+	.nCenterRotate = +10
+	.imgcanvas1.Draw()
+ENDWITH
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1V80N1MPB
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label8
+[PARENT] Form1.Container1
+[START PROPERTIES]
+FontBold = .T.
+WordWrap = .T.
+Caption = "Rotate Center"
+Height = 29
+Left = 392
+Top = 48
+Width = 36
+Name = "Label8"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1TP0L3VWK
 [CLASS] commandbutton
 [BASECLASS] commandbutton
 [OBJNAME] Command2
