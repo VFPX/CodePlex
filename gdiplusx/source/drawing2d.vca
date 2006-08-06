@@ -3591,7 +3591,6 @@ drawing.h[END RESERVED8]
 [BASECLASS] custom
 [OBJNAME] xfcmatrix
 [START PROPERTIES]
-elements = 0
 isidentity = 0
 isinvertible = 0
 offsetx = 0
@@ -3756,7 +3755,7 @@ DECLARE LONG GdipTransformMatrixPoints IN GDIPLUS LONG matrix, STRING @pts, LONG
 DECLARE LONG GdipTransformMatrixPointsI IN GDIPLUS LONG matrix, STRING @pts, LONG Count
 DECLARE LONG GdipVectorTransformMatrixPoints IN GDIPLUS LONG matrix, STRING @pts, LONG Count
 DECLARE LONG GdipVectorTransformMatrixPointsI IN GDIPLUS LONG matrix, STRING @pts, LONG Count
-DECLARE LONG GdipGetMatrixElements IN GDIPLUS LONG matrix, SINGLE @matrixOut
+DECLARE LONG GdipGetMatrixElements IN GDIPLUS LONG matrix, String @matrixOut
 DECLARE LONG GdipIsMatrixInvertible IN GDIPLUS LONG matrix, LONG @result
 DECLARE LONG GdipIsMatrixIdentity IN GDIPLUS LONG matrix, LONG @result
 DECLARE LONG GdipIsMatrixEqual IN GDIPLUS LONG matrix, LONG matrix2, LONG @result
@@ -3772,26 +3771,41 @@ PROCEDURE elements_access
 **
 ** History:
 **  2006/03/07: Auto Generated
+**	2006/08/05: BDurban - Coded
 *********************************************************************
+LPARAMETERS tiIndex
 
-******** DELETE THIS LINE TO PREVENT CODE FROM BEING OVERWRITTEN ********
-
-*!ToDo: Implement this function
 *!ToDo: Test this function
-ERROR 1999	&& Function not implemented
-RETURN NULL
 
-LOCAL lnValue
-m.lnValue = 0.0
+LOCAL leValue, lqMatrix
+m.leValue = 0.0
 
 LOCAL loExc AS Exception
 TRY
-	This.SetStatus(GdipGetMatrixElements(This.Handle, @lnMatrixOut))
+	DIMENSION This.Elements[6]
+	This.Elements = 0.0
+	
+	m.lqMatrix = REPLICATE(EMPTY_FLOAT,6)
+	This.SetStatus(GdipGetMatrixElements(This.Handle, @m.lqMatrix))
+	
+	DO CASE
+	CASE VARTYPE(m.tiIndex) = "Q"
+		m.leValue = m.lqMatrix
+		
+	CASE VARTYPE(m.tiIndex) = "N"
+		IF BETWEEN(m.tiIndex,1,6)
+			m.leValue = CTOBIN(SUBSTR(m.lqMatrix, (m.tiIndex-1)*4+1, 4), "n")
+		ELSE
+			*!ToDo: Error
+		ENDIF
+	OTHERWISE
+		*!ToDo: Error
+	ENDCASE
 
 CATCH TO loExc
 	THROW m.loExc
 ENDTRY
-RETURN m.lnValue
+RETURN m.leValue
 
 ** .NET Help ********************************************************
 ** http://msdn2.microsoft.com/en-us/library/System.Drawing.Drawing2D.Matrix.Elements%28vs.80%29.aspx
@@ -3844,7 +3858,6 @@ PROCEDURE gethashcode
 ** History:
 **  2006/03/07: Auto Generated
 *********************************************************************
-
 
 *!ToDo: Implement this function
 *!ToDo: Test this function
@@ -4012,26 +4025,12 @@ PROCEDURE offsetx_access
 **
 ** History:
 **  2006/03/07: Auto Generated
+**	2006/08/05: BDurban - Coded
 *********************************************************************
 
-******** DELETE THIS LINE TO PREVENT CODE FROM BEING OVERWRITTEN ********
-
-*!ToDo: Implement this function
 *!ToDo: Test this function
-ERROR 1999	&& Function not implemented
-RETURN NULL
 
-LOCAL lnValue
-m.lnValue = 0.0
-
-LOCAL loExc AS Exception
-TRY
-	** This.SetStatus(GdipSomeFunction???())
-
-CATCH TO loExc
-	THROW m.loExc
-ENDTRY
-RETURN m.lnValue
+RETURN This.Elements[5]
 
 ** .NET Help ********************************************************
 ** http://msdn2.microsoft.com/en-us/library/System.Drawing.Drawing2D.Matrix.OffsetX%28vs.80%29.aspx
@@ -4048,26 +4047,12 @@ PROCEDURE offsety_access
 **
 ** History:
 **  2006/03/07: Auto Generated
+**	2006/08/05: BDurban - Coded
 *********************************************************************
 
-******** DELETE THIS LINE TO PREVENT CODE FROM BEING OVERWRITTEN ********
-
-*!ToDo: Implement this function
 *!ToDo: Test this function
-ERROR 1999	&& Function not implemented
-RETURN NULL
 
-LOCAL lnValue
-m.lnValue = 0.0
-
-LOCAL loExc AS Exception
-TRY
-	** This.SetStatus(GdipSomeFunction???())
-
-CATCH TO loExc
-	THROW m.loExc
-ENDTRY
-RETURN m.lnValue
+RETURN This.Elements[6]
 
 ** .NET Help ********************************************************
 ** http://msdn2.microsoft.com/en-us/library/System.Drawing.Drawing2D.Matrix.OffsetY%28vs.80%29.aspx
@@ -4398,11 +4383,11 @@ Class[END RESERVED1]
 [START RESERVED2]
 1[END RESERVED2]
 [START RESERVED3]
-elements Gets an array of floating-point values that represents the elements of this Matrix object.
 isidentity Gets a value indicating whether this Matrix object is the identity matrix.
 isinvertible Gets a value indicating whether this Matrix object is invertible.
 offsetx Gets the x translation value (the dx value, or the element in the third row and first column) of this Matrix object.
 offsety Gets the y translation value (the dy value, or the element in the third row and second column) of this Matrix.
+^elements[1,0] Gets an array of floating-point values that represents the elements of this Matrix object.
 *clone Creates an exact copy of this Matrix object.
 *invert Inverts this Matrix object, if it is invertible.
 *multiply Multiplies this Matrix object by the specified Matrix object by prepending the specified Matrix.
@@ -4430,7 +4415,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcmatrix
 [START RESERVED1]
- 	 drawing.hN]¥ï4 system.hV0¥ï4 gdiplusconstants.h^	¹>Ï4[END RESERVED1]
+ 	 drawing.h®]¥ï4 system.h¶0¥ï4 gdiplusconstants.h¾¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
