@@ -172,32 +172,7 @@ WITH _SCREEN.SYSTEM.Drawing
 				loPathGradBrush = .Drawing2D.PathGradientBrush.New(loPath)
 				loPathGradBrush.CenterColor = .COLOR.FromRGB(THISFORM.ChangeColor(sales.nColor,THISFORM.Spinner1.VALUE * 20))
 
-*!* Please check this code, because the Method SurroundColors_Assign is not working
-*!*					DECLARE LONG GdipSetPathGradientSurroundColorsWithCount IN GDIPLUS LONG brush, String @argb, LONG @COUNT
-*!*					liCount = 1
-*!*					cCOlors = BINTOC(BITLSHIFT(0xff000000+sales.nColor,0),"4rs")
-*!*					=GdipSetPathGradientSurroundColorsWithCount(loPathGradBrush.GpHandle, @cColors, @liCount)
-				
 				loPathGradBrush.SurroundColors[1] = .Color.FromRGB(sales.nColor)
-
-*!* The correct would be to use this command instead of below:
-*!*		loPathGradBrush.SurroundColors = .Color.FromRGB(sales.nColor)
-*!*  OR
-*!*		loPathGradBrush.SurroundColors = .Color.NewArray(.Color.FromRGB(sales.nColor))
-
-
-*!*	In the DeclareDLL Method of xfcPAthGradientBrush, the line below appears twice:
-*!*	DECLARE LONG GdipGetPathGradientSurroundColorsWithCount IN GDIPLUS LONG brush, STRING @argb, LONG @Count
-*!*	DECLARE LONG GdipSetPathGradientSurroundColorsWithCount IN GDIPLUS LONG brush, STRING @argb, LONG @Count
-
-*!*	Note that I had to declare ARGB as LONG, instead of String.
-*!*	I agree that in the case of an array of color that should be a string,
-*!*	But for one color that does not work at all.
-
-*!*	Another point that you should see is that in the "lparameters", in the beginning of the method,
-*!*	*!*	LPARAMETERS toColor AS xfcColor, tiIndex
-*!*	As it is an "assign", can we send two parameters ???
-*!*  This way, tiIndex will always be logical, what will generate an error, or am I missing something ?
 
 				loMainBrush = loPathGradBrush
 
@@ -242,9 +217,6 @@ WITH _SCREEN.SYSTEM.Drawing
 				loPathGradBrush = .Drawing2D.PathGradientBrush.New(loPath)
 				loPathGradBrush.CenterColor = .COLOR.FromRGB(THISFORM.ChangeColor(sales.nColor,THISFORM.Spinner1.VALUE * 20))
 
-*!*					DECLARE LONG GdipSetPathGradientSurroundColorsWithCount IN GDIPLUS LONG brush, LONG @argb, LONG @COUNT
-*!*					liCount = 1
-*!*					=GdipSetPathGradientSurroundColorsWithCount(loPathGradBrush.GpHandle, THISFORM.MakeARGB(sales.nColor), @liCount)
 				loPathGradBrush.SurroundColors[1] = .Color.FromRGB(sales.nColor)
 
 				loMainBrush = loPathGradBrush
