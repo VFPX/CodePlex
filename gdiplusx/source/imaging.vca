@@ -356,7 +356,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcbitmapdata
 [START RESERVED1]
- 	 drawing.hFi]¥ï4 system.hNj0¥ï4 gdiplusconstants.hVk¹>Ï4[END RESERVED1]
+ 	 drawing.h^‰]¥ï4 system.hfŠ0¥ï4 gdiplusconstants.hn‹¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -470,7 +470,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfccolormap
 [START RESERVED1]
- 	 drawing.hFi]¥ï4 system.hNj0¥ï4 gdiplusconstants.hVk¹>Ï4[END RESERVED1]
+ 	 drawing.h^‰]¥ï4 system.hfŠ0¥ï4 gdiplusconstants.hn‹¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -505,9 +505,9 @@ matrix41 = 0
 matrix42 = 0
 matrix43 = 0
 matrix44 = 0
-basename = ColorMatrix
 _memberdata =     2183<VFPData><memberdata name="equals" type="method" display="Equals"/><memberdata name="gethashcode" type="method" display="GetHashCode"/><memberdata name="gettype" type="method" display="GetType"/><memberdata name="tostring" type="method" display="ToString"/><memberdata name="finalize" type="method" display="Finalize"/><memberdata name="memberwiseclone" type="method" display="MemberwiseClone"/><memberdata name="item" type="property" display="Item"/><memberdata name="matrix00" type="property" display="Matrix00"/><memberdata name="matrix01" type="property" display="Matrix01"/><memberdata name="matrix02" type="property" display="Matrix02"/><memberdata name="matrix03" type="property" display="Matrix03"/><memberdata name="matrix04" type="property" display="Matrix04"/><memberdata name="matrix10" type="property" display="Matrix10"/><memberdata name="matrix11" type="property" display="Matrix11"/><memberdata name="matrix12" type="property" display="Matrix12"/><memberdata name="matrix13" type="property" display="Matrix13"/><memberdata name="matrix14" type="property" display="Matrix14"/><memberdata name="matrix20" type="property" display="Matrix20"/><memberdata name="matrix21" type="property" display="Matrix21"/><memberdata name="matrix22" type="property" display="Matrix22"/><memberdata name="matrix23" type="property" display="Matrix23"/><memberdata name="matrix24" type="property" display="Matrix24"/><memberdata name="matrix30" type="property" display="Matrix30"/><memberdata name="matrix31" type="property" display="Matrix31"/><memberdata name="matrix32" type="property" display="Matrix32"/><memberdata name="matrix33" type="property" display="Matrix33"/><memberdata name="matrix34" type="property" display="Matrix34"/><memberdata name="matrix40" type="property" display="Matrix40"/><memberdata name="matrix41" type="property" display="Matrix41"/><memberdata name="matrix42" type="property" display="Matrix42"/><memberdata name="matrix43" type="property" display="Matrix43"/><memberdata name="matrix44" type="property" display="Matrix44"/><memberdata name="new" type="method" display="New"/><memberdata name="tovarbinary" type="method" display="ToVarBinary"/></VFPData>
 
+basename = ColorMatrix
 Name = "xfccolormatrix"
 [END PROPERTIES]
 [START PROTECTED]
@@ -1960,6 +1960,46 @@ ENDTRY
 RETURN NULL
 
 ENDPROC
+PROCEDURE multiply
+*********************************************************************
+** Method: Multiply
+**
+** Returns a new ColorMatrix resulting of the multiplication
+** of two color matrices
+**
+** History:
+** 2006/06/28: CBoyd - Coded
+*********************************************************************
+LPARAMETERS toColorMatrixOne, ;
+			toColorMatrixTwo
+LOCAL loCombinedMatrix, lnCounter, lnColumn, lnRow, lnCombinedValue
+m.loCombinedMatrix = NULL
+
+TRY
+   IF NOT(VARTYPE(m.toColorMatrixOne)+VARTYPE(m.toColorMatrixOne)=="OO")
+      *! ToDo: Error?
+      EXIT
+   ENDIF
+
+   m.loCombinedMatrix = This.New()
+   FOR m.lnCounter = 1 TO 5
+      FOR m.lnRow = 1 TO 5
+         m.lnCombinedValue = 0
+         FOR m.lnColumn = 1 TO 5
+             m.lnCombinedValue = m.lnCombinedValue + ;
+                (m.toColorMatrixTwo.Item(m.lnRow, m.lnColumn) * ;
+                m.toColorMatrixOne.Item(m.lnColumn, m.lnCounter))
+         ENDFOR
+         m.loCombinedMatrix.Item(m.lnRow, m.lnCounter) = m.lnCombinedValue
+      ENDFOR
+   ENDFOR
+
+CATCH TO loExc
+   THROW m.loExc
+
+ENDTRY
+RETURN m.loCombinedMatrix
+ENDPROC
 PROCEDURE new
 LPARAMETERS tanMatrixOr00, ;
 			tn01, tn02, tn03, tn04, ;
@@ -2100,6 +2140,7 @@ matrix44 Gets or sets the element at the 4th row and 4th column of this ColorMat
 ^item_[5,5] 
 ^item[5,5] Returns a specified member of a Collection object.
 *tovarbinary 
+*multiply 
 [END RESERVED3]
 [START RESERVED6]
 Pixels[END RESERVED6]
@@ -2111,7 +2152,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfccolormatrix
 [START RESERVED1]
- 	 drawing.hFi]¥ï4 system.hNj0¥ï4 gdiplusconstants.hVk¹>Ï4[END RESERVED1]
+ 	 drawing.hÖª]¥ï4 system.hÞ«0¥ï4 gdiplusconstants.hæ¬¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -2359,7 +2400,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfccolorpalette
 [START RESERVED1]
- 	 drawing.hFi]¥ï4 system.hNj0¥ï4 gdiplusconstants.hVk¹>Ï4[END RESERVED1]
+ 	 drawing.h^‰]¥ï4 system.hfŠ0¥ï4 gdiplusconstants.hn‹¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -2747,7 +2788,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcencoder
 [START RESERVED1]
- 	 drawing.hFi]¥ï4 system.hNj0¥ï4 gdiplusconstants.hVk¹>Ï4[END RESERVED1]
+ 	 drawing.h^‰]¥ï4 system.hfŠ0¥ï4 gdiplusconstants.hn‹¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -3229,7 +3270,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcencoderparameter
 [START RESERVED1]
- 	 drawing.h6$]¥ï4 system.h>%0¥ï4 gdiplusconstants.hF&¹>Ï4[END RESERVED1]
+ 	 drawing.h^‰]¥ï4 system.hfŠ0¥ï4 gdiplusconstants.hn‹¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -3461,7 +3502,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcencoderparameters
 [START RESERVED1]
- 	 drawing.hFi]¥ï4 system.hNj0¥ï4 gdiplusconstants.hVk¹>Ï4[END RESERVED1]
+ 	 drawing.h^‰]¥ï4 system.hfŠ0¥ï4 gdiplusconstants.hn‹¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -3777,7 +3818,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcframedimension
 [START RESERVED1]
- 	 drawing.hFi]¥ï4 system.hNj0¥ï4 gdiplusconstants.hVk¹>Ï4[END RESERVED1]
+ 	 drawing.h^‰]¥ï4 system.hfŠ0¥ï4 gdiplusconstants.hn‹¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -4685,7 +4726,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcimageattributes
 [START RESERVED1]
- 	 drawing.hFi]¥ï4 system.hNj0¥ï4 gdiplusconstants.hVk¹>Ï4[END RESERVED1]
+ 	 drawing.h^‰]¥ï4 system.hfŠ0¥ï4 gdiplusconstants.hn‹¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -5516,7 +5557,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcimagecodecinfo
 [START RESERVED1]
- 	 drawing.hæc]¥ï4 system.hîd0¥ï4 gdiplusconstants.höe¹>Ï4[END RESERVED1]
+ 	 drawing.h^‰]¥ï4 system.hfŠ0¥ï4 gdiplusconstants.hn‹¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -6092,7 +6133,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcimageformat
 [START RESERVED1]
- 	 drawing.hFi]¥ï4 system.hNj0¥ï4 gdiplusconstants.hVk¹>Ï4[END RESERVED1]
+ 	 drawing.h^‰]¥ï4 system.hfŠ0¥ï4 gdiplusconstants.hn‹¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -6669,7 +6710,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcmetafileheader
 [START RESERVED1]
- 	 drawing.hFi]¥ï4 system.hNj0¥ï4 gdiplusconstants.hVk¹>Ï4[END RESERVED1]
+ 	 drawing.h^‰]¥ï4 system.hfŠ0¥ï4 gdiplusconstants.hn‹¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -7027,7 +7068,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcmetaheader
 [START RESERVED1]
- 	 drawing.hFi]¥ï4 system.hNj0¥ï4 gdiplusconstants.hVk¹>Ï4[END RESERVED1]
+ 	 drawing.h^‰]¥ï4 system.hfŠ0¥ï4 gdiplusconstants.hn‹¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -7463,7 +7504,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcpropertyitem
 [START RESERVED1]
- 	 drawing.hFi]¥ï4 system.hNj0¥ï4 gdiplusconstants.hVk¹>Ï4[END RESERVED1]
+ 	 drawing.h^‰]¥ï4 system.hfŠ0¥ï4 gdiplusconstants.hn‹¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -7884,7 +7925,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcwmfplaceablefileheader
 [START RESERVED1]
- 	 drawing.hFi]¥ï4 system.hNj0¥ï4 gdiplusconstants.hVk¹>Ï4[END RESERVED1]
+ 	 drawing.h^‰]¥ï4 system.hfŠ0¥ï4 gdiplusconstants.hn‹¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -8292,5 +8333,5 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcmetafile
 [START RESERVED1]
- 	 drawing.hFi]¥ï4 system.hNj0¥ï4 gdiplusconstants.hVk¹>Ï4[END RESERVED1]
+ 	 drawing.h^‰]¥ï4 system.hfŠ0¥ï4 gdiplusconstants.hn‹¹>Ï4[END RESERVED1]
 [EOF]
