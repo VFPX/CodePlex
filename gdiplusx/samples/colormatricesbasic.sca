@@ -1,0 +1,421 @@
+SCCTEXT Version 4.0.0.2
+PLATFORM C(8,0),UNIQUEID C(10,0),TIMESTAMP N(10,0),CLASS M(4,0),CLASSLOC M(4,0),BASECLASS M(4,0),OBJNAME M(4,0),PARENT M(4,0),PROPERTIES M(4,0),PROTECTED M(4,0),METHODS M(4,0),OBJCODE M(4,0),OLE M(4,0),OLE2 M(4,0),RESERVED1 M(4,0),RESERVED2 M(4,0),RESERVED3 M(4,0),RESERVED4 M(4,0),RESERVED5 M(4,0),RESERVED6 M(4,0),RESERVED7 M(4,0),RESERVED8 M(4,0),USER M(4,0)
+1252
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] Screen    
+[START RESERVED1]
+VERSION =   3.00[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1TP0L3VWK
+[CLASS] dataenvironment
+[BASECLASS] dataenvironment
+[OBJNAME] Dataenvironment
+[START PROPERTIES]
+Top = 220
+Left = 1
+Width = 520
+Height = 200
+DataSource = .NULL.
+Name = "Dataenvironment"
+[END PROPERTIES]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED4]
+1[END RESERVED4]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1TP0L3VWL
+[CLASS] form
+[BASECLASS] form
+[OBJNAME] Form1
+[START PROPERTIES]
+Top = 7
+Left = 7
+Height = 337
+Width = 516
+DoCreate = .T.
+Caption = "Image transformations using Color Matrices"
+obmp = 0
+oclrmatrix = 0
+Name = "Form1"
+[END PROPERTIES]
+[START RESERVED3]
+obmp
+oclrmatrix
+[END RESERVED3]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1TZ0QGKPH
+[CLASS] imgcanvas
+[CLASSLOC] ..\source\gdiplusx.vcx
+[BASECLASS] image
+[OBJNAME] Imgcanvas1
+[PARENT] Form1
+[START PROPERTIES]
+Anchor = 15
+Height = 180
+Left = 264
+Top = 12
+Width = 240
+Name = "Imgcanvas1"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE beforedraw
+IF EMPTY(Thisform.txtFile.Value)
+	RETURN
+ENDIF
+
+This.Clear
+
+LOCAL loAttr AS xfcImageAttributes
+LOCAL loClrMatrix AS xfcColorMatrix
+
+WITH _SCREEN.System.Drawing
+
+	loAttr = .Imaging.ImageAttributes.New()
+	loAttr.SetColorMatrix(Thisform.oClrMatrix)
+	This.oGfx.DrawImage(Thisform.oBmp, This.Rectangle, Thisform.oBmp.GetBounds(), 2, loAttr)
+
+ENDWITH
+
+RETURN
+
+
+FOR i = 0 TO 4
+  loCmtrx.Matrix33 = i*.25  && Set the Alpha channel
+  loAttr.SetColorMatrix(loCmtrx)
+  loRect.X = i*100
+  loRect.Y = i*25
+  loGfx.DrawImage(loImg, loRect, loImg.GetBounds(), 2, loAttr)
+ENDFOR
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1U40L3TVH
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] txtFile
+[PARENT] Form1
+[START PROPERTIES]
+FontSize = 8
+Anchor = 6
+Enabled = .F.
+Height = 25
+Left = 120
+Top = 204
+Width = 384
+DisabledBackColor = 255,255,255
+DisabledForeColor = 0,0,0
+Name = "txtFile"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1U40LO0FY
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] Image1
+[PARENT] Form1
+[START PROPERTIES]
+Anchor = 3
+Stretch = 2
+Height = 180
+Left = 12
+Top = 12
+Width = 240
+Name = "Image1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1U40NTQI6
+[CLASS] container
+[BASECLASS] container
+[OBJNAME] Container1
+[PARENT] Form1
+[START PROPERTIES]
+Anchor = 6
+Top = 252
+Left = 4
+Width = 500
+Height = 84
+BackStyle = 0
+BorderWidth = 0
+Visible = .F.
+Name = "Container1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1TP0L3VWK
+[CLASS] container
+[BASECLASS] container
+[OBJNAME] Container1
+[PARENT] Form1.Container1
+[START PROPERTIES]
+Top = 4
+Left = 12
+Width = 485
+Height = 78
+SpecialEffect = 0
+Name = "Container1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1TP0L3VWK
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] Command1
+[PARENT] Form1.Container1
+[START PROPERTIES]
+Top = 11
+Left = 23
+Height = 25
+Width = 98
+Anchor = 12
+Caption = "GreyScale 1"
+Name = "Command1"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+WITH Thisform
+	Thisform.oClrMatrix = _Screen.System.Drawing.Imaging.ColorMatrix.New( ;
+        0.33, 0.33, 0.33, 0.0, 0.0, ;
+        0.33, 0.33, 0.33, 0.0, 0.0, ;
+        0.33, 0.33, 0.33, 0.0, 0.0, ;
+        0.0 , 0.0 , 0.0 , 1.0, 0.0, ;
+        0.0 , 0.0 , 0.0 , 0.0, 1.0)
+	.imgcanvas1.Draw()
+ENDWITH
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1V81F5ATY
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] Command2
+[PARENT] Form1.Container1
+[START PROPERTIES]
+Top = 11
+Left = 143
+Height = 25
+Width = 98
+Anchor = 12
+Caption = "GreyScale 2"
+Name = "Command2"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+WITH Thisform
+	Thisform.oClrMatrix = _Screen.System.Drawing.Imaging.ColorMatrix.New( ;
+	 .299, .299, .299, 0, 0, ;
+	 .587, .587, .587, 0, 0, ;
+	 .114, .114, .114, 0, 0, ;
+     0   ,    0,    0, 1, 0, ;
+	 0   ,    0,    0, 0, 1)
+	 .imgcanvas1.Draw()
+ENDWITH
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1TP0L3VWK
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] Command3
+[PARENT] Form1.Container1
+[START PROPERTIES]
+Top = 47
+Left = 23
+Height = 25
+Width = 98
+Anchor = 12
+Caption = "Red"
+Name = "Command3"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+WITH Thisform
+	Thisform.oClrMatrix = _Screen.System.Drawing.Imaging.ColorMatrix.New( ;
+	 1, 0, 0, 0, 0, ;
+	 0, 0, 0, 0, 0, ;
+	 0, 0, 0, 0, 0, ;
+     0, 0, 0, 1, 0, ;
+	 0, 0, 0, 0, 1)
+	.imgcanvas1.Draw()
+ENDWITH
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1V81F5ATZ
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] Command4
+[PARENT] Form1.Container1
+[START PROPERTIES]
+Top = 47
+Left = 263
+Height = 25
+Width = 98
+Anchor = 12
+Caption = "Blue"
+Name = "Command4"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+WITH Thisform
+	Thisform.oClrMatrix = _Screen.System.Drawing.Imaging.ColorMatrix.New( ;
+	 0, 0, 0, 0, 0, ;
+	 0, 0, 0, 0, 0, ;
+	 0, 0, 1, 0, 0, ;
+     0, 0, 0, 1, 0, ;
+	 0, 0, 0, 0, 1)
+	.imgcanvas1.Draw()
+ENDWITH
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1V81F5AU0
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] Command5
+[PARENT] Form1.Container1
+[START PROPERTIES]
+Top = 47
+Left = 143
+Height = 25
+Width = 98
+Anchor = 12
+Caption = "Green"
+Name = "Command5"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+WITH Thisform
+	Thisform.oClrMatrix = _Screen.System.Drawing.Imaging.ColorMatrix.New( ;
+	 0, 0, 0, 0, 0, ;
+	 0, 1, 0, 0, 0, ;
+	 0, 0, 0, 0, 0, ;
+     0, 0, 0, 1, 0, ;
+	 0, 0, 0, 0, 1)
+	.imgcanvas1.Draw()
+ENDWITH
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1V81F5AU1
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] Command6
+[PARENT] Form1.Container1
+[START PROPERTIES]
+Top = 11
+Left = 263
+Height = 25
+Width = 98
+Anchor = 12
+Caption = "Negative"
+Name = "Command6"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+WITH Thisform
+	Thisform.oClrMatrix = _Screen.System.Drawing.Imaging.ColorMatrix.New( ;
+	 -1,  0,  0, 0, 0, ;
+	 0 , -1,  0, 0, 0, ;
+	 0 ,  0, -1, 0, 0, ;
+     0 ,  0,  0, 1, 0, ;
+	 1 ,  1,  1, 0, 1)
+	.imgcanvas1.Draw()
+ENDWITH
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1V81F5AU2
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] Command7
+[PARENT] Form1.Container1
+[START PROPERTIES]
+Top = 11
+Left = 384
+Height = 25
+Width = 98
+Anchor = 12
+Caption = "Restore"
+Name = "Command7"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+WITH Thisform
+	Thisform.oClrMatrix = _Screen.System.Drawing.Imaging.ColorMatrix.New()
+	.imgcanvas1.Draw()
+ENDWITH
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1TP0L3VWK
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] Command2
+[PARENT] Form1
+[START PROPERTIES]
+Top = 204
+Left = 12
+Height = 25
+Width = 98
+Anchor = 6
+Picture = (home() + "/graphics/bitmaps/outline/open.bmp")
+Caption = "Get Picture"
+PicturePosition = 1
+PictureSpacing = 1
+Name = "Command2"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+lcFile = GETPICT()
+IF EMPTY(lcFile)
+	RETURN
+ENDIF
+
+WITH Thisform
+	.Container1.Visible = .T.
+	.txtFile.Value = lcFile
+	.Image1.Picture = lcFile
+	.obmp = _Screen.System.Drawing.Bitmap.New(Thisform.txtFile.Value)
+	.oClrMatrix = _Screen.System.Drawing.Imaging.ColorMatrix.New()
+	.Imgcanvas1.Draw()
+ENDWITH
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[START PROPERTIES]
+Arial, 0, 9, 5, 15, 12, 32, 3, 0
+Arial, 0, 8, 5, 14, 11, 29, 3, 0
+[END PROPERTIES]
+[EOF]
