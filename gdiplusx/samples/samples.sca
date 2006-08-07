@@ -38,7 +38,7 @@ Name = "Dataenvironment"
 Top = 20
 Left = 10
 Height = 90
-Width = 91
+Width = 126
 Alias = "gdiplusxsamples"
 CursorSource = gdiplusxsamples.dbf
 Name = "Cursor1"
@@ -80,7 +80,7 @@ ENDPROC
 Anchor = 15
 RowSourceType = 2
 RowSource = "gdiplusxsamples"
-Height = 240
+Height = 233
 Left = 12
 Top = 12
 Width = 252
