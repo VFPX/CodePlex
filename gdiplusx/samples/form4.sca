@@ -61,36 +61,45 @@ Name = "Imgcanvas1"
 [END PROPERTIES]
 [START METHODS]
 PROCEDURE beforedraw
-WITH _SCREEN.SYSTEM.drawing
+LOCAL aNames[1], p, y, nLineCap
+
+WITH _SCREEN.System.Drawing
 	THIS.CLEAR()
 	DO CASE
-		CASE THISFORM.optiongroup1.VALUE = 1
-			P = .PEN.New(.COLOR.Black, 20)
-			Y = 20
-			aNames = _Screen.SYSTEM.Enum.GetNames(.Drawing2D.LineCap)
-			FOR i = 1 TO ALEN(aNames)
-				LineCap = _SCREEN.SYSTEM.Enum.Parse(.Drawing2D.LineCap, aNames(i))
-				p.StartCap = LineCap
-				p.EndCap = LineCap
-				THIS.oGfx.DrawLine(p, 30, Y, 230, Y)
-				THIS.oGfx.DrawString(aNames(i), .FONT, .Brushes.Black, 260, Y - 10, .StringFormat.GenericTypographic)
-				Y = Y + 40
-			NEXT
-		CASE THISFORM.optiongroup1.VALUE = 2
-			P = .PEN.New(.COLOR.Black, 10)
-			Y = 20
-			aNames = _Screen.SYSTEM.Enum.GetNames(.Drawing2D.DashStyle)
-			FOR i = 1 TO ALEN(aNames)
-				p.DashStyle = _screen.SYSTEM.Enum.Parse(.Drawing2D.DashStyle, aNames(i))
-				THIS.oGfx.DrawLine(p, 20, Y, 420, Y)
-				THIS.oGfx.DrawString(aNames(i), .FONT, .Brushes.Black, 440, Y - 10, .StringFormat.GenericTypographic)
-				Y = Y + 40
-			ENDFOR
-		CASE THISFORM.optiongroup1.VALUE = 3
-			p = .PEN.New(.COLOR.Black, 20)
-			p.CompoundArray = _SCREEN.System.SINGLE.NewArray(0, 0.2, 0.3, 0.6, 0.7, 1)
-			THIS.oGfx.DrawRectangle(p, 20, 20, 200, 150)
-			THIS.oGfx.DrawEllipse(p, 20, 200, 200, 150)
+	** LineCap *************************************
+	CASE ThisForm.OptionGroup1.Value = 1
+		m.p = .Pen.New(.Color.Black, 20)
+		m.y = 20
+		** Get an array of all the LineCap enumeration names
+		aNames = _SCREEN.System.Enum.GetNames(.Drawing2D.LineCap)
+		FOR i = 1 TO ALEN(aNames)
+			nLineCap = _SCREEN.System.Enum.Parse(.Drawing2D.LineCap, aNames(i))
+			p.StartCap = nLineCap
+			p.EndCap = nLineCap
+			This.oGfx.DrawLine(p, 30, Y, 230, Y)
+			This.oGfx.DrawString(aNames(i), .Font.New("Arial",10), .Brushes.Black, 260, m.y-10, .StringFormat.GenericTypographic)
+			m.y = m.y + 40
+		NEXT
+		
+	** DashStyle ***********************************
+	CASE ThisForm.OptionGroup1.Value = 2
+		m.p = .Pen.New(.Color.Black, 10)
+		m.y = 20
+		** Get an array of all the DashStyle enumeration names
+		aNames = _SCREEN.System.Enum.GetNames(.Drawing2D.DashStyle)
+		FOR i = 1 TO ALEN(aNames)
+			p.DashStyle = _SCREEN.System.Enum.Parse(.Drawing2D.DashStyle, aNames(i))
+			This.oGfx.DrawLine(m.p, 20, m.y, 420, m.y)
+			This.oGfx.DrawString(aNames(i), .Font.New("Arial",10), .Brushes.Black, 440, m.y-10, .StringFormat.GenericTypographic)
+			m.y = m.y + 40
+		ENDFOR
+		
+	** Compound lines ******************************
+	CASE ThisForm.OptionGroup1.Value = 3
+		p = .Pen.New(.Color.Black, 20)
+		p.CompoundArray = _SCREEN.System.Single.NewArray(0, 0.2, 0.3, 0.6, 0.7, 1)
+		This.oGfx.DrawRectangle(p, 20, 20, 200, 150)
+		This.oGfx.DrawEllipse(p, 20, 200, 200, 150)
 	ENDCASE
 ENDWITH
 
