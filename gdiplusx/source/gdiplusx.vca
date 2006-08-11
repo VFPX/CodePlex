@@ -30,6 +30,7 @@ rectangle = (NULL)
 smoothingmode = 4
 textrenderinghint = 3
 interpolationmode = 7
+obmp = (NULL)
 Name = "imgcanvas"
 [END PROPERTIES]
 [START PROTECTED]
@@ -163,6 +164,7 @@ IF This.HDC <> 0
 	DeleteObject(hBitmap)
 	DeleteDC(This.HDC)
 	This.HDC = 0
+	This.oBMP = NULL
 ENDIF
 ENDPROC
 PROCEDURE draw
@@ -178,6 +180,28 @@ LPARAMETERS vNewVal
 *To do: Modify this routine for the Assign method
 THIS.InterpolationMode = m.vNewVal
 This.oGfx.InterpolationMode = m.vNewVal
+
+ENDPROC
+PROCEDURE obmp_access
+*********************************************************************
+** Method: oBMP_Access
+**
+** Creates a Bitmap object for the current off screen bitmap
+**
+** History:
+**  2006/08/10: BDurban/CChalom - Coded
+*********************************************************************
+
+#DEFINE OBJ_BITMAP	7
+LOCAL hBitmap
+
+
+IF VARTYPE(This.oBmp) <> "O" AND This.HDC <> 0
+	m.hBitmap = GetCurrentObject(This.HDC, OBJ_BITMAP)
+	This.oBmp = _SCREEN.System.Drawing.Image.FromHBitmap(m.hBitmap)
+ENDIF
+
+RETURN This.oBmp
 
 ENDPROC
 PROCEDURE rectangle_access
@@ -285,17 +309,14 @@ PROCEDURE save
 **
 ** History:
 **  2006/08/05: BDurban/CChalom - Added save method
+**  2006/08/10: BDurban - Changed to use new oBMP property
 *********************************************************************
 LPARAMETERS tcFilename ;
 			, toEncoder AS xfcImageCodecInfo, toEncoderParams AS xfcEncoderParameters
 			
 LOCAL loExc
 TRY
-	m.hdc = This.HDC
-	m.hBitmap = GetCurrentObject(m.hdc, OBJ_BITMAP)
-
-	oImg = _SCREEN.System.Drawing.Image.FromHBitmap(m.hBitmap)
-	oImg.Save(m.tcFilename, m.toEncoder, m.toEncoderParams)
+	This.oBMP.Save(m.tcFilename, m.toEncoder, m.toEncoderParams)
 	
 CATCH TO m.loExc
 	THROW m.loExc
@@ -336,6 +357,7 @@ rectangle
 smoothingmode
 textrenderinghint
 interpolationmode
+obmp
 *draw Repaints a Form object.
 *clear Clears the contents of a ComboBox or ListBox control.
 *beforedraw 
@@ -351,6 +373,7 @@ interpolationmode
 *textrenderinghint_assign 
 *interpolationmode_assign 
 *save 
+*obmp_access 
 [END RESERVED3]
 [START RESERVED6]
 Pixels[END RESERVED6]
@@ -362,7 +385,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] imgcanvas
 [START RESERVED1]
- 	 drawing.hÖô]¥ï4 system.hÞõ0¥ï4 gdiplusconstants.hæö¹>Ï4[END RESERVED1]
+ 	 drawing.höýãM5 system.hþþ0¥ï4 gdiplusconstants.h ¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
