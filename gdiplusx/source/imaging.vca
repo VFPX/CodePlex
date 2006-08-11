@@ -356,7 +356,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcbitmapdata
 [START RESERVED1]
- 	 drawing.h^‰]¥ï4 system.hfŠ0¥ï4 gdiplusconstants.hn‹¹>Ï4[END RESERVED1]
+ 	 drawing.hÞ]¥ï4 system.hæ0¥ï4 gdiplusconstants.hî¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -368,9 +368,9 @@ drawing.h[END RESERVED8]
 [START PROPERTIES]
 newcolor = 0
 oldcolor = 0
-basename = ColorMap
 _memberdata =      603<VFPData><memberdata name="equals" type="method" display="Equals"/><memberdata name="gethashcode" type="method" display="GetHashCode"/><memberdata name="gettype" type="method" display="GetType"/><memberdata name="tostring" type="method" display="ToString"/><memberdata name="finalize" type="method" display="Finalize"/><memberdata name="memberwiseclone" type="method" display="MemberwiseClone"/><memberdata name="newcolor" type="property" display="NewColor"/><memberdata name="oldcolor" type="property" display="OldColor"/><memberdata name="tovarbinary" type="method" display="ToVarbinary"/></VFPData>
 
+basename = ColorMap
 Name = "xfccolormap"
 [END PROPERTIES]
 [START PROTECTED]
@@ -418,35 +418,30 @@ PROCEDURE tovarbinary
 ** Returns a binary representation of this ColorMap structure
 **
 ** History:
-**	2006/05/02: BDurban - Coded
+** 2006/05/02: BDurban - Coded
+** 2006/08/08: CChalom - Updated and Tested
 *********************************************************************
-LPARAMETERS taColorMap AS xfcColorMap, tiCount
-
-LOCAL lqBinary, liColor1, liColor2, loColorMap
+LPARAMETERS taColorMap AS xfcColorMap
+LOCAL lqBinary, loColorMap
 m.lqBinary = 0h
-m.tiCount = 0
-
 DO CASE
 CASE PCOUNT() = 0
 	m.lqBinary = 0h+;
-		BINTOC(This.OldColor.Argb, "4rs")+;
-		BINTOC(This.NewColor.Argb, "4rs")
-		
+	BINTOC(This.OldColor.Argb, "4rs")+;
+	BINTOC(This.NewColor.Argb, "4rs")
+
 CASE TYPE("taColorMap[1]") = "O"
 	FOR EACH loColorMap AS xfcColorMap IN taColorMap FOXOBJECT
 		m.lqBinary = m.lqBinary + m.loColorMap.ToVarbinary()
-		m.tiCount = m.tiCount + 1
 	ENDFOR
-
+	
 CASE VARTYPE(m.taPoint) = "O"
 	m.loColorMap = m.taColorMap
 	m.lqBinary = m.loColorMap.ToVarbinary()
-	m.tiCount = 1
 	
 CASE VARTYPE(m.taColorMap) = "N"
 	** Test
 ENDCASE
-
 RETURN m.lqBinary
 
 ENDPROC
@@ -470,7 +465,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfccolormap
 [START RESERVED1]
- 	 drawing.h^‰]¥ï4 system.hfŠ0¥ï4 gdiplusconstants.hn‹¹>Ï4[END RESERVED1]
+ 	 drawing.hÆ ãM5 system.hÎ¡0¥ï4 gdiplusconstants.hÖ¢¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -2152,7 +2147,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfccolormatrix
 [START RESERVED1]
- 	 drawing.hÖª]¥ï4 system.hÞ«0¥ï4 gdiplusconstants.hæ¬¹>Ï4[END RESERVED1]
+ 	 drawing.hÞ]¥ï4 system.hæ0¥ï4 gdiplusconstants.hî¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -2400,7 +2395,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfccolorpalette
 [START RESERVED1]
- 	 drawing.h^‰]¥ï4 system.hfŠ0¥ï4 gdiplusconstants.hn‹¹>Ï4[END RESERVED1]
+ 	 drawing.hÞ]¥ï4 system.hæ0¥ï4 gdiplusconstants.hî¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -2788,7 +2783,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcencoder
 [START RESERVED1]
- 	 drawing.h^‰]¥ï4 system.hfŠ0¥ï4 gdiplusconstants.hn‹¹>Ï4[END RESERVED1]
+ 	 drawing.hÞ]¥ï4 system.hæ0¥ï4 gdiplusconstants.hî¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -3270,7 +3265,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcencoderparameter
 [START RESERVED1]
- 	 drawing.h^‰]¥ï4 system.hfŠ0¥ï4 gdiplusconstants.hn‹¹>Ï4[END RESERVED1]
+ 	 drawing.hÞ]¥ï4 system.hæ0¥ï4 gdiplusconstants.hî¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -3280,10 +3275,10 @@ drawing.h[END RESERVED8]
 [BASECLASS] custom
 [OBJNAME] xfcencoderparameters
 [START PROPERTIES]
-basename = EncoderParameters
 _handle = 0
-_memberdata =      599<VFPData><memberdata name="dispose" type="method" display="Dispose"/><memberdata name="equals" type="method" display="Equals"/><memberdata name="gethashcode" type="method" display="GetHashCode"/><memberdata name="gettype" type="method" display="GetType"/><memberdata name="tostring" type="method" display="ToString"/><memberdata name="finalize" type="method" display="Finalize"/><memberdata name="memberwiseclone" type="method" display="MemberwiseClone"/><memberdata name="param" type="property" display="Param"/><memberdata name="tomemoryhandle" type="method" display="ToMemoryHandle"/></VFPData>
+_memberdata =      667<VFPData><memberdata name="dispose" type="method" display="Dispose"/><memberdata name="equals" type="method" display="Equals"/><memberdata name="gethashcode" type="method" display="GetHashCode"/><memberdata name="gettype" type="method" display="GetType"/><memberdata name="tostring" type="method" display="ToString"/><memberdata name="finalize" type="method" display="Finalize"/><memberdata name="memberwiseclone" type="method" display="MemberwiseClone"/><memberdata name="param" type="property" display="Param"/><memberdata name="tomemoryhandle" type="method" display="ToMemoryHandle"/><memberdata name="tovarbinary" type="method" display="ToVarbinary"/></VFPData>
 
+basename = EncoderParameters
 Name = "xfcencoderparameters"
 [END PROPERTIES]
 [START PROTECTED]
@@ -3447,6 +3442,14 @@ RETURN NULL
 *********************************************************************
 ENDPROC
 PROCEDURE tomemoryhandle
+*********************************************************************
+** Method: ToMemoryHandle
+**
+** Returns a memory pointer for this EncoderParameters data
+**
+** History:
+**	2006/08/08: BDurban - Coded
+*********************************************************************
 DECLARE LONG LocalAlloc IN WIN32API LONG uFlags, LONG uBytes
 DECLARE LONG LocalFree IN WIN32API LONG HMEM
 
@@ -3462,7 +3465,7 @@ IF VARTYPE(This.Param[1]) <> "O"
 ENDIF
 
 m.lnParamCnt = ALEN(This.Param,1)
-This._handle = LocalAlloc(0x0040, m.lnParamCnt*SIZEOF_ENCODERPARAMETER)
+This._handle = LocalAlloc(0x0040, m.lnParamCnt*SIZEOF_ENCODERPARAMETER+SIZEOF_LONG)
 m.lnPos = This._handle
 
 SYS(2600,This._handle, 4, BINTOC(m.lnParamCnt,"4rs"))
@@ -3480,6 +3483,36 @@ ENDFOR
 RETURN This._handle
 
 ENDPROC
+PROCEDURE tovarbinary
+*********************************************************************
+** Method: ToVarbinary
+**
+** Returns this EncoderParameters as a binary string
+**
+** History:
+**	2006/08/10: BDurban - Coded
+*********************************************************************
+LOCAL lqEncoders, lnParamCnt, lnLoop, loParam
+
+m.lnParamCnt = ALEN(This.Param,1)
+IF VARTYPE(This.Param[1]) <> "O"
+	m.lnParamCnt = 0
+ENDIF
+
+m.lqEncoders = BINTOC(m.lnParamCnt,"4rs")
+
+FOR m.lnLoop = 1 TO m.lnParamCnt
+	m.loParam = This.Param[m.lnLoop]
+	IF VARTYPE(m.loParam) = "O"
+		m.lqEncoders = m.lqEncoders + m.loParam.ToVarBinary()
+	ELSE
+		m.lqEncoders = m.lqEncoders + REPLICATE(0h00, SIZEOF_ENCODERPARAMETER)
+	ENDIF
+ENDFOR
+
+RETURN m.lqEncoders
+
+ENDPROC
 [END METHODS]
 [START RESERVED1]
 Class[END RESERVED1]
@@ -3491,6 +3524,7 @@ _handle
 ^param[1,0] 
 *param_assign 
 *tomemoryhandle 
+*tovarbinary 
 [END RESERVED3]
 [START RESERVED6]
 Pixels[END RESERVED6]
@@ -3502,7 +3536,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcencoderparameters
 [START RESERVED1]
- 	 drawing.h^‰]¥ï4 system.hfŠ0¥ï4 gdiplusconstants.hn‹¹>Ï4[END RESERVED1]
+ 	 drawing.hîãM5 system.hö0¥ï4 gdiplusconstants.hþ¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -3818,7 +3852,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcframedimension
 [START RESERVED1]
- 	 drawing.h^‰]¥ï4 system.hfŠ0¥ï4 gdiplusconstants.hn‹¹>Ï4[END RESERVED1]
+ 	 drawing.hÞ]¥ï4 system.hæ0¥ï4 gdiplusconstants.hî¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -3828,8 +3862,8 @@ drawing.h[END RESERVED8]
 [BASECLASS] custom
 [OBJNAME] xfcimageattributes
 [START PROPERTIES]
-basename = ImageAttributes
 _memberdata =     2121<VFPData><memberdata name="clearbrushremaptable" type="method" display="ClearBrushRemapTable"/><memberdata name="clearcolorkey" type="method" display="ClearColorKey"/><memberdata name="clearcolormatrix" type="method" display="ClearColorMatrix"/><memberdata name="cleargamma" type="method" display="ClearGamma"/><memberdata name="clearnoop" type="method" display="ClearNoOp"/><memberdata name="clearoutputchannel" type="method" display="ClearOutputChannel"/><memberdata name="clearoutputchannelcolorprofile" type="method" display="ClearOutputChannelColorProfile"/><memberdata name="clearremaptable" type="method" display="ClearRemapTable"/><memberdata name="clearthreshold" type="method" display="ClearThreshold"/><memberdata name="clone" type="method" display="Clone"/><memberdata name="dispose" type="method" display="Dispose"/><memberdata name="equals" type="method" display="Equals"/><memberdata name="getadjustedpalette" type="method" display="GetAdjustedPalette"/><memberdata name="gethashcode" type="method" display="GetHashCode"/><memberdata name="gettype" type="method" display="GetType"/><memberdata name="setbrushremaptable" type="method" display="SetBrushRemapTable"/><memberdata name="setcolorkey" type="method" display="SetColorKey"/><memberdata name="setcolormatrices" type="method" display="SetColorMatrices"/><memberdata name="setcolormatrix" type="method" display="SetColorMatrix"/><memberdata name="setgamma" type="method" display="SetGamma"/><memberdata name="setnoop" type="method" display="SetNoOp"/><memberdata name="setoutputchannel" type="method" display="SetOutputChannel"/><memberdata name="setoutputchannelcolorprofile" type="method" display="SetOutputChannelColorProfile"/><memberdata name="setremaptable" type="method" display="SetRemapTable"/><memberdata name="setthreshold" type="method" display="SetThreshold"/><memberdata name="setwrapmode" type="method" display="SetWrapMode"/><memberdata name="tostring" type="method" display="ToString"/><memberdata name="finalize" type="method" display="Finalize"/><memberdata name="memberwiseclone" type="method" display="MemberwiseClone"/></VFPData>
+basename = ImageAttributes
 lastresult = 0
 Name = "xfcimageattributes"
 [END PROPERTIES]
@@ -4247,11 +4281,13 @@ DECLARE LONG GdipSetImageAttributesNoOp IN GDIPLUS LONG imageattr, LONG ClrAdjTy
 DECLARE LONG GdipSetImageAttributesColorKeys IN GDIPLUS LONG imageattr, LONG ClrAdjType, LONG enableFlag, LONG colorLow, LONG colorHigh
 DECLARE LONG GdipSetImageAttributesOutputChannel IN GDIPLUS LONG imageattr, LONG ClrAdjstType, LONG enableFlag, LONG channelFlags
 DECLARE LONG GdipSetImageAttributesOutputChannelColorProfile IN GDIPLUS LONG imageattr, LONG ClrAdjType, LONG enableFlag, STRING colorProfileFilename
-DECLARE LONG GdipSetImageAttributesRemapTable IN GDIPLUS LONG imageattr, LONG ClrAdjType, LONG enableFlag, LONG mapSize, LONG @map
+DECLARE LONG GdipSetImageAttributesRemapTable IN GDIPLUS LONG imageattr, LONG ClrAdjType, LONG enableFlag, LONG mapSize, String @map
 DECLARE LONG GdipSetImageAttributesWrapMode IN GDIPLUS LONG imageattr, LONG wrap, LONG argb, LONG bClamp
 DECLARE LONG GdipGetImageAttributesAdjustedPalette IN GDIPLUS LONG imageattr, String colorPal, LONG ClrAdjType
 
 ENDTRY
+
+
 ENDPROC
 PROCEDURE getadjustedpalette
 *********************************************************************
@@ -4574,35 +4610,31 @@ PROCEDURE setremaptable
 ** Sets the color-remap table.
 **
 ** History:
-**  2006/03/07: Auto Generated
-**	2006/05/02: BDurban - Coded
+** 2006/03/07: Auto Generated
+** 2006/05/02: BDurban - Coded
+** 2006/08/08: CChalom - Fixed and Tested
 *********************************************************************
-LPARAMETERS taoMap AS xfcColorMap, ;
-			tiType AS EnumColorAdjustType
-
-*!ToDo: Test this function
+LPARAMETERS toColorMap AS xfcColorMap, ;
+tiType AS EnumColorAdjustType
 
 LOCAL loExc AS Exception
-TRY
-	LOCAL lqMap, liCount, loColorMap AS xfcColorMap
-	m.tiType = EVL(m.tiType, ColorAdjustTypeDefault)
-	m.loColorMap = This.CreateNew("xfcColorMap")
-	m.liCount = 0
-	m.lqMap = m.loColorMap.ToVarBinary(@taoMap, @liCount)
-	This.SetStatus(GdipSetImageAttributesRemapTable(This.Handle, m.tiType, TRUE, m.liCount, m.lqMap))
 
+TRY
+	LOCAL lqMap
+	m.tiType = EVL(m.tiType, ColorAdjustTypeDefault)
+	m.lqMap = toColorMap.ToVarBinary()
+	
+	This.SetStatus(GdipSetImageAttributesRemapTable(This.Handle, m.tiType, TRUE, LEN(m.lqMap)/4, @m.lqMap))
 CATCH TO loExc
 	THROW m.loExc
 ENDTRY
-
 RETURN NULL
-
 
 ** .NET Help ********************************************************
 ** http://msdn2.microsoft.com/en-us/library/System.Drawing.Imaging.ImageAttributes.SetRemapTable%28vs.80%29.aspx
 ** Parameters:
-**  ColorMap[] map
-**  ColorMap[] map, ColorAdjustType type
+** ColorMap[] map
+** ColorMap[] map, ColorAdjustType type
 ** Returns: void
 *********************************************************************
 
@@ -4726,7 +4758,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcimageattributes
 [START RESERVED1]
- 	 drawing.h^‰]¥ï4 system.hfŠ0¥ï4 gdiplusconstants.hn‹¹>Ï4[END RESERVED1]
+ 	 drawing.hž¥ãM5 system.h¦¦0¥ï4 gdiplusconstants.h®§¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -5557,7 +5589,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcimagecodecinfo
 [START RESERVED1]
- 	 drawing.h^‰]¥ï4 system.hfŠ0¥ï4 gdiplusconstants.hn‹¹>Ï4[END RESERVED1]
+ 	 drawing.hÞ]¥ï4 system.hæ0¥ï4 gdiplusconstants.hî¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -6133,7 +6165,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcimageformat
 [START RESERVED1]
- 	 drawing.h^‰]¥ï4 system.hfŠ0¥ï4 gdiplusconstants.hn‹¹>Ï4[END RESERVED1]
+ 	 drawing.hÞ]¥ï4 system.hæ0¥ï4 gdiplusconstants.hî¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -6710,7 +6742,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcmetafileheader
 [START RESERVED1]
- 	 drawing.h^‰]¥ï4 system.hfŠ0¥ï4 gdiplusconstants.hn‹¹>Ï4[END RESERVED1]
+ 	 drawing.hÞ]¥ï4 system.hæ0¥ï4 gdiplusconstants.hî¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -7068,7 +7100,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcmetaheader
 [START RESERVED1]
- 	 drawing.h^‰]¥ï4 system.hfŠ0¥ï4 gdiplusconstants.hn‹¹>Ï4[END RESERVED1]
+ 	 drawing.hÞ]¥ï4 system.hæ0¥ï4 gdiplusconstants.hî¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -7504,7 +7536,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcpropertyitem
 [START RESERVED1]
- 	 drawing.h^‰]¥ï4 system.hfŠ0¥ï4 gdiplusconstants.hn‹¹>Ï4[END RESERVED1]
+ 	 drawing.hÞ]¥ï4 system.hæ0¥ï4 gdiplusconstants.hî¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -7925,7 +7957,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcwmfplaceablefileheader
 [START RESERVED1]
- 	 drawing.h^‰]¥ï4 system.hfŠ0¥ï4 gdiplusconstants.hn‹¹>Ï4[END RESERVED1]
+ 	 drawing.hÞ]¥ï4 system.hæ0¥ï4 gdiplusconstants.hî¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -8333,5 +8365,5 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcmetafile
 [START RESERVED1]
- 	 drawing.h^‰]¥ï4 system.hfŠ0¥ï4 gdiplusconstants.hn‹¹>Ï4[END RESERVED1]
+ 	 drawing.hÞ]¥ï4 system.hæ0¥ï4 gdiplusconstants.hî¹>Ï4[END RESERVED1]
 [EOF]
