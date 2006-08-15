@@ -75,6 +75,7 @@ Height = 36
 Left = 228
 Top = 249
 Width = 53
+TabIndex = 8
 ForeColor = 255,255,255
 Name = "Label4"
 [END PROPERTIES]
@@ -83,7 +84,7 @@ Name = "Label4"
 [PLATFORM] WINDOWS 
 [UNIQUEID] _1TZ0QGKPH
 [CLASS] imgcanvas
-[CLASSLOC] gdiplusx.vcx
+[CLASSLOC] ..\..\..\vfpx-2859\vfpx\gdiplusx\source\gdiplusx.vcx
 [BASECLASS] image
 [OBJNAME] Imgcanvas1
 [PARENT] Form1
@@ -96,17 +97,6 @@ Width = 108
 Name = "Imgcanvas1"
 [END PROPERTIES]
 [START METHODS]
-PROCEDURE Init
-This.Top = 0
-This.Left = 0
-This.Width = Thisform.Width
-This.Height = Thisform.Height
-This.ZOrder(1)
-IF NOT DODEFAULT()
-	RETURN .F.
-ENDIF
-
-ENDPROC
 PROCEDURE beforedraw
 LOCAL loBrush AS xfcLinearGradientBrush
 LOCAL loBlend AS xfcBlend
@@ -129,6 +119,13 @@ ENDWITH
 
 RETURN
 ENDPROC
+PROCEDURE setup
+This.Top = 0
+This.Left = 0
+This.Width = Thisform.Width
+This.Height = Thisform.Height
+This.ZOrder(1)
+ENDPROC
 [END METHODS]
 
 [ RECORD]
@@ -149,6 +146,7 @@ Height = 36
 Left = 132
 Top = 105
 Width = 190
+TabIndex = 9
 ForeColor = 255,255,255
 Name = "Label1"
 [END PROPERTIES]
@@ -167,13 +165,13 @@ Height = 25
 Width = 85
 Anchor = 12
 Caption = "Color 1"
+TabIndex = 1
 Name = "cmdColor1"
 [END PROPERTIES]
 [START METHODS]
 PROCEDURE Click
 WITH Thisform
-	lnColor = GETCOLOR(.Text1.DisabledBackColor)
-	.Text1.DisabledBackColor = lnColor
+	.Text1.DisabledBackColor = GETCOLOR(.Text1.DisabledBackColor)
 	.imgcanvas1.Draw()
 ENDWITH
 
@@ -194,13 +192,13 @@ Height = 25
 Width = 85
 Anchor = 12
 Caption = "Color 2"
+TabIndex = 3
 Name = "cmdColor2"
 [END PROPERTIES]
 [START METHODS]
 PROCEDURE Click
 WITH Thisform
-	lnColor = GETCOLOR(.Text2.DisabledBackColor)
-	.Text2.DisabledBackColor = lnColor
+	.Text2.DisabledBackColor = GETCOLOR(.Text2.DisabledBackColor)
 	.imgcanvas1.Draw()
 ENDWITH
 
@@ -219,6 +217,7 @@ Anchor = 12
 Enabled = .F.
 Height = 25
 Left = 420
+TabIndex = 2
 Top = 247
 Width = 25
 DisabledBackColor = 255,0,0
@@ -237,6 +236,7 @@ Anchor = 12
 Enabled = .F.
 Height = 25
 Left = 420
+TabIndex = 4
 Top = 275
 Width = 25
 DisabledBackColor = 0,0,0
@@ -258,6 +258,7 @@ KeyboardLowValue = 1
 Left = 279
 SpinnerHighValue =   4.00
 SpinnerLowValue =   1.00
+TabIndex = 5
 Top = 247
 Width = 36
 Value = 1
@@ -300,6 +301,7 @@ Height = 36
 Left = 226
 Top = 247
 Width = 53
+TabIndex = 6
 Name = "Label2"
 [END PROPERTIES]
 
@@ -315,6 +317,7 @@ Top = 336
 Left = 0
 Height = 45
 Width = 455
+TabIndex = 7
 Name = "oleSlide"
 [END PROPERTIES]
 [START METHODS]
@@ -328,7 +331,7 @@ This.Change
 ENDPROC
 [END METHODS]
 [BINSTART OLE]
-CHECKSUM=22498
+CHECKSUM=22836
 [BINEND OLE]
 [BINSTART OLE2]
 CHECKSUM=51974
@@ -353,6 +356,7 @@ Height = 21
 Left = 60
 Top = 307
 Width = 386
+TabIndex = 10
 ForeColor = 255,255,255
 Name = "Label3"
 [END PROPERTIES]
