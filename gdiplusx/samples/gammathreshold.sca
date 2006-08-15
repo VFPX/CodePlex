@@ -54,7 +54,7 @@ oclrmatrix
 [PLATFORM] WINDOWS 
 [UNIQUEID] _1TZ0QGKPH
 [CLASS] imgcanvas
-[CLASSLOC] ..\source\gdiplusx.vcx
+[CLASSLOC] ..\..\..\vfpx-2859\vfpx\gdiplusx\source\gdiplusx.vcx
 [BASECLASS] image
 [OBJNAME] Imgcanvas1
 [PARENT] Form1
@@ -94,8 +94,6 @@ WITH _SCREEN.System.Drawing
 ENDWITH
 
 RETURN
-
-
 ENDPROC
 [END METHODS]
 
@@ -112,6 +110,7 @@ Anchor = 6
 Enabled = .F.
 Height = 25
 Left = 120
+TabIndex = 2
 Top = 204
 Width = 384
 DisabledBackColor = 255,255,255
@@ -151,6 +150,7 @@ Width = 492
 Height = 84
 SpecialEffect = 0
 Visible = .F.
+TabIndex = 3
 Name = "Container1"
 [END PROPERTIES]
 
@@ -168,12 +168,13 @@ Height = 25
 Width = 98
 Anchor = 12
 Caption = "GreyScale"
+TabIndex = 1
 Name = "Command1"
 [END PROPERTIES]
 [START METHODS]
 PROCEDURE Click
 WITH Thisform
-	Thisform.oClrMatrix = _Screen.System.Drawing.Imaging.ColorMatrix.New( ;
+	.oClrMatrix = _Screen.System.Drawing.Imaging.ColorMatrix.New( ;
         0.33, 0.33, 0.33, 0.0, 0.0, ;
         0.33, 0.33, 0.33, 0.0, 0.0, ;
         0.33, 0.33, 0.33, 0.0, 0.0, ;
@@ -198,6 +199,7 @@ Height = 25
 Width = 98
 Anchor = 12
 Caption = "Restore"
+TabIndex = 2
 Name = "Command7"
 [END PROPERTIES]
 [START METHODS]
@@ -230,6 +232,7 @@ Top = 12
 Left = 186
 Height = 19
 Width = 145
+TabIndex = 3
 Name = "oGamma"
 [END PROPERTIES]
 [START METHODS]
@@ -248,7 +251,7 @@ This.Change
 ENDPROC
 [END METHODS]
 [BINSTART OLE]
-CHECKSUM=46487
+CHECKSUM=3012
 [BINEND OLE]
 [BINSTART OLE2]
 CHECKSUM=51974
@@ -269,7 +272,7 @@ Height = 17
 Left = 138
 Top = 12
 Width = 47
-TabIndex = 34
+TabIndex = 6
 Name = "Label10"
 [END PROPERTIES]
 
@@ -287,7 +290,7 @@ Height = 17
 Left = 333
 Top = 12
 Width = 26
-TabIndex = 34
+TabIndex = 7
 Name = "lblGamma"
 [END PROPERTIES]
 
@@ -303,6 +306,7 @@ Top = 48
 Left = 186
 Height = 19
 Width = 145
+TabIndex = 4
 Name = "oThreshold"
 [END PROPERTIES]
 [START METHODS]
@@ -324,7 +328,7 @@ This.Change
 ENDPROC
 [END METHODS]
 [BINSTART OLE]
-CHECKSUM=63047
+CHECKSUM=30532
 [BINEND OLE]
 [BINSTART OLE2]
 CHECKSUM=51974
@@ -345,7 +349,7 @@ Height = 17
 Left = 126
 Top = 47
 Width = 58
-TabIndex = 34
+TabIndex = 9
 Name = "Label2"
 [END PROPERTIES]
 
@@ -363,7 +367,7 @@ Height = 17
 Left = 333
 Top = 48
 Width = 26
-TabIndex = 34
+TabIndex = 8
 Name = "lblThreshold"
 [END PROPERTIES]
 
@@ -382,6 +386,7 @@ Width = 120
 Alignment = 0
 Caption = "Activate Threshold"
 Value = .F.
+TabIndex = 5
 Name = "chkThreshold"
 [END PROPERTIES]
 [START METHODS]
@@ -407,12 +412,14 @@ Width = 98
 Anchor = 6
 Picture = (home() + "/graphics/bitmaps/outline/open.bmp")
 Caption = "Get Picture"
+TabIndex = 1
 PicturePosition = 1
 PictureSpacing = 1
 Name = "Command2"
 [END PROPERTIES]
 [START METHODS]
 PROCEDURE Click
+LOCAL lcFile
 lcFile = GETPICT()
 IF EMPTY(lcFile)
 	RETURN
@@ -447,6 +454,7 @@ Width = 26
 Anchor = 6
 Picture = (home() + "/samples/solution/bts.bmp")
 Caption = ""
+TabIndex = 4
 ToolTipText = "To convert to monochrome, select GreyScale and Activate Threshold"
 PicturePosition = 1
 PictureSpacing = 1
