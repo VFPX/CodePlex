@@ -34,12 +34,12 @@ Name = "Dataenvironment"
 [BASECLASS] form
 [OBJNAME] Form1
 [START PROPERTIES]
-Top = 20
-Left = 14
+Top = -6
+Left = 43
 Height = 453
 Width = 512
 DoCreate = .T.
-Caption = "le"
+Caption = "Pie Charts"
 MinHeight = 230
 MinWidth = 380
 Name = "Form1"
@@ -62,41 +62,33 @@ GO TOP
 
 ENDPROC
 PROCEDURE changecolor
-LPARAMETERS tnRGB, tnPoints
+LPARAMETERS tnRGB, tnLevel
+
+IF tnLevel = 0
+	RETURN tnRGB
+ENDIF
+
+tnLevel = tnLevel / 100
 
 LOCAL lnRed, lnGreen, lnBlue
 lnRed   = BITAND(tnRGB, 0x000000FF)
 lnGreen = BITRSHIFT(BITAND(tnRGB, 0x0000FF00), 8)
 lnBlue  = BITRSHIFT(BITAND(tnRGB, 0x00FF0000), 16)
 
-IF tnPoints >= 0
-	RETURN RGB((MIN(255,lnRed   + tnPoints)), ;
-	  	 (MIN(255,lnGreen + tnPoints)), ;
-		 (MIN(255,lnBlue  + tnPoints)))
+IF tnLevel > 0
+	RETURN RGB( ;
+		lnRed   + ((255 - lnRed)   * tnLevel) , ;
+		lnGreen + ((255 - lnGreen) * tnLevel) , ;
+		lnBlue  + ((255 - lnBlue)  * tnLevel) )
 ELSE
-	RETURN RGB((MAX(0,lnRed + tnPoints)), ;
-	  	 (MAX(0,lnGreen + tnPoints)), ;
-		 (MAX(0,lnBlue  + tnPoints)))
+	RETURN RGB( ;
+		lnRed   + (lnRed   * tnLevel) , ;
+		lnGreen + (lnGreen * tnLevel) , ;
+		lnBlue  + (lnBlue  * tnLevel) )
 ENDIF
-ENDPROC
-PROCEDURE makeargb
-LPARAMETERS tnColor, tnAlpha
-	Local argb, red, green, blue
-	blue = Bitrshift(Bitand(tnColor, 0x00FF0000), 16)
-	green = Bitrshift(Bitand(tnColor, 0x0000FF00), 8)
-	red = Bitand(tnColor, 0x000000FF)
-	argb = blue + Bitlshift(green, 8) + Bitlshift(red, 16)
-	If Vartype(tnAlpha) = 'N'
-		argb = argb + Bitlshift(Bitand(tnAlpha, 0xFF), 24)
-	Else
-		argb = argb + Bitlshift(255, 24)
-	ENDIF
-	RETURN ARGB
-
 ENDPROC
 [END METHODS]
 [START RESERVED3]
-*makeargb 
 *changecolor 
 [END RESERVED3]
 
@@ -104,7 +96,7 @@ ENDPROC
 [PLATFORM] WINDOWS 
 [UNIQUEID] _1TZ0QGKPH
 [CLASS] imgcanvas
-[CLASSLOC] ..\source\gdiplusx.vcx
+[CLASSLOC] ..\..\..\vfpx-2859\vfpx\gdiplusx\source\gdiplusx.vcx
 [BASECLASS] image
 [OBJNAME] Imgcanvas1
 [PARENT] Form1
@@ -120,14 +112,17 @@ Name = "Imgcanvas1"
 PROCEDURE beforedraw
 LOCAL loSolidBrush AS xfcSolidBrush
 LOCAL loGBrush AS xfcLinearGradientBrush
-LOCAL loPen AS xfcPen
+LOCAL loHatchBrush as xfcHatchBrush
 
-LOCAL lnX, lnY, lnWidth, lnHeight, lnAngle, lnSweep
-LOCAL lnDetachPixels
+LOCAL loPen AS xfcPen
+LOCAL loFont AS xfcFont
+
+LOCAL lnX, lnY, x1, y1, lnWidth, lnHeight, lnAngle, wImg, hImg
+LOCAL lnDetachPixels, lnLegendWidth
+LOCAL lnTotal, lnStart, lnSweep
 
 WITH _SCREEN.SYSTEM.Drawing
 
-	LOCAL lnTotal, lnStart, lnSweep, llBW
 	CALCULATE SUM(sales.nValue) TO lnTotal
 
 	lnDetachPixels = 30
@@ -170,7 +165,7 @@ WITH _SCREEN.SYSTEM.Drawing
 				loPath.AddEllipse(x1, y1, lnWidth, lnHeight)
 
 				loPathGradBrush = .Drawing2D.PathGradientBrush.New(loPath)
-				loPathGradBrush.CenterColor = .COLOR.FromRGB(THISFORM.ChangeColor(sales.nColor,THISFORM.Spinner1.VALUE * 20))
+				loPathGradBrush.CenterColor = .COLOR.FromRGB(THISFORM.ChangeColor(sales.nColor,THISFORM.Spinner1.VALUE * 10))
 
 				loPathGradBrush.SurroundColors[1] = .Color.FromRGB(sales.nColor)
 
@@ -194,12 +189,12 @@ WITH _SCREEN.SYSTEM.Drawing
 
 *** Draw Legends
 
-	x1 = THIS.WIDTH - lnLegendWidth + 15
+	x1 = This.Width - lnLegendWidth + 15
 	y1 = 30
 	lnWidth = 20
 	lnHeight = 20
 
-	loFont = .FONT.New("Arial",10)
+	loFont = .Font.New("Arial",10)
 	loBlackBrush = .Brushes.Black
 
 	SCAN
@@ -215,7 +210,7 @@ WITH _SCREEN.SYSTEM.Drawing
 				loPath.AddRectangle(x1, y1, lnWidth, lnHeight)
 
 				loPathGradBrush = .Drawing2D.PathGradientBrush.New(loPath)
-				loPathGradBrush.CenterColor = .COLOR.FromRGB(THISFORM.ChangeColor(sales.nColor,THISFORM.Spinner1.VALUE * 20))
+				loPathGradBrush.CenterColor = .COLOR.FromRGB(THISFORM.ChangeColor(sales.nColor,THISFORM.Spinner1.VALUE * 10))
 
 				loPathGradBrush.SurroundColors[1] = .Color.FromRGB(sales.nColor)
 
@@ -273,6 +268,7 @@ Height = 148
 Left = 0
 Panel = 1
 RecordSource = "sales"
+TabIndex = 1
 Top = 300
 Width = 278
 Name = "Grid1"
@@ -451,6 +447,7 @@ Height = 25
 Width = 96
 Anchor = 12
 Caption = "Update Chart"
+TabIndex = 4
 Name = "Command1"
 [END PROPERTIES]
 [START METHODS]
@@ -475,6 +472,7 @@ Height = 65
 Left = 314
 Top = 303
 Width = 186
+TabIndex = 2
 Name = "Optiongroup1"
 Option1.Caption = "Colored Solid Brush"
 Option1.Value = 1
@@ -527,13 +525,14 @@ ENDPROC
 Anchor = 12
 Height = 25
 KeyboardHighValue = 10
-KeyboardLowValue = 0
+KeyboardLowValue = -10
 Left = 405
 SpinnerHighValue =  10.00
-SpinnerLowValue =   0.00
+SpinnerLowValue = -10.00
+TabIndex = 3
 Top = 375
 Visible = .F.
-Width = 48
+Width = 54
 Value = 5
 Name = "Spinner1"
 [END PROPERTIES]
@@ -553,13 +552,15 @@ ENDPROC
 [START PROPERTIES]
 FontBold = .T.
 Anchor = 12
+WordWrap = .T.
 BackStyle = 0
-Caption = "GradientLevel"
-Height = 25
+Caption = "GradientLevel (-10  +10)"
+Height = 33
 Left = 321
 Top = 375
 Visible = .F.
 Width = 85
+TabIndex = 5
 ForeColor = 255,0,0
 Name = "Label1"
 [END PROPERTIES]
