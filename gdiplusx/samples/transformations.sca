@@ -127,6 +127,7 @@ Anchor = 6
 Enabled = .F.
 Height = 25
 Left = 120
+TabIndex = 2
 Top = 204
 Width = 384
 DisabledBackColor = 255,255,255
@@ -167,6 +168,7 @@ Height = 84
 BackStyle = 0
 BorderWidth = 0
 Visible = .F.
+TabIndex = 3
 Name = "Container1"
 [END PROPERTIES]
 
@@ -183,6 +185,7 @@ Left = 386
 Width = 121
 Height = 36
 SpecialEffect = 0
+TabIndex = 13
 Name = "Container3"
 [END PROPERTIES]
 
@@ -199,6 +202,7 @@ Left = 196
 Width = 168
 Height = 78
 SpecialEffect = 0
+TabIndex = 14
 Name = "Container2"
 [END PROPERTIES]
 
@@ -215,6 +219,7 @@ Left = 4
 Width = 168
 Height = 78
 SpecialEffect = 0
+TabIndex = 15
 Name = "Container1"
 [END PROPERTIES]
 
@@ -234,6 +239,7 @@ FontBold = .T.
 FontSize = 16
 Anchor = 12
 Caption = "-"
+TabIndex = 1
 Name = "Command1"
 [END PROPERTIES]
 [START METHODS]
@@ -261,6 +267,7 @@ FontBold = .T.
 FontSize = 16
 Anchor = 12
 Caption = "+"
+TabIndex = 2
 Name = "Command2"
 [END PROPERTIES]
 [START METHODS]
@@ -287,6 +294,7 @@ Height = 25
 Left = 8
 Top = 12
 Width = 36
+TabIndex = 16
 Name = "Label1"
 [END PROPERTIES]
 
@@ -303,6 +311,7 @@ Height = 25
 Left = 56
 Top = 12
 Width = 36
+TabIndex = 17
 Name = "Label2"
 [END PROPERTIES]
 
@@ -322,6 +331,7 @@ FontBold = .T.
 FontSize = 16
 Anchor = 12
 Caption = "-"
+TabIndex = 3
 Name = "Command3"
 [END PROPERTIES]
 [START METHODS]
@@ -350,6 +360,7 @@ FontBold = .T.
 FontSize = 16
 Anchor = 12
 Caption = "+"
+TabIndex = 4
 Name = "Command4"
 [END PROPERTIES]
 [START METHODS]
@@ -375,6 +386,7 @@ Height = 25
 Left = 56
 Top = 48
 Width = 36
+TabIndex = 18
 Name = "Label3"
 [END PROPERTIES]
 
@@ -394,6 +406,7 @@ FontBold = .T.
 FontSize = 16
 Anchor = 12
 Caption = "-"
+TabIndex = 5
 Name = "Command5"
 [END PROPERTIES]
 [START METHODS]
@@ -422,6 +435,7 @@ FontBold = .T.
 FontSize = 16
 Anchor = 12
 Caption = "+"
+TabIndex = 6
 Name = "Command6"
 [END PROPERTIES]
 [START METHODS]
@@ -448,6 +462,7 @@ Height = 25
 Left = 200
 Top = 12
 Width = 36
+TabIndex = 19
 Name = "Label4"
 [END PROPERTIES]
 
@@ -464,6 +479,7 @@ Height = 25
 Left = 248
 Top = 12
 Width = 36
+TabIndex = 20
 Name = "Label5"
 [END PROPERTIES]
 
@@ -483,6 +499,7 @@ FontBold = .T.
 FontSize = 16
 Anchor = 12
 Caption = "-"
+TabIndex = 7
 Name = "Command7"
 [END PROPERTIES]
 [START METHODS]
@@ -511,6 +528,7 @@ FontBold = .T.
 FontSize = 16
 Anchor = 12
 Caption = "+"
+TabIndex = 8
 Name = "Command8"
 [END PROPERTIES]
 [START METHODS]
@@ -536,6 +554,7 @@ Height = 25
 Left = 248
 Top = 48
 Width = 36
+TabIndex = 21
 Name = "Label6"
 [END PROPERTIES]
 
@@ -555,6 +574,7 @@ FontBold = .T.
 FontSize = 16
 Anchor = 12
 Caption = "-"
+TabIndex = 9
 Name = "Command9"
 [END PROPERTIES]
 [START METHODS]
@@ -583,6 +603,7 @@ FontBold = .T.
 FontSize = 16
 Anchor = 12
 Caption = "+"
+TabIndex = 10
 Name = "Command10"
 [END PROPERTIES]
 [START METHODS]
@@ -610,6 +631,7 @@ Height = 29
 Left = 392
 Top = 7
 Width = 36
+TabIndex = 22
 Name = "Label7"
 [END PROPERTIES]
 
@@ -626,6 +648,7 @@ Left = 386
 Width = 121
 Height = 36
 SpecialEffect = 0
+TabIndex = 23
 Name = "Container4"
 [END PROPERTIES]
 
@@ -645,6 +668,7 @@ FontBold = .T.
 FontSize = 16
 Anchor = 12
 Caption = "-"
+TabIndex = 11
 Name = "Command11"
 [END PROPERTIES]
 [START METHODS]
@@ -673,6 +697,7 @@ FontBold = .T.
 FontSize = 16
 Anchor = 12
 Caption = "+"
+TabIndex = 12
 Name = "Command12"
 [END PROPERTIES]
 [START METHODS]
@@ -700,6 +725,7 @@ Height = 29
 Left = 392
 Top = 48
 Width = 36
+TabIndex = 24
 Name = "Label8"
 [END PROPERTIES]
 
@@ -718,6 +744,7 @@ Width = 98
 Anchor = 6
 Picture = (home() + "/graphics/bitmaps/outline/open.bmp")
 Caption = "Get Picture"
+TabIndex = 1
 PicturePosition = 1
 PictureSpacing = 1
 Name = "Command2"
