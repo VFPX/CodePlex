@@ -42,6 +42,8 @@ ShowWindow = 2
 DoCreate = .T.
 ShowTips = .T.
 Caption = "Playing with logos using ImageAttributes"
+MinHeight = 500
+MinWidth = 500
 obmp = 0
 wbmp = 0
 hbmp = 0
@@ -141,7 +143,7 @@ wbmplogo
 [PLATFORM] WINDOWS 
 [UNIQUEID] _1TZ0QGKPH
 [CLASS] imgcanvas
-[CLASSLOC] ..\source\gdiplusx.vcx
+[CLASSLOC] ..\..\..\vfpx-2859\vfpx\gdiplusx\source\gdiplusx.vcx
 [BASECLASS] image
 [OBJNAME] Imgcanvas1
 [PARENT] Form1
@@ -259,10 +261,11 @@ ENDPROC
 [PARENT] Form1
 [START PROPERTIES]
 FontSize = 8
-Anchor = 6
+Anchor = 11
 Enabled = .F.
 Height = 25
 Left = 120
+TabIndex = 2
 Top = 12
 Width = 588
 DisabledBackColor = 255,255,255
@@ -360,6 +363,7 @@ Width = 132
 Height = 180
 SpecialEffect = 0
 Visible = .T.
+TabIndex = 5
 Name = "Container1"
 [END PROPERTIES]
 
@@ -377,6 +381,7 @@ Height = 25
 Width = 98
 Anchor = 12
 Caption = "Draw Logos"
+TabIndex = 2
 Name = "cmdDraw"
 [END PROPERTIES]
 [START METHODS]
@@ -417,6 +422,7 @@ Name = "Shape1"
 Height = 37
 Left = 24
 SpecialEffect = 1
+TabIndex = 3
 Top = 36
 Width = 36
 Name = "Text1"
@@ -441,6 +447,7 @@ Height = 17
 Left = 12
 Top = 4
 Width = 84
+TabIndex = 4
 Name = "Label1"
 [END PROPERTIES]
 
@@ -499,8 +506,9 @@ KeyboardLowValue = 0
 Left = 12
 SpinnerHighValue = 100.00
 SpinnerLowValue =   0.00
+TabIndex = 1
 Top = 96
-Width = 42
+Width = 50
 Value = 10
 Name = "Spinner1"
 [END PROPERTIES]
@@ -520,9 +528,10 @@ ENDPROC
 [START PROPERTIES]
 Caption = "%"
 Height = 17
-Left = 57
+Left = 65
 Top = 96
 Width = 12
+TabIndex = 5
 Name = "Label3"
 [END PROPERTIES]
 [START METHODS]
@@ -544,9 +553,10 @@ Left = 12
 Height = 25
 Width = 98
 FontSize = 8
-Anchor = 6
+Anchor = 3
 Picture = (home() + "/graphics/bitmaps/outline/open.bmp")
 Caption = "Main Picture"
+TabIndex = 1
 PicturePosition = 1
 PictureSpacing = 1
 Name = "Command2"
@@ -581,7 +591,8 @@ Width = 26
 Anchor = 12
 Picture = (home() + "/samples/solution/bts.bmp")
 Caption = ""
-ToolTipText = 'Select an image; Go with your mouse over the 2nd picture, and click in any color to make it transparent ; The spinner determines the color range to apply transformation; Click "Draw Logos"'
+TabIndex = 6
+ToolTipText = 'Select "Main or background picture"; Select "Logo Picture"; Go with your mouse over the logo picture, and click in any color to make it transparent ; The spinner determines the color range to apply transformation; Click "Draw Logos"'
 PicturePosition = 1
 PictureSpacing = 1
 Name = "Command1"
@@ -623,10 +634,11 @@ Name = "Image1"
 [PARENT] Form1
 [START PROPERTIES]
 FontSize = 8
-Anchor = 6
+Anchor = 11
 Enabled = .F.
 Height = 25
 Left = 120
+TabIndex = 4
 Top = 48
 Width = 588
 DisabledBackColor = 255,255,255
@@ -647,9 +659,10 @@ Left = 12
 Height = 25
 Width = 98
 FontSize = 8
-Anchor = 6
+Anchor = 3
 Picture = (home() + "/graphics/bitmaps/outline/open.bmp")
 Caption = "Logo Picture"
+TabIndex = 3
 PicturePosition = 1
 PictureSpacing = 1
 Name = "Command3"
@@ -671,7 +684,7 @@ ENDPROC
 [PLATFORM] COMMENT 
 [UNIQUEID] RESERVED  
 [START PROPERTIES]
-Arial, 0, 9, 5, 15, 12, 16, 3, 0
-Arial, 0, 8, 5, 14, 11, 14, 3, 0
+Arial, 0, 9, 5, 15, 12, 32, 3, 0
+Arial, 0, 8, 5, 14, 11, 29, 3, 0
 [END PROPERTIES]
 [EOF]
