@@ -284,17 +284,22 @@ loImg = System.Drawing.Image.FromFile(This.txtFile.Value)
 ** Initialize the array...
 xxx = loImg.PropertyIdList[1]
 
-FOR EACH lnProp IN loImg.PropertyIdList
-	loProp = loImg.GetPropertyItem(lnProp)
-	IF SEEK(loProp.Id, "crsProps", "idvalue")
-		lcPropName = crsProps.propname
-	ELSE
-		lcPropname = TRANSFORM(loProp.Id,"@0")
-	ENDIF
+IF VARTYPE(xxx) == "N" && a NULL is returned when no properties are found
+
+	FOR EACH lnProp IN loImg.PropertyIdList
+		loProp = loImg.GetPropertyItem(lnProp)
+		IF SEEK(loProp.Id, "crsProps", "idvalue")
+			lcPropName = crsProps.propname
+		ELSE
+			lcPropname = TRANSFORM(loProp.Id,"@0")
+		ENDIF
 	
-	This.lstProp.AddItem(lcPropName)
-	This.lstProp.List[This.lstProp.NewIndex, 2] = loProp.ToString()
-ENDFOR
+		This.lstProp.AddItem(lcPropName)
+		This.lstProp.List[This.lstProp.NewIndex, 2] = loProp.ToString()
+	ENDFOR
+ELSE
+	This.lstProp.AddItem("No properties available for this image !")
+ENDIF
 
 WAIT CLEAR
 
@@ -318,6 +323,7 @@ ENDPROC
 Anchor = 10
 Height = 23
 Left = 12
+TabIndex = 1
 Top = 12
 Width = 300
 Name = "txtFile"
@@ -337,6 +343,7 @@ Height = 27
 Width = 36
 Anchor = 8
 Caption = "..."
+TabIndex = 2
 Name = "cmdFile"
 [END PROPERTIES]
 [START METHODS]
@@ -366,6 +373,7 @@ ColumnCount = 2
 ColumnWidths = "220,500"
 Height = 181
 Left = 12
+TabIndex = 3
 Top = 60
 Width = 349
 Name = "lstProp"
@@ -385,6 +393,7 @@ Height = 17
 Left = 12
 Top = 41
 Width = 100
+TabIndex = 4
 Name = "Label1"
 [END PROPERTIES]
 
