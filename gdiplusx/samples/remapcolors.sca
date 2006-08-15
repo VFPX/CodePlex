@@ -41,6 +41,8 @@ Width = 516
 DoCreate = .T.
 ShowTips = .T.
 Caption = "Remapping Colors"
+MinHeight = 350
+MinWidth = 510
 obmp = 0
 wbmp = 0
 hbmp = 0
@@ -62,7 +64,6 @@ hbmp
 [PARENT] Form1
 [START PROPERTIES]
 Anchor = 15
-Stretch = 1
 Height = 180
 Left = 264
 Top = 12
@@ -98,17 +99,8 @@ WITH _SCREEN.System.Drawing
 	This.oGfx.DrawImage(Thisform.oBmp, This.Rectangle, Thisform.oBmp.GetBounds(), 2, loAttr)
 ENDWITH
 
-*** Bo, this way it is working properly.
-*** But I think it would be better to have it this way:
-*** Thisform.oBmp = This.oBmp
-
-#DEFINE OBJ_BITMAP	7
-LOCAL hdc, hBitmap
-m.hdc = This.HDC
-m.hBitmap = GetCurrentObject(m.hdc, OBJ_BITMAP)
-
 WITH Thisform
-	.oBmp = _SCREEN.System.Drawing.Image.FromHBitmap(m.hBitmap)
+	.oBmp = This.oBmp
 	.wBmp = .oBmp.Width
 	.hBmp = .oBmp.Height
 ENDWITH
@@ -126,7 +118,7 @@ ENDPROC
 [PARENT] Form1
 [START PROPERTIES]
 FontSize = 8
-Anchor = 6
+Anchor = 134
 Enabled = .F.
 Height = 25
 Left = 120
@@ -161,6 +153,8 @@ IF VARTYPE(Thisform.oBmp) <> "O"
 	RETURN
 ENDIF
 
+LOCAL x1, y1, xRatio, yRatio, lnRGBClr
+
 X1 = nXCoord - This.Left
 Y1 = nYCoord - This.Top
 
@@ -178,7 +172,6 @@ WITH _SCREEN.System.Drawing
 	Thisform.Container1.Text1.BackColor = lnRGBClr
 	Thisform.Container1.Shape1.BackColor = lnRGBClr
 ENDWITH
-
 ENDPROC
 PROCEDURE MouseLeave
 LPARAMETERS nButton, nShift, nXCoord, nYCoord
@@ -190,6 +183,8 @@ LPARAMETERS nButton, nShift, nXCoord, nYCoord
 IF VARTYPE(Thisform.oBmp) <> "O"
 	RETURN
 ENDIF
+
+LOCAL x1, y1, xRatio, yRatio, lnRGBClr
 
 X1 = nXCoord - This.Left
 Y1 = nYCoord - This.Top
@@ -285,7 +280,6 @@ Name = "Text1"
 [START METHODS]
 PROCEDURE When
 RETURN .F.
-
 ENDPROC
 [END METHODS]
 
@@ -395,7 +389,7 @@ Top = 324
 Left = 480
 Height = 25
 Width = 26
-Anchor = 6
+Anchor = 12
 Picture = (home() + "/samples/solution/bts.bmp")
 Caption = ""
 ToolTipText = 'Select an image; Go with your mouse over the left picture, and click in any color; Click "NewColor", select the color that will substitute the original; Click "Remap Colors"'
