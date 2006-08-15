@@ -53,6 +53,7 @@ LOCAL loCMColors AS xfcColorMatrix
 LOCAL loCMHue1 AS xfcColorMatrix
 LOCAL loCMHue2 AS xfcColorMatrix
 LOCAL loCMHue3 AS xfcColorMatrix
+LOCAL loNewMatrix AS xfcColorMatrix
 
 WITH Thisform.Container1
 
@@ -105,6 +106,7 @@ loCMColors =  _Screen.System.Drawing.Imaging.ColorMatrix.New( ;
 LOCAL lnPI, H1, H2, H3
 lnPI = ATAN(1) * 4
 
+*!* Hue1
 H1 = .oHue1.OBJECT.Value * (lnPI / 180)
 loCMHue1 = _Screen.System.Drawing.Imaging.ColorMatrix.New( ;
 	Cos(H1) , Sin(H1), 0, 0, 0, ;
@@ -113,6 +115,7 @@ loCMHue1 = _Screen.System.Drawing.Imaging.ColorMatrix.New( ;
      0      , 0      , 0, 1, 0, ;
 	 0      , 0      , 0, 0, 1)
 
+*!* Hue2
 H2 = .oHue2.OBJECT.Value * (lnPI / 180)	
 loCMHue2 = _Screen.System.Drawing.Imaging.ColorMatrix.New( ;
 	 1     , 0     , 0     , 0, 0, ;
@@ -121,6 +124,7 @@ loCMHue2 = _Screen.System.Drawing.Imaging.ColorMatrix.New( ;
      0     , 0     , 0     , 1, 0, ;
 	 0     , 0     , 0     , 0, 1)
 
+*!* Hue3
 H3 = .oHue3.OBJECT.Value * (lnPI / 180)	
 loCMHue3 = _Screen.System.Drawing.Imaging.ColorMatrix.New( ;
 	Cos(H3) , 0     , -Sin(H3), 0, 0, ;
@@ -140,6 +144,7 @@ loNewMatrix = loNewMatrix.Multiply(loNewMatrix, loCMHue2)
 loNewMatrix = loNewMatrix.Multiply(loNewMatrix, loCMHue3)
 Thisform.oClrMatrix = loNewMatrix
 
+*!* Update Captions of slidebars
 .lblBrightness.Caption = TRANSFORM(B,"99.99")
 .lblContrast.Caption = TRANSFORM(C,"99.99")
 .lblSaturation.Caption = TRANSFORM(S,"99.99")
@@ -163,7 +168,7 @@ oclrmatrix
 [PLATFORM] WINDOWS 
 [UNIQUEID] _1TZ0QGKPH
 [CLASS] imgcanvas
-[CLASSLOC] ..\source\gdiplusx.vcx
+[CLASSLOC] ..\..\..\vfpx-2859\vfpx\gdiplusx\source\gdiplusx.vcx
 [BASECLASS] image
 [OBJNAME] Imgcanvas1
 [PARENT] Form1
@@ -177,6 +182,8 @@ Name = "Imgcanvas1"
 [END PROPERTIES]
 [START METHODS]
 PROCEDURE beforedraw
+#define UnitPixel 2
+
 IF EMPTY(Thisform.txtFile.Value)
 	RETURN
 ENDIF
@@ -187,7 +194,7 @@ LOCAL loAttr AS xfcImageAttributes
 WITH _SCREEN.System.Drawing
 	loAttr = .Imaging.ImageAttributes.New()
 	loAttr.SetColorMatrix(Thisform.oClrMatrix)
-	This.oGfx.DrawImage(Thisform.oBmp, This.Rectangle, Thisform.oBmp.GetBounds(), 2, loAttr)
+	This.oGfx.DrawImage(Thisform.oBmp, This.Rectangle, Thisform.oBmp.GetBounds(), UnitPixel , loAttr)
 ENDWITH
 
 RETURN
@@ -207,6 +214,7 @@ Anchor = 6
 Enabled = .F.
 Height = 25
 Left = 228
+TabIndex = 3
 Top = 300
 Visible = .F.
 Width = 540
@@ -247,6 +255,7 @@ Width = 756
 Height = 92
 SpecialEffect = 0
 Visible = .F.
+TabIndex = 4
 Name = "Container1"
 [END PROPERTIES]
 
@@ -265,7 +274,7 @@ Height = 17
 Left = 19
 Top = 9
 Width = 25
-TabIndex = 34
+TabIndex = 10
 Name = "Label4"
 [END PROPERTIES]
 
@@ -283,7 +292,7 @@ Height = 17
 Left = 218
 Top = 8
 Width = 26
-TabIndex = 34
+TabIndex = 11
 Name = "lblRed"
 [END PROPERTIES]
 
@@ -302,7 +311,7 @@ Height = 17
 Left = 8
 Top = 34
 Width = 36
-TabIndex = 34
+TabIndex = 12
 Name = "Label5"
 [END PROPERTIES]
 
@@ -320,7 +329,7 @@ Height = 17
 Left = 218
 Top = 33
 Width = 26
-TabIndex = 34
+TabIndex = 13
 Name = "lblGreen"
 [END PROPERTIES]
 
@@ -339,7 +348,7 @@ Height = 17
 Left = 17
 Top = 61
 Width = 27
-TabIndex = 34
+TabIndex = 14
 Name = "Label7"
 [END PROPERTIES]
 
@@ -357,7 +366,7 @@ Height = 17
 Left = 218
 Top = 59
 Width = 26
-TabIndex = 34
+TabIndex = 15
 Name = "lblBlue"
 [END PROPERTIES]
 
@@ -375,7 +384,7 @@ Height = 17
 Left = 47
 Top = 60
 Width = 18
-TabIndex = 34
+TabIndex = 16
 BackColor = 0,0,255
 Name = "Label6"
 [END PROPERTIES]
@@ -394,7 +403,7 @@ Height = 17
 Left = 47
 Top = 33
 Width = 18
-TabIndex = 34
+TabIndex = 17
 BackColor = 0,255,0
 Name = "Label8"
 [END PROPERTIES]
@@ -413,7 +422,7 @@ Height = 17
 Left = 47
 Top = 8
 Width = 18
-TabIndex = 34
+TabIndex = 18
 BackColor = 255,0,0
 Name = "Label9"
 [END PROPERTIES]
@@ -430,6 +439,7 @@ Top = 59
 Left = 72
 Height = 19
 Width = 145
+TabIndex = 3
 Name = "oBlue"
 [END PROPERTIES]
 [START METHODS]
@@ -446,10 +456,10 @@ This.Change
 ENDPROC
 [END METHODS]
 [BINSTART OLE]
-CHECKSUM=25940
+CHECKSUM=9517
 [BINEND OLE]
 [BINSTART OLE2]
-CHECKSUM=46011
+CHECKSUM=51974
 [BINEND OLE2]
 
 [ RECORD]
@@ -464,6 +474,7 @@ Top = 34
 Left = 72
 Height = 19
 Width = 145
+TabIndex = 2
 Name = "oGreen"
 [END PROPERTIES]
 [START METHODS]
@@ -480,10 +491,10 @@ This.Change
 ENDPROC
 [END METHODS]
 [BINSTART OLE]
-CHECKSUM=16071
+CHECKSUM=59102
 [BINEND OLE]
 [BINSTART OLE2]
-CHECKSUM=46011
+CHECKSUM=51974
 [BINEND OLE2]
 
 [ RECORD]
@@ -498,6 +509,7 @@ Top = 9
 Left = 72
 Height = 19
 Width = 145
+TabIndex = 1
 Name = "oRed"
 [END PROPERTIES]
 [START METHODS]
@@ -514,10 +526,10 @@ This.Change
 ENDPROC
 [END METHODS]
 [BINSTART OLE]
-CHECKSUM=55125
+CHECKSUM=37069
 [BINEND OLE]
 [BINSTART OLE2]
-CHECKSUM=46011
+CHECKSUM=51974
 [BINEND OLE2]
 
 [ RECORD]
@@ -535,7 +547,7 @@ Height = 17
 Left = 276
 Top = 9
 Width = 49
-TabIndex = 34
+TabIndex = 22
 Name = "Label18"
 [END PROPERTIES]
 
@@ -554,7 +566,7 @@ Height = 17
 Left = 267
 Top = 35
 Width = 58
-TabIndex = 34
+TabIndex = 23
 Name = "Label19"
 [END PROPERTIES]
 
@@ -573,7 +585,7 @@ Height = 17
 Left = 263
 Top = 60
 Width = 62
-TabIndex = 34
+TabIndex = 24
 Name = "Label3"
 [END PROPERTIES]
 
@@ -591,7 +603,7 @@ Height = 17
 Left = 475
 Top = 8
 Width = 26
-TabIndex = 34
+TabIndex = 25
 Name = "lblContrast"
 [END PROPERTIES]
 
@@ -609,7 +621,7 @@ Height = 17
 Left = 475
 Top = 34
 Width = 26
-TabIndex = 34
+TabIndex = 19
 Name = "lblSaturation"
 [END PROPERTIES]
 
@@ -627,7 +639,7 @@ Height = 17
 Left = 475
 Top = 59
 Width = 26
-TabIndex = 34
+TabIndex = 27
 Name = "lblBrightness"
 [END PROPERTIES]
 
@@ -643,6 +655,7 @@ Top = 9
 Left = 329
 Height = 19
 Width = 145
+TabIndex = 4
 Name = "oContrast"
 [END PROPERTIES]
 [START METHODS]
@@ -659,10 +672,10 @@ This.Change
 ENDPROC
 [END METHODS]
 [BINSTART OLE]
-CHECKSUM=54921
+CHECKSUM=17932
 [BINEND OLE]
 [BINSTART OLE2]
-CHECKSUM=46011
+CHECKSUM=51974
 [BINEND OLE2]
 
 [ RECORD]
@@ -677,6 +690,7 @@ Top = 35
 Left = 329
 Height = 19
 Width = 145
+TabIndex = 5
 Name = "oSaturation"
 [END PROPERTIES]
 [START METHODS]
@@ -693,10 +707,10 @@ This.Change
 ENDPROC
 [END METHODS]
 [BINSTART OLE]
-CHECKSUM=18395
+CHECKSUM=42630
 [BINEND OLE]
 [BINSTART OLE2]
-CHECKSUM=46011
+CHECKSUM=51974
 [BINEND OLE2]
 
 [ RECORD]
@@ -711,6 +725,7 @@ Top = 61
 Left = 329
 Height = 19
 Width = 145
+TabIndex = 6
 Name = "oBrightness"
 [END PROPERTIES]
 [START METHODS]
@@ -727,10 +742,10 @@ This.Change
 ENDPROC
 [END METHODS]
 [BINSTART OLE]
-CHECKSUM=18156
+CHECKSUM=23169
 [BINEND OLE]
 [BINSTART OLE2]
-CHECKSUM=46011
+CHECKSUM=51974
 [BINEND OLE2]
 
 [ RECORD]
@@ -745,6 +760,7 @@ Top = 9
 Left = 561
 Height = 19
 Width = 145
+TabIndex = 7
 Name = "oHue1"
 [END PROPERTIES]
 [START METHODS]
@@ -761,10 +777,10 @@ This.Change
 ENDPROC
 [END METHODS]
 [BINSTART OLE]
-CHECKSUM=63445
+CHECKSUM=57881
 [BINEND OLE]
 [BINSTART OLE2]
-CHECKSUM=46011
+CHECKSUM=51974
 [BINEND OLE2]
 
 [ RECORD]
@@ -782,7 +798,7 @@ Height = 17
 Left = 528
 Top = 9
 Width = 35
-TabIndex = 34
+TabIndex = 29
 Name = "Label10"
 [END PROPERTIES]
 
@@ -800,7 +816,7 @@ Height = 17
 Left = 708
 Top = 9
 Width = 26
-TabIndex = 34
+TabIndex = 26
 Name = "lblHue1"
 [END PROPERTIES]
 
@@ -816,6 +832,7 @@ Top = 34
 Left = 561
 Height = 19
 Width = 145
+TabIndex = 8
 Name = "oHue2"
 [END PROPERTIES]
 [START METHODS]
@@ -832,10 +849,10 @@ This.Change
 ENDPROC
 [END METHODS]
 [BINSTART OLE]
-CHECKSUM=58700
+CHECKSUM=57347
 [BINEND OLE]
 [BINSTART OLE2]
-CHECKSUM=46011
+CHECKSUM=51974
 [BINEND OLE2]
 
 [ RECORD]
@@ -853,7 +870,7 @@ Height = 17
 Left = 528
 Top = 34
 Width = 35
-TabIndex = 34
+TabIndex = 20
 Name = "Label2"
 [END PROPERTIES]
 
@@ -871,7 +888,7 @@ Height = 17
 Left = 708
 Top = 34
 Width = 26
-TabIndex = 34
+TabIndex = 21
 Name = "lblHue2"
 [END PROPERTIES]
 
@@ -887,6 +904,7 @@ Top = 60
 Left = 561
 Height = 19
 Width = 145
+TabIndex = 9
 Name = "oHue3"
 [END PROPERTIES]
 [START METHODS]
@@ -903,10 +921,10 @@ This.Change
 ENDPROC
 [END METHODS]
 [BINSTART OLE]
-CHECKSUM=5710
+CHECKSUM=2973
 [BINEND OLE]
 [BINSTART OLE2]
-CHECKSUM=46011
+CHECKSUM=51974
 [BINEND OLE2]
 
 [ RECORD]
@@ -924,7 +942,7 @@ Height = 17
 Left = 528
 Top = 60
 Width = 35
-TabIndex = 34
+TabIndex = 28
 Name = "Label12"
 [END PROPERTIES]
 
@@ -942,7 +960,7 @@ Height = 17
 Left = 708
 Top = 60
 Width = 26
-TabIndex = 34
+TabIndex = 30
 Name = "lblHue3"
 [END PROPERTIES]
 
@@ -961,12 +979,14 @@ Width = 98
 Anchor = 6
 Picture = (home() + "/graphics/bitmaps/outline/open.bmp")
 Caption = "Get Picture"
+TabIndex = 1
 PicturePosition = 1
 PictureSpacing = 1
 Name = "Command2"
 [END PROPERTIES]
 [START METHODS]
 PROCEDURE Click
+LOCAL lcFile
 lcFile = GETPICT()
 IF EMPTY(lcFile)
 	RETURN
@@ -1011,6 +1031,7 @@ Width = 98
 Anchor = 6
 Picture = (home() + "Graphics\Bitmaps\Outline\Nomask\waste.bmp")
 Caption = "Restart"
+TabIndex = 2
 Visible = .F.
 PicturePosition = 1
 PictureSpacing = 1
