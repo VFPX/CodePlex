@@ -1,0 +1,588 @@
+SCCTEXT Version 4.0.0.2
+PLATFORM C(8,0),UNIQUEID C(10,0),TIMESTAMP N(10,0),CLASS M(4,0),CLASSLOC M(4,0),BASECLASS M(4,0),OBJNAME M(4,0),PARENT M(4,0),PROPERTIES M(4,0),PROTECTED M(4,0),METHODS M(4,0),OBJCODE M(4,0),OLE M(4,0),OLE2 M(4,0),RESERVED1 M(4,0),RESERVED2 M(4,0),RESERVED3 M(4,0),RESERVED4 M(4,0),RESERVED5 M(4,0),RESERVED6 M(4,0),RESERVED7 M(4,0),RESERVED8 M(4,0),USER M(4,0)
+1252
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] Screen    
+[START RESERVED1]
+VERSION =   3.00[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1TP0L3VWK
+[CLASS] dataenvironment
+[BASECLASS] dataenvironment
+[OBJNAME] Dataenvironment
+[START PROPERTIES]
+Top = 220
+Left = 1
+Width = 520
+Height = 200
+DataSource = .NULL.
+Name = "Dataenvironment"
+[END PROPERTIES]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED4]
+1[END RESERVED4]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1TP0L3VWL
+[CLASS] form
+[BASECLASS] form
+[OBJNAME] Form1
+[START PROPERTIES]
+Top = 14
+Left = 18
+Height = 375
+Width = 516
+DoCreate = .T.
+BorderStyle = 1
+Caption = "Change Color Intensities using LockBits"
+MaxButton = .F.
+MinButton = .F.
+mode = 0
+Name = "Form1"
+[END PROPERTIES]
+[START RESERVED3]
+mode
+[END RESERVED3]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1U40L3TVG
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] Command3
+[PARENT] Form1
+[START PROPERTIES]
+Top = 204
+Left = 12
+Height = 25
+Width = 96
+Anchor = 12
+Picture = (home() + "/graphics/bitmaps/outline/open.bmp")
+Caption = "Get Picture"
+TabIndex = 1
+PicturePosition = 1
+PictureMargin = 1
+Name = "Command3"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+lcFile = GETPICT()
+IF EMPTY(lcFile)
+	RETURN
+ENDIF
+
+Thisform.Container1.Visible = .T.
+Thisform.txtFile.Value = lcFile
+Thisform.Image1.Picture = lcFile
+Thisform.Mode = 0
+Thisform.Imgcanvas1.Draw()
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1U40L3TVH
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] txtFile
+[PARENT] Form1
+[START PROPERTIES]
+FontSize = 8
+Anchor = 12
+Height = 25
+Left = 120
+TabIndex = 2
+Top = 204
+Width = 384
+Name = "txtFile"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1U40LO0FY
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] Image1
+[PARENT] Form1
+[START PROPERTIES]
+Stretch = 2
+Height = 180
+Left = 12
+Top = 12
+Width = 240
+Name = "Image1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1U40NTQI6
+[CLASS] container
+[BASECLASS] container
+[OBJNAME] Container1
+[PARENT] Form1
+[START PROPERTIES]
+Anchor = 12
+Top = 252
+Left = 4
+Width = 500
+Height = 116
+BackStyle = 0
+BorderWidth = 0
+Visible = .F.
+TabIndex = 3
+Name = "Container1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1U40NTQI7
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] Command1
+[PARENT] Form1.Container1
+[START PROPERTIES]
+Top = 12
+Left = 8
+Height = 25
+Width = 84
+Anchor = 12
+Caption = "GreyScale"
+TabIndex = 1
+Name = "Command1"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+WITH Thisform
+	Thisform.Mode = 1 && GreyScale
+	.imgcanvas1.Draw()
+ENDWITH
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1TP0L3VWK
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] Command2
+[PARENT] Form1.Container1
+[START PROPERTIES]
+Top = 48
+Left = 8
+Height = 25
+Width = 84
+Anchor = 12
+Caption = "Red"
+TabIndex = 4
+Name = "Command2"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+WITH Thisform
+	Thisform.Mode = 2 && Stay only Red
+	.imgcanvas1.Draw()
+ENDWITH
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1TP0L3VWL
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] Command5
+[PARENT] Form1.Container1
+[START PROPERTIES]
+Top = 48
+Left = 104
+Height = 25
+Width = 84
+Anchor = 12
+Caption = "Green"
+TabIndex = 5
+Name = "Command5"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+WITH Thisform
+	Thisform.Mode = 3 && Stay only Green
+	.imgcanvas1.Draw()
+ENDWITH
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1TZ0QGKPH
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] Command6
+[PARENT] Form1.Container1
+[START PROPERTIES]
+Top = 48
+Left = 200
+Height = 25
+Width = 84
+Anchor = 12
+Caption = "Blue"
+TabIndex = 6
+Name = "Command6"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+WITH Thisform
+	Thisform.Mode = 4 && Stay only Blue
+	.imgcanvas1.Draw()
+ENDWITH
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1TP0L3VWK
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] Command7
+[PARENT] Form1.Container1
+[START PROPERTIES]
+Top = 84
+Left = 8
+Height = 25
+Width = 84
+Anchor = 12
+Caption = "Negative"
+TabIndex = 7
+Name = "Command7"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+WITH Thisform
+	Thisform.Mode = 5 && Negative
+	.imgcanvas1.Draw()
+ENDWITH
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1U40VDSFQ
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] Command3
+[PARENT] Form1.Container1
+[START PROPERTIES]
+Top = 84
+Left = 104
+Height = 25
+Width = 84
+Anchor = 12
+Caption = "Bright"
+TabIndex = 8
+Name = "Command3"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+WITH Thisform
+	Thisform.Mode = 6 && Bright
+	.imgcanvas1.Draw()
+ENDWITH
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1TP0L3VWK
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] Command4
+[PARENT] Form1.Container1
+[START PROPERTIES]
+Top = 84
+Left = 200
+Height = 25
+Width = 84
+Anchor = 12
+Caption = "Dark"
+TabIndex = 9
+Name = "Command4"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+WITH Thisform
+	Thisform.Mode = 7 && Dark
+	.imgcanvas1.Draw()
+ENDWITH
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1VF0267WW
+[CLASS] optiongroup
+[BASECLASS] optiongroup
+[OBJNAME] Optiongroup1
+[PARENT] Form1.Container1
+[START PROPERTIES]
+ButtonCount = 2
+Value = 2
+Height = 46
+Left = 356
+Top = 12
+Width = 132
+TabIndex = 10
+Name = "Optiongroup1"
+Option1.Caption = "Original Size"
+Option1.Value = 0
+Option1.Height = 17
+Option1.Left = 5
+Option1.Top = 5
+Option1.Width = 127
+Option1.Name = "Option1"
+Option2.Caption = "ImgCanvas Size"
+Option2.Value = 1
+Option2.Height = 17
+Option2.Left = 5
+Option2.Top = 24
+Option2.Width = 139
+Option2.Name = "Option2"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1VF03FNGA
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] Command8
+[PARENT] Form1.Container1
+[START PROPERTIES]
+Top = 12
+Left = 200
+Height = 25
+Width = 84
+Anchor = 12
+Caption = "Hue2"
+TabIndex = 3
+Name = "Command8"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+WITH Thisform
+	Thisform.Mode = 9 && Hue2
+	.imgcanvas1.Draw()
+ENDWITH
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1VF03FNGB
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] Command9
+[PARENT] Form1.Container1
+[START PROPERTIES]
+Top = 12
+Left = 104
+Height = 25
+Width = 84
+Anchor = 12
+Caption = "Hue1"
+TabIndex = 2
+Name = "Command9"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+WITH Thisform
+	Thisform.Mode = 8 && Hue1
+	.imgcanvas1.Draw()
+ENDWITH
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1VE04ASWR
+[CLASS] imgcanvas
+[CLASSLOC] ..\..\..\vfpx-2859\vfpx\gdiplusx\source\gdiplusx.vcx
+[BASECLASS] image
+[OBJNAME] Imgcanvas1
+[PARENT] Form1
+[START PROPERTIES]
+Height = 180
+Left = 264
+Top = 12
+Width = 240
+Name = "Imgcanvas1"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE beforedraw
+IF EMPTY(Thisform.txtFile.Value)
+	RETURN
+ENDIF
+
+LOCAL loBmp AS xfcBitmap
+LOCAL lotmpBmp AS xfcBitmap
+LOCAL lotmpGfx AS xfcGraphics
+LOCAL loRect AS xfcRectangle
+LOCAL loBmpData AS xfcBitmapData
+
+LOCAL lnWidth, lnHeight, nBytes, b, g, r, lnPos0
+
+WITH _SCREEN.System.Drawing
+
+	WAIT WINDOW "Converting Image, Please Wait..." NOWAIT
+	This.Clear
+
+	loBmp = .Bitmap.New(Thisform.txtFile.Value)
+	
+	IF Thisform.Container1.Optiongroup1.Value = 1 && Original size (slow)
+		lnWidth = loBmp.Width
+		lnHeight = loBmp.Height
+	ELSE && 2 ImageCanvas size (fast)
+		lnWidth = This.Width
+		lnHeight = This.Height
+	ENDIF
+
+	lotmpBmp = .Bitmap.New(lnWidth, lnHeight)
+	lotmpGfx = _screen.System.Drawing.Graphics.FromImage(lotmpBmp)
+	lotmpGfx.DrawImage(loBmp,0,0,lnWidth,lnHeight)
+	
+	loRect = .Rectangle.New(0, 0, lnWidth, lnHeight)
+	loBmpData = lotmpBmp.LockBits(loRect, .Imaging.ImageLockMode.ReadWrite, ;
+		_screen.System.Drawing.Imaging.PixelFormat.Format24bppRGB)
+	nBytes = loBmpData.Width * loBmpData.Height * 3
+
+	LOCAL lnSecs
+	lnSecs = SECONDS()
+
+	DO CASE
+	
+	CASE Thisform.Mode = 1 && GreyScale
+		LOCAL lcGrey
+		FOR y = 0 TO loBmpData.Height - 1
+			FOR x = 0 TO loBmpData.Width - 1
+				lnPos0 = loBmpData.Scan0 + (loBmpData.Stride * y) + (3 * x)
+				b = ASC(SYS(2600, lnPos0, 1))
+				g = ASC(SYS(2600, lnPos0 + 1, 1))
+				r = ASC(SYS(2600, lnPos0 + 2, 1))
+				lcGrey = CHR(INT((r + g + b) / 3))
+				SYS(2600, lnPos0, 3, REPLICATE(lcGrey,3))
+			NEXT
+		NEXT
+
+	CASE Thisform.Mode = 2 && Keep Red / Clear Green and Blue
+		FOR y = 0 TO loBmpData.Height - 1
+			FOR x = 0 TO loBmpData.Width - 1
+			   SYS(2600, loBmpData.Scan0 + (loBmpData.Stride * y) + (3 * x) + 0, 1, CHR(0))
+			   SYS(2600, loBmpData.Scan0 + (loBmpData.Stride * y) + (3 * x) + 1, 1, CHR(0))
+			NEXT
+		NEXT
+
+	CASE Thisform.Mode = 3 && Keep Green / Clear Red and Blue
+		FOR y = 0 TO loBmpData.Height - 1
+			FOR x = 0 TO loBmpData.Width - 1
+			   SYS(2600, loBmpData.Scan0 + (loBmpData.Stride * y) + (3 * x) + 0, 1, CHR(0))
+			   SYS(2600, loBmpData.Scan0 + (loBmpData.Stride * y) + (3 * x) + 2, 1, CHR(0))
+			NEXT
+		NEXT
+
+	CASE Thisform.Mode = 4 && Keep Blue / Clear Red and Green
+		FOR y = 0 TO loBmpData.Height - 1
+			FOR x = 0 TO loBmpData.Width - 1
+			   SYS(2600, loBmpData.Scan0 + (loBmpData.Stride * y) + (3 * x) + 1, 1, CHR(0))
+			   SYS(2600, loBmpData.Scan0 + (loBmpData.Stride * y) + (3 * x) + 2, 1, CHR(0))
+			NEXT
+		NEXT
+
+	CASE Thisform.Mode = 5 && Negative
+		FOR y = 0 TO loBmpData.Height - 1
+			FOR x = 0 TO loBmpData.Width - 1
+				lnPos0 = loBmpData.Scan0 + (loBmpData.Stride * y) + (3 * x)
+				b = ASC(SYS(2600, lnPos0, 1))
+				g = ASC(SYS(2600, lnPos0 + 1, 1))
+				r = ASC(SYS(2600, lnPos0 + 2, 1))
+				SYS(2600, lnPos0, 3, CHR(255 - b ) + CHR(255 - g ) + CHR(255 - r))
+			NEXT
+		NEXT
+
+	CASE Thisform.Mode = 6 && Bright
+		FOR y = 0 TO loBmpData.Height - 1
+			FOR x = 0 TO loBmpData.Width - 1
+				lnPos0 = loBmpData.Scan0 + (loBmpData.Stride * y) + (3 * x)
+				b = ASC(SYS(2600, lnPos0, 1))
+				g = ASC(SYS(2600, lnPos0 + 1, 1))
+				r = ASC(SYS(2600, lnPos0 + 2, 1))
+				SYS(2600, lnPos0, 3, CHR(MIN( b + 50, 255)) + CHR(MIN( g + 50, 255)) + CHR(MIN( r + 50, 255)))
+			NEXT
+		NEXT
+
+	CASE Thisform.Mode = 7 && Dark
+		FOR y = 0 TO loBmpData.Height - 1
+			FOR x = 0 TO loBmpData.Width - 1
+				lnPos0 = loBmpData.Scan0 + (loBmpData.Stride * y) + (3 * x)
+				b = ASC(SYS(2600, lnPos0, 1))
+				g = ASC(SYS(2600, lnPos0 + 1, 1))
+				r = ASC(SYS(2600, lnPos0 + 2, 1))
+				SYS(2600, lnPos0, 3, CHR(MAX( b - 50, 0)) + CHR(MAX( g - 50, 0)) + CHR(MAX( r - 50, 0)))
+			NEXT
+		NEXT
+
+	CASE Thisform.Mode = 8 && Hue1
+		FOR y = 0 TO loBmpData.Height - 1
+			FOR x = 0 TO loBmpData.Width - 1
+				lnPos0 = loBmpData.Scan0 + (loBmpData.Stride * y) + (3 * x)
+				b = SYS(2600, lnPos0, 1)
+				g = SYS(2600, lnPos0 + 1, 1)
+				r = SYS(2600, lnPos0 + 2, 1)
+				SYS(2600, lnPos0, 3, g + r + b)
+			NEXT
+		NEXT
+
+	CASE Thisform.Mode = 9 && Hue2
+		FOR y = 0 TO loBmpData.Height - 1
+			FOR x = 0 TO loBmpData.Width - 1
+				lnPos0 = loBmpData.Scan0 + (loBmpData.Stride * y) + (3 * x)
+				b = SYS(2600, lnPos0, 1)
+				g = SYS(2600, lnPos0 + 1, 1)
+				r = SYS(2600, lnPos0 + 2, 1)
+				SYS(2600, lnPos0, 3, r + b + g)
+			NEXT
+		NEXT
+
+
+	ENDCASE
+	
+	lotmpBmp.UnlockBits(loBmpData)
+	This.oGfx.DrawImage(lotmpBmp,This.Rectangle)
+
+	WAIT CLEAR
+	WAIT WINDOW "Elapsed " + TRANSFORM(SECONDS() - lnSecs) + " seconds." NOWAIT
+
+ENDWITH
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[START PROPERTIES]
+Arial, 0, 9, 5, 15, 12, 32, 3, 0
+Arial, 0, 8, 5, 14, 11, 29, 3, 0
+[END PROPERTIES]
+[EOF]
