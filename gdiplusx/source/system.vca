@@ -326,9 +326,10 @@ knowncolor = .NULL.
 fontstyle = .NULL.
 region = (NULL)
 characterrange = (NULL)
-_memberdata =     2285<VFPData><memberdata name="bitmap" type="property" display="Bitmap"/><memberdata name="color" type="property" display="Color"/><memberdata name="drawing2d" type="property" display="Drawing2D"/><memberdata name="font" type="property" display="Font"/><memberdata name="fontfamily" type="property" display="FontFamily"/><memberdata name="graphics" type="property" display="Graphics"/><memberdata name="image" type="property" display="Image"/><memberdata name="imaging" type="property" display="Imaging"/><memberdata name="pen" type="property" display="Pen"/><memberdata name="point" type="property" display="Point"/><memberdata name="pointf" type="property" display="PointF"/><memberdata name="rectangle" type="property" display="Rectangle"/><memberdata name="rectanglef" type="property" display="RectangleF"/><memberdata name="solidbrush" type="property" display="SolidBrush"/><memberdata name="stringformat" type="property" display="StringFormat"/><memberdata name="size" type="property" display="Size"/><memberdata name="sizef" type="property" display="SizeF"/><memberdata name="pens" type="property" display="Pens"/><memberdata name="systembrushes" type="property" display="SystemBrushes"/><memberdata name="systemcolors" type="property" display="SystemColors"/><memberdata name="systemicons" type="property" display="SystemIcons"/><memberdata name="systempens" type="property" display="SystemPens"/><memberdata name="imageanimator" type="property" display="ImageAnimator"/><memberdata name="brushes" type="property" display="Brushes"/><memberdata name="fontstyle" type="property" display="FontStyle"/><memberdata name="hatchbrush" type="property" display="HatchBrush"/><memberdata name="knowncolor" type="property" display="KnownColor"/><memberdata name="stringalignment" type="property" display="StringAlignment"/><memberdata name="stringdigitsubstitute" type="property" display="StringDigitSubstitute"/><memberdata name="stringformatflags" type="property" display="StringFormatFlags"/><memberdata name="stringtrimming" type="property" display="StringTrimming"/><memberdata name="texturebrush" type="property" display="TextureBrush"/><memberdata name="characterrange" type="property" display="CharacterRange"/><memberdata name="region" type="property" display="Region"/></VFPData>
-
 text = (NULL)
+graphicsunit = 0
+_memberdata =     2357<VFPData><memberdata name="bitmap" type="property" display="Bitmap"/><memberdata name="color" type="property" display="Color"/><memberdata name="drawing2d" type="property" display="Drawing2D"/><memberdata name="font" type="property" display="Font"/><memberdata name="fontfamily" type="property" display="FontFamily"/><memberdata name="graphics" type="property" display="Graphics"/><memberdata name="image" type="property" display="Image"/><memberdata name="imaging" type="property" display="Imaging"/><memberdata name="pen" type="property" display="Pen"/><memberdata name="point" type="property" display="Point"/><memberdata name="pointf" type="property" display="PointF"/><memberdata name="rectangle" type="property" display="Rectangle"/><memberdata name="rectanglef" type="property" display="RectangleF"/><memberdata name="solidbrush" type="property" display="SolidBrush"/><memberdata name="stringformat" type="property" display="StringFormat"/><memberdata name="size" type="property" display="Size"/><memberdata name="sizef" type="property" display="SizeF"/><memberdata name="pens" type="property" display="Pens"/><memberdata name="systembrushes" type="property" display="SystemBrushes"/><memberdata name="systemcolors" type="property" display="SystemColors"/><memberdata name="systemicons" type="property" display="SystemIcons"/><memberdata name="systempens" type="property" display="SystemPens"/><memberdata name="imageanimator" type="property" display="ImageAnimator"/><memberdata name="brushes" type="property" display="Brushes"/><memberdata name="fontstyle" type="property" display="FontStyle"/><memberdata name="hatchbrush" type="property" display="HatchBrush"/><memberdata name="knowncolor" type="property" display="KnownColor"/><memberdata name="stringalignment" type="property" display="StringAlignment"/><memberdata name="stringdigitsubstitute" type="property" display="StringDigitSubstitute"/><memberdata name="stringformatflags" type="property" display="StringFormatFlags"/><memberdata name="stringtrimming" type="property" display="StringTrimming"/><memberdata name="texturebrush" type="property" display="TextureBrush"/><memberdata name="characterrange" type="property" display="CharacterRange"/><memberdata name="region" type="property" display="Region"/><memberdata name="graphicsunit" type="property" display="GraphicsUnit"/></VFPData>
+
 Name = "xfcdrawing"
 [END PROPERTIES]
 [START PROTECTED]
@@ -506,6 +507,47 @@ IF VARTYPE(This.Graphics) <> "O"
 ENDIF
 
 RETURN THIS.Graphics
+
+ENDPROC
+PROCEDURE graphicsunit_access
+*********************************************************************
+** Enumeration: StringTrimming (Access)
+**
+** Specifies how to trim characters from a string that does not completely fit into a layout shape.
+**
+** History:
+**  2006/08/15: BDurban - Coded
+*********************************************************************
+
+*!ToDo: Test this method
+
+IF VARTYPE(This.GraphicsUnit) <> "O"
+	This.GraphicsUnit = CREATEOBJECT(ENUM_BASECLASS)
+	ADDPROPERTY(This.GraphicsUnit, "Display", UnitDisplay)
+	ADDPROPERTY(This.GraphicsUnit, "Document", UnitDocument)
+	ADDPROPERTY(This.GraphicsUnit, "Inch", UnitInch)
+	ADDPROPERTY(This.GraphicsUnit, "Millimeter", UnitMillimeter)
+	ADDPROPERTY(This.GraphicsUnit, "Pixel", UnitPixel)
+	ADDPROPERTY(This.GraphicsUnit, "Point", UnitPoint)
+	ADDPROPERTY(This.GraphicsUnit, "World", UnitWorld)
+#IFDEF USE_MEMBERDATA
+	ADDPROPERTY(This.GraphicsUnit, "_memberdata", [<VFPData>]+;
+				[<memberdata name="display" display="Display"/>]+;
+				[<memberdata name="document" display="Document"/>]+;
+				[<memberdata name="inch" display="Inch"/>]+;
+				[<memberdata name="millimeter" display="Millimeter"/>]+;
+				[<memberdata name="pixel" display="Pixel"/>]+;
+				[<memberdata name="point" display="Point"/>]+;
+				[<memberdata name="world" display="World"/>]+;
+				[</VFPData>])
+#ENDIF
+ENDIF
+
+RETURN This.GraphicsUnit
+
+** .NET Help ********************************************************
+** http://msdn2.microsoft.com/en-us/library/System.Drawing.StringTrimming%28vs.80%29.aspx
+*********************************************************************
 
 ENDPROC
 PROCEDURE icon_access
@@ -1251,7 +1293,8 @@ knowncolor Specifies the known system colors.
 fontstyle Specifies style information applied to text.
 region
 characterrange
-text
+text Returns all of the text in a text-entry area of a control.
+graphicsunit
 *pointf_access 
 *point_access 
 *graphics_access 
@@ -1287,6 +1330,7 @@ text
 *region_access 
 *characterrange_access 
 *text_access 
+*graphicsunit_access 
 [END RESERVED3]
 [START RESERVED6]
 Pixels[END RESERVED6]
@@ -1298,7 +1342,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcdrawing
 [START RESERVED1]
- 	 drawing.hf-„M5 system.hn.0•Ô4 gdiplusconstants.hv/π>œ4[END RESERVED1]
+ 	 drawing.h∆;„M5 system.hŒ<0•Ô4 gdiplusconstants.h÷=π>œ4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
