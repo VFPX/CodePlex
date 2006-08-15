@@ -44,35 +44,12 @@ MinHeight = 150
 MinWidth = 300
 Name = "Form1"
 [END PROPERTIES]
-[START METHODS]
-PROCEDURE Load
-DODEFAULT()
-ENDPROC
-PROCEDURE makeargb
-LPARAMETERS tnColor
-	Local argb, red, green, blue
-	blue = Bitrshift(Bitand(tnColor, 0x00FF0000), 16)
-	green = Bitrshift(Bitand(tnColor, 0x0000FF00), 8)
-	red = Bitand(tnColor, 0x000000FF)
-	argb = blue + Bitlshift(green, 8) + Bitlshift(red, 16)
-	If Vartype(tnAlpha) = 'N'
-		argb = argb + Bitlshift(Bitand(tnAlpha, 0xFF), 24)
-	Else
-		argb = argb + Bitlshift(255, 24)
-	ENDIF
-	RETURN ARGB
-
-ENDPROC
-[END METHODS]
-[START RESERVED3]
-*makeargb 
-[END RESERVED3]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
 [UNIQUEID] _1TZ0QGKPH
 [CLASS] imgcanvas
-[CLASSLOC] ..\source\gdiplusx.vcx
+[CLASSLOC] ..\..\..\vfpx-2859\vfpx\gdiplusx\source\gdiplusx.vcx
 [BASECLASS] image
 [OBJNAME] Imgcanvas1
 [PARENT] Form1
@@ -85,14 +62,6 @@ Width = 108
 Name = "Imgcanvas1"
 [END PROPERTIES]
 [START METHODS]
-PROCEDURE Init
-This.Width = Thisform.Width
-This.Height = Thisform.Height
-IF NOT DODEFAULT()
-	RETURN .F.
-ENDIF
-
-ENDPROC
 PROCEDURE beforedraw
 LOCAL loBrush AS xfcLinearGradientBrush
 LOCAL loBlend AS xfcBlend
@@ -104,42 +73,11 @@ WITH _Screen.System.Drawing
      Thisform.Spinner1.Value - 1)
 
 	loColorBlend = .Drawing2D.ColorBlend.New(Thisform.spnColors.Value)
-
-*!* OPTION 1
-*!* Use modified method "FromRGB" at class xfcColor
-
-*!* Craig and Bo,
-*!* Pls change the contents of "FromRGB" method to this:
-*!* The change must be inserted in the DO CASE  in "PCOUNT() = 1"
-
-*!*		CASE PCOUNT() = 1	&& RGB
-*!*			LOCAL lnColor, lnArgb, lnRed, lnGreen, lnBlue
-*!*			lnColor = m.tiRed
-*!*			lnBlue = Bitrshift(Bitand(lnColor, 0x00FF0000), 16)
-*!*			lnGreen = Bitrshift(Bitand(lnColor, 0x0000FF00), 8)
-*!*			lnRed = Bitand(lnColor, 0x000000FF)
-*!*			lnArgb = lnBlue + Bitlshift(lnGreen, 8) + Bitlshift(lnRed, 16) + Bitlshift(255, 24)
-*!*			liARGB = lnARGB
-		
-
-
 	loColorBlend.Colors = .Color.NewArray( ;
 		.Color.FromRGB(Thisform.Text1.DisabledBackColor), ;
 		.Color.FromRGB(Thisform.Text2.DisabledBackColor), ;
 		.Color.FromRGB(Thisform.Cnt3.Text3.DisabledBackColor), ;
 		.Color.FromRGB(Thisform.Cnt4.Text4.DisabledBackColor))
-
-*!* OPTION 2
-*!* Use ARGB values calculated  by the method MAKEARGB added to the form
-*!*	lnColor1 = Thisform.MakeARGB(Thisform.Text1.DisabledBackColor)
-*!*	lnColor2 = Thisform.MakeARGB(Thisform.Text2.DisabledBackColor)
-*!*	lnColor3 = Thisform.MakeARGB(Thisform.Cnt3.Text3.DisabledBackColor)
-*!*	lnColor4 = Thisform.MakeARGB(Thisform.Cnt4.Text4.DisabledBackColor)
-*!*	loColorBlend.Colors = .Color.NewArray(lnColor1, lnColor2, lnColor3, lnColor4)
-
-*!* OPTION 3
-*!* Use Color Predefined Names
-*!*	loColorBlend.Colors = .Color.NewArray(.Color.Red, .Color.Yellow, .Color.Green, .Color.Blue)
 
 	loColorBlend.Positions = _SCREEN.System.Single.NewArray( ;
 			Thisform.spnPos1.Value, ;
@@ -157,6 +95,10 @@ ENDPROC
 PROCEDURE draw
 DODEFAULT()
 Thisform.Image1.PictureVal = This.PictureVal
+ENDPROC
+PROCEDURE setup
+This.Width = Thisform.Width
+This.Height = Thisform.Height
 ENDPROC
 [END METHODS]
 
@@ -192,6 +134,7 @@ Width = 184
 Height = 25
 BackStyle = 0
 BorderWidth = 0
+TabIndex = 6
 Name = "Cnt4"
 [END PROPERTIES]
 
@@ -209,6 +152,7 @@ Height = 25
 Width = 85
 Anchor = 12
 Caption = "Color 4"
+TabIndex = 1
 Name = "cmdColor4"
 [END PROPERTIES]
 [START METHODS]
@@ -234,6 +178,7 @@ Anchor = 12
 Enabled = .F.
 Height = 25
 Left = 106
+TabIndex = 2
 Top = 0
 Width = 25
 DisabledBackColor = 0,0,255
@@ -258,6 +203,7 @@ KeyboardLowValue = 0
 Left = 139
 SpinnerHighValue =   1.00
 SpinnerLowValue =   0.00
+TabIndex = 3
 Top = 0
 Width = 45
 DisabledBackColor = 245,245,245
@@ -289,6 +235,7 @@ Height = 36
 Left = 105
 Top = 72
 Width = 190
+TabIndex = 9
 ForeColor = 255,255,255
 Name = "Label1"
 [END PROPERTIES]
@@ -307,13 +254,13 @@ Height = 25
 Width = 85
 Anchor = 12
 Caption = "Color 1"
+TabIndex = 1
 Name = "cmdColor1"
 [END PROPERTIES]
 [START METHODS]
 PROCEDURE Click
 WITH Thisform
-	lnColor = GETCOLOR(.Text1.DisabledBackColor)
-	.Text1.DisabledBackColor = lnColor
+	.Text1.DisabledBackColor = GETCOLOR(.Text1.DisabledBackColor)
 	.imgcanvas1.Draw()
 ENDWITH
 
@@ -334,13 +281,13 @@ Height = 25
 Width = 85
 Anchor = 12
 Caption = "Color 2"
+TabIndex = 3
 Name = "cmdColor2"
 [END PROPERTIES]
 [START METHODS]
 PROCEDURE Click
 WITH Thisform
-	lnColor = GETCOLOR(.Text2.DisabledBackColor)
-	.Text2.DisabledBackColor = lnColor
+	.Text2.DisabledBackColor = GETCOLOR(.Text2.DisabledBackColor)
 	.imgcanvas1.Draw()
 ENDWITH
 
@@ -359,6 +306,7 @@ Anchor = 12
 Enabled = .F.
 Height = 25
 Left = 334
+TabIndex = 10
 Top = 254
 Width = 25
 DisabledBackColor = 255,0,0
@@ -377,6 +325,7 @@ Anchor = 12
 Enabled = .F.
 Height = 25
 Left = 334
+TabIndex = 11
 Top = 282
 Width = 25
 DisabledBackColor = 255,255,0
@@ -401,6 +350,7 @@ KeyboardLowValue = 0
 Left = 367
 SpinnerHighValue =   1.00
 SpinnerLowValue =   0.00
+TabIndex = 2
 Top = 254
 Width = 45
 DisabledBackColor = 245,245,245
@@ -431,6 +381,7 @@ KeyboardLowValue = 0
 Left = 367
 SpinnerHighValue =   1.00
 SpinnerLowValue =   0.00
+TabIndex = 4
 Top = 282
 Width = 45
 DisabledBackColor = 245,245,245
@@ -459,6 +410,7 @@ KeyboardLowValue = 2
 Left = 192
 SpinnerHighValue =   4.00
 SpinnerLowValue =   2.00
+TabIndex = 7
 Top = 254
 Width = 36
 Value = 4
@@ -518,6 +470,7 @@ Height = 17
 Left = 120
 Top = 254
 Width = 68
+TabIndex = 12
 Name = "Label4"
 [END PROPERTIES]
 
@@ -537,6 +490,7 @@ Height = 17
 Left = 367
 Top = 234
 Width = 47
+TabIndex = 13
 Name = "Label5"
 [END PROPERTIES]
 
@@ -555,6 +509,7 @@ KeyboardLowValue = 1
 Left = 192
 SpinnerHighValue =   4.00
 SpinnerLowValue =   1.00
+TabIndex = 8
 Top = 310
 Width = 36
 Value = 1
@@ -583,6 +538,7 @@ Height = 36
 Left = 139
 Top = 310
 Width = 53
+TabIndex = 14
 Name = "Label2"
 [END PROPERTIES]
 
@@ -601,6 +557,7 @@ Width = 184
 Height = 25
 BackStyle = 0
 BorderWidth = 0
+TabIndex = 5
 Name = "cnt3"
 [END PROPERTIES]
 
@@ -618,13 +575,13 @@ Height = 25
 Width = 85
 Anchor = 12
 Caption = "Color 3"
+TabIndex = 1
 Name = "cmdColor3"
 [END PROPERTIES]
 [START METHODS]
 PROCEDURE Click
 WITH Thisform
-	lnColor = GETCOLOR(.cnt3.Text3.DisabledBackColor)
-	.Cnt3.Text3.DisabledBackColor = lnColor
+	.Cnt3.Text3.DisabledBackColor = GETCOLOR(.cnt3.Text3.DisabledBackColor)
 	.imgcanvas1.Draw()
 ENDWITH
 
@@ -643,6 +600,7 @@ Anchor = 12
 Enabled = .F.
 Height = 25
 Left = 106
+TabIndex = 2
 Top = 0
 Width = 25
 DisabledBackColor = 0,255,0
@@ -666,6 +624,7 @@ KeyboardLowValue = 0
 Left = 139
 SpinnerHighValue =   1.00
 SpinnerLowValue =   0.00
+TabIndex = 3
 Top = 0
 Width = 45
 DisabledBackColor = 245,245,245
