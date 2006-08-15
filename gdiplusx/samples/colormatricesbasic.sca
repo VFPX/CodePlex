@@ -67,6 +67,8 @@ Name = "Imgcanvas1"
 [END PROPERTIES]
 [START METHODS]
 PROCEDURE beforedraw
+#DEFINE UnitPixel  2
+
 IF EMPTY(Thisform.txtFile.Value)
 	RETURN
 ENDIF
@@ -77,23 +79,12 @@ LOCAL loAttr AS xfcImageAttributes
 LOCAL loClrMatrix AS xfcColorMatrix
 
 WITH _SCREEN.System.Drawing
-
 	loAttr = .Imaging.ImageAttributes.New()
 	loAttr.SetColorMatrix(Thisform.oClrMatrix)
-	This.oGfx.DrawImage(Thisform.oBmp, This.Rectangle, Thisform.oBmp.GetBounds(), 2, loAttr)
-
+	This.oGfx.DrawImage(Thisform.oBmp, This.Rectangle, Thisform.oBmp.GetBounds(), UnitPixel, loAttr)
 ENDWITH
 
 RETURN
-
-
-FOR i = 0 TO 4
-  loCmtrx.Matrix33 = i*.25  && Set the Alpha channel
-  loAttr.SetColorMatrix(loCmtrx)
-  loRect.X = i*100
-  loRect.Y = i*25
-  loGfx.DrawImage(loImg, loRect, loImg.GetBounds(), 2, loAttr)
-ENDFOR
 ENDPROC
 [END METHODS]
 
@@ -110,6 +101,7 @@ Anchor = 6
 Enabled = .F.
 Height = 25
 Left = 120
+TabIndex = 2
 Top = 204
 Width = 384
 DisabledBackColor = 255,255,255
@@ -144,28 +136,14 @@ Name = "Image1"
 [START PROPERTIES]
 Anchor = 6
 Top = 252
-Left = 4
-Width = 500
+Left = 18
+Width = 481
 Height = 84
-BackStyle = 0
-BorderWidth = 0
-Visible = .F.
-Name = "Container1"
-[END PROPERTIES]
-
-[ RECORD]
-[PLATFORM] WINDOWS 
-[UNIQUEID] _1TP0L3VWK
-[CLASS] container
-[BASECLASS] container
-[OBJNAME] Container1
-[PARENT] Form1.Container1
-[START PROPERTIES]
-Top = 4
-Left = 12
-Width = 485
-Height = 78
+BackStyle = 1
+BorderWidth = 1
 SpecialEffect = 0
+Visible = .F.
+TabIndex = 3
 Name = "Container1"
 [END PROPERTIES]
 
@@ -177,18 +155,19 @@ Name = "Container1"
 [OBJNAME] Command1
 [PARENT] Form1.Container1
 [START PROPERTIES]
-Top = 11
-Left = 23
+Top = 12
+Left = 10
 Height = 25
 Width = 98
 Anchor = 12
 Caption = "GreyScale 1"
+TabIndex = 1
 Name = "Command1"
 [END PROPERTIES]
 [START METHODS]
 PROCEDURE Click
 WITH Thisform
-	Thisform.oClrMatrix = _Screen.System.Drawing.Imaging.ColorMatrix.New( ;
+	.oClrMatrix = _Screen.System.Drawing.Imaging.ColorMatrix.New( ;
         0.33, 0.33, 0.33, 0.0, 0.0, ;
         0.33, 0.33, 0.33, 0.0, 0.0, ;
         0.33, 0.33, 0.33, 0.0, 0.0, ;
@@ -207,18 +186,19 @@ ENDPROC
 [OBJNAME] Command2
 [PARENT] Form1.Container1
 [START PROPERTIES]
-Top = 11
-Left = 143
+Top = 12
+Left = 130
 Height = 25
 Width = 98
 Anchor = 12
 Caption = "GreyScale 2"
+TabIndex = 2
 Name = "Command2"
 [END PROPERTIES]
 [START METHODS]
 PROCEDURE Click
 WITH Thisform
-	Thisform.oClrMatrix = _Screen.System.Drawing.Imaging.ColorMatrix.New( ;
+	.oClrMatrix = _Screen.System.Drawing.Imaging.ColorMatrix.New( ;
 	 .299, .299, .299, 0, 0, ;
 	 .587, .587, .587, 0, 0, ;
 	 .114, .114, .114, 0, 0, ;
@@ -237,18 +217,19 @@ ENDPROC
 [OBJNAME] Command3
 [PARENT] Form1.Container1
 [START PROPERTIES]
-Top = 47
-Left = 23
+Top = 48
+Left = 10
 Height = 25
 Width = 98
 Anchor = 12
 Caption = "Red"
+TabIndex = 5
 Name = "Command3"
 [END PROPERTIES]
 [START METHODS]
 PROCEDURE Click
 WITH Thisform
-	Thisform.oClrMatrix = _Screen.System.Drawing.Imaging.ColorMatrix.New( ;
+	.oClrMatrix = _Screen.System.Drawing.Imaging.ColorMatrix.New( ;
 	 1, 0, 0, 0, 0, ;
 	 0, 0, 0, 0, 0, ;
 	 0, 0, 0, 0, 0, ;
@@ -267,18 +248,19 @@ ENDPROC
 [OBJNAME] Command4
 [PARENT] Form1.Container1
 [START PROPERTIES]
-Top = 47
-Left = 263
+Top = 48
+Left = 250
 Height = 25
 Width = 98
 Anchor = 12
 Caption = "Blue"
+TabIndex = 7
 Name = "Command4"
 [END PROPERTIES]
 [START METHODS]
 PROCEDURE Click
 WITH Thisform
-	Thisform.oClrMatrix = _Screen.System.Drawing.Imaging.ColorMatrix.New( ;
+	.oClrMatrix = _Screen.System.Drawing.Imaging.ColorMatrix.New( ;
 	 0, 0, 0, 0, 0, ;
 	 0, 0, 0, 0, 0, ;
 	 0, 0, 1, 0, 0, ;
@@ -297,18 +279,19 @@ ENDPROC
 [OBJNAME] Command5
 [PARENT] Form1.Container1
 [START PROPERTIES]
-Top = 47
-Left = 143
+Top = 48
+Left = 130
 Height = 25
 Width = 98
 Anchor = 12
 Caption = "Green"
+TabIndex = 6
 Name = "Command5"
 [END PROPERTIES]
 [START METHODS]
 PROCEDURE Click
 WITH Thisform
-	Thisform.oClrMatrix = _Screen.System.Drawing.Imaging.ColorMatrix.New( ;
+	.oClrMatrix = _Screen.System.Drawing.Imaging.ColorMatrix.New( ;
 	 0, 0, 0, 0, 0, ;
 	 0, 1, 0, 0, 0, ;
 	 0, 0, 0, 0, 0, ;
@@ -327,18 +310,19 @@ ENDPROC
 [OBJNAME] Command6
 [PARENT] Form1.Container1
 [START PROPERTIES]
-Top = 11
-Left = 263
+Top = 12
+Left = 250
 Height = 25
 Width = 98
 Anchor = 12
 Caption = "Negative"
+TabIndex = 3
 Name = "Command6"
 [END PROPERTIES]
 [START METHODS]
 PROCEDURE Click
 WITH Thisform
-	Thisform.oClrMatrix = _Screen.System.Drawing.Imaging.ColorMatrix.New( ;
+	.oClrMatrix = _Screen.System.Drawing.Imaging.ColorMatrix.New( ;
 	 -1,  0,  0, 0, 0, ;
 	 0 , -1,  0, 0, 0, ;
 	 0 ,  0, -1, 0, 0, ;
@@ -357,18 +341,19 @@ ENDPROC
 [OBJNAME] Command7
 [PARENT] Form1.Container1
 [START PROPERTIES]
-Top = 11
-Left = 384
+Top = 12
+Left = 370
 Height = 25
 Width = 98
 Anchor = 12
 Caption = "Restore"
+TabIndex = 4
 Name = "Command7"
 [END PROPERTIES]
 [START METHODS]
 PROCEDURE Click
 WITH Thisform
-	Thisform.oClrMatrix = _Screen.System.Drawing.Imaging.ColorMatrix.New()
+	.oClrMatrix = _Screen.System.Drawing.Imaging.ColorMatrix.New()
 	.imgcanvas1.Draw()
 ENDWITH
 ENDPROC
@@ -389,12 +374,14 @@ Width = 98
 Anchor = 6
 Picture = (home() + "/graphics/bitmaps/outline/open.bmp")
 Caption = "Get Picture"
+TabIndex = 1
 PicturePosition = 1
 PictureSpacing = 1
 Name = "Command2"
 [END PROPERTIES]
 [START METHODS]
 PROCEDURE Click
+LOCAL lcFile
 lcFile = GETPICT()
 IF EMPTY(lcFile)
 	RETURN
