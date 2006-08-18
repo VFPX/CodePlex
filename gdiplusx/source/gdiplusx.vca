@@ -19,11 +19,11 @@ Height = 162
 Width = 182
 ogfx = (NULL)
 hdc = 0
-_memberdata =      541<VFPData><memberdata name="beforedraw" type="method" display="BeforeDraw"/><memberdata name="hdc" type="property" display="HDC"/><memberdata name="ogfx" type="property" display="oGfx"/><memberdata name="refresh" type="method" display="Refresh"/><memberdata name="clear" type="method" display="Clear"/><memberdata name="draw" type="method" display="Draw"/><memberdata name="controls" type="property" display="Controls"/><memberdata name="setup" type="method" display="SetUp"/><memberdata name="save" type="method" display="Save"/></VFPData>
+_memberdata =     1033<VFPData><memberdata name="beforedraw" type="method" display="BeforeDraw"/><memberdata name="hdc" type="property" display="HDC"/><memberdata name="ogfx" type="property" display="oGfx"/><memberdata name="refresh" type="method" display="Refresh"/><memberdata name="clear" type="method" display="Clear"/><memberdata name="draw" type="method" display="Draw"/><memberdata name="controls" type="property" display="Controls"/><memberdata name="setup" type="method" display="SetUp"/><memberdata name="save" type="method" display="Save"/><memberdata name="afterdraw" type="method" display="AfterDraw"/><memberdata name="interpolationmode" type="property" display="InterpolationMode"/><memberdata name="rectangle" type="property" display="Rectangle"/><memberdata name="rendermode" type="property" display="RenderMode"/><memberdata name="smoothingmode" type="property" display="SmoothingMode"/><memberdata name="textrenderinghint" type="property" display="TextRenderingHint"/><memberdata name="obmp" type="property" display="oBmp"/></VFPData>
 
 controls = (NULL)
-bmpwidth = 0
-bmpheight = 0
+_bmpwidth = 0
+_bmpheight = 0
 usememory = .T.
 _tempfile = 
 rectangle = (NULL)
@@ -31,16 +31,23 @@ smoothingmode = 4
 textrenderinghint = 3
 interpolationmode = 7
 obmp = (NULL)
+rendermode = 0
+_hwnd = 0
 Name = "imgcanvas"
 [END PROPERTIES]
 [START PROTECTED]
-bmpwidth
-bmpheight
+_bmpwidth
+_bmpheight
 _tempfile
+_hwnd
 deleteosb
 renderosb
 declaredll
 createosb
+rectangle_access
+smoothingmode_assign
+textrenderinghint_assign
+obmp_access
 [END PROTECTED]
 [START METHODS]
 PROCEDURE Destroy
@@ -58,11 +65,16 @@ ENDIF
 This.CreateOSB()
 This.Controls=CREATEOBJECT("Collection")
 This.Setup()
+
 *! ToDo: We may not want to draw here. If there are other objects on the form
 ** that have not fully initialized yet, and we are making a reference to
 ** them, we will get an error. We may need to bind to the forms init or
 ** find some other way to handle this
-This.Draw()
+*!This.Draw()
+
+** Trying this instead
+** Binding to ThisForm.Init does not seem to work
+BINDEVENT(ThisForm, "Activate", This, "Draw")
 
 BINDEVENT(This.Parent, "Resize", This, "Resize")
 ENDPROC
@@ -111,8 +123,8 @@ LOCAL hdc, hdcMem, hBitmap, iWidth, iHeight
 
 This.DeleteOSB()
 
-This.BMPWidth = This.Width
-This.BMPHeight = This.Height
+This._BMPWidth = This.Width
+This._BMPHeight = This.Height
 
 m.iWidth = This.Width
 m.iHeight = This.Height
@@ -168,11 +180,12 @@ IF This.HDC <> 0
 ENDIF
 ENDPROC
 PROCEDURE draw
-IF This.BMPWidth <> This.Width OR This.BMPHeight <> This.Height
+IF This._BMPWidth <> This.Width OR This._BMPHeight <> This.Height
 	This.CreateOSB()
 ENDIF
 This.BeforeDraw()
 This.RenderOSB()
+This.AfterDraw()
 
 ENDPROC
 PROCEDURE interpolationmode_assign
@@ -272,9 +285,12 @@ m.bfh = ;
 	0h0000+;					&& bfReserved2
 	BINTOC(m.bfOffBits,"4rs")	&& bfOffBits
 
-IF This.UseMemory
+
+DO CASE
+CASE This.RenderMode = 0	&& Memory BITMAP
 	This.PictureVal = m.bfh+m.bih+SYS(2600, m.hdib, m.biSizeImage)
-ELSE
+	
+CASE This.RenderMode = 1	&& File BITMAP
 	IF EMPTY(This._tempfile)
 		This._tempfile = ADDBS(SYS(2023))+SYS(2015)+".bmp"
 	ELSE
@@ -287,7 +303,14 @@ ELSE
 	FWRITE(nH, m.bfh+m.bih+SYS(2600, m.hdib, m.biSizeImage))
 	FCLOSE(nH)
 	This.Picture = (This._tempfile)
-ENDIF
+	
+CASE This.RenderMode = 2	&& File BITMAP using Container Picture
+	*!ToDo: Finish This
+
+CASE This.RenderMode = 3	&& Client Window
+	*!ToDo: Finish this
+	
+ENDCASE
 
 GlobalFree(m.hdib)
 
@@ -349,8 +372,8 @@ ogfx
 hdc
 _memberdata XML Metadata for customizable properties
 controls An array for accessing the controls in a container object.
-bmpwidth
-bmpheight
+_bmpwidth
+_bmpheight
 usememory
 _tempfile
 rectangle
@@ -358,6 +381,8 @@ smoothingmode
 textrenderinghint
 interpolationmode
 obmp
+rendermode
+_hwnd
 *draw Repaints a Form object.
 *clear Clears the contents of a ComboBox or ListBox control.
 *beforedraw 
@@ -374,6 +399,7 @@ obmp
 *interpolationmode_assign 
 *save 
 *obmp_access 
+*afterdraw 
 [END RESERVED3]
 [START RESERVED6]
 Pixels[END RESERVED6]
@@ -385,7 +411,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] imgcanvas
 [START RESERVED1]
- 	 drawing.höýãM5 system.hþþ0¥ï4 gdiplusconstants.h ¹>Ï4[END RESERVED1]
+ 	 drawing.hAãM5 system.hB0¥ï4 gdiplusconstants.h&C¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
