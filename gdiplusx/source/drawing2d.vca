@@ -293,7 +293,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcblend
 [START RESERVED1]
- 	 drawing.h&×]¥ï4 system.h.Ø0¥ï4 gdiplusconstants.h6Ù¹>Ï4[END RESERVED1]
+ 	 drawing.hnãM5 system.hv0¥ï4 gdiplusconstants.h~¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -559,7 +559,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfccolorblend
 [START RESERVED1]
- 	 drawing.h&×]¥ï4 system.h.Ø0¥ï4 gdiplusconstants.h6Ù¹>Ï4[END RESERVED1]
+ 	 drawing.hnãM5 system.hv0¥ï4 gdiplusconstants.h~¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -1050,7 +1050,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfccustomlinecap
 [START RESERVED1]
- 	 drawing.h&×]¥ï4 system.h.Ø0¥ï4 gdiplusconstants.h6Ù¹>Ï4[END RESERVED1]
+ 	 drawing.hnãM5 system.hv0¥ï4 gdiplusconstants.h~¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -1143,7 +1143,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcgraphicscontainer
 [START RESERVED1]
- 	 drawing.h&×]¥ï4 system.h.Ø0¥ï4 gdiplusconstants.h6Ù¹>Ï4[END RESERVED1]
+ 	 drawing.hnãM5 system.hv0¥ï4 gdiplusconstants.h~¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -3040,7 +3040,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcgraphicspath
 [START RESERVED1]
- 	 drawing.h&×]¥ï4 system.h.Ø0¥ï4 gdiplusconstants.h6Ù¹>Ï4[END RESERVED1]
+ 	 drawing.hnãM5 system.hv0¥ï4 gdiplusconstants.h~¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -3514,7 +3514,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcgraphicspathiterator
 [START RESERVED1]
- 	 drawing.h&×]¥ï4 system.h.Ø0¥ï4 gdiplusconstants.h6Ù¹>Ï4[END RESERVED1]
+ 	 drawing.hnãM5 system.hv0¥ï4 gdiplusconstants.h~¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -3581,7 +3581,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcgraphicsstate
 [START RESERVED1]
- 	 drawing.h&×]¥ï4 system.h.Ø0¥ï4 gdiplusconstants.h6Ù¹>Ï4[END RESERVED1]
+ 	 drawing.hnãM5 system.hv0¥ï4 gdiplusconstants.h~¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -4415,7 +4415,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcmatrix
 [START RESERVED1]
- 	 drawing.h®]¥ï4 system.h¶0¥ï4 gdiplusconstants.h¾¹>Ï4[END RESERVED1]
+ 	 drawing.hnãM5 system.hv0¥ï4 gdiplusconstants.h~¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -4629,7 +4629,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcpathdata
 [START RESERVED1]
- 	 drawing.h&×]¥ï4 system.h.Ø0¥ï4 gdiplusconstants.h6Ù¹>Ï4[END RESERVED1]
+ 	 drawing.hnãM5 system.hv0¥ï4 gdiplusconstants.h~¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -4720,7 +4720,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcregiondata
 [START RESERVED1]
- 	 drawing.h&×]¥ï4 system.h.Ø0¥ï4 gdiplusconstants.h6Ù¹>Ï4[END RESERVED1]
+ 	 drawing.hnãM5 system.hv0¥ï4 gdiplusconstants.h~¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -5041,7 +5041,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcadjustablearrowcap
 [START RESERVED1]
- 	 drawing.h&×]¥ï4 system.h.Ø0¥ï4 gdiplusconstants.h6Ù¹>Ï4[END RESERVED1]
+ 	 drawing.hnãM5 system.hv0¥ï4 gdiplusconstants.h~¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -5291,7 +5291,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfchatchbrush
 [START RESERVED1]
- 	 drawing.h&×]¥ï4 system.h.Ø0¥ï4 gdiplusconstants.h6Ù¹>Ï4[END RESERVED1]
+ 	 drawing.hnãM5 system.hv0¥ï4 gdiplusconstants.h~¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -5617,10 +5617,10 @@ PROCEDURE interpolationcolors_assign
 LPARAMETERS toColorBlend AS xfcColorBlend
 
 *!ToDo: Test this function
+LOCAL lqColors, lqPositions, liCount
 
 LOCAL loExc AS Exception
 TRY
-	LOCAL lqColors, lqPositions, liCount
 	IF VARTYPE(m.toColorBlend) = "O"
 		m.lqColors = m.toColorBlend.Colors(0h)
 		m.lqPositions = m.toColorBlend.Positions(0h)
@@ -5682,20 +5682,22 @@ PROCEDURE linearcolors_assign
 LPARAMETERS toColor AS xfcColor, tnIndex
 
 *!ToDo: Test this function
+LOCAL liArgb1, liArgb2, loOtherColor AS xfcColor
 
 LOCAL loExc AS Exception
 TRY
-	LOCAL liArgb1, liArgb2, loOtherColor AS xfcColor
-	IF tnIndex = 2
-		m.loOtherColor = This.LinearColors_ACCESS[1]
-		m.liArgb1 = m.loOtherColor.ToArgb()
-		m.liArgb2 = m.toColor.ToArgb()
-	ELSE
-		m.liArgb1 = m.toColor.ToArgb()
-		m.loOtherColor = This.LinearColors_ACCESS[2]
-		m.liArgb2 = m.loOtherColor.ToArgb()
+	IF VARTYPE(m.toColor)="O"
+		IF tnIndex = 2
+			m.loOtherColor = This.LinearColors_ACCESS[1]
+			m.liArgb1 = m.loOtherColor.ToArgb()
+			m.liArgb2 = m.toColor.ToArgb()
+		ELSE
+			m.liArgb1 = m.toColor.ToArgb()
+			m.loOtherColor = This.LinearColors_ACCESS[2]
+			m.liArgb2 = m.loOtherColor.ToArgb()
+		ENDIF
+		This.SetStatus(GdipSetLineColors(This.Handle, m.liArgb1, m.liArgb2))
 	ENDIF
-	This.SetStatus(GdipSetLineColors(This.Handle, m.liArgb1, m.liArgb2))
 CATCH TO loExc
 	THROW m.loExc
 ENDTRY
@@ -6012,10 +6014,12 @@ PROCEDURE transform_assign
 LPARAMETERS toMatrix AS xfcMatrix
 
 *!ToDo: Test this function
+LOCAL lhHandle
 
 LOCAL loExc AS Exception
 TRY
-	This.SetStatus(GdipSetLineTransform(This.Handle, m.toMatrix.Handle))
+	m.lhHandle = IIF(VARTYPE(m.toMatrix)="O", m.toMatrix.Handle, 0)
+	This.SetStatus(GdipSetLineTransform(This.Handle, m.lhHandle))
 CATCH TO loExc
 	THROW m.loExc
 ENDTRY
@@ -6156,7 +6160,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfclineargradientbrush
 [START RESERVED1]
- 	 drawing.h&×]¥ï4 system.h.Ø0¥ï4 gdiplusconstants.h6Ù¹>Ï4[END RESERVED1]
+ 	 drawing.hÆùãM5 system.hÎú0¥ï4 gdiplusconstants.hÖû¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -6358,7 +6362,9 @@ LPARAMETERS toColor
 
 LOCAL loExc AS Exception
 TRY
-	This.SetStatus(GdipSetPathGradientCenterColor(This.Handle, m.toColor.ToArgb()))
+	IF VARTYPE(m.toColor) = "O"
+		This.SetStatus(GdipSetPathGradientCenterColor(This.Handle, m.toColor.ToArgb()))
+	ENDIF
 CATCH TO loExc
 	THROW m.loExc
 ENDTRY
@@ -6414,14 +6420,16 @@ LPARAMETERS toPointF AS xfcPointF
 
 LOCAL loExc AS Exception
 TRY
-	DO CASE
-	CASE m.toPointF.BaseName = "xfcPointF"
-		This.SetStatus(GdipSetPathGradientCenterPoint(This.Handle, m.toPoint.ToVarBinary()))
-	CASE m.toPointF.BaseName = "xfcPoint"
-		This.SetStatus(GdipSetPathGradientCenterPointI(This.Handle, m.toPoint.ToVarBinary()))
-	OTHERWISE
-		*!ToDo: Error handling?
-	ENDCASE
+	IF VARTYPE(toPointF) = "O"
+		DO CASE
+		CASE m.toPointF.BaseName = "xfcPointF"
+			This.SetStatus(GdipSetPathGradientCenterPoint(This.Handle, m.toPoint.ToVarBinary()))
+		CASE m.toPointF.BaseName = "xfcPoint"
+			This.SetStatus(GdipSetPathGradientCenterPointI(This.Handle, m.toPoint.ToVarBinary()))
+		OTHERWISE
+			*!ToDo: Error handling?
+		ENDCASE
+	ENDIF
 CATCH TO loExc
 	THROW m.loExc
 ENDTRY
@@ -6525,13 +6533,15 @@ PROCEDURE focusscales_assign
 LPARAMETERS toPointF AS xfcPointF
 
 *!ToDo: Test this function
+LOCAL lnXScale, lnYScale
 
 LOCAL loExc AS Exception
 TRY
-	LOCAL lnXScale, lnYScale
-	STORE 0 TO m.lnXScale, m.lnYScale
-	m.toPointF.GetExtent(@lnXScale, @lnYScale)
-	This.SetStatus(GdipSetPathGradientFocusScales(This.Handle, m.lnXScale, m.lnYScale))
+	IF VARTYPE(m.toPointF) = "O"
+		STORE 0 TO m.lnXScale, m.lnYScale
+		m.toPointF.GetExtent(@m.lnXScale, @m.lnYScale)
+		This.SetStatus(GdipSetPathGradientFocusScales(This.Handle, m.lnXScale, m.lnYScale))
+	ENDIF
 CATCH TO loExc
 	THROW m.loExc
 ENDTRY
@@ -6584,10 +6594,10 @@ PROCEDURE interpolationcolors_assign
 LPARAMETERS toColorBlend AS xfcColorBlend
 
 *!ToDo: Test this function
+LOCAL lqColors, lqPositions, liCount
 
 LOCAL loExc AS Exception
 TRY
-	LOCAL lqColors, lqPositions, liCount
 	IF VARTYPE(toColorBlend) = "O"
 		m.lqColors = m.toColorBlend.Colors(0h)
 		m.lqPositions = m.toColorBlend.Positions(0h)
@@ -6947,18 +6957,19 @@ LOCAL liCount, lqColors
 
 LOCAL loExc AS Exception
 TRY
-	liCount = 0
-	This.SetStatus(GdipGetPathGradientSurroundColorCount(This.Handle, @liCount))
-	
-	IF m.tiIndex > m.liCount
-		*! ToDo ERROR
-	ELSE
-		m.lqColors = REPLICATE(0h00000000,liCount)
-		This.SetStatus(GdipGetPathGradientSurroundColorsWithCount(This.Handle, @lqColors, @liCount))
-		m.lqColors = STUFF(m.lqColors, (m.tiIndex-1)*4+1, 4, BINTOC(toColor.ToArgb(),"4rs"))
-		This.SetStatus(GdipSetPathGradientSurroundColorsWithCount(This.Handle, @lqColors, @liCount))
-	ENDIF
-	
+	IF VARTYPE(m.toColor) = "O"
+		liCount = 0
+		This.SetStatus(GdipGetPathGradientSurroundColorCount(This.Handle, @liCount))
+		
+		IF m.tiIndex > m.liCount
+			*! ToDo ERROR
+		ELSE
+			m.lqColors = REPLICATE(0h00000000,liCount)
+			This.SetStatus(GdipGetPathGradientSurroundColorsWithCount(This.Handle, @lqColors, @liCount))
+			m.lqColors = STUFF(m.lqColors, (m.tiIndex-1)*4+1, 4, BINTOC(toColor.ToArgb(),"4rs"))
+			This.SetStatus(GdipSetPathGradientSurroundColorsWithCount(This.Handle, @lqColors, @liCount))
+		ENDIF
+	ENDIF	
 CATCH TO loExc
 	THROW m.loExc
 ENDTRY
@@ -7016,10 +7027,12 @@ PROCEDURE transform_assign
 LPARAMETERS toMatrix
 
 *!ToDo: Test this function
+LOCAL lhHandle
 
 LOCAL loExc AS Exception
 TRY
-	This.SetStatus(GdipSetPathGradientTransform(This.Handle, m.toMatrix.Handle))
+	m.lhHandle = IIF(VARTYPE(m.toMatrix)="O",m.toMatrix.Handle,0)
+	This.SetStatus(GdipSetPathGradientTransform(This.Handle, m.lhHandle))
 CATCH TO loExc
 	THROW m.loExc
 ENDTRY
@@ -7168,5 +7181,5 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcpathgradientbrush
 [START RESERVED1]
- 	 drawing.h&×]¥ï4 system.h.Ø0¥ï4 gdiplusconstants.h6Ù¹>Ï4[END RESERVED1]
+ 	 drawing.h&ÝãM5 system.h.Þ0¥ï4 gdiplusconstants.h6ß¹>Ï4[END RESERVED1]
 [EOF]
