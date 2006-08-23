@@ -41,6 +41,15 @@ AutoCenter = .T.
 Caption = "Theme Sample"
 Name = "Form1"
 [END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+IF NOT FILE(GETENV("windir")+"\system32\uxtheme.dll")
+	MESSAGEBOX("This sample requires that you are using Windows XP or higher")
+	RETURN .F.
+ENDIF
+
+ENDPROC
+[END METHODS]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
