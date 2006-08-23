@@ -356,7 +356,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcbitmapdata
 [START RESERVED1]
- 	 drawing.hÞ]¥ï4 system.hæ0¥ï4 gdiplusconstants.hî¹>Ï4[END RESERVED1]
+ 	 drawing.hnãM5 system.hv0¥ï4 gdiplusconstants.h~¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -465,7 +465,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfccolormap
 [START RESERVED1]
- 	 drawing.hÆ ãM5 system.hÎ¡0¥ï4 gdiplusconstants.hÖ¢¹>Ï4[END RESERVED1]
+ 	 drawing.hnãM5 system.hv0¥ï4 gdiplusconstants.h~¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -2147,7 +2147,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfccolormatrix
 [START RESERVED1]
- 	 drawing.hÞ]¥ï4 system.hæ0¥ï4 gdiplusconstants.hî¹>Ï4[END RESERVED1]
+ 	 drawing.hnãM5 system.hv0¥ï4 gdiplusconstants.h~¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -2395,7 +2395,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfccolorpalette
 [START RESERVED1]
- 	 drawing.hÞ]¥ï4 system.hæ0¥ï4 gdiplusconstants.hî¹>Ï4[END RESERVED1]
+ 	 drawing.hnãM5 system.hv0¥ï4 gdiplusconstants.h~¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -2783,7 +2783,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcencoder
 [START RESERVED1]
- 	 drawing.hÞ]¥ï4 system.hæ0¥ï4 gdiplusconstants.hî¹>Ï4[END RESERVED1]
+ 	 drawing.hnãM5 system.hv0¥ï4 gdiplusconstants.h~¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -3265,7 +3265,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcencoderparameter
 [START RESERVED1]
- 	 drawing.hÞ]¥ï4 system.hæ0¥ï4 gdiplusconstants.hî¹>Ï4[END RESERVED1]
+ 	 drawing.hnãM5 system.hv0¥ï4 gdiplusconstants.h~¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -3536,7 +3536,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcencoderparameters
 [START RESERVED1]
- 	 drawing.hîãM5 system.hö0¥ï4 gdiplusconstants.hþ¹>Ï4[END RESERVED1]
+ 	 drawing.hnãM5 system.hv0¥ï4 gdiplusconstants.h~¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -3852,7 +3852,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcframedimension
 [START RESERVED1]
- 	 drawing.hÞ]¥ï4 system.hæ0¥ï4 gdiplusconstants.hî¹>Ï4[END RESERVED1]
+ 	 drawing.hnãM5 system.hv0¥ï4 gdiplusconstants.h~¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -4758,7 +4758,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcimageattributes
 [START RESERVED1]
- 	 drawing.hž¥ãM5 system.h¦¦0¥ï4 gdiplusconstants.h®§¹>Ï4[END RESERVED1]
+ 	 drawing.hnãM5 system.hv0¥ï4 gdiplusconstants.h~¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -4790,8 +4790,8 @@ Name = "xfcimagecodecinfo"
 _getendecoders
 _readwstring
 _fillimagecodecinfo
-_memberdata
 declaredll
+_memberdata
 [END PROTECTED]
 [START METHODS]
 PROCEDURE Destroy
@@ -5040,7 +5040,7 @@ PROCEDURE codecname_assign
 **  2006/03/07: Auto Generated
 **  2006/06/10: CBoyd - Coded
 *********************************************************************
-lparameters tcNewValue
+LPARAMETERS tcNewValue
 TRY
 	IF VARTYPE(m.tcNewValue) = "C"
 		This.CodecName = m.tcNewValue
@@ -5101,7 +5101,7 @@ PROCEDURE dllname_assign
 **  2006/03/07: Auto Generated
 **  2006/06/10: CBoyd - Coded
 *********************************************************************
-lparameters tcNewValue
+LPARAMETERS tcNewValue
 TRY
 	IF VARTYPE(m.tcNewValue) = "C"
 		This.DllName = m.tcNewValue
@@ -5589,7 +5589,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcimagecodecinfo
 [START RESERVED1]
- 	 drawing.hÞ]¥ï4 system.hæ0¥ï4 gdiplusconstants.hî¹>Ï4[END RESERVED1]
+ 	 drawing.h.óãM5 system.h6ô0¥ï4 gdiplusconstants.h>õ¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -6165,7 +6165,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcimageformat
 [START RESERVED1]
- 	 drawing.hÞ]¥ï4 system.hæ0¥ï4 gdiplusconstants.hî¹>Ï4[END RESERVED1]
+ 	 drawing.hnãM5 system.hv0¥ï4 gdiplusconstants.h~¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -6742,7 +6742,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcmetafileheader
 [START RESERVED1]
- 	 drawing.hÞ]¥ï4 system.hæ0¥ï4 gdiplusconstants.hî¹>Ï4[END RESERVED1]
+ 	 drawing.hnãM5 system.hv0¥ï4 gdiplusconstants.h~¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -7100,7 +7100,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcmetaheader
 [START RESERVED1]
- 	 drawing.hÞ]¥ï4 system.hæ0¥ï4 gdiplusconstants.hî¹>Ï4[END RESERVED1]
+ 	 drawing.hnãM5 system.hv0¥ï4 gdiplusconstants.h~¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -7114,10 +7114,10 @@ id = 0
 len = 0
 type = 0
 value = 0
-basename = PropertyItem
 hmemory = 0
 _memberdata =      695<VFPData><memberdata name="equals" type="method" display="Equals"/><memberdata name="gethashcode" type="method" display="GetHashCode"/><memberdata name="gettype" type="method" display="GetType"/><memberdata name="tostring" type="method" display="ToString"/><memberdata name="finalize" type="method" display="Finalize"/><memberdata name="memberwiseclone" type="method" display="MemberwiseClone"/><memberdata name="id" type="property" display="Id"/><memberdata name="len" type="property" display="Len"/><memberdata name="type" type="property" display="Type"/><memberdata name="value" type="property" display="Value"/><memberdata name="tovarbinary" type="method" display="ToVarbinary"/></VFPData>
 
+basename = PropertyItem
 Name = "xfcpropertyitem"
 [END PROPERTIES]
 [START PROTECTED]
@@ -7212,27 +7212,6 @@ ENDWITH
 RETURN m.loPropertyItem
 
 ENDPROC
-PROCEDURE id_access
-*********************************************************************
-** Property: Id (Access)
-**
-** Gets or sets the ID of the property.
-**
-** History:
-**  2006/03/07: Auto Generated
-**	2006/04/18: BDurban - Coded
-*********************************************************************
-
-*!ToDo: Test this function
-
-RETURN This.Id
-
-** .NET Help ********************************************************
-** http://msdn2.microsoft.com/en-us/library/System.Drawing.Imaging.PropertyItem.Id%28vs.80%29.aspx
-** Returns: int
-*********************************************************************
-
-ENDPROC
 PROCEDURE id_assign
 *********************************************************************
 ** Property: Id (Assign)
@@ -7255,27 +7234,11 @@ CATCH TO loExc
 ENDTRY
 
 RETURN NULL
-ENDPROC
-PROCEDURE len_access
-*********************************************************************
-** Property: Len (Access)
-**
-** Gets or sets the length of the property.
-**
-** History:
-**  2006/03/07: Auto Generated
-**	2006/04/18: BDurban - Coded
-*********************************************************************
-
-*!ToDo: Test this function
-
-RETURN This.Len
 
 ** .NET Help ********************************************************
-** http://msdn2.microsoft.com/en-us/library/System.Drawing.Imaging.PropertyItem.Len%28vs.80%29.aspx
+** http://msdn2.microsoft.com/en-us/library/System.Drawing.Imaging.PropertyItem.Id%28vs.80%29.aspx
 ** Returns: int
 *********************************************************************
-
 ENDPROC
 PROCEDURE len_assign
 *********************************************************************
@@ -7299,6 +7262,11 @@ CATCH TO loExc
 ENDTRY
 
 RETURN NULL
+
+** .NET Help ********************************************************
+** http://msdn2.microsoft.com/en-us/library/System.Drawing.Imaging.PropertyItem.Len%28vs.80%29.aspx
+** Returns: int
+*********************************************************************
 ENDPROC
 PROCEDURE new
 
@@ -7414,27 +7382,6 @@ SYS(2600, This.hMemory, LEN(lqData)+LEN(lqValue), lqData+lqValue)
 RETURN lqData
 
 ENDPROC
-PROCEDURE type_access
-*********************************************************************
-** Property: Type (Access)
-**
-** Gets or sets the type of the property.
-**
-** History:
-**  2006/03/07: Auto Generated
-**	2006/04/18: BDurban - Coded
-*********************************************************************
-
-*!ToDo: Test this function
-
-RETURN This.Type
-
-** .NET Help ********************************************************
-** http://msdn2.microsoft.com/en-us/library/System.Drawing.Imaging.PropertyItem.Type%28vs.80%29.aspx
-** Returns: short
-*********************************************************************
-
-ENDPROC
 PROCEDURE type_assign
 *********************************************************************
 ** Property: Type (Assign)
@@ -7457,27 +7404,11 @@ CATCH TO loExc
 ENDTRY
 
 RETURN NULL
-ENDPROC
-PROCEDURE value_access
-*********************************************************************
-** Property: Value (Access)
-**
-** Gets or sets the property value.
-**
-** History:
-**  2006/03/07: Auto Generated
-**	2006/04/18: BDurban - Coded
-*********************************************************************
-
-*!ToDo: Test this function
-
-RETURN This.Value
 
 ** .NET Help ********************************************************
-** http://msdn2.microsoft.com/en-us/library/System.Drawing.Imaging.PropertyItem.Value%28vs.80%29.aspx
-** Returns: byte[]
+** http://msdn2.microsoft.com/en-us/library/System.Drawing.Imaging.PropertyItem.Type%28vs.80%29.aspx
+** Returns: short
 *********************************************************************
-
 ENDPROC
 PROCEDURE value_assign
 *********************************************************************
@@ -7495,12 +7426,17 @@ LPARAMETERS tqByte
 
 LOCAL loExc AS Exception
 TRY
-	This.Value = m.tqByte
+	This.Value = 0h+NVL(m.tqByte,0h)
 CATCH TO loExc
 	THROW m.loExc
 ENDTRY
 
 RETURN NULL
+
+** .NET Help ********************************************************
+** http://msdn2.microsoft.com/en-us/library/System.Drawing.Imaging.PropertyItem.Value%28vs.80%29.aspx
+** Returns: byte[]
+*********************************************************************
 ENDPROC
 [END METHODS]
 [START RESERVED1]
@@ -7513,13 +7449,9 @@ len Gets or sets the length of the property.
 type Gets or sets the type of the property.
 value Gets or sets the property value.
 hmemory
-*id_access 
 *id_assign 
-*len_access 
 *len_assign 
-*type_access 
 *type_assign 
-*value_access 
 *value_assign 
 *tovarbinary 
 *declaredll 
@@ -7536,7 +7468,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcpropertyitem
 [START RESERVED1]
- 	 drawing.hÞ]¥ï4 system.hæ0¥ï4 gdiplusconstants.hî¹>Ï4[END RESERVED1]
+ 	 drawing.h†mãM5 system.hŽn0¥ï4 gdiplusconstants.h–o¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -7957,7 +7889,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcwmfplaceablefileheader
 [START RESERVED1]
- 	 drawing.hÞ]¥ï4 system.hæ0¥ï4 gdiplusconstants.hî¹>Ï4[END RESERVED1]
+ 	 drawing.hnãM5 system.hv0¥ï4 gdiplusconstants.h~¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -8365,5 +8297,5 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcmetafile
 [START RESERVED1]
- 	 drawing.hÞ]¥ï4 system.hæ0¥ï4 gdiplusconstants.hî¹>Ï4[END RESERVED1]
+ 	 drawing.hnãM5 system.hv0¥ï4 gdiplusconstants.h~¹>Ï4[END RESERVED1]
 [EOF]
