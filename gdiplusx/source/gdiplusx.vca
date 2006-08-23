@@ -411,7 +411,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] imgcanvas
 [START RESERVED1]
- 	 drawing.hAãM5 system.hB0¥ï4 gdiplusconstants.h&C¹>Ï4[END RESERVED1]
+ 	 drawing.hnãM5 system.hv0¥ï4 gdiplusconstants.h~¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -452,10 +452,22 @@ Arial, 0, 9, 5, 15, 12, 32, 3, 0
 themestate = 0
 themepart = 0
 themeclass = 
+isxp = .F.
 Name = "imgthemebase"
 [END PROPERTIES]
 [START METHODS]
+PROCEDURE Init
+
+This.IsXP = FILE(GETENV("windir")+"\system32\uxtheme.dll")
+
+DODEFAULT()
+ENDPROC
 PROCEDURE beforedraw
+IF NOT This.IsXP
+	RETURN
+ENDIF
+
+
 *!* Here's a super simple example
 *!* There's more to this obviously, such as printing text on certain controls like Tabs or Buttons
 *!* Anyways, I wanted to get most of the grunt work out of the way, now we can play
@@ -489,6 +501,10 @@ ENDWITH
 ENDPROC
 PROCEDURE declaredll
 DODEFAULT()
+
+IF NOT This.IsXP
+	RETURN
+ENDIF
 
 TRY
 
@@ -570,6 +586,7 @@ Class[END RESERVED1]
 themestate
 themepart
 themeclass
+isxp
 *themestate_assign 
 [END RESERVED3]
 [START RESERVED6]
