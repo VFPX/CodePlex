@@ -4058,6 +4058,7 @@ PROCEDURE clearnoop
 ** History:
 **  2006/03/07: Auto Generated
 **	2006/05/02: BDurban - Coded
+**	2006/08/25: CChalom - Changed FLASE to FALSE
 *********************************************************************
 LPARAMETERS tiType AS EnumColorAdjustType
 
@@ -4066,7 +4067,7 @@ LPARAMETERS tiType AS EnumColorAdjustType
 LOCAL loExc AS Exception
 TRY
 	m.tiType = EVL(m.tiType, ColorAdjustTypeDefault)
-	This.SetStatus(GdipSetImageAttributesNoOp(This.Handle, m.tiType, FLASE))
+	This.SetStatus(GdipSetImageAttributesNoOp(This.Handle, m.tiType, FALSE))
 CATCH TO loExc
 	THROW m.loExc
 ENDTRY
@@ -4092,15 +4093,14 @@ PROCEDURE clearoutputchannel
 ** History:
 **  2006/03/07: Auto Generated
 **	2006/05/02: BDurban - Coded
+**	2006/08/25: CChalom - Changed FLASE to FALSE and tested
 *********************************************************************
 LPARAMETERS tiType AS EnumColorAdjustType
-
-*!ToDo: Test this function
 
 LOCAL loExc AS Exception
 TRY
 	m.tiType = EVL(m.tiType, ColorAdjustTypeDefault)
-	This.SetStatus(GdipSetImageAttributesOutputChannel(This.Handle, m.tiType, FLASE, ColorChannelFlagsLast))
+	This.SetStatus(GdipSetImageAttributesOutputChannel(This.Handle, m.tiType, FALSE, ColorChannelFlagsLast))
 
 CATCH TO loExc
 	THROW m.loExc
@@ -4127,6 +4127,7 @@ PROCEDURE clearoutputchannelcolorprofile
 ** History:
 **  2006/03/07: Auto Generated
 **	2006/05/02: BDurban - Coded
+**	2006/08/25: CChalom - Changed FLASE to FALSE
 *********************************************************************
 LPARAMETERS tiType AS EnumColorAdjustType
 
@@ -4135,7 +4136,7 @@ LPARAMETERS tiType AS EnumColorAdjustType
 LOCAL loExc AS Exception
 TRY
 	m.tiType = EVL(m.tiType, ColorAdjustTypeDefault)
-	This.SetStatus(GdipSetImageAttributesOutputChannelColorProfile(This.Handle, m.tiType, FLASE, NULL))
+	This.SetStatus(GdipSetImageAttributesOutputChannelColorProfile(This.Handle, m.tiType, FALSE, NULL))
 
 CATCH TO loExc
 	THROW m.loExc
@@ -4758,7 +4759,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcimageattributes
 [START RESERVED1]
- 	 drawing.hî}ãM5 system.hö~0¥ï4 gdiplusconstants.hþ¹>Ï4[END RESERVED1]
+ 	 drawing.hñãM5 system.hò0¥ï4 gdiplusconstants.h&ó¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
