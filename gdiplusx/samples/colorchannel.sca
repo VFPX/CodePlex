@@ -48,10 +48,6 @@ oclrmatrix = 0
 Name = "Form1"
 [END PROPERTIES]
 [START METHODS]
-PROCEDURE Load
-_SCREEN.AddProperty("System", NEWOBJECT("xfcSystem", LOCFILE("system.vcx","vcx")))
-
-ENDPROC
 PROCEDURE getcolorchannels
 WITH _SCREEN.System.Drawing
 
