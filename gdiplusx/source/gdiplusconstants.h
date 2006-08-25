@@ -300,9 +300,11 @@
 #DEFINE PixelOffsetModeNone   3 
 #DEFINE PixelOffsetModeHalf   4 
 
-#DEFINE TextRenderingHintSystemDefault    0 
+#DEFINE TextRenderingHintSystemDefault      0 
 #DEFINE TextRenderingHintSingleBitPerPixelGridFit 1 
+#DEFINE TextRenderingSingleBitPerPixel      2
 #DEFINE TextRenderingHintAntiAliasGridFit   3 
+#DEFINE TextRenderingAntiAlias              4
 #DEFINE TextRenderingHintClearTypeGridFit   5 
 
 #DEFINE MetafileTypeInvalid   0 
