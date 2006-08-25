@@ -281,7 +281,7 @@ system.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcsystem
 [START RESERVED1]
-  system.hþ0¥ï4[END RESERVED1]
+  system.h†_0¥ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -1342,7 +1342,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcdrawing
 [START RESERVED1]
- 	 drawing.hÆ;ãM5 system.hÎ<0¥ï4 gdiplusconstants.hÖ=¹>Ï4[END RESERVED1]
+ 	 drawing.h1ãM5 system.h20¥ï4 gdiplusconstants.h3¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -2519,7 +2519,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcdrawing2d
 [START RESERVED1]
- 	 drawing.hfÀ]¥ï4 system.hnÁ0¥ï4 gdiplusconstants.hvÂ¹>Ï4[END RESERVED1]
+ 	 drawing.h1ãM5 system.h20¥ï4 gdiplusconstants.h3¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -3542,7 +3542,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcimaging
 [START RESERVED1]
- 	 drawing.hfÀ]¥ï4 system.hnÁ0¥ï4 gdiplusconstants.hvÂ¹>Ï4[END RESERVED1]
+ 	 drawing.h®ããM5 system.h¶ä0¥ï4 gdiplusconstants.h¾å¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -3630,6 +3630,7 @@ PROCEDURE textrenderinghint_access
 **
 ** History:
 **  2006/06/11: Auto Generated
+**  2006/08/25: CChalom - Add missing Enumerations AntiAlias and SingleBitPerPixel
 *********************************************************************
 
 *!ToDo: Test this method
@@ -3637,13 +3638,17 @@ PROCEDURE textrenderinghint_access
 IF VARTYPE(This.TextRenderingHint) <> "O"
 	This.TextRenderingHint = CREATEOBJECT(ENUM_BASECLASS)
 	ADDPROPERTY(This.TextRenderingHint, "SystemDefault", TextRenderingHintSystemDefault)
+	ADDPROPERTY(This.TextRenderingHint, "ClearTypeGridFit", TextRenderingSingleBitPerPixel)
 	ADDPROPERTY(This.TextRenderingHint, "SingleBitPerPixelGridFit", TextRenderingHintSingleBitPerPixelGridFit)
+	ADDPROPERTY(This.TextRenderingHint, "ClearTypeGridFit", TextRenderingAntiAlias)
 	ADDPROPERTY(This.TextRenderingHint, "AntiAliasGridFit", TextRenderingHintAntiAliasGridFit)
 	ADDPROPERTY(This.TextRenderingHint, "ClearTypeGridFit", TextRenderingHintClearTypeGridFit)
 #IFDEF USE_MEMBERDATA
 	ADDPROPERTY(This.TextRenderingHint, "_memberdata", [<VFPData>]+;
 				[<memberdata name="systemdefault" display="SystemDefault"/>]+;
+				[<memberdata name="singlebitperpixel" display="SingleBitPerPixel"/>]+;
 				[<memberdata name="singlebitperpixelgridfit" display="SingleBitPerPixelGridFit"/>]+;
+				[<memberdata name="antialias" display="AntiAlias"/>]+;
 				[<memberdata name="antialiasgridfit" display="AntiAliasGridFit"/>]+;
 				[<memberdata name="cleartypegridfit" display="ClearTypeGridFit"/>]+;
 				[</VFPData>])
@@ -3684,7 +3689,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfctext
 [START RESERVED1]
- 	 drawing.hfÀ]¥ï4 system.hnÁ0¥ï4 gdiplusconstants.hvÂ¹>Ï4[END RESERVED1]
+ 	 drawing.hFAãM5 system.hNB0¥ï4 gdiplusconstants.hVCe5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -3797,7 +3802,7 @@ system.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcguid
 [START RESERVED1]
-  system.hþ0¥ï4[END RESERVED1]
+  system.h†_0¥ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -4104,5 +4109,5 @@ system.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcenum
 [START RESERVED1]
-  system.hþ0¥ï4[END RESERVED1]
+  system.h†_0¥ï4[END RESERVED1]
 [EOF]
