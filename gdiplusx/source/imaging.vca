@@ -356,7 +356,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcbitmapdata
 [START RESERVED1]
- 	 drawing.hnãM5 system.hv0¥ï4 gdiplusconstants.h~¹>Ï4[END RESERVED1]
+ 	 drawing.hî}ãM5 system.hö~0¥ï4 gdiplusconstants.hþ¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -465,7 +465,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfccolormap
 [START RESERVED1]
- 	 drawing.hnãM5 system.hv0¥ï4 gdiplusconstants.h~¹>Ï4[END RESERVED1]
+ 	 drawing.hî}ãM5 system.hö~0¥ï4 gdiplusconstants.hþ¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -2147,7 +2147,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfccolormatrix
 [START RESERVED1]
- 	 drawing.hnãM5 system.hv0¥ï4 gdiplusconstants.h~¹>Ï4[END RESERVED1]
+ 	 drawing.hî}ãM5 system.hö~0¥ï4 gdiplusconstants.hþ¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -2395,7 +2395,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfccolorpalette
 [START RESERVED1]
- 	 drawing.hnãM5 system.hv0¥ï4 gdiplusconstants.h~¹>Ï4[END RESERVED1]
+ 	 drawing.hî}ãM5 system.hö~0¥ï4 gdiplusconstants.hþ¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -2783,7 +2783,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcencoder
 [START RESERVED1]
- 	 drawing.hnãM5 system.hv0¥ï4 gdiplusconstants.h~¹>Ï4[END RESERVED1]
+ 	 drawing.hî}ãM5 system.hö~0¥ï4 gdiplusconstants.hþ¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -3265,7 +3265,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcencoderparameter
 [START RESERVED1]
- 	 drawing.hnãM5 system.hv0¥ï4 gdiplusconstants.h~¹>Ï4[END RESERVED1]
+ 	 drawing.hî}ãM5 system.hö~0¥ï4 gdiplusconstants.hþ¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -3536,7 +3536,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcencoderparameters
 [START RESERVED1]
- 	 drawing.hnãM5 system.hv0¥ï4 gdiplusconstants.h~¹>Ï4[END RESERVED1]
+ 	 drawing.hî}ãM5 system.hö~0¥ï4 gdiplusconstants.hþ¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -3852,7 +3852,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcframedimension
 [START RESERVED1]
- 	 drawing.hnãM5 system.hv0¥ï4 gdiplusconstants.h~¹>Ï4[END RESERVED1]
+ 	 drawing.hî}ãM5 system.hö~0¥ï4 gdiplusconstants.hþ¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -4758,7 +4758,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcimageattributes
 [START RESERVED1]
- 	 drawing.hnãM5 system.hv0¥ï4 gdiplusconstants.h~¹>Ï4[END RESERVED1]
+ 	 drawing.hî}ãM5 system.hö~0¥ï4 gdiplusconstants.hþ¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -5589,7 +5589,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcimagecodecinfo
 [START RESERVED1]
- 	 drawing.h.óãM5 system.h6ô0¥ï4 gdiplusconstants.h>õ¹>Ï4[END RESERVED1]
+ 	 drawing.hî}ãM5 system.hö~0¥ï4 gdiplusconstants.hþ¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -6165,7 +6165,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcimageformat
 [START RESERVED1]
- 	 drawing.hnãM5 system.hv0¥ï4 gdiplusconstants.h~¹>Ï4[END RESERVED1]
+ 	 drawing.hî}ãM5 system.hö~0¥ï4 gdiplusconstants.hþ¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -6742,7 +6742,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcmetafileheader
 [START RESERVED1]
- 	 drawing.hnãM5 system.hv0¥ï4 gdiplusconstants.h~¹>Ï4[END RESERVED1]
+ 	 drawing.hî}ãM5 system.hö~0¥ï4 gdiplusconstants.hþ¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -6752,42 +6752,22 @@ drawing.h[END RESERVED8]
 [BASECLASS] custom
 [OBJNAME] xfcmetaheader
 [START PROPERTIES]
-headersize = 0
+headersize = 18
 maxrecord = 0
 noobjects = 0
 noparameters = 0
 size = 0
 type = 0
 version = 0
-basename = MetaHeader
 _memberdata =      921<VFPData><memberdata name="equals" type="method" display="Equals"/><memberdata name="gethashcode" type="method" display="GetHashCode"/><memberdata name="gettype" type="method" display="GetType"/><memberdata name="tostring" type="method" display="ToString"/><memberdata name="finalize" type="method" display="Finalize"/><memberdata name="memberwiseclone" type="method" display="MemberwiseClone"/><memberdata name="headersize" type="property" display="HeaderSize"/><memberdata name="maxrecord" type="property" display="MaxRecord"/><memberdata name="noobjects" type="property" display="NoObjects"/><memberdata name="noparameters" type="property" display="NoParameters"/><memberdata name="size" type="property" display="Size"/><memberdata name="type" type="property" display="Type"/><memberdata name="version" type="property" display="Version"/><memberdata name="tovarbinary" type="method" display="ToVarbinary"/></VFPData>
 
+basename = MetaHeader
 Name = "xfcmetaheader"
 [END PROPERTIES]
 [START PROTECTED]
 _memberdata
 [END PROTECTED]
 [START METHODS]
-PROCEDURE Destroy
-*********************************************************************
-** Method: Destroy
-**
-** History:
-**  2006/03/07: Auto Generated
-*********************************************************************
-
-*!ToDo: Implement this function
-*!ToDo: Test this function
-RETURN NULL
-
-LOCAL loExc AS Exception
-TRY
-** This.SetStatus(GdipSomeFunction???())
-CATCH TO loExc
-	THROW m.loExc
-ENDTRY
-RETURN
-ENDPROC
 PROCEDURE Init
 *********************************************************************
 ** Method: MetaHeader
@@ -6797,22 +6777,6 @@ PROCEDURE Init
 ** History:
 **  2006/03/07: Auto Generated
 *********************************************************************
-
-
-*!ToDo: Implement this function
-*!ToDo: Test this function
-RETURN
-
-LOCAL loExc AS Exception
-TRY
-	DODEFAULT()
-	
-	** This.SetStatus(GdipSomeFunction???())
-CATCH TO loExc
-	THROW m.loExc
-ENDTRY
-
-RETURN
 
 ** .NET Help ********************************************************
 ** http://msdn2.microsoft.com/en-us/library/System.Drawing.Imaging.MetaHeader.MetaHeader%28vs.80%29.aspx
@@ -6829,19 +6793,14 @@ PROCEDURE headersize_assign
 **
 ** History:
 **  2006/03/07: Auto Generated
+**  2006/08/24: BDurban - Coded
 *********************************************************************
 LPARAMETERS tiValue
 
-******** DELETE THIS LINE TO PREVENT CODE FROM BEING OVERWRITTEN ********
-
-*!ToDo: Implement this function
 *!ToDo: Test this function
-ERROR 1999	&& Function not implemented
-RETURN NULL
-
 LOCAL loExc AS Exception
 TRY
-	** This.SetStatus(GdipSomeFunction???())
+	This.HeaderSize = INT(m.tiValue)
 CATCH TO loExc
 	THROW m.loExc
 ENDTRY
@@ -6863,19 +6822,14 @@ PROCEDURE maxrecord_assign
 **
 ** History:
 **  2006/03/07: Auto Generated
+**  2006/08/24: BDurban - Coded
 *********************************************************************
 LPARAMETERS tiValue
 
-******** DELETE THIS LINE TO PREVENT CODE FROM BEING OVERWRITTEN ********
-
-*!ToDo: Implement this function
 *!ToDo: Test this function
-ERROR 1999	&& Function not implemented
-RETURN NULL
-
 LOCAL loExc AS Exception
 TRY
-	** This.SetStatus(GdipSomeFunction???())
+	This.MaxRecord = INT(m.tiValue)
 CATCH TO loExc
 	THROW m.loExc
 ENDTRY
@@ -6897,19 +6851,14 @@ PROCEDURE noobjects_assign
 **
 ** History:
 **  2006/03/07: Auto Generated
+**  2006/08/24: BDurban - Coded
 *********************************************************************
 LPARAMETERS tiValue
 
-******** DELETE THIS LINE TO PREVENT CODE FROM BEING OVERWRITTEN ********
-
-*!ToDo: Implement this function
 *!ToDo: Test this function
-ERROR 1999	&& Function not implemented
-RETURN NULL
-
 LOCAL loExc AS Exception
 TRY
-	** This.SetStatus(GdipSomeFunction???())
+	This.NoObjects = INT(m.tiValue)
 CATCH TO loExc
 	THROW m.loExc
 ENDTRY
@@ -6930,19 +6879,15 @@ PROCEDURE noparameters_assign
 **
 ** History:
 **  2006/03/07: Auto Generated
+**  2006/08/24: BDurban - Coded
 *********************************************************************
 LPARAMETERS tiValue
 
-******** DELETE THIS LINE TO PREVENT CODE FROM BEING OVERWRITTEN ********
-
-*!ToDo: Implement this function
 *!ToDo: Test this function
-ERROR 1999	&& Function not implemented
-RETURN NULL
-
 LOCAL loExc AS Exception
 TRY
-	** This.SetStatus(GdipSomeFunction???())
+	&& Reserved, 0x0000
+	This.NoParameters = INT(m.tiValue)
 CATCH TO loExc
 	THROW m.loExc
 ENDTRY
@@ -6963,19 +6908,14 @@ PROCEDURE size_assign
 **
 ** History:
 **  2006/03/07: Auto Generated
+**  2006/08/24: BDurban - Coded
 *********************************************************************
 LPARAMETERS tiValue
 
-******** DELETE THIS LINE TO PREVENT CODE FROM BEING OVERWRITTEN ********
-
-*!ToDo: Implement this function
 *!ToDo: Test this function
-ERROR 1999	&& Function not implemented
-RETURN NULL
-
 LOCAL loExc AS Exception
 TRY
-	** This.SetStatus(GdipSomeFunction???())
+	This.Size = INT(m.tiValue)
 CATCH TO loExc
 	THROW m.loExc
 ENDTRY
@@ -6990,6 +6930,23 @@ RETURN NULL
 ENDPROC
 PROCEDURE tovarbinary
 
+LOCAL lqData
+
+LOCAL loExc AS Exception
+TRY
+	m.lqData = ;
+		BINTOC(This.Type,"2rs")+;
+		BINTOC(This.HeaderSize,"2rs")+;
+		BINTOC(This.Version,"2rs")+;
+		BINTOC(This.Size,"4rs")+;
+		BINTOC(This.NoObjects,"2rs")+;
+		BINTOC(This.MaxRecord,"4rs")+;
+		BINTOC(This.NoParameters,"2rs")
+CATCH TO loExc
+	THROW m.loExc
+ENDTRY
+
+RETURN m.lqData
 
 
 *!*	typedef struct tagMETAHEADER {
@@ -7010,19 +6967,15 @@ PROCEDURE type_assign
 **
 ** History:
 **  2006/03/07: Auto Generated
+**  2006/08/24: BDurban - Coded
 *********************************************************************
 LPARAMETERS tiValue
 
-******** DELETE THIS LINE TO PREVENT CODE FROM BEING OVERWRITTEN ********
-
-*!ToDo: Implement this function
 *!ToDo: Test this function
-ERROR 1999	&& Function not implemented
-RETURN NULL
-
 LOCAL loExc AS Exception
 TRY
-	** This.SetStatus(GdipSomeFunction???())
+	&& 1 = memory, 2 = file
+	This.Type = INT(m.tiValue)
 CATCH TO loExc
 	THROW m.loExc
 ENDTRY
@@ -7043,19 +6996,16 @@ PROCEDURE version_assign
 **
 ** History:
 **  2006/03/07: Auto Generated
+**  2006/08/24: BDurban - Coded
 *********************************************************************
 LPARAMETERS tiValue
 
-******** DELETE THIS LINE TO PREVENT CODE FROM BEING OVERWRITTEN ********
-
-*!ToDo: Implement this function
 *!ToDo: Test this function
-ERROR 1999	&& Function not implemented
-RETURN NULL
 
 LOCAL loExc AS Exception
 TRY
-	** This.SetStatus(GdipSomeFunction???())
+	&& 0x0100 or 0x0300 if supports DIBs
+	This.Version = INT(m.tiValue)
 CATCH TO loExc
 	THROW m.loExc
 ENDTRY
@@ -7100,7 +7050,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcmetaheader
 [START RESERVED1]
- 	 drawing.hnãM5 system.hv0¥ï4 gdiplusconstants.h~¹>Ï4[END RESERVED1]
+ 	 drawing.h.ãM5 system.h/0¥ï4 gdiplusconstants.h0¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -7468,7 +7418,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcpropertyitem
 [START RESERVED1]
- 	 drawing.h†mãM5 system.hŽn0¥ï4 gdiplusconstants.h–o¹>Ï4[END RESERVED1]
+ 	 drawing.hî}ãM5 system.hö~0¥ï4 gdiplusconstants.hþ¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -7889,7 +7839,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcwmfplaceablefileheader
 [START RESERVED1]
- 	 drawing.hnãM5 system.hv0¥ï4 gdiplusconstants.h~¹>Ï4[END RESERVED1]
+ 	 drawing.hî}ãM5 system.hö~0¥ï4 gdiplusconstants.hþ¹>Ï4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -8297,5 +8247,5 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcmetafile
 [START RESERVED1]
- 	 drawing.hnãM5 system.hv0¥ï4 gdiplusconstants.h~¹>Ï4[END RESERVED1]
+ 	 drawing.hî}ãM5 system.hö~0¥ï4 gdiplusconstants.hþ¹>Ï4[END RESERVED1]
 [EOF]
