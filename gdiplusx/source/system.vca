@@ -3638,9 +3638,9 @@ PROCEDURE textrenderinghint_access
 IF VARTYPE(This.TextRenderingHint) <> "O"
 	This.TextRenderingHint = CREATEOBJECT(ENUM_BASECLASS)
 	ADDPROPERTY(This.TextRenderingHint, "SystemDefault", TextRenderingHintSystemDefault)
-	ADDPROPERTY(This.TextRenderingHint, "ClearTypeGridFit", TextRenderingSingleBitPerPixel)
+	ADDPROPERTY(This.TextRenderingHint, "SingleBitPerPixel", TextRenderingSingleBitPerPixel)
 	ADDPROPERTY(This.TextRenderingHint, "SingleBitPerPixelGridFit", TextRenderingHintSingleBitPerPixelGridFit)
-	ADDPROPERTY(This.TextRenderingHint, "ClearTypeGridFit", TextRenderingAntiAlias)
+	ADDPROPERTY(This.TextRenderingHint, "AntiAlias", TextRenderingAntiAlias)
 	ADDPROPERTY(This.TextRenderingHint, "AntiAliasGridFit", TextRenderingHintAntiAliasGridFit)
 	ADDPROPERTY(This.TextRenderingHint, "ClearTypeGridFit", TextRenderingHintClearTypeGridFit)
 #IFDEF USE_MEMBERDATA
@@ -3689,7 +3689,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfctext
 [START RESERVED1]
- 	 drawing.hFA„M5 system.hNB0•Ô4 gdiplusconstants.hVCe5[END RESERVED1]
+ 	 drawing.hv‡„M5 system.h~·0•Ô4 gdiplusconstants.hÜ‚e5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
