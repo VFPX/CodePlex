@@ -1010,6 +1010,7 @@
 #DEFINE ARGB_Bisque      -6972 
 #DEFINE ARGB_Black      -16777216 
 #DEFINE ARGB_BlanchedAlmond    -5171 
+#DEFINE ARGB_Blue     -16776961
 #DEFINE ARGB_BlueViolet     -7722014 
 #DEFINE ARGB_Brown      -5952982 
 #DEFINE ARGB_BurlyWood     -2180985 
@@ -1050,7 +1051,8 @@
 #DEFINE ARGB_GhostWhite     -460545 
 #DEFINE ARGB_Gold      -10496 
 #DEFINE ARGB_Goldenrod     -2448096 
-#DEFINE ARGB_Gray      -8355712 
+#DEFINE ARGB_Gray      -8355712
+#DEFINE ARGB_Green      -16711936
 #DEFINE ARGB_GreenYellow     -5374161 
 #DEFINE ARGB_Honeydew     -983056 
 #DEFINE ARGB_HotPink      -38476 
@@ -1112,6 +1114,7 @@
 #DEFINE ARGB_Plum      -2252579 
 #DEFINE ARGB_PowderBlue     -5185306 
 #DEFINE ARGB_Purple      -8388480 
+#DEFINE ARGB_Red     -65536
 #DEFINE ARGB_RosyBrown     -4419697 
 #DEFINE ARGB_RoyalBlue     -12490271 
 #DEFINE ARGB_SaddleBrown     -7650029 
