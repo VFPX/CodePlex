@@ -281,7 +281,7 @@ system.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcsystem
 [START RESERVED1]
-  system.hÜ_0•Ô4[END RESERVED1]
+  system.hé&0•Ô4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -382,8 +382,10 @@ RETURN THIS.CharacterRange
 
 ENDPROC
 PROCEDURE color_access
+** 2006/08/26: BDurban - Changed to use "ColorS" class
+
 IF VARTYPE(This.Color) <> "O"
-	This.Color = This.CreateNew("xfcColor")
+	This.Color = This.CreateNew("xfcColors")
 ENDIF
 
 RETURN THIS.Color
@@ -1342,7 +1344,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcdrawing
 [START RESERVED1]
- 	 drawing.h1„M5 system.h20•Ô4 gdiplusconstants.h3π>œ4[END RESERVED1]
+ 	 drawing.hÓ—„M5 system.hˆ“0•Ô4 gdiplusconstants.h˛”πù5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -2519,7 +2521,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcdrawing2d
 [START RESERVED1]
- 	 drawing.h1„M5 system.h20•Ô4 gdiplusconstants.h3π>œ4[END RESERVED1]
+ 	 drawing.hÓ'„M5 system.hˆ(0•Ô4 gdiplusconstants.h˛)πù5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -3542,7 +3544,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcimaging
 [START RESERVED1]
- 	 drawing.hÆ„„M5 system.h∂‰0•Ô4 gdiplusconstants.hæÂπ>œ4[END RESERVED1]
+ 	 drawing.h6„M5 system.h>0•Ô4 gdiplusconstants.hFπù5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -3689,7 +3691,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfctext
 [START RESERVED1]
- 	 drawing.hv‡„M5 system.h~·0•Ô4 gdiplusconstants.hÜ‚e5[END RESERVED1]
+ 	 drawing.h6„M5 system.h>0•Ô4 gdiplusconstants.hFπù5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -3802,7 +3804,7 @@ system.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcguid
 [START RESERVED1]
-  system.hÜ_0•Ô4[END RESERVED1]
+  system.hé&0•Ô4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -4109,5 +4111,5 @@ system.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcenum
 [START RESERVED1]
-  system.hÜ_0•Ô4[END RESERVED1]
+  system.hé&0•Ô4[END RESERVED1]
 [EOF]
