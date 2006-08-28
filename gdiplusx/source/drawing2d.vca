@@ -293,7 +293,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcblend
 [START RESERVED1]
- 	 drawing.hn„M5 system.hv0•Ô4 gdiplusconstants.h~π>œ4[END RESERVED1]
+ 	 drawing.hû˘„M5 system.h¶˙0•Ô4 gdiplusconstants.hÆ˚πù5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -559,7 +559,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfccolorblend
 [START RESERVED1]
- 	 drawing.hn„M5 system.hv0•Ô4 gdiplusconstants.h~π>œ4[END RESERVED1]
+ 	 drawing.hû˘„M5 system.h¶˙0•Ô4 gdiplusconstants.hÆ˚πù5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -1050,7 +1050,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfccustomlinecap
 [START RESERVED1]
- 	 drawing.hn„M5 system.hv0•Ô4 gdiplusconstants.h~π>œ4[END RESERVED1]
+ 	 drawing.hû˘„M5 system.h¶˙0•Ô4 gdiplusconstants.hÆ˚πù5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -1143,7 +1143,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcgraphicscontainer
 [START RESERVED1]
- 	 drawing.hn„M5 system.hv0•Ô4 gdiplusconstants.h~π>œ4[END RESERVED1]
+ 	 drawing.hû˘„M5 system.h¶˙0•Ô4 gdiplusconstants.hÆ˚πù5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -1156,8 +1156,8 @@ drawing.h[END RESERVED8]
 fillmode = 0
 pathdata = 0
 pointcount = 0
-basename = GraphicsPath
 _memberdata =     2975<VFPData><memberdata name="addarc" type="method" display="AddArc"/><memberdata name="addbezier" type="method" display="AddBezier"/><memberdata name="addbeziers" type="method" display="AddBeziers"/><memberdata name="addclosedcurve" type="method" display="AddClosedCurve"/><memberdata name="addcurve" type="method" display="AddCurve"/><memberdata name="addellipse" type="method" display="AddEllipse"/><memberdata name="addline" type="method" display="AddLine"/><memberdata name="addlines" type="method" display="AddLines"/><memberdata name="addpath" type="method" display="AddPath"/><memberdata name="addpie" type="method" display="AddPie"/><memberdata name="addpolygon" type="method" display="AddPolygon"/><memberdata name="addrectangle" type="method" display="AddRectangle"/><memberdata name="addrectangles" type="method" display="AddRectangles"/><memberdata name="addstring" type="method" display="AddString"/><memberdata name="clearmarkers" type="method" display="ClearMarkers"/><memberdata name="clone" type="method" display="Clone"/><memberdata name="closeallfigures" type="method" display="CloseAllFigures"/><memberdata name="closefigure" type="method" display="CloseFigure"/><memberdata name="createobjref" type="method" display="CreateObjRef"/><memberdata name="dispose" type="method" display="Dispose"/><memberdata name="equals" type="method" display="Equals"/><memberdata name="flatten" type="method" display="Flatten"/><memberdata name="getbounds" type="method" display="GetBounds"/><memberdata name="gethashcode" type="method" display="GetHashCode"/><memberdata name="getlastpoint" type="method" display="GetLastPoint"/><memberdata name="getlifetimeservice" type="method" display="GetLifetimeService"/><memberdata name="gettype" type="method" display="GetType"/><memberdata name="initializelifetimeservice" type="method" display="InitializeLifetimeService"/><memberdata name="isoutlinevisible" type="method" display="IsOutlineVisible"/><memberdata name="isvisible" type="method" display="IsVisible"/><memberdata name="reset" type="method" display="Reset"/><memberdata name="reverse" type="method" display="Reverse"/><memberdata name="setmarkers" type="method" display="SetMarkers"/><memberdata name="startfigure" type="method" display="StartFigure"/><memberdata name="tostring" type="method" display="ToString"/><memberdata name="transform" type="method" display="Transform"/><memberdata name="warp" type="method" display="Warp"/><memberdata name="widen" type="method" display="Widen"/><memberdata name="finalize" type="method" display="Finalize"/><memberdata name="memberwiseclone" type="method" display="MemberwiseClone"/><memberdata name="fillmode" type="property" display="FillMode"/><memberdata name="pathdata" type="property" display="PathData"/><memberdata name="pathpoints" type="property" display="PathPoints"/><memberdata name="pathtypes" type="property" display="PathTypes"/><memberdata name="pointcount" type="property" display="PointCount"/></VFPData>
+basename = GraphicsPath
 lastresult = 0
 Name = "xfcgraphicspath"
 [END PROPERTIES]
@@ -1700,6 +1700,7 @@ PROCEDURE addlines
 ** History:
 **  2006/03/07: Auto Generated
 **	2006/06/11: BDurban - Coded
+**  2006/08/27: BDurban/CChalom - Fixed array reference
 *********************************************************************
 LPARAMETERS taoPoints AS xfcPoint
 
@@ -1714,7 +1715,7 @@ TRY
 	m.liCount = 0
 	
 	** Check precision
-	IF m.taoPoints.BaseName = "PointF"
+	IF m.taoPoints[1].BaseName = "PointF"
 		m.loPoint = This.CreateNew("xfcPointF")
 		m.lqPoints = m.loPoint.ToVarBinary(@taoPoints, @liCount)
 		This.SetStatus(GdipAddPathLine2(This.Handle, @lqPoints, m.liCount))
@@ -1932,6 +1933,7 @@ PROCEDURE addrectangles
 ** History:
 **  2006/03/07: Auto Generated
 **  2006/07/08: BDurban - Coded
+**  2006/08/27: BDurban/CChalom - Fixed array reference
 *********************************************************************
 LPARAMETERS taoRects AS xfcRectangle
 
@@ -1946,7 +1948,7 @@ TRY
 	m.liCount = 0
 
 	** Check precision
-	IF m.taoRects.BaseName = "RectangleF"
+	IF m.taoRects[1].BaseName = "RectangleF"
 		m.loRect = This.CreateNew("xfcRectangleF")
 		m.lqRects = m.loRect.ToVarBinary(@taoRects, @liCount)
 		This.SetStatus(GdipAddPathRectangles(This.Handle, @lqRects, m.liCount))
@@ -2990,7 +2992,6 @@ Class[END RESERVED1]
 fillmode Gets or sets a FillMode enumeration that determines how the interiors of shapes in this GraphicsPath object are filled.
 pathdata Gets a PathData object that encapsulates arrays of points (points) and types (types) for this GraphicsPath object.
 pointcount Gets the number of elements in the PathPoints or the PathTypes array.
-basename
 ^pathpoints[1,0] Gets the points in the path.
 ^pathtypes[1,0] Gets the types of the corresponding points in the PathPoints array.
 *addarc Appends an elliptical arc to the current figure.
@@ -3040,7 +3041,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcgraphicspath
 [START RESERVED1]
- 	 drawing.hn„M5 system.hv0•Ô4 gdiplusconstants.h~π>œ4[END RESERVED1]
+ 	 drawing.hÆw„M5 system.h∂x0•Ô4 gdiplusconstants.hæyπù5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -3514,7 +3515,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcgraphicspathiterator
 [START RESERVED1]
- 	 drawing.hn„M5 system.hv0•Ô4 gdiplusconstants.h~π>œ4[END RESERVED1]
+ 	 drawing.hû˘„M5 system.h¶˙0•Ô4 gdiplusconstants.hÆ˚πù5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -3581,7 +3582,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcgraphicsstate
 [START RESERVED1]
- 	 drawing.hn„M5 system.hv0•Ô4 gdiplusconstants.h~π>œ4[END RESERVED1]
+ 	 drawing.hû˘„M5 system.h¶˙0•Ô4 gdiplusconstants.hÆ˚πù5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -4415,7 +4416,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcmatrix
 [START RESERVED1]
- 	 drawing.hn„M5 system.hv0•Ô4 gdiplusconstants.h~π>œ4[END RESERVED1]
+ 	 drawing.hû˘„M5 system.h¶˙0•Ô4 gdiplusconstants.hÆ˚πù5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -4629,7 +4630,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcpathdata
 [START RESERVED1]
- 	 drawing.hn„M5 system.hv0•Ô4 gdiplusconstants.h~π>œ4[END RESERVED1]
+ 	 drawing.hû˘„M5 system.h¶˙0•Ô4 gdiplusconstants.hÆ˚πù5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -4720,7 +4721,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcregiondata
 [START RESERVED1]
- 	 drawing.hn„M5 system.hv0•Ô4 gdiplusconstants.h~π>œ4[END RESERVED1]
+ 	 drawing.hû˘„M5 system.h¶˙0•Ô4 gdiplusconstants.hÆ˚πù5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -5041,7 +5042,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcadjustablearrowcap
 [START RESERVED1]
- 	 drawing.hn„M5 system.hv0•Ô4 gdiplusconstants.h~π>œ4[END RESERVED1]
+ 	 drawing.hû˘„M5 system.h¶˙0•Ô4 gdiplusconstants.hÆ˚πù5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -5291,7 +5292,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfchatchbrush
 [START RESERVED1]
- 	 drawing.hn„M5 system.hv0•Ô4 gdiplusconstants.h~π>œ4[END RESERVED1]
+ 	 drawing.hû˘„M5 system.h¶˙0•Ô4 gdiplusconstants.hÆ˚πù5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -6160,7 +6161,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfclineargradientbrush
 [START RESERVED1]
- 	 drawing.h∆˘„M5 system.hŒ˙0•Ô4 gdiplusconstants.h÷˚π>œ4[END RESERVED1]
+ 	 drawing.hû˘„M5 system.h¶˙0•Ô4 gdiplusconstants.hÆ˚πù5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -7181,5 +7182,5 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcpathgradientbrush
 [START RESERVED1]
- 	 drawing.h&›„M5 system.h.ﬁ0•Ô4 gdiplusconstants.h6ﬂπ>œ4[END RESERVED1]
+ 	 drawing.hû˘„M5 system.h¶˙0•Ô4 gdiplusconstants.hÆ˚πù5[END RESERVED1]
 [EOF]
