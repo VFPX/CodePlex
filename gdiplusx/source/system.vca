@@ -281,7 +281,7 @@ system.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcsystem
 [START RESERVED1]
-  system.hé&0•Ô4[END RESERVED1]
+  system.hæ0•Ô4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -328,8 +328,9 @@ region = (NULL)
 characterrange = (NULL)
 text = (NULL)
 graphicsunit = 0
-_memberdata =     2357<VFPData><memberdata name="bitmap" type="property" display="Bitmap"/><memberdata name="color" type="property" display="Color"/><memberdata name="drawing2d" type="property" display="Drawing2D"/><memberdata name="font" type="property" display="Font"/><memberdata name="fontfamily" type="property" display="FontFamily"/><memberdata name="graphics" type="property" display="Graphics"/><memberdata name="image" type="property" display="Image"/><memberdata name="imaging" type="property" display="Imaging"/><memberdata name="pen" type="property" display="Pen"/><memberdata name="point" type="property" display="Point"/><memberdata name="pointf" type="property" display="PointF"/><memberdata name="rectangle" type="property" display="Rectangle"/><memberdata name="rectanglef" type="property" display="RectangleF"/><memberdata name="solidbrush" type="property" display="SolidBrush"/><memberdata name="stringformat" type="property" display="StringFormat"/><memberdata name="size" type="property" display="Size"/><memberdata name="sizef" type="property" display="SizeF"/><memberdata name="pens" type="property" display="Pens"/><memberdata name="systembrushes" type="property" display="SystemBrushes"/><memberdata name="systemcolors" type="property" display="SystemColors"/><memberdata name="systemicons" type="property" display="SystemIcons"/><memberdata name="systempens" type="property" display="SystemPens"/><memberdata name="imageanimator" type="property" display="ImageAnimator"/><memberdata name="brushes" type="property" display="Brushes"/><memberdata name="fontstyle" type="property" display="FontStyle"/><memberdata name="hatchbrush" type="property" display="HatchBrush"/><memberdata name="knowncolor" type="property" display="KnownColor"/><memberdata name="stringalignment" type="property" display="StringAlignment"/><memberdata name="stringdigitsubstitute" type="property" display="StringDigitSubstitute"/><memberdata name="stringformatflags" type="property" display="StringFormatFlags"/><memberdata name="stringtrimming" type="property" display="StringTrimming"/><memberdata name="texturebrush" type="property" display="TextureBrush"/><memberdata name="characterrange" type="property" display="CharacterRange"/><memberdata name="region" type="property" display="Region"/><memberdata name="graphicsunit" type="property" display="GraphicsUnit"/></VFPData>
+_memberdata =     2435<VFPData><memberdata name="bitmap" type="property" display="Bitmap"/><memberdata name="color" type="property" display="Color"/><memberdata name="drawing2d" type="property" display="Drawing2D"/><memberdata name="font" type="property" display="Font"/><memberdata name="fontfamily" type="property" display="FontFamily"/><memberdata name="graphics" type="property" display="Graphics"/><memberdata name="image" type="property" display="Image"/><memberdata name="imaging" type="property" display="Imaging"/><memberdata name="pen" type="property" display="Pen"/><memberdata name="point" type="property" display="Point"/><memberdata name="pointf" type="property" display="PointF"/><memberdata name="rectangle" type="property" display="Rectangle"/><memberdata name="rectanglef" type="property" display="RectangleF"/><memberdata name="solidbrush" type="property" display="SolidBrush"/><memberdata name="stringformat" type="property" display="StringFormat"/><memberdata name="size" type="property" display="Size"/><memberdata name="sizef" type="property" display="SizeF"/><memberdata name="pens" type="property" display="Pens"/><memberdata name="systembrushes" type="property" display="SystemBrushes"/><memberdata name="systemcolors" type="property" display="SystemColors"/><memberdata name="systemicons" type="property" display="SystemIcons"/><memberdata name="systempens" type="property" display="SystemPens"/><memberdata name="imageanimator" type="property" display="ImageAnimator"/><memberdata name="brushes" type="property" display="Brushes"/><memberdata name="fontstyle" type="property" display="FontStyle"/><memberdata name="hatchbrush" type="property" display="HatchBrush"/><memberdata name="knowncolor" type="property" display="KnownColor"/><memberdata name="stringalignment" type="property" display="StringAlignment"/><memberdata name="stringdigitsubstitute" type="property" display="StringDigitSubstitute"/><memberdata name="stringformatflags" type="property" display="StringFormatFlags"/><memberdata name="stringtrimming" type="property" display="StringTrimming"/><memberdata name="texturebrush" type="property" display="TextureBrush"/><memberdata name="characterrange" type="property" display="CharacterRange"/><memberdata name="region" type="property" display="Region"/><memberdata name="graphicsunit" type="property" display="GraphicsUnit"/><memberdata name="colortranslator" type="property" display="ColorTranslator"/></VFPData>
 
+colortranslator = (NULL)
 Name = "xfcdrawing"
 [END PROPERTIES]
 [START PROTECTED]
@@ -389,6 +390,14 @@ IF VARTYPE(This.Color) <> "O"
 ENDIF
 
 RETURN THIS.Color
+
+ENDPROC
+PROCEDURE colortranslator_access
+IF VARTYPE(This.ColorTranslator) <> "O"
+	This.ColorTranslator = This.CreateNew("xfcColorTranslator")
+ENDIF
+
+RETURN THIS.ColorTranslator
 
 ENDPROC
 PROCEDURE createnew
@@ -1297,6 +1306,7 @@ region
 characterrange
 text Returns all of the text in a text-entry area of a control.
 graphicsunit
+colortranslator
 *pointf_access 
 *point_access 
 *graphics_access 
@@ -1333,6 +1343,7 @@ graphicsunit
 *characterrange_access 
 *text_access 
 *graphicsunit_access 
+*colortranslator_access 
 [END RESERVED3]
 [START RESERVED6]
 Pixels[END RESERVED6]
@@ -1344,7 +1355,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcdrawing
 [START RESERVED1]
- 	 drawing.hÓ—„M5 system.hˆ“0•Ô4 gdiplusconstants.h˛”πù5[END RESERVED1]
+ 	 drawing.hûa„M5 system.h¶b0•Ô4 gdiplusconstants.hÆcπù5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -2521,7 +2532,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcdrawing2d
 [START RESERVED1]
- 	 drawing.hÓ'„M5 system.hˆ(0•Ô4 gdiplusconstants.h˛)πù5[END RESERVED1]
+ 	 drawing.hf„M5 system.hn0•Ô4 gdiplusconstants.hvπù5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -3544,7 +3555,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcimaging
 [START RESERVED1]
- 	 drawing.h6„M5 system.h>0•Ô4 gdiplusconstants.hFπù5[END RESERVED1]
+ 	 drawing.hf„M5 system.hn0•Ô4 gdiplusconstants.hvπù5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -3691,7 +3702,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfctext
 [START RESERVED1]
- 	 drawing.h6„M5 system.h>0•Ô4 gdiplusconstants.hFπù5[END RESERVED1]
+ 	 drawing.hNÈ„M5 system.hVÍ0•Ô4 gdiplusconstants.h^Îπù5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -3804,7 +3815,7 @@ system.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcguid
 [START RESERVED1]
-  system.hé&0•Ô4[END RESERVED1]
+  system.hæ0•Ô4[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -4111,5 +4122,5 @@ system.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcenum
 [START RESERVED1]
-  system.hé&0•Ô4[END RESERVED1]
+  system.hæ0•Ô4[END RESERVED1]
 [EOF]
