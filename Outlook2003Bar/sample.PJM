@@ -24,4 +24,9 @@ AutoIncrement=.F.
 [OLEServers]
 [OLEServersEnd]
 [ProjectFiles]
+ 888753937,V,vcx\outlook2003bar.vcx,.F.,.F.,1252,,,
+ 890201358,T,config.fpw,.F.,.F.,1252,,,
+ 890201366,x,vcx\outlook2003bararrow.png,.F.,.F.,1252,,,
+ 890201366,x,vcx\outlook2003barsplitter.png,.F.,.F.,1252,,,
+ 890266289,K,sample.scx,.F.,.T.,1252,,,
 [EOF]
