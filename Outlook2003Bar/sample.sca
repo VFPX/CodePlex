@@ -1,0 +1,215 @@
+SCCTEXT Version 4.0.0.2
+PLATFORM C(8,0),UNIQUEID C(10,0),TIMESTAMP N(10,0),CLASS M(4,0),CLASSLOC M(4,0),BASECLASS M(4,0),OBJNAME M(4,0),PARENT M(4,0),PROPERTIES M(4,0),PROTECTED M(4,0),METHODS M(4,0),OBJCODE M(4,0),OLE M(4,0),OLE2 M(4,0),RESERVED1 M(4,0),RESERVED2 M(4,0),RESERVED3 M(4,0),RESERVED4 M(4,0),RESERVED5 M(4,0),RESERVED6 M(4,0),RESERVED7 M(4,0),RESERVED8 M(4,0),USER M(4,0)
+1252
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] Screen    
+[START RESERVED1]
+VERSION =   3.00[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1VI0QHN7T
+[CLASS] dataenvironment
+[BASECLASS] dataenvironment
+[OBJNAME] Dataenvironment
+[START PROPERTIES]
+Top = 0
+Left = 0
+Width = 0
+Height = 0
+DataSource = .NULL.
+Name = "Dataenvironment"
+[END PROPERTIES]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED4]
+1[END RESERVED4]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1VI0QHN7U
+[CLASS] form
+[BASECLASS] form
+[OBJNAME] Form1
+[START PROPERTIES]
+Height = 404
+Width = 204
+ShowWindow = 2
+DoCreate = .T.
+AutoCenter = .T.
+Caption = "Outlook 2003 Bar Sample"
+MinButton = .F.
+Name = "Form1"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Activate
+Read Events
+ENDPROC
+PROCEDURE QueryUnload
+Nodefault
+This.Release()
+ENDPROC
+PROCEDURE Release
+Clear Events
+Quit
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1VI0QJ650
+[CLASS] outlook2003bar
+[CLASSLOC] vcx\outlook2003bar.vcx
+[BASECLASS] container
+[OBJNAME] outlook2003bar1
+[PARENT] Form1
+[START PROPERTIES]
+Top = 2
+Left = 2
+Name = "outlook2003bar1"
+Panes.ErasePage = .T.
+Panes.PageCount = 10
+Panes.Pane1.Caption = "E-mails"
+Panes.Pane1.picture16 = Email Envelope 16.png
+Panes.Pane1.picture24 = Email Envelope 24.png
+Panes.Pane1.Name = "Pane1"
+Panes.Pane2.Caption = "Contacts"
+Panes.Pane2.picture16 = Contacts 16.png
+Panes.Pane2.picture24 = Contacts 24.png
+Panes.Pane2.Name = "Pane2"
+Panes.Pane3.Caption = "Favourites"
+Panes.Pane3.picture16 = Favourites 16.png
+Panes.Pane3.picture24 = Favourites 24.png
+Panes.Pane3.Name = "Pane3"
+Panes.Pane4.Caption = "Calendar"
+Panes.Pane4.picture16 = Calendar Multiweek 16.png
+Panes.Pane4.picture24 = Calendar Multiweek 24.png
+Panes.Pane4.Name = "Pane4"
+Panes.Pane5.Caption = "Games"
+Panes.Pane5.picture16 = Games 16.png
+Panes.Pane5.picture24 = Games 24.png
+Panes.Pane5.Name = "Pane5"
+Panes.Pane6.Caption = "Help"
+Panes.Pane6.picture16 = Help 2 16.png
+Panes.Pane6.picture24 = Help 2 24.png
+Panes.Pane6.Name = "Pane6"
+Panes.Pane7.Caption = "Music"
+Panes.Pane7.picture16 = Music Player 1 16.png
+Panes.Pane7.picture24 = Music Player 1 24.png
+Panes.Pane7.Name = "Pane7"
+Panes.Pane8.Caption = "Pictures"
+Panes.Pane8.picture16 = Pics 1 16.png
+Panes.Pane8.picture24 = Pics 1 24.png
+Panes.Pane8.Name = "Pane8"
+Panes.Pane9.Caption = "Security"
+Panes.Pane9.picture16 = Security 1 16.png
+Panes.Pane9.picture24 = Security 1 24.png
+Panes.Pane9.Name = "Pane9"
+Panes.Pane10.Caption = "Tech Support"
+Panes.Pane10.picture16 = Tech Support 16.png
+Panes.Pane10.picture24 = Tech Support 24.png
+Panes.Pane10.Name = "Pane10"
+Panes.Top = 33
+Panes.Height = 328
+Panes.Name = "Panes"
+overflowpanel.MenuButton.imgPicture.Height = 16
+overflowpanel.MenuButton.imgPicture.Width = 16
+overflowpanel.MenuButton.imgPicture.Name = "imgPicture"
+overflowpanel.MenuButton.Name = "MenuButton"
+overflowpanel.Name = "overflowpanel"
+SplitBar.imgSplitter.Height = 3
+SplitBar.imgSplitter.Width = 35
+SplitBar.imgSplitter.Name = "imgSplitter"
+SplitBar.Name = "SplitBar"
+Panel.Name = "Panel"
+Splitter.Name = "Splitter"
+Title.lblCaption.Name = "lblCaption"
+Title.linBorder.Name = "linBorder"
+Title.Name = "Title"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1VI0QN7AJ
+[CLASS] olecontrol
+[BASECLASS] olecontrol
+[OBJNAME] Olecontrol1
+[PARENT] Form1.outlook2003bar1.Panes.Pane1
+[START PROPERTIES]
+Top = 0
+Left = 0
+Height = 328
+Width = 198
+Anchor = 15
+Name = "Olecontrol1"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+With This
+   .Imagelist = .Parent.oleControl2
+   With .Nodes
+      Local laNos[12,3]
+      Store Null To laNos
+      laNos[1,1] = "Pastas locais"
+      laNos[2,1] = "Caixa de entrada"
+      laNos[3,1] = "Caixa de saída"
+      laNos[4,1] = "Itens enviados"
+      laNos[5,1] = "Itens excluídos"
+      laNos[6,1] = "Rascunhos"
+      laNos[7,1] = "Documentos"
+      laNos[8,1] = "Favoritos"
+      laNos[9,1] = "Jogos"
+      laNos[10,1] = "Músicas"
+      laNos[11,1] = "Fotos"
+      laNos[12,1] = "Vídeos"
+      Store laNos[1,1] To laNos[2,2], laNos[3,2], laNos[4,2], laNos[5,2], laNos[6,2]
+      Store 4 To laNos[2,3], laNos[3,3], laNos[4,3], laNos[5,3], laNos[6,3]
+      Local lnNo
+      For lnNo=1 To Alen(laNos,1)
+         .Add(laNos[lnNo,2],laNos[lnNo,3],laNos[lnNo,1],laNos[lnNo,1],laNos[lnNo,1])
+      Endfor
+   Endwith
+   Local loNo
+   loNo = .Nodes(1)
+   loNo.Expanded = .T.
+   .SelectedItem = loNo
+   loNo = Null
+Endwith
+ENDPROC
+[END METHODS]
+[BINSTART OLE]
+CHECKSUM=54385
+[BINEND OLE]
+[BINSTART OLE2]
+CHECKSUM=11934
+[BINEND OLE2]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1VI0QN7AL
+[CLASS] olecontrol
+[BASECLASS] olecontrol
+[OBJNAME] Olecontrol2
+[PARENT] Form1.outlook2003bar1.Panes.Pane1
+[START PROPERTIES]
+Height = 150
+Width = 200
+Visible = .F.
+Name = "Olecontrol2"
+[END PROPERTIES]
+[BINSTART OLE]
+CHECKSUM=25474
+[BINEND OLE]
+[BINSTART OLE2]
+CHECKSUM=11934
+[BINEND OLE2]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[START PROPERTIES]
+Arial, 0, 9, 5, 15, 12, 32, 3, 0
+[END PROPERTIES]
+[EOF]
