@@ -45,15 +45,26 @@ Name = "Form1"
 [END PROPERTIES]
 [START METHODS]
 PROCEDURE Activate
-Read Events
+If _vfp.StartMode > 0 && Run time
+   Read Events
+Endif
+ENDPROC
+PROCEDURE Load
+If _vfp.StartMode = 0 && Design time
+   Set Path To (Addbs(Home(1))+"FFC") Additive
+   Set Path To (Addbs(_vfp.ActiveProject.HomeDir)+"VCX") Additive
+   Set Default To (_vfp.ActiveProject.HomeDir)
+Endif
 ENDPROC
 PROCEDURE QueryUnload
 Nodefault
 This.Release()
 ENDPROC
 PROCEDURE Release
-Clear Events
-Quit
+If _vfp.StartMode > 0 && Run time
+   Clear Events
+   Quit
+Endif
 ENDPROC
 [END METHODS]
 
@@ -180,7 +191,7 @@ Endwith
 ENDPROC
 [END METHODS]
 [BINSTART OLE]
-CHECKSUM=54385
+CHECKSUM=53709
 [BINEND OLE]
 [BINSTART OLE2]
 CHECKSUM=11934
@@ -200,7 +211,7 @@ Visible = .F.
 Name = "Olecontrol2"
 [END PROPERTIES]
 [BINSTART OLE]
-CHECKSUM=25474
+CHECKSUM=32418
 [BINEND OLE]
 [BINSTART OLE2]
 CHECKSUM=11934
