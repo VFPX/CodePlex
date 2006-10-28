@@ -293,7 +293,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcblend
 [START RESERVED1]
- 	 drawing.hû˘„M5 system.h¶˙0•Ô4 gdiplusconstants.hÆ˚πù5[END RESERVED1]
+ 	 drawing.hﬁ„„M5 system.hÊ‰0•Ô4 gdiplusconstants.hÓÂÎi05[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -559,7 +559,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfccolorblend
 [START RESERVED1]
- 	 drawing.hû˘„M5 system.h¶˙0•Ô4 gdiplusconstants.hÆ˚πù5[END RESERVED1]
+ 	 drawing.hﬁ„„M5 system.hÊ‰0•Ô4 gdiplusconstants.hÓÂÎi05[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -1050,7 +1050,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfccustomlinecap
 [START RESERVED1]
- 	 drawing.hû˘„M5 system.h¶˙0•Ô4 gdiplusconstants.hÆ˚πù5[END RESERVED1]
+ 	 drawing.hﬁ„„M5 system.hÊ‰0•Ô4 gdiplusconstants.hÓÂÎi05[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -1143,7 +1143,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcgraphicscontainer
 [START RESERVED1]
- 	 drawing.hû˘„M5 system.h¶˙0•Ô4 gdiplusconstants.hÆ˚πù5[END RESERVED1]
+ 	 drawing.hﬁ„„M5 system.hÊ‰0•Ô4 gdiplusconstants.hÓÂÎi05[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -1220,7 +1220,7 @@ TRY
 	*!We may want to allow differenct parameters here also
 	
 	DO CASE
-	CASE VARTYPE(m.taoPts)="O" AND m.taoPts.BaseName = "PointF"
+	CASE VARTYPE(m.taoPts)="Q" OR (VARTYPE(m.taoPts)="O" AND m.taoPts.BaseName = "PointF")
 		m.loPoint = This.CreateNew("xfcPointF")
 		m.lqPoints = loPoint.ToVarBinary(@taoPts, @liCount)
 		m.tiFillMode = EVL(m.tiFillMode, FillModeAlternate)
@@ -1505,6 +1505,7 @@ PROCEDURE addcurve
 ** History:
 **  2006/03/07: Auto Generated
 **	2006/06/11: BDurban - Coded
+**  2006/09/10: CChalom - Fixed
 *********************************************************************
 LPARAMETERS taoPoints AS xfcPoint, ;
 			tiOffset, tiNumberOfSegments, tnTension
@@ -1522,7 +1523,7 @@ TRY
 	m.llUsePrecision = .F.
 	
 	** Check precision
-	IF m.taoPoints.BaseName = "PointF"
+	IF m.taoPoints(1).BaseName = "PointF"
 		m.loPoint = This.CreateNew("xfcPointF")
 		m.lqPoints = m.loPoint.ToVarBinary(@taoPoints, @liCount)
 		m.llUsePrecision = .T.
@@ -1642,6 +1643,7 @@ PROCEDURE addline
 ** History:
 **  2006/03/07: Auto Generated
 **	2006/05/08: BDurban - Coded
+**  2006/09/10: CChalom - Fixed
 *********************************************************************
 LPARAMETERS tnX1, tnY1, tnX2, tnY2
 *********** toPt1 AS xfcPoint, toPt2 AS xfcPoint
@@ -1652,14 +1654,14 @@ LOCAL loExc AS Exception
 TRY
 	LOCAL loPoint1 AS xfcPoint, loPoint2 AS xfcPoint
 	DO CASE
-	CASE VARTYPE("m.tnX1")="O" AND m.tnX1.BaseName="PointF"
+	CASE VARTYPE(m.tnX1)="O" AND m.tnX1.BaseName="PointF"
 		m.loPoint1 = m.tnX1
 		m.loPoint2 = m.tnY1
 		m.loPoint1.GetExtent(@tnX1, @tnY1)
 		m.loPoint2.GetExtent(@tnX2, @tnY2)
 		This.SetStatus(GdipAddPathLine(This.Handle, m.tnX1, m.tnY1, m.tnX2, m.tnY2))
 		
-	CASE VARTYPE("m.tnX1")="O" AND m.tnX1.BaseName="Point"
+	CASE VARTYPE(m.tnX1)="O" AND m.tnX1.BaseName="Point"
 		m.loPoint1 = m.tnX1
 		m.loPoint2 = m.tnY1
 		m.loPoint1.GetExtent(@tnX1, @tnY1)
@@ -1835,6 +1837,7 @@ PROCEDURE addpolygon
 ** History:
 **  2006/03/07: Auto Generated
 **	2006/06/11: BDurban - Coded
+**	2006/10/14: BDurban - Tweaked for different array types
 *********************************************************************
 LPARAMETERS taoPoints AS xfcPoint
 
@@ -1849,14 +1852,14 @@ TRY
 	m.liCount = 0
 	
 	** Check precision
-	IF m.taoPoints.BaseName = "PointF"
-		m.loPoint = This.CreateNew("xfcPointF")
-		m.lqPoints = m.loPoint.ToVarBinary(@taoPoints, @liCount)
-		This.SetStatus(GdipAddPathPolygon(This.Handle, @lqPoints, m.liCount))
-	ELSE
+	IF VARTYPE(m.taoPoints)="O" AND m.taoPoints.BaseName == "Point"
 		m.loPoint = This.CreateNew("xfcPoint")
-		m.lqPoints = m.loPoint.ToVarBinary(@taoPoints, @liCount)
-		This.SetStatus(GdipAddPathPolygonI(This.Handle, @lqPoints, m.liCount))
+		m.lqPoints = m.loPoint.ToVarBinary(@m.taoPoints, @m.liCount)
+		This.SetStatus(GdipAddPathPolygonI(This.Handle, @m.lqPoints, m.liCount))
+	ELSE
+		m.loPoint = This.CreateNew("xfcPointF")
+		m.lqPoints = m.loPoint.ToVarBinary(@m.taoPoints, @liCount)
+		This.SetStatus(GdipAddPathPolygon(This.Handle, @m.lqPoints, m.liCount))
 	ENDIF
 
 CATCH TO loExc
@@ -2600,6 +2603,7 @@ PROCEDURE pathpoints_access
 ** History:
 **  2006/03/07: Auto Generated
 **	2006/06/11: BDurban - Coded
+**  2006/09/06: CChalom - Fixed in the creation of the PointF object
 *********************************************************************
 LPARAMETERS m.tiIndex
 
@@ -2625,12 +2629,13 @@ TRY
 		This.SetStatus(GdipGetPathPoints(This.Handle, @lqPoints, m.liCount))
 		*!*This.SetStatus(GdipGetPathPointsI(This.Handle, @lcPoints, m.liCount))
 		m.lqPoint = SUBSTR(m.lqPoints, (m.tiIndex-1)*8+1, 8)
-		m.loPoint = This.CreateNew("xfcPointF", m.lqPoints, m.lqPoint)
+		m.loPoint = This.CreateNew("xfcPointF", m.lqPoint)
 		This.PathPoints[m.tiIndex] = m.loPoint
 	ENDIF
 CATCH TO loExc
 	THROW m.loExc
 ENDTRY
+
 RETURN m.loPoint
 
 ** .NET Help ********************************************************
@@ -3041,7 +3046,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcgraphicspath
 [START RESERVED1]
- 	 drawing.hÆw„M5 system.h∂x0•Ô4 gdiplusconstants.hæyπù5[END RESERVED1]
+ 	 drawing.hFZ„M5 system.hN[0•Ô4 gdiplusconstants.hV\Îi05[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -3515,7 +3520,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcgraphicspathiterator
 [START RESERVED1]
- 	 drawing.hû˘„M5 system.h¶˙0•Ô4 gdiplusconstants.hÆ˚πù5[END RESERVED1]
+ 	 drawing.hﬁ„„M5 system.hÊ‰0•Ô4 gdiplusconstants.hÓÂÎi05[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -3582,7 +3587,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcgraphicsstate
 [START RESERVED1]
- 	 drawing.hû˘„M5 system.h¶˙0•Ô4 gdiplusconstants.hÆ˚πù5[END RESERVED1]
+ 	 drawing.hﬁ„„M5 system.hÊ‰0•Ô4 gdiplusconstants.hÓÂÎi05[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -4017,6 +4022,10 @@ RETURN NULL
 *********************************************************************
 
 ENDPROC
+PROCEDURE new
+LPARAMETERS tnM11, tnM12, tnM21, tnM22, tnDx, tnDy
+RETURN This.CreateNew(This.Class, m.tnM11, m.tnM12, m.tnM21, m.tnM22, m.tnDx, m.tnDy)
+ENDPROC
 PROCEDURE offsetx_access
 *********************************************************************
 ** Property: OffsetX (Access)
@@ -4416,7 +4425,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcmatrix
 [START RESERVED1]
- 	 drawing.hû˘„M5 system.h¶˙0•Ô4 gdiplusconstants.hÆ˚πù5[END RESERVED1]
+ 	 drawing.h—„M5 system.h“0•Ô4 gdiplusconstants.h”Îi05[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -4630,7 +4639,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcpathdata
 [START RESERVED1]
- 	 drawing.hû˘„M5 system.h¶˙0•Ô4 gdiplusconstants.hÆ˚πù5[END RESERVED1]
+ 	 drawing.hﬁ„„M5 system.hÊ‰0•Ô4 gdiplusconstants.hÓÂÎi05[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -4721,7 +4730,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcregiondata
 [START RESERVED1]
- 	 drawing.hû˘„M5 system.h¶˙0•Ô4 gdiplusconstants.hÆ˚πù5[END RESERVED1]
+ 	 drawing.hﬁ„„M5 system.hÊ‰0•Ô4 gdiplusconstants.hÓÂÎi05[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -5042,7 +5051,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcadjustablearrowcap
 [START RESERVED1]
- 	 drawing.hû˘„M5 system.h¶˙0•Ô4 gdiplusconstants.hÆ˚πù5[END RESERVED1]
+ 	 drawing.hﬁ„„M5 system.hÊ‰0•Ô4 gdiplusconstants.hÓÂÎi05[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -5096,6 +5105,7 @@ TRY
 	
 	DODEFAULT()
 	This.DeclareDLL()
+	lhBrush = 0
 	
 	IF VARTYPE(tiHatchstyle) = "N"
 		m.liColor2 = 0x00
@@ -5292,7 +5302,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfchatchbrush
 [START RESERVED1]
- 	 drawing.hû˘„M5 system.h¶˙0•Ô4 gdiplusconstants.hÆ˚πù5[END RESERVED1]
+ 	 drawing.hﬁ„„M5 system.hÊ‰0•Ô4 gdiplusconstants.hÓÂÎi05[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -6161,7 +6171,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfclineargradientbrush
 [START RESERVED1]
- 	 drawing.hû˘„M5 system.h¶˙0•Ô4 gdiplusconstants.hÆ˚πù5[END RESERVED1]
+ 	 drawing.hﬁ„„M5 system.hÊ‰0•Ô4 gdiplusconstants.hÓÂÎi05[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -6194,6 +6204,7 @@ PROCEDURE Init
 ** History:
 **  2006/03/07: Auto Generated
 **	2006/05/10: BDurban - Coded
+**  2006/09/06: CChalom - Fixed (liCount=0;  m.taoPoints(1) in DOCASE)
 *********************************************************************
 LPARAMETERS taoPoints AS xfcPoint, ;
 			tiWrapMode AS EnumWrapMode
@@ -6208,14 +6219,15 @@ TRY
 	LOCAL loPath AS xfcGraphicsPath
 	m.tiWrapMode = EVL(m.tiWrapMode, WrapModeTile)
 	m.lhPolyGradient = 0
-	
+	m.liCount = 0
+
 	DO CASE
-	CASE VARTYPE(m.taoPoints)="O" AND m.taoPoints.BaseName = "PointF"
+	CASE VARTYPE(m.taoPoints)="O" AND m.taoPoints(1).BaseName = "PointF"
 		m.loPoint = This.CreateNew("xfcPointF")
 		m.lqPoints = m.loPoint.ToVarBinary(@taoPoints, @liCount)
 		This.SetStatus(GdipCreatePathGradient(@lqPoints, m.liCount, m.tiWrapMode, @lhPolyGradient))
 		
-	CASE VARTYPE(m.taoPoints)="O" AND m.taoPoints.BaseName = "Point"
+	CASE VARTYPE(m.taoPoints)="O" AND m.taoPoints(1).BaseName = "Point"
 		m.loPoint = This.CreateNew("xfcPoint")
 		m.lqPoints = m.loPoint.ToVarBinary(@taoPoints, @liCount)
 		This.SetStatus(GdipCreatePathGradient(@lqPoints, m.liCount, m.tiWrapMode, @lhPolyGradient))
@@ -6879,6 +6891,7 @@ PROCEDURE surroundcolors_access
 ** History:
 **  2006/03/07: Auto Generated
 **	2006/06/09: BDurban - Coded
+**  2006/09/06: CChalom - Fixed
 *********************************************************************
 LPARAMETERS tiIndex
 
@@ -6891,7 +6904,6 @@ TRY
 	m.liCount = 0
 	m.loColor = NULL
 	This.SetStatus(GdipGetPathGradientSurroundColorCount(This.Handle, @liCount))
-	
 	m.tiIndex = EVL(m.tiIndex, 1)
 	
 	IF m.tiIndex > m.liCount
@@ -6937,7 +6949,6 @@ RETURN m.loColor[1]
 ** http://msdn2.microsoft.com/en-us/library/System.Drawing.Drawing2D.PathGradientBrush.SurroundColors%28vs.80%29.aspx
 ** Returns: Color[]
 *********************************************************************
-
 ENDPROC
 PROCEDURE surroundcolors_assign
 *********************************************************************
@@ -7182,5 +7193,5 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcpathgradientbrush
 [START RESERVED1]
- 	 drawing.hû˘„M5 system.h¶˙0•Ô4 gdiplusconstants.hÆ˚πù5[END RESERVED1]
+ 	 drawing.h^„M5 system.hf0•Ô4 gdiplusconstants.hnÎi05[END RESERVED1]
 [EOF]
