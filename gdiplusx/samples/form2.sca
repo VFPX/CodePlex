@@ -69,7 +69,7 @@ WITH _SCREEN.SYSTEM.drawing
 		pts(x) = .PointF.NEW((x-1) * 10, 30 + 15 * SIN(angle))
 		angle = angle +  PI() / 10
 	NEXT
-	THIS.oGfx.DrawLines(.Pens.Blue, pts)
+	THIS.oGfx.DrawLines(.Pens.Blue, @pts)
 	LOCAL p
 	FOR EACH p IN pts
 		THIS.oGfx.FillEllipse(.Brushes.Green, ;
