@@ -1,0 +1,119 @@
+SCCTEXT Version 4.0.0.2
+PLATFORM C(8,0),UNIQUEID C(10,0),TIMESTAMP N(10,0),CLASS M(4,0),CLASSLOC M(4,0),BASECLASS M(4,0),OBJNAME M(4,0),PARENT M(4,0),PROPERTIES M(4,0),PROTECTED M(4,0),METHODS M(4,0),OBJCODE M(4,0),OLE M(4,0),OLE2 M(4,0),RESERVED1 M(4,0),RESERVED2 M(4,0),RESERVED3 M(4,0),RESERVED4 M(4,0),RESERVED5 M(4,0),RESERVED6 M(4,0),RESERVED7 M(4,0),RESERVED8 M(4,0),USER M(4,0)
+1252
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] Screen    
+[START RESERVED1]
+VERSION =   3.00[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1XB0P5QQV
+[CLASS] dataenvironment
+[BASECLASS] dataenvironment
+[OBJNAME] Dataenvironment
+[START PROPERTIES]
+Top = 0
+Left = 0
+Width = 0
+Height = 0
+DataSource = .NULL.
+Name = "Dataenvironment"
+[END PROPERTIES]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED4]
+1[END RESERVED4]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1XB0P5QQX
+[CLASS] form
+[BASECLASS] form
+[OBJNAME] Form1
+[START PROPERTIES]
+Top = 0
+Left = 0
+Height = 444
+Width = 420
+DoCreate = .T.
+Caption = "Form1"
+nctrlx1 = 50
+nctrly1 = 50
+nctrlx2 = 400
+nctrly2 = 400
+Name = "Form1"
+[END PROPERTIES]
+[START RESERVED3]
+nctrlx1
+nctrly1
+nctrlx2
+nctrly2
+[END RESERVED3]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1XB0P5QQY
+[CLASS] imgcanvas
+[CLASSLOC] source\gdiplusx.vcx
+[BASECLASS] image
+[OBJNAME] Imgcanvas1
+[PARENT] Form1
+[START PROPERTIES]
+Anchor = 15
+Height = 444
+Left = 0
+Top = 0
+Width = 420
+Name = "Imgcanvas1"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE MouseDown
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+
+DO CASE
+CASE nButton = 1
+	ThisForm.nCtrlX1 = nXCoord
+	ThisForm.nCtrlY1 = nYCoord
+CASE nButton = 2
+	ThisForm.nCtrlX2 = nXCoord
+	ThisForm.nCtrlY2 = nYCoord
+ENDCASE
+
+This.Draw()
+ENDPROC
+PROCEDURE beforedraw
+LOCAL loPen AS xfcPen
+LOCAL loPen2 AS xfcPen
+LOCAL loGfx AS xfcGraphics
+
+WITH _SCREEN.System.Drawing
+loPen = .Pen.New(.Color.Blue, 5)
+loPen2 = .Pen.New(.Color.Red, 2)
+loGfx = This.oGfx
+
+This.Clear()
+loGfx.DrawBezier(loPen, 400,50, ;
+		ThisForm.nCtrlX1, ThisForm.nCtrlY1, ;
+		ThisForm.nCtrlX2, ThisForm.nCtrlY2, ;
+		50, 400)
+		
+loGFX.DrawLine(loPen2, 400,50, ;
+		ThisForm.nCtrlX1, ThisForm.nCtrlY1)
+		
+loGFX.DrawLine(loPen2, 50,400, ;
+		ThisForm.nCtrlX2, ThisForm.nCtrlY2)
+
+ENDWITH	
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[START PROPERTIES]
+Arial, 0, 9, 5, 15, 12, 32, 3, 0
+[END PROPERTIES]
+[EOF]
