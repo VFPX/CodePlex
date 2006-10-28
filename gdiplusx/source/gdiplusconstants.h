@@ -972,7 +972,7 @@
 #DEFINE StatusFontStyleNotFound  15 
 #DEFINE StatusNotTrueTypeFont   16 
 #DEFINE StatusUnsupportedlusVersion 17 
-#DEFINE StatuslusNotInitialized  18 
+#DEFINE StatusGdiPlusNotInitialized  18 
 #DEFINE StatusPropertyNotFound  19 
 #DEFINE StatusPropertyNotSupported 20 
 
