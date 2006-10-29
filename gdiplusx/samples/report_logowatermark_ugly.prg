@@ -1,0 +1,87 @@
+#DEFINE GDIPlusXPath ADDBS(JUSTPATH(SYS(16)))+"..\source"
+#DEFINE ImagePath    ADDBS(JUSTPATH(SYS(16)))+"..\samples\image"
+SET PATH TO (GDIPlusXPath) ADDITIVE
+_SCREEN.AddProperty("System", NEWOBJECT("xfcSystem", LOCFILE("system.vcx","vcx"))) 
+
+LOCAL loReportListener, i
+loReportListener = CREATEOBJECT("MyReportListener")
+loReportListener.LISTENERTYPE = 1
+loReportListener.WaterMarkImage = (ImagePath + "\vfpxlogosmall.png")
+
+CREATE CURSOR Dummy (campo1 c(20), field2 c(15))
+FOR i=1 TO 200
+	INSERT INTO Dummy VALUES ("Testing ReportListener with GdiPlus-X", "Visit CodePlex")
+ENDFOR
+SELECT dummy
+GO TOP
+
+REPORT FORM (LOCFILE("Teste","frx")) OBJECT loReportListener
+USE IN dummy
+RETURN
+
+DEFINE CLASS MyReportListener AS _ReportListener OF ADDBS(HOME()) + "FFC\" + "_ReportListener.VCX"
+	NewPage = .T.
+	oGDIGraphics = NULL
+	WaterMarkImage = ""
+
+	FUNCTION BEFOREREPORT
+		DODEFAULT()
+		This.oGDIGraphics = _SCREEN.SYSTEM.Drawing.Graphics.New() &&  CREATEOBJECT('GPGraphics')
+	ENDFUNC
+
+	FUNCTION BEFOREBAND(nBandObjCode, nFRXRecNo)
+		#DEFINE FRX_OBJCOD_PAGEHEADER 1
+		IF nBandObjCode==FRX_OBJCOD_PAGEHEADER
+			This.NewPage = .T.
+			IF NOT This.IsSuccessor
+				This.SharedGDIPlusGraphics = This.GDIPLUSGRAPHICS
+			ENDIF
+			This.oGDIGraphics.Handle = This.SharedGDIPlusGraphics
+		ENDIF
+		DODEFAULT(nBandObjCode, nFRXRecNo)
+	ENDFUNC
+
+	PROCEDURE RENDER(nFRXRecNo,;
+		nLeft,nTop,nWidth,nHeight,;
+		nObjectContinuationType, ;
+		cContentsToBeRendered, GDIPlusImage)
+		WITH _SCREEN.SYSTEM.Drawing
+			IF This.NewPage
+
+				* Create a Rectangle of the size of 60% of the report page
+				LOCAL loRect AS xfcRectangle
+				loRect = .Rectangle.New(0.2 * This.sharedPageWidth, ;
+						0.2 * This.sharedPageHeight, ;
+						This.sharedPageWidth * 0.6, ;
+						This.sharedPageHeight * 0.6)
+
+				* Load the Image File to GDI+
+				LOCAL loBmp as xfcBitmap
+				loBmp = .Bitmap.New(This.WaterMarkImage)
+
+				* Logo Image with 50% transparency 
+				* The position (4,4) of the matrix is responsible for the opacity 
+
+				LOCAL loClrMatrix AS xfcColorMatrix
+				loClrMatrix = .Imaging.ColorMatrix.New( ; 
+			        1, 0, 0, 0  , 0, ; 
+			        0, 1, 0, 0  , 0, ; 
+			        0, 0, 1, 0  , 0, ;
+			        0, 0, 0, 0.1, 0, ; 
+			        0, 0, 0, 0  , 0)
+
+				LOCAL loAttr AS xfcImageAttributes
+				loAttr = .Imaging.ImageAttributes.New() 
+				loAttr.SetColorMatrix(loClrMatrix)
+
+				This.oGdiGraphics.DrawImage(loBmp, loRect, loBmp.GetBounds(), 2, loAttr)
+
+				This.NewPage = .F.
+			ENDIF
+		ENDWITH
+		DODEFAULT(nFRXRecNo,;
+			nLeft,nTop,nWidth,nHeight,;
+			nObjectContinuationType, ;
+			cContentsToBeRendered, GDIPlusImage)
+	ENDPROC
+ENDDEFINE
