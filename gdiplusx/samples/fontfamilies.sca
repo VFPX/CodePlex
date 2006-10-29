@@ -68,6 +68,7 @@ oldindex
 [OBJNAME] List1
 [PARENT] Form1
 [START PROPERTIES]
+Anchor = 15
 Height = 228
 Left = 12
 Top = 12
@@ -76,7 +77,7 @@ Name = "List1"
 [END PROPERTIES]
 [START METHODS]
 PROCEDURE Init
-_SCREEN.ADDPROPERTY("System", NEWOBJECT("xfcSystem", LOCFILE("system.vcx","vcx")))
+_SCREEN.ADDPROPERTY("System", NEWOBJECT("xfcSystem", LOCFILE("system.vcx")))
 
 lcTempFile = ADDBS(SYS(2023)) + "_Font_"
 
@@ -116,7 +117,7 @@ NEXT
 
 ENDWITH
 
-RETURN
+*!*	RETURN
 ENDPROC
 PROCEDURE InteractiveChange
 Thisform.LockScreen = .T.
