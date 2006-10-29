@@ -46,18 +46,28 @@ nctrlx2 = 400
 nctrly2 = 400
 Name = "Form1"
 [END PROPERTIES]
+[START METHODS]
+PROCEDURE nearpoint
+LPARAMETERS nX, nY, oPoint
+
+IF BETWEEN(oPoint.X, nX-5, nx+5) AND BETWEEN(oPointY.Y, nY-5, nY+5)
+
+ENDIF
+ENDPROC
+[END METHODS]
 [START RESERVED3]
 nctrlx1
 nctrly1
 nctrlx2
 nctrly2
+*nearpoint 
 [END RESERVED3]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
 [UNIQUEID] _1XB0P5QQY
 [CLASS] imgcanvas
-[CLASSLOC] source\gdiplusx.vcx
+[CLASSLOC] ..\source\gdiplusx.vcx
 [BASECLASS] image
 [OBJNAME] Imgcanvas1
 [PARENT] Form1
@@ -75,14 +85,41 @@ LPARAMETERS nButton, nShift, nXCoord, nYCoord
 
 DO CASE
 CASE nButton = 1
-	ThisForm.nCtrlX1 = nXCoord
-	ThisForm.nCtrlY1 = nYCoord
-CASE nButton = 2
-	ThisForm.nCtrlX2 = nXCoord
-	ThisForm.nCtrlY2 = nYCoord
+
+	DO CASE
+	CASE BETWEEN(This.oPoint1.X, nXCoord-5, nXCoord+5) AND BETWEEN(oPoint1.Y, nYCoord-5, nYCoord+5)
+		This.oSelectedPoint = This.oPoint1
+	CASE BETWEEN(This.oPoint2.X, nXCoord-5, nXCoord+5) AND BETWEEN(oPoint2.Y, nYCoord-5, nYCoord+5)
+		This.oSelectedPoint = This.oPoint2
+	CASE BETWEEN(This.oCtrl1.X, nXCoord-5, nXCoord+5) AND BETWEEN(oCtrl1.Y, nYCoord-5, nYCoord+5)
+		This.oSelectedPoint = This.oCtrl1
+	CASE BETWEEN(This.oCtrl2.X, nXCoord-5, nXCoord+5) AND BETWEEN(oCtrl2.Y, nYCoord-5, nYCoord+5)
+		This.oSelectedPoint = This.oCtrl2
+	ENDCASE
+	
 ENDCASE
 
 This.Draw()
+ENDPROC
+PROCEDURE MouseMove
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+
+DO CASE
+CASE nButton = 1
+	IF VARTYPE(This.oSelectedPoint) = "O"
+		This.oSelectedPoint.X = nXCoord
+		This.oSelectedPoint.Y = nYCoord
+		This.Draw()
+	ENDIF
+ENDCASE
+ENDPROC
+PROCEDURE MouseUp
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+
+DO CASE
+CASE nButton = 1
+	This.oSelectedPoint = NULL
+ENDCASE
 ENDPROC
 PROCEDURE beforedraw
 LOCAL loPen AS xfcPen
@@ -95,18 +132,21 @@ loPen2 = .Pen.New(.Color.Red, 2)
 loGfx = This.oGfx
 
 This.Clear()
-loGfx.DrawBezier(loPen, 400,50, ;
-		ThisForm.nCtrlX1, ThisForm.nCtrlY1, ;
-		ThisForm.nCtrlX2, ThisForm.nCtrlY2, ;
-		50, 400)
+loGfx.DrawBezier(loPen, ;
+		This.oPoint1, This.oCtrl1, ;
+		This.oCtrl2, This.oPoint2)
 		
-loGFX.DrawLine(loPen2, 400,50, ;
-		ThisForm.nCtrlX1, ThisForm.nCtrlY1)
+loGFX.DrawLine(loPen2, This.oPoint1, This.oCtrl1)
 		
-loGFX.DrawLine(loPen2, 50,400, ;
-		ThisForm.nCtrlX2, ThisForm.nCtrlY2)
+loGFX.DrawLine(loPen2, This.oPoint2, This.oCtrl2)
 
 ENDWITH	
+ENDPROC
+PROCEDURE setup
+This.AddProperty("oPoint1", _SCREEN.System.Drawing.Point.New(50,200))
+This.AddProperty("oPoint2", _SCREEN.System.Drawing.Point.New(200,50))
+This.AddProperty("oCtrl1", _SCREEN.System.Drawing.Point.New(50,50))
+This.AddProperty("oCtrl2", _SCREEN.System.Drawing.Point.New(200,200))
 ENDPROC
 [END METHODS]
 
