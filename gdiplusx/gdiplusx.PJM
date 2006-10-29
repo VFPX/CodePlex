@@ -120,7 +120,7 @@ AutoIncrement=.F.
  895304684,P,help\help_system.drawing.imaging.imageattributes.setnoop.prg,.T.,.F.,1252,,,
  895304687,P,help\help_system.drawing.imaging.imageattributes.setoutputchannel.prg,.T.,.F.,1252,,,
  895304691,P,help\help_system.drawing.imaging.imageattributes.setwrapmode.prg,.T.,.F.,1252,,,
- 895304696,P,help\help_system.drawing.pathgradientbrush.multiplytransform.prg,.T.,.F.,1252,,,
+ 895304696,P,help\help_system.drawing.drawing2d.pathgradientbrush.multiplytransform.prg,.T.,.F.,1252,,,
  895304698,P,help\help_system.drawing.pathgradientbrush.rotatetransform.prg,.T.,.F.,1252,,,
  895304701,P,help\help_system.drawing.pathgradientbrush.scaletransform.prg,.T.,.F.,1252,,,
  895304706,P,help\help_system.drawing.region.complement.prg,.T.,.F.,1252,,,
@@ -135,4 +135,5 @@ AutoIncrement=.F.
  895304733,P,help\howto_rotatereflectandskewimages.prg,.T.,.F.,1252,,,
  895304738,P,help\howto_settiffcompression.prg,.T.,.F.,1252,,,
  895304815,D,samples\gdiplusxsamples.dbf,.F.,.F.,1252,,,
+ 895304906,K,samples\samples.scx,.F.,.F.,0,,,
 [EOF]
