@@ -155,7 +155,7 @@ lnTotalWidth = Thisform.Width + lnLeftBorder * 2
 lnTotalHeight = Thisform.Height + lnTitleHeight + lnTopBorder * 2
 
 LOCAL loCaptureBmp as xfcBitmap
-loCaptureBmp = _screen.system.Drawing.Bitmap.FromhWnd(Thisform.HWnd, ;
+loCaptureBmp = _screen.system.Drawing.Bitmap.FromScreen(Thisform.HWnd, ;
 	lnTotalWidth/2, lnTotalHeight/2, lnTotalWidth /2, lnTotalHeight /2)
 	
 loCaptureBmp.Save("c:\capturedBotRight.png", _screen.system.Drawing.Imaging.ImageFormat.Png)
@@ -197,7 +197,7 @@ lnTotalWidth = Thisform.Width + lnLeftBorder * 2
 lnTotalHeight = Thisform.Height + lnTitleHeight + lnTopBorder * 2
 
 LOCAL loCaptureBmp as xfcBitmap
-loCaptureBmp = _screen.system.Drawing.Bitmap.FromhWnd(Thisform.HWnd, ;
+loCaptureBmp = _screen.system.Drawing.Bitmap.FromScreen(Thisform.HWnd, ;
 	0, 0, lnTotalWIdth /2, lnTotalHeight /2)
 	
 loCaptureBmp.Save("c:\capturedTopLeft.png", _screen.system.Drawing.Imaging.ImageFormat.Png)
@@ -239,7 +239,7 @@ lnTotalWidth = Thisform.Width + lnLeftBorder * 2
 lnTotalHeight = Thisform.Height + lnTitleHeight + lnTopBorder * 2
 
 LOCAL loCaptureBmp as xfcBitmap
-loCaptureBmp = _screen.system.Drawing.Bitmap.FromhWnd(Thisform.HWnd, ;
+loCaptureBmp = _screen.system.Drawing.Bitmap.FromScreen(Thisform.HWnd, ;
 	lnTotalWidth/4, lnTotalHeight/4, lnTotalWidth /2, lnTotalHeight /2)
 	
 loCaptureBmp.Save("c:\capturedCenter.png", _screen.system.Drawing.Imaging.ImageFormat.Png)
@@ -273,7 +273,7 @@ Name = "Command5"
 PROCEDURE Click
 *** You can also remove the Window borders and titles, if you want :
 LOCAL loCaptureBmp as xfcBitmap
-loCaptureBmp = _screen.system.Drawing.Bitmap.FromhWnd(Thisform.HWnd)
+loCaptureBmp = _screen.system.Drawing.Bitmap.FromScreen(Thisform.HWnd)
 loCaptureBmp.Save("c:\captured1.png", _screen.system.Drawing.Imaging.ImageFormat.Png)
 RUN /N explorer.exe c:\captured1.png
 ENDPROC
@@ -308,7 +308,7 @@ lnLeftBorder = SYSMETRIC(3)
 lnTopBorder = SYSMETRIC(4)
 
 LOCAL loCaptureBmp as xfcBitmap
-loCaptureBmp = _screen.system.Drawing.Bitmap.FromhWnd(Thisform.HWnd, ;
+loCaptureBmp = _screen.system.Drawing.Bitmap.FromScreen(Thisform.HWnd, ;
 	lnLeftBorder, lnTitleHeight + lnTopBorder, ;
       Thisform.Width, ;
       Thisform.Height)
@@ -343,7 +343,7 @@ Name = "Command7"
 PROCEDURE Click
 *** To capture the whole screen no parameter is needed
 LOCAL loCaptureBmp as xfcBitmap
-loCaptureBmp = _screen.system.Drawing.Bitmap.FromhWnd()
+loCaptureBmp = _screen.system.Drawing.Bitmap.FromScreen()
 loCaptureBmp.Save("c:\capturedScrn.png", _screen.system.Drawing.Imaging.ImageFormat.Png)
 RUN /N explorer.exe c:\capturedScrn.png
 ENDPROC
