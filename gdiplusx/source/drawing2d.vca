@@ -303,10 +303,10 @@ drawing.h[END RESERVED8]
 [BASECLASS] custom
 [OBJNAME] xfccolorblend
 [START PROPERTIES]
-basename = ColorBlend
 _colors = (0h)
 _positions = (0h)
 _memberdata =      531<VFPData><memberdata name="equals" type="method" display="Equals"/><memberdata name="gethashcode" type="method" display="GetHashCode"/><memberdata name="gettype" type="method" display="GetType"/><memberdata name="tostring" type="method" display="ToString"/><memberdata name="finalize" type="method" display="Finalize"/><memberdata name="memberwiseclone" type="method" display="MemberwiseClone"/><memberdata name="colors" type="property" display="Colors"/><memberdata name="positions" type="property" display="Positions"/></VFPData>
+basename = ColorBlend
 Name = "xfccolorblend"
 [END PROPERTIES]
 [START PROTECTED]
@@ -434,7 +434,7 @@ TRY
 		*!ToDo: Check the length of this binary string
 		This._colors = m.toColor
 	OTHERWISE
-		m.lqColor = BINTOC(m.toColor.ToArgb(),"4rs")
+		m.lqColor = BINTOC(m.toColor.ARGB,"4rs")
 		IF VARTYPE(m.tiIndex)="N" AND BETWEEN(m.tiIndex, 1, ALEN(This.Colors,1))
 			This._colors = STUFF(This._colors, (m.tiIndex-1)*4+1, 4, m.lqColor)
 		ELSE
@@ -539,7 +539,6 @@ Class[END RESERVED1]
 [START RESERVED2]
 1[END RESERVED2]
 [START RESERVED3]
-basename
 _colors
 _positions
 ^colors[1,0] Gets or sets an array of colors that represents the colors to use at corresponding positions along a gradient.
@@ -559,7 +558,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfccolorblend
 [START RESERVED1]
- 	 drawing.hﬁ„„M5 system.hÊ‰0•Ô4 gdiplusconstants.hÓÂÎi05[END RESERVED1]
+ 	 drawing.hﬁ„E5 system.hﬂÓ≠\5 gdiplusconstants.h‡Ì≠\5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -5700,12 +5699,12 @@ TRY
 	IF VARTYPE(m.toColor)="O"
 		IF tnIndex = 2
 			m.loOtherColor = This.LinearColors_ACCESS[1]
-			m.liArgb1 = m.loOtherColor.ToArgb()
-			m.liArgb2 = m.toColor.ToArgb()
+			m.liArgb1 = m.loOtherColor.ARGB
+			m.liArgb2 = m.toColor.ARGB
 		ELSE
-			m.liArgb1 = m.toColor.ToArgb()
+			m.liArgb1 = m.toColor.ARGB
 			m.loOtherColor = This.LinearColors_ACCESS[2]
-			m.liArgb2 = m.loOtherColor.ToArgb()
+			m.liArgb2 = m.loOtherColor.ARGB
 		ENDIF
 		This.SetStatus(GdipSetLineColors(This.Handle, m.liArgb1, m.liArgb2))
 	ENDIF
@@ -6171,7 +6170,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfclineargradientbrush
 [START RESERVED1]
- 	 drawing.hﬁ„„M5 system.hÊ‰0•Ô4 gdiplusconstants.hÓÂÎi05[END RESERVED1]
+ 	 drawing.hﬁ„E5 system.hﬂÓ≠\5 gdiplusconstants.h‡Ì≠\5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -6376,7 +6375,7 @@ LPARAMETERS toColor
 LOCAL loExc AS Exception
 TRY
 	IF VARTYPE(m.toColor) = "O"
-		This.SetStatus(GdipSetPathGradientCenterColor(This.Handle, m.toColor.ToArgb()))
+		This.SetStatus(GdipSetPathGradientCenterColor(This.Handle, m.toColor.ARGB))
 	ENDIF
 CATCH TO loExc
 	THROW m.loExc
@@ -6960,6 +6959,7 @@ PROCEDURE surroundcolors_assign
 ** History:
 **  2006/03/07: Auto Generated
 **	2006/06/09: BDurban - Coded
+**	2006/10/29: BDurban - Fixed to handle no index being specified
 *********************************************************************
 LPARAMETERS toColor AS xfcColor, tiIndex
 
@@ -6978,7 +6978,11 @@ TRY
 		ELSE
 			m.lqColors = REPLICATE(0h00000000,liCount)
 			This.SetStatus(GdipGetPathGradientSurroundColorsWithCount(This.Handle, @lqColors, @liCount))
-			m.lqColors = STUFF(m.lqColors, (m.tiIndex-1)*4+1, 4, BINTOC(toColor.ToArgb(),"4rs"))
+			IF ISNULL(m.tiIndex)
+				m.lqColors = REPLICATE(BINTOC(toColor.ARGB,"4rs"),m.liCount)
+			ELSE
+				m.lqColors = STUFF(m.lqColors, (m.tiIndex-1)*4+1, 4, BINTOC(toColor.ARGB,"4rs"))
+			ENDIF
 			This.SetStatus(GdipSetPathGradientSurroundColorsWithCount(This.Handle, @lqColors, @liCount))
 		ENDIF
 	ENDIF	
@@ -7193,5 +7197,5 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcpathgradientbrush
 [START RESERVED1]
- 	 drawing.h^„M5 system.hf0•Ô4 gdiplusconstants.hnÎi05[END RESERVED1]
+ 	 drawing.hÓÿ„E5 system.hˆŸÓ≠\5 gdiplusconstants.h˛⁄Ì≠\5[END RESERVED1]
 [EOF]
