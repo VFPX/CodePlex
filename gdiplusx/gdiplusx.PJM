@@ -136,4 +136,9 @@ AutoIncrement=.F.
  895304738,P,help\howto_settiffcompression.prg,.T.,.F.,1252,,,
  895304815,D,samples\gdiplusxsamples.dbf,.F.,.F.,1252,,,
  895304906,K,samples\samples.scx,.F.,.F.,0,,,
+ 895320872,P,samples\report_logowatermark_cool.prg,.F.,.F.,1252,,,
+ 895320883,P,samples\report_logowatermark_greyscale.prg,.F.,.F.,1252,,,
+ 895320887,P,samples\report_logowatermark_ugly.prg,.F.,.F.,1252,,,
+ 895320892,P,samples\report_rotatedtext.prg,.F.,.F.,1252,,,
+ 895320906,R,samples\teste.frx,.F.,.F.,1252,,,
 [EOF]
