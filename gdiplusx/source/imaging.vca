@@ -2158,9 +2158,9 @@ drawing.h[END RESERVED8]
 [OBJNAME] xfccolorpalette
 [START PROPERTIES]
 flags = 0
-basename = ColorPalette
 _binary = (NULL)
 _memberdata =      525<VFPData><memberdata name="equals" type="method" display="Equals"/><memberdata name="gethashcode" type="method" display="GetHashCode"/><memberdata name="gettype" type="method" display="GetType"/><memberdata name="tostring" type="method" display="ToString"/><memberdata name="finalize" type="method" display="Finalize"/><memberdata name="memberwiseclone" type="method" display="MemberwiseClone"/><memberdata name="entries" type="property" display="Entries"/><memberdata name="flags" type="property" display="Flags"/></VFPData>
+basename = ColorPalette
 Name = "xfccolorpalette"
 [END PROPERTIES]
 [START PROTECTED]
@@ -2291,7 +2291,7 @@ TRY
 		DIMENSION This.Entries[m.liCount]
 		
 	CASE VARTYPE(m.toColor) = "O"
-		m.liARGB = m.toColor.ToArgb()
+		m.liARGB = m.toColor.ARGB
 		m.tiIndex = EVL(m.tiIndex,1)
 		This._Binary = STUFF(This._Binary, (m.tiIndex+1)*4+1, 4, BINTOC(m.liARGB,"4rs"))
 		
@@ -2395,7 +2395,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfccolorpalette
 [START RESERVED1]
- 	 drawing.hî}ãM5 system.hö~0¥ï4 gdiplusconstants.hþ¹>Ï4[END RESERVED1]
+ 	 drawing.hæuãE5 system.hîvî­\5 gdiplusconstants.höwí­\5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -4699,7 +4699,7 @@ TRY
 	m.liClamp = IIF(m.tlClamp, TRUE, FALSE)
 	
 	IF VARTYPE(m.toColor) = "O"
-		m.liArgb = m.toColor.ToArgb()
+		m.liArgb = m.toColor.ARGB
 	ENDIF
 	
 	This.SetStatus(GdipSetImageAttributesWrapMode(This.Handle, m.tiMode, m.liArgb, m.liClamp))
@@ -4759,7 +4759,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcimageattributes
 [START RESERVED1]
- 	 drawing.hñãM5 system.hò0¥ï4 gdiplusconstants.h&ó¹>Ï4[END RESERVED1]
+ 	 drawing.h‰ãE5 system.h&Šî­\5 gdiplusconstants.h.‹í­\5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
