@@ -1392,7 +1392,8 @@ PROCEDURE addbeziers
 **  2006/03/07: Auto Generated
 **	2006/06/11: BDurban - Coded
 *********************************************************************
-LPARAMETERS taoPoints AS xfcPoint
+LPARAMETERS taoPoints AS xfcPoint, ;
+			tlIsFloat
 
 *!ToDo: Test this function
 
@@ -1405,7 +1406,7 @@ TRY
 	m.liCount = 0
 	
 	** Check precision
-	IF m.taoPoints.BaseName = "PointF"
+	IF m.tlIsFloat OR (VARTYPE(m.taoPoints)="O" AND m.taoPoints.BaseName == "PointF")
 		m.loPoint = This.CreateNew("xfcPointF")
 		m.lqPoints = m.loPoint.ToVarBinary(@taoPoints, @liCount)
 		This.SetStatus(GdipAddPathBeziers(This.Handle, @lqPoints, m.liCount))
@@ -1443,7 +1444,8 @@ PROCEDURE addclosedcurve
 **	2006/05/06: BDurban - Coded
 *********************************************************************
 LPARAMETERS taoPoints AS xfcPoint, ;
-			tnTension
+			tnTension, ;
+			tlIsFloat
 
 *!ToDo: Test this function
 
@@ -1456,8 +1458,7 @@ TRY
 	LOCAL loPoint AS xfcPoint, lqPoints, liCount
 	m.liCount = 0
 	
-	DO CASE
-	CASE VARTYPE(taoPoints)="O" AND taoPoints.BaseName=="PointF"
+	IF m.tlIsFloat OR (VARTYPE(m.taoPoints)="O" AND m.taoPoints.BaseName == "PointF")
 		m.loPoint = m.taoPoints
 		m.lqPoints = m.loPoint.ToVarBinary(@taoPoints, @liCount)
 		IF VARTYPE(m.tnTension)="N"
@@ -1466,7 +1467,7 @@ TRY
 			This.SetStatus(GdipAddPathClosedCurve2(This.Handle, m.lqPoints, m.liCount, m.tnTension))
 		ENDIF
 		
-	CASE VARTYPE(taoPoints)="O" AND taoPoints.BaseName=="Point"
+	ELSE
 		m.loPoint = m.taoPoints
 		m.lqPoints = m.loPoint.ToVarBinary(@taoPoints, @liCount)
 		IF VARTYPE(m.tnTension)="N"
@@ -1474,7 +1475,7 @@ TRY
 		ELSE
 			This.SetStatus(GdipAddPathClosedCurve2I(This.Handle, m.lqPoints, m.liCount, m.tnTension))
 		ENDIF
-	ENDCASE
+	ENDIF
 
 CATCH TO loExc
 	THROW m.loExc
@@ -1507,7 +1508,8 @@ PROCEDURE addcurve
 **  2006/09/10: CChalom - Fixed
 *********************************************************************
 LPARAMETERS taoPoints AS xfcPoint, ;
-			tiOffset, tiNumberOfSegments, tnTension
+			tiOffset, tiNumberOfSegments, tnTension, ;
+			tlIsFloat
 *********** taoPoints AS xfcPoint, tnTension
 
 *!ToDo: Test this function
@@ -1522,7 +1524,7 @@ TRY
 	m.llUsePrecision = .F.
 	
 	** Check precision
-	IF m.taoPoints(1).BaseName = "PointF"
+	IF m.tlIsFloat OR (VARTYPE(m.taoPoints)="O" AND m.taoPoints.BaseName == "PointF")
 		m.loPoint = This.CreateNew("xfcPointF")
 		m.lqPoints = m.loPoint.ToVarBinary(@taoPoints, @liCount)
 		m.llUsePrecision = .T.
@@ -1703,7 +1705,8 @@ PROCEDURE addlines
 **	2006/06/11: BDurban - Coded
 **  2006/08/27: BDurban/CChalom - Fixed array reference
 *********************************************************************
-LPARAMETERS taoPoints AS xfcPoint
+LPARAMETERS taoPoints AS xfcPoint, ;
+			tlIsFloat
 
 *!ToDo: Test this function
 
@@ -1716,7 +1719,7 @@ TRY
 	m.liCount = 0
 	
 	** Check precision
-	IF m.taoPoints[1].BaseName = "PointF"
+	IF m.tlIsFloat OR (VARTYPE(m.taoPoints)="O" AND m.taoPoints.BaseName == "PointF")
 		m.loPoint = This.CreateNew("xfcPointF")
 		m.lqPoints = m.loPoint.ToVarBinary(@taoPoints, @liCount)
 		This.SetStatus(GdipAddPathLine2(This.Handle, @lqPoints, m.liCount))
@@ -1838,7 +1841,8 @@ PROCEDURE addpolygon
 **	2006/06/11: BDurban - Coded
 **	2006/10/14: BDurban - Tweaked for different array types
 *********************************************************************
-LPARAMETERS taoPoints AS xfcPoint
+LPARAMETERS taoPoints AS xfcPoint, ;
+			tlIsFloat
 
 *!ToDo: Test this function
 
@@ -1851,14 +1855,14 @@ TRY
 	m.liCount = 0
 	
 	** Check precision
-	IF VARTYPE(m.taoPoints)="O" AND m.taoPoints.BaseName == "Point"
-		m.loPoint = This.CreateNew("xfcPoint")
-		m.lqPoints = m.loPoint.ToVarBinary(@m.taoPoints, @m.liCount)
-		This.SetStatus(GdipAddPathPolygonI(This.Handle, @m.lqPoints, m.liCount))
-	ELSE
+	IF m.tlIsFloat OR (VARTYPE(m.taoPoints)="O" AND m.taoPoints.BaseName == "PointF")
 		m.loPoint = This.CreateNew("xfcPointF")
 		m.lqPoints = m.loPoint.ToVarBinary(@m.taoPoints, @liCount)
 		This.SetStatus(GdipAddPathPolygon(This.Handle, @m.lqPoints, m.liCount))
+	ELSE
+		m.loPoint = This.CreateNew("xfcPoint")
+		m.lqPoints = m.loPoint.ToVarBinary(@m.taoPoints, @m.liCount)
+		This.SetStatus(GdipAddPathPolygonI(This.Handle, @m.lqPoints, m.liCount))
 	ENDIF
 
 CATCH TO loExc
@@ -1937,7 +1941,8 @@ PROCEDURE addrectangles
 **  2006/07/08: BDurban - Coded
 **  2006/08/27: BDurban/CChalom - Fixed array reference
 *********************************************************************
-LPARAMETERS taoRects AS xfcRectangle
+LPARAMETERS taoRects AS xfcRectangle, ;
+			tlIsFloat
 
 *!ToDo: Test this function
 
@@ -1950,7 +1955,7 @@ TRY
 	m.liCount = 0
 
 	** Check precision
-	IF m.taoRects[1].BaseName = "RectangleF"
+	IF m.tlIsFloat OR (VARTYPE(m.taoRects)="O" AND m.taoPoints.BaseName == "RectangleF")
 		m.loRect = This.CreateNew("xfcRectangleF")
 		m.lqRects = m.loRect.ToVarBinary(@taoRects, @liCount)
 		This.SetStatus(GdipAddPathRectangles(This.Handle, @lqRects, m.liCount))
@@ -3045,7 +3050,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcgraphicspath
 [START RESERVED1]
- 	 drawing.hFZ„M5 system.hN[0•Ô4 gdiplusconstants.hV\Îi05[END RESERVED1]
+ 	 drawing.héÒ≠ê5 system.hñÚ≠ê5 gdiplusconstants.hûÛ≠ê5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -5346,8 +5351,10 @@ PROCEDURE Init
 ** History:
 **  2006/03/07: Auto Generated
 **	2006/03/29: BDurban - Coded
+**  2006/12/17: BDurban/CChalom - Fixed loPoint2 and WrapMode
 *********************************************************************
-LPARAMETERS toRect AS xfcRectangle, toColor1 AS xfcColor, toColor2 AS xfcColor, tnAngle, tlIsAngleScaleable
+LPARAMETERS toRect AS xfcRectangle, toColor1 AS xfcColor, toColor2 AS xfcColor, tnAngleOrMode, ;
+			tlIsAngleScaleable
 *********** toRect AS xfcRectangle, toColor1 AS xfcColor, toColor2 AS xfcColor, tiLinearGradientMode AS EnumLinearGradientMode
 *********** toPoint1 AS xfcPoint, toPoint2 AS xfcPoint, toColor1 AS xfcColor, toColor2 AS xfcColor
 
@@ -5366,37 +5373,41 @@ TRY
 	LOCAL loPoint1 AS xfcPointF
 	LOCAL loPoint2 AS xfcPointF
 	m.lhLineGradient = 0
-	m.liWrapMode = 0	&& WrapModeTile
-	m.tiLinearGradientMode = 0
+	m.tiWrapMode = 0	&& WrapModeTile
+	m.liLinearGradientMode = 0
 
 	DO CASE
-	CASE VARTYPE(toRect) == "O" AND toRect.BaseName = "PointF"
+	CASE VARTYPE(toRect) == "O" AND toRect.BaseName == "PointF"
 		m.loPoint1 = m.toRect
 		m.loPoint2 = m.toColor1
 		m.toColor1 = m.toColor2
-		m.toColor2 = m.tnAngle
-		This.SetStatus(GdipCreateLineBrush(m.loPoint1.ToVarBinary(), m.loPoint1.ToVarBinary(), m.toColor1.Argb, m.toColor2.Argb, m.liWrapMode, @lhLineGradient))
+		m.toColor2 = m.tnAngleOrMode
+		m.tiWrapMode = EVL(m.tlIsAngleScaleable,WrapModeTile)
+		This.SetStatus(GdipCreateLineBrush(m.loPoint1.ToVarBinary(), m.loPoint2.ToVarBinary(), m.toColor1.Argb, m.toColor2.Argb, m.tiWrapMode, @lhLineGradient))
 		
-	CASE VARTYPE(toRect) == "O" AND toRect.BaseName = "Point"
+	CASE VARTYPE(toRect) == "O" AND toRect.BaseName == "Point"
 		m.loPoint1 = m.toRect
 		m.loPoint2 = m.toColor1
 		m.toColor1 = m.toColor2
-		m.toColor2 = m.tnAngle
-		This.SetStatus(GdipCreateLineBrushI(m.loPoint1.ToVarBinary(), m.loPoint1.ToVarBinary(), m.toColor1.Argb, m.toColor2.Argb, m.liWrapMode, @lhLineGradient))
+		m.toColor2 = m.tnAngleOrMode
+		m.tiWrapMode = EVL(m.tlIsAngleScaleable,WrapModeTile)
+		This.SetStatus(GdipCreateLineBrushI(m.loPoint1.ToVarBinary(), m.loPoint2.ToVarBinary(), m.toColor1.Argb, m.toColor2.Argb, m.tiWrapMode, @lhLineGradient))
 	
 	CASE VARTYPE(toRect) == "O" AND toRect.BaseName = "RectangleF" AND PCOUNT()=4
-		m.liLinearGradientMode = m.tnAngle
-		This.SetStatus(GdipCreateLineBrushFromRect(m.toRect.ToVarBinary(), m.toColor1.Argb, m.toColor2.Argb, m.liLinearGradientMode, m.liWrapMode, @lhLineGradient))
+		m.tiWrapMode = EVL(m.tlIsAngleScaleable,WrapModeTile)
+		This.SetStatus(GdipCreateLineBrushFromRect(m.toRect.ToVarBinary(), m.toColor1.Argb, m.toColor2.Argb, m.tnAngleOrMode, m.tiWrapMode, @lhLineGradient))
 	
 	CASE VARTYPE(toRect) == "O" AND toRect.BaseName = "Rectangle" AND PCOUNT()=4
-		m.liLinearGradientMode = m.tnAngle
-		This.SetStatus(GdipCreateLineBrushFromRectI(m.toRect.ToVarBinary(), m.toColor1.Argb, m.toColor2.Argb, m.liLinearGradientMode, m.liWrapMode, @lhLineGradient))
+		m.tiWrapMode = EVL(m.tlIsAngleScaleable,WrapModeTile)
+		This.SetStatus(GdipCreateLineBrushFromRectI(m.toRect.ToVarBinary(), m.toColor1.Argb, m.toColor2.Argb, m.tnAngleOrMode, m.tiWrapMode, @lhLineGradient))
 
-	CASE VARTYPE(toRect) == "O" AND toRect.BaseName = "RectangleF" AND PCOUNT()=5
-		This.SetStatus(GdipCreateLineBrushFromRectWithAngle(m.toRect.ToVarBinary(), m.toColor1.Argb, m.toColor2.Argb, m.tnAngle, IIF(m.tlIsAngleScaleable,1,0), m.liWrapMode, @lhLineGradient))
+	CASE VARTYPE(toRect) == "O" AND toRect.BaseName = "RectangleF" AND PCOUNT()>4
+		m.tiWrapMode = EVL(m.tiWrapMode,WrapModeTile)
+		This.SetStatus(GdipCreateLineBrushFromRectWithAngle(m.toRect.ToVarBinary(), m.toColor1.Argb, m.toColor2.Argb, m.tnAngleOrMode, IIF(m.tlIsAngleScaleable,1,0), m.tiWrapMode, @lhLineGradient))
 		
-	CASE VARTYPE(toRect) == "O" AND toRect.BaseName = "Rectangle" AND PCOUNT()=5
-		This.SetStatus(GdipCreateLineBrushFromRectWithAngleI(m.toRect.ToVarBinary(), m.toColor1.Argb, m.toColor2.Argb, m.tnAngle, IIF(m.tlIsAngleScaleable,1,0), m.liWrapMode, @lhLineGradient))
+	CASE VARTYPE(toRect) == "O" AND toRect.BaseName = "Rectangle" AND PCOUNT()>4
+		m.tiWrapMode = EVL(m.tiWrapMode,WrapModeTile)
+		This.SetStatus(GdipCreateLineBrushFromRectWithAngleI(m.toRect.ToVarBinary(), m.toColor1.Argb, m.toColor2.Argb, m.tnAngleOrMode, IIF(m.tlIsAngleScaleable,1,0), m.tiWrapMode, @lhLineGradient))
 		
 	ENDCASE
 	
@@ -5753,7 +5764,8 @@ RETURN NULL
 
 ENDPROC
 PROCEDURE new
-LPARAMETERS toRect AS xfcRectangle, toColor1 AS xfcColor, toColor2 AS xfcColor, tnAngleOrMode, tlIsAngleScaleable
+LPARAMETERS toRect AS xfcRectangle, toColor1 AS xfcColor, toColor2 AS xfcColor, tnAngleOrMode, ;
+			tlIsAngleScaleable
 
 IF PCOUNT()=5
 	RETURN This.CreateNew(This.Class, m.toRect, m.toColor1, m.toColor2, m.tnAngleOrMode, m.tlIsAngleScaleable)
@@ -6170,7 +6182,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfclineargradientbrush
 [START RESERVED1]
- 	 drawing.hﬁ„E5 system.hﬂÓ≠\5 gdiplusconstants.h‡Ì≠\5[END RESERVED1]
+ 	 drawing.hﬁY≠ê5 system.hÊZ≠ê5 gdiplusconstants.hÓ[≠ê5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -6204,6 +6216,7 @@ PROCEDURE Init
 **  2006/03/07: Auto Generated
 **	2006/05/10: BDurban - Coded
 **  2006/09/06: CChalom - Fixed (liCount=0;  m.taoPoints(1) in DOCASE)
+**  2006/12/17: BDurban/CChalom - Added code to handle arrays as parameters
 *********************************************************************
 LPARAMETERS taoPoints AS xfcPoint, ;
 			tiWrapMode AS EnumWrapMode
@@ -6221,12 +6234,14 @@ TRY
 	m.liCount = 0
 
 	DO CASE
-	CASE VARTYPE(m.taoPoints)="O" AND m.taoPoints(1).BaseName = "PointF"
+	CASE (VARTYPE(m.taoPoints)="O" AND m.taoPoints.BaseName = "PointF") ;
+			OR TYPE("m.taoPoints[1,2]") = "N"
 		m.loPoint = This.CreateNew("xfcPointF")
 		m.lqPoints = m.loPoint.ToVarBinary(@taoPoints, @liCount)
 		This.SetStatus(GdipCreatePathGradient(@lqPoints, m.liCount, m.tiWrapMode, @lhPolyGradient))
 		
-	CASE VARTYPE(m.taoPoints)="O" AND m.taoPoints(1).BaseName = "Point"
+	CASE (VARTYPE(m.taoPoints)="O" AND m.taoPoints.BaseName = "Point") ;
+			OR VARTYPE(m.taoPoints)="Q"
 		m.loPoint = This.CreateNew("xfcPoint")
 		m.lqPoints = m.loPoint.ToVarBinary(@taoPoints, @liCount)
 		This.SetStatus(GdipCreatePathGradient(@lqPoints, m.liCount, m.tiWrapMode, @lhPolyGradient))
@@ -7197,5 +7212,5 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcpathgradientbrush
 [START RESERVED1]
- 	 drawing.hÓÿ„E5 system.hˆŸÓ≠\5 gdiplusconstants.h˛⁄Ì≠\5[END RESERVED1]
+ 	 drawing.hûÅ≠ê5 system.h¶Ç≠ê5 gdiplusconstants.hÆÉ≠ê5[END RESERVED1]
 [EOF]
