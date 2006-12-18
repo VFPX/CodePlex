@@ -33,6 +33,7 @@ interpolationmode = 7
 obmp = (NULL)
 rendermode = 0
 _hwnd = 0
+_hbitmapold = 0
 Name = "imgcanvas"
 [END PROPERTIES]
 [START PROTECTED]
@@ -48,6 +49,7 @@ rectangle_access
 smoothingmode_assign
 textrenderinghint_assign
 obmp_access
+_hbitmapold
 [END PROTECTED]
 [START METHODS]
 PROCEDURE Destroy
@@ -59,7 +61,7 @@ PROCEDURE Init
 This.DeclareDLL()
 
 IF VARTYPE(_SCREEN.System) <> "O"
-	ADDPROPERTY(_SCREEN, "System", NEWOBJECT("xfcSystem","System"))
+	ADDPROPERTY(_SCREEN, "System", NEWOBJECT("xfcSystem", ADDBS(JUSTPATH(This.ClassLibrary))+"System.vcx"))
 ENDIF
 
 This.CreateOSB()
@@ -133,7 +135,7 @@ m.hdc = GetDC(0)
 m.hdcMem = CreateCompatibleDC(m.hdc)
 m.hBitmap = CreateCompatibleBitmap(m.hdc, m.iWidth, m.iHeight)
 IF m.hBitmap <> 0
-	SelectObject(m.hdcMem, m.hBitmap)
+	This._hBitmapOld = SelectObject(m.hdcMem, m.hBitmap)
 ENDIF
 *	BitBlt(hdcMem, 0, 0, iWidth, iHeight, hdc, 0, 0, SRCCOPY)
 ReleaseDC(0,m.hdc)
@@ -172,8 +174,7 @@ ENDPROC
 PROCEDURE deleteosb
 LOCAL hBitmap
 IF This.HDC <> 0
-	hBitmap = GetCurrentObject(This.HDC, OBJ_BITMAP)
-	DeleteObject(hBitmap)
+	DeleteObject(SelectObject(This.HDC, This._hBitmapOld))
 	DeleteDC(This.HDC)
 	This.HDC = 0
 	This.oBMP = NULL
@@ -383,6 +384,7 @@ interpolationmode
 obmp
 rendermode
 _hwnd
+_hbitmapold
 *draw Repaints a Form object.
 *clear Clears the contents of a ComboBox or ListBox control.
 *beforedraw 
@@ -411,7 +413,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] imgcanvas
 [START RESERVED1]
- 	 drawing.hf-„M5 system.hn.0•Ô4 gdiplusconstants.hv/πù5[END RESERVED1]
+ 	 drawing.hº≠ê5 system.hΩ≠ê5 gdiplusconstants.hæ≠ê5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
