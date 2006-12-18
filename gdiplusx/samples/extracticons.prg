@@ -1,5 +1,5 @@
 * The following code example demonstrates how to extract icons from an EXE file
-lcPath = ADDBS(JUSTPATH(SYS(16)))+"..\source\
+lcPath = ADDBS(JUSTPATH(SYS(16)))+"..\source\"
 
 _SCREEN.AddProperty("System", NEWOBJECT("xfcSystem", LOCFILE(lcPath+"system.vcx","vcx"))) 
 
