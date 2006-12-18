@@ -41,6 +41,16 @@ AutoCenter = .T.
 Caption = "ImageCodecInfo"
 Name = "Form1"
 [END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+LOCAL lcSourcePath
+
+lcSourcePath = FULLPATH("..\source\", ADDBS(JUSTPATH(SYS(1271,This))))
+
+ADDPROPERTY(_screen, "System", NEWOBJECT("xfcSystem",lcSourcePath+"system.vcx"))
+
+ENDPROC
+[END METHODS]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -76,8 +86,6 @@ Name = "cmdGetCodec"
 [START METHODS]
 PROCEDURE Click
 #DEFINE CRLF CHR(13)+CHR(10)
-
-ADDPROPERTY(_screen, "System", NEWOBJECT("xfcSystem","system"))
 
 LOCAL loEncoder AS xfcImageCodecInfo
 LOCAL loEncoders AS Collection
@@ -119,8 +127,6 @@ Name = "Command1"
 [START METHODS]
 PROCEDURE Click
 #DEFINE CRLF CHR(13)+CHR(10)
-
-ADDPROPERTY(_screen, "System", NEWOBJECT("xfcSystem","system"))
 
 LOCAL loEncoder AS xfcImageCodecInfo
 LOCAL loEncoders AS Collection
