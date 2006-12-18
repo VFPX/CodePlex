@@ -1,13 +1,14 @@
 * The following code example demonstrates how to extract icons from an EXE file
 
 lcDir = "c:\MyIcons"
+lcPath = ADDBS(JUSTPATH(SYS(16)))+"..\source\
+
+_SCREEN.AddProperty("System", NEWOBJECT("xfcSystem", LOCFILE(lcPath+"system.vcx","vcx"))) 
 
 IF NOT DIRECTORY(lcDir)
 	MKDIR (lcDir)
 ENDIF
 
- 
-_SCREEN.AddProperty("System", NEWOBJECT("xfcSystem", LOCFILE("system.vcx","vcx"))) 
 WITH _SCREEN.System.Drawing
 
 LOCAL lcFile, lnIndex
