@@ -211,9 +211,6 @@ _memberdata = 
 Name = "xfcsystem"
 [END PROPERTIES]
 [START METHODS]
-PROCEDURE Init
-SET CLASSLIB TO (This.ClassLibrary)
-ENDPROC
 PROCEDURE drawing_access
 IF VARTYPE(This.Drawing) <> "O"
 	This.Drawing = NEWOBJECT("xfcDrawing", This.ClassLibrary)
@@ -281,7 +278,7 @@ system.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcsystem
 [START RESERVED1]
-  system.hæ0•Ô4[END RESERVED1]
+  system.hvÊ≠ê5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
