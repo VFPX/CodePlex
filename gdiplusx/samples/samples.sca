@@ -51,12 +51,14 @@ Name = "Cursor1"
 [BASECLASS] form
 [OBJNAME] Form1
 [START PROPERTIES]
-Height = 325
-Width = 387
+Height = 412
+Width = 389
 DoCreate = .T.
 AutoCenter = .T.
 Caption = "GDIPlusX Samples"
 WindowType = 1
+_memberdata =      245<VFPData><memberdata name="runselectedsample" type="method" display="RunSelectedSample"/><memberdata name="canvasrightclick" type="method" display="CanvasRightClick"/><memberdata name="printimage" type="method" display="PrintImage"/></VFPData>
+
 Name = "Form1"
 [END PROPERTIES]
 [START METHODS]
@@ -64,10 +66,186 @@ PROCEDURE Init
 SET PATH TO "samples" ADDITIVE
 SET PATH TO "source" ADDITIVE
 
+SET TALK OFF
+SET NOTIFY OFF
+SET CONSOLE OFF
+
 This.MinWidth = This.Width
 This.MinHeight = This.Height
 ENDPROC
+PROCEDURE canvasrightclick
+LOCAL laObjects(1), loImgCanvas
+AEVENTS(laObjects,0)
+loImgCanvas = laObjects(1)
+
+SET TALK OFF
+SET NOTIFY OFF
+SET CONSOLE OFF
+
+LOCAL lnChoice, lcImgSave, lcImgPrint
+
+lnChoice = 0
+lcImgSave  = HOME() + "/graphics/Bitmaps\Offctlbr\Small\Color\Save.bmp"
+lcImgPrint = HOME() + "/graphics/Bitmaps\Offctlbr\Small\Color\Print.bmp"
+
+DEFINE POPUP CanvasMenu SHORTCUT RELATIVE FROM MROW(),MCOL()
+DEFINE BAR 1 OF CanvasMenu PROMPT "Print using Default Printer " ;
+	PICTURE lcImgPrint
+DEFINE BAR 2 OF CanvasMenu PROMPT "Print using Selected Printer "
+DEFINE BAR 3 OF CanvasMenu PROMPT "Print adjusting to Page Size "
+DEFINE BAR 4 OF CanvasMenu PROMPT "Save As... " ;
+	PICTURE lcImgSave
+
+ON SELECTION POPUP CanvasMenu lnChoice = BAR()
+
+ACTIVATE POPUP CanvasMenu
+
+DO CASE
+	CASE lnchoice = 0
+		RETURN
+	CASE lnchoice = 1
+		Thisform.PrintImage(loImgCanvas.oBmp)
+	CASE lnchoice = 2
+		Thisform.PrintImage(loImgCanvas.oBmp, .F., .T.)
+	CASE lnchoice = 3
+		Thisform.PrintImage(loImgCanvas.oBmp, .T., .T.)
+	CASE lnchoice = 4
+		LOCAL lcImgFormatTypes, lcFile, lcExt
+		LOCAL loImgFormat as xfcImageFormat
+		lcImgFormatTypes = "bmp;jpg;gif;png;tif"
+		lcFile = PUTFILE("Save Image as...", "", lcImgFormatTypes)
+		IF EMPTY(lcFile) OR lcImgFormatTypes $ lcFile && Invalid File Name
+			RETURN .F.
+		ENDIF
+		lcExt = LOWER(JUSTEXT(lcFile))
+		DO CASE
+		CASE lcExt = "bmp" OR lcExt = "bitmap"
+			loImgFormat = _Screen.System.Drawing.Imaging.ImageFormat.Bmp			
+
+		CASE lcExt = "jpg" OR lcExt = "jpeg"
+			loImgFormat = _Screen.System.Drawing.Imaging.ImageFormat.Jpeg 			
+
+		CASE lcExt = "gif"
+			loImgFormat = _Screen.System.Drawing.Imaging.ImageFormat.Gif 			
+
+		CASE lcExt = "png"
+			loImgFormat = _Screen.System.Drawing.Imaging.ImageFormat.Png
+
+		CASE lcExt = "tif" OR lcExt = "tiff"
+			loImgFormat = _Screen.System.Drawing.Imaging.ImageFormat.Tiff
+		OTHERWISE
+			RETURN .F.
+		ENDCASE
+			
+		TRY
+			loImgCanvas.oBmp.Save(lcFile, loImgFormat)	
+		CATCH
+		ENDTRY
+		
+		RETURN FILE(lcFile)
+ENDCASE
+ENDPROC
+PROCEDURE printimage
+LPARAMETERS toimage, tlFitToPage, tlselectprinter
+
+LOCAL lcprintername, lnprinterdc, lcdocinfo, logpgraphicsprint
+
+* API Declarations
+DECLARE INTEGER CreateDC IN WIN32API STRING cDriver, STRING cDevice, STRING cOutput, STRING @cInitData
+DECLARE INTEGER DeleteDC IN Win32API INTEGER nDC
+DECLARE INTEGER StartPage IN GDI32 INTEGER hdc
+DECLARE INTEGER EndPage IN GDI32 INTEGER hdc
+DECLARE INTEGER EndDoc IN GDI32 INTEGER hdc
+DECLARE INTEGER StartDoc IN GDI32 INTEGER hdc, STRING lpdi
+
+* Get Printer name
+IF PCOUNT() > 2 AND TYPE("tlSelectPrinter") = "L" AND tlselectprinter
+	lcprintername = GETPRINTER()
+ELSE
+	lcprintername = SET("Printer",3)
+ENDIF
+
+IF VARTYPE(tlFitToPage) <> "L"
+	tlFitToPage = .F.
+ENDIF
+
+* Get Printer DC for the selected Printer
+lnprinterdc = 0
+FOR lncounter = 1 TO 20 && Sometimes doesn't work first couple times through
+	lnprinterdc = createdc(NULL, lcprintername, NULL, NULL)
+	IF lnprinterdc > 0
+		EXIT
+	ENDIF
+ENDFOR
+
+IF tlFitToPage && Adjust page Width AND Height
+	lnWidth = (PRTINFO(4) / 100 / 2.54) * toImage.HorizontalResolution
+	lnHeight = (PRTINFO(3) / 100 / 2.54) * toImage.VerticalResolution
+ELSE
+	lnWidth = toImage.Width
+	lnHeight = toImage.Height
+ENDIF
+
+* Start Printing
+IF lnprinterdc > 0
+	lcdocinfo = PADR(CHR(20), 20, CHR(0)) && Fake DocInfo Struct
+	startdoc(lnprinterdc, lcdocinfo)
+	startpage(lnprinterdc)
+
+	LOCAL logpgraphicsdb AS xfcgraphics
+	logpgraphicsdb = _SCREEN.SYSTEM.drawing.graphics.fromhdc(lnprinterdc)
+	logpgraphicsdb.drawimage(toimage, 0, 0, lnWidth, lnHeight)
+
+	endpage(lnprinterdc)
+	enddoc(lnprinterdc)
+	deletedc(lnprinterdc)
+ENDIF
+
+RETURN .T.
+ENDPROC
+PROCEDURE runselectedsample
+LOCAL lcCommand
+lcCommand = gdiplusxsamples.runcmd
+
+IF "DO FORM " $ UPPER (lcCommand)
+	lcCommand = lcCommand + " NAME oSample"
+ENDIF
+
+TRY
+	&lcCommand
+	* EXECSCRIPT(gdiplusxsamples.runcmd)
+
+	IF VARTYPE(oSample) = "O"
+		oSample.AddObject("ImgVFPXPowered", "Image")
+		oSample.ShowTips = .T.
+		WITH oSample.ImgVFPXPowered
+			.Picture = "\Image\vfpxpoweredby_alternative.gif"
+			.Left = oSample.Width - .Width
+			.Top = oSample.Height - .Height
+			.Anchor = 192
+			.ZOrder(0)
+			.Visible = .T.
+		ENDWITH
+		
+		FOR EACH loControl IN oSample.Controls
+			IF loControl.Class = "Imgcanvas"
+				BINDEVENT(loControl, "RightClick", This, "CanvasRightClick")
+				loControl.ToolTipText = "RightClick to Save or Print Image"
+			ENDIF
+		ENDFOR
+	ENDIF
+
+CATCH
+
+ENDTRY
+ENDPROC
 [END METHODS]
+[START RESERVED3]
+_memberdata XML Metadata for customizable properties
+*runselectedsample 
+*canvasrightclick 
+*printimage 
+[END RESERVED3]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -80,13 +258,17 @@ ENDPROC
 Anchor = 15
 RowSourceType = 2
 RowSource = "gdiplusxsamples"
-Height = 233
+Height = 242
 Left = 12
-Top = 12
+Top = 84
 Width = 252
+IntegralHeight = .T.
 Name = "List1"
 [END PROPERTIES]
 [START METHODS]
+PROCEDURE DblClick
+Thisform.RunSelectedSample()
+ENDPROC
 PROCEDURE InteractiveChange
 This.Parent.Refresh()
 ENDPROC
@@ -100,7 +282,7 @@ ENDPROC
 [OBJNAME] Command1
 [PARENT] Form1
 [START PROPERTIES]
-Top = 12
+Top = 84
 Left = 288
 Height = 27
 Width = 84
@@ -110,10 +292,7 @@ Name = "Command1"
 [END PROPERTIES]
 [START METHODS]
 PROCEDURE Click
-LOCAL lcCommand
-lcCommand = gdiplusxsamples.runcmd
-&lcCommand
-**EXECSCRIPT(gdiplusxsamples.runcmd)
+Thisform.RunSelectedSample()
 ENDPROC
 [END METHODS]
 
@@ -125,7 +304,7 @@ ENDPROC
 [OBJNAME] Command2
 [PARENT] Form1
 [START PROPERTIES]
-Top = 48
+Top = 120
 Left = 288
 Height = 27
 Width = 84
@@ -155,16 +334,51 @@ ENDPROC
 Anchor = 14
 Height = 62
 Left = 12
-Top = 257
+Top = 339
 Width = 361
 ControlSource = "gdiplusxsamples.notes"
 Name = "Edit1"
 [END PROPERTIES]
 
 [ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1YY1F1Z5M
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] Image2
+[PARENT] Form1
+[START PROPERTIES]
+Picture = image\transpvfpxlogosmall.gif
+Stretch = 1
+BackStyle = 0
+Height = 60
+Left = 12
+Top = 12
+Width = 156
+Name = "Image2"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1Z0029Q12
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] Image1
+[PARENT] Form1
+[START PROPERTIES]
+Anchor = 9
+Picture = image\vfpxpoweredby_alternative.gif
+Height = 16
+Left = 288
+Top = 12
+Width = 85
+Name = "Image1"
+[END PROPERTIES]
+
+[ RECORD]
 [PLATFORM] COMMENT 
 [UNIQUEID] RESERVED  
 [START PROPERTIES]
-Arial, 0, 9, 5, 15, 12, 32, 3, 0
+Arial, 0, 9, 5, 15, 12, 16, 3, 0
 [END PROPERTIES]
 [EOF]
