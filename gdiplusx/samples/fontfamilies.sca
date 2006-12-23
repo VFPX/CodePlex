@@ -50,6 +50,7 @@ PROCEDURE Destroy
 Thisform.oGfx = NULL
 Thisform.oBmp = NULL
 
+* Delete Temporary Image Files
 lcCommand = "Erase " + ADDBS(SYS(2023)) + "_Font_*.bmp"
 &lcCommand
 ENDPROC
@@ -77,8 +78,6 @@ Name = "List1"
 [END PROPERTIES]
 [START METHODS]
 PROCEDURE Init
-_SCREEN.ADDPROPERTY("System", NEWOBJECT("xfcSystem", LOCFILE("system.vcx")))
-
 lcTempFile = ADDBS(SYS(2023)) + "_Font_"
 
 WITH _SCREEN.System.Drawing
@@ -116,31 +115,6 @@ FOR EACH loFamily IN laFamilies
 NEXT
 
 ENDWITH
-
-*!*	RETURN
-ENDPROC
-PROCEDURE InteractiveChange
-Thisform.LockScreen = .T.
-lcFont = ALLTRIM(This.Value)
-
-WITH _screen.system.drawing
-
-lcTempFile = ADDBS(SYS(2023)) + "_Font_"
-lcFontFile = lcTempFile + lcFont + "2.bmp"
-IF NOT FILE(lcFontFile)
-	Thisform.oGfx.Clear(.Color.FromRGB(This.SelectedItemBackColor))
-	Thisform.oGfx.DrawString(lcFont, .Font.New(lcFont, 12), ;
-		.SolidBrush.New(.Color.FromRGB(This.SelectedItemForeColor)), .Point.New(0, 0))
-	Thisform.oBmp.Save(lcFontFile, .Imaging.ImageFormat.bmp)
-ENDIF
-
-n = This.ListIndex
-Thisform.List1.Picture[n] = lcFontFile
-Thisform.List1.Picture[Thisform.OldIndex] = lcTempFile + This.ListItem(Thisform.OldIndex) + ".bmp"
-Thisform.oldIndex = n
-
-ENDWITH
-Thisform.LockScreen = .F.
 ENDPROC
 [END METHODS]
 
