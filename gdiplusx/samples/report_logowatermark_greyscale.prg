@@ -8,16 +8,26 @@ loReportListener = CREATEOBJECT("MyReportListener")
 loReportListener.LISTENERTYPE = 1
 loReportListener.WaterMarkImage = (ImagePath + "\vfpxlogosmall.png")
 
-CREATE CURSOR Dummy (campo1 c(20), field2 c(15))
+* Create a cursor that will be the report data source and insert some records
+CREATE CURSOR Dummy (Field1 c(20), field2 c(15))
 FOR i=1 TO 200
 	INSERT INTO Dummy VALUES ("Testing ReportListener with GdiPlus-X", "Visit CodePlex")
 ENDFOR
 SELECT dummy
 GO TOP
 
-REPORT FORM (LOCFILE("Teste","frx")) OBJECT loReportListener
+* Create a report on the fly
+CREATE REPORT Test FROM dummy
+
+* Run the report using the new report engine (object-assisted output)
+REPORT FORM (LOCFILE("Test","frx")) OBJECT loReportListener
+
+* Close cursor and delete the report file
 USE IN dummy
+DELETE FILE Test.fr?
+
 RETURN
+
 
 DEFINE CLASS MyReportListener AS _ReportListener OF ADDBS(HOME()) + "FFC\" + "_ReportListener.VCX"
 	NewPage = .T.
