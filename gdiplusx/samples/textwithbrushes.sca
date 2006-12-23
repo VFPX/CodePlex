@@ -451,7 +451,7 @@ Name = "Label4"
 [OBJNAME] SpnGradMode
 [PARENT] Form1
 [START PROPERTIES]
-Anchor = 12
+Anchor = 3
 Height = 25
 KeyboardHighValue = 3
 KeyboardLowValue = 0
@@ -478,7 +478,7 @@ ENDPROC
 [PARENT] Form1
 [START PROPERTIES]
 AutoSize = .T.
-Anchor = 12
+Anchor = 3
 BackStyle = 0
 Caption = "Gradient Mode"
 Height = 17
