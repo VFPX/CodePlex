@@ -32,15 +32,15 @@ Name = "Dataenvironment"
 [UNIQUEID] _1V00MAIPG
 [CLASS] form
 [BASECLASS] form
-[OBJNAME] Lines
+[OBJNAME] LINES
 [START PROPERTIES]
 Top = 0
 Left = 0
 Height = 300
 Width = 457
 DoCreate = .T.
-Caption = "Lines"
-Name = "Lines"
+Caption = "Lines - Resize this form !"
+Name = "LINES"
 [END PROPERTIES]
 
 [ RECORD]
@@ -50,7 +50,7 @@ Name = "Lines"
 [CLASSLOC] ..\source\gdiplusx.vcx
 [BASECLASS] image
 [OBJNAME] Imgcanvas1
-[PARENT] Lines
+[PARENT] LINES
 [START PROPERTIES]
 Anchor = 15
 Stretch = 0
