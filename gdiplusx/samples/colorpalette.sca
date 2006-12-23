@@ -43,6 +43,17 @@ Caption = "Retrieve GIF properties and ColorPalettes"
 mode = 0
 Name = "Form1"
 [END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+DODEFAULT()
+LOCAL lcPicture
+lcPicture = FULLPATH("\Image\GotData.gif")
+Thisform.txtFile.Value = lcPicture
+Thisform.Image1.Picture = lcPicture
+Thisform.Imgcanvas1.Draw()
+
+ENDPROC
+[END METHODS]
 [START RESERVED3]
 mode
 [END RESERVED3]
