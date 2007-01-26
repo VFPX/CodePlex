@@ -40,7 +40,7 @@ Height = 432
 Width = 707
 DoCreate = .T.
 Caption = "Extract icons from executables"
-WindowState = 2
+WindowState = 0
 mode = 0
 Name = "Form1"
 [END PROPERTIES]
