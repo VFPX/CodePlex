@@ -293,7 +293,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcblend
 [START RESERVED1]
- 	 drawing.hﬁ„„M5 system.hÊ‰0•Ô4 gdiplusconstants.hÓÂÎi05[END RESERVED1]
+ 	 drawing.hñ>≠ê5 system.hû?≠ê5 gdiplusconstants.h¶@≠ê5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -558,7 +558,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfccolorblend
 [START RESERVED1]
- 	 drawing.hﬁ„E5 system.hﬂÓ≠\5 gdiplusconstants.h‡Ì≠\5[END RESERVED1]
+ 	 drawing.hñ>≠ê5 system.hû?≠ê5 gdiplusconstants.h¶@≠ê5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -600,8 +600,7 @@ CATCH TO loExc
 	THROW m.loExc
 ENDTRY
 RETURN
-ENDPROC
-PROCEDURE Init
+ENDPROCPROCEDURE Init
 *********************************************************************
 ** Method: CustomLineCap
 **
@@ -814,19 +813,19 @@ CATCH
 
 DECLARE Long Sleep IN WIN32API AS xfcCustomLineCapDeclareDLL Long
 
-DECLARE LONG GdipCreateCustomLineCap IN GDIPLUS LONG PathtoFill, LONG PathStroke, LONG baseCap, SINGLE baseInset, LONG @customCap
-DECLARE LONG GdipDeleteCustomLineCap IN GDIPLUS LONG customCap
-DECLARE LONG GdipCloneCustomLineCap IN GDIPLUS LONG customCap, LONG @clonedCap
-DECLARE LONG GdipSetCustomLineCapStrokeCaps IN GDIPLUS LONG customCap, LONG startCap, LONG endCap
-DECLARE LONG GdipGetCustomLineCapStrokeCaps IN GDIPLUS LONG customCap, LONG @startCap, LONG @endCap
-DECLARE LONG GdipSetCustomLineCapStrokeJoin IN GDIPLUS LONG customCap, LONG LnJoin
-DECLARE LONG GdipGetCustomLineCapStrokeJoin IN GDIPLUS LONG customCap, LONG @LnJoin
-DECLARE LONG GdipSetCustomLineCapBaseCap IN GDIPLUS LONG customCap, LONG baseCap
-DECLARE LONG GdipGetCustomLineCapBaseCap IN GDIPLUS LONG customCap, LONG @baseCap
-DECLARE LONG GdipSetCustomLineCapBaseInset IN GDIPLUS LONG customCap, SINGLE inset
-DECLARE LONG GdipGetCustomLineCapBaseInset IN GDIPLUS LONG customCap, SINGLE @inset
-DECLARE LONG GdipSetCustomLineCapWidthScale IN GDIPLUS LONG customCap, SINGLE widthScale
-DECLARE LONG GdipGetCustomLineCapWidthScale IN GDIPLUS LONG customCap, SINGLE @widthScale
+DECLARE LONG GdipCreateCustomLineCap IN GDIPLUS.DLL LONG PathtoFill, LONG PathStroke, LONG baseCap, SINGLE baseInset, LONG @customCap
+DECLARE LONG GdipDeleteCustomLineCap IN GDIPLUS.DLL LONG customCap
+DECLARE LONG GdipCloneCustomLineCap IN GDIPLUS.DLL LONG customCap, LONG @clonedCap
+DECLARE LONG GdipSetCustomLineCapStrokeCaps IN GDIPLUS.DLL LONG customCap, LONG startCap, LONG endCap
+DECLARE LONG GdipGetCustomLineCapStrokeCaps IN GDIPLUS.DLL LONG customCap, LONG @startCap, LONG @endCap
+DECLARE LONG GdipSetCustomLineCapStrokeJoin IN GDIPLUS.DLL LONG customCap, LONG LnJoin
+DECLARE LONG GdipGetCustomLineCapStrokeJoin IN GDIPLUS.DLL LONG customCap, LONG @LnJoin
+DECLARE LONG GdipSetCustomLineCapBaseCap IN GDIPLUS.DLL LONG customCap, LONG baseCap
+DECLARE LONG GdipGetCustomLineCapBaseCap IN GDIPLUS.DLL LONG customCap, LONG @baseCap
+DECLARE LONG GdipSetCustomLineCapBaseInset IN GDIPLUS.DLL LONG customCap, SINGLE inset
+DECLARE LONG GdipGetCustomLineCapBaseInset IN GDIPLUS.DLL LONG customCap, SINGLE @inset
+DECLARE LONG GdipSetCustomLineCapWidthScale IN GDIPLUS.DLL LONG customCap, SINGLE widthScale
+DECLARE LONG GdipGetCustomLineCapWidthScale IN GDIPLUS.DLL LONG customCap, SINGLE @widthScale
 
 ENDTRY
 ENDPROC
@@ -1049,7 +1048,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfccustomlinecap
 [START RESERVED1]
- 	 drawing.hﬁ„„M5 system.hÊ‰0•Ô4 gdiplusconstants.hÓÂÎi05[END RESERVED1]
+ 	 drawing.hñ>≠ê5 system.hû?≠ê5 gdiplusconstants.h¶@≠ê5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -1142,7 +1141,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcgraphicscontainer
 [START RESERVED1]
- 	 drawing.hﬁ„„M5 system.hÊ‰0•Ô4 gdiplusconstants.hÓÂÎi05[END RESERVED1]
+ 	 drawing.hñ>≠ê5 system.hû?≠ê5 gdiplusconstants.h¶@≠ê5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -1182,8 +1181,7 @@ CATCH TO loExc
 	THROW m.loExc
 ENDTRY
 RETURN
-ENDPROC
-PROCEDURE Init
+ENDPROCPROCEDURE Init
 *********************************************************************
 ** Method: GraphicsPath
 **
@@ -2185,70 +2183,70 @@ CATCH
 
 DECLARE Long Sleep IN WIN32API AS xfcGraphicsPathDeclareDLL Long
 
-DECLARE LONG GdipCreatePath IN GDIPLUS LONG brushmode, LONG @path
-DECLARE LONG GdipCreatePath2 IN GDIPLUS STRING @pPoint, STRING @types, LONG Count, LONG brushmode, LONG @path
-DECLARE LONG GdipCreatePath2I IN GDIPLUS STRING @pPoint, STRING @types, LONG Count, LONG brushmode, LONG @path
-DECLARE LONG GdipClonePath IN GDIPLUS LONG path, LONG @clonePath
-DECLARE LONG GdipDeletePath IN GDIPLUS LONG path
-DECLARE LONG GdipResetPath IN GDIPLUS LONG path
-DECLARE LONG GdipGetPointCount IN GDIPLUS LONG path, LONG @Count
-DECLARE LONG GdipGetPathTypes IN GDIPLUS LONG path, STRING @types, LONG Count
-DECLARE LONG GdipGetPathPoints IN GDIPLUS LONG path, STRING @pPoint, LONG Count
-DECLARE LONG GdipGetPathPointsI IN GDIPLUS LONG path, STRING @pPoint, LONG Count
-DECLARE LONG GdipGetPathFillMode IN GDIPLUS LONG path, LONG brushmode
-DECLARE LONG GdipSetPathFillMode IN GDIPLUS LONG path, LONG brushmode
-DECLARE LONG GdipGetPathData IN GDIPLUS LONG path, STRING @pdata
-DECLARE LONG GdipStartPathFigure IN GDIPLUS LONG path
-DECLARE LONG GdipClosePathFigure IN GDIPLUS LONG path
-DECLARE LONG GdipClosePathFigures IN GDIPLUS LONG path
-DECLARE LONG GdipSetPathMarker IN GDIPLUS LONG path
-DECLARE LONG GdipClearPathMarkers IN GDIPLUS LONG path
-DECLARE LONG GdipReversePath IN GDIPLUS LONG path
-DECLARE LONG GdipGetPathLastPoint IN GDIPLUS LONG path, STRING @lastPoint
-DECLARE LONG GdipAddPathLine IN GDIPLUS LONG path, SINGLE x1, SINGLE y1, SINGLE x2, SINGLE y2
-DECLARE LONG GdipAddPathLine2 IN GDIPLUS LONG path, STRING @pPoint, LONG Count
-DECLARE LONG GdipAddPathArc IN GDIPLUS LONG path, SINGLE x, SINGLE y, SINGLE nWidth, SINGLE Height, SINGLE startAngle, SINGLE sweepAngle
-DECLARE LONG GdipAddPathBezier IN GDIPLUS LONG path, SINGLE x1, SINGLE y1, SINGLE x2, SINGLE y2, SINGLE x3, SINGLE y3, SINGLE x4, SINGLE y4
-DECLARE LONG GdipAddPathBeziers IN GDIPLUS LONG path, STRING @pPoint, LONG Count
-DECLARE LONG GdipAddPathCurve IN GDIPLUS LONG path, STRING @pPoint, LONG Count
-DECLARE LONG GdipAddPathCurve2 IN GDIPLUS LONG path, STRING @pPoint, LONG Count, SINGLE tension
-DECLARE LONG GdipAddPathCurve3 IN GDIPLUS LONG path, STRING @pPoint, LONG Count, LONG offset, LONG numberOfSegments, SINGLE tension
-DECLARE LONG GdipAddPathClosedCurve IN GDIPLUS LONG path, STRING @pPoint, LONG Count
-DECLARE LONG GdipAddPathClosedCurve2 IN GDIPLUS LONG path, STRING @pPoint, LONG Count, SINGLE tension
-DECLARE LONG GdipAddPathRectangle IN GDIPLUS LONG path, SINGLE x, SINGLE y, SINGLE nWidth, SINGLE Height
-DECLARE LONG GdipAddPathRectangles IN GDIPLUS LONG path, STRING @nRect, LONG Count
-DECLARE LONG GdipAddPathEllipse IN GDIPLUS LONG path, SINGLE x, SINGLE y, SINGLE nWidth, SINGLE Height
-DECLARE LONG GdipAddPathPie IN GDIPLUS LONG path, SINGLE x, SINGLE y, SINGLE nWidth, SINGLE Height, SINGLE startAngle, SINGLE sweepAngle
-DECLARE LONG GdipAddPathPolygon IN GDIPLUS LONG path, STRING @pPoint, LONG Count
-DECLARE LONG GdipAddPathPath IN GDIPLUS LONG path, LONG addingPath, LONG bConnect
-DECLARE LONG GdipAddPathString IN GDIPLUS LONG path, STRING str, LONG length, LONG family, LONG style, SINGLE emSize, STRING @layoutRect, LONG StringFormat
-DECLARE LONG GdipAddPathStringI IN GDIPLUS LONG path, STRING str, LONG length, LONG family, LONG style, SINGLE emSize, STRING @layoutRect, LONG StringFormat
-DECLARE LONG GdipAddPathLineI IN GDIPLUS LONG path, LONG x1, LONG y1, LONG x2, LONG y2
-DECLARE LONG GdipAddPathLine2I IN GDIPLUS LONG path, STRING @pPoint, LONG Count
-DECLARE LONG GdipAddPathArcI IN GDIPLUS LONG path, LONG x, LONG y, LONG nWidth, LONG Height, SINGLE startAngle, SINGLE sweepAngle
-DECLARE LONG GdipAddPathBezierI IN GDIPLUS LONG path, LONG x1, LONG y1, LONG x2, LONG y2, LONG x3, LONG y3, LONG x4, LONG y4
-DECLARE LONG GdipAddPathBeziersI IN GDIPLUS LONG path, STRING @pPoint, LONG Count
-DECLARE LONG GdipAddPathCurveI IN GDIPLUS LONG path, STRING @pPoint, LONG Count
-DECLARE LONG GdipAddPathCurve2I IN GDIPLUS LONG path, STRING @pPoint, LONG Count, LONG tension
-DECLARE LONG GdipAddPathCurve3I IN GDIPLUS LONG path, STRING @pPoint, LONG Count, LONG offset, LONG numberOfSegments, SINGLE tension
-DECLARE LONG GdipAddPathClosedCurveI IN GDIPLUS LONG path, STRING @pPoint, LONG Count
-DECLARE LONG GdipAddPathClosedCurve2I IN GDIPLUS LONG path, STRING @pPoint, LONG Count, SINGLE tension
-DECLARE LONG GdipAddPathRectangleI IN GDIPLUS LONG path, LONG x, LONG y, LONG nWidth, LONG Height
-DECLARE LONG GdipAddPathRectanglesI IN GDIPLUS LONG path, STRING @rects, LONG Count
-DECLARE LONG GdipAddPathEllipseI IN GDIPLUS LONG path, LONG x, LONG y, LONG nWidth, LONG Height
-DECLARE LONG GdipAddPathPieI IN GDIPLUS LONG path, LONG x, LONG y, LONG nWidth, LONG Height, SINGLE startAngle, SINGLE sweepAngle
-DECLARE LONG GdipAddPathPolygonI IN GDIPLUS LONG path, STRING @pPoint, LONG Count
-DECLARE LONG GdipFlattenPath IN GDIPLUS LONG path, LONG matrix, SINGLE flatness
-DECLARE LONG GdipWindingModeOutline IN GDIPLUS LONG path, LONG matrix, SINGLE flatness
-DECLARE LONG GdipWidenPath IN GDIPLUS LONG nativePath, LONG pen, LONG matrix, SINGLE flatness
-DECLARE LONG GdipWarpPath IN GDIPLUS LONG path, LONG matrix, STRING @pPoint, LONG Count, SINGLE srcx, SINGLE srcy, SINGLE srcwidth, SINGLE srcheight, LONG WarpMd, SINGLE flatness
-DECLARE LONG GdipTransformPath IN GDIPLUS LONG path, LONG matrix
-DECLARE LONG GdipGetPathWorldBounds IN GDIPLUS LONG path, STRING @bounds, LONG matrix, LONG pen
-DECLARE LONG GdipGetPathWorldBoundsI IN GDIPLUS LONG path, STRING @bounds, LONG matrix, LONG pen
-DECLARE LONG GdipIsVisiblePathPoint IN GDIPLUS LONG path, SINGLE x, SINGLE y, LONG graphics, LONG @result
-DECLARE LONG GdipIsVisiblePathPointI IN GDIPLUS LONG path, LONG x, LONG y, LONG graphics, LONG @result
-DECLARE LONG GdipIsOutlineVisiblePathPoint IN GDIPLUS LONG path, SINGLE x, SINGLE y, LONG pen, LONG graphics, LONG @result
-DECLARE LONG GdipIsOutlineVisiblePathPointI IN GDIPLUS LONG path, LONG x, LONG y, LONG pen, LONG graphics, LONG @result
+DECLARE LONG GdipCreatePath IN GDIPLUS.DLL LONG brushmode, LONG @path
+DECLARE LONG GdipCreatePath2 IN GDIPLUS.DLL STRING @pPoint, STRING @types, LONG Count, LONG brushmode, LONG @path
+DECLARE LONG GdipCreatePath2I IN GDIPLUS.DLL STRING @pPoint, STRING @types, LONG Count, LONG brushmode, LONG @path
+DECLARE LONG GdipClonePath IN GDIPLUS.DLL LONG path, LONG @clonePath
+DECLARE LONG GdipDeletePath IN GDIPLUS.DLL LONG path
+DECLARE LONG GdipResetPath IN GDIPLUS.DLL LONG path
+DECLARE LONG GdipGetPointCount IN GDIPLUS.DLL LONG path, LONG @Count
+DECLARE LONG GdipGetPathTypes IN GDIPLUS.DLL LONG path, STRING @types, LONG Count
+DECLARE LONG GdipGetPathPoints IN GDIPLUS.DLL LONG path, STRING @pPoint, LONG Count
+DECLARE LONG GdipGetPathPointsI IN GDIPLUS.DLL LONG path, STRING @pPoint, LONG Count
+DECLARE LONG GdipGetPathFillMode IN GDIPLUS.DLL LONG path, LONG brushmode
+DECLARE LONG GdipSetPathFillMode IN GDIPLUS.DLL LONG path, LONG brushmode
+DECLARE LONG GdipGetPathData IN GDIPLUS.DLL LONG path, STRING @pdata
+DECLARE LONG GdipStartPathFigure IN GDIPLUS.DLL LONG path
+DECLARE LONG GdipClosePathFigure IN GDIPLUS.DLL LONG path
+DECLARE LONG GdipClosePathFigures IN GDIPLUS.DLL LONG path
+DECLARE LONG GdipSetPathMarker IN GDIPLUS.DLL LONG path
+DECLARE LONG GdipClearPathMarkers IN GDIPLUS.DLL LONG path
+DECLARE LONG GdipReversePath IN GDIPLUS.DLL LONG path
+DECLARE LONG GdipGetPathLastPoint IN GDIPLUS.DLL LONG path, STRING @lastPoint
+DECLARE LONG GdipAddPathLine IN GDIPLUS.DLL LONG path, SINGLE x1, SINGLE y1, SINGLE x2, SINGLE y2
+DECLARE LONG GdipAddPathLine2 IN GDIPLUS.DLL LONG path, STRING @pPoint, LONG Count
+DECLARE LONG GdipAddPathArc IN GDIPLUS.DLL LONG path, SINGLE x, SINGLE y, SINGLE nWidth, SINGLE Height, SINGLE startAngle, SINGLE sweepAngle
+DECLARE LONG GdipAddPathBezier IN GDIPLUS.DLL LONG path, SINGLE x1, SINGLE y1, SINGLE x2, SINGLE y2, SINGLE x3, SINGLE y3, SINGLE x4, SINGLE y4
+DECLARE LONG GdipAddPathBeziers IN GDIPLUS.DLL LONG path, STRING @pPoint, LONG Count
+DECLARE LONG GdipAddPathCurve IN GDIPLUS.DLL LONG path, STRING @pPoint, LONG Count
+DECLARE LONG GdipAddPathCurve2 IN GDIPLUS.DLL LONG path, STRING @pPoint, LONG Count, SINGLE tension
+DECLARE LONG GdipAddPathCurve3 IN GDIPLUS.DLL LONG path, STRING @pPoint, LONG Count, LONG offset, LONG numberOfSegments, SINGLE tension
+DECLARE LONG GdipAddPathClosedCurve IN GDIPLUS.DLL LONG path, STRING @pPoint, LONG Count
+DECLARE LONG GdipAddPathClosedCurve2 IN GDIPLUS.DLL LONG path, STRING @pPoint, LONG Count, SINGLE tension
+DECLARE LONG GdipAddPathRectangle IN GDIPLUS.DLL LONG path, SINGLE x, SINGLE y, SINGLE nWidth, SINGLE Height
+DECLARE LONG GdipAddPathRectangles IN GDIPLUS.DLL LONG path, STRING @nRect, LONG Count
+DECLARE LONG GdipAddPathEllipse IN GDIPLUS.DLL LONG path, SINGLE x, SINGLE y, SINGLE nWidth, SINGLE Height
+DECLARE LONG GdipAddPathPie IN GDIPLUS.DLL LONG path, SINGLE x, SINGLE y, SINGLE nWidth, SINGLE Height, SINGLE startAngle, SINGLE sweepAngle
+DECLARE LONG GdipAddPathPolygon IN GDIPLUS.DLL LONG path, STRING @pPoint, LONG Count
+DECLARE LONG GdipAddPathPath IN GDIPLUS.DLL LONG path, LONG addingPath, LONG bConnect
+DECLARE LONG GdipAddPathString IN GDIPLUS.DLL LONG path, STRING str, LONG length, LONG family, LONG style, SINGLE emSize, STRING @layoutRect, LONG StringFormat
+DECLARE LONG GdipAddPathStringI IN GDIPLUS.DLL LONG path, STRING str, LONG length, LONG family, LONG style, SINGLE emSize, STRING @layoutRect, LONG StringFormat
+DECLARE LONG GdipAddPathLineI IN GDIPLUS.DLL LONG path, LONG x1, LONG y1, LONG x2, LONG y2
+DECLARE LONG GdipAddPathLine2I IN GDIPLUS.DLL LONG path, STRING @pPoint, LONG Count
+DECLARE LONG GdipAddPathArcI IN GDIPLUS.DLL LONG path, LONG x, LONG y, LONG nWidth, LONG Height, SINGLE startAngle, SINGLE sweepAngle
+DECLARE LONG GdipAddPathBezierI IN GDIPLUS.DLL LONG path, LONG x1, LONG y1, LONG x2, LONG y2, LONG x3, LONG y3, LONG x4, LONG y4
+DECLARE LONG GdipAddPathBeziersI IN GDIPLUS.DLL LONG path, STRING @pPoint, LONG Count
+DECLARE LONG GdipAddPathCurveI IN GDIPLUS.DLL LONG path, STRING @pPoint, LONG Count
+DECLARE LONG GdipAddPathCurve2I IN GDIPLUS.DLL LONG path, STRING @pPoint, LONG Count, LONG tension
+DECLARE LONG GdipAddPathCurve3I IN GDIPLUS.DLL LONG path, STRING @pPoint, LONG Count, LONG offset, LONG numberOfSegments, SINGLE tension
+DECLARE LONG GdipAddPathClosedCurveI IN GDIPLUS.DLL LONG path, STRING @pPoint, LONG Count
+DECLARE LONG GdipAddPathClosedCurve2I IN GDIPLUS.DLL LONG path, STRING @pPoint, LONG Count, SINGLE tension
+DECLARE LONG GdipAddPathRectangleI IN GDIPLUS.DLL LONG path, LONG x, LONG y, LONG nWidth, LONG Height
+DECLARE LONG GdipAddPathRectanglesI IN GDIPLUS.DLL LONG path, STRING @rects, LONG Count
+DECLARE LONG GdipAddPathEllipseI IN GDIPLUS.DLL LONG path, LONG x, LONG y, LONG nWidth, LONG Height
+DECLARE LONG GdipAddPathPieI IN GDIPLUS.DLL LONG path, LONG x, LONG y, LONG nWidth, LONG Height, SINGLE startAngle, SINGLE sweepAngle
+DECLARE LONG GdipAddPathPolygonI IN GDIPLUS.DLL LONG path, STRING @pPoint, LONG Count
+DECLARE LONG GdipFlattenPath IN GDIPLUS.DLL LONG path, LONG matrix, SINGLE flatness
+DECLARE LONG GdipWindingModeOutline IN GDIPLUS.DLL LONG path, LONG matrix, SINGLE flatness
+DECLARE LONG GdipWidenPath IN GDIPLUS.DLL LONG nativePath, LONG pen, LONG matrix, SINGLE flatness
+DECLARE LONG GdipWarpPath IN GDIPLUS.DLL LONG path, LONG matrix, STRING @pPoint, LONG Count, SINGLE srcx, SINGLE srcy, SINGLE srcwidth, SINGLE srcheight, LONG WarpMd, SINGLE flatness
+DECLARE LONG GdipTransformPath IN GDIPLUS.DLL LONG path, LONG matrix
+DECLARE LONG GdipGetPathWorldBounds IN GDIPLUS.DLL LONG path, STRING @bounds, LONG matrix, LONG pen
+DECLARE LONG GdipGetPathWorldBoundsI IN GDIPLUS.DLL LONG path, STRING @bounds, LONG matrix, LONG pen
+DECLARE LONG GdipIsVisiblePathPoint IN GDIPLUS.DLL LONG path, SINGLE x, SINGLE y, LONG graphics, LONG @result
+DECLARE LONG GdipIsVisiblePathPointI IN GDIPLUS.DLL LONG path, LONG x, LONG y, LONG graphics, LONG @result
+DECLARE LONG GdipIsOutlineVisiblePathPoint IN GDIPLUS.DLL LONG path, SINGLE x, SINGLE y, LONG pen, LONG graphics, LONG @result
+DECLARE LONG GdipIsOutlineVisiblePathPointI IN GDIPLUS.DLL LONG path, LONG x, LONG y, LONG pen, LONG graphics, LONG @result
 
 ENDTRY
 ENDPROC
@@ -3050,7 +3048,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcgraphicspath
 [START RESERVED1]
- 	 drawing.héÒ≠ê5 system.hñÚ≠ê5 gdiplusconstants.hûÛ≠ê5[END RESERVED1]
+ 	 drawing.hñ>≠ê5 system.hû?≠ê5 gdiplusconstants.h¶@≠ê5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -3202,19 +3200,19 @@ CATCH
 
 DECLARE Long Sleep IN WIN32API AS xfcGraphicsPathIteratorDeclareDLL Long
 
-DECLARE LONG GdipCreatePathIter IN GDIPLUS LONG @iterator, LONG path
-DECLARE LONG GdipDeletePathIter IN GDIPLUS LONG iterator
-DECLARE LONG GdipPathIterNextSubpath IN GDIPLUS LONG iterator, LONG @resultCount, LONG @startIndex, LONG @endIndex, LONG @isClosed
-DECLARE LONG GdipPathIterNextSubpathPath IN GDIPLUS LONG iterator, LONG @resultCount, LONG path, LONG @isClosed
-DECLARE LONG GdipPathIterNextPathType IN GDIPLUS LONG iterator, LONG @resultCount, STRING @pathType, LONG @startIndex, LONG @endIndex
-DECLARE LONG GdipPathIterNextMarker IN GDIPLUS LONG iterator, LONG @resultCount, LONG @startIndex, LONG @endIndex
-DECLARE LONG GdipPathIterNextMarkerPath IN GDIPLUS LONG iterator, LONG @resultCount, LONG path
-DECLARE LONG GdipPathIterGetCount IN GDIPLUS LONG iterator, LONG @Count
-DECLARE LONG GdipPathIterGetSubpathCount IN GDIPLUS LONG iterator, LONG @Count
-DECLARE LONG GdipPathIterHasCurve IN GDIPLUS LONG iterator, LONG @hasCurve
-DECLARE LONG GdipPathIterRewind IN GDIPLUS LONG iterator
-DECLARE LONG GdipPathIterEnumerate IN GDIPLUS LONG iterator, LONG @resultCount, STRING @pPoint, STRING @types, LONG Count
-DECLARE LONG GdipPathIterCopyData IN GDIPLUS LONG iterator, LONG @resultCount, STRING @pPoint, STRING @types, LONG startIndex, LONG endIndex
+DECLARE LONG GdipCreatePathIter IN GDIPLUS.DLL LONG @iterator, LONG path
+DECLARE LONG GdipDeletePathIter IN GDIPLUS.DLL LONG iterator
+DECLARE LONG GdipPathIterNextSubpath IN GDIPLUS.DLL LONG iterator, LONG @resultCount, LONG @startIndex, LONG @endIndex, LONG @isClosed
+DECLARE LONG GdipPathIterNextSubpathPath IN GDIPLUS.DLL LONG iterator, LONG @resultCount, LONG path, LONG @isClosed
+DECLARE LONG GdipPathIterNextPathType IN GDIPLUS.DLL LONG iterator, LONG @resultCount, STRING @pathType, LONG @startIndex, LONG @endIndex
+DECLARE LONG GdipPathIterNextMarker IN GDIPLUS.DLL LONG iterator, LONG @resultCount, LONG @startIndex, LONG @endIndex
+DECLARE LONG GdipPathIterNextMarkerPath IN GDIPLUS.DLL LONG iterator, LONG @resultCount, LONG path
+DECLARE LONG GdipPathIterGetCount IN GDIPLUS.DLL LONG iterator, LONG @Count
+DECLARE LONG GdipPathIterGetSubpathCount IN GDIPLUS.DLL LONG iterator, LONG @Count
+DECLARE LONG GdipPathIterHasCurve IN GDIPLUS.DLL LONG iterator, LONG @hasCurve
+DECLARE LONG GdipPathIterRewind IN GDIPLUS.DLL LONG iterator
+DECLARE LONG GdipPathIterEnumerate IN GDIPLUS.DLL LONG iterator, LONG @resultCount, STRING @pPoint, STRING @types, LONG Count
+DECLARE LONG GdipPathIterCopyData IN GDIPLUS.DLL LONG iterator, LONG @resultCount, STRING @pPoint, STRING @types, LONG startIndex, LONG endIndex
 
 ENDTRY
 ENDPROC
@@ -3296,8 +3294,7 @@ PROCEDURE new
 LPARAMETERS toPath AS xfcGraphicsPath
 
 RETURN This.CreateNew(This.Class, m.toPath)
-ENDPROC
-PROCEDURE nextmarker
+ENDPROCPROCEDURE nextmarker
 *********************************************************************
 ** Method: NextMarker
 **
@@ -3524,7 +3521,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcgraphicspathiterator
 [START RESERVED1]
- 	 drawing.hﬁ„„M5 system.hÊ‰0•Ô4 gdiplusconstants.hÓÂÎi05[END RESERVED1]
+ 	 drawing.hñ>≠ê5 system.hû?≠ê5 gdiplusconstants.h¶@≠ê5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -3591,7 +3588,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcgraphicsstate
 [START RESERVED1]
- 	 drawing.hﬁ„„M5 system.hÊ‰0•Ô4 gdiplusconstants.hÓÂÎi05[END RESERVED1]
+ 	 drawing.hñ>≠ê5 system.hû?≠ê5 gdiplusconstants.h¶@≠ê5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -3748,27 +3745,27 @@ CATCH
 
 DECLARE Long Sleep IN WIN32API AS xfcMatrixDeclareDLL Long
 
-DECLARE LONG GdipCreateMatrix IN GDIPLUS LONG @matrix
-DECLARE LONG GdipCreateMatrix2 IN GDIPLUS SINGLE m11, SINGLE m12, SINGLE m21, SINGLE m22, SINGLE dx, SINGLE dy, LONG @matrix
-DECLARE LONG GdipCreateMatrix3 IN GDIPLUS STRING Rect, STRING dstplg, LONG @matrix
-DECLARE LONG GdipCreateMatrix3I IN GDIPLUS STRING Rect, STRING dstplg, LONG @matrix
-DECLARE LONG GdipCloneMatrix IN GDIPLUS LONG matrix, LONG @cloneMatrix
-DECLARE LONG GdipDeleteMatrix IN GDIPLUS LONG matrix
-DECLARE LONG GdipSetMatrixElements IN GDIPLUS LONG matrix, SINGLE m11, SINGLE m12, SINGLE m21, SINGLE m22, SINGLE dx, SINGLE dy
-DECLARE LONG GdipMultiplyMatrix IN GDIPLUS LONG matrix, LONG matrix2, LONG order
-DECLARE LONG GdipTranslateMatrix IN GDIPLUS LONG matrix, SINGLE offsetX, SINGLE offsetY, LONG order
-DECLARE LONG GdipScaleMatrix IN GDIPLUS LONG matrix, SINGLE scaleX, SINGLE scaleY, LONG order
-DECLARE LONG GdipRotateMatrix IN GDIPLUS LONG matrix, SINGLE angle, LONG order
-DECLARE LONG GdipShearMatrix IN GDIPLUS LONG matrix, SINGLE shearX, SINGLE shearY, LONG order
-DECLARE LONG GdipInvertMatrix IN GDIPLUS LONG matrix
-DECLARE LONG GdipTransformMatrixPoints IN GDIPLUS LONG matrix, STRING @pts, LONG Count
-DECLARE LONG GdipTransformMatrixPointsI IN GDIPLUS LONG matrix, STRING @pts, LONG Count
-DECLARE LONG GdipVectorTransformMatrixPoints IN GDIPLUS LONG matrix, STRING @pts, LONG Count
-DECLARE LONG GdipVectorTransformMatrixPointsI IN GDIPLUS LONG matrix, STRING @pts, LONG Count
-DECLARE LONG GdipGetMatrixElements IN GDIPLUS LONG matrix, String @matrixOut
-DECLARE LONG GdipIsMatrixInvertible IN GDIPLUS LONG matrix, LONG @result
-DECLARE LONG GdipIsMatrixIdentity IN GDIPLUS LONG matrix, LONG @result
-DECLARE LONG GdipIsMatrixEqual IN GDIPLUS LONG matrix, LONG matrix2, LONG @result
+DECLARE LONG GdipCreateMatrix IN GDIPLUS.DLL LONG @matrix
+DECLARE LONG GdipCreateMatrix2 IN GDIPLUS.DLL SINGLE m11, SINGLE m12, SINGLE m21, SINGLE m22, SINGLE dx, SINGLE dy, LONG @matrix
+DECLARE LONG GdipCreateMatrix3 IN GDIPLUS.DLL STRING Rect, STRING dstplg, LONG @matrix
+DECLARE LONG GdipCreateMatrix3I IN GDIPLUS.DLL STRING Rect, STRING dstplg, LONG @matrix
+DECLARE LONG GdipCloneMatrix IN GDIPLUS.DLL LONG matrix, LONG @cloneMatrix
+DECLARE LONG GdipDeleteMatrix IN GDIPLUS.DLL LONG matrix
+DECLARE LONG GdipSetMatrixElements IN GDIPLUS.DLL LONG matrix, SINGLE m11, SINGLE m12, SINGLE m21, SINGLE m22, SINGLE dx, SINGLE dy
+DECLARE LONG GdipMultiplyMatrix IN GDIPLUS.DLL LONG matrix, LONG matrix2, LONG order
+DECLARE LONG GdipTranslateMatrix IN GDIPLUS.DLL LONG matrix, SINGLE offsetX, SINGLE offsetY, LONG order
+DECLARE LONG GdipScaleMatrix IN GDIPLUS.DLL LONG matrix, SINGLE scaleX, SINGLE scaleY, LONG order
+DECLARE LONG GdipRotateMatrix IN GDIPLUS.DLL LONG matrix, SINGLE angle, LONG order
+DECLARE LONG GdipShearMatrix IN GDIPLUS.DLL LONG matrix, SINGLE shearX, SINGLE shearY, LONG order
+DECLARE LONG GdipInvertMatrix IN GDIPLUS.DLL LONG matrix
+DECLARE LONG GdipTransformMatrixPoints IN GDIPLUS.DLL LONG matrix, STRING @pts, LONG Count
+DECLARE LONG GdipTransformMatrixPointsI IN GDIPLUS.DLL LONG matrix, STRING @pts, LONG Count
+DECLARE LONG GdipVectorTransformMatrixPoints IN GDIPLUS.DLL LONG matrix, STRING @pts, LONG Count
+DECLARE LONG GdipVectorTransformMatrixPointsI IN GDIPLUS.DLL LONG matrix, STRING @pts, LONG Count
+DECLARE LONG GdipGetMatrixElements IN GDIPLUS.DLL LONG matrix, String @matrixOut
+DECLARE LONG GdipIsMatrixInvertible IN GDIPLUS.DLL LONG matrix, LONG @result
+DECLARE LONG GdipIsMatrixIdentity IN GDIPLUS.DLL LONG matrix, LONG @result
+DECLARE LONG GdipIsMatrixEqual IN GDIPLUS.DLL LONG matrix, LONG matrix2, LONG @result
 
 ENDTRY
 ENDPROC
@@ -4029,8 +4026,7 @@ ENDPROC
 PROCEDURE new
 LPARAMETERS tnM11, tnM12, tnM21, tnM22, tnDx, tnDy
 RETURN This.CreateNew(This.Class, m.tnM11, m.tnM12, m.tnM21, m.tnM22, m.tnDx, m.tnDy)
-ENDPROC
-PROCEDURE offsetx_access
+ENDPROCPROCEDURE offsetx_access
 *********************************************************************
 ** Property: OffsetX (Access)
 **
@@ -4429,7 +4425,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcmatrix
 [START RESERVED1]
- 	 drawing.h—„M5 system.h“0•Ô4 gdiplusconstants.h”Îi05[END RESERVED1]
+ 	 drawing.hñ>≠ê5 system.hû?≠ê5 gdiplusconstants.h¶@≠ê5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -4643,7 +4639,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcpathdata
 [START RESERVED1]
- 	 drawing.hﬁ„„M5 system.hÊ‰0•Ô4 gdiplusconstants.hÓÂÎi05[END RESERVED1]
+ 	 drawing.hñ>≠ê5 system.hû?≠ê5 gdiplusconstants.h¶@≠ê5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -4734,7 +4730,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcregiondata
 [START RESERVED1]
- 	 drawing.hﬁ„„M5 system.hÊ‰0•Ô4 gdiplusconstants.hÓÂÎi05[END RESERVED1]
+ 	 drawing.hñ>≠ê5 system.hû?≠ê5 gdiplusconstants.h¶@≠ê5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -4790,8 +4786,7 @@ RETURN
 **  float width, float height, bool isFilled
 *********************************************************************
 
-ENDPROC
-PROCEDURE declaredll
+ENDPROCPROCEDURE declaredll
 DODEFAULT()
 TRY
 
@@ -4801,15 +4796,15 @@ CATCH
 
 DECLARE Long Sleep IN WIN32API AS xfcAdjustableArrowCapDeclareDLL Long
 
-DECLARE LONG GdipCreateAdjustableArrowCap IN GDIPLUS SINGLE height, SINGLE width, LONG isFilled, LONG @cap
-DECLARE LONG GdipSetAdjustableArrowCapHeight IN GDIPLUS LONG cap, SINGLE height
-DECLARE LONG GdipGetAdjustableArrowCapHeight IN GDIPLUS LONG cap, SINGLE @height
-DECLARE LONG GdipSetAdjustableArrowCapWidth IN GDIPLUS LONG cap, SINGLE width
-DECLARE LONG GdipGetAdjustableArrowCapWidth IN GDIPLUS LONG cap, SINGLE @width
-DECLARE LONG GdipSetAdjustableArrowCapMiddleInset IN GDIPLUS LONG cap, SINGLE middleInset
-DECLARE LONG GdipGetAdjustableArrowCapMiddleInset IN GDIPLUS LONG cap, SINGLE @middleInset
-DECLARE LONG GdipSetAdjustableArrowCapFillState IN GDIPLUS LONG cap, LONG bFillState
-DECLARE LONG GdipGetAdjustableArrowCapFillState IN GDIPLUS LONG cap, LONG @bFillState
+DECLARE LONG GdipCreateAdjustableArrowCap IN GDIPLUS.DLL SINGLE height, SINGLE width, LONG isFilled, LONG @cap
+DECLARE LONG GdipSetAdjustableArrowCapHeight IN GDIPLUS.DLL LONG cap, SINGLE height
+DECLARE LONG GdipGetAdjustableArrowCapHeight IN GDIPLUS.DLL LONG cap, SINGLE @height
+DECLARE LONG GdipSetAdjustableArrowCapWidth IN GDIPLUS.DLL LONG cap, SINGLE width
+DECLARE LONG GdipGetAdjustableArrowCapWidth IN GDIPLUS.DLL LONG cap, SINGLE @width
+DECLARE LONG GdipSetAdjustableArrowCapMiddleInset IN GDIPLUS.DLL LONG cap, SINGLE middleInset
+DECLARE LONG GdipGetAdjustableArrowCapMiddleInset IN GDIPLUS.DLL LONG cap, SINGLE @middleInset
+DECLARE LONG GdipSetAdjustableArrowCapFillState IN GDIPLUS.DLL LONG cap, LONG bFillState
+DECLARE LONG GdipGetAdjustableArrowCapFillState IN GDIPLUS.DLL LONG cap, LONG @bFillState
 
 ENDTRY
 ENDPROC
@@ -5055,7 +5050,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcadjustablearrowcap
 [START RESERVED1]
- 	 drawing.hﬁ„„M5 system.hÊ‰0•Ô4 gdiplusconstants.hÓÂÎi05[END RESERVED1]
+ 	 drawing.hñ>≠ê5 system.hû?≠ê5 gdiplusconstants.h¶@≠ê5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -5193,10 +5188,10 @@ ENDPROC
 PROCEDURE declaredll
 DODEFAULT()
 
-DECLARE LONG GdipCreateHatchBrush IN GDIPLUS LONG style, LONG forecolr, LONG backcolr, LONG @brush
-DECLARE LONG GdipGetHatchStyle IN GDIPLUS LONG brush, LONG @style
-DECLARE LONG GdipGetHatchForegroundColor IN GDIPLUS LONG brush, LONG @forecolr
-DECLARE LONG GdipGetHatchBackgroundColor IN GDIPLUS LONG brush, LONG @backcolr
+DECLARE LONG GdipCreateHatchBrush IN GDIPLUS.DLL LONG style, LONG forecolr, LONG backcolr, LONG @brush
+DECLARE LONG GdipGetHatchStyle IN GDIPLUS.DLL LONG brush, LONG @style
+DECLARE LONG GdipGetHatchForegroundColor IN GDIPLUS.DLL LONG brush, LONG @forecolr
+DECLARE LONG GdipGetHatchBackgroundColor IN GDIPLUS.DLL LONG brush, LONG @backcolr
 
 ENDPROC
 PROCEDURE foregroundcolor_access
@@ -5274,8 +5269,7 @@ LPARAMETERS tiHatchstyle AS EnumHatchStyle, toForeColor AS xfcColor, toBackColor
 
 RETURN This.CreateNew(This.Class, m.tiHatchstyle, m.toForeColor, m.toBackColor)
 
-ENDPROC
-PROCEDURE setstatus
+ENDPROCPROCEDURE setstatus
 LPARAMETERS tnStatus
 IF This.LastResult = 0
 	This.LastResult = m.tnStatus
@@ -5306,7 +5300,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfchatchbrush
 [START RESERVED1]
- 	 drawing.hﬁ„„M5 system.hÊ‰0•Ô4 gdiplusconstants.hÓÂÎi05[END RESERVED1]
+ 	 drawing.hñ>≠ê5 system.hû?≠ê5 gdiplusconstants.h¶@≠ê5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -5505,35 +5499,35 @@ CATCH
 
 DECLARE Long Sleep IN WIN32API AS xfcLinearGradientBrushDeclareDLL Long
 
-DECLARE LONG GdipCreateLineBrush IN GDIPLUS STRING @point1, STRING @point2, LONG color1, LONG color2, LONG WrapMd, LONG @lineGradient
-DECLARE LONG GdipCreateLineBrushI IN GDIPLUS STRING @point1, STRING @point2, LONG color1, LONG color2, LONG WrapMd, LONG @lineGradient
-DECLARE LONG GdipCreateLineBrushFromRect IN GDIPLUS STRING @nRect, LONG color1, LONG color2, LONG mode, LONG WrapMd, LONG @lineGradient
-DECLARE LONG GdipCreateLineBrushFromRectI IN GDIPLUS STRING @nRect, LONG color1, LONG color2, LONG mode, LONG WrapMd, LONG @lineGradient
-DECLARE LONG GdipCreateLineBrushFromRectWithAngle IN GDIPLUS STRING @nRect, LONG color1, LONG color2, SINGLE angle, LONG isAngleScalable, LONG WrapMd, LONG @lineGradient
-DECLARE LONG GdipCreateLineBrushFromRectWithAngleI IN GDIPLUS STRING @nRect, LONG color1, LONG color2, SINGLE angle, LONG isAngleScalable, LONG WrapMd, LONG @lineGradient
-DECLARE LONG GdipSetLineColors IN GDIPLUS LONG brush, LONG color1, LONG color2
-DECLARE LONG GdipGetLineColors IN GDIPLUS LONG brush, String @cColors
-DECLARE LONG GdipGetLineRect IN GDIPLUS LONG brush, STRING @nRect
-DECLARE LONG GdipGetLineRectI IN GDIPLUS LONG brush, STRING @nRect
-DECLARE LONG GdipSetLineGammaCorrection IN GDIPLUS LONG brush, LONG useGammaCorrection
-DECLARE LONG GdipGetLineGammaCorrection IN GDIPLUS LONG brush, LONG @useGammaCorrection
-DECLARE LONG GdipGetLineBlendCount IN GDIPLUS LONG brush, LONG @Count
-DECLARE LONG GdipGetLineBlend IN GDIPLUS LONG brush, STRING @blend, STRING @positions, LONG Count
-DECLARE LONG GdipSetLineBlend IN GDIPLUS LONG brush, STRING @blend, STRING @positions, LONG Count
-DECLARE LONG GdipGetLinePresetBlendCount IN GDIPLUS LONG brush, LONG @Count
-DECLARE LONG GdipGetLinePresetBlend IN GDIPLUS LONG brush, STRING @blend, STRING @positions, LONG Count
-DECLARE LONG GdipSetLinePresetBlend IN GDIPLUS LONG brush, STRING blend, STRING positions, LONG Count
-DECLARE LONG GdipSetLineSigmaBlend IN GDIPLUS LONG brush, SINGLE FOCUS, SINGLE theScale
-DECLARE LONG GdipSetLineLinearBlend IN GDIPLUS LONG brush, SINGLE FOCUS, SINGLE theScale
-DECLARE LONG GdipSetLineWrapMode IN GDIPLUS LONG brush, LONG WrapMd
-DECLARE LONG GdipGetLineWrapMode IN GDIPLUS LONG brush, LONG @WrapMd
-DECLARE LONG GdipGetLineTransform IN GDIPLUS LONG brush, LONG @matrix
-DECLARE LONG GdipSetLineTransform IN GDIPLUS LONG brush, LONG matrix
-DECLARE LONG GdipResetLineTransform IN GDIPLUS LONG brush
-DECLARE LONG GdipMultiplyLineTransform IN GDIPLUS LONG brush, LONG matrix, LONG order
-DECLARE LONG GdipTranslateLineTransform IN GDIPLUS LONG brush, SINGLE dx, SINGLE dy, LONG order
-DECLARE LONG GdipScaleLineTransform IN GDIPLUS LONG brush, SINGLE sx, SINGLE sy, LONG order
-DECLARE LONG GdipRotateLineTransform IN GDIPLUS LONG brush, SINGLE angle, LONG order
+DECLARE LONG GdipCreateLineBrush IN GDIPLUS.DLL STRING @point1, STRING @point2, LONG color1, LONG color2, LONG WrapMd, LONG @lineGradient
+DECLARE LONG GdipCreateLineBrushI IN GDIPLUS.DLL STRING @point1, STRING @point2, LONG color1, LONG color2, LONG WrapMd, LONG @lineGradient
+DECLARE LONG GdipCreateLineBrushFromRect IN GDIPLUS.DLL STRING @nRect, LONG color1, LONG color2, LONG mode, LONG WrapMd, LONG @lineGradient
+DECLARE LONG GdipCreateLineBrushFromRectI IN GDIPLUS.DLL STRING @nRect, LONG color1, LONG color2, LONG mode, LONG WrapMd, LONG @lineGradient
+DECLARE LONG GdipCreateLineBrushFromRectWithAngle IN GDIPLUS.DLL STRING @nRect, LONG color1, LONG color2, SINGLE angle, LONG isAngleScalable, LONG WrapMd, LONG @lineGradient
+DECLARE LONG GdipCreateLineBrushFromRectWithAngleI IN GDIPLUS.DLL STRING @nRect, LONG color1, LONG color2, SINGLE angle, LONG isAngleScalable, LONG WrapMd, LONG @lineGradient
+DECLARE LONG GdipSetLineColors IN GDIPLUS.DLL LONG brush, LONG color1, LONG color2
+DECLARE LONG GdipGetLineColors IN GDIPLUS.DLL LONG brush, String @cColors
+DECLARE LONG GdipGetLineRect IN GDIPLUS.DLL LONG brush, STRING @nRect
+DECLARE LONG GdipGetLineRectI IN GDIPLUS.DLL LONG brush, STRING @nRect
+DECLARE LONG GdipSetLineGammaCorrection IN GDIPLUS.DLL LONG brush, LONG useGammaCorrection
+DECLARE LONG GdipGetLineGammaCorrection IN GDIPLUS.DLL LONG brush, LONG @useGammaCorrection
+DECLARE LONG GdipGetLineBlendCount IN GDIPLUS.DLL LONG brush, LONG @Count
+DECLARE LONG GdipGetLineBlend IN GDIPLUS.DLL LONG brush, STRING @blend, STRING @positions, LONG Count
+DECLARE LONG GdipSetLineBlend IN GDIPLUS.DLL LONG brush, STRING @blend, STRING @positions, LONG Count
+DECLARE LONG GdipGetLinePresetBlendCount IN GDIPLUS.DLL LONG brush, LONG @Count
+DECLARE LONG GdipGetLinePresetBlend IN GDIPLUS.DLL LONG brush, STRING @blend, STRING @positions, LONG Count
+DECLARE LONG GdipSetLinePresetBlend IN GDIPLUS.DLL LONG brush, STRING blend, STRING positions, LONG Count
+DECLARE LONG GdipSetLineSigmaBlend IN GDIPLUS.DLL LONG brush, SINGLE FOCUS, SINGLE theScale
+DECLARE LONG GdipSetLineLinearBlend IN GDIPLUS.DLL LONG brush, SINGLE FOCUS, SINGLE theScale
+DECLARE LONG GdipSetLineWrapMode IN GDIPLUS.DLL LONG brush, LONG WrapMd
+DECLARE LONG GdipGetLineWrapMode IN GDIPLUS.DLL LONG brush, LONG @WrapMd
+DECLARE LONG GdipGetLineTransform IN GDIPLUS.DLL LONG brush, LONG @matrix
+DECLARE LONG GdipSetLineTransform IN GDIPLUS.DLL LONG brush, LONG matrix
+DECLARE LONG GdipResetLineTransform IN GDIPLUS.DLL LONG brush
+DECLARE LONG GdipMultiplyLineTransform IN GDIPLUS.DLL LONG brush, LONG matrix, LONG order
+DECLARE LONG GdipTranslateLineTransform IN GDIPLUS.DLL LONG brush, SINGLE dx, SINGLE dy, LONG order
+DECLARE LONG GdipScaleLineTransform IN GDIPLUS.DLL LONG brush, SINGLE sx, SINGLE sy, LONG order
+DECLARE LONG GdipRotateLineTransform IN GDIPLUS.DLL LONG brush, SINGLE angle, LONG order
 
 ENDTRY
 ENDPROC
@@ -5773,8 +5767,7 @@ ELSE
 	RETURN This.CreateNew(This.Class, m.toRect, m.toColor1, m.toColor2, m.tnAngleOrMode)
 ENDIF
 
-ENDPROC
-PROCEDURE rectangle_access
+ENDPROCPROCEDURE rectangle_access
 *********************************************************************
 ** Property: Rectangle (Access)
 **
@@ -6182,7 +6175,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfclineargradientbrush
 [START RESERVED1]
- 	 drawing.hﬁY≠ê5 system.hÊZ≠ê5 gdiplusconstants.hÓ[≠ê5[END RESERVED1]
+ 	 drawing.hñ>≠ê5 system.hû?≠ê5 gdiplusconstants.h¶@≠ê5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -6474,48 +6467,47 @@ CATCH
 
 DECLARE Long Sleep IN WIN32API AS xfcPathGradientBrushDeclareDLL Long
 
-DECLARE LONG GdipCreatePathGradient IN GDIPLUS STRING @pPoint, LONG Count, LONG WrapMd, LONG @polyGradient
-DECLARE LONG GdipCreatePathGradientI IN GDIPLUS STRING @pPoint, LONG Count, LONG WrapMd, LONG @polyGradient
-DECLARE LONG GdipCreatePathGradientFromPath IN GDIPLUS LONG path, LONG @polyGradient
-DECLARE LONG GdipGetPathGradientCenterColor IN GDIPLUS LONG brush, LONG @lColors
-DECLARE LONG GdipSetPathGradientCenterColor IN GDIPLUS LONG brush, LONG lColors
-DECLARE LONG GdipGetPathGradientSurroundColorsWithCount IN GDIPLUS LONG brush, STRING @argb, LONG @Count
-DECLARE LONG GdipSetPathGradientSurroundColorsWithCount IN GDIPLUS LONG brush, STRING @argb, LONG @Count
-DECLARE LONG GdipGetPathGradientPath IN GDIPLUS LONG brush, LONG path
-DECLARE LONG GdipSetPathGradientPath IN GDIPLUS LONG brush, LONG path
-DECLARE LONG GdipGetPathGradientCenterPoint IN GDIPLUS LONG brush, STRING @pPoint
-DECLARE LONG GdipGetPathGradientCenterPointI IN GDIPLUS LONG brush, STRING @pPoint
-DECLARE LONG GdipSetPathGradientCenterPoint IN GDIPLUS LONG brush, STRING pPoint
-DECLARE LONG GdipSetPathGradientCenterPointI IN GDIPLUS LONG brush, STRING pPoint
-DECLARE LONG GdipGetPathGradientRect IN GDIPLUS LONG brush, STRING @nRect
-DECLARE LONG GdipGetPathGradientRectI IN GDIPLUS LONG brush, STRING @nRect
-DECLARE LONG GdipGetPathGradientPointCount IN GDIPLUS LONG brush, LONG @Count
-DECLARE LONG GdipGetPathGradientSurroundColorCount IN GDIPLUS LONG brush, LONG @Count
-DECLARE LONG GdipSetPathGradientGammaCorrection IN GDIPLUS LONG brush, LONG useGammaCorrection
-DECLARE LONG GdipGetPathGradientGammaCorrection IN GDIPLUS LONG brush, LONG @useGammaCorrection
-DECLARE LONG GdipGetPathGradientBlendCount IN GDIPLUS LONG brush, LONG @Count
-DECLARE LONG GdipGetPathGradientBlend IN GDIPLUS LONG brush, STRING @blend, STRING @positions, LONG Count
-DECLARE LONG GdipSetPathGradientBlend IN GDIPLUS LONG brush, STRING @blend, STRING @positions, LONG Count
-DECLARE LONG GdipGetPathGradientPresetBlendCount IN GDIPLUS LONG brush, LONG @Count
-DECLARE LONG GdipGetPathGradientPresetBlend IN GDIPLUS LONG brush, LONG @blend, SINGLE @positions, LONG Count
-DECLARE LONG GdipSetPathGradientPresetBlend IN GDIPLUS LONG brush, LONG @blend, SINGLE @positions, LONG Count
-DECLARE LONG GdipSetPathGradientSigmaBlend IN GDIPLUS LONG brush, SINGLE FOCUS, SINGLE sscale
-DECLARE LONG GdipSetPathGradientLinearBlend IN GDIPLUS LONG brush, SINGLE FOCUS, SINGLE sscale
-DECLARE LONG GdipGetPathGradientWrapMode IN GDIPLUS LONG brush, LONG @WrapMd
-DECLARE LONG GdipSetPathGradientWrapMode IN GDIPLUS LONG brush, LONG WrapMd
-DECLARE LONG GdipGetPathGradientTransform IN GDIPLUS LONG brush, LONG matrix
-DECLARE LONG GdipSetPathGradientTransform IN GDIPLUS LONG brush, LONG matrix
-DECLARE LONG GdipResetPathGradientTransform IN GDIPLUS LONG brush
-DECLARE LONG GdipMultiplyPathGradientTransform IN GDIPLUS LONG brush, LONG matrix, LONG order
-DECLARE LONG GdipTranslatePathGradientTransform IN GDIPLUS LONG brush, SINGLE dx, SINGLE dy, LONG order
-DECLARE LONG GdipScalePathGradientTransform IN GDIPLUS LONG brush, SINGLE sx, SINGLE sy, LONG order
-DECLARE LONG GdipRotatePathGradientTransform IN GDIPLUS LONG brush, SINGLE angle, LONG order
-DECLARE LONG GdipGetPathGradientFocusScales IN GDIPLUS LONG brush, SINGLE @xScale, SINGLE @yScale
-DECLARE LONG GdipSetPathGradientFocusScales IN GDIPLUS LONG brush, SINGLE xScale, SINGLE yScale
+DECLARE LONG GdipCreatePathGradient IN GDIPLUS.DLL STRING @pPoint, LONG Count, LONG WrapMd, LONG @polyGradient
+DECLARE LONG GdipCreatePathGradientI IN GDIPLUS.DLL STRING @pPoint, LONG Count, LONG WrapMd, LONG @polyGradient
+DECLARE LONG GdipCreatePathGradientFromPath IN GDIPLUS.DLL LONG path, LONG @polyGradient
+DECLARE LONG GdipGetPathGradientCenterColor IN GDIPLUS.DLL LONG brush, LONG @lColors
+DECLARE LONG GdipSetPathGradientCenterColor IN GDIPLUS.DLL LONG brush, LONG lColors
+DECLARE LONG GdipGetPathGradientSurroundColorsWithCount IN GDIPLUS.DLL LONG brush, STRING @argb, LONG @Count
+DECLARE LONG GdipSetPathGradientSurroundColorsWithCount IN GDIPLUS.DLL LONG brush, STRING @argb, LONG @Count
+DECLARE LONG GdipGetPathGradientPath IN GDIPLUS.DLL LONG brush, LONG path
+DECLARE LONG GdipSetPathGradientPath IN GDIPLUS.DLL LONG brush, LONG path
+DECLARE LONG GdipGetPathGradientCenterPoint IN GDIPLUS.DLL LONG brush, STRING @pPoint
+DECLARE LONG GdipGetPathGradientCenterPointI IN GDIPLUS.DLL LONG brush, STRING @pPoint
+DECLARE LONG GdipSetPathGradientCenterPoint IN GDIPLUS.DLL LONG brush, STRING pPoint
+DECLARE LONG GdipSetPathGradientCenterPointI IN GDIPLUS.DLL LONG brush, STRING pPoint
+DECLARE LONG GdipGetPathGradientRect IN GDIPLUS.DLL LONG brush, STRING @nRect
+DECLARE LONG GdipGetPathGradientRectI IN GDIPLUS.DLL LONG brush, STRING @nRect
+DECLARE LONG GdipGetPathGradientPointCount IN GDIPLUS.DLL LONG brush, LONG @Count
+DECLARE LONG GdipGetPathGradientSurroundColorCount IN GDIPLUS.DLL LONG brush, LONG @Count
+DECLARE LONG GdipSetPathGradientGammaCorrection IN GDIPLUS.DLL LONG brush, LONG useGammaCorrection
+DECLARE LONG GdipGetPathGradientGammaCorrection IN GDIPLUS.DLL LONG brush, LONG @useGammaCorrection
+DECLARE LONG GdipGetPathGradientBlendCount IN GDIPLUS.DLL LONG brush, LONG @Count
+DECLARE LONG GdipGetPathGradientBlend IN GDIPLUS.DLL LONG brush, STRING @blend, STRING @positions, LONG Count
+DECLARE LONG GdipSetPathGradientBlend IN GDIPLUS.DLL LONG brush, STRING @blend, STRING @positions, LONG Count
+DECLARE LONG GdipGetPathGradientPresetBlendCount IN GDIPLUS.DLL LONG brush, LONG @Count
+DECLARE LONG GdipGetPathGradientPresetBlend IN GDIPLUS.DLL LONG brush, LONG @blend, SINGLE @positions, LONG Count
+DECLARE LONG GdipSetPathGradientPresetBlend IN GDIPLUS.DLL LONG brush, LONG @blend, SINGLE @positions, LONG Count
+DECLARE LONG GdipSetPathGradientSigmaBlend IN GDIPLUS.DLL LONG brush, SINGLE FOCUS, SINGLE sscale
+DECLARE LONG GdipSetPathGradientLinearBlend IN GDIPLUS.DLL LONG brush, SINGLE FOCUS, SINGLE sscale
+DECLARE LONG GdipGetPathGradientWrapMode IN GDIPLUS.DLL LONG brush, LONG @WrapMd
+DECLARE LONG GdipSetPathGradientWrapMode IN GDIPLUS.DLL LONG brush, LONG WrapMd
+DECLARE LONG GdipGetPathGradientTransform IN GDIPLUS.DLL LONG brush, LONG matrix
+DECLARE LONG GdipSetPathGradientTransform IN GDIPLUS.DLL LONG brush, LONG matrix
+DECLARE LONG GdipResetPathGradientTransform IN GDIPLUS.DLL LONG brush
+DECLARE LONG GdipMultiplyPathGradientTransform IN GDIPLUS.DLL LONG brush, LONG matrix, LONG order
+DECLARE LONG GdipTranslatePathGradientTransform IN GDIPLUS.DLL LONG brush, SINGLE dx, SINGLE dy, LONG order
+DECLARE LONG GdipScalePathGradientTransform IN GDIPLUS.DLL LONG brush, SINGLE sx, SINGLE sy, LONG order
+DECLARE LONG GdipRotatePathGradientTransform IN GDIPLUS.DLL LONG brush, SINGLE angle, LONG order
+DECLARE LONG GdipGetPathGradientFocusScales IN GDIPLUS.DLL LONG brush, SINGLE @xScale, SINGLE @yScale
+DECLARE LONG GdipSetPathGradientFocusScales IN GDIPLUS.DLL LONG brush, SINGLE xScale, SINGLE yScale
 
 ENDTRY
-ENDPROC
-PROCEDURE focusscales_access
+ENDPROCPROCEDURE focusscales_access
 *********************************************************************
 ** Property: FocusScales (Access)
 **
@@ -7212,5 +7204,5 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcpathgradientbrush
 [START RESERVED1]
- 	 drawing.hûÅ≠ê5 system.h¶Ç≠ê5 gdiplusconstants.hÆÉ≠ê5[END RESERVED1]
+ 	 drawing.hñ>≠ê5 system.hû?≠ê5 gdiplusconstants.h¶@≠ê5[END RESERVED1]
 [EOF]
