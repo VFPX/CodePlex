@@ -356,7 +356,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcbitmapdata
 [START RESERVED1]
- 	 drawing.hÓ}„M5 system.hˆ~0•Ô4 gdiplusconstants.h˛π>œ4[END RESERVED1]
+ 	 drawing.hñ>≠ê5 system.hû?≠ê5 gdiplusconstants.h¶@≠ê5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -465,7 +465,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfccolormap
 [START RESERVED1]
- 	 drawing.hÓ}„M5 system.hˆ~0•Ô4 gdiplusconstants.h˛π>œ4[END RESERVED1]
+ 	 drawing.hñ>≠ê5 system.hû?≠ê5 gdiplusconstants.h¶@≠ê5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -2147,7 +2147,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfccolormatrix
 [START RESERVED1]
- 	 drawing.hÓ}„M5 system.hˆ~0•Ô4 gdiplusconstants.h˛π>œ4[END RESERVED1]
+ 	 drawing.hñ>≠ê5 system.hû?≠ê5 gdiplusconstants.h¶@≠ê5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -2395,7 +2395,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfccolorpalette
 [START RESERVED1]
- 	 drawing.hÊu„E5 system.hÓvÓ≠\5 gdiplusconstants.hˆwÌ≠\5[END RESERVED1]
+ 	 drawing.hñ>≠ê5 system.hû?≠ê5 gdiplusconstants.h¶@≠ê5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -2783,7 +2783,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcencoder
 [START RESERVED1]
- 	 drawing.hÓ}„M5 system.hˆ~0•Ô4 gdiplusconstants.h˛π>œ4[END RESERVED1]
+ 	 drawing.hñ>≠ê5 system.hû?≠ê5 gdiplusconstants.h¶@≠ê5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -3265,7 +3265,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcencoderparameter
 [START RESERVED1]
- 	 drawing.hÓ}„M5 system.hˆ~0•Ô4 gdiplusconstants.h˛π>œ4[END RESERVED1]
+ 	 drawing.hñ>≠ê5 system.hû?≠ê5 gdiplusconstants.h¶@≠ê5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -3536,7 +3536,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcencoderparameters
 [START RESERVED1]
- 	 drawing.hÓ}„M5 system.hˆ~0•Ô4 gdiplusconstants.h˛π>œ4[END RESERVED1]
+ 	 drawing.hñ>≠ê5 system.hû?≠ê5 gdiplusconstants.h¶@≠ê5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -3852,7 +3852,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcframedimension
 [START RESERVED1]
- 	 drawing.hÓ}„M5 system.hˆ~0•Ô4 gdiplusconstants.h˛π>œ4[END RESERVED1]
+ 	 drawing.hñ>≠ê5 system.hû?≠ê5 gdiplusconstants.h¶@≠ê5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -4270,21 +4270,21 @@ CATCH
 
 DECLARE Long Sleep IN WIN32API AS xfcImageAttributesDeclareDLL Long
 
-DECLARE LONG GdipCreateImageAttributes IN GDIPLUS LONG @imageattr
-DECLARE LONG GdipCloneImageAttributes IN GDIPLUS LONG imageattr, LONG @cloneImageattr
-DECLARE LONG GdipDisposeImageAttributes IN GDIPLUS LONG imageattr
-DECLARE LONG GdipSetImageAttributesToIdentity IN GDIPLUS LONG imageattr, LONG ClrAdjType
-DECLARE LONG GdipResetImageAttributes IN GDIPLUS LONG imageattr, LONG ClrAdjType
-DECLARE LONG GdipSetImageAttributesColorMatrix IN GDIPLUS LONG imageattr, LONG ClrAdjType, LONG enableFlag, String colourMatrix, String grayMatrix, LONG flags
-DECLARE LONG GdipSetImageAttributesThreshold IN GDIPLUS LONG imageattr, LONG ClrAdjType, LONG enableFlag, SINGLE threshold
-DECLARE LONG GdipSetImageAttributesGamma IN GDIPLUS LONG imageattr, LONG ClrAdjType, LONG enableFlag, SINGLE gamma
-DECLARE LONG GdipSetImageAttributesNoOp IN GDIPLUS LONG imageattr, LONG ClrAdjType, LONG enableFlag
-DECLARE LONG GdipSetImageAttributesColorKeys IN GDIPLUS LONG imageattr, LONG ClrAdjType, LONG enableFlag, LONG colorLow, LONG colorHigh
-DECLARE LONG GdipSetImageAttributesOutputChannel IN GDIPLUS LONG imageattr, LONG ClrAdjstType, LONG enableFlag, LONG channelFlags
-DECLARE LONG GdipSetImageAttributesOutputChannelColorProfile IN GDIPLUS LONG imageattr, LONG ClrAdjType, LONG enableFlag, STRING colorProfileFilename
-DECLARE LONG GdipSetImageAttributesRemapTable IN GDIPLUS LONG imageattr, LONG ClrAdjType, LONG enableFlag, LONG mapSize, String @map
-DECLARE LONG GdipSetImageAttributesWrapMode IN GDIPLUS LONG imageattr, LONG wrap, LONG argb, LONG bClamp
-DECLARE LONG GdipGetImageAttributesAdjustedPalette IN GDIPLUS LONG imageattr, String colorPal, LONG ClrAdjType
+DECLARE LONG GdipCreateImageAttributes IN GDIPLUS.DLL LONG @imageattr
+DECLARE LONG GdipCloneImageAttributes IN GDIPLUS.DLL LONG imageattr, LONG @cloneImageattr
+DECLARE LONG GdipDisposeImageAttributes IN GDIPLUS.DLL LONG imageattr
+DECLARE LONG GdipSetImageAttributesToIdentity IN GDIPLUS.DLL LONG imageattr, LONG ClrAdjType
+DECLARE LONG GdipResetImageAttributes IN GDIPLUS.DLL LONG imageattr, LONG ClrAdjType
+DECLARE LONG GdipSetImageAttributesColorMatrix IN GDIPLUS.DLL LONG imageattr, LONG ClrAdjType, LONG enableFlag, String colourMatrix, String grayMatrix, LONG flags
+DECLARE LONG GdipSetImageAttributesThreshold IN GDIPLUS.DLL LONG imageattr, LONG ClrAdjType, LONG enableFlag, SINGLE threshold
+DECLARE LONG GdipSetImageAttributesGamma IN GDIPLUS.DLL LONG imageattr, LONG ClrAdjType, LONG enableFlag, SINGLE gamma
+DECLARE LONG GdipSetImageAttributesNoOp IN GDIPLUS.DLL LONG imageattr, LONG ClrAdjType, LONG enableFlag
+DECLARE LONG GdipSetImageAttributesColorKeys IN GDIPLUS.DLL LONG imageattr, LONG ClrAdjType, LONG enableFlag, LONG colorLow, LONG colorHigh
+DECLARE LONG GdipSetImageAttributesOutputChannel IN GDIPLUS.DLL LONG imageattr, LONG ClrAdjstType, LONG enableFlag, LONG channelFlags
+DECLARE LONG GdipSetImageAttributesOutputChannelColorProfile IN GDIPLUS.DLL LONG imageattr, LONG ClrAdjType, LONG enableFlag, STRING colorProfileFilename
+DECLARE LONG GdipSetImageAttributesRemapTable IN GDIPLUS.DLL LONG imageattr, LONG ClrAdjType, LONG enableFlag, LONG mapSize, String @map
+DECLARE LONG GdipSetImageAttributesWrapMode IN GDIPLUS.DLL LONG imageattr, LONG wrap, LONG argb, LONG bClamp
+DECLARE LONG GdipGetImageAttributesAdjustedPalette IN GDIPLUS.DLL LONG imageattr, String colorPal, LONG ClrAdjType
 
 ENDTRY
 
@@ -4325,8 +4325,7 @@ RETURN NULL
 ENDPROC
 PROCEDURE new
 RETURN This.CreateNew(This.Class)
-ENDPROC
-PROCEDURE setbrushremaptable
+ENDPROCPROCEDURE setbrushremaptable
 *********************************************************************
 ** Method: SetBrushRemapTable
 **
@@ -4759,7 +4758,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcimageattributes
 [START RESERVED1]
- 	 drawing.hâ„E5 system.h&äÓ≠\5 gdiplusconstants.h.ãÌ≠\5[END RESERVED1]
+ 	 drawing.hñ>≠ê5 system.hû?≠ê5 gdiplusconstants.h¶@≠ê5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -4812,8 +4811,7 @@ CATCH TO loExc
 	THROW m.loExc
 ENDTRY
 RETURN
-ENDPROC
-PROCEDURE Init
+ENDPROCPROCEDURE Init
 *********************************************************************
 ** Method: ImageCodecInfo
 **
@@ -5059,10 +5057,10 @@ xfcImageCodecInfoDeclareDLL(0)
 CATCH
 DECLARE Long Sleep IN WIN32API AS xfcImageCodecInfoDeclareDLL Long
 
-DECLARE LONG GdipGetImageDecodersSize IN GDIPLUS LONG @numDecoders, LONG @size
-DECLARE LONG GdipGetImageDecoders IN GDIPLUS LONG numDecoders, LONG size, LONG decoders
-DECLARE LONG GdipGetImageEncodersSize IN GDIPLUS LONG @numEncoders, LONG @size
-DECLARE LONG GdipGetImageEncoders IN GDIPLUS LONG numEncoders, LONG size, LONG encoders
+DECLARE LONG GdipGetImageDecodersSize IN GDIPLUS.DLL LONG @numDecoders, LONG @size
+DECLARE LONG GdipGetImageDecoders IN GDIPLUS.DLL LONG numDecoders, LONG size, LONG decoders
+DECLARE LONG GdipGetImageEncodersSize IN GDIPLUS.DLL LONG @numEncoders, LONG @size
+DECLARE LONG GdipGetImageEncoders IN GDIPLUS.DLL LONG numEncoders, LONG size, LONG encoders
 DECLARE LONG LocalAlloc IN WIN32API LONG uFlags, LONG uBytes
 DECLARE LONG LocalFree IN WIN32API LONG HMEM
 
@@ -5590,7 +5588,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcimagecodecinfo
 [START RESERVED1]
- 	 drawing.hÓ}„M5 system.hˆ~0•Ô4 gdiplusconstants.h˛π>œ4[END RESERVED1]
+ 	 drawing.hñ>≠ê5 system.hû?≠ê5 gdiplusconstants.h¶@≠ê5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -6166,7 +6164,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcimageformat
 [START RESERVED1]
- 	 drawing.hÓ}„M5 system.hˆ~0•Ô4 gdiplusconstants.h˛π>œ4[END RESERVED1]
+ 	 drawing.hñ>≠ê5 system.hû?≠ê5 gdiplusconstants.h¶@≠ê5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -6743,7 +6741,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcmetafileheader
 [START RESERVED1]
- 	 drawing.hÓ}„M5 system.hˆ~0•Ô4 gdiplusconstants.h˛π>œ4[END RESERVED1]
+ 	 drawing.hñ>≠ê5 system.hû?≠ê5 gdiplusconstants.h¶@≠ê5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -7051,7 +7049,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcmetaheader
 [START RESERVED1]
- 	 drawing.h.„M5 system.h/0•Ô4 gdiplusconstants.h0π>œ4[END RESERVED1]
+ 	 drawing.hñ>≠ê5 system.hû?≠ê5 gdiplusconstants.h¶@≠ê5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -7244,7 +7242,7 @@ CASE This.Type = PropertyTagTypeByte ;
 	m.lcString = "0h"+STRCONV(This.Value,15)
 	
 CASE This.Type = PropertyTagTypeASCII
-	m.lcString = This.Value
+	m.lcString = ""+This.Value
 	
 CASE This.Type = PropertyTagTypeShort
 	FOR lnStep = 1 TO This.Len STEP 2
@@ -7419,7 +7417,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcpropertyitem
 [START RESERVED1]
- 	 drawing.hÓ}„M5 system.hˆ~0•Ô4 gdiplusconstants.h˛π>œ4[END RESERVED1]
+ 	 drawing.hñ>≠ê5 system.hû?≠ê5 gdiplusconstants.h¶@≠ê5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -7840,7 +7838,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcwmfplaceablefileheader
 [START RESERVED1]
- 	 drawing.hÓ}„M5 system.hˆ~0•Ô4 gdiplusconstants.h˛π>œ4[END RESERVED1]
+ 	 drawing.hñ>≠ê5 system.hû?≠ê5 gdiplusconstants.h¶@≠ê5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -8055,32 +8053,31 @@ CATCH
 
 DECLARE Long Sleep IN WIN32API AS xfcMetaFileDeclareDLL Long
 
-DECLARE LONG GdipPlayMetafileRecord IN GDIPLUS LONG metafile, STRING recordType, LONG flags, LONG dataSize, STRING @byteData
-DECLARE LONG GdipGetMetafileHeaderFromEmf IN GDIPLUS LONG hEmf, STRING @header
-DECLARE LONG GdipGetMetafileHeaderFromFile IN GDIPLUS STRING FilName, STRING @header
-DECLARE LONG GdipGetMetafileHeaderFromStream IN GDIPLUS INTEGER stream, STRING @header
-DECLARE LONG GdipGetMetafileHeaderFromMetafile IN GDIPLUS LONG metafile, STRING @header
-DECLARE LONG GdipGetHemfFromMetafile IN GDIPLUS LONG metafile, LONG @hEmf
-DECLARE LONG GdipCreateMetafileFromWmf IN GDIPLUS LONG hWmf, LONG bDeleteWmf, STRING @WmfPlaceableFileHdr, LONG metafile
-DECLARE LONG GdipCreateMetafileFromEmf IN GDIPLUS LONG hEmf, LONG bDeleteEmf, LONG @metafile
-DECLARE LONG GdipCreateMetafileFromFile IN GDIPLUS STRING @byvalfile, LONG @metafile
-DECLARE LONG GdipCreateMetafileFromWmfFile IN GDIPLUS STRING file, STRING @WmfPlaceableFileHdr, LONG @metafile
-DECLARE LONG GdipCreateMetafileFromStream IN GDIPLUS INTEGER stream, Long @metafile
-DECLARE LONG GdipRecordMetafile IN GDIPLUS LONG referenceHdc, LONG @etype, STRING @frameRect, LONG frameUnit, STRING description, LONG @metafile
-DECLARE LONG GdipRecordMetafileI IN GDIPLUS LONG referenceHdc, LONG @etype, STRING @frameRect, LONG frameUnit, STRING description, LONG @metafile
-DECLARE LONG GdipRecordMetafileFileName IN GDIPLUS STRING FilName, LONG referenceHdc, LONG @etype, STRING @frameRect, LONG frameUnit, STRING description, LONG @metafile
-DECLARE LONG GdipRecordMetafileFileNameI IN GDIPLUS STRING FilName, LONG referenceHdc, LONG @etype, STRING @frameRect, LONG frameUnit, STRING description, LONG @metafile
+DECLARE LONG GdipPlayMetafileRecord IN GDIPLUS.DLL LONG metafile, STRING recordType, LONG flags, LONG dataSize, STRING @byteData
+DECLARE LONG GdipGetMetafileHeaderFromEmf IN GDIPLUS.DLL LONG hEmf, STRING @header
+DECLARE LONG GdipGetMetafileHeaderFromFile IN GDIPLUS.DLL STRING FilName, STRING @header
+DECLARE LONG GdipGetMetafileHeaderFromStream IN GDIPLUS.DLL INTEGER stream, STRING @header
+DECLARE LONG GdipGetMetafileHeaderFromMetafile IN GDIPLUS.DLL LONG metafile, STRING @header
+DECLARE LONG GdipGetHemfFromMetafile IN GDIPLUS.DLL LONG metafile, LONG @hEmf
+DECLARE LONG GdipCreateMetafileFromWmf IN GDIPLUS.DLL LONG hWmf, LONG bDeleteWmf, STRING @WmfPlaceableFileHdr, LONG metafile
+DECLARE LONG GdipCreateMetafileFromEmf IN GDIPLUS.DLL LONG hEmf, LONG bDeleteEmf, LONG @metafile
+DECLARE LONG GdipCreateMetafileFromFile IN GDIPLUS.DLL STRING @byvalfile, LONG @metafile
+DECLARE LONG GdipCreateMetafileFromWmfFile IN GDIPLUS.DLL STRING file, STRING @WmfPlaceableFileHdr, LONG @metafile
+DECLARE LONG GdipCreateMetafileFromStream IN GDIPLUS.DLL INTEGER stream, Long @metafile
+DECLARE LONG GdipRecordMetafile IN GDIPLUS.DLL LONG referenceHdc, LONG @etype, STRING @frameRect, LONG frameUnit, STRING description, LONG @metafile
+DECLARE LONG GdipRecordMetafileI IN GDIPLUS.DLL LONG referenceHdc, LONG @etype, STRING @frameRect, LONG frameUnit, STRING description, LONG @metafile
+DECLARE LONG GdipRecordMetafileFileName IN GDIPLUS.DLL STRING FilName, LONG referenceHdc, LONG @etype, STRING @frameRect, LONG frameUnit, STRING description, LONG @metafile
+DECLARE LONG GdipRecordMetafileFileNameI IN GDIPLUS.DLL STRING FilName, LONG referenceHdc, LONG @etype, STRING @frameRect, LONG frameUnit, STRING description, LONG @metafile
 
 
-DECLARE LONG GdipSetMetafileDownLevelRasterizationLimit IN GDIPLUS LONG metafile, LONG metafileRasterizationLimitDpi
-DECLARE LONG GdipGetMetafileDownLevelRasterizationLimit IN GDIPLUS LONG metafile, LONG @metafileRasterizationLimitDpi
+DECLARE LONG GdipSetMetafileDownLevelRasterizationLimit IN GDIPLUS.DLL LONG metafile, LONG metafileRasterizationLimitDpi
+DECLARE LONG GdipGetMetafileDownLevelRasterizationLimit IN GDIPLUS.DLL LONG metafile, LONG @metafileRasterizationLimitDpi
 
 ENDTRY
 
 
 
-ENDPROC
-PROCEDURE gethenhmetafile
+ENDPROCPROCEDURE gethenhmetafile
 *********************************************************************
 ** Method: GetHenhmetafile
 **
@@ -8248,5 +8245,5 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcmetafile
 [START RESERVED1]
- 	 drawing.hÓ}„M5 system.hˆ~0•Ô4 gdiplusconstants.h˛π>œ4[END RESERVED1]
+ 	 drawing.hñ>≠ê5 system.hû?≠ê5 gdiplusconstants.h¶@≠ê5[END RESERVED1]
 [EOF]
