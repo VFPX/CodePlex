@@ -41,6 +41,7 @@ _bmpwidth
 _bmpheight
 _tempfile
 _hwnd
+_hbitmapold
 deleteosb
 renderosb
 declaredll
@@ -48,61 +49,48 @@ createosb
 rectangle_access
 smoothingmode_assign
 textrenderinghint_assign
+interpolationmode_assign
 obmp_access
-_hbitmapold
+width_access
+height_access
+backstyle_access
 [END PROTECTED]
 [START METHODS]
 PROCEDURE Destroy
 This.Controls.Remove(-1)
 This.Controls = NULL
 This.DeleteOSB()
+
+IF FILE(This._tempfile)
+	DELETE FILE (This._tempFile)
+ENDIF
+
 ENDPROC
 PROCEDURE Init
+LOCAL lcPath
 This.DeclareDLL()
 
 IF VARTYPE(_SCREEN.System) <> "O"
-	ADDPROPERTY(_SCREEN, "System", NEWOBJECT("xfcSystem", ADDBS(JUSTPATH(This.ClassLibrary))+"System.vcx"))
+	m.lcPath = ADDBS(JUSTPATH(SUBSTR(SYS(16), AT(" ",SYS(16),2)+1)))
+	DO (m.lcPath+"system.prg")
 ENDIF
 
 This.CreateOSB()
 This.Controls=CREATEOBJECT("Collection")
 This.Setup()
 
-*! ToDo: We may not want to draw here. If there are other objects on the form
-** that have not fully initialized yet, and we are making a reference to
-** them, we will get an error. We may need to bind to the forms init or
-** find some other way to handle this
-*!This.Draw()
-
-** Trying this instead
-** Binding to ThisForm.Init does not seem to work
-BINDEVENT(ThisForm, "Activate", This, "Draw")
-
 BINDEVENT(This.Parent, "Resize", This, "Resize")
+
 ENDPROC
-PROCEDURE Move
-LPARAMETERS nLeft, nTop, nWidth, nHeight
+PROCEDURE backstyle_access
+This.Draw()
+RETURN THIS.BackStyle
 
-** We need to create a new bitmap and graphics object whenever the
-** control resizes.
-**
-*!ToDo: We are hooking in here because we don't have a resize event
-** however, this doesn't always get called, like on a form maximize
-** with anchoring. We need to find a better way of hooking into this
-** control's resize.
-** Plus...This.Width and This.Height have not been set yet...
-** we really need another place to hook into for resizes
-
-*!*	IF This.Stretch = 0 AND (m.nWidth <> This.Width OR m.nHeight <> This.Height)
-*!*	*	This.CreateOSB()
-*!*		This.Draw()
-*!*	ENDIF
 ENDPROC
 PROCEDURE clear
 LPARAMETERS eColor
 
 ** eColor can be RGB, ARGB or Color object
-
 DO CASE
 CASE VARTYPE(m.eColor) = "O"
 	This.oGfx.Clear(m.eColor)
@@ -111,37 +99,35 @@ CASE VARTYPE(m.eColor) = "N" AND BITAND(m.eColor,0xFF000000) = 0
 CASE VARTYPE(m.eColor) = "N"
 	This.oGfx.Clear(_SCREEN.System.Drawing.Color.FromARGB(m.eColor))
 OTHERWISE
+	*! ToDo: Need to add support for XP theme background
 	This.oGfx.Clear(_SCREEN.System.Drawing.Color.FromRGB(ThisForm.BackColor))
 ENDCASE
 
-
-
-
-
 ENDPROC
 PROCEDURE createosb
+LPARAMETERS tnWidth, tnHeight
 
-LOCAL hdc, hdcMem, hBitmap, iWidth, iHeight
+LOCAL hdc, hdcMem, hBitmap
 
 This.DeleteOSB()
 
-This._BMPWidth = This.Width
-This._BMPHeight = This.Height
+IF EMPTY(m.tnWidth)
+	m.tnWidth = This.Width
+	m.tnHeight = This.Height
+ENDIF
 
-m.iWidth = This.Width
-m.iHeight = This.Height
+This._BMPWidth = m.tnWidth
+This._BMPHeight = m.tnHeight
 
 m.hdc = GetDC(0)
 m.hdcMem = CreateCompatibleDC(m.hdc)
-m.hBitmap = CreateCompatibleBitmap(m.hdc, m.iWidth, m.iHeight)
+m.hBitmap = CreateCompatibleBitmap(m.hdc, m.tnWidth, m.tnHeight)
 IF m.hBitmap <> 0
 	This._hBitmapOld = SelectObject(m.hdcMem, m.hBitmap)
 ENDIF
-*	BitBlt(hdcMem, 0, 0, iWidth, iHeight, hdc, 0, 0, SRCCOPY)
 ReleaseDC(0,m.hdc)
-**DeleteObject(m.hBitmap)
 
-This.HDC = m.hdcMem
+This.hDC = m.hdcMem
 This.oGfx = _SCREEN.System.Drawing.Graphics.FromHDC(This.hDC)
 
 This.oGfx.SmoothingMode = This.SmoothingMode
@@ -174,6 +160,7 @@ ENDPROC
 PROCEDURE deleteosb
 LOCAL hBitmap
 IF This.HDC <> 0
+	This.oGfx = NULL
 	DeleteObject(SelectObject(This.HDC, This._hBitmapOld))
 	DeleteDC(This.HDC)
 	This.HDC = 0
@@ -181,17 +168,30 @@ IF This.HDC <> 0
 ENDIF
 ENDPROC
 PROCEDURE draw
-IF This._BMPWidth <> This.Width OR This._BMPHeight <> This.Height
-	This.CreateOSB()
+LPARAMETERS tnWidth, tnHeight
+
+IF EMPTY(m.tnWidth)
+	m.tnWidth = This.Width
+	m.tnHeight = This.Height
+ENDIF
+
+IF This._BMPWidth <> m.tnWidth OR This._BMPHeight <> m.tnHeight
+	This.CreateOSB(m.tnWidth, m.tnHeight)
 ENDIF
 This.BeforeDraw()
 This.RenderOSB()
 This.AfterDraw()
 
 ENDPROC
+PROCEDURE height_access
+IF This.Parent.BaseClass = "Column"
+	RETURN This.Parent.Parent.RowHeight
+ENDIF
+RETURN THIS.Height
+
+ENDPROC
 PROCEDURE interpolationmode_assign
 LPARAMETERS vNewVal
-*To do: Modify this routine for the Assign method
 THIS.InterpolationMode = m.vNewVal
 This.oGfx.InterpolationMode = m.vNewVal
 
@@ -220,7 +220,7 @@ RETURN This.oBmp
 ENDPROC
 PROCEDURE rectangle_access
 
-IF VARTYPE(THIs.Rectangle) <> "O"
+IF VARTYPE(This.Rectangle) <> "O"
 	This.Rectangle = _SCREEN.System.Drawing.Rectangle.New(0,0,This.Width,This.Height)
 ELSE
 	This.Rectangle.Width = This.Width
@@ -239,9 +239,9 @@ LOCAL hBitmap, hdcMem, hdib
 LOCAL bm, bmWidth, bmHeight, bmPlanes, bmBitsPixel
 LOCAL bih, biSizeImage, biBitCount
 LOCAL hdib
-LOCAL hdc, hdc2, hdc3, hr
+LOCAL hdc, hdc2, hdc3, hr, lhFile
 
-m.hdc = This.HDC
+m.hdc = This.hDC
 m.hBitmap = GetCurrentObject(m.hdc, OBJ_BITMAP)
 
 m.qBitmap = REPLICATE(0h00, SIZEOF_BITMAP)
@@ -300,9 +300,9 @@ CASE This.RenderMode = 1	&& File BITMAP
 		This._tempfile = ADDBS(SYS(2023))+SYS(2015)+".bmp"
 	ENDIF
 	
-	nH = FCREATE(This._tempfile)
-	FWRITE(nH, m.bfh+m.bih+SYS(2600, m.hdib, m.biSizeImage))
-	FCLOSE(nH)
+	m.lhFile = FCREATE(This._tempfile)
+	FWRITE(m.lhFile, m.bfh+m.bih+SYS(2600, m.hdib, m.biSizeImage))
+	FCLOSE(m.lhFile)
 	This.Picture = (This._tempfile)
 	
 CASE This.RenderMode = 2	&& File BITMAP using Container Picture
@@ -321,7 +321,6 @@ ENDPROC
 PROCEDURE resize
 
 IF This.Stretch = 0 AND This.Anchor > 0 && AND (m.nWidth <> This.Width OR m.nHeight <> This.Height)
-*	This.CreateOSB()
 	This.Draw()
 ENDIF
 ENDPROC
@@ -350,7 +349,6 @@ ENDTRY
 ENDPROC
 PROCEDURE smoothingmode_assign
 LPARAMETERS vNewVal
-*To do: Modify this routine for the Assign method
 THIS.SmoothingMode = m.vNewVal
 This.oGfx.SmoothingMode = m.vNewVal
 
@@ -358,9 +356,15 @@ This.oGfx.SmoothingMode = m.vNewVal
 ENDPROC
 PROCEDURE textrenderinghint_assign
 LPARAMETERS vNewVal
-*To do: Modify this routine for the Assign method
 THIS.TextRenderingHint = m.vNewVal
 This.oGfx.TextRenderingHint = m.vNewVal
+
+ENDPROC
+PROCEDURE width_access
+IF This.Parent.BaseClass = "Column"
+	RETURN This.Parent.Width
+ENDIF
+RETURN THIS.Width
 
 ENDPROC
 [END METHODS]
@@ -402,6 +406,10 @@ _hbitmapold
 *save 
 *obmp_access 
 *afterdraw 
+*getextent 
+*width_access 
+*height_access 
+*backstyle_access 
 [END RESERVED3]
 [START RESERVED6]
 Pixels[END RESERVED6]
@@ -413,7 +421,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] imgcanvas
 [START RESERVED1]
- 	 drawing.hº≠ê5 system.hΩ≠ê5 gdiplusconstants.hæ≠ê5[END RESERVED1]
+ 	 drawing.h∂C≠ê5 system.hæD≠ê5 gdiplusconstants.h∆E≠ê5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
