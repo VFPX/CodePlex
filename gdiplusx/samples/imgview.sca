@@ -38,7 +38,7 @@ Height = 462
 Width = 554
 DoCreate = .T.
 AutoCenter = .T.
-Caption = "Form1"
+Caption = "Image View"
 Name = "Form1"
 [END PROPERTIES]
 [START METHODS]
@@ -134,7 +134,7 @@ Column5.Name = "Column5"
 [OBJNAME] Header1
 [PARENT] Form1.Grid1.Column1
 [START PROPERTIES]
-Caption = "Header1"
+Caption = "Thumbnail"
 Name = "Header1"
 [END PROPERTIES]
 
@@ -142,7 +142,7 @@ Name = "Header1"
 [PLATFORM] WINDOWS 
 [UNIQUEID] _2040K5AV3
 [CLASS] imgcanvas
-[CLASSLOC] ..\..\program files\microsoft visual foxpro 9\vfpx\gdiplusx.vcx
+[CLASSLOC] ..\source\gdiplusx.vcx
 [BASECLASS] image
 [OBJNAME] Image1
 [PARENT] Form1.Grid1.Column1
@@ -224,7 +224,7 @@ ENDPROC
 [OBJNAME] Header1
 [PARENT] Form1.Grid1.Column2
 [START PROPERTIES]
-Caption = "Header1"
+Caption = "File Name"
 Name = "Header1"
 [END PROPERTIES]
 
@@ -251,7 +251,7 @@ Name = "Text1"
 [OBJNAME] Header1
 [PARENT] Form1.Grid1.Column3
 [START PROPERTIES]
-Caption = "Header1"
+Caption = "Size"
 Name = "Header1"
 [END PROPERTIES]
 
@@ -278,7 +278,7 @@ Name = "Text1"
 [OBJNAME] Header1
 [PARENT] Form1.Grid1.Column4
 [START PROPERTIES]
-Caption = "Header1"
+Caption = "Date"
 Name = "Header1"
 [END PROPERTIES]
 
@@ -305,7 +305,7 @@ Name = "Text1"
 [OBJNAME] Header1
 [PARENT] Form1.Grid1.Column5
 [START PROPERTIES]
-Caption = "Header1"
+Caption = "Time"
 Name = "Header1"
 [END PROPERTIES]
 
@@ -380,7 +380,7 @@ ENDPROC
 [PARENT] Form1
 [START PROPERTIES]
 Top = 428
-Left = 239
+Left = 110
 Height = 27
 Width = 101
 Anchor = 12
@@ -390,6 +390,115 @@ Name = "cmdPath"
 [START METHODS]
 PROCEDURE Click
 ThisForm.LoadImages()
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2080V34HP
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] Command3
+[PARENT] Form1
+[START PROPERTIES]
+Top = 428
+Left = 225
+Height = 27
+Width = 115
+Anchor = 12
+Caption = "Web Thumbnails..."
+Name = "Command3"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+#DEFINE CRLF CHR(13)+CHR(10)
+#DEFINE PropertyTagDateTime 0x0132
+
+LOCAL lcPath, lnFile, laFiles[1], lcHTML, lcThumbHTML
+LOCAL lnWidth, lnHeight
+LOCAL loImg AS xfcImage
+LOCAL loThumb AS xfcImage
+LOCAL loBmp AS xfcBitmap
+LOCAL loGfx AS xfcGraphics
+LOCAL loColor AS xfcColor
+LOCAL loBrushLight AS xfcSolidBrush
+LOCAL loBrushDark AS xfcSolidBrush
+LOCAL loProp AS xfcPropertyItem
+
+SELECT curImages
+GO TOP
+lcPath = ADDBS(filepath)
+lcThumbPath = lcPath+"Thumbs\"
+
+IF NOT DIRECTORY(lcThumbPath)
+	MD (lcThumbPath)
+ENDIF
+
+WITH _SCREEN.System.Drawing
+
+loFont = .Font.New("Arial",10,1)
+loColor = .Color.New(0x80000000)
+loBrushDark = .SolidBrush.New(loColor)
+loColor = .Color.New(0xa0ffffff)
+loBrushLight = .SolidBrush.New(loColor)
+
+loImg = NULL
+
+lnWidth = 160
+lnHeight = 120
+
+lcThumbHTML = ""
+
+
+SELECT curImages
+SCAN
+	lcFile = filename
+	loImg = .Image.FromFile(lcPath+lcFile)
+	loBmp = .Bitmap.New(160,120)
+	loGfx = .Graphics.FromImage(loBmp)
+	
+	lcDate = ""
+	** Get picture taken date
+	IF NOT ISNULL(loImg.PropertyIdList[1])
+		FOR EACH lnProp IN loImg.PropertyIdList
+			loProp = loImg.GetPropertyItem(lnProp)
+			IF loProp.Id = PropertyTagDateTime
+				lcDate = ""+loProp.Value
+				EXIT
+			ENDIF
+		ENDFOR
+	ENDIF
+	lcString = lcFile + CRLF + ;
+				TRANSFORM(loImg.Width) + " x " + TRANSFORM(loImg.Height) + CRLF + ;
+				lcDate	
+	
+	loGfx.Clear(.Color.White)
+	loGFX.DrawImage(loImg,0,0,lnWidth,lnHeight)
+	loGFX.DrawString(lcString, loFont, loBrushDark, 1, 1)
+	loGFX.DrawString(lcString, loFont, loBrushLight, 0, 0)
+	
+	loBmp.Save(FORCEEXT(lcThumbPath+"thumb"+lcFile,"jpg"), .Imaging.ImageFormat.Jpeg)
+	lcThumbHTML = lcThumbHTML + ;
+				[   <a href="../]+lcFile+[" target="large">]+;
+				[<img src="thumb]+FORCEEXT(lcFile,"jpg")+[" border="0" alt="]+lcString+["></a>]+CRLF
+
+ENDSCAN
+
+TEXT TO lcHTML NOSHOW TEXTMERGE
+<html>
+<body>
+<<lcThumbHTML>>
+</body>
+</html>
+ENDTEXT
+
+ENDWITH
+
+STRTOFILE(lcHTML, lcThumbPath+"default.htm")
+
+MESSAGEBOX("File Created: "+lcThumbPath+"default.htm")
+
+
 ENDPROC
 [END METHODS]
 
