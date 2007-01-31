@@ -79,6 +79,7 @@ This.CreateOSB()
 This.Controls=CREATEOBJECT("Collection")
 This.Setup()
 
+BINDEVENT(ThisForm, "Activate", This, "Draw")
 BINDEVENT(This.Parent, "Resize", This, "Resize")
 
 ENDPROC
@@ -421,7 +422,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] imgcanvas
 [START RESERVED1]
- 	 drawing.h∂C≠ê5 system.hæD≠ê5 gdiplusconstants.h∆E≠ê5[END RESERVED1]
+ 	 drawing.h.ñ≠ê5 system.h6ó≠ê5 gdiplusconstants.h>ò≠ê5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
