@@ -293,7 +293,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcblend
 [START RESERVED1]
- 	 drawing.hñ>≠ê5 system.hû?≠ê5 gdiplusconstants.h¶@≠ê5[END RESERVED1]
+ 	 drawing.hn≠ê5 system.hv≠ê5 gdiplusconstants.h~≠ê5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -558,7 +558,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfccolorblend
 [START RESERVED1]
- 	 drawing.hñ>≠ê5 system.hû?≠ê5 gdiplusconstants.h¶@≠ê5[END RESERVED1]
+ 	 drawing.hˆ·≠ê5 system.h˛‚≠ê5 gdiplusconstants.h‰≠ê5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -1048,7 +1048,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfccustomlinecap
 [START RESERVED1]
- 	 drawing.hñ>≠ê5 system.hû?≠ê5 gdiplusconstants.h¶@≠ê5[END RESERVED1]
+ 	 drawing.hf≠ê5 system.hn≠ê5 gdiplusconstants.hv≠ê5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -1141,7 +1141,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcgraphicscontainer
 [START RESERVED1]
- 	 drawing.hñ>≠ê5 system.hû?≠ê5 gdiplusconstants.h¶@≠ê5[END RESERVED1]
+ 	 drawing.hf≠ê5 system.hn≠ê5 gdiplusconstants.hv≠ê5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -3048,7 +3048,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcgraphicspath
 [START RESERVED1]
- 	 drawing.hñ>≠ê5 system.hû?≠ê5 gdiplusconstants.h¶@≠ê5[END RESERVED1]
+ 	 drawing.hf≠ê5 system.hn≠ê5 gdiplusconstants.hv≠ê5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -3521,7 +3521,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcgraphicspathiterator
 [START RESERVED1]
- 	 drawing.hñ>≠ê5 system.hû?≠ê5 gdiplusconstants.h¶@≠ê5[END RESERVED1]
+ 	 drawing.hˆ·≠ê5 system.h˛‚≠ê5 gdiplusconstants.h‰≠ê5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -3588,7 +3588,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcgraphicsstate
 [START RESERVED1]
- 	 drawing.hñ>≠ê5 system.hû?≠ê5 gdiplusconstants.h¶@≠ê5[END RESERVED1]
+ 	 drawing.hˆ·≠ê5 system.h˛‚≠ê5 gdiplusconstants.h‰≠ê5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -4425,7 +4425,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcmatrix
 [START RESERVED1]
- 	 drawing.hñ>≠ê5 system.hû?≠ê5 gdiplusconstants.h¶@≠ê5[END RESERVED1]
+ 	 drawing.hf≠ê5 system.hn≠ê5 gdiplusconstants.hv≠ê5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -4639,7 +4639,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcpathdata
 [START RESERVED1]
- 	 drawing.hñ>≠ê5 system.hû?≠ê5 gdiplusconstants.h¶@≠ê5[END RESERVED1]
+ 	 drawing.hf≠ê5 system.hn≠ê5 gdiplusconstants.hv≠ê5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -4730,7 +4730,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcregiondata
 [START RESERVED1]
- 	 drawing.hñ>≠ê5 system.hû?≠ê5 gdiplusconstants.h¶@≠ê5[END RESERVED1]
+ 	 drawing.hf≠ê5 system.hn≠ê5 gdiplusconstants.hv≠ê5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -5050,7 +5050,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcadjustablearrowcap
 [START RESERVED1]
- 	 drawing.hñ>≠ê5 system.hû?≠ê5 gdiplusconstants.h¶@≠ê5[END RESERVED1]
+ 	 drawing.hVw≠ê5 system.h^x≠ê5 gdiplusconstants.hfy≠ê5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -5300,7 +5300,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfchatchbrush
 [START RESERVED1]
- 	 drawing.hñ>≠ê5 system.hû?≠ê5 gdiplusconstants.h¶@≠ê5[END RESERVED1]
+ 	 drawing.hn≠ê5 system.hv≠ê5 gdiplusconstants.h~≠ê5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -6175,7 +6175,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfclineargradientbrush
 [START RESERVED1]
- 	 drawing.hñ>≠ê5 system.hû?≠ê5 gdiplusconstants.h¶@≠ê5[END RESERVED1]
+ 	 drawing.hf≠ê5 system.hn≠ê5 gdiplusconstants.hv≠ê5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -7204,5 +7204,5 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcpathgradientbrush
 [START RESERVED1]
- 	 drawing.hñ>≠ê5 system.hû?≠ê5 gdiplusconstants.h¶@≠ê5[END RESERVED1]
+ 	 drawing.hf≠ê5 system.hn≠ê5 gdiplusconstants.hv≠ê5[END RESERVED1]
 [EOF]
