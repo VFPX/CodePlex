@@ -278,7 +278,7 @@ system.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcsystem
 [START RESERVED1]
-  system.hvÊ≠ê5[END RESERVED1]
+  system.h^s≠ê5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -1352,7 +1352,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcdrawing
 [START RESERVED1]
- 	 drawing.hûa„M5 system.h¶b0•Ô4 gdiplusconstants.hÆcπù5[END RESERVED1]
+ 	 drawing.h¶≠ê5 system.hÆ≠ê5 gdiplusconstants.h∂≠ê5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -2529,7 +2529,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcdrawing2d
 [START RESERVED1]
- 	 drawing.hf„M5 system.hn0•Ô4 gdiplusconstants.hvπù5[END RESERVED1]
+ 	 drawing.hf≠ê5 system.hn≠ê5 gdiplusconstants.hv≠ê5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -3552,7 +3552,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcimaging
 [START RESERVED1]
- 	 drawing.hf„M5 system.hn0•Ô4 gdiplusconstants.hvπù5[END RESERVED1]
+ 	 drawing.hf≠ê5 system.hn≠ê5 gdiplusconstants.hv≠ê5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -3699,7 +3699,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfctext
 [START RESERVED1]
- 	 drawing.hNÈ„M5 system.hVÍ0•Ô4 gdiplusconstants.h^Îπù5[END RESERVED1]
+ 	 drawing.h¶≠ê5 system.hÆ≠ê5 gdiplusconstants.h∂≠ê5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -3812,7 +3812,7 @@ system.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcguid
 [START RESERVED1]
-  system.hæ0•Ô4[END RESERVED1]
+  system.h^s≠ê5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -4119,5 +4119,5 @@ system.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcenum
 [START RESERVED1]
-  system.hæ0•Ô4[END RESERVED1]
+  system.h^s≠ê5[END RESERVED1]
 [EOF]
