@@ -512,7 +512,7 @@ rgbborder = (Rgb(0,45,150))
 imgsplitbar = 
 themenumber = 0
 themessupport = (Null)
-version = 1.0.1
+version = 1.0.2
 Name = "outlook2003bar"
 [END PROPERTIES]
 [START PROTECTED]
@@ -683,7 +683,7 @@ loGfx = Createobject("gpGraphics")
 loGfx.CreateFromImage(loBmp)
 
 * Declare API
-Declare Long GdipCreateLineBrushI In GDIPlus ;
+Declare Long GdipCreateLineBrushI In GDIPlus.dll ;
 	String point1, String point2, ;
 	Long color1, Long color2, ;
 	Long wrapMode, Long @lineGradient
@@ -783,9 +783,9 @@ With This
       lnTheme = 1 && Blue
       If .ThemesSupport
          Local lnSysColor
-         Declare Integer GetSysColor In Win32Api Integer
-         lnSysColor = GetSysColor(2)
-         Clear Dlls GetSysColor
+         Declare Integer GetSysColor In Win32Api As API_GetSysColor Integer
+         lnSysColor = API_GetSysColor(2)
+         Clear Dlls API_GetSysColor
          Do Case
             Case lnSysColor == 12632256 && Silver
                lnTheme = 2
@@ -961,9 +961,9 @@ With This
 		llThemesSupport = .F.
 		If .ThemeNumber==0 && Automatic
 			If Os(3)=="5" And Os(4)=="1" && Windows XP
-				Declare Long IsThemeActive In UXTHEME
-				llThemesSupport = (IsThemeActive()==1)
-				Clear Dlls IsThemeActive
+				Declare Long IsThemeActive In UXTHEME As API_IsThemeActive
+				llThemesSupport = (API_IsThemeActive()==1)
+				Clear Dlls API_IsThemeActive
 			Endif
 		Endif
 		.ThemesSupport = llThemesSupport
