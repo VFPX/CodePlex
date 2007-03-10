@@ -1829,46 +1829,17 @@ PROCEDURE Init
 ***************************************************************************************
 LPARAMETERS voMenuItem, voTabMenu
 
-LOCAL lnX, lnY
+IF DODEFAULT(voMenuItem, voTabMenu)
+  *-- Reposition the start menu form because the default behaviour is to display the
+  * popup below the menu item that selected it.  In the case of the start menu form
+  * this needs to be in the centre of the main item.
+  thisform.Top  = thisform.Top - INT(this.oMenuItem.Height / 2)
+  thisform.Left = thisform.left + INT(this.oMenuItem.Width / 2)
 
-lnX = 0
-lnY = 0
-
-#define WM_KEYDOWN        0x0100
-#define WM_KEYUP          0x0101
-#define WM_SYSKEYUP       0x0105
-#define WS_EX_LAYERED     0x00080000
-#define WS_EX_TOOLWINDOW  0x00000080
-
-BINDEVENT(this.Hwnd, WM_KEYDOWN, voTabMenu, "WMEventHandler")
-BINDEVENT(this.Hwnd, WM_SYSKEYUP, voTabMenu, "WMEventHandler")
-BINDEVENT(this.Hwnd, WM_KEYUP, voTabMenu, "WMEventHandler")
-
-this.oTabMenu         = voTabMenu
-this.oMenuItem        = voTabMenu.cntMainItem
-thisform.lShowhotkeys = voTabMenu.lShowHotKeys
-thisform.cBaseFont    = voTabMenu.cBaseFont
-
-thisform.cntMenuItems.cntRecentItems.Caption = "Recent Items"
-
-thisform.cmdCancel.Left = -100
-thisform.cmdCancel.Top = -100
-
-IF thisform.getobjectpos(@lnX, @lnY, this.oMenuItem)
-  thisform.Top  = lnY + INT(this.oMenuItem.Height / 2)
-  thisform.Left = lnX + INT(this.oMenuItem.Width / 2)
+  thisform.cntMenuItems.cntRecentItems.Caption = "Recent Items"
 ELSE
-  thisform.Top  = lnY
-  thisform.Left = lnX
+  RETURN .f.
 ENDIF
-
-this.Resize()
-
-DECLARE SetWindowLong In WIN32API Integer, Integer, Integer
-DECLARE SetLayeredWindowAttributes IN WIN32API Integer, Integer, Integer, Integer
-
-SetWindowLong(Thisform.HWnd, -20, WS_EX_LAYERED + WS_EX_TOOLWINDOW)
-SetLayeredWindowAttributes(Thisform.HWnd, RGB(0,255,0), 0, 1)
 ENDPROC
 PROCEDURE Resize
 *************************************************************************************************
