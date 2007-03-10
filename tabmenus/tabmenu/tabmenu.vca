@@ -468,14 +468,29 @@ PROCEDURE mainformresize
 *************************************************************************
 *$METHOD$ MainFormResize()
 *$CREATED$ 27/02/2007
+*
+*$HISTORY$
+*  10/03/2007 - GZ: Fixed a problem when the toolbar is docked after
+*  it has been created.
+*$HISTORY$
 *************************************************************************
 IF VARTYPE(this.omainform) = "O"
   this.cntControl.nWindowstate = this.omainform.windowstate
   this.Width = this.omainform.width
 ELSE
   this.cntControl.nWindowstate = _SCREEN.WindowState
-  this.Width = _SCREEN.width
+  IF this.Parent.docked
+    *-- If the form is docked then changing the size of the container
+    * results in a recursive call to this method which ultimately ends
+    * up causing a C5 error
+    IF this.Width <> _SCREEN.Width - (SYSMETRIC(3) * 2)
+      this.Width = _SCREEN.width - (SYSMETRIC(3) * 2)
+    ENDIF
+  ELSE
+    this.Width = _SCREEN.width
+  ENDIF
 ENDIF
+
 ENDPROC
 PROCEDURE selectmainitem
 **************************************************************************
@@ -917,6 +932,11 @@ PROCEDURE MouseMove
 *  bar and move the form, but it will only happen if the toolbar is
 *  contained within a top level form and not the VFP screen
 *$PURPOSE$
+*
+*$HISTORY$
+*  10/03/2007 - GZ: Fixed a problem with the way the screen was positioned
+*  if the toolbar was docked.
+*$HISTORY$
 *************************************************************************
 LPARAMETERS nButton, nShift, nXCoord, nYCoord
 
@@ -932,7 +952,13 @@ IF m.nButton = 1
       ENDWITH
     ELSE
       WITH _SCREEN
-        .Move(.Left + m.lnDiffX, .Top + m.lnDiffY, .Width, .Height)
+        IF this.Parent.Parent.Docked
+          *-- Need to offet the height by the height of the toolbar if the toolbar
+          * is docked.
+          .Move(.Left + m.lnDiffX, .Top + m.lnDiffY - this.Parent.Parent.Height, .Width, .Height)
+        ELSE
+          .Move(.Left + m.lnDiffX, .Top + m.lnDiffY, .Width, .Height)
+        ENDIF
       ENDWITH
     ENDIF
     this.MouseDown(m.nButton, m.nShift, m.nXCoord - m.lnDiffX, m.nYCoord - m.lnDiffY)
