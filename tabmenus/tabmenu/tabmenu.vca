@@ -1,0 +1,5183 @@
+SCCTEXT Version 4.0.0.2
+PLATFORM C(8,0),UNIQUEID C(10,0),TIMESTAMP N(10,0),CLASS M(4,0),CLASSLOC M(4,0),BASECLASS M(4,0),OBJNAME M(4,0),PARENT M(4,0),PROPERTIES M(4,0),PROTECTED M(4,0),METHODS M(4,0),OBJCODE M(4,0),OLE M(4,0),OLE2 M(4,0),RESERVED1 M(4,0),RESERVED2 M(4,0),RESERVED3 M(4,0),RESERVED4 M(4,0),RESERVED5 M(4,0),RESERVED6 M(4,0),RESERVED7 M(4,0),RESERVED8 M(4,0),USER M(4,0)
+1252
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] Class     
+[START RESERVED1]
+VERSION =   3.00[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1ZX0XK18Y
+[CLASS] container
+[BASECLASS] container
+[OBJNAME] cnttabmenu
+[START PROPERTIES]
+Anchor = 11
+Width = 390
+Height = 142
+BorderWidth = 0
+BackColor = 221,234,251
+BorderColor = 59,90,130
+itemcount = ( 0)
+ofrmstartmenu = ( .NULL.)
+lshowhelp = ( .t.)
+lshowmain = ( .t.)
+ccaption = ( "")
+ltitlebar = ( .t.)
+lshowquickbar = ( .t.)
+lshowhotkeys = .F.
+nselecteditem = ( 0)
+lshowsearch = ( .t.)
+noldproc = ( 0)
+cfrmstartclass = ( "frmStartMenu")
+lctrldown = .F.
+osubmenu = ( .NULL.)
+nmousex = ( 0)
+nmousey = ( 0)
+omainform = ( .NULL.)
+lallowresize = ( .f.)
+nmaxitempos = ( 0)
+cbasefont = ( "Segoe UI")
+Name = "cnttabmenu"
+[END PROPERTIES]
+[START PROTECTED]
+lctrldown
+[END PROTECTED]
+[START METHODS]
+PROCEDURE Destroy
+***************************************************************************
+*$METHOD$ Destroy()
+*$CREATED$ 17/02/2007
+***************************************************************************
+UNBINDEVENTS(this)
+
+this.omainform = .NULL.
+
+IF VARTYPE(_SCREEN.oTabMenuHandler) = "O"
+  *-- the tab menu handler object exists on the _SCREEN object so when
+  * we get rid of the tabmenu we should also get rid of the handler
+  * object
+  UNBINDEVENTS(_SCREEN.oTabMenuHandler)
+  _SCREEN.oTabMenuHandler = .NULL.
+  REMOVEPROPERTY(_SCREEN, "oTabMenuHandler")
+ENDIF
+
+IF VARTYPE(_SCREEN.oTabMenu) <> "U"
+  *-- the tab menu property exists on the _SCREEN object so when we get
+  * rid of the tabmenu we should also get rid of the property
+  _SCREEN.oTabMenu = .NULL.
+  REMOVEPROPERTY(_SCREEN, "oTabMenu")
+ENDIF
+
+IF VARTYPE(_SCREEN.oToolbar) <> "U"
+  *-- the toolbar property exists on the _SCREEN object so when we get
+  * rid of the tabmenu we should also get rid of the property
+  _SCREEN.oToolbar = .NULL.
+  REMOVEPROPERTY(_SCREEN, "oToolbar")
+ENDIF
+ENDPROC
+PROCEDURE Init
+*************************************************************************
+*$METHOD$ Init()
+*$CREATED$ 11/02/2007
+*************************************************************************
+this.BackColor = RGB(221,234,251)
+
+IF this.lTitlebar
+  this.imgTitleBar.Left = 0
+  this.imgTitleBar.Top = 0
+  this.imgTitleBar.Width = this.width
+  this.imgTitleBar.Visible = .t.
+
+  this.lblCapTION.Visible = .f.
+  this.lblCaption.Width = this.Width
+  this.lblCaption.Top = INT((this.imgTitleBar.Height - this.lblCapTION.Height) / 2)
+  this.lblCapTION.Left = 0
+
+  this.cntcontrol.Top = 0
+  this.cntcontrol.Left = this.Width - this.cntcontrol.width
+  this.cntcontrol.nWindowstate = 0
+ELSE
+  this.lblCapTION.Visible = .f.
+  this.imgTitleBar.Visible = .f.
+  this.cntcontrol.Visible = .f.
+ENDIF
+
+this.imgTabStrip.Top = IIF(this.lTitleBar, this.imgTitleBar.Height, 0)
+this.imgTabStrip.Width = this.Width
+
+this.shpPopup.Top = IIF(this.lTitlebar, this.imgTitleBar.Height, 0) + this.imgTabStrip.Height + 2
+this.shpPopup.Width = this.Width - (this.shpPopup.Left * 2)
+this.shpPopup.height = this.Height - this.shpPopup.Top
+
+this.pgfPopups.Height = this.shpPopup.Height - 2
+this.pgfPopups.Top = this.shpPopup.Top + 1
+this.pgfPopups.Width = this.shpPopup.Width - 2
+this.pgfPopups.Left = this.shpPopup.Left + 1
+
+IF this.lShowhelp
+  this.cntHelpItem.Left = this.Width - this.cntHelpItem.Width - 3
+  IF this.lTitlebar
+    this.cntHelpItem.Top = this.imgTitleBar.Height + 3
+  ELSE
+    this.cntHelpItem.Top = 3
+  ENDIF
+ELSE
+  this.cntHelpItem.Visible = .f.
+ENDIF
+
+IF this.lShowSearch
+  this.cntSearchBox.Left = this.Width - (IIF(this.lShowHelp, this.cntHelpItem.Width, 0) + this.cntSearchBox.Width + 2)
+  IF this.lTitleBar
+    this.cntSearchBox.Top = this.imgTitleBar.Height + 3
+  ELSE
+    this.cntSearchBox.Top = 3
+  ENDIF
+ELSE
+  this.cntSearchBox.Visible = .f.
+ENDIF
+
+IF this.lShowMain
+  this.cntMainitem.Left = 0
+  this.cntMainitem.Top = 0
+  this.cntQuickBar.Left = this.cntMainItem.Width - 5
+ELSE
+  this.imgMainitem.Visible = .f.
+  this.cntQuickBar.Left = 2
+ENDIF
+
+this.cntQuickBar.Top = 0
+
+IF NOT this.lShowQuickbar
+  this.cntQuickBar.Visible = .f.
+ENDIF
+ENDPROC
+PROCEDURE Refresh
+*************************************************************************
+*$METHOD$ Refresh()
+*$CREATED$ 11/02/2007
+*************************************************************************
+LOCAL lnCount, lcItemName, lnLeft, lcPrevItem
+
+lnLeft = IIF(this.lShowMain, 45, 5)
+
+this.nMaxItemPos = 0
+
+FOR lnCount = 1 TO this.ItemCount
+  lcPrevItem = lcItemName
+  lcItemName = "MenuItem" + STRTRAN(STR(lnCount,3,0), " ", "0")
+  IF lnCount > 1
+    lnLeft = this.&lcPrevItem..Left + this.&lcPrevItem..Width
+  ENDIF
+  WITH this.&lcItemName.
+    .Refresh()
+    .Left = lnLeft
+    .Top = IIF(this.ltitlebar, this.imgTitleBar.Height, 0)
+    IF .Left + .Width > this.nMaxitempos
+      *-- Determine the position of the rightmost item
+      this.nMaxItemPos = .Left + .Width
+    ENDIF
+  ENDWITH
+NEXT
+ENDPROC
+PROCEDURE Resize
+**************************************************************************
+*$METHOD$ Resize()
+*$CREATED$ 11/02/2007
+**************************************************************************
+IF this.lTitlebar
+  this.imgTitleBar.Top = 0
+  this.imgTitleBar.Left = 0
+  this.imgTitleBar.Width = this.width
+ENDIF
+
+this.cntControl.Left = this.Width - this.cntcontrol.Width
+this.cntControl.Top = 0
+
+this.lblCaption.Width = this.Width
+
+this.imgTabStrip.Top = IIF(this.lTitleBar, this.imgTitleBar.Height, 0)
+this.imgTabStrip.Width = this.Width
+this.shpPopup.Top = IIF(this.lTitlebar, this.imgTitleBar.Height, 0) + this.imgTabStrip.Height + 2
+
+IF VARTYPE(this.omainform) = "O"
+  this.imgResize.Visible = .t.
+ELSE
+  this.imgResize.Visible = .f.
+ENDIF
+this.imgReSIZE.Left = this.Width - this.imgreSIZE.Width
+this.imgResize.Top = this.Height - this.imgreSIZE.Height
+
+this.shpPopup.Width = this.Width - (this.shpPopup.Left * 2)
+this.shpPopup.height = this.Height - this.shpPopup.Top && - 2
+
+this.pgfPopups.Height = this.shpPopup.Height - 2
+this.pgfPopups.Top = this.shpPopup.Top + 1
+this.pgfPopups.Width = this.shpPopup.Width - 2
+this.pgfPopups.Left = this.shpPopup.Left + 1
+
+this.cntHelpItem.Left = MAX(this.nMaxItemPos, this.Width - this.cntHelpItem.Width - 3)
+this.cntHelpItem.Top = IIF(this.lTitleBar, this.imgTitleBar.Height + 3, 3)
+
+IF this.lShowSearch
+  this.cntSearchBox.Left = this.Width - (IIF(this.lShowHelp, this.cntHelpItem.Width, 0) + this.cntSearchBox.Width + 2)
+  IF this.lTitleBar
+    this.cntSearchBox.Top = this.imgTitleBar.Height + 3
+  ELSE
+    this.cntSearchBox.Top = 3
+  ENDIF
+  IF this.cntSearchBox.Left < this.nMaxitempos
+    *-- If we have shrunk the screen to the extent that things
+    * start to overlap then make them invisible
+    this.cntsearchbox.Visible = .f.
+  ELSE
+    this.cntsearchbox.Visible = .t.
+  ENDIF
+ELSE
+  this.cntSearchBox.Visible = .f.
+ENDIF
+
+ENDPROC
+PROCEDURE addmenuitem
+****************************************************************************
+*$METHOD$ AddMenuItem()
+*$CREATED$ 01/02/2007
+****************************************************************************
+LPARAMETERS vcCaption, vcHotKey
+
+LOCAL lcItemName, lnLeft, lcPrevItem
+
+lcPrevItem = "MenuItem" + STRTRAN(STR(this.ItemCount,3,0), " ", "0")
+this.Itemcount = this.Itemcount + 1
+lcItemName = "MenuItem" + STRTRAN(STR(this.ItemCount,3,0), " ", "0")
+this.AddObject(lcItemName, "cntMenuItem", vcCaption)
+
+lnLeft = IIF(this.lShowMain, 45, 5)
+IF this.ItemCount > 1
+  lnLeft = this.&lcPrevItem..Left + this.&lcPrevItem..Width
+ENDIF
+
+WITH this.&lcItemName.
+  .Top = IIF(this.ltitlebar, this.imgTitleBar.Height, 0)
+  .Left = lnLeft
+  .cHotKey = IIF(EMPTY(vcHotKey),"",vcHotKey)
+  .ItemIndex = this.Itemcount
+  .cBaseFont = this.cBasefont
+  .Visible = .t.
+ENDWITH
+
+this.pgfPopups.PageCount = this.Itemcount
+this.pgfPopups.Pages(this.Itemcount).BackColor = this.shpPopup.BackColor
+this.pgfPopups.Pages(this.Itemcount).BackStyle = 0
+this.pgfPopups.Pages(this.Itemcount).AddProperty("ItemCount", 0)
+
+RETURN this.&lcItemName.
+ENDPROC
+PROCEDURE addpopup
+*************************************************************************
+*$METHOD$ AddPopup()
+*$CREATED$ 01/02/2007
+*************************************************************************
+LPARAMETERS vcCaption, vnItemIndex
+
+LOCAL lcPopupItem, loPage, lnLeft, lcPrevPopup
+
+lnLeft = 2
+loPage = this.pgfPopups.Pages(vnItemIndex)
+WITH loPage
+  lcPrevPopup = "PopupMenu" + STRTRAN(STR(.ItemCount,3,0)," ","0")
+  .ItemCount = .ItemCount + 1
+  lcPopupItem = "PopupMenu" + STRTRAN(STR(.ItemCount,3,0)," ","0")
+  .AddObject(lcPopupItem, "cntPopupMenu")
+
+  IF .ItemCount > 1
+    lnLeft = loPage.&lcPrevPopup..Left + loPage.&lcPrevPopup..Width + 2
+  ENDIF
+
+  WITH .&lcPopupItem.
+    .Height    = loPage.Parent.height - 4
+    .top       = 2
+    .left      = lnLeft
+    .Caption   = vcCaption
+    .cBaseFont = this.cBasefont
+    .Visible   = .t.
+  ENDWITH
+ENDWITH
+
+RETURN loPage.&lcPopupItem.
+
+ENDPROC
+PROCEDURE appmaximize
+************************************************************************
+*$METHOD$ AppMaximize()
+*$CREATED$ 27/02/2007
+************************************************************************
+this.cntCONTROL.nwindowstate = 2
+ENDPROC
+PROCEDURE appminimize
+************************************************************************
+*$METHOD$ AppMinimize()
+*$CREATED$ 27/02/2007
+************************************************************************
+this.cntCONTROL.nwindowstate = 1
+ENDPROC
+PROCEDURE apprestore
+************************************************************************
+*$METHOD$ AppRestore()
+*$CREATED$ 27/02/2007
+************************************************************************
+this.cntCONTROL.nwindowstate = 0
+ENDPROC
+PROCEDURE cbasefont_assign
+*************************************************************************
+*$METHOD$ cBaseFont_Assign()
+*$CREATED$ 09/03/2007
+*************************************************************************
+LPARAMETERS vcNewVal
+
+THIS.cBaseFont = m.vcNewVal
+this.lblCaption.FontName = this.cBasefont
+this.cntMainItem.cBaseFont = this.cBasefont
+
+ENDPROC
+PROCEDURE ccaption_assign
+************************************************************************
+*$METHOD$ cCaption_assign()
+*$CREATED$ 07/02/2007
+************************************************************************
+LPARAMETERS vcNewVal
+
+THIS.cCaption = m.vcNewVal
+
+IF EMPTY(this.cCaption)
+  this.lblCaption.Visible = .f.
+  this.lblCapTION.Caption = ""
+ELSE
+  this.lblCapTION.Caption = vcNewVal
+  this.lblCapTION.Visible = this.ltitlebar
+ENDIF
+ENDPROC
+PROCEDURE lallowresize_assign
+**************************************************************************
+*$METHOD$ lAllowResize_Assign()
+*$CREATED$ 27/02/2007
+**************************************************************************
+LPARAMETERS vlNewVal
+
+THIS.lAllowResize = m.vlNewVal
+IF VARTYPE(this.omainform) = "O"
+  this.imgResize.Visible = m.vlNewVal
+ELSE
+  this.imgResize.Visible = .f.
+ENDIF
+
+ENDPROC
+PROCEDURE lshowhelp_assign
+LPARAMETERS vlNewVal
+
+THIS.lshowhelp = m.vlNewVal
+this.cntHelpItem.Visible = this.lShowHelp
+
+ENDPROC
+PROCEDURE lshowhotkeys_assign
+LPARAMETERS vlNewVal
+
+THIS.lShowHotkeys = m.vlNewVal
+
+this.cntMAINITEM.lshowhotkey = THIS.lShowHotkeys
+this.cntQUICKBAR.lshowhotkeys = THIS.lShowHotkeys
+
+LOCAL lnCount, lcItemName
+
+FOR lnCount = 1 TO this.ItemCount
+  lcItemName = "MenuItem" + STRTRAN(STR(lnCount,3,0), " ", "0")
+  WITH this.&lcItemName.
+    .lShowHotKey = THIS.lShowHotkeys
+  ENDWITH
+NEXT
+
+IF this.pgfPopups.PageCount > 0 AND this.nSelecteditem > 0
+  WITH this.pgfPopups.Pages(this.nSelectedItem)
+    FOR lnCount = 1 TO .ControlCount
+      .Controls(lnCount).lShowHotKeys = this.lShowHotkeys
+    NEXT
+  ENDWITH
+ENDIF
+
+IF VARTYPE(this.ofrmstartmenu) = "O"
+  this.oFrmstartmenu.lShowHotKeys = this.lShowHotkeys
+ENDIF
+
+IF VARTYPE(this.osubmenu) = "O"
+  this.osubmenu.lShowHotKeys = this.lShowHotkeys
+ENDIF
+ENDPROC
+PROCEDURE lshowquickbar_assign
+****************************************************************************
+*$METHOD$ lShowQuickBar_assign()
+*$CREATED$ 13/02/2007
+****************************************************************************
+LPARAMETERS vlNewVal
+
+THIS.lShowQuickBar = (m.vlNewVal AND this.ltitlebar)
+this.cntQuickBar.Visible = this.lShowQuickbar
+
+ENDPROC
+PROCEDURE lshowsearch_assign
+LPARAMETERS vlNewVal
+*To do: Modify this routine for the Assign method
+THIS.lShowSearch = m.vlNewVal
+
+this.cntsearchbox.Visible = this.lShowsearch
+
+ENDPROC
+PROCEDURE ltitlebar_assign
+************************************************************************
+*$METHOD$ lTitleBar_assign()
+*$CREATED$ 07/02/2007
+************************************************************************
+LPARAMETERS vlNewVal
+
+THIS.lTitlebar = m.vlNewVal
+
+IF this.lTitlebar
+  IF VARTYPE(this.omainform) = "O"
+    this.oMainForm.TitleBar = 0
+  ELSE
+    _SCREEN.TitleBar = 0
+  ENDIF
+  this.cntcontrol.Visible = .t.
+  this.lblCAPTION.Visible = .t.
+ELSE
+  IF VARTYPE(this.omainform) = "O"
+    this.oMainForm.TitleBar = 1
+  ELSE
+    _SCREEN.TitleBar = 1
+  ENDIF
+  this.cntcontrol.Visible = .f.
+  this.lShowquickbar = .f.
+  this.lblCAPTION.Visible = .f.
+ENDIF
+
+this.Resize()
+ENDPROC
+PROCEDURE mainformresize
+*************************************************************************
+*$METHOD$ MainFormResize()
+*$CREATED$ 27/02/2007
+*************************************************************************
+IF VARTYPE(this.omainform) = "O"
+  this.cntControl.nWindowstate = this.omainform.windowstate
+  this.Width = this.omainform.width
+ELSE
+  this.cntControl.nWindowstate = _SCREEN.WindowState
+  this.Width = _SCREEN.width
+ENDIF
+ENDPROC
+PROCEDURE selectmainitem
+**************************************************************************
+*$METHOD$ SelectMainItem()
+*$CREATED$ 01/02/2007
+**************************************************************************
+LPARAMETERS vlShowHotkey
+
+IF VARTYPE(this.osubmenu) = "O"
+  this.osubmenu.Release()
+ENDIF
+
+*-- Create the form to hold the start menu popups
+this.ofrmStartMenu = CREATEOBJECT(this.cfrmStartClass, this.cntMainItem, this)
+
+WITH this.ofrmStartMenu
+  .Show()
+ENDWITH
+
+ENDPROC
+PROCEDURE selectmenuitem
+***************************************************************************
+*$METHOD$ SelectMenuItem()
+*$CREATED$ 01/02/2007
+***************************************************************************
+LPARAMETERS vnItemIndex, vlShowHotKeys
+
+LOCAL lnCount, lcItemName
+
+this.lshowhotkeys = vlShowHotKeys
+
+FOR lnCount = 1 TO this.ItemCount
+  lcItemName = "MenuItem" + STRTRAN(STR(lnCount,3,0), " ", "0")
+  WITH this.&lcItemName.
+    IF .Selected AND .ItemIndex <> vnItemIndex
+      .Selected = .f.
+    ELSE
+      IF .ItemIndex = vnItemIndex AND NOT .Selected
+        .Selected = .t.
+        this.pgfPopups.ActivePage = vnItemIndex
+      ENDIF
+    ENDIF
+  ENDWITH
+NEXT
+
+IF VARTYPE(this.osubmenu) = "O"
+  this.osubmenu.Release()
+ENDIF
+IF VARTYPE(this.ofrmstartmenu) = "O"
+  this.ofrmstartmenu.Release()
+ENDIF
+
+WITH this.pgfPopups.Pages(vnItemIndex)
+  FOR lnCount = 1 TO .ControlCount
+    .Controls(lnCount).lShowHotKeys = vlShowHotKeys
+  NEXT
+ENDWITH
+
+this.nSelecteditem = vnItemIndex
+ENDPROC
+PROCEDURE sendhotkey
+**************************************************************************
+*$METHOD$ SendHotKey()
+*$CREATED$ 10/02/2007
+**************************************************************************
+LPARAMETERS vcHotKey
+
+LOCAL llReturn, lnCount, lcItemName
+llReturn = .f.
+lnCount = 0
+lcItemName = ""
+
+IF ASC(vcHotKey) = 27
+  *-- The escape key has been pressed
+  DO CASE
+    CASE VARTYPE(this.ofrmstartmenu) = "O"
+      *-- Release the start menu if that is visible
+      this.ofrmStartMenu.Release()
+    CASE VARTYPE(this.osubmenu) = "O"
+      *-- Release the sub menu if that is visible
+      this.osubMenu.Release()
+    OTHERWISE
+      *-- Switch off the hotkeys
+      this.lShowhotkeys = .f.
+      RETURN .f.
+  ENDCASE
+ENDIF
+
+vcHotKey = UPPER(vcHotKey)
+
+IF NOT llReturn AND VARTYPE(this.ofrmstartmenu) = "O"
+  *-- If the Start Menu form is active send the hotkey there first.
+  llReturn = this.ofrmStartMenu.SendHotKey(vcHotKey)
+ENDIF
+
+IF NOT llReturn AND VARTYPE(this.osubmenu) = "O"
+  *-- If a Sub Menu form is active send the hotkey there.
+  llReturn = this.oSubMenu.SendHotKey(vcHotKey)
+ENDIF
+
+IF NOT llReturn AND this.lshowmain AND this.cntMainItem.chotkey = vcHotKey
+  *-- If the hotkey has not yet been processed see if the hotkey refers to
+  * the main item
+  llReturn = this.cntMainItem.SelectMain(.t.)
+ENDIF
+
+IF NOT llReturn
+  *-- It's not the main item so see if the hotkey refers to any of the
+  * menu tabs.
+  FOR lnCount = 1 TO this.ItemCount
+    lcItemName = "MenuItem" + STRTRAN(STR(lnCount,3,0), " ", "0")
+    WITH this.&lcItemName.
+      IF .cHotKey = vcHotKey
+        this.Selectmenuitem(.ItemIndex, .t.)
+        llReturn = .t.
+      ENDIF
+    ENDWITH
+  NEXT
+ENDIF
+
+IF NOT llReturn AND this.nSelectedItem > 0
+  *-- It's not the menu tabs so see if the hotkey refers to any of the
+  * menu popups for the selected menu item
+  WITH this.pgfPopups.Pages(this.nSelectedItem)
+    FOR lnCount = 1 TO .ControlCount
+      IF .Controls(lnCount).lShowHotKeys AND .Controls(lnCount).SendHotKey(vcHotKey)
+        llReturn = .t.
+        EXIT
+      ENDIF
+    NEXT
+  ENDWITH
+ENDIF
+
+IF NOT llReturn AND this.lshowquickbar
+  *-- It's not the menu popups so see if the hotkey refers to any of the
+  * quickbar shortcuts
+  llReturn = this.cntquickbar.Sendhotkey(vcHotKey)
+ENDIF
+
+RETURN llReturn
+
+ENDPROC
+PROCEDURE wmeventhandler
+************************************************************************
+*$METHOD$ WMEventHandler()
+*$CREATED$ 11/02/2007
+************************************************************************
+LPARAMETERS hWnd, Msg, wParam, lParam
+
+#define WM_GETMINMAXINFO    0x0024
+#define WM_ACTIVATEAPP      0x001C
+#define WM_KEYDOWN          0x0100
+#define WM_KEYUP            0x0101
+#define WM_SYSKEYDOWN       0x0104
+#define WM_SYSKEYUP         0x0105
+#define WM_COMMAND          0x0111
+#define WM_SYSCOMMAND       0x0112
+
+LOCAL llPassThrough
+
+llPassThrough = .f.
+
+DO CASE
+  CASE Msg = WM_ACTIVATEAPP
+    IF wParam = 0
+      this.cntcontrol.lActive = .f.
+      this.lblCAPTION.ForeColor = RGB(141,141,141)
+    ELSE
+      this.cntcontrol.lActive = .t.
+      this.lblCAPTION.ForeColor = RGB(21,66,139)
+
+      IF TYPE("_SCREEN.Activeform") <> "O"
+        *-- If there are no forms active in the application
+        * then just refresh the toolbar, if there are screens
+        * active then their activate should do this so there
+        * is no need to make it happen twice
+        this.Refresh()
+      ENDIF
+    ENDIF
+    llPassThrough = .t.
+
+  CASE Msg = WM_KEYDOWN AND this.lShowhotkeys
+*    MESSAGEBOX("WM_KEYDOWN: " + TRANSFORM(wParam), 4096,"test",5000)
+    *-- If the hotkeys are enabled we don't want the active control to
+    * get any keyboard input
+    =INKEY(0,"H")
+    IF this.SendHotkey(CHR(wParam))
+      this.lshowhotkeys = .t.
+    ENDIF
+
+  CASE Msg = WM_KEYDOWN AND this.lshowSearch
+    IF wParam = 17
+      this.lCtrlDown = .t.
+    ELSE
+      IF this.lCtrlDown AND wParam = 70
+        this.lCtrlDown = .t.
+        =INKEY(0,"H")
+        this.cntsearchbox.txtSearch.SetFocus()
+      ELSE
+        llPassThrough = .t.
+      ENDIF
+    ENDIF
+  CASE Msg = WM_KEYUP AND this.lCtrlDown
+    IF wParam = 17
+      this.lCtrlDown = .f.
+    ENDIF
+    llPassThrough = .t.
+*    MESSAGEBOX("WM_KEYUP: wParam = " + TRANSFORM(wParam) + " lParam = " + TRANSFORM(lParam), 4096,"test",5000)
+
+  CASE Msg = WM_SYSKEYUP
+*    MESSAGEBOX("WM_SYSKEYUP: " + TRANSFORM(wParam), 4096,"test",5000)
+    IF wParam = 9
+      *-- Alt+Tab was pressed then we don't really want to do anything
+      llPassThrough = .t.
+    ELSE
+      this.lshowhotkeys = (NOT this.lShowHotkeys)
+      IF wParam > 18
+        IF this.Sendhotkey(CHR(wParam))
+          this.lshowhotkeys = .t.
+        ENDIF
+      ENDIF
+    ENDIF
+  CASE Msg = WM_GETMINMAXINFO
+*    MESSAGEBOX("WM_GETMINMAXINFO: width: " + TRANSFORM(this.oMainform.Width) + CHR(13) + ;
+*               "height: " + TRANSFORM(this.oMainform.Height) + CHR(13) + ;
+*               "top: " + TRANSFORM(this.oMainform.Top) + CHR(13) + ;
+*               "left: " + TRANSFORM(this.oMainform.Left) + CHR(13) + ;
+*               "Windowstate: " + TRANSFORM(this.oMainform.WindowState), 4096,"test")
+*    this.oMainForm.WindowState = 0
+*    RAISEEVENT(this, "AppMaximize")
+  OTHERWISE
+    llPassThrough = .t.
+
+ENDCASE
+
+IF llPassThrough
+  DECLARE INTEGER CallWindowProc in Win32API ;
+     integer lpPrevWndFunc, integer hWnd, integer Msg, integer wParam, ;
+     integer lParam
+
+  RETURN CallWindowProc(this.nOldProc, hWnd, Msg, wParam, lParam)
+ELSE
+  RETURN
+ENDIF
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+12[END RESERVED2]
+[START RESERVED3]
+itemcount
+ofrmstartmenu
+lshowhelp
+lshowmain
+ccaption
+ltitlebar
+lshowquickbar
+lshowhotkeys
+nselecteditem
+lshowsearch
+noldproc
+cfrmstartclass
+lctrldown
+osubmenu
+nmousex
+nmousey
+omainform
+lallowresize
+nmaxitempos
+cbasefont
+*addmenuitem 
+*selectmenuitem 
+*addpopup 
+*ccaption_assign 
+*ltitlebar_assign 
+*lshowquickbar_assign 
+*lshowhotkeys_assign 
+*wmeventhandler 
+*sendhotkey 
+*lshowhelp_assign 
+*lshowsearch_assign 
+*selectmainitem 
+*appexit 
+*appminimize 
+*appmaximize 
+*apprestore 
+*mainformresize 
+*lallowresize_assign 
+*cbasefont_assign 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2080IECMR
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] imgTitleBar
+[PARENT] cnttabmenu
+[START PROPERTIES]
+Picture = images\titleback.bmp
+Stretch = 2
+Height = 24
+Left = 56
+Top = 2
+Width = 4
+Name = "imgTitleBar"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1ZX0XZRX1
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] imgTabStrip
+[PARENT] cnttabmenu
+[START PROPERTIES]
+Picture = images\tabstrip.bmp
+Stretch = 2
+Height = 28
+Left = 0
+Top = 0
+Width = 4
+Name = "imgTabStrip"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1ZX12IR5T
+[CLASS] shape
+[BASECLASS] shape
+[OBJNAME] shpPopup
+[PARENT] cnttabmenu
+[START PROPERTIES]
+Top = 30
+Left = 4
+Height = 110
+Width = 43
+Curvature = 5
+BackColor = 219,230,244
+BorderColor = 138,175,225
+Name = "shpPopup"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+IF VARTYPE(this.Parent.ofrmstartmenu) = "O"
+  this.Parent.ofrmstartmenu.Release()
+ENDIF
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1ZY0TP5RC
+[CLASS] pageframe
+[BASECLASS] pageframe
+[OBJNAME] pgfPopups
+[PARENT] cnttabmenu
+[START PROPERTIES]
+ErasePage = .T.
+PageCount = 0
+ActivePage = 0
+BorderWidth = 0
+Top = 24
+Left = 84
+Width = 241
+Height = 169
+Tabs = .F.
+Name = "pgfPopups"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1ZY0UR0OI
+[CLASS] cnthelpitem
+[CLASSLOC] tabmenu.vcx
+[BASECLASS] container
+[OBJNAME] Cnthelpitem
+[PARENT] cnttabmenu
+[START PROPERTIES]
+Top = 0
+Left = 350
+Name = "Cnthelpitem"
+IMGLEFT.Height = 21
+IMGLEFT.Width = 3
+IMGLEFT.Name = "IMGLEFT"
+IMGRIGHT.Height = 21
+IMGRIGHT.Width = 3
+IMGRIGHT.Name = "IMGRIGHT"
+IMGBACK.Name = "IMGBACK"
+imgHelp.Height = 16
+imgHelp.Width = 16
+imgHelp.Name = "imgHelp"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2080OX9DF
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] lblCaption
+[PARENT] cnttabmenu
+[START PROPERTIES]
+FontName = "Segoe UI"
+FontSize = 10
+Alignment = 2
+BackStyle = 0
+Caption = "Label1"
+Height = 17
+Left = 99
+Top = 6
+Width = 40
+ForeColor = 21,66,139
+Name = "lblCaption"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE MouseDown
+*************************************************************************
+*$METHOD$ MouseDown()
+*$CREATED$ 27/02/2007
+*************************************************************************
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+
+IF nButton = 1
+  this.Parent.nMouseX = m.nXCoord
+  this.Parent.nMouseY = m.nYCoord
+ENDIF
+ENDPROC
+PROCEDURE MouseMove
+*************************************************************************
+*$METHOD$ MouseMove()
+*$CREATED$ 27/02/2007
+*
+*$PURPOSE$
+*  This method allows the fake titlebar  to behave like a real title
+*  bar and move the form, but it will only happen if the toolbar is
+*  contained within a top level form and not the VFP screen
+*$PURPOSE$
+*************************************************************************
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+
+LOCAL lnDiffX, lnDiffY
+
+IF m.nButton = 1
+  IF (this.parent.nMouseX <> 0 OR this.parent.nMouseY <> 0)
+    lnDiffX = m.nXCoord - this.parent.nMouseX
+    lnDiffY = m.nYCoord - this.parent.nMouseY
+    IF VARTYPE(this.Parent.oMainform) = "O"
+      WITH this.Parent.oMainform
+        .Move(.Left + m.lnDiffX, .Top + m.lnDiffY, .Width, .Height)
+      ENDWITH
+    ELSE
+      WITH _SCREEN
+        .Move(.Left + m.lnDiffX, .Top + m.lnDiffY, .Width, .Height)
+      ENDWITH
+    ENDIF
+    this.MouseDown(m.nButton, m.nShift, m.nXCoord - m.lnDiffX, m.nYCoord - m.lnDiffY)
+  ENDIF
+ENDIF
+ENDPROC
+PROCEDURE MouseUp
+*************************************************************************
+*$METHOD$ MouseUp()
+*$CREATED$ 27/02/2007
+*************************************************************************
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+
+IF nButton = 1
+  this.Parent.nMouseX = 0
+  this.Parent.nMouseY = 0
+ENDIF
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2080THKLV
+[CLASS] cntquickbar
+[CLASSLOC] tabmenu.vcx
+[BASECLASS] container
+[OBJNAME] Cntquickbar
+[PARENT] cnttabmenu
+[START PROPERTIES]
+Top = 23
+Left = 20
+Visible = .F.
+Name = "Cntquickbar"
+imgLeft.Height = 24
+imgLeft.Width = 18
+imgLeft.Name = "imgLeft"
+imgRight.Height = 24
+imgRight.Width = 15
+imgRight.Name = "imgRight"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _20B0GRS3L
+[CLASS] cntcontrol
+[CLASSLOC] tabmenu.vcx
+[BASECLASS] container
+[OBJNAME] Cntcontrol
+[PARENT] cnttabmenu
+[START PROPERTIES]
+Top = 0
+Left = 240
+Name = "Cntcontrol"
+imgControl.Height = 18
+imgControl.Width = 95
+imgControl.Name = "imgControl"
+cmdMinimize.Name = "cmdMinimize"
+cmdMaximize.Name = "cmdMaximize"
+cmdClose.Name = "cmdClose"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _20E0NUFXP
+[CLASS] cntstartitem
+[CLASSLOC] tabmenu.vcx
+[BASECLASS] container
+[OBJNAME] cntMainItem
+[PARENT] cnttabmenu
+[START PROPERTIES]
+Top = 0
+Left = 12
+Name = "cntMainItem"
+Imgmainitem.Height = 38
+Imgmainitem.Width = 38
+Imgmainitem.Name = "Imgmainitem"
+cmdStartItem.Name = "cmdStartItem"
+imgHotKey.Height = 15
+imgHotKey.Width = 16
+imgHotKey.Name = "imgHotKey"
+lblHotKey.Name = "lblHotKey"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _20I0IJKN3
+[CLASS] cntsearchbox
+[CLASSLOC] tabmenu.vcx
+[BASECLASS] container
+[OBJNAME] cntSearchBox
+[PARENT] cnttabmenu
+[START PROPERTIES]
+Top = 36
+Left = 180
+Name = "cntSearchBox"
+imgBack.Name = "imgBack"
+txtSearch.Name = "txtSearch"
+imgSearch.Height = 20
+imgSearch.Width = 13
+imgSearch.Name = "imgSearch"
+imgLeft.Height = 21
+imgLeft.Width = 3
+imgLeft.Name = "imgLeft"
+imgRight.Height = 21
+imgRight.Width = 3
+imgRight.Name = "imgRight"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _20Z1D7O4R
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] imgResize
+[PARENT] cnttabmenu
+[START PROPERTIES]
+Picture = images\resize.bmp
+BackStyle = 0
+Height = 11
+Left = 369
+MousePointer = 9
+Top = 121
+Width = 11
+Name = "imgResize"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE MouseDown
+*************************************************************************
+*$METHOD$ MouseDown()
+*$CREATED$ 27/02/2007
+*************************************************************************
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+
+IF nButton = 1
+  this.Parent.nMouseX = m.nXCoord
+  this.Parent.nMouseY = m.nYCoord
+ENDIF
+ENDPROC
+PROCEDURE MouseMove
+*************************************************************************
+*$METHOD$ MouseMove()
+*$CREATED$ 27/02/2007
+*************************************************************************
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+
+LOCAL lnDiffX &&, lnDiffY
+
+IF m.nButton = 1
+  IF (this.parent.nMouseX <> 0 OR this.parent.nMouseY <> 0)
+    lnDiffX = m.nXCoord - this.parent.nMouseX
+*    lnDiffY = m.nYCoord - this.parent.nMouseY
+    IF VARTYPE(this.Parent.oMainform) = "O"
+      WITH this.Parent.oMainform
+        .Width = .Width + m.lnDiffX
+      ENDWITH
+    ENDIF
+    this.Parent.nMouseX = m.nXCoord
+*    this.Parent.nMouseY = m.nYCoord
+  ENDIF
+ENDIF
+ENDPROC
+PROCEDURE MouseUp
+*************************************************************************
+*$METHOD$ MouseUp()
+*$CREATED$ 27/02/2007
+*************************************************************************
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+
+IF nButton = 1
+  this.Parent.nMouseX = 0
+  this.Parent.nMouseY = 0
+ENDIF
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] cnttabmenu
+[START PROPERTIES]
+Arial, 0, 9, 5, 15, 12, 32, 3, 0
+Segoe UI, 0, 9, 6, 15, 12, 22, 3, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1ZX0Y5UIT
+[CLASS] container
+[BASECLASS] container
+[OBJNAME] cntmenuitem
+[START PROPERTIES]
+Width = 200
+Height = 28
+Picture = images\tabstrip.bmp
+BorderWidth = 0
+caption = ("")
+selected = .F.
+itemindex = ( 0)
+chotkey = ( "")
+lshowhotkey = .F.
+cskipforexp = ( "")
+citemkey = ( "")
+cbasefont = ( "")
+Name = "cntmenuitem"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+****************************************************************************
+*$METHOD$ Click()
+*$CREATED$ 10/02/2007
+****************************************************************************
+IF this.Enabled
+  this.Parent.SelectMenuItem(this.ItemIndex)
+ENDIF
+ENDPROC
+PROCEDURE Destroy
+***************************************************************************
+*$METHOD$ Destroy()
+*$CREATED$ 17/02/2007
+***************************************************************************
+UNBINDEVENTS(this)
+ENDPROC
+PROCEDURE Init
+LPARAMETERS vcCaption
+
+this.Caption = vcCaption
+
+this.imgHotKey.Top = this.Height - this.imgHotKey.Height
+this.imgHotkey.Left = this.Width - this.imgHotKey.Width
+this.lblHotKey.Top = this.imgHotKey.Top
+this.lblHotKey.Left = this.imgHotkey.Left
+this.lblHotkey.Width = this.imghotkey.width
+
+ENDPROC
+PROCEDURE MouseEnter
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+
+this.HotTrackon()
+ENDPROC
+PROCEDURE MouseLeave
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+
+this.Hottrackoff()
+ENDPROC
+PROCEDURE Refresh
+this.Width = this.lblCaption.Width + 12
+
+IF NOT EMPTY(this.cSkipforexp)
+  this.Enabled = NOT EVALUATE(this.cSkipforexp)
+ENDIF
+ENDPROC
+PROCEDURE Resize
+this.imgRight.Left = this.Width - this.imgRight.Width
+this.cmdMenuItem.Width = this.width - 7
+
+this.imgHotKey.Top = this.Height - this.imgHotKey.Height
+this.imgHotkey.Left = this.Width - this.imgHotKey.Width
+this.lblHotKey.Top = this.imgHotKey.Top
+this.lblHotKey.Left = this.imgHotkey.Left
+this.lblHotkey.Width = this.imghotkey.width
+
+ENDPROC
+PROCEDURE caption_assign
+LPARAMETERS vcNewVal
+
+THIS.caption = m.vcNewVal
+this.lblCaption.Caption = this.Caption
+this.cmdMenuItem.Caption = this.Caption
+this.lblCaption.Visible = .t.
+this.lblCaption.Left = 6
+this.Width = this.lblCaption.Width + 12
+ENDPROC
+PROCEDURE cbasefont_assign
+*************************************************************************
+*$METHOD$ cBaseFont_Assign()
+*$CREATED$ 03/07/2007
+*************************************************************************
+LPARAMETERS vcNewVal
+
+THIS.cBaseFont = m.vcNewVal
+
+this.lblCaption.FontName = this.cBaseFont
+this.lblHotKey.FontName = this.cBaseFont
+
+ENDPROC
+PROCEDURE chotkey_assign
+LPARAMETERS vcNewVal
+
+THIS.chotkey = m.vcNewVal
+this.lblHotKey.Caption = this.cHotkey
+
+ENDPROC
+PROCEDURE cskipforexp_assign
+****************************************************************************
+*$METHOD$ cSkipForExp_assign()
+*$CREATED$ 13/02/2007
+****************************************************************************
+LPARAMETERS vcNewVal
+
+THIS.cSkipForExp = m.vcNewVal
+
+ENDPROC
+PROCEDURE enabled_assign
+****************************************************************************
+*$METHOD$ enabled_assign()
+*$CREATED$ 13/02/2007
+****************************************************************************
+LPARAMETERS vlNewVal
+
+this.enabled = m.vlNewVal
+
+IF this.Enabled
+  this.lblCaption.ForeColor = RGB(21,66,139)
+ELSE
+  this.lblCaption.ForeColor = RGB(141,141,141)
+ENDIF
+
+ENDPROC
+PROCEDURE hottrackoff
+IF NOT this.Selected
+  this.imgLeft.Picture = 'tabLEFT.BMP'
+  this.imgLeft.Visible = .f.
+  this.Picture = 'TABSTRIP.BMP'
+  this.imgRight.Picture = 'tabseparator.BMP'
+ENDIF
+ENDPROC
+PROCEDURE hottrackon
+IF this.Enabled AND NOT this.Selected
+  this.imgLeft.Picture = 'HOVLEFT.BMP'
+  this.imgLeft.Visible = .t.
+  this.Picture = 'HOVMENU.BMP'
+  this.imgRight.Picture = 'HOVRIGHT.BMP'
+ENDIF
+ENDPROC
+PROCEDURE lshowhotkey_assign
+LPARAMETERS vlNewVal
+
+THIS.lShowHotKey = m.vlNewVal AND this.Enabled
+
+this.lblHotKey.Visible = this.lshowhotkey AND NOT EMPTY(this.chotkey)
+this.imgHotKey.Visible = this.lshowhotkey AND NOT EMPTY(this.chotkey)
+
+ENDPROC
+PROCEDURE selected_assign
+LPARAMETERS vlNewVal
+
+THIS.Selected = m.vlNewVal
+
+IF m.vlNewVal
+  this.picture = "tabmenu.bmp"
+  this.imgLeft.Picture = 'TABLEFT.BMP'
+  this.imgLeft.Visible = .t.
+  this.imgRight.Picture = 'TABRIGHT.BMP'
+ELSE
+  this.Picture = 'TABSTRIP.BMP'
+  this.imgLeft.Visible = .f.
+  this.imgRight.Picture = 'TABSEPARATOR.BMP'
+ENDIF
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+7[END RESERVED2]
+[START RESERVED3]
+caption Specifies the text displayed in an object's caption.
+selected Specifies if an item is selected in a ComboBox or ListBox control.
+itemindex
+chotkey
+lshowhotkey
+cskipforexp
+citemkey
+cbasefont
+*caption_assign 
+*selected_assign 
+*hottrackon 
+*hottrackoff 
+*chotkey_assign 
+*lshowhotkey_assign 
+*cskipforexp_assign 
+*enabled_assign 
+*cbasefont_assign 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1ZX0YEC5M
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] imgLeft
+[PARENT] cntmenuitem
+[START PROPERTIES]
+Picture = images\tableft.bmp
+Height = 28
+Left = 0
+Top = 0
+Visible = .F.
+Width = 4
+Name = "imgLeft"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1ZX0YEC5N
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] imgRight
+[PARENT] cntmenuitem
+[START PROPERTIES]
+Picture = images\tabseparator.bmp
+Height = 28
+Left = 144
+Top = 0
+Width = 5
+Name = "imgRight"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1ZX0YEC5O
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] lblCaption
+[PARENT] cntmenuitem
+[START PROPERTIES]
+AutoSize = .T.
+FontName = "Segoe UI"
+BackStyle = 0
+Caption = "Menu Item"
+Height = 17
+Left = 36
+Top = 8
+Width = 60
+ForeColor = 21,66,139
+Name = "lblCaption"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+RAISEEVENT(this.Parent,"Click")
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1ZX1BH80E
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] cmdMenuItem
+[PARENT] cntmenuitem
+[START PROPERTIES]
+Top = 5
+Left = 3
+Height = 20
+Width = 84
+Caption = ""
+Style = 1
+Name = "cmdMenuItem"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+RAISEEVENT(this.Parent,"Click")
+ENDPROC
+PROCEDURE GotFocus
+this.Parent.Hottrackon()
+ENDPROC
+PROCEDURE LostFocus
+this.Parent.Hottrackoff()
+ENDPROC
+PROCEDURE MouseEnter
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+
+this.Parent.Hottrackon()
+ENDPROC
+PROCEDURE MouseLeave
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+
+this.Parent.Hottrackoff()
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _20E0VDFER
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] imgHotKey
+[PARENT] cntmenuitem
+[START PROPERTIES]
+Picture = images\hotkeys.png
+BackStyle = 0
+Height = 15
+Left = 60
+Top = 13
+Visible = .F.
+Width = 16
+Name = "imgHotKey"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _20E0VDFES
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] lblHotKey
+[PARENT] cntmenuitem
+[START PROPERTIES]
+FontName = "Segoe UI"
+Alignment = 2
+BackStyle = 0
+Caption = ( "?")
+Height = 17
+Left = 61
+Top = 13
+Visible = .F.
+Width = 16
+Name = "lblHotKey"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+this.Parent.Parent.lShowHotKeys = .f.
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] cntmenuitem
+[START PROPERTIES]
+Arial, 0, 9, 5, 15, 12, 32, 3, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1ZX1ERJNJ
+[CLASS] toolbar
+[BASECLASS] toolbar
+[OBJNAME] tbrtabmenu
+[START PROPERTIES]
+Caption = "Tab Menu Bar"
+Height = 148
+Left = 0
+Top = 0
+Width = 400
+BackColor = 221,234,251
+ShowWindow = 1
+Name = "tbrtabmenu"
+[END PROPERTIES]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+2[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1ZX1ESEI6
+[CLASS] cnttabmenu
+[CLASSLOC] tabmenu.vcx
+[BASECLASS] container
+[OBJNAME] cntTabMenu
+[PARENT] tbrtabmenu
+[START PROPERTIES]
+Top = 3
+Left = 5
+Name = "cntTabMenu"
+imgTitleBar.Name = "imgTitleBar"
+imgTabStrip.Name = "imgTabStrip"
+imgBotStrip.Name = "imgBotStrip"
+shpPopup.Name = "shpPopup"
+pgfPopups.ErasePage = .T.
+pgfPopups.Top = 24
+pgfPopups.Height = 169
+pgfPopups.Name = "pgfPopups"
+cnthelpitem.imgLeft.Height = 21
+cnthelpitem.imgLeft.Width = 3
+cnthelpitem.imgLeft.Name = "imgLeft"
+cnthelpitem.imgRight.Height = 21
+cnthelpitem.imgRight.Width = 3
+cnthelpitem.imgRight.Name = "imgRight"
+cnthelpitem.imgBack.Name = "imgBack"
+cnthelpitem.imgHelp.Height = 16
+cnthelpitem.imgHelp.Width = 16
+cnthelpitem.imgHelp.Name = "imgHelp"
+cnthelpitem.Name = "cnthelpitem"
+lblCaption.Name = "lblCaption"
+cntquickbar.imgLeft.Height = 24
+cntquickbar.imgLeft.Width = 18
+cntquickbar.imgLeft.Name = "imgLeft"
+cntquickbar.imgRight.Height = 24
+cntquickbar.imgRight.Width = 15
+cntquickbar.imgRight.Name = "imgRight"
+cntquickbar.Name = "cntquickbar"
+cntcontrol.imgControl.Height = 18
+cntcontrol.imgControl.Width = 95
+cntcontrol.imgControl.Name = "imgControl"
+cntcontrol.cmdMinimize.Name = "cmdMinimize"
+cntcontrol.cmdMaximize.Name = "cmdMaximize"
+cntcontrol.cmdClose.Name = "cmdClose"
+cntcontrol.Name = "cntcontrol"
+cntMainItem.imgMainItem.Height = 38
+cntMainItem.imgMainItem.Width = 38
+cntMainItem.imgMainItem.Name = "imgMainItem"
+cntMainItem.cmdStartItem.Name = "cmdStartItem"
+cntMainItem.imgHotKey.Height = 15
+cntMainItem.imgHotKey.Width = 16
+cntMainItem.imgHotKey.Name = "imgHotKey"
+cntMainItem.lblHotKey.Name = "lblHotKey"
+cntMainItem.Name = "cntMainItem"
+cntsearchbox.imgBack.Name = "imgBack"
+cntsearchbox.txtSearch.Name = "txtSearch"
+cntsearchbox.imgSearch.Height = 20
+cntsearchbox.imgSearch.Width = 13
+cntsearchbox.imgSearch.Name = "imgSearch"
+cntsearchbox.imgLeft.Height = 21
+cntsearchbox.imgLeft.Width = 3
+cntsearchbox.imgLeft.Name = "imgLeft"
+cntsearchbox.imgRight.Height = 21
+cntsearchbox.imgRight.Width = 3
+cntsearchbox.imgRight.Name = "imgRight"
+cntsearchbox.Name = "cntsearchbox"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] tbrtabmenu
+[START PROPERTIES]
+Arial, 0, 9, 5, 15, 12, 32, 3, 0
+Segoe UI, 0, 9, 6, 15, 12, 22, 3, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1ZY01P3XS
+[CLASS] container
+[BASECLASS] container
+[OBJNAME] cntstartitem
+[START PROPERTIES]
+Width = 38
+Height = 38
+BackStyle = 0
+BorderWidth = 0
+chotkey = ( "F")
+lshowhotkey = .F.
+lselected = .F.
+citemkey = ( "")
+cbasefont = ( "")
+Name = "cntstartitem"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+this.imgHotKey.Top = this.Height - this.imgHotKey.Height
+this.imgHotkey.Left = this.Width - this.imgHotKey.Width
+this.lblHotKey.Top = this.imgHotKey.Top
+this.lblHotKey.Left = this.imgHotkey.Left
+this.lblHotkey.Width = this.imghotkey.width
+ENDPROC
+PROCEDURE cbasefont_assign
+*************************************************************************
+*$METHOD$ cBaseFont_assign()
+*$CREATED$ 09/03/2007
+*************************************************************************
+LPARAMETERS vcNewVal
+
+THIS.cBaseFont = m.vcNewVal
+this.lblHotKey.FontName = this.cBasefont
+
+ENDPROC
+PROCEDURE chotkey_assign
+LPARAMETERS vcNewVal
+
+THIS.chotkey = m.vcNewVal
+this.lblHotKey.Caption = this.cHotkey
+
+ENDPROC
+PROCEDURE lselected_assign
+LPARAMETERS vlNewVal
+THIS.lSelected = m.vlNewVal
+
+IF m.vlNewVal
+  this.imgMainItem.Picture = "mainsel.png"
+  this.Parent.lShowHotkeys = .f.
+ELSE
+  this.imgMainItem.Picture = "mainidle.png"
+ENDIF
+
+IF NOT this.lSelected
+  IF VARTYPE(this.parent.ofrmStartMenu) = "O"
+    this.parent.ofrmStartMenu.Release()
+  ENDIF
+ENDIF
+ENDPROC
+PROCEDURE lshowhotkey_assign
+LPARAMETERS vlNewVal
+
+THIS.lShowHotKey = m.vlNewVal AND this.Enabled
+
+this.lblHotKey.Visible = this.lshowhotkey AND NOT EMPTY(this.chotkey)
+this.imgHotKey.Visible = this.lshowhotkey AND NOT EMPTY(this.chotkey)
+
+ENDPROC
+PROCEDURE selectmain
+LPARAMETERS vlShowHotKey
+
+this.lSelected = .t.
+
+this.Parent.SelectMainItem(vlShowHotKey)
+
+ENDPROC
+PROCEDURE tooltiptext_assign
+**************************************************************************
+*$METHOD$ ToolTipText_assign()
+*$CREATED$ 13/02/2007
+**************************************************************************
+LPARAMETERS vcNewVal
+
+THIS.TOOLTIPTEXT = m.vcNewVal
+this.cmdStartItem.ToolTipText = m.vcNewVal
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+5[END RESERVED2]
+[START RESERVED3]
+chotkey
+lshowhotkey
+lselected
+citemkey
+cbasefont
+*lshowhotkey_assign 
+*chotkey_assign 
+*lselected_assign 
+*selectmain 
+*tooltiptext_assign 
+*cbasefont_assign 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _20E0NQQ1F
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] imgMainItem
+[PARENT] cntstartitem
+[START PROPERTIES]
+Picture = images\mainidle.png
+Height = 38
+Left = 0
+Top = 0
+Width = 38
+Name = "imgMainItem"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1ZY0PTJ5L
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] cmdStartItem
+[PARENT] cntstartitem
+[START PROPERTIES]
+Top = 0
+Left = 0
+Height = 38
+Width = 38
+Caption = ""
+Style = 1
+Name = "cmdStartItem"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+*************************************************************************
+*$METHOD$ Click()
+*$CREATED$ 01/02/2007
+*************************************************************************
+IF this.Parent.lselected
+  this.Parent.lSelected = .f.
+ELSE
+  this.Parent.Selectmain()
+ENDIF
+
+ENDPROC
+PROCEDURE MouseEnter
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+
+IF this.Parent.lSelected
+  this.Parent.imgMainItem.Picture = 'mainsel.png'
+ELSE
+  this.Parent.imgMainItem.Picture = 'HOVMAIN.png'
+ENDIF
+ENDPROC
+PROCEDURE MouseLeave
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+
+IF this.Parent.lSelected
+  this.Parent.imgMainItem.Picture = 'mainsel.png'
+ELSE
+  this.Parent.imgMainItem.Picture = 'MAINidle.png'
+ENDIF
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1ZY0ULTWG
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] imgHotKey
+[PARENT] cntstartitem
+[START PROPERTIES]
+Picture = images\hotkeys.png
+BackStyle = 0
+Height = 15
+Left = 21
+Top = 22
+Visible = .F.
+Width = 16
+Name = "imgHotKey"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] RESERVED  
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] lblHotKey
+[PARENT] cntstartitem
+[START PROPERTIES]
+FontName = "Segoe UI"
+Alignment = 2
+BackStyle = 0
+Caption = "F"
+Height = 17
+Left = 22
+Top = 21
+Visible = .F.
+Width = 16
+Name = "lblHotKey"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+**************************************************************************
+*$METHOD$ Click()
+*$CREATED$ 13/02/2007
+**************************************************************************
+this.Parent.Parent.lShowHotKeys = .f.
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] cntstartitem
+[START PROPERTIES]
+Arial, 0, 9, 5, 15, 12, 32, 3, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1ZY0FQEXD
+[CLASS] frmtabmenu
+[CLASSLOC] tabmenu.vcx
+[BASECLASS] form
+[OBJNAME] frmstartmenu
+[START PROPERTIES]
+Height = 250
+Width = 375
+DoCreate = .T.
+Caption = "Start Form"
+ControlBox = .F.
+Closable = .F.
+MaxButton = .F.
+MinButton = .F.
+BackColor = 221,234,251
+oactiveitem = ( .NULL.)
+Name = "frmstartmenu"
+cmdCancel.Top = 220
+cmdCancel.Left = 190
+cmdCancel.Name = "cmdCancel"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+***************************************************************************************
+*$METHOD$ Init()
+*$CREATED$ 20/02/2007
+***************************************************************************************
+LPARAMETERS voMenuItem, voTabMenu
+
+LOCAL lnX, lnY
+
+lnX = 0
+lnY = 0
+
+#define WM_KEYDOWN        0x0100
+#define WM_KEYUP          0x0101
+#define WM_SYSKEYUP       0x0105
+#define WS_EX_LAYERED     0x00080000
+#define WS_EX_TOOLWINDOW  0x00000080
+
+BINDEVENT(this.Hwnd, WM_KEYDOWN, voTabMenu, "WMEventHandler")
+BINDEVENT(this.Hwnd, WM_SYSKEYUP, voTabMenu, "WMEventHandler")
+BINDEVENT(this.Hwnd, WM_KEYUP, voTabMenu, "WMEventHandler")
+
+this.oTabMenu         = voTabMenu
+this.oMenuItem        = voTabMenu.cntMainItem
+thisform.lShowhotkeys = voTabMenu.lShowHotKeys
+thisform.cBaseFont    = voTabMenu.cBaseFont
+
+thisform.cntMenuItems.cntRecentItems.Caption = "Recent Items"
+
+thisform.cmdCancel.Left = -100
+thisform.cmdCancel.Top = -100
+
+IF thisform.getobjectpos(@lnX, @lnY, this.oMenuItem)
+  thisform.Top  = lnY + INT(this.oMenuItem.Height / 2)
+  thisform.Left = lnX + INT(this.oMenuItem.Width / 2)
+ELSE
+  thisform.Top  = lnY
+  thisform.Left = lnX
+ENDIF
+
+this.Resize()
+
+DECLARE SetWindowLong In WIN32API Integer, Integer, Integer
+DECLARE SetLayeredWindowAttributes IN WIN32API Integer, Integer, Integer, Integer
+
+SetWindowLong(Thisform.HWnd, -20, WS_EX_LAYERED + WS_EX_TOOLWINDOW)
+SetLayeredWindowAttributes(Thisform.HWnd, RGB(0,255,0), 0, 1)
+ENDPROC
+PROCEDURE Resize
+*************************************************************************************************
+*$METHOD$ Resize()
+*$CREATED$ 23/02/2007
+*************************************************************************************************
+thisform.shpBackground.Top = 0
+thisform.shpBackground.Left = 0
+thisform.shpBackground.Width = thisform.Width - thisform.imgright.width
+thisform.shpBackground.Height = thisform.Height - thisform.imgbottom.width - 1
+
+thisform.shpLeft.Top = 0
+thisform.shpLeft.Height = thisform.height
+thisform.shpLeft.Width = thisform.imgright.width
+thisform.shpLeft.Left = thisform.Width - thisform.shpLeft.Width
+
+thisform.imgtr.Left = thisform.Width - thisform.imgtr.Width
+thisform.imgtr.Top = 0
+
+thisform.imgRight.Top = 0
+thisform.imgRight.Height = thisform.Height
+thisform.imgRight.Left = thisform.Width - thisform.imgRight.Width
+
+thisform.shpBottom.Left = 0
+thisform.shpBottom.Width = thisform.width
+thisform.shpBottom.Height = thisform.imgbottom.height
+thisform.shpBottom.Top = thisform.Height - thisform.shpBottom.Height
+
+thisform.imgbottom.Left = 0
+thisform.imgbottom.Width = thisform.Width
+thisform.imgbottom.Top = thisform.Height - thisform.imgbottom.Height
+
+thisform.imgbr.Left = thisform.Width - thisform.imgbr.Width
+thisform.imgbr.Top = thisform.Height - thisform.imgbr.height
+
+thisform.imgbl.Left = 0
+thisform.imgbl.Top = thisform.Height - thisform.imgbl.height
+
+thisform.cntMenuItems.Left = 10
+thisform.cntMenuItems.Width = thisform.Width - (2 * thisform.cntMenuItems.Left) - thisform.imgRight.Width
+thisform.cntMenuItems.Top = 10
+thisform.cntMenuItems.Height = thisform.Height - (thisform.imgBottom.Height + 30 + thisform.cntMenuItems.Top) + 1
+
+thisform.cntMenuItems.cntRecentItems.Width = INT(this.cntMenuItems.Width * 0.66)
+thisform.cntMenuItems.cntRecentItems.Top = 0
+thisform.cntMenuItems.cntRecentItems.Height = this.cntMenuItems.Height
+thisform.cntMenuItems.cntRecentItems.Left = this.cntMenuItems.Width - thisform.cntMenuItems.cntRecentItems.Width
+
+thisform.cntMenuItems.cntSubMenu.Width = thisform.cntMenuItems.cntRecentItems.Width - 6
+thisform.cntMenuItems.cntSubMenu.Height = thisform.cntMenuItems.cntRecentItems.Height - 6
+thisform.cntMenuItems.cntSubMenu.Top = 2
+thisform.cntMenuItems.cntSubMenu.Left = thisform.cntMenuItems.cntRecentItems.Left + 2
+
+thisform.cntMenuItems.shpShadow.Top = thisform.cntMenuItems.cntSubMenu.Top + 2
+thisform.cntMenuItems.shpShadow.Left = thisform.cntMenuItems.cntSubMenu.Left + 2
+thisform.cntMenuItems.shpShadow.Width = thisform.cntMenuItems.cntSubMenu.Width
+thisform.cntMenuItems.shpShadow.Height = thisform.cntMenuItems.cntSubMenu.Height
+
+thisform.cntMenuItems.cntQuickMenu.Top = 0
+thisform.cntMenuItems.cntQuickMenu.Left = 0
+thisform.cntMenuItems.cntQuickMenu.Height = this.cntMenuItems.Height
+thisform.cntMenuItems.cntQuickMenu.Width = this.cntMenuItems.Width - this.cntMenuItems.cntRecentItems.Width
+
+ENDPROC
+PROCEDURE cbasefont_assign
+*************************************************************************
+*$METHOD$ cBaseFont_assign()
+*$CREATED$ 09/03/2007
+*************************************************************************
+LPARAMETERS vcNewVal
+
+DODEFAULT(vcNewVal)
+this.cnTMENUITEMS.cnTQUICKMENU.cBasefont = this.cBasefont
+this.cnTMENUITEMS.cnTRECENTITEMS.cBasefont = this.cBasefont
+this.cnTMENUITEMS.cnTSUBMENU.cBasefont = this.cBaseFont
+
+ENDPROC
+PROCEDURE cmdCancel.Click
+**********************************************************************
+*$METHOD$ Click()
+*$CREATED$ 10/02/2007
+**********************************************************************
+IF thisform.cntMenuItems.cntSubMenu.Visible
+  thisform.Hidesubmenu()
+ELSE
+  thisform.Release()
+ENDIF
+ENDPROC
+PROCEDURE hidesubmenu
+*************************************************************************
+*$METHOD$ HideSubMenu()
+*$CREATED$ 25/02/2007
+*************************************************************************
+IF thisform.cntMenuItems.cntsubMenu.Visible
+  IF VARTYPE(thisform.oActiveItem) = "O"
+    thisform.oActiveItem.lSelected = .f.
+    thisform.oActiveItem = .NULL.
+  ENDIF
+  thisform.cntmenuItems.shpShadow.Visible = .f.
+  thisform.cntmenuItems.cntsubMenu.Visible = .f.
+  thisform.cntMenuItems.cntSubMenu.Deleteitems()
+ENDIF
+ENDPROC
+PROCEDURE lshowhotkeys_assign
+************************************************************************
+*$METHOD$ lShowHotKeys_Assign()
+*$CREATED$ 10/02/2007
+************************************************************************
+LPARAMETERS vlNewVal
+
+THIS.lShowHotKeys = m.vlNewVal
+
+this.cntMenuItems.cntRecentItems.lshowhotkeys = this.lShowhotkeys
+this.cntMenuItems.cntQuickMenu.lshowhotkeys = this.lShowhotkeys
+this.cntMenuItems.cntSubMenu.lshowhotkeys = this.lShowhotkeys
+
+ENDPROC
+PROCEDURE sendhotkey
+************************************************************************
+*$METHOD$ SendHotKey()
+*$CREATED$ 12/02/2007
+************************************************************************
+LPARAMETERS vcHotKey
+
+LOCAL llReturn
+
+IF NOT llReturn
+  llReturn = this.cntMenuItems.cntQuickMenu.SendHotKey(vcHotKey)
+ENDIF
+
+IF this.cntMenuItems.cntSubMenu.Visible AND NOT llReturn
+  llReturn = this.cntMenuItems.cntSubmenu.SendHotKey(vcHotKey)
+ENDIF
+
+IF NOT llReturn
+  llReturn = this.cntMenuItems.cntRecentItems.SendHotKey(vcHotKey)
+ENDIF
+
+RETURN llReturn
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+16[END RESERVED2]
+[START RESERVED3]
+oactiveitem
+*hidesubmenu 
+*showsubmenu 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _20X0MZWCB
+[CLASS] shape
+[BASECLASS] shape
+[OBJNAME] shpBackground
+[PARENT] frmstartmenu
+[START PROPERTIES]
+Top = 0
+Left = 36
+Height = 17
+Width = 100
+BackStyle = 0
+BorderColor = 138,175,225
+Name = "shpBackground"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE MouseMove
+*******************************************************************************
+*$METHOD$ MouseMove()
+*$CREATED$ 25/02/2007
+*******************************************************************************
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+
+thisform.Hidesubmenu()
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1ZY0FQEXD
+[CLASS] shape
+[BASECLASS] shape
+[OBJNAME] shpLeft
+[PARENT] frmstartmenu
+[START PROPERTIES]
+Top = 72
+Left = 357
+Height = 17
+Width = 13
+BorderStyle = 0
+BorderWidth = 0
+BackColor = 0,255,0
+Name = "shpLeft"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _20S0NL96V
+[CLASS] shape
+[BASECLASS] shape
+[OBJNAME] shpbottom
+[PARENT] frmstartmenu
+[START PROPERTIES]
+Top = 106
+Left = 356
+Height = 17
+Width = 13
+BorderStyle = 0
+BorderWidth = 0
+BackColor = 0,255,0
+Name = "shpbottom"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1ZY0ULTWG
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] cmdExit
+[PARENT] frmstartmenu
+[START PROPERTIES]
+Top = 220
+Left = 279
+Height = 20
+Width = 84
+FontName = "Segoe UI"
+Caption = "Exit"
+Name = "cmdExit"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+RAISEEVENT(thisform.oTabmenu, "AppExit")
+thisform.Release()
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1ZX0Y5UIT
+[CLASS] container
+[BASECLASS] container
+[OBJNAME] cntMenuItems
+[PARENT] frmstartmenu
+[START PROPERTIES]
+Top = 12
+Left = 0
+Width = 348
+Height = 200
+BorderColor = 138,175,225
+Name = "cntMenuItems"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1ZY0LXFWC
+[CLASS] cntpopupmenu
+[CLASSLOC] tabmenu.vcx
+[BASECLASS] container
+[OBJNAME] cntRecentItems
+[PARENT] frmstartmenu.cntMenuItems
+[START PROPERTIES]
+Top = 0
+Left = 144
+BackColor = 233,234,238
+alignment = ( 0)
+topcaption = ( .t.)
+Name = "cntRecentItems"
+lblCaption.Name = "lblCaption"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1ZY0NL84H
+[CLASS] cntpopupmenu
+[CLASSLOC] tabmenu.vcx
+[BASECLASS] container
+[OBJNAME] cntQuickMenu
+[PARENT] frmstartmenu.cntMenuItems
+[START PROPERTIES]
+Top = 0
+Left = 0
+Width = 145
+Height = 200
+BackColor = 255,255,255
+Name = "cntQuickMenu"
+lblCaption.Name = "lblCaption"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _20V0OCMXD
+[CLASS] shape
+[BASECLASS] shape
+[OBJNAME] shpShadow
+[PARENT] frmstartmenu.cntMenuItems
+[START PROPERTIES]
+Top = 24
+Left = 240
+Height = 17
+Width = 100
+BorderStyle = 0
+BorderWidth = 0
+Visible = .F.
+BackColor = 192,192,192
+Name = "shpShadow"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _20V0OCMXE
+[CLASS] cntpopupmenu
+[CLASSLOC] tabmenu.vcx
+[BASECLASS] container
+[OBJNAME] cntSubMenu
+[PARENT] frmstartmenu.cntMenuItems
+[START PROPERTIES]
+Top = 6
+Left = 156
+Width = 175
+Height = 175
+Visible = .F.
+BackColor = 255,255,255
+topcaption = ( .t.)
+Name = "cntSubMenu"
+lblCaption.Caption = "SubMenu"
+lblCaption.Name = "lblCaption"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _20015KWUK
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] imgbottom
+[PARENT] frmstartmenu
+[START PROPERTIES]
+Picture = images\shadbott.bmp
+Stretch = 2
+Height = 4
+Left = 108
+Top = 241
+Width = 3
+Name = "imgbottom"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _20015RNMW
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] imgRight
+[PARENT] frmstartmenu
+[START PROPERTIES]
+Picture = images\shadright.bmp
+Stretch = 2
+Height = 17
+Left = 200
+Top = 41
+Width = 4
+Name = "imgRight"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _20016BDO6
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] imgtr
+[PARENT] frmstartmenu
+[START PROPERTIES]
+Picture = images\shadtr.bmp
+Height = 9
+Left = 357
+Top = 23
+Width = 4
+Name = "imgtr"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1ZZ0J2LMZ
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] imgLeft
+[PARENT] frmstartmenu
+[START PROPERTIES]
+Picture = images\mainsel.png
+BackStyle = 0
+Height = 38
+Left = -19
+Top = -19
+Width = 38
+Name = "imgLeft"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1ZY0FQEXD
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] imgbr
+[PARENT] frmstartmenu
+[START PROPERTIES]
+Picture = images\shadbr.bmp
+Height = 4
+Left = 360
+Top = 78
+Width = 4
+Name = "imgbr"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _20S0NPLX5
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] imgbl
+[PARENT] frmstartmenu
+[START PROPERTIES]
+Picture = images\shadbl.bmp
+Height = 4
+Left = 357
+Top = 112
+Width = 8
+Name = "imgbl"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] frmstartmenu
+[START PROPERTIES]
+Segoe UI, 0, 9, 6, 15, 12, 22, 3, 0
+Arial, 0, 9, 5, 15, 12, 32, 3, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1ZY0KG7R9
+[CLASS] container
+[BASECLASS] container
+[OBJNAME] cntpopupitem
+[START PROPERTIES]
+Width = 163
+Height = 200
+BackStyle = 0
+BorderWidth = 0
+BackColor = 219,230,244
+caption = ( "")
+itemindex = ( 0)
+lselected = .F.
+type = ( "")
+alignment = ( 2)
+lshowpin = .F.
+lpinned = .F.
+cpicture = ( "")
+lshowhotkey = .F.
+chotkey = ( "")
+cskipforexp = ( "")
+citemkey = ( "")
+nshowsubmenu = ( 0)
+lactive = .F.
+cbasefont = ( "")
+Name = "cntpopupitem"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Destroy
+***************************************************************************
+*$METHOD$ Destroy()
+*$CREATED$ 17/02/2007
+***************************************************************************
+UNBINDEVENTS(this)
+ENDPROC
+PROCEDURE Init
+******************************************************************************
+*$METHOD$ Init()
+*$CREATED$ 01/02/2007
+******************************************************************************
+LPARAMETERS vcCaption, vcType, vnWidth
+
+this.Type = vcType
+
+this.Hottrackoff()
+
+IF this.lShowpin
+  this.imgPin.Visible = .t.
+  this.cmdPin.Visible = .t.
+ENDIF
+
+IF this.nShowSubmenu > 0
+  this.imgSubmenu.Visible = .t.
+  this.cmdSubmenu.Visible = (this.nShowSubmenu = 2)
+ENDIF
+
+this.Caption = vcCaption
+DO CASE
+  CASE UPPER(vcType) = "NORM"
+    this.Height = 21
+    this.imgsubMenu.Picture   = "popupdn.bmp"
+    this.imgsep.Picture       = "itemsep.bmp"
+    this.imgback.Picture      = "itemback.bmp"
+    this.imghighlight.Picture = "itemback.bmp"
+    this.imgsubback.Picture   = "itemsubback.bmp"
+    this.imgsubleft.Picture   = "itemsubleft.bmp"
+  OTHERWISE
+    this.Height = 44
+    this.imgsubMenu.Picture   = "popuprt.bmp"
+    this.imgsep.Picture       = "bitmsep.bmp"
+    this.imgback.Picture      = "bitmback.bmp"
+    this.imghighlight.Picture = "bitmback.bmp"
+    this.imgsubback.Picture   = "bitmsubback.bmp"
+    this.imgsubleft.Picture   = "bitmsubleft.bmp"
+ENDCASE
+this.Width = vnWidth
+ENDPROC
+PROCEDURE Refresh
+************************************************************************
+*$METHOD$ Refresh()
+*$CREATED$ 13/02/2007
+************************************************************************
+IF NOT EMPTY(this.cSkipforexp)
+  this.Enabled = NOT EVALUATE(this.cSkipForExp)
+ENDIF
+ENDPROC
+PROCEDURE Resize
+************************************************************************************
+*$METHOD$ Resize()
+*$CREATED$ 13/02/2007
+************************************************************************************
+this.imgLeft.Top = 0
+this.imgLeft.Left = 0
+this.imgLeft.Height = this.Height
+
+this.imgRight.Top = 0
+this.imgRight.Left = this.Width - this.imgRight.Width
+this.imgRight.Height = this.height
+
+this.imgPin.Left = this.Width - this.imgPin.Width
+this.imgPin.Top = 0
+
+this.cmdPin.Left = this.imgPin.Left + 2
+this.cmdPin.Top = 2
+this.cmdPin.Width = this.imgPin.Width - 4
+this.cmdPin.Height = this.imgPin.Height - 4
+
+this.cmdSubMenu.Left = this.Width - this.cmdSubmenu.Width
+this.cmdSubMenu.Top = 2
+this.cmdSubMenu.Width = IIF(this.type = "NORM", 13, 15)
+this.cmdSubMenu.Height = this.Height - 2
+
+this.imgSubMenu.Left = this.cmdSubMenu.Left + INT((this.cmdSubMenu.Width - this.imgSubmenu.Width)/2)
+this.imgSubMenu.Top = this.cmdSubMenu.Top + INT((this.cmdSubMenu.Height - this.imgSubmenu.Height)/2)
+
+this.cmdPopupItem.Top = 2
+this.cmdPopupItem.Left = 3
+IF this.nshowsubmenu = 2
+  this.cmdPopupItem.Width = this.cmdSubMenu.Left - this.cmdPopupItem.Left
+ELSE
+  this.cmdPopupItem.Width = this.Width - (2 * this.cmdPopupItem.Left)
+ENDIF
+this.cmdPopupItem.Height = this.Height - (2 * this.cmdPopupItem.Top)
+
+this.imgPicture.Top = 2
+this.imgPicture.Left = this.imgLeft.Width + 2
+
+this.lblCaption.Top = INT(this.Height / 2) - INT(this.lblCaption.Height / 2)
+this.lblCaption.Left = this.imgLeft.Width + 2
+this.lblCaption.Width = this.Width - (2 * this.lblCaption.Left)
+
+this.imgHotKey.Top = this.Height - this.imgHotKey.Height
+DO CASE
+  CASE this.lShowPin
+    this.imgHotkey.Left = this.Width - (this.imgHotKey.Width + this.imgPin.Width)
+  CASE this.nShowSubmenu > 0
+    this.imgHotkey.Left = this.Width - (this.imgHotKey.Width + this.cmdSubmenu.Width)
+  OTHERWISE
+    this.imgHotkey.Left = this.Width - this.imgHotKey.Width
+ENDCASE
+
+this.lblHotKey.Top = this.imgHotKey.Top
+this.lblHotKey.Left = this.imgHotkey.Left
+this.lblHotkey.Width = this.imghotkey.width
+
+this.imgsep.Top = 0
+this.imgsep.Left = this.cmdsubmenu.Left
+
+this.imgback.Left  = this.imgsep.Left + this.imgsep.width
+this.imgback.Top   = 0
+this.imgback.Height = this.height
+this.imgback.Width = this.cmdsubMenu.Width - this.imgsep.Width - this.imgright.width
+
+this.imghighlight.Left   = this.imgleft.width
+this.imghighlight.Top    = 0
+this.imghighlight.Height = this.height
+this.imghighlight.Width  = this.width - this.imgleft.Width - this.imgright.width
+
+this.imgsubleft.Top = 0
+this.imgsubleft.Left = 0
+
+this.imgsubback.Top = 0
+this.imgsubback.Height = this.height
+this.imgsubback.Left = this.imgsubleft.Width
+this.imgsubback.Width = this.imgsep.left - this.imgsubleft.width
+ENDPROC
+PROCEDURE alignment_assign
+LPARAMETERS vnNewVal
+
+THIS.alignment = m.vnNewVal
+this.lblCAPTION.Alignment = m.vnNewVal
+
+ENDPROC
+PROCEDURE caption_assign
+LPARAMETERS vcNewVal
+
+THIS.caption = m.vcNewVal
+this.lblCaption.Caption = m.vcNewVal
+this.lblCaption.Visible = .t.
+
+ENDPROC
+PROCEDURE cbasefont_assign
+*************************************************************************
+*$METHOD$ cBaseFont_assign()
+*$CREATED$ 09/03/2007
+*************************************************************************
+LPARAMETERS vcNewVal
+
+THIS.cBaseFont = m.vcNewVal
+
+this.lblCaption.FontName = this.cBaseFont
+this.lblHotKey.FontName = this.cBaseFont
+
+ENDPROC
+PROCEDURE chotkey_assign
+LPARAMETERS vcNewVal
+
+THIS.chotkey = m.vcNewVal
+this.lblHotKey.Caption = this.cHotkey
+
+ENDPROC
+PROCEDURE cpicture_assign
+LPARAMETERS vcNewVal
+
+this.cpicture = m.vcNewVal
+this.imgPicture.Picture = m.vcNewVal
+
+IF EMPTY(this.cPicture)
+  this.imgPicture.Visible = .f.
+  this.lblCaption.Left = this.imgLeft.Width + 2
+ELSE
+  this.imgPicture.Top = INT((this.Height - this.imgPicture.Height) / 2)
+  this.lblCaption.Left = this.imgPicture.Left + this.imgPicture.Width + 2
+  this.imgPicture.Visible = .t.
+ENDIF
+this.lblCaption.Width = this.Width - (2 * this.lblCaption.Left)
+
+ENDPROC
+PROCEDURE cskipforexp_assign
+LPARAMETERS vcNewVal
+
+THIS.cSkipForExp = m.vcNewVal
+
+ENDPROC
+PROCEDURE enabled_assign
+LPARAMETERS vlNewVal
+
+THIS.ENABLED = m.vlNewVal
+
+IF this.Enabled
+  this.lblCAPTION.ForeColor = RGB(21,66,139)
+ELSE
+  this.lblCAPTION.ForeColor = RGB(141,141,141)
+ENDIF
+
+ENDPROC
+PROCEDURE hottrackoff
+************************************************************************
+*$METHOD$ HotTrackOff()
+*$CREATED$ 01/02/2007
+************************************************************************
+IF this.lSelected
+  IF this.type = "NORM"
+    this.imgLeft.picture      = "itemselleft.bmp"
+    this.imgRight.picture     = "itemselright.bmp"
+    this.imgHighlight.picture = "itemselback.bmp"
+  ELSE
+    this.imgLeft.picture      = "bitmselleft.bmp"
+    this.imgRight.picture     = "bitmselright.bmp"
+    this.imgHighlight.picture = "bitmselback.bmp"
+  ENDIF
+ELSE
+  this.imgLeft.Visible = .f.
+  this.imgRight.Visible = .f.
+  this.imgHighlight.Visible = .f.
+  IF this.nShowsubmenu = 2
+    this.imgSep.Visible = .f.
+  ENDIF
+ENDIF
+
+IF this.lActive
+  *-- Indicate that the control is no longer active
+  this.lActive = .f.
+ENDIF
+
+ENDPROC
+PROCEDURE hottrackon
+************************************************************************
+*$METHOD$ HotTrackOn()
+*$CREATED$ 01/02/2007
+************************************************************************
+IF this.Enabled AND IIF(this.nShowsubmenu = 0, .t., NOT this.lSelected)
+  IF TYPE("this.parent.parent.parent.parent.osubmenu") = "O" AND ;
+     NOT ISNULL(this.parent.parent.parent.parent.osubmenu)
+    RETURN
+  ENDIF
+
+  IF this.Type = "NORM"
+    this.imgLeft.Picture = 'ITEMLEFT.BMP'
+    this.imgRight.Picture = 'ITEMRIGHT.BMP'
+    this.imgHighlight.Picture = 'ITEMBACK.BMP'
+    this.imgsep.Picture = "ITEMSEP.BMP"
+  ELSE
+    this.imgLeft.Picture = 'BITMLEFT.BMP'
+    this.imgRight.Picture = 'BITMRIGHT.BMP'
+    this.imgHighlight.Picture = 'BITMBACK.BMP'
+    this.imgsep.Picture = "BITMSEP.BMP"
+  ENDIF
+
+  this.imgLeft.Visible = .t.
+  this.imgRight.Visible = .t.
+  this.imgHighlight.Visible = .t.
+  IF this.nShowsubmenu = 2
+    this.imgSep.Visible = .t.
+  ENDIF
+  this.lActive = .t.
+ENDIF
+ENDPROC
+PROCEDURE lactive_assign
+*************************************************************************
+*$METHOD$ lActive_assign()
+*$CREATED$ 23/02/2007
+*************************************************************************
+LPARAMETERS vlNewVal
+
+IF this.lActive <> m.vlNewVal
+  this.lActive = m.vlNewVal
+  IF this.lActive
+    RAISEEVENT(this, "Activate")
+  ELSE
+    RAISEEVENT(this, "Deactivate")
+  ENDIF
+ENDIF
+
+ENDPROC
+PROCEDURE lpinned_assign
+LPARAMETERS vlNewVal
+THIS.lPinned = m.vlNewVal
+IF m.vlNewVal
+  this.imgPin.Picture = "itempinned.bmp"
+ELSE
+  this.imgPin.Picture = "itempinup.bmp"
+ENDIF
+
+
+ENDPROC
+PROCEDURE lselected_assign
+*************************************************************************
+*$METHOD$ lSelected_assign()
+*$CREATED$ 25/02/2007
+*************************************************************************
+LPARAMETERS vlNewVal
+
+THIS.lselected = m.vlNewVal
+
+IF this.lSelected
+  IF this.type = "NORM"
+    this.imgLeft.picture      = "itemselleft.bmp"
+    this.imgRight.picture     = "itemselright.bmp"
+    this.imgHighlight.picture = "itemselback.bmp"
+  ELSE
+    this.imgLeft.picture      = "bitmselleft.bmp"
+    this.imgRight.picture     = "bitmselright.bmp"
+    this.imgHighlight.picture = "bitmselback.bmp"
+  ENDIF
+
+  this.imgLeft.Visible = .t.
+  this.imgRight.Visible = .t.
+  this.imgHighlight.Visible = .t.
+ELSE
+  IF this.lActive
+    this.Hottrackon()
+  ELSE
+    this.imgLeft.Visible = .f.
+    this.imgRight.Visible = .f.
+    this.imgSep.Visible = .f.
+    this.imgHighlight.Visible = .f.
+    this.imgsep.Visible = .f.
+    this.imgsubleft.Visible = .f.
+    this.imgback.Visible = .f.
+    this.imgsubback.Visible = .f.
+  ENDIF
+ENDIF
+ENDPROC
+PROCEDURE lshowhotkey_assign
+LPARAMETERS vlNewVal
+
+THIS.lShowHotKey = m.vlNewVal AND this.Enabled
+
+this.lblHotKey.Visible = this.lshowhotkey AND NOT EMPTY(this.chotkey)
+this.imgHotKey.Visible = this.lshowhotkey AND NOT EMPTY(this.chotkey)
+
+ENDPROC
+PROCEDURE lshowpin_assign
+LPARAMETERS vlNewVal
+THIS.lShowPin = m.vlNewVal
+this.imgPin.Visible = m.vlNewVal
+this.cmdPin.Visible = m.vlNewVal
+
+this.imgHotKey.Top = this.Height - this.imgHotKey.Height
+this.imgHotkey.Left = this.Width - (this.imgHotKey.Width + IIF(this.lShowPin, this.imgPin.Width, 0))
+this.lblHotKey.Top = this.imgHotKey.Top
+this.lblHotKey.Left = this.imgHotkey.Left
+this.lblHotkey.Width = this.imghotkey.width
+ENDPROC
+PROCEDURE nshowsubmenu_assign
+LPARAMETERS vnNewVal
+THIS.nShowSubmenu = m.vnNewVal
+this.imgSubmenu.Visible = (m.vnNewVal > 0)
+this.cmdSubmenu.Visible = (m.vnNewVal = 2)
+
+IF this.nshowsubmenu = 2
+  this.cmdPopupItem.Width = this.cmdSubMenu.Left - this.cmdPopupItem.Left
+ELSE
+  this.cmdPopupItem.Width = this.Width - (2 * this.cmdPopupItem.Left)
+ENDIF
+
+this.imgHotKey.Top = this.Height - this.imgHotKey.Height
+this.imgHotkey.Left = this.Width - (this.imgHotKey.Width + IIF(this.nShowSubmenu > 0, this.cmdSubMenu.Width, 0))
+this.lblHotKey.Top = this.imgHotKey.Top
+this.lblHotKey.Left = this.imgHotkey.Left
+this.lblHotkey.Width = this.imghotkey.width
+ENDPROC
+PROCEDURE tooltiptext_assign
+*************************************************************************
+*$METHOD$ ToolTipText_assign()
+*$CREATED$ 13/02/2007
+*************************************************************************
+LPARAMETERS vcNewVal
+
+THIS.TOOLTIPTEXT = m.vcNewVal
+this.cmdPopupItem.ToolTipText =  m.vcNewVal
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+17[END RESERVED2]
+[START RESERVED3]
+caption Specifies the text displayed in an object's caption.
+itemindex
+lselected
+type
+alignment Specifies the alignment of text associated with a control.
+lshowpin
+lpinned
+cpicture
+lshowhotkey
+chotkey
+cskipforexp
+citemkey
+nshowsubmenu
+lactive
+cbasefont
+*hottrackon 
+*hottrackoff 
+*caption_assign 
+*lselected_assign 
+*alignment_assign 
+*lshowpin_assign 
+*lpinned_assign 
+*cpicture_assign 
+*lshowhotkey_assign 
+*chotkey_assign 
+*execute 
+*enabled_assign 
+*cskipforexp_assign 
+*tooltiptext_assign 
+*nshowsubmenu_assign 
+*submenu 
+*activate Occurs when a FormSet, Form, or Page object becomes active or when a ToolBar object is shown.
+*deactivate Occurs when a container object, such as a form, is no longer active because none of its contained objects has the focus.
+*lactive_assign 
+*cbasefont_assign 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _20X0IO0B0
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] imgHighlight
+[PARENT] cntpopupitem
+[START PROPERTIES]
+Picture = images\itemback.bmp
+Stretch = 2
+BackStyle = 0
+Height = 21
+Left = 36
+Top = 5
+Visible = .F.
+Width = 3
+Name = "imgHighlight"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1ZY0FQEXD
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] imgLeft
+[PARENT] cntpopupitem
+[START PROPERTIES]
+Picture = images\itemleft.bmp
+BackStyle = 0
+Height = 21
+Left = 12
+Top = 3
+Visible = .F.
+Width = 3
+Name = "imgLeft"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _20V0ULAL1
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] imgsubback
+[PARENT] cntpopupitem
+[START PROPERTIES]
+Picture = images\itemsubback.bmp
+Stretch = 2
+BackStyle = 0
+Height = 21
+Left = 22
+Top = 49
+Visible = .F.
+Width = 3
+Name = "imgsubback"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _20V0ULALB
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] imgsubleft
+[PARENT] cntpopupitem
+[START PROPERTIES]
+Picture = images\itemsubleft.bmp
+BackStyle = 0
+Height = 21
+Left = 13
+Top = 37
+Visible = .F.
+Width = 2
+Name = "imgsubleft"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2080S29V1
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] imgBack
+[PARENT] cntpopupitem
+[START PROPERTIES]
+Picture = images\itemback.bmp
+Stretch = 2
+BackStyle = 0
+Height = 21
+Left = 30
+Top = 35
+Visible = .F.
+Width = 3
+Name = "imgBack"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1ZY0FQEXD
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] imgRight
+[PARENT] cntpopupitem
+[START PROPERTIES]
+Picture = images\itemright.bmp
+BackStyle = 0
+Height = 21
+Left = 84
+Top = 3
+Visible = .F.
+Width = 3
+Name = "imgRight"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1ZZ0OIODV
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] imgPin
+[PARENT] cntpopupitem
+[START PROPERTIES]
+Picture = images\itempinup.bmp
+BackStyle = 0
+Height = 21
+Left = 48
+Top = 144
+Visible = .F.
+Width = 28
+Name = "imgPin"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2020GQT5R
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] imgPicture
+[PARENT] cntpopupitem
+[START PROPERTIES]
+Height = 17
+Left = 24
+Top = 96
+Visible = .F.
+Width = 100
+Name = "imgPicture"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _20V0PU559
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] imgSubMenu
+[PARENT] cntpopupitem
+[START PROPERTIES]
+Picture = images\popupdn.bmp
+BackStyle = 0
+Height = 6
+Left = 42
+Top = 38
+Visible = .F.
+Width = 7
+Name = "imgSubMenu"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _20V0RIAV9
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] imgSep
+[PARENT] cntpopupitem
+[START PROPERTIES]
+Picture = images\itemsep.bmp
+BackStyle = 0
+Height = 21
+Left = 101
+Top = 20
+Visible = .F.
+Width = 2
+Name = "imgSep"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1ZY0KMEZH
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] lblCaption
+[PARENT] cntpopupitem
+[START PROPERTIES]
+FontName = "Segoe UI"
+Alignment = 2
+BackStyle = 0
+Caption = "Label1"
+Height = 17
+Left = 72
+Top = 67
+Width = 38
+ForeColor = 21,66,139
+Name = "lblCaption"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+RAISEEVENT(this.Parent, "Click")
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1ZY0ULTWG
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] cmdPopupItem
+[PARENT] cntpopupitem
+[START PROPERTIES]
+Top = 63
+Left = 72
+Height = 27
+Width = 84
+Caption = ""
+Style = 1
+Name = "cmdPopupItem"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+this.Parent.Parent.SelectMenuItem(this.Parent.Itemindex)
+ENDPROC
+PROCEDURE GotFocus
+this.Parent.Hottrackon()
+ENDPROC
+PROCEDURE LostFocus
+this.Parent.Hottrackoff()
+ENDPROC
+PROCEDURE MouseEnter
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+
+this.Parent.Hottrackon()
+ENDPROC
+PROCEDURE MouseLeave
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+
+this.Parent.Hottrackoff()
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _20G0LJ7B2
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] imgHotKey
+[PARENT] cntpopupitem
+[START PROPERTIES]
+Picture = images\hotkeys.png
+BackStyle = 0
+Height = 15
+Left = 68
+Top = 21
+Visible = .F.
+Width = 16
+Name = "imgHotKey"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _20G0LJ7BC
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] lblHotKey
+[PARENT] cntpopupitem
+[START PROPERTIES]
+FontName = "Segoe UI"
+Alignment = 2
+BackStyle = 0
+Caption = ( "U")
+Height = 17
+Left = 69
+Top = 21
+Visible = .F.
+Width = 16
+Name = "lblHotKey"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+*************************************************************************
+*$METHOD$ Click()
+*$CREATED$ 13/02/2007
+*************************************************************************
+IF VARTYPE(thisform.oTabMenu) = "O"
+  thisform.oTabMenu.lShowHotKeys = .f.
+ELSE
+  this.parent.parent.parent.Parent.parent.lshowhotkeys = .f.
+ENDIF
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _20V0PU54Z
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] cmdSubMenu
+[PARENT] cntpopupitem
+[START PROPERTIES]
+Top = 161
+Left = 16
+Height = 27
+Width = 84
+Caption = ""
+Style = 1
+TabStop = .F.
+Visible = .F.
+Name = "cmdSubMenu"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+************************************************************************
+*$METHOD$ Click()
+*$CREATED$ 23/02/2007
+************************************************************************
+IF this.Parent.nshowsubmenu = 2
+  RAISEEVENT(this.Parent, "submenu")
+ELSE
+  RAISEEVENT(this.Parent, "execute")
+ENDIF
+ENDPROC
+PROCEDURE MouseEnter
+************************************************************************
+*$METHOD$ MouseEnter()
+*$CREATED$ 01/02/2007
+************************************************************************
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+
+IF this.Parent.Enabled
+  this.Parent.imgright.Visible = .t.
+  this.Parent.imgsep.Visible = .t.
+  this.Parent.imgback.Visible = .t.
+  this.Parent.imgsubback.Visible = .t.
+  this.Parent.imgsubleft.Visible = .t.
+  this.parent.lActive = .t.
+ENDIF
+ENDPROC
+PROCEDURE MouseLeave
+************************************************************************
+*$METHOD$ MouseLeave()
+*$CREATED$ 25/02/2007
+************************************************************************
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+
+IF NOT this.Parent.lSelected
+  this.Parent.imgright.Visible = .f.
+  this.Parent.imgsep.Visible = .f.
+  this.Parent.imgback.Visible = .f.
+  this.Parent.imgsubback.Visible = .f.
+  this.Parent.imgsubleft.Visible = .f.
+ENDIF
+
+this.Parent.lActive = .f.
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1ZY0FQEXD
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] cmdPin
+[PARENT] cntpopupitem
+[START PROPERTIES]
+Top = 120
+Left = 72
+Height = 27
+Width = 84
+Caption = ""
+Style = 1
+TabStop = .F.
+Visible = .F.
+Name = "cmdPin"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+this.Parent.lPinned = NOT this.Parent.lPinned
+ENDPROC
+PROCEDURE MouseEnter
+************************************************************************
+*$METHOD$ MouseEnter()
+*$CREATED$ 01/02/2007
+************************************************************************
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+
+IF this.Parent.Enabled
+  IF this.Parent.lPinned
+    this.Parent.imgPin.Picture = "hovpinned.bmp"
+  ELSE
+    this.Parent.imgPin.Picture = "hovpinup.bmp"
+  ENDIF
+ENDIF
+ENDPROC
+PROCEDURE MouseLeave
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+
+IF this.Parent.lPinned
+  this.Parent.imgPin.Picture = "itempinned.bmp"
+ELSE
+  this.Parent.imgPin.Picture = "itempinup.bmp"
+ENDIF
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] cntpopupitem
+[START PROPERTIES]
+Arial, 0, 9, 5, 15, 12, 32, 3, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1ZY0LHQ0F
+[CLASS] container
+[BASECLASS] container
+[OBJNAME] cntpopupmenu
+[START PROPERTIES]
+Width = 200
+Height = 200
+BackColor = 219,230,244
+BorderColor = 138,175,225
+caption = ( "")
+topcaption = .F.
+itemcount = ( 0)
+alignment = ( 2)
+ncolumns = ( 1)
+lshowhotkeys = .F.
+cbasefont = ( "")
+Name = "cntpopupmenu"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+this.lblCaption.Left = 1
+IF this.Topcaption
+  this.lblCaption.Top = 1
+ELSE
+  this.lblCaption.Top = this.Height - this.lblCaption.Height - 1
+ENDIF
+this.lblCaption.Width = this.width - 2
+ENDPROC
+PROCEDURE Resize
+this.lblCaption.Left = 1
+IF this.Topcaption
+  this.lblCaption.Top = 1
+ELSE
+  this.lblCaption.Top = this.Height - this.lblCaption.Height - 1
+ENDIF
+this.lblCaption.Width = this.width - 2
+ENDPROC
+PROCEDURE addpopupitem
+********************************************************************************************
+*$METHOD$ AddPopupItem()
+*$CREATED$ 01/02/2007
+********************************************************************************************
+LPARAMETERS vcCaption, vcType, vcHotKey
+
+LOCAL lcItemName, lnTop, lcPrevItem, lnWidth, lnLeft
+
+lnWidth = this.Width - 6
+lnLeft  = 3
+
+IF this.nColumns > 1
+  lnWidth = INT((this.Width - (6 * this.nColumns))/this.nColumns)
+ENDIF
+
+lcPrevItem = "PopupItem" + STRTRAN(STR(this.ItemCount,3,0), " ", "0")
+this.ItemCount = this.ItemCount + 1
+lcItemName = "PopupItem" + STRTRAN(STR(this.ItemCount,3,0), " ", "0")
+this.AddObject(lcItemName, "cntPopupItem", vcCaption, vcType, lnWidth)
+
+IF this.Topcaption AND NOT EMPTY(this.caption)
+  lnTop = this.lblCaption.Height + 2
+ELSE
+  lnTop = 2
+ENDIF
+
+IF this.ItemCount > 1
+  lnTop = this.&lcPrevItem..Top + this.&lcPrevItem..Height
+  lnLeft = this.&lcPrevItem..Left
+ENDIF
+
+WITH this.&lcItemName.
+  IF this.nColumns > 1
+    IF lnTop + .Height > IIF(this.TopCaption OR EMPTY(this.Caption), this.Height, this.Height - this.lblCaption.Height)
+      IF this.Topcaption AND NOT EMPTY(this.caption)
+        lnTop = this.lblCaption.Height + 2
+      ELSE
+        lnTop = 2
+      ENDIF
+
+      lnLeft = this.&lcPrevItem..Left + this.&lcPrevItem..Width + 6
+    ENDIF
+  ENDIF
+
+  .BackColor = this.BackColor
+  .Alignment = this.Alignment
+  .Top = lnTop
+  .Left = lnLeft
+  .ItemIndex = this.ItemCount
+  .Visible = .t.
+  .cHotKey = IIF(EMPTY(vcHotKey),"",vcHotKey)
+  .cBaseFont = this.cBasefont
+ENDWITH
+
+RETURN this.&lcItemName.
+ENDPROC
+PROCEDURE alignment_assign
+LPARAMETERS vnNewVal
+
+THIS.Alignment = m.vnNewVal
+
+LOCAL lnCount, lcItemName
+
+FOR lnCount = 1 TO this.ItemCount
+  lcItemName = "PopupItem" + STRTRAN(STR(lnCount,3,0), " ", "0")
+  WITH this.&lcItemName.
+    .Alignment = m.vnNewVal
+  ENDWITH
+NEXT
+ENDPROC
+PROCEDURE caption_assign
+******************************************************************
+*$METHOD$ Caption_assign()
+*$CREATED$ 01/02/2007
+******************************************************************
+LPARAMETERS vcNewVal
+
+THIS.caption = m.vcNewVal
+this.lblCaption.Caption = m.vcNewVal
+
+IF EMPTY(m.vcNewval)
+  this.lblCaption.Visible = .f.
+ELSE
+  this.lblCaption.Visible = .t.
+ENDIF
+ENDPROC
+PROCEDURE cbasefont_assign
+*************************************************************************
+*$METHOD$ cBaseFont_Assign()
+*$CREATED$ 09/03/2007
+*************************************************************************
+LPARAMETERS vcNewVal
+
+THIS.cBaseFont = m.vcNewVal
+this.lblCaption.FontName = this.cBasefont
+
+ENDPROC
+PROCEDURE deleteitems
+*************************************************************************
+*$METHOD$ DeleteItems()
+*$CREATED$ 23/02/2007
+*************************************************************************
+LOCAL llReturn, lnCount, lcItemName
+
+llReturn = .t.
+
+FOR lnCount = 1 TO this.ItemCount
+  lcItemName = "PopupItem" + STRTRAN(STR(lnCount,3,0), " ", "0")
+  this.RemoveObject(lcItemName)
+NEXT
+
+this.Itemcount = 0
+
+RETURN llReturn
+ENDPROC
+PROCEDURE lshowhotkeys_assign
+LPARAMETERS vlNewVal
+
+THIS.lShowHotkeys = m.vlNewVal
+
+LOCAL lnCount, lcItemName
+
+FOR lnCount = 1 TO this.ItemCount
+  lcItemName = "PopupItem" + STRTRAN(STR(lnCount,3,0), " ", "0")
+  WITH this.&lcItemName.
+    .lShowHotKey = THIS.lShowHotkeys
+  ENDWITH
+NEXT
+
+ENDPROC
+PROCEDURE ncolumns_assign
+LPARAMETERS vnNewVal
+
+THIS.ncolumns = m.vnNewVal
+
+ENDPROC
+PROCEDURE selectmenuitem
+************************************************************************
+*$METHOD$ SelectMenuItem()
+*$CREATED$ 12/02/2007
+************************************************************************
+LPARAMETERS vnItemIndex, vlShowHotKeys
+
+LOCAL lcItemName
+
+lcItemName = "PopupItem" + STRTRAN(STR(vnItemIndex,3,0), " ", "0")
+
+IF VARTYPE(thisform.oTabMenu) = "O"
+  thisform.oTabMenu.lShowHotKeys = vlShowHotKeys
+  WITH this.&lcItemName.
+    IF .nShowSubmenu <> 1
+      thisform.Release()
+    ENDIF
+  ENDWITH
+ELSE
+  IF VARTYPE(this.parent.parent.parent.osubmenu) = "O"
+    this.parent.parent.parent.osubmenu.Release()
+  ENDIF
+  IF VARTYPE(this.parent.parent.parent.ofrmstartmenu) = "O"
+    this.parent.parent.parent.ofrmstartmenu.Release()
+  ENDIF
+
+  this.parent.parent.parent.lshowhotkeys = vlShowHotKeys
+ENDIF
+
+RAISEEVENT(this.&lcItemName., "Execute")
+ENDPROC
+PROCEDURE sendhotkey
+*************************************************************************
+*$METHOD$ SendHotkey()
+*$CREATED$ 13/02/2007
+*************************************************************************
+LPARAMETERS vcHotKey
+
+LOCAL llReturn, lnCount, lcItemName
+
+IF NOT llReturn
+  *-- It's not the main item so see if the hotkey refers to any of the
+  * menu tabs.
+  FOR lnCount = 1 TO this.ItemCount
+    lcItemName = "PopupItem" + STRTRAN(STR(lnCount,3,0), " ", "0")
+    WITH this.&lcItemName.
+      IF .cHotKey = vcHotKey
+        this.Selectmenuitem(.ItemIndex, .t.)
+        llReturn = .t.
+      ENDIF
+    ENDWITH
+  NEXT
+ENDIF
+
+RETURN llReturn
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+2[END RESERVED2]
+[START RESERVED3]
+caption Specifies the text displayed in an object's caption.
+topcaption
+itemcount
+alignment Specifies the alignment of text associated with a control.
+ncolumns
+lshowhotkeys
+cbasefont
+*caption_assign 
+*addpopupitem 
+*alignment_assign 
+*ncolumns_assign 
+*lshowhotkeys_assign 
+*sendhotkey 
+*selectmenuitem 
+*deleteitems 
+*cbasefont_assign 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1ZY0LTH4Z
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] lblCaption
+[PARENT] cntpopupmenu
+[START PROPERTIES]
+FontName = "Segoe UI"
+Alignment = 2
+Caption = "lblCaption"
+Height = 16
+Left = 72
+Top = 156
+Visible = .F.
+Width = 96
+ForeColor = 21,66,139
+BackColor = 193,217,241
+Name = "lblCaption"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] cntpopupmenu
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1ZY0ULTWG
+[CLASS] container
+[BASECLASS] container
+[OBJNAME] cnthelpitem
+[START PROPERTIES]
+Width = 22
+Height = 21
+BackStyle = 0
+BorderWidth = 0
+citemkey = ( "HELP")
+Name = "cnthelpitem"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Destroy
+***************************************************************************
+*$METHOD$ Destroy()
+*$CREATED$ 17/02/2007
+***************************************************************************
+UNBINDEVENTS(this)
+ENDPROC
+PROCEDURE Init
+this.imgLeft.Top = 0
+this.imgLeft.Left = 0
+
+this.imgRight.Top = 0
+this.imgRiGHT.Left = this.Width - this.imgRIGHT.Width
+
+this.imgBack.Top = 0
+this.imgBack.Left = this.imgLeft.Width
+This.imgBack.Width = this.Width - (this.imgLeft.Width + this.imgRight.Width)
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+5[END RESERVED2]
+[START RESERVED3]
+citemkey
+*execute 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _20K185QBM
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] imgLeft
+[PARENT] cnthelpitem
+[START PROPERTIES]
+Picture = images\itemleft.bmp
+BackStyle = 0
+Height = 21
+Left = 0
+Top = 0
+Visible = .F.
+Width = 3
+Name = "imgLeft"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _20K185QBN
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] imgRight
+[PARENT] cnthelpitem
+[START PROPERTIES]
+Picture = images\itemright.bmp
+BackStyle = 0
+Height = 21
+Left = 19
+Top = 0
+Visible = .F.
+Width = 3
+Name = "imgRight"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _20K185QBW
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] imgBack
+[PARENT] cnthelpitem
+[START PROPERTIES]
+Picture = images\itemback.bmp
+Stretch = 2
+Height = 21
+Left = 3
+Top = 0
+Visible = .F.
+Width = 16
+Name = "imgBack"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _20K18MB6M
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] imgHelp
+[PARENT] cnthelpitem
+[START PROPERTIES]
+Picture = images\help.png
+BackStyle = 0
+Height = 14
+Left = 4
+Top = 3
+Width = 14
+Name = "imgHelp"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+RAISEEVENT(this.Parent, "Execute")
+ENDPROC
+PROCEDURE MouseEnter
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+
+this.Parent.imgLeft.Visible = .t.
+this.Parent.imgRight.Visible = .t.
+this.Parent.imgBack.Visible = .t.
+ENDPROC
+PROCEDURE MouseLeave
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+
+this.Parent.imgLeft.Visible = .f.
+this.Parent.imgRight.Visible = .f.
+this.Parent.imgBack.Visible = .f.
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] cnthelpitem
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2080S29V1
+[CLASS] container
+[BASECLASS] container
+[OBJNAME] cntquickbar
+[START PROPERTIES]
+Width = 200
+Height = 24
+Picture = images\qtbback.bmp
+nitemcount = ( 0)
+lshowhotkeys = .F.
+cskipforexp = ( "")
+Name = "cntquickbar"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Refresh
+*******************************************************************
+*$METHOD$ Refresh()
+*$CREATED$ 13/02/2007
+*******************************************************************
+IF NOT EMPTY(this.cSkipforexp)
+  this.enabled = EVALUATE(this.cSkipForExp)
+ENDIF
+ENDPROC
+PROCEDURE Resize
+this.imgleft.Left = 0
+this.imgright.Left = this.Width - this.imgright.Width
+
+this.imgright.Top = 0
+this.imgleft.Top = 0
+ENDPROC
+PROCEDURE additem
+LPARAMETERS vcPicture
+
+LOCAL lcItemName, lnTop, lcPrevItem, lnLeft
+
+lnLeft  = this.imgLeft.Width + 1
+
+lcPrevItem = "QuickItem" + STRTRAN(STR(this.nItemCount,3,0), " ", "0")
+
+this.nItemcount = this.nItemcount + 1
+this.Width = (this.imgLeft.Width + this.imgRight.Width + (this.nItemCount * 23))
+
+lcItemName = "QuickItem" + STRTRAN(STR(this.nItemCount,3,0), " ", "0")
+this.AddObject(lcItemName, "cntQuickItem")
+
+IF this.nItemCount > 1
+  lnLeft = this.&lcPrevItem..Left + this.&lcPrevItem..Width + 2
+ENDIF
+
+WITH this.&lcItemName.
+  .Top = 3
+  .Left = lnLeft
+  .nItemIndex = this.nItemcount
+  .Visible = .t.
+  IF NOT EMPTY(vcPicture)
+    .cPicture = vcPicture
+  ENDIF
+  .cHotKey = ALLTRIM(STR(this.nItemCount,2,0))
+ENDWITH
+
+RETURN this.&lcItemName.
+
+
+ENDPROC
+PROCEDURE cskipforexp_assign
+LPARAMETERS vcNewVal
+
+THIS.cSkipForExp = m.vcNewVal
+
+ENDPROC
+PROCEDURE lshowhotkeys_assign
+LPARAMETERS vlNewVal
+
+LOCAL lnCount, lcItemName
+
+THIS.lShowHotKeys = m.vlNewVal
+
+FOR lnCount = 1 TO this.nItemcount
+  lcItemName = "QuickItem" + STRTRAN(STR(lnCount,3,0), " ", "0")
+  WITH this.&lcItemName.
+    .lShowHotKey = THIS.lShowHotkeys
+  ENDWITH
+ENDFOR
+
+ENDPROC
+PROCEDURE selectmenuitem
+LPARAMETERS vnItemIndex, vlShowHotKeys
+
+LOCAL lcItemName
+
+IF VARTYPE(this.parent.ofrmstartmenu) = "O"
+  this.parent.ofrmstartmenu.Release()
+ENDIF
+
+this.parent.lshowhotkeys = vlShowHotKeys
+
+lcItemName = "QuickItem" + STRTRAN(STR(vnItemIndex,3,0), " ", "0")
+RAISEEVENT(this.&lcItemName., "Execute")
+ENDPROC
+PROCEDURE sendhotkey
+LPARAMETERS vcHotKey
+
+LOCAL llReturn, lnCount, lcItemName
+
+IF NOT llReturn
+  *-- It's not the main item so see if the hotkey refers to any of the
+  * menu tabs.
+  FOR lnCount = 1 TO this.nItemCount
+    lcItemName = "QuickItem" + STRTRAN(STR(lnCount,3,0), " ", "0")
+    WITH this.&lcItemName.
+      IF .cHotKey = vcHotKey
+        this.Selectmenuitem(.nItemIndex, .t.)
+        llReturn = .t.
+      ENDIF
+    ENDWITH
+  NEXT
+ENDIF
+
+RETURN llReturn
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+3[END RESERVED2]
+[START RESERVED3]
+nitemcount
+lshowhotkeys
+cskipforexp
+*additem Adds a new item to a ComboBox or ListBox control, optionally allowing you to specify the item's index.
+*lshowhotkeys_assign 
+*sendhotkey 
+*selectmenuitem 
+*cskipforexp_assign 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2080S7TY6
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] imgLeft
+[PARENT] cntquickbar
+[START PROPERTIES]
+Picture = images\qtbleft.bmp
+Height = 24
+Left = 0
+Top = 0
+Width = 18
+Name = "imgLeft"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2080S7TY7
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] imgRight
+[PARENT] cntquickbar
+[START PROPERTIES]
+Picture = images\qtbright.bmp
+Height = 24
+Left = 185
+Top = 0
+Width = 15
+Name = "imgRight"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] cntquickbar
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2080S9LPF
+[CLASS] container
+[BASECLASS] container
+[OBJNAME] cntquickitem
+[START PROPERTIES]
+Width = 200
+Height = 21
+Picture = images\itemback.bmp
+BackStyle = 0
+BorderWidth = 0
+cpicture = ( "")
+nitemindex = ( 0)
+lshowhotkey = ( .f.)
+chotkey = ( "0")
+citemkey = ( "")
+cskipforexp = ( "")
+Name = "cntquickitem"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Destroy
+***************************************************************************
+*$METHOD$ Destroy()
+*$CREATED$ 17/02/2007
+***************************************************************************
+UNBINDEVENTS(this)
+ENDPROC
+PROCEDURE Init
+this.Picture = ""
+this.imgLeft.Visible = .f.
+this.imgRight.Visible = .f.
+
+this.Width = 21
+this.Height = 21
+
+this.imgRight.Left = this.Width - this.imgRight.Width
+
+this.imgItem.Left = 1
+this.imgItem.Top = 1
+this.cmdItem.Left = 1
+this.cmdItem.Top = 2
+
+this.imgHotKey.Top = this.Height - this.imgHotKey.Height
+this.imgHotkey.Left = this.Width - this.imgHotKey.Width
+this.lblHotKey.Top = this.imgHotKey.Top
+this.lblHotKey.Left = this.imgHotkey.Left
+this.lblHotkey.Width = this.imghotkey.width
+ENDPROC
+PROCEDURE Refresh
+************************************************************************
+*$METHOD$ Refresh()
+*$CREATED$ 15/02/2007
+************************************************************************
+IF NOT EMPTY(this.cSkipforexp)
+  this.Enabled = NOT EVALUATE(this.cSkipForExp)
+ENDIF
+ENDPROC
+PROCEDURE chotkey_assign
+LPARAMETERS vcNewVal
+
+THIS.chotkey = m.vcNewVal
+this.lblHotKey.Caption = this.cHotkey
+ENDPROC
+PROCEDURE cpicture_assign
+LPARAMETERS vcNewVal
+THIS.cPicture = m.vcNewVal
+
+this.imgItem.Picture = this.cPicture
+this.imgItem.Top = INT((this.Height - this.imgItem.Height)/2)
+this.imgItem.Left = INT((this.Width - this.imgItem.Width)/2)
+
+ENDPROC
+PROCEDURE cskipforexp_assign
+************************************************************************
+*$METHOD$ cSkipForExp_assign()
+*$CREATED$ 15/02/2007
+************************************************************************
+LPARAMETERS vcNewVal
+
+THIS.cskipforexp = m.vcNewVal
+
+ENDPROC
+PROCEDURE enabled_assign
+**************************************************************************
+*$METHOD$ Enabled_assign()
+*$CREATED$ 13/02/2007
+**************************************************************************
+LPARAMETERS vlNewVal
+
+THIS.ENABLEd = m.vlNewVal
+
+ENDPROC
+PROCEDURE execute
+* This is a stub method to allow the users of this control to bind to
+* the event raised when the users select this control
+ENDPROC
+PROCEDURE lshowhotkey_assign
+LPARAMETERS vlNewVal
+
+THIS.lShowHotKey = m.vlNewVal AND this.Enabled
+
+this.lblHotKey.Visible = this.lshowhotkey AND NOT EMPTY(this.chotkey)
+this.imgHotKey.Visible = this.lshowhotkey AND NOT EMPTY(this.chotkey)
+
+ENDPROC
+PROCEDURE tooltiptext_assign
+**************************************************************************
+*$METHOD$ ToolTipText_assign()
+*$CREATED$ 13/02/2007
+**************************************************************************
+LPARAMETERS vcNewVal
+
+THIS.TOOLTIPTEXT = m.vcNewVal
+this.cmdItem.ToolTipText = m.vcNewVal
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+7[END RESERVED2]
+[START RESERVED3]
+cpicture
+nitemindex
+lshowhotkey
+chotkey
+citemkey
+cskipforexp
+*cpicture_assign 
+*lshowhotkey_assign 
+*chotkey_assign 
+*execute 
+*enabled_assign 
+*tooltiptext_assign 
+*cskipforexp_assign 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2080SNNHT
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] imgLeft
+[PARENT] cntquickitem
+[START PROPERTIES]
+Picture = images\itemleft.bmp
+BackStyle = 0
+Height = 21
+Left = 0
+Top = 0
+Width = 3
+Name = "imgLeft"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2080SNNHU
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] imgRight
+[PARENT] cntquickitem
+[START PROPERTIES]
+Picture = images\itemright.bmp
+BackStyle = 0
+Height = 21
+Left = 18
+Top = 0
+Width = 3
+Name = "imgRight"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2080SNNI3
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] imgItem
+[PARENT] cntquickitem
+[START PROPERTIES]
+BackStyle = 0
+Height = 19
+Left = 96
+Top = 1
+Width = 19
+Name = "imgItem"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2080SNNI4
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] cmdItem
+[PARENT] cntquickitem
+[START PROPERTIES]
+Top = 0
+Left = 129
+Height = 19
+Width = 19
+Caption = ""
+Style = 1
+Name = "cmdItem"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+this.Parent.Parent.SelectMenuItem(this.parent.nItemIndex)
+ENDPROC
+PROCEDURE MouseEnter
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+
+IF this.parent.Enabled
+  this.parent.imgLeft.visible = .t.
+  this.parent.imgRight.visible = .t.
+  this.parent.Picture = "itemback.bmp"
+  this.Parent.BackStyle = 1
+ENDIF
+
+ENDPROC
+PROCEDURE MouseLeave
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+
+this.parent.imgLeft.visible = .f.
+this.parent.imgRight.visible = .f.
+this.parent.Picture = ""
+this.Parent.BackStyle = 0
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _20E116V21
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] imgHotKey
+[PARENT] cntquickitem
+[START PROPERTIES]
+Picture = images\hotkeys.png
+BackStyle = 0
+Height = 15
+Left = 68
+Top = 6
+Visible = .F.
+Width = 16
+Name = "imgHotKey"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _20E116V22
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] lblHotKey
+[PARENT] cntquickitem
+[START PROPERTIES]
+FontName = "Segoe UI"
+Alignment = 2
+BackStyle = 0
+Caption = ( "0")
+Height = 17
+Left = 69
+Top = 5
+Visible = .F.
+Width = 16
+Name = "lblHotKey"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+**************************************************************************
+*$METHOD$ Click()
+*$CREATED$ 13/02/2007
+**************************************************************************
+this.Parent.Parent.Parent.lShowHotKeys = .f.
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] cntquickitem
+[START PROPERTIES]
+Arial, 0, 9, 5, 15, 12, 32, 3, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _20B0GD7KM
+[CLASS] container
+[BASECLASS] container
+[OBJNAME] cntcontrol
+[START PROPERTIES]
+Width = 95
+Height = 18
+BackStyle = 0
+BorderWidth = 0
+lactive = ( .t.)
+nwindowstate = ( 0)
+Name = "cntcontrol"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Destroy
+***************************************************************************
+*$METHOD$ Destroy()
+*$CREATED$ 17/02/2007
+***************************************************************************
+UNBINDEVENTS(this)
+ENDPROC
+PROCEDURE lactive_assign
+*************************************************************************
+*$METHOD$ lActive_assign()
+*$CREATED$ 11/02/2007
+*************************************************************************
+LPARAMETERS vlNewVal
+THIS.lactive = m.vlNewVal
+
+IF this.lActive
+  IF this.nWindowState = 2
+    this.imgControl.Picture = "maxactive.png"
+  ELSE
+    this.imgControl.Picture = "active.png"
+  ENDIF
+ELSE
+  IF this.nWindowState = 2
+    this.imgControl.Picture = "maxinactive.png"
+  ELSE
+    this.imgControl.Picture = "inactive.png"
+  ENDIF
+ENDIF
+
+ENDPROC
+PROCEDURE nwindowstate_assign
+*************************************************************************
+*$METHOD$ nWindowState_Assign()
+*$CREATED$ 27/02/2007
+*************************************************************************
+LPARAMETERS vnNewVal
+
+this.nWindowState = m.vnNewVal
+IF this.nWindowState = 2
+  this.cmdMAXIMIZE.ToolTipText = "Restore Down"
+ELSE
+  this.cmdMAXIMIZE.ToolTipText = "Maximize"
+ENDIF
+this.lActive      = this.lActive
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+5[END RESERVED2]
+[START RESERVED3]
+lactive
+nwindowstate
+*lactive_assign 
+*nwindowstate_assign 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _20B0GMBKF
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] imgControl
+[PARENT] cntcontrol
+[START PROPERTIES]
+Picture = images\active.png
+BackStyle = 0
+Height = 18
+Left = -1
+Top = 0
+Width = 95
+Name = "imgControl"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1ZY0ULTWG
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] cmdMinimize
+[PARENT] cntcontrol
+[START PROPERTIES]
+Top = 1
+Left = 2
+Height = 14
+Width = 22
+Caption = ""
+Style = 1
+ToolTipText = "Minimize"
+Name = "cmdMinimize"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+RAISEEVENT(this.Parent.parent, "AppMinimize")
+ENDPROC
+PROCEDURE MouseEnter
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+IF this.Parent.lActive AND this.Enabled
+  IF this.Parent.nWindowstate = 2
+    this.Parent.imgCONTROL.Picture = "maxhovmin.png"
+  ELSE
+    this.Parent.imgCONTROL.Picture = "hovmin.png"
+  ENDIF
+ENDIF
+ENDPROC
+PROCEDURE MouseLeave
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+IF this.Parent.lActive
+  IF this.Parent.nWindowstate = 2
+    this.Parent.imgCONTROL.Picture = "maxactive.png"
+  ELSE
+    this.Parent.imgCONTROL.Picture = "active.png"
+  ENDIF
+ELSE
+  IF this.Parent.nWindowstate = 2
+    this.Parent.imgCONTROL.Picture = "maxinactive.png"
+  ELSE
+    this.Parent.imgCONTROL.Picture = "inactive.png"
+  ENDIF
+ENDIF
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1ZY0ULTWG
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] cmdMaximize
+[PARENT] cntcontrol
+[START PROPERTIES]
+Top = 1
+Left = 28
+Height = 14
+Width = 22
+Caption = ""
+Style = 1
+ToolTipText = "Restore"
+Name = "cmdMaximize"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+IF this.parent.nWindowState = 2
+  RAISEEVENT(this.Parent.Parent, "AppRestore")
+ELSE
+  RAISEEVENT(this.parent.Parent, "AppMaximize")
+ENDIF
+ENDPROC
+PROCEDURE MouseEnter
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+IF this.Parent.lActive AND this.Enabled
+  IF this.Parent.nWindowstate = 2
+    this.Parent.imgCONTROL.Picture = "maxhovmax.png"
+  ELSE
+    this.Parent.imgCONTROL.Picture = "hovmax.png"
+  ENDIF
+ENDIF
+ENDPROC
+PROCEDURE MouseLeave
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+IF this.Parent.lActive
+  IF this.Parent.nWindowstate = 2
+    this.Parent.imgCONTROL.Picture = "maxactive.png"
+  ELSE
+    this.Parent.imgCONTROL.Picture = "active.png"
+  ENDIF
+ELSE
+  IF this.Parent.nWindowstate = 2
+    this.Parent.imgCONTROL.Picture = "maxinactive.png"
+  ELSE
+    this.Parent.imgCONTROL.Picture = "inactive.png"
+  ENDIF
+ENDIF
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _20B0GMBKP
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] cmdClose
+[PARENT] cntcontrol
+[START PROPERTIES]
+Top = 1
+Left = 51
+Height = 14
+Width = 40
+Caption = ""
+Style = 1
+ToolTipText = "Close"
+Name = "cmdClose"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+RAISEEVENT(this.Parent.parent, "AppExit")
+ENDPROC
+PROCEDURE MouseEnter
+*************************************************************************
+*$METHOD$ MouseEnter()
+*$CREATED$ 11/02/2007
+*************************************************************************
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+IF this.Parent.lActive AND this.Enabled
+  IF this.Parent.nWindowstate = 2
+    this.Parent.imgCONTROL.Picture = "maxhovclose.png"
+  ELSE
+    this.Parent.imgCONTROL.Picture = "hovclose.png"
+  ENDIF
+ENDIF
+ENDPROC
+PROCEDURE MouseLeave
+*************************************************************************
+*$METHOD$ MouseLeave()
+*$CREATED$ 11/02/2007
+*************************************************************************
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+
+IF this.Parent.lActive
+  IF this.Parent.nWindowstate = 2
+    this.Parent.imgCONTROL.Picture = "maxactive.png"
+  ELSE
+    this.Parent.imgCONTROL.Picture = "active.png"
+  ENDIF
+ELSE
+  IF this.Parent.nWindowstate = 2
+    this.Parent.imgCONTROL.Picture = "maxinactive.png"
+  ELSE
+    this.Parent.imgCONTROL.Picture = "inactive.png"
+  ENDIF
+ENDIF
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] cntcontrol
+[START PROPERTIES]
+Arial, 0, 9, 5, 15, 12, 32, 3, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _20I0HW0I0
+[CLASS] container
+[BASECLASS] container
+[OBJNAME] cntsearchbox
+[START PROPERTIES]
+Width = 200
+Height = 27
+BackStyle = 0
+BorderWidth = 0
+cskipforexp = ( "")
+citemkey = ( "SEARCH")
+Name = "cntsearchbox"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Destroy
+***************************************************************************
+*$METHOD$ Destroy()
+*$CREATED$ 17/02/2007
+***************************************************************************
+UNBINDEVENTS(this)
+ENDPROC
+PROCEDURE Init
+this.Resize()
+ENDPROC
+PROCEDURE Refresh
+************************************************************************
+*$METHOD$ Refresh()
+*$CREATED$ 15/02/2007
+************************************************************************
+IF NOT EMPTY(this.cSkipforexp)
+  this.Enabled = NOT EVALUATE(this.cSkipForExp)
+ENDIF
+ENDPROC
+PROCEDURE Resize
+this.height = this.imgBack.Height
+
+this.txtSearch.Left = 0
+this.txtSearch.Top = 0
+
+this.imgRight.Top = 0
+this.imgRight.Left = this.Width - this.imgRight.Width
+
+this.imgBack.Width = 22 - (this.imgLeft.width + this.imgRight.Width)
+this.imgBack.Top = 0
+this.imgBack.Left = this.imgRight.Left - this.imgBack.Width
+
+this.imgLeft.Top = 0
+this.imgLeft.Left = this.imgBack.Left - this.imgLeft.Width
+
+this.imgSearch.Left = this.imgBack.Left + INT((this.imgBack.Width - this.imgSearch.Width) / 2)
+this.imgSearch.Top = INT((this.Height - this.imgSeARCH.Height)/2)
+
+this.txtSearch.Width = this.imgLeft.left
+ENDPROC
+PROCEDURE cskipforexp_assign
+************************************************************************
+*$METHOD$ cSkipForExp_assign()
+*$CREATED$ 13/07/2007
+************************************************************************
+LPARAMETERS vcNewVal
+
+THIS.cSkipForExp = m.vcNewVal
+
+ENDPROC
+PROCEDURE enabled_assign
+************************************************************************
+*$METHOD$ Enabled_assign()
+*$CREATED$ 13/02/2007
+************************************************************************
+LPARAMETERS vlNewVal
+
+THIS.ENABLED = m.vlNewVal
+
+this.txtSEARCH.Enabled = this.Enabled
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+6[END RESERVED2]
+[START RESERVED3]
+cskipforexp
+citemkey
+*search 
+*execute 
+*cskipforexp_assign 
+*enabled_assign 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _20I0ID7SA
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] imgBack
+[PARENT] cntsearchbox
+[START PROPERTIES]
+Picture = images\itemback.bmp
+Stretch = 2
+Height = 21
+Left = 125
+Top = 1
+Visible = .F.
+Width = 19
+Name = "imgBack"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _20I0ID7SK
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] txtSearch
+[PARENT] cntsearchbox
+[START PROPERTIES]
+FontName = "Segoe UI"
+Height = 21
+Left = 0
+Top = 0
+Width = 118
+Name = "txtSearch"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Valid
+RAISEEVENT(this.Parent, "Execute")
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _20I0ID7SL
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] imgSearch
+[PARENT] cntsearchbox
+[START PROPERTIES]
+Picture = images\search.png
+Height = 17
+Left = 128
+Top = 3
+Width = 11
+Name = "imgSearch"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+RAISEEVENT(this.Parent, "Execute")
+
+ENDPROC
+PROCEDURE MouseEnter
+************************************************************************
+*$METHOD$ MouseEnter()
+*$CREATED$ 10/02/2007
+************************************************************************
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+
+IF This.Parent.enabled
+  this.Parent.imgLeft.Visible = .t.
+  this.Parent.imgRight.Visible = .t.
+  this.Parent.imgBack.Visible = .t.
+ENDIF
+ENDPROC
+PROCEDURE MouseLeave
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+
+this.Parent.imgLeft.Visible = .f.
+this.Parent.imgRight.Visible = .f.
+this.Parent.imgBack.Visible = .f.
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _20I0ID7T4
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] imgLeft
+[PARENT] cntsearchbox
+[START PROPERTIES]
+Picture = images\itemleft.bmp
+BackStyle = 0
+Height = 21
+Left = 156
+Top = 0
+Visible = .F.
+Width = 3
+Name = "imgLeft"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _20I0ID7T5
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] imgRight
+[PARENT] cntsearchbox
+[START PROPERTIES]
+Picture = images\itemright.bmp
+BackStyle = 0
+Height = 21
+Left = 180
+Top = 0
+Visible = .F.
+Width = 3
+Name = "imgRight"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] cntsearchbox
+[START PROPERTIES]
+Segoe UI, 0, 9, 6, 15, 12, 22, 3, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _20S0RXLWA
+[CLASS] frmtabmenu
+[CLASSLOC] tabmenu.vcx
+[BASECLASS] form
+[OBJNAME] frmpopup
+[START PROPERTIES]
+Top = 0
+Left = 0
+Height = 250
+Width = 375
+DoCreate = .T.
+Caption = "Menu Popup"
+npopupstyle = ( 0)
+Name = "frmpopup"
+cmdCancel.Top = 204
+cmdCancel.Left = 84
+cmdCancel.Name = "cmdCancel"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+**********************************************************************
+*$METHOD$ Click()
+*$CREATED$ 20/02/2007
+**********************************************************************
+thisform.Release()
+
+ENDPROC
+PROCEDURE Resize
+***************************************************************************************
+*$METHOD$ Resize()
+*$CREATED$ 20/02/2007
+***************************************************************************************
+thisform.shpLeft.Top = 0
+thisform.shpLeft.Height = thisform.height
+thisform.shpLeft.Width = thisform.imgright.width
+thisform.shpLeft.Left = thisform.Width - thisform.shpLeft.Width
+
+thisform.imgtr.Left = thisform.Width - thisform.imgtr.Width
+thisform.imgtr.Top = 0
+
+thisform.imgRight.Top = 0
+thisform.imgRight.Height = thisform.Height
+thisform.imgRight.Left = thisform.Width - thisform.imgRight.Width
+
+thisform.shpBottom.Left = 0
+thisform.shpBottom.Width = thisform.width
+thisform.shpBottom.Height = thisform.imgbottom.height
+thisform.shpBottom.Top = thisform.Height - thisform.shpBottom.Height
+
+thisform.imgbottom.Left = 0
+thisform.imgbottom.Width = thisform.Width
+thisform.imgbottom.Top = thisform.Height - thisform.imgbottom.Height
+
+thisform.imgbr.Left = thisform.Width - thisform.imgbr.Width
+thisform.imgbr.Top = thisform.Height - thisform.imgbr.height
+
+thisform.imgbl.Left = 0
+thisform.imgbl.Top = thisform.Height - thisform.imgbl.height
+
+thisform.cntPopupItems.Left = 0
+thisform.cntPopupItems.Width = thisform.Width - thisform.imgRight.Width
+thisform.cntPopupItems.Top = 0
+thisform.cntPopupItems.Height = thisform.Height - thisform.imgBottom.Height
+
+thisform.cntpopupItems.shpBackground.Top    = 1
+thisform.cntPopupItems.shpBackground.Left   = 1
+thisform.cntPopupItems.shpBackground.Height = thisform.cntpopupItems.Height - 2
+thisform.cntpopupItems.shpBackground.Width  = 25
+ENDPROC
+PROCEDURE cbasefont_assign
+*************************************************************************
+*$METHOD$ cBaseFont_assign()
+*$CREATED$ 09/03/2007
+*************************************************************************
+LPARAMETERS vcNewVal
+
+DODEFAULT(vcNewVal)
+this.cntPopupItems.cBasefont = this.cBasefont
+ENDPROC
+PROCEDURE lshowhotkeys_assign
+************************************************************************
+*$METHOD$ lShowHotKeys_Assign()
+*$CREATED$ 20/02/2007
+************************************************************************
+LPARAMETERS vlNewVal
+
+THIS.lShowHotKeys = m.vlNewVal
+
+this.cntPopupItems.lshowhotkeys = this.lShowhotkeys
+ENDPROC
+PROCEDURE npopupstyle_assign
+********************************************************************************
+*$METHOD$ nPopupStyle_assign()
+*$CREATED$ 25/02/2007
+********************************************************************************
+LPARAMETERS vnNewVal
+
+THIS.nPopupStyle = m.vnNewVal
+
+IF this.nPopupStyle = 1
+  *-- Need to make the shape in the popup container visible
+  * as this is what a menu popup typically looks like.
+  this.cntPopupItems.shpBackground.Visible = .t.
+ELSE
+  this.cntPopupItems.shpBackground.Visible = .f.
+ENDIF
+
+ENDPROC
+PROCEDURE sendhotkey
+************************************************************************
+*$METHOD$ SendHotKey()
+*$CREATED$ 20/02/2007
+************************************************************************
+LPARAMETERS vcHotKey
+
+LOCAL llReturn
+
+llReturn = this.cntPopupItems.SendHotKey(vcHotKey)
+
+RETURN llReturn
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+10[END RESERVED2]
+[START RESERVED3]
+npopupstyle
+*npopupstyle_assign 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1ZY0FQEXD
+[CLASS] shape
+[BASECLASS] shape
+[OBJNAME] shpLeft
+[PARENT] frmpopup
+[START PROPERTIES]
+Top = 24
+Left = 300
+Height = 17
+Width = 36
+BorderStyle = 0
+BorderWidth = 0
+BackColor = 0,255,0
+Name = "shpLeft"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _20S0SC439
+[CLASS] shape
+[BASECLASS] shape
+[OBJNAME] shpBottom
+[PARENT] frmpopup
+[START PROPERTIES]
+Top = 120
+Left = 276
+Height = 17
+Width = 36
+BorderStyle = 0
+BorderWidth = 0
+BackColor = 0,255,0
+Name = "shpBottom"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1ZY0FQEXD
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] imgRight
+[PARENT] frmpopup
+[START PROPERTIES]
+Picture = images\shadright.bmp
+Stretch = 2
+BackStyle = 0
+Height = 60
+Left = 200
+Top = 138
+Width = 4
+Name = "imgRight"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1ZY0FQEXD
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] imgBottom
+[PARENT] frmpopup
+[START PROPERTIES]
+Picture = images\shadbott.bmp
+Stretch = 2
+BackStyle = 0
+Height = 4
+Left = 211
+Top = 180
+Width = 55
+Name = "imgBottom"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _20S0SC43T
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] imgbl
+[PARENT] frmpopup
+[START PROPERTIES]
+Picture = images\shadbl.bmp
+Stretch = 2
+BackStyle = 0
+Height = 4
+Left = 72
+Top = 168
+Width = 8
+Name = "imgbl"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _20S0SUF1Z
+[CLASS] cntpopupmenu
+[CLASSLOC] tabmenu.vcx
+[BASECLASS] container
+[OBJNAME] cntPopupItems
+[PARENT] frmpopup
+[START PROPERTIES]
+Top = 12
+Left = 12
+Width = 130
+Height = 123
+BackColor = 255,255,255
+Name = "cntPopupItems"
+lblCaption.Name = "lblCaption"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _20X0I8ZUC
+[CLASS] shape
+[BASECLASS] shape
+[OBJNAME] shpBackground
+[PARENT] frmpopup.cntPopupItems
+[START PROPERTIES]
+Top = 24
+Left = 12
+Height = 17
+Width = 100
+BorderStyle = 0
+BorderWidth = 0
+Visible = .F.
+Name = "shpBackground"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1ZY0FQEXD
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] imgbr
+[PARENT] frmpopup
+[START PROPERTIES]
+Picture = images\shadbr.bmp
+Stretch = 2
+BackStyle = 0
+Height = 4
+Left = 228
+Top = 180
+Width = 4
+Name = "imgbr"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1ZY0FQEXD
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] imgtr
+[PARENT] frmpopup
+[START PROPERTIES]
+Picture = images\shadtr.bmp
+Stretch = 2
+BackStyle = 0
+Height = 9
+Left = 200
+Top = 112
+Width = 4
+Name = "imgtr"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] frmpopup
+[START PROPERTIES]
+Segoe UI, 0, 9, 6, 15, 12, 22, 3, 0
+Arial, 0, 9, 5, 15, 12, 32, 3, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _20Z1CDKZQ
+[CLASS] container
+[BASECLASS] container
+[OBJNAME] cntresize
+[START PROPERTIES]
+Width = 42
+Height = 31
+BackStyle = 0
+BorderWidth = 0
+Name = "cntresize"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+*************************************************************************
+*$METHOD$ Init()
+*$CREATED$ 27/02/2007
+*************************************************************************
+this.imgResize.Top = 0
+this.imgResize.Left = 0
+this.Width = this.imgresize.Width
+this.Height = this.imgresize.Height
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+2[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _20Z1CIRE7
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] imgResize
+[PARENT] cntresize
+[START PROPERTIES]
+Picture = images\resize.bmp
+BackStyle = 0
+Height = 10
+Left = 0
+MousePointer = 9
+Top = 0
+Width = 10
+Name = "imgResize"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] cntresize
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2170OHIML
+[CLASS] form
+[BASECLASS] form
+[OBJNAME] frmtabmenu
+[START PROPERTIES]
+Top = 0
+Left = 0
+Height = 250
+Width = 375
+Desktop = .T.
+ShowWindow = 1
+ShowInTaskBar = .F.
+DoCreate = .T.
+ShowTips = .T.
+BorderStyle = 0
+Caption = "Tab Menu Form"
+FontName = "Segoe UI"
+Movable = .F.
+TitleBar = 0
+AlwaysOnTop = .T.
+lshowhotkeys = ( .f.)
+otabmenu = ( .NULL.)
+omenuitem = ( .NULL.)
+cbasefont = ( "")
+Name = "frmtabmenu"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Deactivate
+*************************************************************************
+*$METHOD$ Deactivate()
+*$CREATED$ 07/03/2007
+*************************************************************************
+thisform.Release()
+ENDPROC
+PROCEDURE Destroy
+*************************************************************************
+*$METHOD$ Destroy()
+*$CREATED$ 07/03/2007
+*************************************************************************
+IF this.oMenuItem.lSelected
+  this.oMenuItem.lSelected = .f.
+ENDIF
+this.oMenuItem = .NULL.
+this.oTabmenu = .NULL.
+
+UNBINDEVENTS(this.HWnd)
+UNBINDEVENTS(this)
+ENDPROC
+PROCEDURE Init
+***************************************************************************************
+*$METHOD$ Init()
+*$CREATED$ 07/03/2007
+***************************************************************************************
+LPARAMETERS voMenuItem, voTabMenu
+
+LOCAL lnX, lnY
+
+lnX = 0
+lnY = 0
+
+#define WM_KEYDOWN        0x0100
+#define WM_KEYUP          0x0101
+#define WM_SYSKEYUP       0x0105
+#define WS_EX_LAYERED     0x00080000
+#define WS_EX_TOOLWINDOW  0x00000080
+#define WM_MOUSEHOVER     0x02A1
+
+BINDEVENT(this.Hwnd, WM_KEYDOWN, voTabMenu, "WMEventHandler")
+BINDEVENT(this.Hwnd, WM_SYSKEYUP, voTabMenu, "WMEventHandler")
+BINDEVENT(this.Hwnd, WM_KEYUP, voTabMenu, "WMEventHandler")
+
+thisform.oMenuItem    = voMenuItem
+thisform.oTabMenu     = voTabMenu
+thisform.lShowhotkeys = voTabMenu.lShowHotKeys
+thisform.cBaseFont    = voTabMenu.cBaseFont
+
+thisform.cmdCancel.Left = -100
+thisform.cmdCancel.Top  = -100
+
+IF thisform.getobjectpos(@lnX, @lnY, voMenuItem)
+  thisform.Top  = lnY + voMenuItem.Height
+  thisform.Left = lnX
+ELSE
+  thisform.Top  = lnY
+  thisform.Left = lnX
+ENDIF
+
+thisform.Resize()
+
+DECLARE SetWindowLong IN WIN32API Integer, Integer, Integer
+DECLARE SetLayeredWindowAttributes IN WIN32API Integer, Integer, Integer, Integer
+
+SetWindowLong(Thisform.HWnd, -20, WS_EX_LAYERED + WS_EX_TOOLWINDOW)
+SetLayeredWindowAttributes(Thisform.HWnd, RGB(0,255,0), 0, 1)
+
+ENDPROC
+PROCEDURE cbasefont_assign
+*************************************************************************
+*$METHOD$ cBaseFont_assign()
+*$CREATED$ 09/03/2007
+*************************************************************************
+LPARAMETERS vcNewVal
+
+THIS.cBaseFont = m.vcNewVal
+this.FontName = this.cBaseFont
+
+ENDPROC
+PROCEDURE getobjectpos
+******************************************************************************************
+*$METHOD$ GetObjectPos()
+*$CREATED$ 07/03/2007
+*
+*$PURPOSE$
+*  This method returns the absolute screen position in X,Y pixels of an object
+*$PURPOSE$
+******************************************************************************************
+LPARAMETERS rnX, rnY, voControl
+
+LOCAL llReturn, lnX, lnY, lpRect, lnLeft, lnTop, lnRight, ;
+      lnBottom, lnWidth, lnHeight, lnBorder, lnTitle
+
+lpRect   = REPLICATE(CHR(0),16)
+lnLeft   = 0
+lnTop    = 0
+lnRight  = 0
+lnBottom = 0
+lnWidth  = 0
+lnHeight = 0
+lnBorder = 0
+lnTitle  = 0
+llReturn = .t.
+lnX      = 0
+lnY      = 0
+
+IF VARTYPE(voControl.Left) = "N"
+  rnX = voControl.Left
+ELSE
+  rnX = 0
+ENDIF
+IF VARTYPE(voControl.Top) = "N"
+  rnY = voControl.Top
+ELSE
+  rnY = 0
+ENDIF
+
+IF TYPE("voControl.Parent") = "O"
+  llReturn = this.GetObjectPos(@lnX, @lnY, voControl.Parent)
+  IF llReturn
+    rnX = rnX + lnX
+    rnY = rnY + lnY
+  ENDIF
+ELSE
+  DO CASE
+    CASE INLIST(UPPER(voControl.BaseClass),"FORM","TOOLBAR")
+      DECLARE INTEGER GetWindowRect IN user32 INTEGER hWnd, STRING @ lpRect
+
+      lpRect = REPLICATE(CHR(0),16)
+      = GetWindowRect(voControl.hWnd, @lpRect)
+
+      lnLeft   = this.str2DWord(SUBSTR(lpRect, 1, 4))
+      lnTop    = this.str2DWord(SUBSTR(lpRect, 5, 4))
+      lnRight  = this.str2DWord(SUBSTR(lpRect, 9, 4))
+      lnBottom = this.str2DWord(SUBSTR(lpRect,13, 4))
+      lnWidth  = lnRight - lnLeft
+      lnHeight = lnBottom - lnTop
+
+      lnBorder = (lnWidth - voControl.Width)/2
+      lnTitle  = (lnHeight - voControl.Height - (lnBorder*2))
+
+      rnX = lnLeft + lnBorder
+      rnY = lnTop + lnTitle + lnBorder
+  ENDCASE
+ENDIF
+
+RETURN llReturn
+ENDPROC
+PROCEDURE lshowhotkeys_assign
+*************************************************************************
+*$METHOD$ lShowHotKeys_Assign()
+*$CREATED$ 07/03/2007
+*************************************************************************
+LPARAMETERS vlNewVal
+
+THIS.lShowHotKeys = m.vlNewVal
+
+ENDPROC
+PROCEDURE sendhotkey
+************************************************************************
+*$METHOD$ SendHotKey()
+*$CREATED$ 07/03/2007
+************************************************************************
+LPARAMETERS vcHotKey
+ENDPROC
+PROCEDURE str2dword
+***********************************************************************
+*$METHOD$ str2dWord()
+*$CREATED$ 07/03/2007
+***********************************************************************
+LPARAMETERS vcBuffer
+  RETURN ASC(SUBSTR(vcBuffer, 1,1)) + ;
+      BITLSHIFT(ASC(SUBSTR(vcBuffer, 2,1)),  8) +;
+      BITLSHIFT(ASC(SUBSTR(vcBuffer, 3,1)), 16) +;
+      BITLSHIFT(ASC(SUBSTR(vcBuffer, 4,1)), 24)
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+2[END RESERVED2]
+[START RESERVED3]
+lshowhotkeys
+otabmenu
+omenuitem
+cbasefont
+*lshowhotkeys_assign 
+*sendhotkey 
+*getobjectpos 
+*str2dword 
+*cbasefont_assign 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2170OXJ8H
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] cmdCancel
+[PARENT] frmtabmenu
+[START PROPERTIES]
+Top = 180
+Left = 252
+Height = 27
+Width = 84
+Cancel = .T.
+Caption = "Cancel"
+TabStop = .F.
+Name = "cmdCancel"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+*************************************************************************
+*$METHOD$ Click()
+*$CREATED$ 07/03/2007
+*************************************************************************
+thisform.Release()
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] frmtabmenu
+[START PROPERTIES]
+Segoe UI, 0, 9, 6, 15, 12, 22, 3, 0
+Arial, 0, 9, 5, 15, 12, 32, 3, 0
+[END PROPERTIES]
+[EOF]
