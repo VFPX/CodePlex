@@ -259,8 +259,16 @@ CHECKSUM=57840
 [ITEMNUM]   0
 [SCHEME] 4
 [OBJTYPE] 3
-[OBJCODE] 67
-[PROMPT] Option A
+[OBJCODE] 80
+[PROMPT] Dock TabMenu
+[MESSAGE] dock or undock the tabmenu toolbar in the screen
+[PROCTYPE] 1
+[START PROCEDURE]
+IF _SCREEN.oToolbar.Docked
+  _SCREEN.oToolBar.Dock(-1)
+ELSE
+  _SCREEN.oToolBar.Dock(0)
+ENDIF[END PROCEDURE]
 [BINSTART MARK]
 CHECKSUM=57840
 [BINEND MARK]
