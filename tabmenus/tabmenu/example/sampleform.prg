@@ -1,4 +1,3 @@
-SET PATH TO u:\devsource\tabmenu\images\;u:\devsource\tabmenu\example\
 SET CLASSLIB TO "tabmenu.vcx", "example.vcx"
 
 RELEASE goForm
