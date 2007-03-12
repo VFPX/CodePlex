@@ -468,22 +468,14 @@ PROCEDURE mainformresize
 *************************************************************************
 *$METHOD$ MainFormResize()
 *$CREATED$ 27/02/2007
-*
-*$HISTORY$
-*  10/03/2007 - GZ: Fixed a problem when the toolbar is docked after
-*  it has been created.
-*$HISTORY$
 *************************************************************************
 IF VARTYPE(this.omainform) = "O"
   this.cntControl.nWindowstate = this.omainform.windowstate
   this.Width = this.omainform.width
 ELSE
   this.cntControl.nWindowstate = _SCREEN.WindowState
-  IF this.Parent.docked
-    *-- If the form is docked then changing the size of the container
-    * results in a recursive call to this method which ultimately ends
-    * up causing a C5 error
-    IF this.Width <> _SCREEN.Width - (SYSMETRIC(3) * 2)
+  IF this.Parent.Docked
+    IF this.Width <> _SCREEN.width - (SYSMETRIC(3) * 2)
       this.Width = _SCREEN.width - (SYSMETRIC(3) * 2)
     ENDIF
   ELSE
@@ -932,11 +924,6 @@ PROCEDURE MouseMove
 *  bar and move the form, but it will only happen if the toolbar is
 *  contained within a top level form and not the VFP screen
 *$PURPOSE$
-*
-*$HISTORY$
-*  10/03/2007 - GZ: Fixed a problem with the way the screen was positioned
-*  if the toolbar was docked.
-*$HISTORY$
 *************************************************************************
 LPARAMETERS nButton, nShift, nXCoord, nYCoord
 
@@ -952,9 +939,7 @@ IF m.nButton = 1
       ENDWITH
     ELSE
       WITH _SCREEN
-        IF this.Parent.Parent.Docked
-          *-- Need to offet the height by the height of the toolbar if the toolbar
-          * is docked.
+        IF this.Parent.Parent.docked
           .Move(.Left + m.lnDiffX, .Top + m.lnDiffY - this.Parent.Parent.Height, .Width, .Height)
         ELSE
           .Move(.Left + m.lnDiffX, .Top + m.lnDiffY, .Width, .Height)
@@ -1856,16 +1841,16 @@ PROCEDURE Init
 LPARAMETERS voMenuItem, voTabMenu
 
 IF DODEFAULT(voMenuItem, voTabMenu)
-  *-- Reposition the start menu form because the default behaviour is to display the
-  * popup below the menu item that selected it.  In the case of the start menu form
-  * this needs to be in the centre of the main item.
+  *-- Position the start menu form differently because the default
+  * behaviour is to position the popup form below the item that called it
   thisform.Top  = thisform.Top - INT(this.oMenuItem.Height / 2)
-  thisform.Left = thisform.left + INT(this.oMenuItem.Width / 2)
+  thisform.Left = thisform.Left + INT(this.oMenuItem.Width / 2)
 
   thisform.cntMenuItems.cntRecentItems.Caption = "Recent Items"
 ELSE
   RETURN .f.
 ENDIF
+
 ENDPROC
 PROCEDURE Resize
 *************************************************************************************************
@@ -2336,6 +2321,8 @@ citemkey = ( "")
 nshowsubmenu = ( 0)
 lactive = .F.
 cbasefont = ( "")
+cmarkexp = ( "")
+lmarked = .F.
 Name = "cntpopupitem"
 [END PROPERTIES]
 [START METHODS]
@@ -2392,15 +2379,29 @@ PROCEDURE Refresh
 ************************************************************************
 *$METHOD$ Refresh()
 *$CREATED$ 13/02/2007
+*
+*$HISTORY$
+*  12/03/2007 - GZ: Added support for the marked property
+*$HISTORY$
 ************************************************************************
 IF NOT EMPTY(this.cSkipforexp)
   this.Enabled = NOT EVALUATE(this.cSkipForExp)
+ENDIF
+IF NOT EMPTY(this.cMarkExp)
+  this.lMarked = EVALUATE(this.cMarkExp)
+ELSE
+  this.lMarked = .f.
 ENDIF
 ENDPROC
 PROCEDURE Resize
 ************************************************************************************
 *$METHOD$ Resize()
 *$CREATED$ 13/02/2007
+*
+*$HISTORY$
+*  12/03/2007 - GZ: Added support for positioning the caption based on the
+*  type of popup being used.
+*$HISTORY$
 ************************************************************************************
 this.imgLeft.Top = 0
 this.imgLeft.Left = 0
@@ -2439,8 +2440,19 @@ this.imgPicture.Top = 2
 this.imgPicture.Left = this.imgLeft.Width + 2
 
 this.lblCaption.Top = INT(this.Height / 2) - INT(this.lblCaption.Height / 2)
-this.lblCaption.Left = this.imgLeft.Width + 2
-this.lblCaption.Width = this.Width - (2 * this.lblCaption.Left)
+IF this.Parent.nPopupStyle = 0
+  *-- This is the type that is used in the menu bar
+  this.lblCaption.Left = this.imgLeft.Width + 2
+ELSE
+  *-- This is the type used for the popups
+  this.lblCaption.Left = this.Parent.linBackground.Left + 2
+ENDIF
+IF this.Alignment = 2
+  *-- Centred text requires the label to be centered
+  this.lblCaption.Width = this.Width - (2 * this.lblCaption.Left)
+ELSE
+  this.lblCaption.Width = this.Width - this.lblCaption.Left - 2
+ENDIF
 
 this.imgHotKey.Top = this.Height - this.imgHotKey.Height
 DO CASE
@@ -2478,10 +2490,33 @@ this.imgsubback.Left = this.imgsubleft.Width
 this.imgsubback.Width = this.imgsep.left - this.imgsubleft.width
 ENDPROC
 PROCEDURE alignment_assign
+*************************************************************************
+*$METHOD$ Alignment_assign()
+*$CREATED$ 01/02/2007
+*
+*$HISTORY$
+*  12/03/2007 - GZ: Added support for the lMarked Property
+*$HISTORY$
+*************************************************************************
 LPARAMETERS vnNewVal
 
 THIS.alignment = m.vnNewVal
 this.lblCAPTION.Alignment = m.vnNewVal
+
+IF this.Parent.nPopupStyle = 0
+  *-- This is the type that is used in the menu bar
+  this.lblCaption.Left = this.imgLeft.Width + 2
+ELSE
+  *-- This is the type used for the popups
+  this.lblCaption.Left = this.Parent.linBackground.Left + 2
+ENDIF
+
+IF this.Alignment = 2
+  *-- Centred text requires the label to be centered
+  this.lblCaption.Width = this.Width - (2 * this.lblCaption.Left)
+ELSE
+  this.lblCaption.Width = this.Width - this.lblCaption.Left - 2
+ENDIF
 
 ENDPROC
 PROCEDURE caption_assign
@@ -2512,22 +2547,60 @@ THIS.chotkey = m.vcNewVal
 this.lblHotKey.Caption = this.cHotkey
 
 ENDPROC
+PROCEDURE cmarkexp_assign
+*************************************************************************
+*$METHOD$ cMarkExp_assign()
+*$CREATED$ 12/03/2007
+*************************************************************************
+LPARAMETERS vcNewVal
+
+this.cMarkExp = m.vcNewVal
+
+IF NOT EMPTY(this.cMarkExp)
+  this.lMarked = EVALUATE(m.vcNewVal)
+ELSE
+  this.lMarked = .f.
+ENDIF
+
+ENDPROC
 PROCEDURE cpicture_assign
+************************************************************************
+*$METHOD$ cPicture_assign()
+*$CREATED$ 01/02/2007
+*
+*$HISTORY$
+*  12/03/2007 - GZ: Changed to add support for the lMarked property
+*$HISTORY$
+************************************************************************
 LPARAMETERS vcNewVal
 
 this.cpicture = m.vcNewVal
-this.imgPicture.Picture = m.vcNewVal
+IF NOT this.lMarked
+  this.imgPicture.Picture = m.vcNewVal
+ENDIF
 
 IF EMPTY(this.cPicture)
   this.imgPicture.Visible = .f.
-  this.lblCaption.Left = this.imgLeft.Width + 2
+  IF this.Parent.nPopupStyle = 0
+    this.lblCaption.Left = this.imgLeft.Width + 2
+  ELSE
+    this.lblCaption.Left = this.Parent.linBackGround.Left + 2
+  ENDIF
 ELSE
   this.imgPicture.Top = INT((this.Height - this.imgPicture.Height) / 2)
-  this.lblCaption.Left = this.imgPicture.Left + this.imgPicture.Width + 2
+  IF this.Parent.nPopupStyle = 0
+    this.lblCaption.Left = this.imgPicture.Left + this.imgPicture.Width + 2
+  ELSE
+    this.lblCaption.Left = MAX(this.imgPicture.Left + this.imgPicture.Width, this.Parent.linBackGround.Left) + 2
+  ENDIF
   this.imgPicture.Visible = .t.
 ENDIF
-this.lblCaption.Width = this.Width - (2 * this.lblCaption.Left)
-
+IF this.Alignment = 2
+  *-- Centred text requires the label to be centered
+  this.lblCaption.Width = this.Width - (2 * this.lblCaption.Left)
+ELSE
+  this.lblCaption.Width = this.Width - this.lblCaption.Left - 2
+ENDIF
 ENDPROC
 PROCEDURE cskipforexp_assign
 LPARAMETERS vcNewVal
@@ -2622,6 +2695,25 @@ IF this.lActive <> m.vlNewVal
     RAISEEVENT(this, "Activate")
   ELSE
     RAISEEVENT(this, "Deactivate")
+  ENDIF
+ENDIF
+
+ENDPROC
+PROCEDURE lmarked_assign
+*************************************************************************
+*$METHOD$ lMarked_assign()
+*$CREATED$ 23/02/2007
+*************************************************************************
+LPARAMETERS vlNewVal
+
+IF this.lMarked <> m.vlNewVal
+  this.lMarked = m.vlNewVal
+  IF this.lMarked
+    this.imgPicture.Picture = "itemmark.bmp"
+    this.imgPicture.Visible = .t.
+  ELSE
+    this.imgPicture.Picture = this.cPicture
+    this.imgPicture.Visible = NOT EMPTY(this.cPicture)
   ENDIF
 ENDIF
 
@@ -2746,6 +2838,8 @@ citemkey
 nshowsubmenu
 lactive
 cbasefont
+cmarkexp
+lmarked
 *hottrackon 
 *hottrackoff 
 *caption_assign 
@@ -2766,6 +2860,8 @@ cbasefont
 *deactivate Occurs when a container object, such as a form, is no longer active because none of its contained objects has the focus.
 *lactive_assign 
 *cbasefont_assign 
+*cmarkexp_assign 
+*lmarked_assign 
 [END RESERVED3]
 [START RESERVED6]
 Pixels[END RESERVED6]
@@ -3205,6 +3301,7 @@ alignment = ( 2)
 ncolumns = ( 1)
 lshowhotkeys = .F.
 cbasefont = ( "")
+npopupstyle = ( 0)
 Name = "cntpopupmenu"
 [END PROPERTIES]
 [START METHODS]
@@ -3218,6 +3315,16 @@ ENDIF
 this.lblCaption.Width = this.width - 2
 ENDPROC
 PROCEDURE Resize
+*************************************************************************
+*$METHOD$ Resize()
+*$CREATED$ 01/02/2007
+*
+*$HISTORY$
+*  12/03/2007 - GZ: Changed to add the background shape to the popup
+*  class rather than the form class.  This was done because the popup
+*  items need to know if the popup has the background.
+*$HISTORY$
+*************************************************************************
 this.lblCaption.Left = 1
 IF this.Topcaption
   this.lblCaption.Top = 1
@@ -3225,6 +3332,16 @@ ELSE
   this.lblCaption.Top = this.Height - this.lblCaption.Height - 1
 ENDIF
 this.lblCaption.Width = this.width - 2
+
+this.shpBackground.Top    = 1
+this.shpBackground.Left   = 1
+this.shpBackground.Height = this.Height - 2
+this.shpBackground.Width  = 25
+
+this.linBackground.Top    = 1
+this.linBackground.Left   = 26
+this.linBackground.Height = this.Height - 2
+this.linBackground.Width  = 0
 ENDPROC
 PROCEDURE addpopupitem
 ********************************************************************************************
@@ -3363,6 +3480,23 @@ LPARAMETERS vnNewVal
 THIS.ncolumns = m.vnNewVal
 
 ENDPROC
+PROCEDURE npopupstyle_assign
+*************************************************************************
+*$METHOD$ nPopupStyle_assign()
+*$CREATED$ 12/03/2007
+*************************************************************************
+LPARAMETERS vnNewVal
+
+this.nPopupStyle = m.vnNewVal
+IF this.nPopupStyle = 0
+  this.shpBackground.Visible = .f.
+  this.linBackground.Visible = .f.
+ELSE
+  this.shpBackground.Visible = .t.
+  this.linBackground.Visible = .t.
+ENDIF
+
+ENDPROC
 PROCEDURE selectmenuitem
 ************************************************************************
 *$METHOD$ SelectMenuItem()
@@ -3423,7 +3557,7 @@ ENDPROC
 [START RESERVED1]
 Class[END RESERVED1]
 [START RESERVED2]
-2[END RESERVED2]
+4[END RESERVED2]
 [START RESERVED3]
 caption Specifies the text displayed in an object's caption.
 topcaption
@@ -3432,6 +3566,7 @@ alignment Specifies the alignment of text associated with a control.
 ncolumns
 lshowhotkeys
 cbasefont
+npopupstyle
 *caption_assign 
 *addpopupitem 
 *alignment_assign 
@@ -3441,6 +3576,7 @@ cbasefont
 *selectmenuitem 
 *deleteitems 
 *cbasefont_assign 
+*npopupstyle_assign 
 [END RESERVED3]
 [START RESERVED6]
 Pixels[END RESERVED6]
@@ -3464,6 +3600,42 @@ Width = 96
 ForeColor = 21,66,139
 BackColor = 193,217,241
 Name = "lblCaption"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _21C0QIR68
+[CLASS] shape
+[BASECLASS] shape
+[OBJNAME] shpBackGround
+[PARENT] cntpopupmenu
+[START PROPERTIES]
+Top = 72
+Left = 48
+Height = 17
+Width = 100
+BorderStyle = 0
+BorderWidth = 0
+Visible = .F.
+BackColor = 220,220,220
+Name = "shpBackGround"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _21C0QIR6I
+[CLASS] line
+[BASECLASS] line
+[OBJNAME] linBackGround
+[PARENT] cntpopupmenu
+[START PROPERTIES]
+Height = 48
+Left = 84
+Top = 48
+Visible = .F.
+Width = 0
+BorderColor = 128,128,128
+Name = "linBackGround"
 [END PROPERTIES]
 
 [ RECORD]
@@ -4621,10 +4793,6 @@ thisform.cntPopupItems.Width = thisform.Width - thisform.imgRight.Width
 thisform.cntPopupItems.Top = 0
 thisform.cntPopupItems.Height = thisform.Height - thisform.imgBottom.Height
 
-thisform.cntpopupItems.shpBackground.Top    = 1
-thisform.cntPopupItems.shpBackground.Left   = 1
-thisform.cntPopupItems.shpBackground.Height = thisform.cntpopupItems.Height - 2
-thisform.cntpopupItems.shpBackground.Width  = 25
 ENDPROC
 PROCEDURE cbasefont_assign
 *************************************************************************
@@ -4655,15 +4823,7 @@ PROCEDURE npopupstyle_assign
 LPARAMETERS vnNewVal
 
 THIS.nPopupStyle = m.vnNewVal
-
-IF this.nPopupStyle = 1
-  *-- Need to make the shape in the popup container visible
-  * as this is what a menu popup typically looks like.
-  this.cntPopupItems.shpBackground.Visible = .t.
-ELSE
-  this.cntPopupItems.shpBackground.Visible = .f.
-ENDIF
-
+this.cntPopupItems.npopupstyle = m.vnNewVal
 ENDPROC
 PROCEDURE sendhotkey
 ************************************************************************
@@ -4682,7 +4842,7 @@ ENDPROC
 [START RESERVED1]
 Class[END RESERVED1]
 [START RESERVED2]
-10[END RESERVED2]
+9[END RESERVED2]
 [START RESERVED3]
 npopupstyle
 *npopupstyle_assign 
@@ -4794,26 +4954,11 @@ Left = 12
 Width = 130
 Height = 123
 BackColor = 255,255,255
+alignment = ( 0)
 Name = "cntPopupItems"
 lblCaption.Name = "lblCaption"
-[END PROPERTIES]
-
-[ RECORD]
-[PLATFORM] WINDOWS 
-[UNIQUEID] _20X0I8ZUC
-[CLASS] shape
-[BASECLASS] shape
-[OBJNAME] shpBackground
-[PARENT] frmpopup.cntPopupItems
-[START PROPERTIES]
-Top = 24
-Left = 12
-Height = 17
-Width = 100
-BorderStyle = 0
-BorderWidth = 0
-Visible = .F.
-Name = "shpBackground"
+shpBackground.Name = "shpBackground"
+LINBACKGROUND.Name = "LINBACKGROUND"
 [END PROPERTIES]
 
 [ RECORD]
@@ -5156,7 +5301,6 @@ Height = 27
 Width = 84
 Cancel = .T.
 Caption = "Cancel"
-TabStop = .F.
 Name = "cmdCancel"
 [END PROPERTIES]
 [START METHODS]
@@ -5175,6 +5319,517 @@ ENDPROC
 [OBJNAME] frmtabmenu
 [START PROPERTIES]
 Segoe UI, 0, 9, 6, 15, 12, 22, 3, 0
+Arial, 0, 9, 5, 15, 12, 32, 3, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _21C0I2N9R
+[CLASS] toolbar
+[BASECLASS] toolbar
+[OBJNAME] _tbrpopup
+[START PROPERTIES]
+Caption = "Popup"
+Height = 225
+Left = 0
+Top = 0
+Width = 228
+cbasefont = ( "")
+omenuitem = ( .NULL.)
+otabmenu = ( .NULL.)
+nxoffset = ( 0)
+nyoffset = ( 0)
+lshowhotkeys = .F.
+Name = "tbrpopup"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Destroy
+*************************************************************************
+*$METHOD$ Destroy()
+*$CREATED$ 11/03/2007
+*************************************************************************
+*!*  IF this.oMenuItem.lSelected
+*!*    this.oMenuItem.lSelected = .f.
+*!*  ENDIF
+this.oMenuItem = .NULL.
+this.oTabmenu = .NULL.
+
+UNBINDEVENTS(this.HWnd)
+UNBINDEVENTS(this)
+ENDPROC
+PROCEDURE Init
+***************************************************************************************
+*$METHOD$ Init()
+*$CREATED$ 07/03/2007
+***************************************************************************************
+LPARAMETERS voMenuItem, voTabMenu
+
+LOCAL lnX, lnY
+
+lnX = 0
+lnY = 0
+
+#define WM_KEYDOWN        0x0100
+#define WM_KEYUP          0x0101
+#define WM_SYSKEYUP       0x0105
+#define WM_MOUSEHOVER     0x02A1
+
+BINDEVENT(this.Hwnd, WM_KEYDOWN, voTabMenu, "WMEventHandler")
+BINDEVENT(this.Hwnd, WM_SYSKEYUP, voTabMenu, "WMEventHandler")
+BINDEVENT(this.Hwnd, WM_KEYUP, voTabMenu, "WMEventHandler")
+
+this.oMenuItem    = voMenuItem
+this.oTabMenu     = voTabMenu
+this.lShowhotkeys = voTabMenu.lShowHotKeys
+this.cBaseFont    = voTabMenu.cBaseFont
+
+this.cntSizer.cmdCancel.Left = -100
+this.cntSizer.cmdCancel.Top  = -100
+
+this.cntSizer.Resize()
+
+IF this.getobjectpos(@lnX, @lnY, voMenuItem)
+  this.Top  = lnY + voMenuItem.Height - this.nYOffset
+  this.Left = lnX - this.nXOffset
+ELSE
+  this.Top  = lnY
+  this.Left = lnX
+ENDIF
+ENDPROC
+PROCEDURE Show
+LPARAMETERS vnStyle
+
+IF DODEFAULT(vnStyle)
+  this.Setdisplayregion()
+ENDIF
+ENDPROC
+PROCEDURE cbasefont_assign
+LPARAMETERS vNewVal
+*To do: Modify this routine for the Assign method
+THIS.cBaseFont = m.vNewVal
+
+ENDPROC
+PROCEDURE getobjectpos
+******************************************************************************************
+*$METHOD$ GetObjectPos()
+*$CREATED$ 07/03/2007
+*
+*$PURPOSE$
+*  This method returns the absolute screen position in X,Y pixels of an object
+*$PURPOSE$
+******************************************************************************************
+LPARAMETERS rnX, rnY, voControl
+
+LOCAL llReturn, lnX, lnY, lpRect, lnLeft, lnTop, lnRight, ;
+      lnBottom, lnWidth, lnHeight, lnBorder, lnTitle
+
+lpRect   = REPLICATE(CHR(0),16)
+lnLeft   = 0
+lnTop    = 0
+lnRight  = 0
+lnBottom = 0
+lnWidth  = 0
+lnHeight = 0
+lnBorder = 0
+lnTitle  = 0
+llReturn = .t.
+lnX      = 0
+lnY      = 0
+
+IF VARTYPE(voControl.Left) = "N"
+  rnX = voControl.Left
+ELSE
+  rnX = 0
+ENDIF
+IF VARTYPE(voControl.Top) = "N"
+  rnY = voControl.Top
+ELSE
+  rnY = 0
+ENDIF
+
+IF TYPE("voControl.Parent") = "O"
+  llReturn = this.GetObjectPos(@lnX, @lnY, voControl.Parent)
+  IF llReturn
+    rnX = rnX + lnX
+    rnY = rnY + lnY
+  ENDIF
+ELSE
+  DO CASE
+    CASE INLIST(UPPER(voControl.BaseClass),"FORM","TOOLBAR")
+      DECLARE INTEGER GetWindowRect IN user32 INTEGER hWnd, STRING @ lpRect
+
+      lpRect = REPLICATE(CHR(0),16)
+      = GetWindowRect(voControl.hWnd, @lpRect)
+
+      lnLeft   = this.str2DWord(SUBSTR(lpRect, 1, 4))
+      lnTop    = this.str2DWord(SUBSTR(lpRect, 5, 4))
+      lnRight  = this.str2DWord(SUBSTR(lpRect, 9, 4))
+      lnBottom = this.str2DWord(SUBSTR(lpRect,13, 4))
+      lnWidth  = lnRight - lnLeft
+      lnHeight = lnBottom - lnTop
+
+      lnBorder = (lnWidth - voControl.Width)/2
+      lnTitle  = (lnHeight - voControl.Height - (lnBorder*2))
+
+      rnX = lnLeft + lnBorder
+      rnY = lnTop + lnTitle + lnBorder
+  ENDCASE
+ENDIF
+
+RETURN llReturn
+ENDPROC
+PROCEDURE lshowhotkeys_assign
+LPARAMETERS vNewVal
+*To do: Modify this routine for the Assign method
+THIS.lShowHotKeys = m.vNewVal
+
+ENDPROC
+PROCEDURE place
+LPARAMETERS vnTop, vnLeft
+
+this.Left = vnLeft - this.nXOffset
+this.Top  = vnTop - this.nYOffset
+ENDPROC
+PROCEDURE setdisplayregion
+*************************************************************************
+*$METHOD$ SetDisplayRegion()
+*$CREATED$ 11/03/2007
+*************************************************************************
+DECLARE INTEGER DeleteObject IN gdi32 INTEGER hObject
+DECLARE INTEGER CreateRectRgn IN gdi32 INTEGER X1, INTEGER Y1, INTEGER X2, INTEGER Y2
+DECLARE INTEGER SetWindowRgn IN user32 INTEGER HWND, INTEGER hRgn , INTEGER bRedraw
+DECLARE INTEGER GetWindowRect IN user32 INTEGER hWnd, STRING @ lpRect
+
+LOCAL lpRect, lnLeft, lnTop, lnRight, lnBottom, lnWidth, lnHeight, ;
+      lnBorder, lnTitle, lnRegion, lnX1, lnY1, lnX2, lnY2
+
+lpRect = REPLICATE(CHR(0),16)
+= GetWindowRect(this.hWnd, @lpRect)
+
+lnLeft   = this.str2DWord(SUBSTR(lpRect, 1, 4))
+lnTop    = this.str2DWord(SUBSTR(lpRect, 5, 4))
+lnRight  = this.str2DWord(SUBSTR(lpRect, 9, 4))
+lnBottom = this.str2DWord(SUBSTR(lpRect,13, 4))
+lnWidth  = lnRight - lnLeft
+lnHeight = lnBottom - lnTop
+
+lnBorder = (lnWidth - this.Width)/2
+lnTitle  = (lnHeight - this.Height - (lnBorder*2))
+
+lnX1 = lnBorder + 5
+lnY1 = lnBorder + lnTitle + 3
+lnX2 = this.width + lnBorder - 5
+lnY2 = this.height + lnBorder + lnTitle - 3
+
+this.nYOffset = lnY1
+this.nXOffset = lnX1
+
+this.place(this.Top, this.Left)
+
+lnRegion = 0
+
+lnRegion = CreateRectRgn(lnX1, lnY1, lnX2, lnY2)
+SetWindowRgn(this.hWnd, lnRegion, 1)
+DeleteObject(lnRegion)
+
+#define WS_EX_LAYERED     0x00080000
+#define WS_EX_TOOLWINDOW  0x00000080
+
+DECLARE SetWindowLong IN WIN32API Integer, Integer, Integer
+DECLARE SetLayeredWindowAttributes IN WIN32API Integer, Integer, Integer, Integer
+
+SetWindowLong(This.HWnd, -20, WS_EX_LAYERED + WS_EX_TOOLWINDOW)
+SetLayeredWindowAttributes(This.HWnd, RGB(0,255,0), 0, 1)
+
+ENDPROC
+PROCEDURE str2dword
+***********************************************************************
+*$METHOD$ str2dWord()
+*$CREATED$ 07/03/2007
+***********************************************************************
+LPARAMETERS vcBuffer
+  RETURN ASC(SUBSTR(vcBuffer, 1,1)) + ;
+      BITLSHIFT(ASC(SUBSTR(vcBuffer, 2,1)),  8) +;
+      BITLSHIFT(ASC(SUBSTR(vcBuffer, 3,1)), 16) +;
+      BITLSHIFT(ASC(SUBSTR(vcBuffer, 4,1)), 24)
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+12[END RESERVED2]
+[START RESERVED3]
+cbasefont
+omenuitem
+otabmenu
+nxoffset
+nyoffset
+lshowhotkeys
+*cbasefont_assign 
+*getobjectpos 
+*str2dword 
+*place 
+*setdisplayregion 
+*lshowhotkeys_assign 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _21C0I74FF
+[CLASS] container
+[BASECLASS] container
+[OBJNAME] cntSizer
+[PARENT] _tbrpopup
+[START PROPERTIES]
+Top = 3
+Left = 5
+Width = 200
+Height = 200
+BackStyle = 0
+BorderWidth = 0
+Name = "cntSizer"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Resize
+***************************************************************************************
+*$METHOD$ Resize()
+*$CREATED$ 11/03/2007
+***************************************************************************************
+this.shpLeft.Top = 0
+this.shpLeft.Height = this.height
+this.shpLeft.Width = this.imgright.width
+this.shpLeft.Left = this.Width - this.shpLeft.Width
+
+this.imgtr.Left = this.Width - this.imgtr.Width
+this.imgtr.Top = 0
+
+this.imgRight.Top = 0
+this.imgRight.Height = this.Height
+this.imgRight.Left = this.Width - this.imgRight.Width
+
+this.shpBottom.Left = 0
+this.shpBottom.Width = this.width
+this.shpBottom.Height = this.imgbottom.height
+this.shpBottom.Top = this.Height - this.shpBottom.Height
+
+this.imgbottom.Left = 0
+this.imgbottom.Width = this.Width
+this.imgbottom.Top = this.Height - this.imgbottom.Height
+
+this.imgbr.Left = this.Width - this.imgbr.Width
+this.imgbr.Top = this.Height - this.imgbr.height
+
+this.imgbl.Left = 0
+this.imgbl.Top = this.Height - this.imgbl.height
+
+this.cntPopupItems.Left = 0
+this.cntPopupItems.Width = this.Width - this.imgRight.Width
+this.cntPopupItems.Top = 0
+this.cntPopupItems.Height = this.Height - this.imgBottom.Height
+
+this.cntpopupItems.shpBackground.Top    = 1
+this.cntPopupItems.shpBackground.Left   = 1
+this.cntPopupItems.shpBackground.Height = this.cntpopupItems.Height - 2
+this.cntpopupItems.shpBackground.Width  = 25
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _21C0IFUTD
+[CLASS] shape
+[BASECLASS] shape
+[OBJNAME] shpLeft
+[PARENT] _tbrpopup.cntSizer
+[START PROPERTIES]
+Top = 8
+Left = 150
+Height = 17
+Width = 36
+BorderStyle = 0
+BorderWidth = 0
+BackColor = 0,255,0
+Name = "shpLeft"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _21C0IGGB9
+[CLASS] shape
+[BASECLASS] shape
+[OBJNAME] shpBottom
+[PARENT] _tbrpopup.cntSizer
+[START PROPERTIES]
+Top = 168
+Left = 8
+Height = 17
+Width = 36
+BorderStyle = 0
+BorderWidth = 0
+BackColor = 0,255,0
+Name = "shpBottom"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _21C0I74FP
+[CLASS] cntpopupmenu
+[CLASSLOC] tabmenu.vcx
+[BASECLASS] container
+[OBJNAME] cntPopupItems
+[PARENT] _tbrpopup.cntSizer
+[START PROPERTIES]
+Top = 0
+Left = 0
+Width = 130
+Height = 123
+BackColor = 255,255,255
+Name = "cntPopupItems"
+lblCaption.Name = "lblCaption"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _21C0I74FQ
+[CLASS] shape
+[BASECLASS] shape
+[OBJNAME] shpBackground
+[PARENT] _tbrpopup.cntSizer.cntPopupItems
+[START PROPERTIES]
+Top = 24
+Left = 12
+Height = 17
+Width = 100
+BorderStyle = 0
+BorderWidth = 0
+Visible = .F.
+Name = "shpBackground"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _21C0IC7OF
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] imgRight
+[PARENT] _tbrpopup.cntSizer
+[START PROPERTIES]
+Picture = images\shadright.bmp
+Stretch = 2
+BackStyle = 0
+Height = 60
+Left = 170
+Top = 15
+Width = 4
+Name = "imgRight"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _21C0IDAYY
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] imgBottom
+[PARENT] _tbrpopup.cntSizer
+[START PROPERTIES]
+Picture = images\shadbott.bmp
+Stretch = 2
+BackStyle = 0
+Height = 4
+Left = 46
+Top = 143
+Width = 55
+Name = "imgBottom"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _21C0IEBHC
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] imgtr
+[PARENT] _tbrpopup.cntSizer
+[START PROPERTIES]
+Picture = images\shadtr.bmp
+Stretch = 2
+BackStyle = 0
+Height = 9
+Left = 158
+Top = 159
+Width = 4
+Name = "imgtr"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _21C0IEUEL
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] imgbl
+[PARENT] _tbrpopup.cntSizer
+[START PROPERTIES]
+Picture = images\shadbl.bmp
+Stretch = 2
+BackStyle = 0
+Height = 4
+Left = 114
+Top = 157
+Width = 8
+Name = "imgbl"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _21C0INURE
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] cmdCancel
+[PARENT] _tbrpopup.cntSizer
+[START PROPERTIES]
+Top = 165
+Left = 72
+Height = 27
+Width = 84
+Cancel = .T.
+Caption = "Cancel"
+TabStop = .F.
+Name = "cmdCancel"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+*************************************************************************
+*$METHOD$ Click()
+*$CREATED$ 11/03/2007
+*************************************************************************
+this.Parent.Release()
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _21C0JC9TG
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] imgbr
+[PARENT] _tbrpopup.cntSizer
+[START PROPERTIES]
+Picture = images\shadbr.bmp
+Stretch = 2
+BackStyle = 0
+Height = 4
+Left = 143
+Top = 64
+Width = 4
+Name = "imgbr"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _tbrpopup
+[START PROPERTIES]
 Arial, 0, 9, 5, 15, 12, 32, 3, 0
 [END PROPERTIES]
 [EOF]
