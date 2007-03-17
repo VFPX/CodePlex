@@ -194,10 +194,17 @@ FUNCTION spProcessMenu(vcMenuFile, vnLevel, vcLevelName, vcItemKey, vnTabNumber)
     
     *-- Add the properties needed to the data
     ADDPROPERTY(loMenuData, "Submenu", .f.)
+    ADDPROPERTY(loMenuData, "MarkExp", "")
     
     IF "\+" $ loMenuData.Prompt
       *-- The prompt indicates that the menu option has a submenu
       loMenuData.Submenu = .t.
+    ENDIF
+    
+    IF "*:MARKEXP" $ UPPER(loMenuData.Comment)
+      *-- The menu bar has additional directives in the comment
+      * which need to be parsed and included in the menu data object
+      loMenuData.MarkExp = spGetDirective("*:MARKEXP", loMenuData.Comment)
     ENDIF
     
     *-- Format the text
@@ -732,6 +739,16 @@ FUNCTION spProcessSubMenu(vcMenuFile, vnItemRecno, vcLevelName, vcItemKey, vcBin
   SCAN FOR NOT DELETED()
     SCATTER MEMO NAME loMenuData
 
+    *-- Add the properties needed to the data
+    ADDPROPERTY(loMenuData, "Submenu", .f.)
+    ADDPROPERTY(loMenuData, "MarkExp", "")
+
+    IF "*:MARKEXP" $ UPPER(loMenuData.Comment)
+      *-- The menu bar has additional directives in the comment
+      * which need to be parsed and included in the menu data object
+      loMenuData.MarkExp = spGetDirective("*:MARKEXP", loMenuData.Comment)
+    ENDIF
+
     *-- Format the text
     loMenuData.Prompt = STRTRAN(loMenuData.Prompt, "\-", "")
     loMenuData.Prompt = STRTRAN(loMenuData.Prompt, "\+", "")
@@ -757,6 +774,9 @@ FUNCTION spProcessSubMenu(vcMenuFile, vnItemRecno, vcLevelName, vcItemKey, vcBin
     ENDIF
     IF NOT EMPTY(loMenuData.Message)
       lcEventCode = lcEventCode + "loItem.ToolTipText = [" + loMenuData.Message + "]"  + CHR(13)
+    ENDIF
+    IF NOT EMPTY(loMenuData.MarkExp)
+      lcEventCode = lcEventCode + "loItem.cMarkExp = [" + loMenuData.MarkExp + "]" + CHR(13)
     ENDIF
     IF NOT EMPTY(lcItemKey)
       lcEventCode = lcEventCode + "loItem.cItemKey = '" + lcItemKey + "'" + CHR(13)
@@ -834,4 +854,24 @@ FUNCTION spProcessSubMenu(vcMenuFile, vnItemRecno, vcLevelName, vcItemKey, vcBin
   SELECT (lnSelect)
   
   RETURN m.llReturn
+ENDFUNC
+
+**************************************************************************************
+*$FUNCTION$ spGetDirective()
+*$CREATED$ 17/03/2007
+**************************************************************************************
+FUNCTION spGetDirective(vcSearchFor, vcSearchIn)
+  LOCAL lcReturn, lnCount, lcText
+
+  STORE "" TO lcReturn
+
+  _MLINE = 0
+  FOR lnCount = 1 TO MEMLINES(m.vcSearchIn)
+    lcText = MLINE(m.vcSearchIn, 1, _MLINE)
+    IF UPPER(m.vcSearchFor) $ UPPER(m.lcText)
+      lcReturn = ALLTRIM(SUBSTR(m.lcText, LEN(m.vcSearchFor) + 1))
+    ENDIF
+  NEXT
+  
+  RETURN m.lcReturn
 ENDFUNC
