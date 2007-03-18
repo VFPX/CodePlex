@@ -24,11 +24,17 @@ shpLeft.Name = "shpLeft"
 shpBottom.Name = "shpBottom"
 cmdExit.Name = "cmdExit"
 cntMenuItems.cntRecentItems.LBLCAPTION.Name = "LBLCAPTION"
+cntMenuItems.cntRecentItems.shpBackGround.Name = "shpBackGround"
+cntMenuItems.cntRecentItems.linBackGround.Name = "linBackGround"
 cntMenuItems.cntRecentItems.Name = "cntRecentItems"
 cntMenuItems.cntQuickMenu.LBLCAPTION.Name = "LBLCAPTION"
+cntMenuItems.cntQuickMenu.shpBackGround.Name = "shpBackGround"
+cntMenuItems.cntQuickMenu.linBackGround.Name = "linBackGround"
 cntMenuItems.cntQuickMenu.Name = "cntQuickMenu"
 cntMenuItems.shpShadow.Name = "shpShadow"
 cntMenuItems.cntSubMenu.lblCaption.Name = "lblCaption"
+cntMenuItems.cntSubMenu.shpBackGround.Name = "shpBackGround"
+cntMenuItems.cntSubMenu.linBackGround.Name = "linBackGround"
 cntMenuItems.cntSubMenu.Name = "cntSubMenu"
 cntMenuItems.Name = "cntMenuItems"
 imgbottom.Name = "imgbottom"
@@ -121,9 +127,25 @@ ENDPROC
 [START RESERVED1]
 Class[END RESERVED1]
 [START RESERVED2]
-1[END RESERVED2]
+2[END RESERVED2]
 [START RESERVED6]
 Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _21I0U8DED
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] imgVFPX
+[PARENT] frmexamplestart
+[START PROPERTIES]
+Picture = vfpxpoweredby.gif
+Height = 16
+Left = 7
+Top = 222
+Width = 76
+Name = "imgVFPX"
+[END PROPERTIES]
 
 [ RECORD]
 [PLATFORM] COMMENT 
