@@ -85,9 +85,9 @@ CHECKSUM=57840
 [ITEMNUM]   1
 [OBJTYPE] 2
 [NAME] Home1
-[PROCTYPE] 3
+[PROCTYPE] 1
 [START PROCEDURE]
-loPopup.nColumns = 3
+loPopup.nColumns = 2
 loPopup.Width = (100 * loPopup.nColumns)[END PROCEDURE]
 [BINSTART MARK]
 CHECKSUM=57840
