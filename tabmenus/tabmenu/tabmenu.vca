@@ -41,6 +41,8 @@ omainform = ( .NULL.)
 lallowresize = ( .f.)
 nmaxitempos = ( 0)
 cbasefont = ( "Segoe UI")
+orightclick = ( .NULL.)
+lminimized = .F.
 Name = "cnttabmenu"
 [END PROPERTIES]
 [START PROTECTED]
@@ -51,10 +53,17 @@ PROCEDURE Destroy
 ***************************************************************************
 *$METHOD$ Destroy()
 *$CREATED$ 17/02/2007
+*
+*$HISTORY$
+*  18/03/2007 - GZ: Added code to clean up contained objects
+*$HISTORY$
 ***************************************************************************
 UNBINDEVENTS(this)
 
-this.omainform = .NULL.
+this.omainform     = .NULL.
+this.oRightClick   = .NULL.
+this.ofrmStartmenu = .NULL.
+this.osubmenu      = .NULL.
 
 IF VARTYPE(_SCREEN.oTabMenuHandler) = "O"
   *-- the tab menu handler object exists on the _SCREEN object so when
@@ -83,7 +92,13 @@ PROCEDURE Init
 *************************************************************************
 *$METHOD$ Init()
 *$CREATED$ 11/02/2007
+*
+*$HISTORY$
+*  18/03/2007 - GZ: Added a property that can be used for context menus
+*$HISTORY$
 *************************************************************************
+LOCAL loRightClick
+
 this.BackColor = RGB(221,234,251)
 
 IF this.lTitlebar
@@ -154,6 +169,18 @@ this.cntQuickBar.Top = 0
 IF NOT this.lShowQuickbar
   this.cntQuickBar.Visible = .f.
 ENDIF
+
+*-- Create a dummy menu item object for use with any context menus that might be required
+loRightClick = CREATEOBJECT("empty")
+
+ADDPROPERTY(loRightClick, "lSelected", .f.)
+ADDPROPERTY(loRightClick, "Top", 0)
+ADDPROPERTY(loRightClick, "Left", 0)
+ADDPROPERTY(loRightClick, "Height", 0)
+ADDPROPERTY(loRightClick, "BaseClass", "empty")
+ADDPROPERTY(loRightClick, "Parent", this)
+
+this.oRightClick = loRightClick
 ENDPROC
 PROCEDURE Refresh
 *************************************************************************
@@ -240,6 +267,62 @@ ELSE
   this.cntSearchBox.Visible = .f.
 ENDIF
 
+ENDPROC
+PROCEDURE RightClick
+*************************************************************************
+*$METHOD$ RightClick()
+*$CREATED$ 18/03/2007
+*************************************************************************
+LOCAL loSubMenu, loItem
+
+this.osubmenu      = .NULL.
+this.ofrmstartmenu = .NULL.
+
+IF VARTYPE(this.oMainform) = "O"
+  this.oRightClick.Top = MROW(this.oMainform.Name,3)
+  this.oRightClick.Left = MCOL(this.oMainform.Name,3)
+ELSE
+  this.oRightClick.Top = MROW("",3)
+  this.oRightClick.Left = MCOL("",3)
+ENDIF
+
+*-- Create the submenu popup form and size it according to the current
+* display settings
+loSubmenu = CREATEOBJECT("frmPopup",this.oRightClick,this)
+loSubMenu.nPopupStyle = 1
+loSubMenu.Width  = 200
+IF this.lTitlebar
+  loSubMenu.Height = 50
+ELSE
+  loSubMenu.Height = 25
+ENDIF
+loSubMenu.Resize()
+
+*-- Add the options, if there is not titlebar then the quickbar will not
+* be shown.  If there is a titlebar allow the user to show or hide the
+* quickbar.
+IF this.lTitleBar
+  loItem = loSubMenu.cntPopupItems.AddPopupItem("Show Quick Access Bar","NORM","S")
+  IF this.lshowquickbar
+    loItem.cMarkExp = ".t."
+  ELSE
+    loItem.cMarkExp = ".f."
+  ENDIF
+  BINDEVENT(loItem, "Execute", this, "ToggleQuickBar")
+ENDIF
+
+*-- Provide the option to allow the user to minimize the ribbon.
+loItem = loSubMenu.cntPopupItems.AddPopupItem("Minimize the Ribbon","NORM","N")
+IF this.lMinimized
+  loItem.cMarkExp = ".t."
+ELSE
+  loItem.cMarkExp = ".f."
+ENDIF
+BINDEVENT(loItem, "Execute", this, "ToggleMinimize")
+
+loSubMenu.Show()
+
+this.oSubMenu = loSubMenu
 ENDPROC
 PROCEDURE addmenuitem
 ****************************************************************************
@@ -373,6 +456,16 @@ IF VARTYPE(this.omainform) = "O"
 ELSE
   this.imgResize.Visible = .f.
 ENDIF
+
+ENDPROC
+PROCEDURE lminimized_assign
+*************************************************************************
+*$METHOD$ lMinimized_assign()
+*$CREATED$ 18/03/2007
+*************************************************************************
+LPARAMETERS vlNewVal
+
+THIS.lMinimized = m.vlNewVal
 
 ENDPROC
 PROCEDURE lshowhelp_assign
@@ -625,6 +718,20 @@ ENDIF
 RETURN llReturn
 
 ENDPROC
+PROCEDURE toggleminimize
+*************************************************************************
+*$METHOD$ ToggleMinimize()
+*$CREATED$ 18/03/2007
+*************************************************************************
+this.lMinimized = NOT this.lMinimized
+ENDPROC
+PROCEDURE togglequickbar
+*************************************************************************
+*$METHOD$ ToggleQuickBar()
+*$CREATED$ 18/03/2007
+*************************************************************************
+this.lshowquickbar = (this.lTitleBar AND NOT this.lShowQuickBar)
+ENDPROC
 PROCEDURE wmeventhandler
 ************************************************************************
 *$METHOD$ WMEventHandler()
@@ -755,6 +862,8 @@ omainform
 lallowresize
 nmaxitempos
 cbasefont
+orightclick
+lminimized
 *addmenuitem 
 *selectmenuitem 
 *addpopup 
@@ -774,6 +883,9 @@ cbasefont
 *mainformresize 
 *lallowresize_assign 
 *cbasefont_assign 
+*togglequickbar 
+*lminimized_assign 
+*toggleminimize 
 [END RESERVED3]
 [START RESERVED6]
 Pixels[END RESERVED6]
@@ -811,6 +923,15 @@ Top = 0
 Width = 4
 Name = "imgTabStrip"
 [END PROPERTIES]
+[START METHODS]
+PROCEDURE RightClick
+*************************************************************************
+*$METHOD$ RightClick()
+*$CREATED$ 18/03/2007
+*************************************************************************
+RAISEEVENT(this.Parent, "RightClick")
+ENDPROC
+[END METHODS]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
