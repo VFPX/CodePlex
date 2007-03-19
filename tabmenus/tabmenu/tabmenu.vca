@@ -1023,6 +1023,16 @@ ForeColor = 21,66,139
 Name = "lblCaption"
 [END PROPERTIES]
 [START METHODS]
+PROCEDURE DblClick
+*************************************************************************
+*$METHOD$ DblClick()
+*$CREATED$ 19/03/2007
+*************************************************************************
+IF this.Parent.ltitlebar
+  RAISEEVENT(this.Parent.cntcontrol.cmdmaximize, "Click")
+ENDIF
+
+ENDPROC
 PROCEDURE MouseDown
 *************************************************************************
 *$METHOD$ MouseDown()
