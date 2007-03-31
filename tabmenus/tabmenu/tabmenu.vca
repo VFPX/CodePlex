@@ -186,29 +186,73 @@ PROCEDURE Refresh
 *************************************************************************
 *$METHOD$ Refresh()
 *$CREATED$ 11/02/2007
+*
+*$HISTORY$
+*  30/03/2007 - GZ: Added support for hidden menu items
+*$HISTORY$
 *************************************************************************
-LOCAL lnCount, lcItemName, lnLeft, lcPrevItem
+LOCAL lnCount, lcItemName, lnLeft, lnItems, lnNewSelected, ;
+      lcPrevVisible, lcFirstVisible, llAnySelected
 
-lnLeft = IIF(this.lShowMain, 45, 5)
+lnLeft        = IIF(this.lShowMain, 45, 5)
+lnItems       = 0
+lnNewSelected = 0
 
 this.nMaxItemPos = 0
 
 FOR lnCount = 1 TO this.ItemCount
-  lcPrevItem = lcItemName
   lcItemName = "MenuItem" + STRTRAN(STR(lnCount,3,0), " ", "0")
-  IF lnCount > 1
-    lnLeft = this.&lcPrevItem..Left + this.&lcPrevItem..Width
-  ENDIF
-  WITH this.&lcItemName.
-    .Refresh()
-    .Left = lnLeft
-    .Top = IIF(this.ltitlebar, this.imgTitleBar.Height, 0)
-    IF .Left + .Width > this.nMaxitempos
-      *-- Determine the position of the rightmost item
-      this.nMaxItemPos = .Left + .Width
+  IF this.&lcItemName..Visible
+    lnItems = lnItems + 1
+
+    IF lnItems = 1
+      *-- Take note of the first visible item name for use later
+      lcFirstVisible = lcItemName
+    ELSE
+      *-- If we are past the first item then adjust the left position
+      lnLeft = this.&lcPrevVisible..Left + this.&lcPrevVisible..Width
     ENDIF
-  ENDWITH
+
+    WITH this.&lcItemName.
+      .Refresh()
+      .Left = lnLeft
+      .Top = IIF(this.ltitlebar, this.imgTitleBar.Height, 0)
+      IF .Left + .Width > this.nMaxitempos
+        *-- Determine the position of the rightmost item
+        this.nMaxItemPos = .Left + .Width
+      ENDIF
+
+      *-- Set the flag to determine if any of the visible items
+      * are selected because if they are not we will need to
+      * select one of them
+      llAnySelected = (llAnySelected OR .Selected)
+    ENDWITH
+
+    lcPrevVisible = lcItemName
+  ELSE
+    *-- The item is invisible but it may have been the selected item
+    * so we need to select a different tab
+    IF this.&lcItemName..Selected
+      this.&lcItemName..Selected = .f.
+      IF NOT EMPTY(lcPrevVisible)
+        *-- The default selected item will be the one immediately prior
+        * to the invisible one.
+        lnNewSelected = this.&lcPrevVisible..ItemIndex
+      ENDIF
+    ENDIF
+  ENDIF
 NEXT
+
+IF NOT llAnySelected
+  *-- We need to select a new menu item becaue the none of the currently
+  * visible menu items have been selected.
+  IF lnNewSelected = 0 AND NOT EMPTY(lcFirstVisible)
+    *-- We have not yet determined which menu item to select so that means
+    * we need to default to the first visible item if there is one
+    lnNewSelected = this.&lcFirstVisible..ItemIndex
+  ENDIF
+  this.SelectMenuItem(lnNewSelected, this.lShowHotkeys)
+ENDIF
 ENDPROC
 PROCEDURE Resize
 **************************************************************************
@@ -443,6 +487,20 @@ ELSE
   this.lblCapTION.Visible = this.ltitlebar
 ENDIF
 ENDPROC
+PROCEDURE hidemenuitem
+***************************************************************************
+*$METHOD$ HideMenuItem()
+*$CREATED$ 30/03/2007
+***************************************************************************
+LPARAMETERS vnItemIndex
+
+LOCAL lcItemName
+
+lcItemName = "MenuItem" + STRTRAN(STR(vnItemIndex,3,0), " ", "0")
+this.&lcItemName..Visible = .f.
+
+this.Refresh()
+ENDPROC
 PROCEDURE lallowresize_assign
 **************************************************************************
 *$METHOD$ lAllowResize_Assign()
@@ -600,6 +658,11 @@ PROCEDURE selectmenuitem
 ***************************************************************************
 *$METHOD$ SelectMenuItem()
 *$CREATED$ 01/02/2007
+*
+*$HISTORY$
+*  31/03/2007 - GZ: Added support for hidden menu items so needed to be
+*  able to deal with the case where no pages are selected.
+*$HISTORY$
 ***************************************************************************
 LPARAMETERS vnItemIndex, vlShowHotKeys
 
@@ -607,19 +670,33 @@ LOCAL lnCount, lcItemName
 
 this.lshowhotkeys = vlShowHotKeys
 
-FOR lnCount = 1 TO this.ItemCount
-  lcItemName = "MenuItem" + STRTRAN(STR(lnCount,3,0), " ", "0")
-  WITH this.&lcItemName.
-    IF .Selected AND .ItemIndex <> vnItemIndex
-      .Selected = .f.
-    ELSE
-      IF .ItemIndex = vnItemIndex AND NOT .Selected
-        .Selected = .t.
-        this.pgfPopups.ActivePage = vnItemIndex
+IF vnItemIndex > 0
+  *-- Show the page frame if something is selected
+  this.pgfPopups.Visible = .t.
+
+  FOR lnCount = 1 TO this.ItemCount
+    lcItemName = "MenuItem" + STRTRAN(STR(lnCount,3,0), " ", "0")
+    WITH this.&lcItemName.
+      IF .Selected AND .ItemIndex <> vnItemIndex
+        .Selected = .f.
+      ELSE
+        IF .ItemIndex = vnItemIndex AND NOT .Selected
+          .Selected = .t.
+          this.pgfPopups.ActivePage = vnItemIndex
+        ENDIF
       ENDIF
-    ENDIF
+    ENDWITH
+  NEXT
+
+  WITH this.pgfPopups.Pages(vnItemIndex)
+    FOR lnCount = 1 TO .ControlCount
+      .Controls(lnCount).lShowHotKeys = vlShowHotKeys
+    NEXT
   ENDWITH
-NEXT
+ELSE
+  *-- Hide the page frame if nothing is selected
+  this.pgfPopups.Visible = .f.
+ENDIF
 
 IF VARTYPE(this.osubmenu) = "O"
   this.osubmenu.Release()
@@ -627,12 +704,6 @@ ENDIF
 IF VARTYPE(this.ofrmstartmenu) = "O"
   this.ofrmstartmenu.Release()
 ENDIF
-
-WITH this.pgfPopups.Pages(vnItemIndex)
-  FOR lnCount = 1 TO .ControlCount
-    .Controls(lnCount).lShowHotKeys = vlShowHotKeys
-  NEXT
-ENDWITH
 
 this.nSelecteditem = vnItemIndex
 ENDPROC
@@ -717,6 +788,20 @@ ENDIF
 
 RETURN llReturn
 
+ENDPROC
+PROCEDURE showmenuitem
+***************************************************************************
+*$METHOD$ ShowMenuItem()
+*$CREATED$ 30/03/2007
+***************************************************************************
+LPARAMETERS vnItemIndex
+
+LOCAL lcItemName
+
+lcItemName = "MenuItem" + STRTRAN(STR(vnItemIndex,3,0), " ", "0")
+this.&lcItemName..Visible = .t.
+
+this.Refresh()
 ENDPROC
 PROCEDURE toggleminimize
 *************************************************************************
@@ -886,6 +971,8 @@ lminimized
 *togglequickbar 
 *lminimized_assign 
 *toggleminimize 
+*hidemenuitem 
+*showmenuitem 
 [END RESERVED3]
 [START RESERVED6]
 Pixels[END RESERVED6]
