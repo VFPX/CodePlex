@@ -69,22 +69,148 @@ ENDPROC
 
 [ RECORD]
 [PLATFORM] WINDOWS 
-[UNIQUEID] _2020IX9PY
+[UNIQUEID] _2020IX9PW
 [CLASS] commandbutton
 [BASECLASS] commandbutton
 [OBJNAME] Command1
 [PARENT] TESTFORM2
 [START PROPERTIES]
-Top = 120
-Left = 240
+Top = 216
+Left = 288
 Height = 27
 Width = 84
-Caption = "Command1"
+Caption = "Close Form"
 Name = "Command1"
 [END PROPERTIES]
 [START METHODS]
 PROCEDURE Click
 thisform.Release()
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2020IX9PW
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] Command2
+[PARENT] TESTFORM2
+[START PROPERTIES]
+Top = 72
+Left = 36
+Height = 27
+Width = 96
+Caption = "Hide Programs"
+Name = "Command2"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+_SCREEN.oTabMenu.HideMenuItem(2)
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2020IX9PW
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] Command3
+[PARENT] TESTFORM2
+[START PROPERTIES]
+Top = 132
+Left = 36
+Height = 27
+Width = 96
+Caption = "Show Programs"
+Name = "Command3"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+_SCREEN.oTabMenu.ShowMenuItem(2)
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2020IX9PW
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] Command4
+[PARENT] TESTFORM2
+[START PROPERTIES]
+Top = 72
+Left = 144
+Height = 27
+Width = 96
+Caption = "Hide Home"
+Name = "Command4"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+_SCREEN.oTabMenu.HideMenuItem(1)
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2020IX9PX
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] Command5
+[PARENT] TESTFORM2
+[START PROPERTIES]
+Top = 132
+Left = 144
+Height = 27
+Width = 96
+Caption = "Show Home"
+Name = "Command5"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+_SCREEN.oTabMenu.ShowMenuItem(1)
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _21V0NPL68
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] Command6
+[PARENT] TESTFORM2
+[START PROPERTIES]
+Top = 72
+Left = 251
+Height = 27
+Width = 96
+Caption = "Hide Reports"
+Name = "Command6"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+_SCREEN.oTabMenu.HideMenuItem(3)
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _21V0NPL69
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] Command7
+[PARENT] TESTFORM2
+[START PROPERTIES]
+Top = 132
+Left = 251
+Height = 27
+Width = 96
+Caption = "Show Reports"
+Name = "Command7"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+_SCREEN.oTabMenu.ShowMenuItem(3)
 ENDPROC
 [END METHODS]
 
