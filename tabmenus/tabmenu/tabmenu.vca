@@ -258,6 +258,10 @@ PROCEDURE Resize
 **************************************************************************
 *$METHOD$ Resize()
 *$CREATED$ 11/02/2007
+*
+*$HISTORY$
+*  01/04/2007 - GZ: Added support for minimizing the ribbon
+*$HISTORY$
 **************************************************************************
 IF this.lTitlebar
   this.imgTitleBar.Top = 0
@@ -272,23 +276,6 @@ this.lblCaption.Width = this.Width
 
 this.imgTabStrip.Top = IIF(this.lTitleBar, this.imgTitleBar.Height, 0)
 this.imgTabStrip.Width = this.Width
-this.shpPopup.Top = IIF(this.lTitlebar, this.imgTitleBar.Height, 0) + this.imgTabStrip.Height + 2
-
-IF VARTYPE(this.omainform) = "O"
-  this.imgResize.Visible = .t.
-ELSE
-  this.imgResize.Visible = .f.
-ENDIF
-this.imgReSIZE.Left = this.Width - this.imgreSIZE.Width
-this.imgResize.Top = this.Height - this.imgreSIZE.Height
-
-this.shpPopup.Width = this.Width - (this.shpPopup.Left * 2)
-this.shpPopup.height = this.Height - this.shpPopup.Top && - 2
-
-this.pgfPopups.Height = this.shpPopup.Height - 2
-this.pgfPopups.Top = this.shpPopup.Top + 1
-this.pgfPopups.Width = this.shpPopup.Width - 2
-this.pgfPopups.Left = this.shpPopup.Left + 1
 
 this.cntHelpItem.Left = MAX(this.nMaxItemPos, this.Width - this.cntHelpItem.Width - 3)
 this.cntHelpItem.Top = IIF(this.lTitleBar, this.imgTitleBar.Height + 3, 3)
@@ -309,6 +296,27 @@ IF this.lShowSearch
   ENDIF
 ELSE
   this.cntSearchBox.Visible = .f.
+ENDIF
+
+IF VARTYPE(this.omainform) = "O"
+  this.imgResize.Visible = .t.
+ELSE
+  this.imgResize.Visible = .f.
+ENDIF
+this.imgReSIZE.Left = this.Width - this.imgreSIZE.Width
+this.imgResize.Top = this.Height - this.imgreSIZE.Height
+
+IF NOT this.lMinimized
+  *-- Don't do anything to the size of the controls if the bar has been minimized
+  this.shpPopup.Top = IIF(this.lTitlebar, this.imgTitleBar.Height, 0) + this.imgTabStrip.Height + 2
+
+  this.shpPopup.Width = this.Width - (this.shpPopup.Left * 2)
+  this.shpPopup.height = this.Height - this.shpPopup.Top && - 2
+
+  this.pgfPopups.Height = this.shpPopup.Height - 2
+  this.pgfPopups.Top = this.shpPopup.Top + 1
+  this.pgfPopups.Width = this.shpPopup.Width - 2
+  this.pgfPopups.Left = this.shpPopup.Left + 1
 ENDIF
 
 ENDPROC
@@ -520,11 +528,20 @@ PROCEDURE lminimized_assign
 *************************************************************************
 *$METHOD$ lMinimized_assign()
 *$CREATED$ 18/03/2007
+*
+*$HISTORY$
+*  01/04/2007 - GZ: Added further support for the minimized ribbon
+*$HISTORY$
 *************************************************************************
 LPARAMETERS vlNewVal
 
 THIS.lMinimized = m.vlNewVal
 
+IF m.vlNewVal
+  RAISEEVENT(this, "tbmMinimize")
+ELSE
+  RAISEEVENT(this, "tbmRestore")
+ENDIF
 ENDPROC
 PROCEDURE lshowhelp_assign
 LPARAMETERS vlNewVal
@@ -662,6 +679,8 @@ PROCEDURE selectmenuitem
 *$HISTORY$
 *  31/03/2007 - GZ: Added support for hidden menu items so needed to be
 *  able to deal with the case where no pages are selected.
+*  01/04/2007 - GZ: Added support for minimizing the ribbon so needed to
+*  be able to make all the items appear unselected visually
 *$HISTORY$
 ***************************************************************************
 LPARAMETERS vnItemIndex, vlShowHotKeys
@@ -693,9 +712,22 @@ IF vnItemIndex > 0
       .Controls(lnCount).lShowHotKeys = vlShowHotKeys
     NEXT
   ENDWITH
+
+  IF this.lMinimized
+    *-- If the ribbon has been minimised then the size of the form needs to be increased
+    RAISEEVENT(this, "tbmDropDown")
+  ENDIF
 ELSE
-  *-- Hide the page frame if nothing is selected
+  *-- Hide the page frame if nothing is selected and set the property on
+  * the existing items to ensure they do not appear selected
   this.pgfPopups.Visible = .f.
+
+  FOR lnCount = 1 TO this.ItemCount
+    lcItemName = "MenuItem" + STRTRAN(STR(lnCount,3,0), " ", "0")
+    IF this.&lcItemName..Selected
+      this.&lcItemName..Selected = .f.
+    ENDIF
+  NEXT
 ENDIF
 
 IF VARTYPE(this.osubmenu) = "O"
@@ -803,6 +835,41 @@ this.&lcItemName..Visible = .t.
 
 this.Refresh()
 ENDPROC
+PROCEDURE tbmdropdown
+****************************************************************************
+*$METHOD$ tbmDropDown()
+*$CREATED$ 01/04/2007
+****************************************************************************
+IF this.lMinimized
+  this.Height = (this.shpPopup.Top + this.shpPopup.Height)
+ENDIF
+ENDPROC
+PROCEDURE tbmminimize
+************************************************************************
+*$METHOD$ tbmMinimize()
+*$CREATED$ 01/04/2007
+************************************************************************
+this.SelectMenuItem(0, this.lShowHotkeys)
+this.Height = (this.imgTabStrip.Top + this.ImgTabStrip.Height)
+ENDPROC
+PROCEDURE tbmrestore
+************************************************************************
+*$METHOD$ Restore()
+*$CREATED$ 01/04/2007
+************************************************************************
+this.Height = (this.shpPopup.Top + this.shpPopup.Height)
+this.SelectMenuItem(1, this.lShowHotkeys)
+ENDPROC
+PROCEDURE tbmrollup
+****************************************************************************
+*$METHOD$ tbmRollUp()
+*$CREATED$ 01/04/2007
+****************************************************************************
+IF this.lMinimized
+  this.SelectMenuItem(0, this.lShowHotkeys)
+  this.Height = (this.imgTabStrip.Top + this.imgTabStrip.Height)
+ENDIF
+ENDPROC
 PROCEDURE toggleminimize
 *************************************************************************
 *$METHOD$ ToggleMinimize()
@@ -884,6 +951,11 @@ DO CASE
     llPassThrough = .t.
 *    MESSAGEBOX("WM_KEYUP: wParam = " + TRANSFORM(wParam) + " lParam = " + TRANSFORM(lParam), 4096,"test",5000)
 
+  CASE Msg = WM_KEYUP AND this.lMinimized
+    IF wParam = 27
+      RAISEEVENT(this, "tbmRollUp")
+    ENDIF
+    llPassThrough = .t.
   CASE Msg = WM_SYSKEYUP
 *    MESSAGEBOX("WM_SYSKEYUP: " + TRANSFORM(wParam), 4096,"test",5000)
     IF wParam = 9
@@ -973,6 +1045,10 @@ lminimized
 *toggleminimize 
 *hidemenuitem 
 *showmenuitem 
+*tbmdropdown 
+*tbmrollup 
+*tbmminimize 
+*tbmrestore 
 [END RESERVED3]
 [START RESERVED6]
 Pixels[END RESERVED6]
