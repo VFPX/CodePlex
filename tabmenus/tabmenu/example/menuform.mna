@@ -13,10 +13,17 @@ _SCREEN.oTabMenu.lAllowResize = .t.
 
 goForm.Height = _SCREEN.oTabMenu.Height
 
+*-- The following events handle the application control box
 BINDEVENT(_SCREEN.oTabMenu, "AppMinimize", goForm, "AppMinimize")
 BINDEVENT(_SCREEN.oTabMenu, "AppExit", goForm, "AppExit")
 BINDEVENT(_SCREEN.oTabMenu, "AppMaximize", goForm, "AppMaximize")
-BINDEVENT(_SCREEN.oTabMenu, "AppRestore", goForm, "AppRestore")[END SETUP]
+BINDEVENT(_SCREEN.oTabMenu, "AppRestore", goForm, "AppRestore")
+
+*-- The following events handle the minimized ribbon state
+BINDEVENT(_SCREEN.oTabMenu, "tbmDropDown", goForm, "Resize", 1)
+BINDEVENT(_SCREEN.oTabMenu, "tbmRestore", goForm, "Resize", 1)
+BINDEVENT(_SCREEN.oTabMenu, "tbmRollup", goForm, "Resize", 1)
+BINDEVENT(_SCREEN.oTabMenu, "tbmMinimize", goForm, "Resize", 1)[END SETUP]
 [CLEANTYPE] 1
 [BINSTART MARK]
 CHECKSUM=41332
