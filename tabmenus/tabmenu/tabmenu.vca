@@ -189,6 +189,7 @@ PROCEDURE Refresh
 *
 *$HISTORY$
 *  30/03/2007 - GZ: Added support for hidden menu items
+*  07/04/2007 - GZ: Added support for the minimized ribbon
 *$HISTORY$
 *************************************************************************
 LOCAL lnCount, lcItemName, lnLeft, lnItems, lnNewSelected, ;
@@ -243,7 +244,7 @@ FOR lnCount = 1 TO this.ItemCount
   ENDIF
 NEXT
 
-IF NOT llAnySelected
+IF NOT llAnySelected AND NOT this.lMinimized
   *-- We need to select a new menu item becaue the none of the currently
   * visible menu items have been selected.
   IF lnNewSelected = 0 AND NOT EMPTY(lcFirstVisible)
@@ -728,6 +729,7 @@ ELSE
       this.&lcItemName..Selected = .f.
     ENDIF
   NEXT
+
 ENDIF
 
 IF VARTYPE(this.osubmenu) = "O"
@@ -1511,6 +1513,10 @@ this.lblHotkey.Width = this.imghotkey.width
 
 ENDPROC
 PROCEDURE caption_assign
+************************************************************************
+*$METHOD$ Caption_assign()
+*$CREATED$ 01/02/2007
+************************************************************************
 LPARAMETERS vcNewVal
 
 THIS.caption = m.vcNewVal
@@ -1567,19 +1573,45 @@ ENDIF
 
 ENDPROC
 PROCEDURE hottrackoff
+************************************************************************
+*$METHOD$ HotTrackOff()
+*$CREATED$ 01/02/2007
+*
+*$HISTORY$
+*  07/04/2007 - GZ: Added support for the minimized ribbon
+*$HISTORY$
+************************************************************************
 IF NOT this.Selected
   this.imgLeft.Picture = 'tabLEFT.BMP'
   this.imgLeft.Visible = .f.
   this.Picture = 'TABSTRIP.BMP'
   this.imgRight.Picture = 'tabseparator.BMP'
+
+  IF this.Parent.lMinimized
+    RAISEEVENT(this.Parent, "tbmMinimize")
+  ENDIF
 ENDIF
+
+
 ENDPROC
 PROCEDURE hottrackon
+*************************************************************************
+*$METHOD$ HotTrackOn()
+*$CREATED$ 01/02/2007
+*
+*$HISTORY$
+*  07/04/2007 - GZ: Added support for the minimized ribbon
+*$HISTORY$
+*************************************************************************
 IF this.Enabled AND NOT this.Selected
   this.imgLeft.Picture = 'HOVLEFT.BMP'
   this.imgLeft.Visible = .t.
   this.Picture = 'HOVMENU.BMP'
   this.imgRight.Picture = 'HOVRIGHT.BMP'
+
+  IF this.Parent.lMinimized
+    RAISEEVENT(this.Parent, "tbmMinimize")
+  ENDIF
 ENDIF
 ENDPROC
 PROCEDURE lshowhotkey_assign
