@@ -65,7 +65,7 @@ thisform.Top   = 20
 ENDPROC
 PROCEDURE Resize
 IF VARTYPE(_SCREEN.oTabMenu) = "O"
-  IF this.Height > _SCREEN.oTabMenu.Height
+  IF this.Height <> _SCREEN.oTabMenu.Height
     this.Height = _SCREEN.oTabMenu.Height
   ENDIF
 ENDIF
