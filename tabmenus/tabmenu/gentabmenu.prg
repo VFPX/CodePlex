@@ -195,6 +195,8 @@ FUNCTION spProcessMenu(vcMenuFile, vnLevel, vcLevelName, vcItemKey, vnTabNumber)
     *-- Add the properties needed to the data
     ADDPROPERTY(loMenuData, "Submenu", .f.)
     ADDPROPERTY(loMenuData, "MarkExp", "")
+    ADDPROPERTY(loMenuData, "ActionExp", "")
+    ADDPROPERTY(loMenuData, "ActionTip", "")
     
     IF "\+" $ loMenuData.Prompt
       *-- The prompt indicates that the menu option has a submenu
@@ -205,6 +207,18 @@ FUNCTION spProcessMenu(vcMenuFile, vnLevel, vcLevelName, vcItemKey, vnTabNumber)
       *-- The menu bar has additional directives in the comment
       * which need to be parsed and included in the menu data object
       loMenuData.MarkExp = spGetDirective("*:MARKEXP", loMenuData.Comment)
+    ENDIF
+    
+    IF "*:ACTIONEXP" $ UPPER(loMenuData.Comment)
+      *-- The menu bar has additional directives in the comment
+      * which need to be parsed and included in the menu data object
+      loMenuData.ActionExp = spGetDirective("*:ACTIONEXP", loMenuData.Comment)
+    ENDIF
+
+    IF "*:ACTIONTIP" $ UPPER(loMenuData.Comment)
+      *-- The menu bar has additional directives in the comment
+      * which need to be parsed and included in the menu data object
+      loMenuData.ActionTip = spGetDirective("*:ACTIONTIP", loMenuData.Comment)
     ENDIF
     
     *-- Format the text
@@ -295,6 +309,14 @@ FUNCTION spProcessMenu(vcMenuFile, vnLevel, vcLevelName, vcItemKey, vnTabNumber)
             \<<"loPopup = _SCREEN.oTabMenu.AddPopup('" + loMenuData.Prompt + "'," + ALLTRIM(STR(lnTabNumber,3,0)) + ")">>
             \<<"loPopup.Width = _SCREEN.oTabMenuHandler.nDefaultItemWidth">>
             \<<"loPopup.Alignment = _SCREEN.oTabMenuHandler.nDefaultAlignment">>
+            
+            IF NOT EMPTY(loMenuData.ActionExp)
+              *-- The popup itself has an action that needs to be executed
+              \<<"loPopup.cActionExp = " + loMenuData.ActionExp>>
+              IF NOT EMPTY(loMenuData.ActionTip)
+                \<<"loPopup.cActionTip = " + loMenuData.ActionTip>>
+              ENDIF
+            ENDIF
           ENDIF
         
           IF NOT EMPTY(procedure)
