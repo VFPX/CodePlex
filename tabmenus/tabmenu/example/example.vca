@@ -155,4 +155,66 @@ Name = "imgVFPX"
 Segoe UI, 0, 9, 6, 15, 12, 22, 3, 0
 Arial, 0, 9, 5, 15, 12, 32, 3, 0
 [END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2230KV3G7
+[CLASS] container
+[BASECLASS] container
+[OBJNAME] cntactiontip
+[START PROPERTIES]
+Width = 319
+Height = 165
+BackStyle = 0
+BorderColor = 118,118,118
+Name = "cntactiontip"
+[END PROPERTIES]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+3[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2230KVYNF
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] lblTipText
+[PARENT] cntactiontip
+[START PROPERTIES]
+AutoSize = .T.
+FontName = "Segoe UI"
+WordWrap = .T.
+BackStyle = 0
+Caption = "This is a sample popup action Tip, the text displayed here doesn't really achieve any purpose beyond giving an example of the functionality"
+Height = 77
+Left = 129
+Top = 44
+Width = 159
+ForeColor = 40,40,40
+Name = "lblTipText"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2230UME4R
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] imgTipImage
+[PARENT] cntactiontip
+[START PROPERTIES]
+Picture = tipimage.bmp
+Height = 130
+Left = 17
+Top = 17
+Width = 86
+Name = "imgTipImage"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] cntactiontip
 [EOF]
