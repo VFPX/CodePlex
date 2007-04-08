@@ -3666,6 +3666,9 @@ ncolumns = ( 1)
 lshowhotkeys = .F.
 cbasefont = ( "")
 npopupstyle = ( 0)
+cactionexp = ( "")
+cactiontip = ( "")
+otooltip = ( .NULL.)
 Name = "cntpopupmenu"
 [END PROPERTIES]
 [START METHODS]
@@ -3687,6 +3690,7 @@ PROCEDURE Resize
 *  12/03/2007 - GZ: Changed to add the background shape to the popup
 *  class rather than the form class.  This was done because the popup
 *  items need to know if the popup has the background.
+*  08/04/2007 - GZ: Added support for popup level actions
 *$HISTORY$
 *************************************************************************
 this.lblCaption.Left = 1
@@ -3706,6 +3710,10 @@ this.linBackground.Top    = 1
 this.linBackground.Left   = 26
 this.linBackground.Height = this.Height - 2
 this.linBackground.Width  = 0
+
+this.imgtipwin.Left = this.Width - this.imgtipwin.Width - 2
+this.imgtipwin.Top = this.Height - this.imgtipwin.Height - 2
+
 ENDPROC
 PROCEDURE addpopupitem
 ********************************************************************************************
@@ -3778,6 +3786,17 @@ FOR lnCount = 1 TO this.ItemCount
   ENDWITH
 NEXT
 ENDPROC
+PROCEDURE cactionexp_assign
+*************************************************************************
+*$METHOD$ cActionExp_Assign()
+*$CREATED$ 08/04/2007
+*************************************************************************
+LPARAMETERS vcNewVal
+
+THIS.cActionExp = m.vcNewVal
+this.imgtipwin.Visible = NOT EMPTY(m.vcNewVal)
+
+ENDPROC
 PROCEDURE caption_assign
 ******************************************************************
 *$METHOD$ Caption_assign()
@@ -3822,6 +3841,19 @@ NEXT
 this.Itemcount = 0
 
 RETURN llReturn
+ENDPROC
+PROCEDURE execute
+*************************************************************************
+*$METHOD$ Execute()
+*$CREATED$ 08/04/2007
+*************************************************************************
+LOCAL luReturn
+
+IF NOT EMPTY(this.cActionExp)
+  luReturn = EVALUATE(this.cActionExp)
+ENDIF
+
+RETURN luReturn
 ENDPROC
 PROCEDURE lshowhotkeys_assign
 LPARAMETERS vlNewVal
@@ -3921,7 +3953,7 @@ ENDPROC
 [START RESERVED1]
 Class[END RESERVED1]
 [START RESERVED2]
-4[END RESERVED2]
+6[END RESERVED2]
 [START RESERVED3]
 caption Specifies the text displayed in an object's caption.
 topcaption
@@ -3931,6 +3963,9 @@ ncolumns
 lshowhotkeys
 cbasefont
 npopupstyle
+cactionexp
+cactiontip
+otooltip
 *caption_assign 
 *addpopupitem 
 *alignment_assign 
@@ -3941,6 +3976,8 @@ npopupstyle
 *deleteitems 
 *cbasefont_assign 
 *npopupstyle_assign 
+*cactionexp_assign 
+*execute 
 [END RESERVED3]
 [START RESERVED6]
 Pixels[END RESERVED6]
@@ -4001,6 +4038,90 @@ Width = 0
 BorderColor = 197,197,197
 Name = "linBackGround"
 [END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2230HCZSL
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] imgtipwin
+[PARENT] cntpopupmenu
+[START PROPERTIES]
+Picture = images\tipwin.png
+Height = 14
+Left = 60
+Top = 120
+Visible = .F.
+Width = 15
+Name = "imgtipwin"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+*************************************************************************
+*$METHOD$ Click()
+*$CREATED$ 08/04/2007
+*************************************************************************
+this.Parent.tmrTipWin.Enabled = .f.
+RAISEEVENT(this.Parent, "Execute")
+ENDPROC
+PROCEDURE MouseEnter
+************************************************************************
+*$METHOD$ MouseEnter()
+*$CREATED$ 08/04/2007
+************************************************************************
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+
+this.Picture = "hovtipwin.png"
+this.Parent.tmrTipWin.Enabled = .t.
+
+ENDPROC
+PROCEDURE MouseLeave
+************************************************************************
+*$METHOD$ MouseLeave()
+*$CREATED$ 08/04/2007
+************************************************************************
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+
+this.Picture = "tipwin.png"
+this.Parent.tmrTipWin.Enabled = .f.
+this.Parent.oTooltip = .NULL.
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2230JSQAE
+[CLASS] timer
+[BASECLASS] timer
+[OBJNAME] tmrTipWin
+[PARENT] cntpopupmenu
+[START PROPERTIES]
+Top = 36
+Left = 132
+Height = 23
+Width = 23
+Enabled = .F.
+Interval = 1100
+Name = "tmrTipWin"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Timer
+************************************************************************
+*$METHOD$ Timer()
+*$CREATED$ 08/04/2007
+************************************************************************
+this.Enabled = .f.
+
+IF NOT EMPTY(this.Parent.cActionTip)
+  this.parent.oToolTip = CREATEOBJECT("frmToolTip", ;
+                                      this.parent.imgtipwin, ;
+                                      this.parent.parent.parent.parent, ;
+                                      this.parent.cActionTip)
+  this.parent.oToolTip.FadeIn()
+ENDIF
+ENDPROC
+[END METHODS]
 
 [ RECORD]
 [PLATFORM] COMMENT 
@@ -5466,8 +5587,18 @@ PROCEDURE Destroy
 *************************************************************************
 *$METHOD$ Destroy()
 *$CREATED$ 07/03/2007
+*
+*$HISTORY$
+*  08/04/2007 - GZ: Added check for the existance of the lSelected
+*  property before attempting to set it.
+*
+*  08/04/2007 - GZ: Added ability to fade the window out when the form
+*  is released
+*$HISTORY$
 *************************************************************************
-IF this.oMenuItem.lSelected
+this.FadeOut()
+
+IF VARTYPE(this.oMenuItem.lSelected) = "L" AND this.oMenuItem.lSelected
   this.oMenuItem.lSelected = .f.
 ENDIF
 this.oMenuItem = .NULL.
@@ -5534,6 +5665,35 @@ LPARAMETERS vcNewVal
 THIS.cBaseFont = m.vcNewVal
 this.FontName = this.cBaseFont
 
+ENDPROC
+PROCEDURE fadein
+************************************************************************
+*$METHOD$ FadeIn()
+*$CREATED$ 08/04/2007
+************************************************************************
+DECLARE SetLayeredWindowAttributes IN WIN32API Integer, Integer, Integer, Integer
+DECLARE Sleep IN WIN32API Long
+
+SetLayeredWindowAttributes(Thisform.HWnd, RGB(0,255,0), 0, 3)
+this.Visible = .t.
+
+FOR lnCount = 1 TO 255
+  SetLayeredWindowAttributes(Thisform.HWnd, RGB(0,255,0), lnCount, 3)
+  Sleep(2)
+NEXT
+ENDPROC
+PROCEDURE fadeout
+************************************************************************
+*$METHOD$ FadeOut()
+*$CREATED$ 08/04/2007
+************************************************************************
+DECLARE SetLayeredWindowAttributes IN WIN32API Integer, Integer, Integer, Integer
+DECLARE Sleep IN WIN32API Long
+
+FOR lnCount = 255 TO 1 STEP -1
+  SetLayeredWindowAttributes(Thisform.HWnd, RGB(0,255,0), lnCount, 3)
+  Sleep(1)
+NEXT
 ENDPROC
 PROCEDURE getobjectpos
 ******************************************************************************************
@@ -5647,6 +5807,8 @@ cbasefont
 *getobjectpos 
 *str2dword 
 *cbasefont_assign 
+*fadein 
+*fadeout 
 [END RESERVED3]
 [START RESERVED6]
 Pixels[END RESERVED6]
@@ -5681,6 +5843,246 @@ ENDPROC
 [PLATFORM] COMMENT 
 [UNIQUEID] RESERVED  
 [OBJNAME] frmtabmenu
+[START PROPERTIES]
+Segoe UI, 0, 9, 6, 15, 12, 22, 3, 0
+Arial, 0, 9, 5, 15, 12, 32, 3, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2230KMJCA
+[CLASS] frmtabmenu
+[CLASSLOC] tabmenu.vcx
+[BASECLASS] form
+[OBJNAME] frmtooltip
+[START PROPERTIES]
+DoCreate = .T.
+Name = "frmtooltip"
+CMDCANCEL.Name = "CMDCANCEL"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+*************************************************************************
+*$METHOD$ Init()
+*$CREATED$ 08/04/2007
+*************************************************************************
+LPARAMETERS voMenuItem, voTabMenu, vcTipContainer
+
+LOCAL llReturn
+
+IF NOT EMPTY(vcTipContainer)
+  thisform.AddObject(vcTipContainer,vcTipContainer)
+  WITH thisform.&vcTipContainer
+    .Top  = 0
+    .Left = 0
+    .Visible = .t.
+
+    this.Width  = .Width + this.imgRIGHT.width
+    this.Height = .Height + this.imgbottom.height
+
+    this.imgBackGround.Top    = 0
+    this.imgBackGround.Left   = 0
+    this.imgBackGround.Width  = .Width
+    this.imgBackGround.Height = .Height
+  ENDWITH
+ENDIF
+
+llReturn = DODEFAULT(voMenuItem, voTabMenu)
+this.Top = this.Top + 5
+
+RETURN llReturn
+
+
+
+ENDPROC
+PROCEDURE Resize
+***************************************************************************************
+*$METHOD$ Resize()
+*$CREATED$ 20/02/2007
+***************************************************************************************
+thisform.shpRight.Top = 0
+thisform.shpRight.Height = thisform.height
+thisform.shpRight.Width = thisform.imgright.width
+thisform.shpRight.Left = thisform.Width - thisform.shpRight.Width
+
+thisform.imgtr.Left = thisform.Width - thisform.imgtr.Width
+thisform.imgtr.Top = 0
+
+thisform.imgRight.Top = 0
+thisform.imgRight.Height = thisform.Height
+thisform.imgRight.Left = thisform.Width - thisform.imgRight.Width
+
+thisform.shpBottom.Left = 0
+thisform.shpBottom.Width = thisform.width
+thisform.shpBottom.Height = thisform.imgbottom.height
+thisform.shpBottom.Top = thisform.Height - thisform.shpBottom.Height
+
+thisform.imgbottom.Left = 0
+thisform.imgbottom.Width = thisform.Width
+thisform.imgbottom.Top = thisform.Height - thisform.imgbottom.Height
+
+thisform.imgbr.Left = thisform.Width - thisform.imgbr.Width
+thisform.imgbr.Top = thisform.Height - thisform.imgbr.height
+
+thisform.imgbl.Left = 0
+thisform.imgbl.Top = thisform.Height - thisform.imgbl.height
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+9[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2230KU5X4
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] imgBackGround
+[PARENT] frmtooltip
+[START PROPERTIES]
+Picture = images\tipwinback.bmp
+Stretch = 2
+Height = 163
+Left = 108
+Top = 36
+Width = 4
+Name = "imgBackGround"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2230TCX99
+[CLASS] shape
+[BASECLASS] shape
+[OBJNAME] shpRight
+[PARENT] frmtooltip
+[START PROPERTIES]
+Top = 8
+Left = 275
+Height = 17
+Width = 36
+BorderStyle = 0
+BorderWidth = 0
+BackColor = 0,255,0
+Name = "shpRight"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2230TCX9C
+[CLASS] shape
+[BASECLASS] shape
+[OBJNAME] shpBottom
+[PARENT] frmtooltip
+[START PROPERTIES]
+Top = 104
+Left = 251
+Height = 17
+Width = 36
+BorderStyle = 0
+BorderWidth = 0
+BackColor = 0,255,0
+Name = "shpBottom"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2230TCX9D
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] imgRight
+[PARENT] frmtooltip
+[START PROPERTIES]
+Picture = images\shadright.bmp
+Stretch = 2
+BackStyle = 0
+Height = 60
+Left = 175
+Top = 122
+Width = 4
+Name = "imgRight"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2230TCX9E
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] imgBottom
+[PARENT] frmtooltip
+[START PROPERTIES]
+Picture = images\shadbott.bmp
+Stretch = 2
+BackStyle = 0
+Height = 4
+Left = 186
+Top = 164
+Width = 55
+Name = "imgBottom"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2230TCX9F
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] imgbl
+[PARENT] frmtooltip
+[START PROPERTIES]
+Picture = images\shadbl.bmp
+Stretch = 2
+BackStyle = 0
+Height = 4
+Left = 47
+Top = 152
+Width = 8
+Name = "imgbl"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2230TCX9G
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] imgbr
+[PARENT] frmtooltip
+[START PROPERTIES]
+Picture = images\shadbr.bmp
+Stretch = 2
+BackStyle = 0
+Height = 4
+Left = 203
+Top = 164
+Width = 4
+Name = "imgbr"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2230TCX9H
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] imgtr
+[PARENT] frmtooltip
+[START PROPERTIES]
+Picture = images\shadtr.bmp
+Stretch = 2
+BackStyle = 0
+Height = 9
+Left = 175
+Top = 96
+Width = 4
+Name = "imgtr"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] frmtooltip
 [START PROPERTIES]
 Segoe UI, 0, 9, 6, 15, 12, 22, 3, 0
 Arial, 0, 9, 5, 15, 12, 32, 3, 0
