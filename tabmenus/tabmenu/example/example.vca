@@ -217,4 +217,66 @@ Name = "imgTipImage"
 [PLATFORM] COMMENT 
 [UNIQUEID] RESERVED  
 [OBJNAME] cntactiontip
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2230KV3G7
+[CLASS] container
+[BASECLASS] container
+[OBJNAME] cntstarttip
+[START PROPERTIES]
+Width = 388
+Height = 165
+BackStyle = 0
+BorderColor = 118,118,118
+Name = "cntstarttip"
+[END PROPERTIES]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+3[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2230KVYNF
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] lblTipText
+[PARENT] cntstarttip
+[START PROPERTIES]
+AutoSize = .T.
+FontName = "Segoe UI"
+WordWrap = .T.
+BackStyle = 0
+Caption = "This is a sample start item action Tip, the text displayed here doesn't really achieve any purpose beyond giving an example of the functionality"
+Height = 107
+Left = 241
+Top = 24
+Width = 115
+ForeColor = 40,40,40
+Name = "lblTipText"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2230UME4R
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] imgTipImage
+[PARENT] cntstarttip
+[START PROPERTIES]
+Picture = starttip.bmp
+Height = 130
+Left = 17
+Top = 17
+Width = 196
+Name = "imgTipImage"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] cntstarttip
 [EOF]
