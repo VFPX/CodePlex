@@ -95,9 +95,13 @@ PROCEDURE Init
 *
 *$HISTORY$
 *  18/03/2007 - GZ: Added a property that can be used for context menus
+*
+*  13/04/2007 - GZ: Added call to generic API declaration method
 *$HISTORY$
 *************************************************************************
 LOCAL loRightClick
+
+this.DeclareAPI()
 
 this.BackColor = RGB(221,234,251)
 
@@ -496,6 +500,41 @@ ELSE
   this.lblCapTION.Visible = this.ltitlebar
 ENDIF
 ENDPROC
+PROCEDURE declareapi
+*************************************************************************
+*$METHOD$ DeclareAPI
+*$CREATED$ 13/04/2007
+*************************************************************************
+DECLARE INTEGER GetWindowRect IN user32 ;
+  AS tbm_GetWindowRect ;
+  INTEGER hWnd, ;
+  STRING @ lpRect
+
+DECLARE INTEGER SetLayeredWindowAttributes IN user32 ;
+  AS tbm_SetLayeredWindowAttributes;
+  INTEGER hwnd, ;
+  INTEGER crKey, ;
+  SHORT   bAlpha, ;
+  INTEGER dwFlags
+
+DECLARE INTEGER SetWindowLong IN user32 ;
+  AS tbm_SetWindowLong ;
+  INTEGER hWnd, ;
+  INTEGER nIndex, ;
+  INTEGER dwNewLong
+
+DECLARE INTEGER CallWindowProc IN user32 ;
+  AS tbm_CallWindowProc ;
+  LONG    lpPrevWndFunc, ;
+  INTEGER hWnd, ;
+  LONG    Msg, ;
+  INTEGER wParam, ;
+  INTEGER lParam
+
+DECLARE Sleep IN kernel32 ;
+  AS tbm_Sleep ;
+  INTEGER dwMilliseconds
+ENDPROC
 PROCEDURE hidemenuitem
 ***************************************************************************
 *$METHOD$ HideMenuItem()
@@ -890,6 +929,10 @@ PROCEDURE wmeventhandler
 ************************************************************************
 *$METHOD$ WMEventHandler()
 *$CREATED$ 11/02/2007
+*
+*$HISTORY$
+*  13/04/2007 - GZ: Removed local declaration of API function
+*$HISTORY$
 ************************************************************************
 LPARAMETERS hWnd, Msg, wParam, lParam
 
@@ -985,11 +1028,7 @@ DO CASE
 ENDCASE
 
 IF llPassThrough
-  DECLARE INTEGER CallWindowProc in Win32API ;
-     integer lpPrevWndFunc, integer hWnd, integer Msg, integer wParam, ;
-     integer lParam
-
-  RETURN CallWindowProc(this.nOldProc, hWnd, Msg, wParam, lParam)
+  RETURN tbm_CallWindowProc(this.nOldProc, hWnd, Msg, wParam, lParam)
 ELSE
   RETURN
 ENDIF
@@ -1051,6 +1090,7 @@ lminimized
 *tbmrollup 
 *tbmminimize 
 *tbmrestore 
+*declareapi 
 [END RESERVED3]
 [START RESERVED6]
 Pixels[END RESERVED6]
@@ -1331,6 +1371,7 @@ imgHotKey.Height = 15
 imgHotKey.Width = 16
 imgHotKey.Name = "imgHotKey"
 lblHotKey.Name = "lblHotKey"
+tmrTipWin.Name = "tmrTipWin"
 [END PROPERTIES]
 
 [ RECORD]
@@ -1930,6 +1971,8 @@ lshowhotkey = .F.
 lselected = .F.
 citemkey = ( "")
 cbasefont = ( "")
+otooltip = ( .NULL.)
+cactiontip = ( "")
 Name = "cntstartitem"
 [END PROPERTIES]
 [START METHODS]
@@ -2007,13 +2050,15 @@ ENDPROC
 [START RESERVED1]
 Class[END RESERVED1]
 [START RESERVED2]
-5[END RESERVED2]
+6[END RESERVED2]
 [START RESERVED3]
 chotkey
 lshowhotkey
 lselected
 citemkey
 cbasefont
+otooltip
+cactiontip
 *lshowhotkey_assign 
 *chotkey_assign 
 *lselected_assign 
@@ -2061,7 +2106,13 @@ PROCEDURE Click
 *************************************************************************
 *$METHOD$ Click()
 *$CREATED$ 01/02/2007
+*
+*$HISTORY$
+*  13/04/2007 - GZ: Added support for the start item tip window
+*$HISTORY$
 *************************************************************************
+this.Parent.tmrTipWin.Enabled = .f.
+this.Parent.oTooltip = .NULL.
 IF this.Parent.lselected
   this.Parent.lSelected = .f.
 ELSE
@@ -2070,15 +2121,32 @@ ENDIF
 
 ENDPROC
 PROCEDURE MouseEnter
+*************************************************************************
+*$METHOD$ MouseEnter()
+*$CREATED$ 01/02/2007
+*
+*$HISTORY$
+*  13/04/2007 - GZ: Added support for the tip window on the start item
+*$HISTORY$
+*************************************************************************
 LPARAMETERS nButton, nShift, nXCoord, nYCoord
 
 IF this.Parent.lSelected
   this.Parent.imgMainItem.Picture = 'mainsel.png'
 ELSE
   this.Parent.imgMainItem.Picture = 'HOVMAIN.png'
+  this.Parent.tmrTipWin.Enabled = .t.
 ENDIF
 ENDPROC
 PROCEDURE MouseLeave
+*************************************************************************
+*$METHOD$ MouseLeave()
+*$CREATED$ 01/02/2007
+*
+*$HISTORY$
+*  13/04/2007 - GZ: Added support for the tip window on the start item
+*$HISTORY$
+*************************************************************************
 LPARAMETERS nButton, nShift, nXCoord, nYCoord
 
 IF this.Parent.lSelected
@@ -2086,6 +2154,8 @@ IF this.Parent.lSelected
 ELSE
   this.Parent.imgMainItem.Picture = 'MAINidle.png'
 ENDIF
+this.Parent.tmrTipWin.Enabled = .f.
+this.Parent.oTooltip = .NULL.
 ENDPROC
 [END METHODS]
 
@@ -2134,6 +2204,40 @@ PROCEDURE Click
 **************************************************************************
 this.Parent.Parent.lShowHotKeys = .f.
 
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2280A73XH
+[CLASS] timer
+[BASECLASS] timer
+[OBJNAME] tmrTipWin
+[PARENT] cntstartitem
+[START PROPERTIES]
+Top = 8
+Left = 8
+Height = 23
+Width = 23
+Enabled = .F.
+Interval = 1100
+Name = "tmrTipWin"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Timer
+************************************************************************
+*$METHOD$ Timer()
+*$CREATED$ 08/04/2007
+************************************************************************
+this.Enabled = .f.
+
+IF NOT EMPTY(this.Parent.cActionTip)
+  this.parent.oToolTip = CREATEOBJECT("frmToolTip", ;
+                                      this.parent, ;
+                                      this.parent.parent, ;
+                                      this.parent.cActionTip)
+  this.parent.oToolTip.FadeIn()
+ENDIF
 ENDPROC
 [END METHODS]
 
@@ -2995,11 +3099,15 @@ PROCEDURE hottrackon
 ************************************************************************
 *$METHOD$ HotTrackOn()
 *$CREATED$ 01/02/2007
+*
+*$HISTORY$
+*  13/04/2007 - GZ: Clear any existing submenu if the user moves over
+*  a control that does not have one.
+*$HISTORY$
 ************************************************************************
 IF this.Enabled AND IIF(this.nShowsubmenu = 0, .t., NOT this.lSelected)
-  IF TYPE("this.parent.parent.parent.parent.osubmenu") = "O" AND ;
-     NOT ISNULL(this.parent.parent.parent.parent.osubmenu)
-    RETURN
+  IF TYPE("this.parent.parent.parent.parent.osubmenu") = "O"
+    this.parent.parent.parent.parent.osubmenu = .NULL.
   ENDIF
 
   IF this.Type = "NORM"
@@ -4060,8 +4168,14 @@ PROCEDURE Click
 *************************************************************************
 *$METHOD$ Click()
 *$CREATED$ 08/04/2007
+*
+*$HISTORY$
+*  13/04/2007 - GZ: Fixed an issue where the tip window is displayed
+*  and the user then clicks the button.  Need to clear the tip window
+*$HISTORY$
 *************************************************************************
 this.Parent.tmrTipWin.Enabled = .f.
+this.Parent.oTooltip = .NULL.
 RAISEEVENT(this.Parent, "Execute")
 ENDPROC
 PROCEDURE MouseEnter
@@ -5611,6 +5725,10 @@ PROCEDURE Init
 ***************************************************************************************
 *$METHOD$ Init()
 *$CREATED$ 07/03/2007
+*
+*$HISTORY$
+*  13/04/2007 - GZ: Removed local API declarations
+*$HISTORY$
 ***************************************************************************************
 LPARAMETERS voMenuItem, voTabMenu
 
@@ -5648,11 +5766,8 @@ ENDIF
 
 thisform.Resize()
 
-DECLARE SetWindowLong IN WIN32API Integer, Integer, Integer
-DECLARE SetLayeredWindowAttributes IN WIN32API Integer, Integer, Integer, Integer
-
-SetWindowLong(Thisform.HWnd, -20, WS_EX_LAYERED + WS_EX_TOOLWINDOW)
-SetLayeredWindowAttributes(Thisform.HWnd, RGB(0,255,0), 0, 1)
+tbm_SetWindowLong(Thisform.HWnd, -20, WS_EX_LAYERED + WS_EX_TOOLWINDOW)
+tbm_SetLayeredWindowAttributes(Thisform.HWnd, RGB(0,255,0), 0, 1)
 
 ENDPROC
 PROCEDURE cbasefont_assign
@@ -5670,29 +5785,31 @@ PROCEDURE fadein
 ************************************************************************
 *$METHOD$ FadeIn()
 *$CREATED$ 08/04/2007
+*
+*$HISTORY$
+*  13/04/2007 - GZ: Removed local API declarations
+*$HISTORY$
 ************************************************************************
-DECLARE SetLayeredWindowAttributes IN WIN32API Integer, Integer, Integer, Integer
-DECLARE Sleep IN WIN32API Long
-
-SetLayeredWindowAttributes(Thisform.HWnd, RGB(0,255,0), 0, 3)
+tbm_SetLayeredWindowAttributes(Thisform.HWnd, RGB(0,255,0), 0, 3)
 this.Visible = .t.
 
 FOR lnCount = 1 TO 255
-  SetLayeredWindowAttributes(Thisform.HWnd, RGB(0,255,0), lnCount, 3)
-  Sleep(2)
+  tbm_SetLayeredWindowAttributes(Thisform.HWnd, RGB(0,255,0), lnCount, 3)
+  tbm_Sleep(2)
 NEXT
 ENDPROC
 PROCEDURE fadeout
 ************************************************************************
 *$METHOD$ FadeOut()
 *$CREATED$ 08/04/2007
+*
+*$HISTORY$
+*  13/04/2007 - GZ: Removed local API declarations
+*$HISTORY$
 ************************************************************************
-DECLARE SetLayeredWindowAttributes IN WIN32API Integer, Integer, Integer, Integer
-DECLARE Sleep IN WIN32API Long
-
 FOR lnCount = 255 TO 1 STEP -1
-  SetLayeredWindowAttributes(Thisform.HWnd, RGB(0,255,0), lnCount, 3)
-  Sleep(1)
+  tbm_SetLayeredWindowAttributes(Thisform.HWnd, RGB(0,255,0), lnCount, 3)
+  tbm_Sleep(1)
 NEXT
 ENDPROC
 PROCEDURE getobjectpos
@@ -5703,6 +5820,10 @@ PROCEDURE getobjectpos
 *$PURPOSE$
 *  This method returns the absolute screen position in X,Y pixels of an object
 *$PURPOSE$
+*
+*$HISTORY$
+*  13/04/2007 - GZ: Removed local API declarations
+*$HISTORY$
 ******************************************************************************************
 LPARAMETERS rnX, rnY, voControl
 
@@ -5742,10 +5863,9 @@ IF TYPE("voControl.Parent") = "O"
 ELSE
   DO CASE
     CASE INLIST(UPPER(voControl.BaseClass),"FORM","TOOLBAR")
-      DECLARE INTEGER GetWindowRect IN user32 INTEGER hWnd, STRING @ lpRect
 
       lpRect = REPLICATE(CHR(0),16)
-      = GetWindowRect(voControl.hWnd, @lpRect)
+      tbm_GetWindowRect(voControl.hWnd, @lpRect)
 
       lnLeft   = this.str2DWord(SUBSTR(lpRect, 1, 4))
       lnTop    = this.str2DWord(SUBSTR(lpRect, 5, 4))
