@@ -29,6 +29,7 @@ ENDFUNC
 _SCREEN.oTabMenu.lTitleBar = .t.
 _SCREEN.oTabMenu.lShowQuickBar = .t.
 _SCREEN.oTabMenu.cfrmStartClass = "frmExampleStart"
+_SCREEN.oTabMenu.cntMainItem.cActionTip = "cntStartTip"
 _SCREEN.oTabMenu.lAllowResize = .t.
 
 BINDEVENT(_SCREEN.oTabMenu, "AppMinimize", _SCREEN.oTabMenuHandler, "AppMinimize")
