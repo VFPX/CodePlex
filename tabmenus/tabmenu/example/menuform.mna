@@ -9,6 +9,7 @@ OBJTYPE N(2,0),OBJCODE N(2,0),NAME M(4,0),PROMPT M(4,0),COMMAND M(4,0),MESSAGE M
 _SCREEN.oTabMenu.lTitleBar = .t.
 _SCREEN.oTabMenu.lShowQuickBar = .t.
 _SCREEN.oTabMenu.cfrmStartClass = "frmExampleStart"
+_SCREEN.oTabMenu.cntMainItem.cActionTip = "cntStartTip"
 _SCREEN.oTabMenu.lAllowResize = .t.
 
 goForm.Height = _SCREEN.oTabMenu.Height
@@ -75,9 +76,9 @@ CHECKSUM=57840
 *:ACTIONEXP [MESSAGEBOX("Test Action",64,"Test")]*:ACTIONTIP [cntActionTip][END COMMENT]
 [OBJTYPE] 2
 [NAME] Home1
-[PROCTYPE] 3
+[PROCTYPE] 1
 [START PROCEDURE]
-loPopup.nColumns = 3
+loPopup.nColumns = 2
 loPopup.Width = (100 * loPopup.nColumns)[END PROCEDURE]
 [BINSTART MARK]
 CHECKSUM=57840
@@ -172,6 +173,7 @@ CHECKSUM=57840
 [OBJTYPE] 3
 [OBJCODE] 67
 [PROMPT] Sub Option 1
+[COMMAND] MESSAGEBOX("This was called from a submenu command", 64, "Test")
 [BINSTART MARK]
 CHECKSUM=57840
 [BINEND MARK]
@@ -182,8 +184,11 @@ CHECKSUM=57840
 [START RESNAME]
 edit.bmp[END RESNAME]
 [OBJTYPE] 3
-[OBJCODE] 67
+[OBJCODE] 80
 [PROMPT] Sub Option 2
+[PROCTYPE] 1
+[START PROCEDURE]
+MESSAGEBOX("This was called from a submenu procedure", 64, "Test")[END PROCEDURE]
 [BINSTART MARK]
 CHECKSUM=57840
 [BINEND MARK]
@@ -196,6 +201,7 @@ new.bmp[END RESNAME]
 [OBJTYPE] 3
 [OBJCODE] 67
 [PROMPT] Sub Option 3
+[COMMAND] DO FORM testform
 [BINSTART MARK]
 CHECKSUM=57840
 [BINEND MARK]
