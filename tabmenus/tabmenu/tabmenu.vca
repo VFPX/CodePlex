@@ -2234,6 +2234,10 @@ PROCEDURE Timer
 ************************************************************************
 *$METHOD$ Timer()
 *$CREATED$ 08/04/2007
+*
+*$HISTORY$
+*  17/04/2007 - GZ: Changed to remove the fade in of the tip window
+*$HISTORY$
 ************************************************************************
 this.Enabled = .f.
 
@@ -2242,7 +2246,7 @@ IF NOT EMPTY(this.Parent.cActionTip)
                                       this.parent, ;
                                       this.parent.parent, ;
                                       this.parent.cActionTip)
-  this.parent.oToolTip.FadeIn()
+  this.parent.oToolTip.Show()
 ENDIF
 ENDPROC
 [END METHODS]
@@ -4032,7 +4036,9 @@ IF VARTYPE(thisform.oTabMenu) = "O"
   WITH this.&lcItemName.
     IF .nShowSubmenu <> 1
       thisform.FadeOut()
-      thisform.Visible = .f.
+      IF VARTYPE(thisform.oMenuItem) = "O"
+        thisform.oMenuItem.lSelected = .f.
+      ENDIF
       thisform.Release()
     ENDIF
   ENDWITH
@@ -4252,6 +4258,10 @@ PROCEDURE Timer
 ************************************************************************
 *$METHOD$ Timer()
 *$CREATED$ 08/04/2007
+*
+*$HISTORY$
+*  17/04/2007 - GZ: Changed to remove the fade in of the tip window
+*$HISTORY$
 ************************************************************************
 this.Enabled = .f.
 
@@ -4260,7 +4270,7 @@ IF NOT EMPTY(this.Parent.cActionTip)
                                       this.parent.imgtipwin, ;
                                       this.parent.parent.parent.parent, ;
                                       this.parent.cActionTip)
-  this.parent.oToolTip.FadeIn()
+  this.parent.oToolTip.Show()
 ENDIF
 ENDPROC
 [END METHODS]
@@ -5817,16 +5827,19 @@ PROCEDURE fadein
 *$HISTORY$
 *  13/04/2007 - GZ: Removed local API declarations
 *
-*  16/04/2007 - GZ: Changed to improve performance on some PCs
+*  16/04/2007 - GZ: Changed to improve performance on some PCs and to
+*  only run this code if the form is currently not visible
 *$HISTORY$
 ************************************************************************
-tbm_SetLayeredWindowAttributes(Thisform.HWnd, RGB(0,255,0), 0, 3)
-this.Visible = .t.
+IF NOT this.Visible
+  tbm_SetLayeredWindowAttributes(Thisform.HWnd, RGB(0,255,0), 0, 3)
+  this.Visible = .t.
 
-FOR lnCount = 1 TO 255 STEP 5
-  tbm_SetLayeredWindowAttributes(Thisform.HWnd, RGB(0,255,0), lnCount, 3)
-  tbm_Sleep(2)
-NEXT
+  FOR lnCount = 1 TO 255 STEP 5
+    tbm_SetLayeredWindowAttributes(Thisform.HWnd, RGB(0,255,0), lnCount, 3)
+    tbm_Sleep(1)
+  NEXT
+ENDIF
 ENDPROC
 PROCEDURE fadeout
 ************************************************************************
@@ -5836,13 +5849,17 @@ PROCEDURE fadeout
 *$HISTORY$
 *  13/04/2007 - GZ: Removed local API declarations
 *
-*  16/04/2007 - GZ: Changed to improve performance on some PCs
+*  16/04/2007 - GZ: Changed to improve performance on some PCs and to
+*  only execute this code if the form is visible
 *$HISTORY$
 ************************************************************************
-FOR lnCount = 255 TO 1 STEP -15
-  tbm_SetLayeredWindowAttributes(Thisform.HWnd, RGB(0,255,0), lnCount, 3)
-  tbm_Sleep(1)
-NEXT
+IF this.Visible
+  FOR lnCount = 255 TO 1 STEP -15
+    tbm_SetLayeredWindowAttributes(Thisform.HWnd, RGB(0,255,0), lnCount, 3)
+    tbm_Sleep(1)
+  NEXT
+  this.Visible = .f.
+ENDIF
 ENDPROC
 PROCEDURE getobjectpos
 ******************************************************************************************
