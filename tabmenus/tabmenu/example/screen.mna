@@ -211,8 +211,9 @@ CHECKSUM=57840
 [START RESNAME]
 new.bmp[END RESNAME]
 [OBJTYPE] 3
-[OBJCODE] 78
+[OBJCODE] 67
 [PROMPT] Sub Option 3
+[COMMAND] DO FORM Testform
 [MESSAGE] Ticked only if the date has an even day
 [BINSTART MARK]
 CHECKSUM=57840
