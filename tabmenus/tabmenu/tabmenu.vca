@@ -905,10 +905,16 @@ PROCEDURE tbmrollup
 ****************************************************************************
 *$METHOD$ tbmRollUp()
 *$CREATED$ 01/04/2007
+*
+*$HISTORY$
+*  16/04/2007 - GZ: changed to remove any popup windows that might still be
+*  hanging around when the option is rolled up
+*$HISTORY$
 ****************************************************************************
 IF this.lMinimized
   this.SelectMenuItem(0, this.lShowHotkeys)
   this.Height = (this.imgTabStrip.Top + this.imgTabStrip.Height)
+  this.oSubmenu = .NULL.
 ENDIF
 ENDPROC
 PROCEDURE toggleminimize
@@ -4005,6 +4011,12 @@ PROCEDURE selectmenuitem
 ************************************************************************
 *$METHOD$ SelectMenuItem()
 *$CREATED$ 12/02/2007
+*
+*$HISTORY$
+*  16/04/2007 - GZ: Added support for the minimized ribbon and fixed
+*  a cosmetic issue where the popup form remains visible after the
+*  user has selected an option
+*$HISTORY$
 ************************************************************************
 LPARAMETERS vnItemIndex, vlShowHotKeys
 
@@ -4013,13 +4025,22 @@ LOCAL lcItemName
 lcItemName = "PopupItem" + STRTRAN(STR(vnItemIndex,3,0), " ", "0")
 
 IF VARTYPE(thisform.oTabMenu) = "O"
+  *-- The menu item is contained on a popup form of some kind so
+  * we should make the popup form fade out since the form object
+  * will remain in existance until after the event has completed
   thisform.oTabMenu.lShowHotKeys = vlShowHotKeys
   WITH this.&lcItemName.
     IF .nShowSubmenu <> 1
+      thisform.FadeOut()
+      thisform.Visible = .f.
       thisform.Release()
     ENDIF
   ENDWITH
+  IF thisform.oTabMenu.lMinimized
+    RAISEEVENT(thisform.oTabMenu, "tbmRollUp")
+  ENDIF
 ELSE
+  *-- The menu item is contained on the ribbon bar
   IF VARTYPE(this.parent.parent.parent.osubmenu) = "O"
     this.parent.parent.parent.osubmenu.Release()
   ENDIF
@@ -4028,6 +4049,13 @@ ELSE
   ENDIF
 
   this.parent.parent.parent.lshowhotkeys = vlShowHotKeys
+  IF this.parent.parent.parent.lMinimized
+    WITH this.&lcItemName.
+      IF .nShowSubmenu <> 1
+        RAISEEVENT(this.parent.parent.parent, "tbmRollUp")
+      ENDIF
+    ENDWITH
+  ENDIF
 ENDIF
 
 RAISEEVENT(this.&lcItemName., "Execute")
@@ -5788,12 +5816,14 @@ PROCEDURE fadein
 *
 *$HISTORY$
 *  13/04/2007 - GZ: Removed local API declarations
+*
+*  16/04/2007 - GZ: Changed to improve performance on some PCs
 *$HISTORY$
 ************************************************************************
 tbm_SetLayeredWindowAttributes(Thisform.HWnd, RGB(0,255,0), 0, 3)
 this.Visible = .t.
 
-FOR lnCount = 1 TO 255
+FOR lnCount = 1 TO 255 STEP 5
   tbm_SetLayeredWindowAttributes(Thisform.HWnd, RGB(0,255,0), lnCount, 3)
   tbm_Sleep(2)
 NEXT
@@ -5805,9 +5835,11 @@ PROCEDURE fadeout
 *
 *$HISTORY$
 *  13/04/2007 - GZ: Removed local API declarations
+*
+*  16/04/2007 - GZ: Changed to improve performance on some PCs
 *$HISTORY$
 ************************************************************************
-FOR lnCount = 255 TO 1 STEP -1
+FOR lnCount = 255 TO 1 STEP -15
   tbm_SetLayeredWindowAttributes(Thisform.HWnd, RGB(0,255,0), lnCount, 3)
   tbm_Sleep(1)
 NEXT
