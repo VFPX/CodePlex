@@ -37,7 +37,7 @@ Name = "Dataenvironment"
 Top = 10
 Left = 2
 Height = 230
-Width = 694
+Width = 925
 DoCreate = .T.
 Caption = "Text with Border"
 MinHeight = 200
@@ -78,7 +78,7 @@ Anchor = 15
 Height = 108
 Left = 216
 Top = 108
-Width = 468
+Width = 696
 smoothingmode = 0
 Name = "Imgcanvas1"
 [END PROPERTIES]
@@ -87,7 +87,7 @@ PROCEDURE beforedraw
 LOCAL loFont AS xfcFont
 
 WITH _SCREEN.SYSTEM.Drawing
-	This.Clear()
+	This.Clear(.Color.White)
 
 	LOCAL lcStyle
 	lcStyle = Thisform.TxtFontStyle.Value
@@ -358,24 +358,6 @@ Thisform.Imgcanvas1.Draw()
 
 ENDPROC
 [END METHODS]
-
-[ RECORD]
-[PLATFORM] WINDOWS 
-[UNIQUEID] _1TP0L3VWK
-[CLASS] label
-[BASECLASS] label
-[OBJNAME] Label2
-[PARENT] Form1
-[START PROPERTIES]
-AutoSize = .T.
-Caption = "Halo"
-Height = 17
-Left = 216
-Top = 84
-Width = 28
-TabIndex = 5
-Name = "Label2"
-[END PROPERTIES]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
