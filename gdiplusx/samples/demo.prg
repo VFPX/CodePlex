@@ -9,6 +9,8 @@ SET PATH TO (lcPath+"..\source\") ADDITIVE
 
 DO FORM samples
 
+READ EVENTS
+
 **goGDIPlusXSamples=NEWOBJECT("_main","gdipsamples")
 **goGDIPlusXSamples.Show( IIF(_VFP.StartMode>=2,1,0) )
 
