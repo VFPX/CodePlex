@@ -204,7 +204,6 @@ If you would like to be involved in the project, please send an email to gdiplus
 To report any issues with the library, please use the Issue Tracker in CodePlex.
 ENDTEXT
 
-
 WITH _Screen.System.Drawing
 
 	*!* Fill Image with Background color
@@ -260,7 +259,6 @@ WITH _Screen.System.Drawing
 		LOCAL lnSecs
 		lnSecs = SECONDS()
 		This.oGfx.DrawStringJustified(lcText, loFont, loTextBrush, This.Rectangle)
-		**Thisform.DrawFullJustifiedString(This.oGfx, lcText, loFont, loTextBrush, This.Rectangle)
 		WAIT WINDOW ("Elapsed " + TRANSFORM(SECONDS() - lnSecs) + " Seconds.") NOWAIT
 	ENDCASE
 
@@ -369,7 +367,7 @@ ENDPROC
 [PLATFORM] COMMENT 
 [UNIQUEID] RESERVED  
 [START PROPERTIES]
-Arial, 0, 9, 5, 15, 12, 32, 3, 0
-Arial, 1, 9, 6, 15, 12, 32, 3, 0
+Arial, 0, 9, 5, 15, 12, 16, 3, 0
+Arial, 1, 9, 6, 15, 12, 15, 3, 0
 [END PROPERTIES]
 [EOF]
