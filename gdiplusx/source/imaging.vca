@@ -356,7 +356,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcbitmapdata
 [START RESERVED1]
- 	 drawing.hf≠ê5 system.hn≠ê5 gdiplusconstants.hv≠ê5[END RESERVED1]
+ 	 drawing.h5≠ê5 system.h6≠ê5 gdiplusconstants.h&7≠ê5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -465,7 +465,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfccolormap
 [START RESERVED1]
- 	 drawing.hf≠ê5 system.hn≠ê5 gdiplusconstants.hv≠ê5[END RESERVED1]
+ 	 drawing.h5≠ê5 system.h6≠ê5 gdiplusconstants.h&7≠ê5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -2147,7 +2147,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfccolormatrix
 [START RESERVED1]
- 	 drawing.hf≠ê5 system.hn≠ê5 gdiplusconstants.hv≠ê5[END RESERVED1]
+ 	 drawing.h5≠ê5 system.h6≠ê5 gdiplusconstants.h&7≠ê5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -2395,7 +2395,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfccolorpalette
 [START RESERVED1]
- 	 drawing.hf≠ê5 system.hn≠ê5 gdiplusconstants.hv≠ê5[END RESERVED1]
+ 	 drawing.h5≠ê5 system.h6≠ê5 gdiplusconstants.h&7≠ê5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -2783,7 +2783,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcencoder
 [START RESERVED1]
- 	 drawing.hf≠ê5 system.hn≠ê5 gdiplusconstants.hv≠ê5[END RESERVED1]
+ 	 drawing.h5≠ê5 system.h6≠ê5 gdiplusconstants.h&7≠ê5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -3265,7 +3265,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcencoderparameter
 [START RESERVED1]
- 	 drawing.hf≠ê5 system.hn≠ê5 gdiplusconstants.hv≠ê5[END RESERVED1]
+ 	 drawing.h5≠ê5 system.h6≠ê5 gdiplusconstants.h&7≠ê5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -3536,7 +3536,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcencoderparameters
 [START RESERVED1]
- 	 drawing.hf≠ê5 system.hn≠ê5 gdiplusconstants.hv≠ê5[END RESERVED1]
+ 	 drawing.h5≠ê5 system.h6≠ê5 gdiplusconstants.h&7≠ê5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -3852,7 +3852,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcframedimension
 [START RESERVED1]
- 	 drawing.h^ô≠ê5 system.hfö≠ê5 gdiplusconstants.hnõ≠ê5[END RESERVED1]
+ 	 drawing.h5≠ê5 system.h6≠ê5 gdiplusconstants.h&7≠ê5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -4758,7 +4758,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcimageattributes
 [START RESERVED1]
- 	 drawing.hf≠ê5 system.hn≠ê5 gdiplusconstants.hv≠ê5[END RESERVED1]
+ 	 drawing.h5≠ê5 system.h6≠ê5 gdiplusconstants.h&7≠ê5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -5588,7 +5588,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcimagecodecinfo
 [START RESERVED1]
- 	 drawing.hf≠ê5 system.hn≠ê5 gdiplusconstants.hv≠ê5[END RESERVED1]
+ 	 drawing.h5≠ê5 system.h6≠ê5 gdiplusconstants.h&7≠ê5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -6164,7 +6164,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcimageformat
 [START RESERVED1]
- 	 drawing.hf≠ê5 system.hn≠ê5 gdiplusconstants.hv≠ê5[END RESERVED1]
+ 	 drawing.h5≠ê5 system.h6≠ê5 gdiplusconstants.h&7≠ê5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -6741,7 +6741,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcmetafileheader
 [START RESERVED1]
- 	 drawing.h^ô≠ê5 system.hfö≠ê5 gdiplusconstants.hnõ≠ê5[END RESERVED1]
+ 	 drawing.h5≠ê5 system.h6≠ê5 gdiplusconstants.h&7≠ê5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -7049,7 +7049,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcmetaheader
 [START RESERVED1]
- 	 drawing.hf≠ê5 system.hn≠ê5 gdiplusconstants.hv≠ê5[END RESERVED1]
+ 	 drawing.h5≠ê5 system.h6≠ê5 gdiplusconstants.h&7≠ê5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -7417,7 +7417,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcpropertyitem
 [START RESERVED1]
- 	 drawing.hf≠ê5 system.hn≠ê5 gdiplusconstants.hv≠ê5[END RESERVED1]
+ 	 drawing.h5≠ê5 system.h6≠ê5 gdiplusconstants.h&7≠ê5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -7838,7 +7838,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcwmfplaceablefileheader
 [START RESERVED1]
- 	 drawing.hf≠ê5 system.hn≠ê5 gdiplusconstants.hv≠ê5[END RESERVED1]
+ 	 drawing.h5≠ê5 system.h6≠ê5 gdiplusconstants.h&7≠ê5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -7941,7 +7941,7 @@ TRY
 	** Handles overloads: 5,6,11,12,20,21,28,29
 	CASE LEFT(lcVarType, 2) == "NO" AND INLIST(m.thDCRef.BaseName, "RectangleF", "Rectangle")
 		m.tcDescription = EVL(m.tiType, "")
-		m.tiType = EVL(m.tiFrameUnit, 0)
+		m.tiType = EVL(m.tiFrameUnit, 5)
 		m.tiFrameUnit = EVL(m.toFrameRect, 0)
 		m.toFrameRect = m.thDCRef
 		m.thDCRef = m.tcFileName
@@ -7951,6 +7951,7 @@ TRY
 		ELSE
 			m.lnFunctionType = 9
 		ENDIF
+		m.lqFrameRect = m.toFrameRect.ToVarBinary()
 	
 	** Handles overloads: 3
 	CASE LEFT(lcVarType, 2) == "NL"
@@ -8061,7 +8062,7 @@ DECLARE Long Sleep IN WIN32API AS xfcMetaFileDeclareDLL Long
 
 DECLARE LONG GdipPlayMetafileRecord IN GDIPLUS.DLL LONG metafile, STRING recordType, LONG flags, LONG dataSize, STRING @byteData
 DECLARE LONG GdipGetMetafileHeaderFromEmf IN GDIPLUS.DLL LONG hEmf, STRING @header
-DECLARE LONG GdipGetMetafileHeaderFromFile IN GDIPLUS.DLL STRING FilName, STRING @header
+DECLARE LONG GdipGetMetafileHeaderFromFile IN GDIPLUS.DLL STRING FileName, STRING @header
 DECLARE LONG GdipGetMetafileHeaderFromStream IN GDIPLUS.DLL INTEGER stream, STRING @header
 DECLARE LONG GdipGetMetafileHeaderFromMetafile IN GDIPLUS.DLL LONG metafile, STRING @header
 DECLARE LONG GdipGetHemfFromMetafile IN GDIPLUS.DLL LONG metafile, LONG @hEmf
@@ -8070,9 +8071,9 @@ DECLARE LONG GdipCreateMetafileFromEmf IN GDIPLUS.DLL LONG hEmf, LONG bDeleteEmf
 DECLARE LONG GdipCreateMetafileFromFile IN GDIPLUS.DLL STRING @byvalfile, LONG @metafile
 DECLARE LONG GdipCreateMetafileFromWmfFile IN GDIPLUS.DLL STRING file, STRING @WmfPlaceableFileHdr, LONG @metafile
 DECLARE LONG GdipCreateMetafileFromStream IN GDIPLUS.DLL INTEGER stream, Long @metafile
-DECLARE LONG GdipRecordMetafile IN GDIPLUS.DLL LONG referenceHdc, LONG @etype, STRING @frameRect, LONG frameUnit, STRING description, LONG @metafile
-DECLARE LONG GdipRecordMetafileI IN GDIPLUS.DLL LONG referenceHdc, LONG @etype, STRING @frameRect, LONG frameUnit, STRING description, LONG @metafile
-DECLARE LONG GdipRecordMetafileFileName IN GDIPLUS.DLL STRING FilName, LONG referenceHdc, LONG etype, STRING @frameRect, LONG frameUnit, STRING description, LONG @metafile
+DECLARE LONG GdipRecordMetafile IN GDIPLUS.DLL LONG referenceHdc, LONG etype, STRING frameRect, LONG frameUnit, STRING description, LONG @metafile
+DECLARE LONG GdipRecordMetafileI IN GDIPLUS.DLL LONG referenceHdc, LONG etype, STRING frameRect, LONG frameUnit, STRING description, LONG @metafile
+DECLARE LONG GdipRecordMetafileFileName IN GDIPLUS.DLL STRING FilName, LONG referenceHdc, LONG etype, STRING frameRect, LONG frameUnit, STRING description, LONG @metafile
 DECLARE LONG GdipRecordMetafileFileNameI IN GDIPLUS.DLL STRING FilName, LONG referenceHdc, LONG etype, STRING frameRect, LONG frameUnit, STRING description, LONG @metafile
 
 
@@ -8252,5 +8253,5 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcmetafile
 [START RESERVED1]
- 	 drawing.hét≠ê5 system.hñu≠ê5 gdiplusconstants.hûv≠ê5[END RESERVED1]
+ 	 drawing.h5≠ê5 system.h6≠ê5 gdiplusconstants.h&7≠ê5[END RESERVED1]
 [EOF]
