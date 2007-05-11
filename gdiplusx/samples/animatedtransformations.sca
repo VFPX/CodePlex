@@ -67,6 +67,7 @@ Height = 517
 Left = -1
 Top = -1
 Width = 613
+rendermode = 1
 Name = "Imgcanvas1"
 [END PROPERTIES]
 [START METHODS]
