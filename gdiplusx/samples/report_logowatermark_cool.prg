@@ -1,7 +1,7 @@
 #DEFINE GDIPlusXPath ADDBS(JUSTPATH(SYS(16)))+"..\source"
 #DEFINE ImagePath    ADDBS(JUSTPATH(SYS(16)))+"..\samples\image"
 SET PATH TO (GDIPlusXPath) ADDITIVE
-_SCREEN.AddProperty("System", NEWOBJECT("xfcSystem", LOCFILE("system.vcx","vcx"))) 
+_SCREEN.AddProperty("System", NEWOBJECT("xfcSystem", LOCFILE("system.vcx"))) 
 
 LOCAL loReportListener, i
 loReportListener = CREATEOBJECT("MyReportListener")
@@ -20,7 +20,7 @@ GO TOP
 CREATE REPORT Test FROM dummy
 
 * Run the report using the new report engine (object-assisted output)
-Report Form Test Object loReportListener
+REPORT FORM (LOCFILE("Test","frx")) Object loReportListener
 
 * Close cursor and delete the report file
 USE IN dummy
@@ -30,14 +30,14 @@ RETURN
 
 
 
-DEFINE CLASS MyReportListener AS _ReportListener OF ADDBS(HOME(1)) + "FFC\_ReportListener.VCX"
+DEFINE CLASS MyReportListener AS "_ReportListener" OF ADDBS(HOME(1)) + "FFC\_ReportListener.vcx"
 	NewPage = .T.
 	oGDIGraphics = NULL
 	WaterMarkImage = ""
 
 	FUNCTION BEFOREREPORT
 		DODEFAULT()
-		This.oGDIGraphics = _SCREEN.SYSTEM.Drawing.Graphics.New() &&  CREATEOBJECT('GPGraphics')
+		This.oGDIGraphics = _SCREEN.SYSTEM.Drawing.Graphics.New()
 	ENDFUNC
 
 	FUNCTION BEFOREBAND(nBandObjCode, nFRXRecNo)
