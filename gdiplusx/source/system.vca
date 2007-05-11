@@ -24,22 +24,6 @@ Name = "xfcobject"
 PROCEDURE createnew
 LPARAMETERS tcClass, teP1, teP2, teP3, teP4, teP5, teP6, teP7, teP8, teP9, teP10, teP11, teP12
 
-** We need to make sure these class libraries are always part of SET("Classlib")
-** This may appear overkill, when a simple "NEWOBJECT" would do, but test show that this technique
-** can be 4x to 5x faster than using "NEWOBJECT". And because these classes are ment to be used in
-** high-performance, graphics intensive apps, we want to get every bit of perfomance we can
-
-IF NOT "SYSTEM.VCX" $ SET("Classlib")
-	SET CLASSLIB TO ADDBS(JUSTPATH(This.ClassLibrary))+"system.vcx" ADDITIVE
-ENDIF
-*!ToDo: Move this to a drawing related class
-IF NOT "DRAWING.VCX" $ SET("Classlib")
-	SET CLASSLIB TO ADDBS(JUSTPATH(This.ClassLibrary))+"drawing.vcx" ADDITIVE
-	SET CLASSLIB TO ADDBS(JUSTPATH(This.ClassLibrary))+"drawing2d.vcx" ADDITIVE
-	SET CLASSLIB TO ADDBS(JUSTPATH(This.ClassLibrary))+"imaging.vcx" ADDITIVE
-	SET CLASSLIB TO ADDBS(JUSTPATH(This.ClassLibrary))+"text.vcx" ADDITIVE
-ENDIF
-
 DO CASE
 CASE PCOUNT() = 1
 	RETURN CREATEOBJECT(m.tcClass)
@@ -206,28 +190,43 @@ guid = (NULL)
 eventhandler = (NULL)
 single = (NULL)
 enum = (NULL)
-_memberdata =      267<VFPData><memberdata name="drawing" type="Property" display="Drawing"/><memberdata name="guid" type="property" display="Guid"/><memberdata name="eventhandler" type="property" display="EventHandler"/><memberdata name="enum" type="property" display="Enum"/></VFPData>
+io = NULL
+_memberdata =      391<VFPData><memberdata name="drawing" type="Property" display="Drawing"/><memberdata name="guid" type="property" display="Guid"/><memberdata name="eventhandler" type="property" display="EventHandler"/><memberdata name="enum" type="property" display="Enum"/><memberdata name="io" type="property" display="IO"/><memberdata name="checkclasslib" type="method" display="CheckClasslib"/></VFPData>
 
 Name = "xfcsystem"
 [END PROPERTIES]
 [START METHODS]
-PROCEDURE drawing_access
-IF VARTYPE(This.Drawing) <> "O"
-	This.Drawing = NEWOBJECT("xfcDrawing", This.ClassLibrary)
+PROCEDURE checkclasslib
+IF NOT "SYSTEM.VCX" $ SET("Classlib")
+   SET CLASSLIB TO ADDBS(JUSTPATH(This.ClassLibrary))+"drawing.vcx" ADDITIVE
+   SET CLASSLIB TO ADDBS(JUSTPATH(This.ClassLibrary))+"drawing2d.vcx" ADDITIVE
+   SET CLASSLIB TO ADDBS(JUSTPATH(This.ClassLibrary))+"imaging.vcx" ADDITIVE
+   SET CLASSLIB TO ADDBS(JUSTPATH(This.ClassLibrary))+"text.vcx" ADDITIVE
+   SET CLASSLIB TO ADDBS(JUSTPATH(This.ClassLibrary))+"system.vcx" ADDITIVE
 ENDIF
 
-RETURN THIS.Drawing
+RETURN
+ENDPROC
+PROCEDURE drawing_access
+This.CheckClasslib()
 
+IF VARTYPE(This.Drawing) <> "O"
+   This.Drawing = This.CreateNew("xfcDrawing")
+ENDIF
+RETURN THIS.Drawing
 ENDPROC
 PROCEDURE enum_access
+This.CheckClasslib()
+
 IF VARTYPE(This.Enum) <> "O"
-	This.Enum = NEWOBJECT("xfcEnum", This.ClassLibrary)
+	This.Enum = This.CreateNew("xfcEnum")
 ENDIF
 
-RETURN THIS.Enum
-
+RETURN This.Enum
 ENDPROC
 PROCEDURE eventhandler_access
+This.CheckClasslib()
+
 IF VARTYPE(This.EventHandler) <> "O"
 	This.EventHandler = This.CreateNew("xfcEventHandler")
 ENDIF
@@ -236,19 +235,33 @@ RETURN THIS.EventHandler
 
 ENDPROC
 PROCEDURE guid_access
+This.CheckClasslib()
+
 IF VARTYPE(This.Guid) <> "O"
-	This.Guid = NEWOBJECT("xfcGuid", This.ClassLibrary)
+	This.Guid = This.CreateNew("xfcGuid")
 ENDIF
 
 RETURN THIS.Guid
 
 ENDPROC
-PROCEDURE single_access
-IF VARTYPE(This.Single) <> "O"
-	This.Single = NEWOBJECT("xfcSingle", This.ClassLibrary)
+PROCEDURE io_access
+This.CheckClasslib()
+
+IF VARTYPE(This.IO) <> "O"
+	This.IO = This.CreateNew("xfcIO")
 ENDIF
 
-RETURN THIS.Single
+RETURN This.IO
+
+ENDPROC
+PROCEDURE single_access
+This.CheckClasslib()
+
+IF VARTYPE(This.Single) <> "O"
+	This.Single = This.CreateNew("xfcSingle")
+ENDIF
+
+RETURN This.Single
 
 ENDPROC
 [END METHODS]
@@ -262,11 +275,14 @@ guid
 eventhandler
 single
 enum
+io
 *drawing_access 
 *guid_access 
 *eventhandler_access 
 *single_access 
 *enum_access 
+*io_access 
+*checkclasslib 
 [END RESERVED3]
 [START RESERVED6]
 Pixels[END RESERVED6]
@@ -278,7 +294,7 @@ system.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcsystem
 [START RESERVED1]
-  system.h^s≠ê5[END RESERVED1]
+  system.hÓ~≠ê5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -325,9 +341,10 @@ region = (NULL)
 characterrange = (NULL)
 text = (NULL)
 graphicsunit = 0
-_memberdata =     2435<VFPData><memberdata name="bitmap" type="property" display="Bitmap"/><memberdata name="color" type="property" display="Color"/><memberdata name="drawing2d" type="property" display="Drawing2D"/><memberdata name="font" type="property" display="Font"/><memberdata name="fontfamily" type="property" display="FontFamily"/><memberdata name="graphics" type="property" display="Graphics"/><memberdata name="image" type="property" display="Image"/><memberdata name="imaging" type="property" display="Imaging"/><memberdata name="pen" type="property" display="Pen"/><memberdata name="point" type="property" display="Point"/><memberdata name="pointf" type="property" display="PointF"/><memberdata name="rectangle" type="property" display="Rectangle"/><memberdata name="rectanglef" type="property" display="RectangleF"/><memberdata name="solidbrush" type="property" display="SolidBrush"/><memberdata name="stringformat" type="property" display="StringFormat"/><memberdata name="size" type="property" display="Size"/><memberdata name="sizef" type="property" display="SizeF"/><memberdata name="pens" type="property" display="Pens"/><memberdata name="systembrushes" type="property" display="SystemBrushes"/><memberdata name="systemcolors" type="property" display="SystemColors"/><memberdata name="systemicons" type="property" display="SystemIcons"/><memberdata name="systempens" type="property" display="SystemPens"/><memberdata name="imageanimator" type="property" display="ImageAnimator"/><memberdata name="brushes" type="property" display="Brushes"/><memberdata name="fontstyle" type="property" display="FontStyle"/><memberdata name="hatchbrush" type="property" display="HatchBrush"/><memberdata name="knowncolor" type="property" display="KnownColor"/><memberdata name="stringalignment" type="property" display="StringAlignment"/><memberdata name="stringdigitsubstitute" type="property" display="StringDigitSubstitute"/><memberdata name="stringformatflags" type="property" display="StringFormatFlags"/><memberdata name="stringtrimming" type="property" display="StringTrimming"/><memberdata name="texturebrush" type="property" display="TextureBrush"/><memberdata name="characterrange" type="property" display="CharacterRange"/><memberdata name="region" type="property" display="Region"/><memberdata name="graphicsunit" type="property" display="GraphicsUnit"/><memberdata name="colortranslator" type="property" display="ColorTranslator"/></VFPData>
-
 colortranslator = (NULL)
+rotatefliptype = 0
+_memberdata =     2579<VFPData><memberdata name="bitmap" type="property" display="Bitmap"/><memberdata name="color" type="property" display="Color"/><memberdata name="drawing2d" type="property" display="Drawing2D"/><memberdata name="font" type="property" display="Font"/><memberdata name="fontfamily" type="property" display="FontFamily"/><memberdata name="graphics" type="property" display="Graphics"/><memberdata name="image" type="property" display="Image"/><memberdata name="imaging" type="property" display="Imaging"/><memberdata name="pen" type="property" display="Pen"/><memberdata name="point" type="property" display="Point"/><memberdata name="pointf" type="property" display="PointF"/><memberdata name="rectangle" type="property" display="Rectangle"/><memberdata name="rectanglef" type="property" display="RectangleF"/><memberdata name="solidbrush" type="property" display="SolidBrush"/><memberdata name="stringformat" type="property" display="StringFormat"/><memberdata name="size" type="property" display="Size"/><memberdata name="sizef" type="property" display="SizeF"/><memberdata name="pens" type="property" display="Pens"/><memberdata name="systembrushes" type="property" display="SystemBrushes"/><memberdata name="systemcolors" type="property" display="SystemColors"/><memberdata name="systemicons" type="property" display="SystemIcons"/><memberdata name="systempens" type="property" display="SystemPens"/><memberdata name="imageanimator" type="property" display="ImageAnimator"/><memberdata name="brushes" type="property" display="Brushes"/><memberdata name="fontstyle" type="property" display="FontStyle"/><memberdata name="hatchbrush" type="property" display="HatchBrush"/><memberdata name="knowncolor" type="property" display="KnownColor"/><memberdata name="stringalignment" type="property" display="StringAlignment"/><memberdata name="stringdigitsubstitute" type="property" display="StringDigitSubstitute"/><memberdata name="stringformatflags" type="property" display="StringFormatFlags"/><memberdata name="stringtrimming" type="property" display="StringTrimming"/><memberdata name="texturebrush" type="property" display="TextureBrush"/><memberdata name="characterrange" type="property" display="CharacterRange"/><memberdata name="region" type="property" display="Region"/><memberdata name="graphicsunit" type="property" display="GraphicsUnit"/><memberdata name="colortranslator" type="property" display="ColorTranslator"/><memberdata name="rotateflip" type="property" display="RotateFlip"/><memberdata name="rotatefliptype" type="property" display="RotateFlipType"/></VFPData>
+
 Name = "xfcdrawing"
 [END PROPERTIES]
 [START PROTECTED]
@@ -341,14 +358,6 @@ createnew
 [END PROTECTED]
 [START METHODS]
 PROCEDURE Init
-
-** Add drawing class libraries to Classlib path
-*!*	SET CLASSLIB TO (ADDBS(JUSTPATH(This.ClassLibrary))+"drawing") ADDITIVE
-*!*	SET CLASSLIB TO (ADDBS(JUSTPATH(This.ClassLibrary))+"drawing2d") ADDITIVE
-*!*	SET CLASSLIB TO (ADDBS(JUSTPATH(This.ClassLibrary))+"imaging") ADDITIVE
-*!*	SET CLASSLIB TO (ADDBS(JUSTPATH(This.ClassLibrary))+"text") ADDITIVE
-*!*	SET CLASSLIB TO (ADDBS(JUSTPATH(This.ClassLibrary))+"system") ADDITIVE
-
 ** Initialize the GDI Plus library
 IF VARTYPE(_SCREEN.GDIPToken) <> "O"
 	ADDPROPERTY(_SCREEN, "GDIPToken", This.CreateNew("xfcGDIPToken"))
@@ -399,19 +408,6 @@ RETURN THIS.ColorTranslator
 ENDPROC
 PROCEDURE createnew
 LPARAMETERS tcClass, teP1, teP2, teP3, teP4, teP5, teP6, teP7, teP8, teP9, teP10, teP11, teP12
-
-** We need to make sure these class libraries are always part of SET("Classlib")
-** This may appear overkill, when a simple "NEWOBJECT" would do, but test show that this technique
-** can be 4x to 5x faster than using "NEWOBJECT". And because these classes are ment to be used in
-** high-performance, graphics intensive apps, we want to get every bit of perfomance we can
-
-IF NOT "DRAWING.VCX" $ SET("Classlib")
-	SET CLASSLIB TO ADDBS(JUSTPATH(This.ClassLibrary))+"drawing.vcx" ADDITIVE
-	SET CLASSLIB TO ADDBS(JUSTPATH(This.ClassLibrary))+"drawing2d.vcx" ADDITIVE
-	SET CLASSLIB TO ADDBS(JUSTPATH(This.ClassLibrary))+"imaging.vcx" ADDITIVE
-	SET CLASSLIB TO ADDBS(JUSTPATH(This.ClassLibrary))+"text.vcx" ADDITIVE
-	SET CLASSLIB TO ADDBS(JUSTPATH(This.ClassLibrary))+"system.vcx" ADDITIVE
-ENDIF
 
 DO CASE
 CASE PCOUNT() = 1
@@ -1028,6 +1024,65 @@ ENDIF
 RETURN THIS.Region
 
 ENDPROC
+PROCEDURE rotatefliptype_access
+*********************************************************************
+** Enumeration: RotateFlipType (Access)
+**
+** Specifies the direction of an image's rotation and the axis used to flip the image.
+**
+** History:
+**  2007/02/02: CChalom - Coded
+*********************************************************************
+
+*!ToDo: Test this method
+
+IF VARTYPE(This.RotateFlipType) <> "O"
+	This.RotateFlipType = CREATEOBJECT(ENUM_BASECLASS)
+	ADDPROPERTY(This.RotateFlipType , "RotateNoneFlipNone", RotateNoneFlipNone)
+	ADDPROPERTY(This.RotateFlipType , "Rotate90FlipNone", Rotate90FlipNone)
+	ADDPROPERTY(This.RotateFlipType , "Rotate180FlipNone", Rotate180FlipNone )
+	ADDPROPERTY(This.RotateFlipType , "Rotate270FlipNone", Rotate270FlipNone )
+	ADDPROPERTY(This.RotateFlipType , "RotateNoneFlipX", RotateNoneFlipX)
+	ADDPROPERTY(This.RotateFlipType , "Rotate90FlipX", Rotate90FlipX)
+	ADDPROPERTY(This.RotateFlipType , "Rotate180FlipX", Rotate180FlipX)
+	ADDPROPERTY(This.RotateFlipType , "Rotate270FlipX", Rotate270FlipX)
+	ADDPROPERTY(This.RotateFlipType , "Rotate180FlipXY", Rotate180FlipXY)
+	ADDPROPERTY(This.RotateFlipType , "Rotate270FlipXY", Rotate270FlipXY)
+	ADDPROPERTY(This.RotateFlipType , "RotateNoneFlipXY", RotateNoneFlipXY)
+	ADDPROPERTY(This.RotateFlipType , "Rotate90FlipXY", Rotate90FlipXY)
+	ADDPROPERTY(This.RotateFlipType , "Rotate180FlipY", Rotate180FlipY)
+	ADDPROPERTY(This.RotateFlipType , "Rotate270FlipY", Rotate270FlipY)
+	ADDPROPERTY(This.RotateFlipType , "RotateNoneFlipY", RotateNoneFlipY)
+	ADDPROPERTY(This.RotateFlipType , "Rotate90FlipY", Rotate90FlipY)
+
+#IFDEF USE_MEMBERDATA
+	ADDPROPERTY(This.RotateFlipType, "_memberdata", [<VFPData>]+;
+				[<memberdata name="rotatenoneflipnone" display="RotateNoneFlipNone"/>]+;
+				[<memberdata name="rotate90flipnone" display="Rotate90FlipNone"/>]+;
+				[<memberdata name="rotate180flipnone" display="Rotate180FlipNone"/>]+;
+				[<memberdata name="rotate270flipnone" display="Rotate270FlipNone"/>]+;
+				[<memberdata name="rotatenoneflipx" display="RotateNoneFlipX"/>]+;
+				[<memberdata name="rotate90flipx" display="Rotate90FlipX"/>]+;
+				[<memberdata name="rotate180flipx" display="Rotate180FlipX"/>]+;
+				[<memberdata name="rotate270flipx" display="Rotate270FlipX"/>]+;
+				[<memberdata name="rotate180flipxy" display="Rotate180FlipXY"/>]+;
+				[<memberdata name="rotate270flipxy" display="Rotate270FlipXY"/>]+;
+				[<memberdata name="rotatenoneflipxy" display="RotateNoneFlipXY"/>]+;
+				[<memberdata name="rotate90flipxy" display="Rotate90FlipXY"/>]+;
+				[<memberdata name="rotate180flipy" display="Rotate180FlipY"/>]+;
+				[<memberdata name="rotate270flipy" display="Rotate270FlipY"/>]+;
+				[<memberdata name="rotatenoneflipy" display="RotateNoneFlipY"/>]+;
+				[<memberdata name="rotate90flipy" display="Rotate90FlipY"/>]+;
+				[</VFPData>])
+#ENDIF
+ENDIF
+
+RETURN This.RotateFlipType
+
+** .NET Help ********************************************************
+** http://msdn2.microsoft.com/en-us/library/system.drawing.rotatefliptype.aspx
+*********************************************************************
+ENDPROC
 PROCEDURE size_access
 IF VARTYPE(This.Size) <> "O"
 	This.Size = This.CreateNew("xfcSize")
@@ -1304,6 +1359,7 @@ characterrange
 text Returns all of the text in a text-entry area of a control.
 graphicsunit
 colortranslator
+rotatefliptype
 *pointf_access 
 *point_access 
 *graphics_access 
@@ -1341,6 +1397,7 @@ colortranslator
 *text_access 
 *graphicsunit_access 
 *colortranslator_access 
+*rotatefliptype_access 
 [END RESERVED3]
 [START RESERVED6]
 Pixels[END RESERVED6]
@@ -1352,7 +1409,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcdrawing
 [START RESERVED1]
- 	 drawing.h¶≠ê5 system.hÆ≠ê5 gdiplusconstants.h∂≠ê5[END RESERVED1]
+ 	 drawing.h5≠ê5 system.h6≠ê5 gdiplusconstants.h&7≠ê5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -1395,9 +1452,9 @@ customlinecap = (NULL)
 graphicspathiterator = (NULL)
 pathdata = (NULL)
 regiondata = (NULL)
+matrix = (NULL)
 _memberdata =     2399<VFPData><memberdata name="graphicspath" type="property" display="GraphicsPath"/><memberdata name="hatchbrush" type="property" display="HatchBrush"/><memberdata name="lineargradientbrush" type="property" display="LinearGradientBrush"/><memberdata name="pathgradientbrush" type="property" display="PathGradientBrush"/><memberdata name="combinemode" type="property" display="CombineMode"/><memberdata name="compositingmode" type="property" display="CompositingMode"/><memberdata name="compositingquality" type="property" display="CompositingQuality"/><memberdata name="coordinatespace" type="property" display="CoordinateSpace"/><memberdata name="dashcap" type="property" display="DashCap"/><memberdata name="dashstyle" type="property" display="DashStyle"/><memberdata name="fillmode" type="property" display="FillMode"/><memberdata name="flushintention" type="property" display="FlushIntention"/><memberdata name="hatchstyle" type="property" display="HatchStyle"/><memberdata name="interpolationmode" type="property" display="InterpolationMode"/><memberdata name="lineargradientmode" type="property" display="LineargradientMode"/><memberdata name="linecap" type="property" display="LineCap"/><memberdata name="linejoin" type="property" display="LineJoin"/><memberdata name="matrixorder" type="property" display="MatrixOrder"/><memberdata name="pathpointtype" type="property" display="PathPointType"/><memberdata name="penalignment" type="property" display="PenAlignment"/><memberdata name="pentype" type="property" display="PenType"/><memberdata name="pixeloffsetmode" type="property" display="PixelOffsetMode"/><memberdata name="qualitymode" type="property" display="QualityMode"/><memberdata name="smoothingmode" type="property" display="SmoothingMode"/><memberdata name="warpmode" type="property" display="WarpMode"/><memberdata name="wrapmode" type="property" display="WrapMode"/><memberdata name="blend" type="property" display="Blend"/><memberdata name="colorblend" type="property" display="ColorBlend"/><memberdata name="adjustablearrowcap" type="property" display="AdjustableArrowCap"/><memberdata name="customlinecap" type="property" display="CustomLineCap"/><memberdata name="graphicspathiterator" type="property" display="GraphicsPathIterator"/><memberdata name="pathdata" type="property" display="PathData"/><memberdata name="regiondata" type="property" display="RegionData"/></VFPData>
 
-matrix = (NULL)
 Name = "xfcdrawing2d"
 [END PROPERTIES]
 [START PROTECTED]
@@ -1433,8 +1490,6 @@ colorblend_access
 [START METHODS]
 PROCEDURE Init
 DODEFAULT()
-
-SET CLASSLIB TO (ADDBS(JUSTPATH(This.ClassLibrary))+"drawing2d") ADDITIVE
 
 IF VARTYPE(_SCREEN.GDIPToken) <> "O"
 	ADDPROPERTY(_SCREEN, "GDIPToken", CREATEOBJECT("xfcGDIPToken"))
@@ -2529,7 +2584,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcdrawing2d
 [START RESERVED1]
- 	 drawing.hf≠ê5 system.hn≠ê5 gdiplusconstants.hv≠ê5[END RESERVED1]
+ 	 drawing.h5≠ê5 system.h6≠ê5 gdiplusconstants.h&7≠ê5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -3552,7 +3607,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcimaging
 [START RESERVED1]
- 	 drawing.hf≠ê5 system.hn≠ê5 gdiplusconstants.hv≠ê5[END RESERVED1]
+ 	 drawing.h5≠ê5 system.h6≠ê5 gdiplusconstants.h&7≠ê5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -3699,7 +3754,7 @@ drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfctext
 [START RESERVED1]
- 	 drawing.h¶≠ê5 system.hÆ≠ê5 gdiplusconstants.h∂≠ê5[END RESERVED1]
+ 	 drawing.h5≠ê5 system.h6≠ê5 gdiplusconstants.h&7≠ê5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -3812,7 +3867,7 @@ system.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcguid
 [START RESERVED1]
-  system.h^s≠ê5[END RESERVED1]
+  system.hÓ~≠ê5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -4119,5 +4174,642 @@ system.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] xfcenum
 [START RESERVED1]
-  system.h^s≠ê5[END RESERVED1]
+  system.hÓ~≠ê5[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2291F4RJM
+[CLASS] xfcobject
+[CLASSLOC] system.vcx
+[BASECLASS] custom
+[OBJNAME] xfcio
+[START PROPERTIES]
+stream = NULL
+_memberdata =      771<VFPData><memberdata name="createnew" type="method" display="CreateNew"/><memberdata name="new" type="method" display="New"/><memberdata name="memberwiseclone" type="method" display="MemberwiseClone"/><memberdata name="gethashcode" type="method" display="GetHashCode"/><memberdata name="equals" type="method" display="Equals"/><memberdata name="referenceequals" type="method" display="ReferenceEquals"/><memberdata name="basename" type="property" display="BaseName"/><memberdata name="stream" type="property" display="Stream"/><memberdata name="stream_access" type="property" display="Stream_Access"/><memberdata name="memorystream" type="property" display="MemoryStream"/><memberdata name="memorystream_access" type="property" display="MemoryStream_Access"/></VFPData>
+
+memorystream = NULL
+Name = "xfcio"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE memorystream_access
+IF VARTYPE(This.MemoryStream) <> "O"
+	This.MemoryStream = This.CreateNew("xfcMemoryStream")
+ENDIF
+
+RETURN This.MemoryStream
+ENDPROC
+PROCEDURE stream_access
+IF VARTYPE(This.Stream) <> "O"
+	This.Stream = This.CreateNew("xfcStream")
+ENDIF
+
+RETURN THIS.Stream
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+stream
+memorystream
+*stream_access 
+*memorystream_access 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] xfcio
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2291FBWJD
+[CLASS] xfcobject
+[CLASSLOC] system.vcx
+[BASECLASS] custom
+[OBJNAME] xfcstream
+[START PROPERTIES]
+Height = 16
+Width = 100
+canread = .T.
+canseek = .T.
+cantimeout = .T.
+canwrite = .T.
+length = 0
+position = 0
+readtimeout = 
+writetimeout = 
+hglobalptr = 0
+handle = 0
+_memberdata =     2311<VFPData><memberdata name="createnew" type="method" display="CreateNew"/><memberdata name="new" type="method" display="New"/><memberdata name="memberwiseclone" type="method" display="MemberwiseClone"/><memberdata name="gethashcode" type="method" display="GetHashCode"/><memberdata name="equals" type="method" display="Equals"/><memberdata name="referenceequals" type="method" display="ReferenceEquals"/><memberdata name="basename" type="property" display="BaseName"/><memberdata name="beginread" type="method" display="BeginRead"/><memberdata name="beginwrite" type="method" display="BeginWrite"/><memberdata name="close" type="method" display="Close"/><memberdata name="createwaithandle" type="method" display="CreateWaitHandle"/><memberdata name="dispose" type="method" display="Dispose"/><memberdata name="endread" type="method" display="EndRead"/><memberdata name="endwrite" type="method" display="EndWrite"/><memberdata name="flush" type="method" display="Flush"/><memberdata name="read" type="method" display="Read"/><memberdata name="readbyte" type="method" display="ReadByte"/><memberdata name="seek" type="method" display="Seek"/><memberdata name="setlenght" type="method" display="SetLenght"/><memberdata name="synchronized" type="method" display="Synchronized"/><memberdata name="write" type="method" display="Write"/><memberdata name="writebyte" type="method" display="WriteByte"/><memberdata name="canread" type="property" display="CanRead"/><memberdata name="canseek" type="property" display="CanSeek"/><memberdata name="cantimeout" type="property" display="CanTimeout"/><memberdata name="canwrite" type="property" display="CanWrite"/><memberdata name="length" type="property" display="Length"/><memberdata name="position" type="property" display="Position"/><memberdata name="readtimeout" type="property" display="ReadTimeout"/><memberdata name="writetimeout" type="property" display="WriteTimeout"/><memberdata name="declaredll" type="method" display="DeclareDll"/><memberdata name="streamptr" type="property" display="StreamPtr"/><memberdata name="hglobalptr" type="property" display="hGlobalPtr"/><memberdata name="toarray" type="method" display="ToArray"/><memberdata name="setlength" type="method" display="SetLength"/><memberdata name="handle" type="property" display="Handle"/></VFPData>
+
+basename = Stream
+Name = "xfcstream"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Destroy
+*********************************************************************
+** Method: Destroy
+**
+** History:
+**  2007/04/15: CChalom - Coded
+*********************************************************************
+
+*!ToDo: Test this function
+
+LOCAL loExc AS Exception
+
+TRY
+	LOCAL lHGlobal, lHPtr
+
+	m.lHStream = This.Handle
+
+	IF This.hGlobalPtr = 0
+		m.lHGlobal = 0
+		GetHGlobalFromStream(m.lHStream, @lHGlobal)
+	ELSE
+		m.lHGlobal = This.hGlobalPtr
+	ENDIF
+
+	*	m.lHPtr = GlobalLock(m.lHGlobal)
+	*	GlobalUnlock(m.lHGlobal)
+
+	GlobalFree (m.lhGlobal)
+
+CATCH TO loExc
+	THROW m.loExc
+ENDTRY
+RETURN
+ENDPROC
+PROCEDURE Init
+*********************************************************************
+** Method: Init
+**
+** http://msdn2.microsoft.com/en-us/library/system.io.stream.aspx
+**
+** History:
+**  2007/04/15: CChalom - Coded
+*********************************************************************
+
+*!ToDo: Test this function
+
+LOCAL loExc AS Exception
+
+TRY
+
+	This.DeclareDll()
+
+	LOCAL lHStream, lHGlobal
+	m.lHStream = 0
+	m.lHGlobal = GlobalAlloc(0x2022, 0)
+
+	CreateStreamOnHGlobal(m.lHGlobal, 1, @lHStream)
+	This.Handle = m.lHStream
+
+CATCH TO loExc
+	THROW m.loExc
+ENDTRY
+
+RETURN
+ENDPROC
+PROCEDURE beginread
+*!*	<HostProtection(SecurityAction.LinkDemand, ExternalThreading:=True)> _
+*!*	Public Overridable Function BeginRead(ByVal buffer As Byte(), ByVal offset As Integer, ByVal count As Integer, ByVal callback As AsyncCallback, ByVal state As Object) As IAsyncResult
+*!*	    If Not Me.CanRead Then
+*!*	        __Error.ReadNotSupported
+*!*	    End If
+*!*	    Interlocked.Increment((Me._asyncActiveCount))
+*!*	    Dim delegate2 As ReadDelegate = New ReadDelegate(AddressOf Me.Read)
+*!*	    If (Me._asyncActiveEvent Is Nothing) Then
+*!*	        SyncLock Me
+*!*	            If (Me._asyncActiveEvent Is Nothing) Then
+*!*	                Me._asyncActiveEvent = New AutoResetEvent(True)
+*!*	            End If
+*!*	        End SyncLock
+*!*	    End If
+*!*	    Me._asyncActiveEvent.WaitOne
+*!*	    Me._readDelegate = delegate2
+*!*	    Return delegate2.BeginInvoke(buffer, offset, count, callback, state)
+*!*	End Function
+ENDPROC
+PROCEDURE beginwrite
+*!*	<HostProtection(SecurityAction.LinkDemand, ExternalThreading:=True)> _
+*!*	Public Overridable Function BeginWrite(ByVal buffer As Byte(), ByVal offset As Integer, ByVal count As Integer, ByVal callback As AsyncCallback, ByVal state As Object) As IAsyncResult
+*!*	    If Not Me.CanWrite Then
+*!*	        __Error.WriteNotSupported
+*!*	    End If
+*!*	    Interlocked.Increment((Me._asyncActiveCount))
+*!*	    Dim delegate2 As WriteDelegate = New WriteDelegate(AddressOf Me.Write)
+*!*	    If (Me._asyncActiveEvent Is Nothing) Then
+*!*	        SyncLock Me
+*!*	            If (Me._asyncActiveEvent Is Nothing) Then
+*!*	                Me._asyncActiveEvent = New AutoResetEvent(True)
+*!*	            End If
+*!*	        End SyncLock
+*!*	    End If
+*!*	    Me._asyncActiveEvent.WaitOne
+*!*	    Me._writeDelegate = delegate2
+*!*	    Return delegate2.BeginInvoke(buffer, offset, count, callback, state)
+*!*	End Function
+
+
+
+
+
+ENDPROC
+PROCEDURE canread_access
+*To do: Modify this routine for the Access method
+RETURN THIS.CanRead
+ENDPROC
+PROCEDURE canseek_access
+*To do: Modify this routine for the Access method
+RETURN THIS.CanSeek
+ENDPROC
+PROCEDURE cantimeout_access
+*To do: Modify this routine for the Access method
+RETURN THIS.CanTimeout
+ENDPROC
+PROCEDURE canwrite_access
+*To do: Modify this routine for the Access method
+RETURN THIS.CanWrite
+ENDPROC
+PROCEDURE declaredll
+TRY
+
+	xfcStreamDeclareDLL(0)
+
+CATCH
+
+	DECLARE LONG Sleep IN WIN32API AS xfcStreamDeclareDLL LONG
+
+	DECLARE Long CreateStreamOnHGlobal IN ole32 Long, Long, Long@
+	DECLARE Long GetHGlobalFromStream IN ole32 Long, Long@
+	DECLARE Long GlobalAlloc IN WIN32API Long, Long
+	DECLARE Long GlobalSize IN WIN32API Long
+	DECLARE Long GlobalLock IN WIN32API Long
+	DECLARE Long GlobalFree IN WIN32API Long
+	DECLARE Long GlobalUnlock IN WIN32API Long
+
+ENDTRY
+
+
+
+
+
+
+
+ENDPROC
+PROCEDURE dispose
+RELEASE This
+ENDPROC
+PROCEDURE endread
+*!*	Public Overridable Function EndRead(ByVal asyncResult As IAsyncResult) As Integer
+*!*	    If (asyncResult Is Nothing) Then
+*!*	        Throw New ArgumentNullException("asyncResult")
+*!*	    End If
+*!*	    If (Me._readDelegate Is Nothing) Then
+*!*	        Throw New ArgumentException(Environment.GetResourceString("InvalidOperation_WrongAsyncResultOrEndReadCalledMultiple"))
+*!*	    End If
+*!*	    Dim num As Integer = -1
+*!*	    Try
+*!*	        num = Me._readDelegate.EndInvoke(asyncResult)
+*!*	    Finally
+*!*	        Me._readDelegate = Nothing
+*!*	        Me._asyncActiveEvent.Set
+*!*	        Me._CloseAsyncActiveEvent(Interlocked.Decrement((Me._asyncActiveCount)))
+*!*	    End Try
+*!*	    Return num
+*!*	End Function
+ENDPROC
+PROCEDURE endwrite
+*!*	Public Overridable Sub EndWrite(ByVal asyncResult As IAsyncResult)
+*!*	    If (asyncResult Is Nothing) Then
+*!*	        Throw New ArgumentNullException("asyncResult")
+*!*	    End If
+*!*	    If (Me._writeDelegate Is Nothing) Then
+*!*	        Throw New ArgumentException(Environment.GetResourceString("InvalidOperation_WrongAsyncResultOrEndWriteCalledMultiple"))
+*!*	    End If
+*!*	    Try
+*!*	        Me._writeDelegate.EndInvoke(asyncResult)
+*!*	    Finally
+*!*	        Me._writeDelegate = Nothing
+*!*	        Me._asyncActiveEvent.Set
+*!*	        Me._CloseAsyncActiveEvent(Interlocked.Decrement((Me._asyncActiveCount)))
+*!*	    End Try
+*!*	End Sub
+ENDPROC
+PROCEDURE flush
+*!*	Public MustOverride Sub Flush()
+
+
+
+
+
+ENDPROC
+PROCEDURE hglobalptr_access
+*********************************************************************
+** Property: hGlobalPtr
+**
+** Gets the hGlobal adress from the Stream.
+**
+** History:
+**  2007/04/15: CChalom - Coded
+*********************************************************************
+
+*!ToDo: Test this function
+
+LOCAL loExc AS Exception
+TRY
+	IF This.hGlobalPtr = 0
+		LOCAL lHStream, lHGlobal
+		m.lHGlobal = 0
+		m.lhStream = This.Handle
+		GetHGlobalFromStream(m.lHStream, @lHGlobal)
+		This.hGlobalPtr = m.lhGlobal
+	ENDIF
+
+CATCH TO loExc
+	THROW m.loExc
+ENDTRY
+
+RETURN This.hGlobalPtr
+ENDPROC
+PROCEDURE length_access
+*********************************************************************
+** Property: Length
+** http://msdn2.microsoft.com/en-us/library/system.io.stream.length.aspx
+**
+** Gets the length in bytes of the stream.
+**
+** History:
+**  2007/04/15: CChalom - Coded
+*********************************************************************
+
+*!ToDo: Test this function
+
+LOCAL loExc AS Exception
+TRY
+	IF This.Length = 0
+		LOCAL lhGlobal, liSize
+		m.lhGlobal = This.hGlobalPtr
+		m.liSize = GlobalSize(m.lHGlobal)
+		This.Length = m.liSize
+	ENDIF
+
+CATCH TO loExc
+	THROW m.loExc
+ENDTRY
+
+RETURN THIS.Length
+ENDPROC
+PROCEDURE new
+*********************************************************************
+** Property: New
+**
+** History:
+**  2007/04/15: CChalom - Coded
+*********************************************************************
+
+RETURN This.CreateNew(This.Class)
+ENDPROC
+PROCEDURE read
+*********************************************************************
+** Method: Read
+** http://msdn2.microsoft.com/en-us/library/system.io.stream.read.aspx
+**
+** Reads a sequence of bytes from the current stream
+**    and advances the position within the stream by the number of bytes read.
+**
+** History:
+**  2007/04/15: CChalom - Coded
+*********************************************************************
+
+LPARAMETERS tiStart, tiCount
+
+*!ToDo: Test this function
+
+LOCAL loExc AS Exception
+
+TRY
+
+	IF This.CanRead
+		LOCAL lhGlobal, lhPtr, lcBuffer
+		m.lhGlobal = This.hGlobalPtr
+		m.lHPtr = GlobalLock(m.lHGlobal)
+		m.lcBuffer = SYS(2600, m.lHPtr + m.tiStart, m.tiCount)
+		GlobalUnlock(m.lhGlobal)
+	
+		LOCAL lnPos
+		lnPos = m.tiStart + m.tiCount
+		This.Position = IIF(m.lnPos >= This.Length, 0, m.lnPos)
+	ENDIF
+
+CATCH TO loExc
+	THROW m.loExc
+ENDTRY
+
+RETURN m.lcBuffer
+ENDPROC
+PROCEDURE readbyte
+*********************************************************************
+** Method: ReadByte
+** http://msdn2.microsoft.com/en-us/library/system.io.stream.readbyte.aspx
+**
+** Reads a byte from the stream and advances the position within the stream by one byte,
+**    or returns -1 if at the end of the stream.
+**
+** History:
+**  2007/04/15: CChalom - Coded
+*********************************************************************
+
+LPARAMETERS tiPos
+
+*!ToDo: Test this function
+
+LOCAL loExc AS Exception
+TRY
+
+	IF This.CanRead
+		IF VARTYPE(tiPos) <> "N"
+			m.tiPos = This.Position
+		ENDIF
+
+		IF(m.tiPos <= This.Length)
+			m.tiByte = ASC(This.Read(m.tiPos, 1))
+		ELSE
+			m.tiByte = -1
+		ENDIF
+	ENDIF
+	
+CATCH TO loExc
+	THROW m.loExc
+ENDTRY
+
+RETURN m.tiByte
+ENDPROC
+PROCEDURE readtimeout_access
+*To do: Modify this routine for the Access method
+RETURN THIS.ReadTimeout
+ENDPROC
+PROCEDURE readtimeout_assign
+LPARAMETERS vNewVal
+*To do: Modify this routine for the Assign method
+THIS.ReadTimeout = m.vNewVal
+
+ENDPROC
+PROCEDURE seek
+* Public MustOverride Function Seek(ByVal offset As Long, ByVal origin As SeekOrigin) As Long
+ENDPROC
+PROCEDURE setlength
+* Public MustOverride Sub SetLength(ByVal value As Long)
+ENDPROC
+PROCEDURE synchronized
+*!*	<HostProtection(SecurityAction.LinkDemand, Synchronization:=True)> _
+*!*	Public Shared Function Synchronized(ByVal stream As Stream) As Stream
+*!*	    If (stream Is Nothing) Then
+*!*	        Throw New ArgumentNullException("stream")
+*!*	    End If
+*!*	    If TypeOf stream Is SyncStream Then
+*!*	        Return stream
+*!*	    End If
+*!*	    Return New SyncStream(stream)
+*!*	End Function
+ENDPROC
+PROCEDURE write
+*********************************************************************
+** Method: Write
+** http://msdn2.microsoft.com/en-us/library/system.io.stream.write.aspx
+**
+** Writes a sequence of bytes to the current stream
+**    and advances the current position within this stream by the number of bytes written.
+**
+** History:
+**  2007/04/17: CChalom - Coded
+*********************************************************************
+
+LPARAMETERS tqBuffer, tiStart, tiCount
+
+*!ToDo: Test this function
+
+LOCAL loExc AS Exception
+
+TRY
+
+	IF This.CanWrite
+	
+		IF VARTYPE(tiStart) <> "N"
+			m.tiStart = 0
+		ENDIF
+	
+		IF VARTYPE(tiCount) <> "N"
+			m.tiCount = LEN(m.tqBuffer)
+		ENDIF
+		m.tiCount = MIN(This.Length, m.tiCount)
+
+		LOCAL lhGlobal, lhPtr, lnLength
+		m.lhGlobal = This.hGlobalPtr
+		m.lHPtr = GlobalLock(m.lHGlobal)
+		= SYS(2600, m.lHPtr + m.tiStart, m.tiCount, m.tqBuffer)
+		GlobalUnlock(m.lhGlobal)
+
+		This.Position = m.tiCount
+	ENDIF
+	
+CATCH TO loExc
+	THROW m.loExc
+ENDTRY
+
+RETURN
+ENDPROC
+PROCEDURE writebyte
+*********************************************************************
+** Method: WriteByte
+** http://msdn2.microsoft.com/en-us/library/system.io.stream.writebyte.aspx
+**
+** Writes a byte to the current position in the stream
+**    and advances the position within the stream by one byte.
+**
+** History:
+**  2007/04/17: CChalom - Coded
+*********************************************************************
+
+LPARAMETERS tiByte
+
+*!ToDo: Test this function
+
+LOCAL loExc AS Exception
+
+TRY
+
+	IF This.CanWrite
+		This.Write(CHR(m.tiByte), This.Position, 1)
+		This.Position = This.Position + 1
+	ENDIF
+	
+CATCH TO loExc
+	THROW m.loExc
+ENDTRY
+
+RETURN
+ENDPROC
+PROCEDURE writetimeout_access
+*To do: Modify this routine for the Access method
+RETURN THIS.WriteTimeout
+ENDPROC
+PROCEDURE writetimeout_assign
+LPARAMETERS vNewVal
+*To do: Modify this routine for the Assign method
+THIS.WriteTimeout = m.vNewVal
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+canread
+canseek
+cantimeout
+canwrite
+length
+position
+readtimeout Specifies how long the FormSet remains active with no user input.
+writetimeout
+hglobalptr
+handle
+*beginread 
+*beginwrite 
+*close 
+*createwaithandle 
+*dispose 
+*endread 
+*endwrite 
+*flush 
+*read 
+*readbyte 
+*seek 
+*synchronized 
+*write 
+*writebyte 
+*canread_access 
+*canseek_access 
+*cantimeout_access 
+*canwrite_access 
+*length_access 
+*readtimeout_access 
+*readtimeout_assign 
+*writetimeout_access 
+*writetimeout_assign 
+*declaredll 
+*setlength 
+*hglobalptr_access 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] xfcstream
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _22A1E78Y0
+[CLASS] xfcstream
+[CLASSLOC] system.vcx
+[BASECLASS] custom
+[OBJNAME] xfcmemorystream
+[START PROPERTIES]
+_memberdata =      275<VFPData><memberdata name="setlenght" type="method" display="SetLenght"/><memberdata name="streamptr" type="property" display="StreamPtr"/><memberdata name="toarray" type="method" display="ToArray"/><memberdata name="getbuffer" type="method" display="GetBuffer"/></VFPData>
+
+Name = "xfcmemorystream"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE getbuffer
+*********************************************************************
+** Method: GetBuffer
+** http://msdn2.microsoft.com/en-us/library/system.io.memorystream.getbuffer.aspx
+**
+** Returns the array of unsigned bytes from which this stream was created.
+**
+** History:
+**  2007/04/17: CChalom - Coded
+*********************************************************************
+
+LPARAMETERS tiStart, tiCount
+
+*!ToDo: Test this function
+
+LOCAL loExc AS Exception
+
+TRY
+	LOCAL lqBinary
+	m.lqBinary = This.Read(0, This.Length)
+
+CATCH TO loExc
+	THROW m.loExc
+ENDTRY
+
+RETURN m.lqBinary
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+*getbuffer 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] xfcmemorystream
 [EOF]
