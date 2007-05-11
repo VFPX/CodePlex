@@ -96,7 +96,7 @@ ENDPROC
 [PLATFORM] WINDOWS 
 [UNIQUEID] _1TZ0QGKPH
 [CLASS] imgcanvas
-[CLASSLOC] ..\..\..\vfpx-2859\vfpx\gdiplusx\source\gdiplusx.vcx
+[CLASSLOC] ..\source\gdiplusx.vcx
 [BASECLASS] image
 [OBJNAME] Imgcanvas1
 [PARENT] Form1
@@ -135,7 +135,7 @@ WITH _SCREEN.SYSTEM.Drawing
 	hImg = THIS.HEIGHT - (lnDetachPixels * 2) - 10
 
 * Draw the pie
-	lnStart = 0
+	lnStart = 270
 	lnWidth = wImg
 	lnHeight = hImg
 
@@ -324,6 +324,11 @@ ForeColor = 0,0,0
 BackColor = 255,255,255
 Name = "Text1"
 [END PROPERTIES]
+[START METHODS]
+PROCEDURE Valid
+Thisform.Imgcanvas1.Draw()
+ENDPROC
+[END METHODS]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -352,6 +357,11 @@ ForeColor = 0,0,0
 BackColor = 255,255,255
 Name = "Text1"
 [END PROPERTIES]
+[START METHODS]
+PROCEDURE Valid
+Thisform.Imgcanvas1.Draw()
+ENDPROC
+[END METHODS]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -398,6 +408,13 @@ Centered = .T.
 Caption = ""
 Name = "Check1"
 [END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+replace sales.lDetach WITH sales.lDetach
+Thisform.Imgcanvas1.Draw()
+NODEFAULT
+ENDPROC
+[END METHODS]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -430,29 +447,7 @@ PROCEDURE DblClick
 lnColor = sales.nColor
 replace sales.nColor WITH GETCOLOR(lnColor)
 This.Refresh
-ENDPROC
-[END METHODS]
-
-[ RECORD]
-[PLATFORM] WINDOWS 
-[UNIQUEID] _1U2035L0F
-[CLASS] commandbutton
-[BASECLASS] commandbutton
-[OBJNAME] Command1
-[PARENT] Form1
-[START PROPERTIES]
-Top = 411
-Left = 405
-Height = 25
-Width = 96
-Anchor = 12
-Caption = "Update Chart"
-TabIndex = 4
-Name = "Command1"
-[END PROPERTIES]
-[START METHODS]
-PROCEDURE Click
-This.Parent.imgcanvas1.Draw()
+Thisform.Imgcanvas1.Draw()
 ENDPROC
 [END METHODS]
 
