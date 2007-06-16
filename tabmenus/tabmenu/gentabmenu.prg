@@ -197,6 +197,7 @@ FUNCTION spProcessMenu(vcMenuFile, vnLevel, vcLevelName, vcItemKey, vnTabNumber)
     ADDPROPERTY(loMenuData, "MarkExp", "")
     ADDPROPERTY(loMenuData, "ActionExp", "")
     ADDPROPERTY(loMenuData, "ActionTip", "")
+    ADDPROPERTY(loMenuData, "BarSize", "NORM")
     
     IF "\+" $ loMenuData.Prompt
       *-- The prompt indicates that the menu option has a submenu
@@ -220,7 +221,13 @@ FUNCTION spProcessMenu(vcMenuFile, vnLevel, vcLevelName, vcItemKey, vnTabNumber)
       * which need to be parsed and included in the menu data object
       loMenuData.ActionTip = spGetDirective("*:ACTIONTIP", loMenuData.Comment)
     ENDIF
-    
+
+    IF "*:BARSIZE" $ UPPER(loMenuData.Comment)
+      *-- The menu bar has additional directives in the comment
+      * which need to be parsed and included in the menu data object
+      loMenuData.BarSize = spGetDirective("*:BARSIZE", loMenuData.Comment)
+    ENDIF
+        
     *-- Format the text
     loMenuData.Prompt = STRTRAN(loMenuData.Prompt, "\-", "")
     loMenuData.Prompt = STRTRAN(loMenuData.Prompt, "\+", "")
@@ -271,7 +278,7 @@ FUNCTION spProcessMenu(vcMenuFile, vnLevel, vcLevelName, vcItemKey, vnTabNumber)
             \<<"loPopup = loDefPopup">>
           ENDIF
           \
-          \<<"loItem = loPopup.AddPopupItem('" + loMenuData.Prompt + "','NORM','" + loMenuData.keylabel + "')">>
+          \<<"loItem = loPopup.AddPopupItem('" + loMenuData.Prompt + "','" + loMenuData.BarSize + "','" + loMenuData.keylabel + "')">>
           IF NOT EMPTY(loMenuData.ResName) AND loMenuData.SysRes <> 1
             \<<"loItem.cPicture = '" + loMenuData.ResName + "'">>
           ENDIF
@@ -340,7 +347,7 @@ FUNCTION spProcessMenu(vcMenuFile, vnLevel, vcLevelName, vcItemKey, vnTabNumber)
         ENDIF
         
         \
-        \<<"loItem = loDefPopup.AddPopupItem('" + loMenuData.Prompt + "','NORM','" + loMenuData.keylabel + "')">>
+        \<<"loItem = loPopup.AddPopupItem('" + loMenuData.Prompt + "','" + loMenuData.BarSize + "','" + loMenuData.keylabel + "')">>
         IF NOT EMPTY(loMenuData.ResName)
           \<<"loItem.cPicture = '" + loMenuData.ResName + "'">>
         ENDIF
@@ -441,7 +448,7 @@ FUNCTION spProcessMenu(vcMenuFile, vnLevel, vcLevelName, vcItemKey, vnTabNumber)
           \<<"loPopup = loDefPopup">>
         ENDIF
         \
-        \<<"loItem = loPopup.AddPopupItem('" + loMenuData.Prompt + "','NORM','" + loMenuData.keylabel + "')">>
+        \<<"loItem = loPopup.AddPopupItem('" + loMenuData.Prompt + "','" + loMenuData.BarSize + "','" + loMenuData.keylabel + "')">>
         IF NOT EMPTY(loMenuData.ResName) AND loMenuData.SysRes <> 1
           \<<"loItem.cPicture = '" + loMenuData.ResName + "'">>
         ENDIF
