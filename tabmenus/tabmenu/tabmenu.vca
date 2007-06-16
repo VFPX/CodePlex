@@ -43,6 +43,8 @@ nmaxitempos = ( 0)
 cbasefont = ( "Segoe UI")
 orightclick = ( .NULL.)
 lminimized = .F.
+ccomponentid = ( "0000000011")
+ctblskindef = ( "")
 Name = "cnttabmenu"
 [END PROPERTIES]
 [START PROTECTED]
@@ -56,9 +58,20 @@ PROCEDURE Destroy
 *
 *$HISTORY$
 *  18/03/2007 - GZ: Added code to clean up contained objects
+*
+*  05/05/2007 - GZ: Added code to close the skin definition table
+*
+*  17/06/2007 - GZ: Added code to restore the title bar to the main VFP
+*  screen when the tabmenu is closed.  Also cleaned up the nOldProc
+*  property which is added by the tabmenu.
 *$HISTORY$
 ***************************************************************************
 UNBINDEVENTS(this)
+
+IF this.lTitlebar AND _SCREEN.TitleBar = 0
+ *-- Restore the VFP titlebar when we destroy the tabmenu container
+ _SCREEN.TitleBar = 1
+ENDIF
 
 this.omainform     = .NULL.
 this.oRightClick   = .NULL.
@@ -87,6 +100,15 @@ IF VARTYPE(_SCREEN.oToolbar) <> "U"
   _SCREEN.oToolbar = .NULL.
   REMOVEPROPERTY(_SCREEN, "oToolbar")
 ENDIF
+
+IF VARTYPE(_SCREEN.nOldProc) <> "U"
+  *-- the OldProc property exists on the _SCREEN object so when we get
+  * rid of the tabmenu we should also get rid of the property
+  REMOVEPROPERTY(_SCREEN, "nOldProc")
+ENDIF
+
+*-- Close any skin definitions table that might be open
+USE IN SELECT(this.ctblskindef)
 ENDPROC
 PROCEDURE Init
 *************************************************************************
@@ -97,11 +119,23 @@ PROCEDURE Init
 *  18/03/2007 - GZ: Added a property that can be used for context menus
 *
 *  13/04/2007 - GZ: Added call to generic API declaration method
+*
+*  05/05/2007 - GZ: Added support for using skins to control the look
+*  of the tab menu interface.
 *$HISTORY$
 *************************************************************************
 LOCAL loRightClick
 
 this.DeclareAPI()
+
+*-- Determine an unused alias for the skin definition table and
+* then open that table in a new workarea with that alias.
+this.ctblSkindef = "t" + SYS(2015)
+DO WHILE USED(this.ctblskindef)
+  this.ctblSkindef = "t" + SYS(2015)
+ENDDO
+SELECT 0
+USE skindef ALIAS (this.ctblskindef)
 
 this.BackColor = RGB(221,234,251)
 
@@ -1068,6 +1102,8 @@ nmaxitempos
 cbasefont
 orightclick
 lminimized
+ccomponentid Used to link with the skin definition
+ctblskindef The alias of the skin definition table in use
 *addmenuitem 
 *selectmenuitem 
 *addpopup 
@@ -1500,6 +1536,7 @@ lshowhotkey = .F.
 cskipforexp = ( "")
 citemkey = ( "")
 cbasefont = ( "")
+ccomponentid = ( "00000000003")
 Name = "cntmenuitem"
 [END PROPERTIES]
 [START METHODS]
@@ -1700,6 +1737,7 @@ lshowhotkey
 cskipforexp
 citemkey
 cbasefont
+ccomponentid Used to link with the skin definition
 *caption_assign 
 *selected_assign 
 *hottrackon 
@@ -1979,6 +2017,7 @@ citemkey = ( "")
 cbasefont = ( "")
 otooltip = ( .NULL.)
 cactiontip = ( "")
+ccomponentid = ( "0000000010")
 Name = "cntstartitem"
 [END PROPERTIES]
 [START METHODS]
@@ -2065,6 +2104,7 @@ citemkey
 cbasefont
 otooltip
 cactiontip
+ccomponentid Used to link with the skin definition
 *lshowhotkey_assign 
 *chotkey_assign 
 *lselected_assign 
@@ -2773,6 +2813,7 @@ lactive = .F.
 cbasefont = ( "")
 cmarkexp = ( "")
 lmarked = .F.
+ccomponentid = ( "0000000004")
 Name = "cntpopupitem"
 [END PROPERTIES]
 [START METHODS]
@@ -3305,6 +3346,7 @@ lactive
 cbasefont
 cmarkexp
 lmarked
+ccomponentid Used to link with the skin definition
 *hottrackon 
 *hottrackoff 
 *caption_assign 
@@ -3787,6 +3829,7 @@ npopupstyle = ( 0)
 cactionexp = ( "")
 cactiontip = ( "")
 otooltip = ( .NULL.)
+ccomponentid = ( "0000000005")
 Name = "cntpopupmenu"
 [END PROPERTIES]
 [START METHODS]
@@ -4108,6 +4151,7 @@ npopupstyle
 cactionexp
 cactiontip
 otooltip
+ccomponentid Used to link with the skin definition
 *caption_assign 
 *addpopupitem 
 *alignment_assign 
@@ -4292,6 +4336,7 @@ Height = 21
 BackStyle = 0
 BorderWidth = 0
 citemkey = ( "HELP")
+ccomponentid = ( "00000000002")
 Name = "cnthelpitem"
 [END PROPERTIES]
 [START METHODS]
@@ -4320,6 +4365,7 @@ Class[END RESERVED1]
 5[END RESERVED2]
 [START RESERVED3]
 citemkey
+ccomponentid Used to link with the skin definition
 *execute 
 [END RESERVED3]
 [START RESERVED6]
@@ -4433,6 +4479,7 @@ Picture = images\qtbback.bmp
 nitemcount = ( 0)
 lshowhotkeys = .F.
 cskipforexp = ( "")
+ccomponentid = ( "0000000006")
 Name = "cntquickbar"
 [END PROPERTIES]
 [START METHODS]
@@ -4551,6 +4598,7 @@ Class[END RESERVED1]
 nitemcount
 lshowhotkeys
 cskipforexp
+ccomponentid Used to link with the skin definition
 *additem Adds a new item to a ComboBox or ListBox control, optionally allowing you to specify the item's index.
 *lshowhotkeys_assign 
 *sendhotkey 
@@ -4615,6 +4663,7 @@ lshowhotkey = ( .f.)
 chotkey = ( "0")
 citemkey = ( "")
 cskipforexp = ( "")
+ccomponentid = ( "0000000007")
 Name = "cntquickitem"
 [END PROPERTIES]
 [START METHODS]
@@ -4726,6 +4775,7 @@ lshowhotkey
 chotkey
 citemkey
 cskipforexp
+ccomponentid Used to link with the skin definition
 *cpicture_assign 
 *lshowhotkey_assign 
 *chotkey_assign 
@@ -4897,6 +4947,7 @@ BackStyle = 0
 BorderWidth = 0
 lactive = ( .t.)
 nwindowstate = ( 0)
+ccomponentid = ( "0000000001")
 Name = "cntcontrol"
 [END PROPERTIES]
 [START METHODS]
@@ -4954,6 +5005,7 @@ Class[END RESERVED1]
 [START RESERVED3]
 lactive
 nwindowstate
+ccomponentid Used to link with the skin definition
 *lactive_assign 
 *nwindowstate_assign 
 [END RESERVED3]
@@ -5158,6 +5210,7 @@ BackStyle = 0
 BorderWidth = 0
 cskipforexp = ( "")
 citemkey = ( "SEARCH")
+ccomponentid = ( "0000000009")
 Name = "cntsearchbox"
 [END PROPERTIES]
 [START METHODS]
@@ -5231,6 +5284,7 @@ Class[END RESERVED1]
 [START RESERVED3]
 cskipforexp
 citemkey
+ccomponentid Used to link with the skin definition
 *search 
 *execute 
 *cskipforexp_assign 
@@ -5654,6 +5708,7 @@ Width = 42
 Height = 31
 BackStyle = 0
 BorderWidth = 0
+ccomponentid = ( "0000000008")
 Name = "cntresize"
 [END PROPERTIES]
 [START METHODS]
@@ -5673,6 +5728,9 @@ ENDPROC
 Class[END RESERVED1]
 [START RESERVED2]
 2[END RESERVED2]
+[START RESERVED3]
+ccomponentid Used to link with the skin definition
+[END RESERVED3]
 [START RESERVED6]
 Pixels[END RESERVED6]
 
