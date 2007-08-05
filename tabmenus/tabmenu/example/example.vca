@@ -26,15 +26,27 @@ cmdExit.Name = "cmdExit"
 cntMenuItems.cntRecentItems.LBLCAPTION.Name = "LBLCAPTION"
 cntMenuItems.cntRecentItems.shpBackGround.Name = "shpBackGround"
 cntMenuItems.cntRecentItems.linBackGround.Name = "linBackGround"
+cntMenuItems.cntRecentItems.imgtipwin.Height = 14
+cntMenuItems.cntRecentItems.imgtipwin.Width = 15
+cntMenuItems.cntRecentItems.imgtipwin.Name = "imgtipwin"
+cntMenuItems.cntRecentItems.tmrTipWin.Name = "tmrTipWin"
 cntMenuItems.cntRecentItems.Name = "cntRecentItems"
 cntMenuItems.cntQuickMenu.LBLCAPTION.Name = "LBLCAPTION"
 cntMenuItems.cntQuickMenu.shpBackGround.Name = "shpBackGround"
 cntMenuItems.cntQuickMenu.linBackGround.Name = "linBackGround"
+cntMenuItems.cntQuickMenu.imgtipwin.Height = 14
+cntMenuItems.cntQuickMenu.imgtipwin.Width = 15
+cntMenuItems.cntQuickMenu.imgtipwin.Name = "imgtipwin"
+cntMenuItems.cntQuickMenu.tmrTipWin.Name = "tmrTipWin"
 cntMenuItems.cntQuickMenu.Name = "cntQuickMenu"
 cntMenuItems.shpShadow.Name = "shpShadow"
 cntMenuItems.cntSubMenu.lblCaption.Name = "lblCaption"
 cntMenuItems.cntSubMenu.shpBackGround.Name = "shpBackGround"
 cntMenuItems.cntSubMenu.linBackGround.Name = "linBackGround"
+cntMenuItems.cntSubMenu.imgtipwin.Height = 14
+cntMenuItems.cntSubMenu.imgtipwin.Width = 15
+cntMenuItems.cntSubMenu.imgtipwin.Name = "imgtipwin"
+cntMenuItems.cntSubMenu.tmrTipWin.Name = "tmrTipWin"
 cntMenuItems.cntSubMenu.Name = "cntSubMenu"
 cntMenuItems.Name = "cntMenuItems"
 imgbottom.Name = "imgbottom"
@@ -73,6 +85,8 @@ IF DODEFAULT(voTabMenu, vlShowHotKeys)
   loItem = thisform.cntMenuItems.cntQuickMenu.Addpopupitem("Quick Menu 1", "LARGE", "A")
   BINDEVENT(loItem, "activate", thisform, "hidesubmenu")
 
+  loItem = thisform.cntMenuItems.cntQuickMenu.Addpopupitem("Separator", "SEP")
+
   loItem = thisform.cntMenuItems.cntQuickMenu.Addpopupitem("Quick Menu 2", "LARGE", "B")
   loItem.nShowSubmenu = 2
   loItem.cItemKey = "MENU.OPTION.2"
@@ -108,9 +122,14 @@ DO CASE
   CASE paSource[1].cItemKey = "MENU.OPTION.2"
     thisform.cntMenuItems.cntsubMenu.Caption = "Submenu for option 2"
 
-    loItem = thisform.cntMenuItems.cntsubMenu.Addpopupitem("Submenu Item 1", "NORM", "1")
-    loItem = thisform.cntMenuItems.cntsubMenu.Addpopupitem("Submenu Item 2", "NORM", "2")
-    loItem = thisform.cntMenuItems.cntsubMenu.Addpopupitem("Submenu Item 3", "NORM", "3")
+    loItem = thisform.cntMenuItems.cntsubMenu.Addpopupitem("Submenu Item 1", "LARGE", "1")
+    loItem.cDescription = "Some text to describe what this first item is"
+
+    loItem = thisform.cntMenuItems.cntsubMenu.Addpopupitem("Submenu Item 2", "LARGE", "2")
+    loItem.cDescription = "Some text to describe what this second item is"
+
+    loItem = thisform.cntMenuItems.cntsubMenu.Addpopupitem("Submenu Item 3", "LARGE", "3")
+    loItem.cDescription = "Some text to describe what this third item is"
 
   CASE paSource[1].cItemKey = "MENU.OPTION.3"
     thisform.cntMenuItems.cntsubMenu.Caption = "Submenu for option 3"
