@@ -719,6 +719,10 @@ ENDFUNC
 **************************************************************************************
 *$FUNCTION$ spProcessSubMenu()
 *$CREATED$ 23/02/2007
+*
+*$HISTORY$
+*  05/08/2007 - GZ: Added support for separator bars in the submenus
+*$HISTORY$
 **************************************************************************************
 FUNCTION spProcessSubMenu(vcMenuFile, vnItemRecno, vcLevelName, vcItemKey, vcBindEvent)
   LOCAL llReturn, lcCursor, lnSelect, loMenuData, lcEventCode, lcItemKey, lnMenuFile, ;
@@ -751,7 +755,7 @@ FUNCTION spProcessSubMenu(vcMenuFile, vnItemRecno, vcLevelName, vcItemKey, vcBin
   USE IN (lnMenuFile)
   
   *-- Determine the sub menu data
-  SELECT *, RECNO() AS itemrecno FROM (m.vcMenuFile) WHERE (LevelName = vcLevelName) AND (VAL(ItemNum) > 0) AND (ALLTRIM(prompt) <> "\-") INTO CURSOR (lcCursor)
+  SELECT *, RECNO() AS itemrecno FROM (m.vcMenuFile) WHERE (LevelName = vcLevelName) AND (VAL(ItemNum) > 0) INTO CURSOR (lcCursor)
   
   lcEventCode = "LOCAL loItem, loSubMenu" + CHR(13) + ;
                 "AEVENTS(paSource,0)" + CHR(13) + ;
@@ -772,6 +776,12 @@ FUNCTION spProcessSubMenu(vcMenuFile, vnItemRecno, vcLevelName, vcItemKey, vcBin
     ADDPROPERTY(loMenuData, "Submenu", .f.)
     ADDPROPERTY(loMenuData, "MarkExp", "")
 
+    IF loMenuData.Prompt = "\-"
+      *-- This is a separator bar so just add that and move to the next item
+      lcEventCode = lcEventCode + "loItem = .cntPopupItems.AddPopupItem('Separator', 'SEP')" + CHR(13)
+      LOOP
+    ENDIF
+    
     IF "*:MARKEXP" $ UPPER(loMenuData.Comment)
       *-- The menu bar has additional directives in the comment
       * which need to be parsed and included in the menu data object
