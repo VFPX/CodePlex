@@ -2346,6 +2346,12 @@ PROCEDURE Resize
 *************************************************************************************************
 *$METHOD$ Resize()
 *$CREATED$ 23/02/2007
+*
+*$HISTORY$
+*  16/08/2007 - GZ: Added a method call to set the width of the recent items container.  This
+*               was done to allow for the developer to customise the width of this control
+*               at runtime.
+*$HISTORY$
 *************************************************************************************************
 thisform.shpBackground.Top = 0
 thisform.shpBackground.Left = 0
@@ -2384,7 +2390,9 @@ thisform.cntMenuItems.Width = thisform.Width - (2 * thisform.cntMenuItems.Left) 
 thisform.cntMenuItems.Top = 10
 thisform.cntMenuItems.Height = thisform.Height - (thisform.imgBottom.Height + 30 + thisform.cntMenuItems.Top) + 1
 
-thisform.cntMenuItems.cntRecentItems.Width = INT(this.cntMenuItems.Width * 0.66)
+*-- Call the width method
+thisform.SetRecentitemwidth()
+
 thisform.cntMenuItems.cntRecentItems.Top = 0
 thisform.cntMenuItems.cntRecentItems.Height = this.cntMenuItems.Height
 thisform.cntMenuItems.cntRecentItems.Left = this.cntMenuItems.Width - thisform.cntMenuItems.cntRecentItems.Width
@@ -2482,6 +2490,14 @@ ENDIF
 RETURN llReturn
 
 ENDPROC
+PROCEDURE setrecentitemwidth
+***************************************************************************************
+*$METHOD$ SetRecentItemWidth()
+*$CREATED$ 16/08/2007
+***************************************************************************************
+thisform.cntMenuItems.cntRecentItems.Width = INT(this.cntMenuItems.Width * 0.66)
+
+ENDPROC
 [END METHODS]
 [START RESERVED1]
 Class[END RESERVED1]
@@ -2491,6 +2507,7 @@ Class[END RESERVED1]
 oactiveitem
 *hidesubmenu 
 *showsubmenu 
+*setrecentitemwidth 
 [END RESERVED3]
 [START RESERVED6]
 Pixels[END RESERVED6]
@@ -2616,6 +2633,12 @@ alignment = ( 0)
 topcaption = ( .t.)
 Name = "cntRecentItems"
 lblCaption.Name = "lblCaption"
+shpBackground.Name = "shpBackground"
+linBackGround.Name = "linBackGround"
+imgtipwin.Height = 14
+imgtipwin.Width = 15
+imgtipwin.Name = "imgtipwin"
+tmrTipWin.Name = "tmrTipWin"
 [END PROPERTIES]
 
 [ RECORD]
@@ -2634,6 +2657,12 @@ Height = 200
 BackColor = 255,255,255
 Name = "cntQuickMenu"
 lblCaption.Name = "lblCaption"
+shpBackground.Name = "shpBackground"
+linBackGround.Name = "linBackGround"
+imgtipwin.Height = 14
+imgtipwin.Width = 15
+imgtipwin.Name = "imgtipwin"
+tmrTipWin.Name = "tmrTipWin"
 [END PROPERTIES]
 
 [ RECORD]
@@ -2674,6 +2703,12 @@ topcaption = ( .t.)
 Name = "cntSubMenu"
 lblCaption.Caption = "SubMenu"
 lblCaption.Name = "lblCaption"
+shpBackground.Name = "shpBackground"
+linBackGround.Name = "linBackGround"
+imgtipwin.Height = 14
+imgtipwin.Width = 15
+imgtipwin.Name = "imgtipwin"
+tmrTipWin.Name = "tmrTipWin"
 [END PROPERTIES]
 
 [ RECORD]
