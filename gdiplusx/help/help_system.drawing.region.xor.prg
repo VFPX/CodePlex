@@ -9,7 +9,7 @@
 ** Fills the fills the Xor area with blue and draws it to the screen. 
 
 
-_SCREEN.AddProperty("System", NEWOBJECT("xfcSystem", LOCFILE("system.vcx","vcx"))) 
+DO (LOCFILE("System.prg")) 
 
 WITH _SCREEN.System.Drawing
 
