@@ -1,4 +1,11 @@
-#DEFINE LF_FACESIZE 32
+
+
+#DEFINE XFCCLASS_SYSTEM (ADDBS(JUSTPATH(This.ClassLibrary))+"System.prg")
+
+** Comenting out this line can reduce the compiled
+** size of the library by as much as 20%
+#DEFINE USE_MEMBERDATA
+
 #DEFINE LANG_NEUTRAL 0x00
 
 #DEFINE TRUE	1
@@ -11,7 +18,7 @@
 
 #DEFINE EMPTY_VFPARRAY		.F.
 
-#DEFINE USE_MEMBERDATA
+*#DEFINE USE_MEMBERDATA
 
 #DEFINE GMEM_FIXED          0x0000
 #DEFINE GMEM_MOVEABLE       0x0002
