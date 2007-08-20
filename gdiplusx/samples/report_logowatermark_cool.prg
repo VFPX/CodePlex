@@ -1,12 +1,9 @@
-#DEFINE GDIPlusXPath ADDBS(JUSTPATH(SYS(16)))+"..\source"
-#DEFINE ImagePath    ADDBS(JUSTPATH(SYS(16)))+"..\samples\image"
-SET PATH TO (GDIPlusXPath) ADDITIVE
-_SCREEN.AddProperty("System", NEWOBJECT("xfcSystem", LOCFILE("system.vcx"))) 
+DO (LOCFILE("System.prg"))
 
 LOCAL loReportListener, i
 loReportListener = CREATEOBJECT("MyReportListener")
 loReportListener.LISTENERTYPE = 1
-loReportListener.WaterMarkImage = (ImagePath + "\vfpxlogosmall.png")
+loReportListener.WaterMarkImage = FULLPATH("vfpxlogosmall.png")
 
 * Create a cursor that will be the report data source and insert some records
 CREATE CURSOR Dummy (Field1 c(20), field2 c(15))
