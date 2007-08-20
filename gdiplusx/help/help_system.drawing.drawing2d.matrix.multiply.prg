@@ -14,7 +14,7 @@
 * Notice that the red rectangle has been scaled by a factor of two in the horizontal direction, then rotated 90 degrees, and then moved (translated) 250 points in the x direction and 50 points in the y direction.
 
 
-_SCREEN.AddProperty("System", NEWOBJECT("xfcSystem", LOCFILE("system.vcx","vcx"))) 
+DO (LOCFILE("System.prg")) 
 
 WITH _SCREEN.System.Drawing
 
