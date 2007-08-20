@@ -3,7 +3,7 @@
 
 * The following example demonstrates how to use the CustomLineCap class. 
 
-_SCREEN.AddProperty("System", NEWOBJECT("xfcSystem", LOCFILE("system.vcx","vcx"))) 
+DO (LOCFILE("System.prg")) 
 
 WITH _SCREEN.System.Drawing
 
