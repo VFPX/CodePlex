@@ -10,7 +10,7 @@
 * Notice that the red rectangle is rotated 45 degrees from the original rectangle, shown in blue.
 
 
-_SCREEN.AddProperty("System", NEWOBJECT("xfcSystem", LOCFILE("system.vcx","vcx"))) 
+DO (LOCFILE("System.prg")) 
 
 WITH _SCREEN.System.Drawing
 
