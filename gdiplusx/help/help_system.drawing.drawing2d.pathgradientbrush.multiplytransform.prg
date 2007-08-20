@@ -10,7 +10,7 @@
 * Draws the brush to the screen.
 * Visual Basic Copy CodePublic Sub MultiplyTransformExample(ByVal e As PaintEventArgs)
 
-_SCREEN.AddProperty("System", NEWOBJECT("xfcSystem", LOCFILE("system.vcx","vcx"))) 
+DO (LOCFILE("System.prg")) 
 
 WITH _SCREEN.System.Drawing
 
