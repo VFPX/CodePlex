@@ -11,7 +11,7 @@
 #DEFINE ImagePath    ADDBS(JUSTPATH(SYS(16)))+"..\samples\image"
 
 SET PATH TO (GDIPlusXPath) ADDITIVE
-_SCREEN.AddProperty("System", NEWOBJECT("xfcSystem", LOCFILE("system.vcx","vcx"))) 
+DO (LOCFILE("System.prg")) 
 
 WITH _SCREEN.System.Drawing
 
