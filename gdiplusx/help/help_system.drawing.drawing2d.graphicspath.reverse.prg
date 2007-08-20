@@ -7,7 +7,7 @@
 * Draws the reversed points array to the screen.
 * Notice that the second listing of points is in reverse order from the first.
 
-_SCREEN.AddProperty("System", NEWOBJECT("xfcSystem", LOCFILE("system.vcx","vcx"))) 
+DO (LOCFILE("System.prg")) 
 
 WITH _SCREEN.System.Drawing
 
