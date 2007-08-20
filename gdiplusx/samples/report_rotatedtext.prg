@@ -1,7 +1,4 @@
-#DEFINE GDIPlusXPath ADDBS(JUSTPATH(SYS(16)))+"..\source"
-#DEFINE ImagePath    ADDBS(JUSTPATH(SYS(16)))+"..\samples\image"
-SET PATH TO (GDIPlusXPath) ADDITIVE
-_SCREEN.AddProperty("System", NEWOBJECT("xfcSystem", LOCFILE("system.vcx","vcx"))) 
+DO (LOCFILE("System.prg"))
 
 LOCAL loReportListener, i
 loReportListener = CREATEOBJECT("MyReportListener")
