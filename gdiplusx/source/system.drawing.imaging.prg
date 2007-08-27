@@ -7298,6 +7298,7 @@ DEFINE CLASS xfcMetafile AS xfcimage OF System.Drawing.prg
 	*********** tHMetafile AS IntPtr, toWmfHeader AS xfcWmfPlaceableFileHeader [, tlDeleteWmf]
 		
 		*!ToDo: Test this function
+		LOCAL llReleaseDC
 		
 		LOCAL loExc AS Exception
 		TRY
@@ -7352,9 +7353,9 @@ DEFINE CLASS xfcMetafile AS xfcimage OF System.Drawing.prg
 				m.tiType = m.thDCRef
 				m.thDCRef = m.tcFileName
 				m.tcFilename = ""
-				m.lqFrameRect = EMPTY_RECTANGLE
-				m.tiFrameUnit = 7
-				m.lnFunctionType = 8
+				m.lqFrameRect = NULL
+				m.tiFrameUnit = MetafileFrameUnitGdi  
+				m.lnFunctionType = 6
 		
 		** Handles overloads: 5,6,11,12,20,21,28,29
 			CASE LEFT(lcVarType, 2) == "NO" AND INLIST(m.thDCRef.BaseName, "RectangleF", "Rectangle")
@@ -7382,6 +7383,11 @@ DEFINE CLASS xfcMetafile AS xfcimage OF System.Drawing.prg
 			OTHERWISE
 		
 			ENDCASE
+			
+			IF INLIST(m.lnFunctionType, 6,7,8,9) AND m.thDCRef = 0
+				m.thDCRef = xfcGetDC(0)
+				m.llReleaseDC = .T.
+			ENDIF
 				
 				
 			
@@ -7412,7 +7418,9 @@ DEFINE CLASS xfcMetafile AS xfcimage OF System.Drawing.prg
 		*		This.SetStatus(GdipRecordMetafileStream(new GPStream(stream), new HandleRef(null, referenceHdc), (int) type, NativeMethods.NullHandleRef, 7, description, out ptr1)
 			ENDCASE
 			
-		
+			IF m.llReleaseDC
+				xfcReleaseDC(m.thDCRef, 0)
+			ENDIF
 			
 			This.Handle = m.lhMetafile
 			
@@ -7574,8 +7582,44 @@ DEFINE CLASS xfcMetafile AS xfcimage OF System.Drawing.prg
 		
 		RETURN NULL
 	ENDFUNC
-
-
+	
+	
+	*********************************************************************
+	FUNCTION ToWMFBits
+	*********************************************************************
+	** Method: xfcMetafile.ToWMFBits
+	**
+	** Converts the current EMF file to a WMETAFILE binary.
+	**
+	** History:
+	**  2007/08/26: BDurban - Created
+	**
+	** GDI Plus Flat API ************************************************
+	** http://msdn2.microsoft.com/en-us/library/ms533975.aspx
+	** Parameters:
+	**  HENHMETAFILE hemf, UINT cbData16, LPBYTE pData16, INT iMapMode, INT eFlags
+	** Returns: UINT
+	*********************************************************************
+	LPARAMETERS tiMapMode, tiFlags 
+	
+		LOCAL lhEMF, lnWMFLen, lqData
+		m.tiMapMode = EVL(m.tiMapMode, 2)
+		m.tiFlags = EVL(m.tiFlags, 0)
+		m.lqData = 0h
+		
+		LOCAL loExc AS Exception
+		TRY
+			m.lhEMF = This.GetHenhmetafile()
+			m.lnWMFLen = xfcGdipEmfToWmfBits(m.lhEMF, 0, NULL, m.tiMapMode, m.tiFlags)
+			lqData = REPLICATE(0h00,m.lnWMFLen)
+			xfcGdipEmfToWmfBits(m.lhEMF, m.lnWMFLen, @lqData, m.tiMapMode, m.tiFlags)
+			fxcDeleteEnhMetaFile(m.lhEMF)
+		CATCH TO loExc
+			THROW m.loExc
+		ENDTRY
+		
+		RETURN m.lqData
+	ENDFUNC
 
 
 	#IFDEF USE_MEMBERDATA
@@ -7619,6 +7663,7 @@ DEFINE CLASS xfcMetafile AS xfcimage OF System.Drawing.prg
 		[<memberdata name="size" type="property" display="Size"/>]+;
 		[<memberdata name="verticalresolution" type="property" display="VerticalResolution"/>]+;
 		[<memberdata name="width" type="property" display="Width"/>]+;
+		[<memberdata name="towmfbits" type="method" display="ToWMFBits"/>]+;
 		[</VFPData>]		
 	#ENDIF
 ENDDEFINE
@@ -9527,6 +9572,34 @@ FUNCTION xfcGdipRecordMetafileI(referenceHdc, etype, frameRect, frameUnit, descr
 *********************************************************************
 	DECLARE Long GdipRecordMetafileI IN GDIPLUS.DLL AS xfcGdipRecordMetafileI Long referenceHdc, Long etype, String frameRect, Long frameUnit, String description, Long @metafile
 	RETURN xfcGdipRecordMetafileI(m.referenceHdc, m.etype, m.frameRect, m.frameUnit, m.description, @m.metafile)
+ENDFUNC
+
+*********************************************************************
+FUNCTION xfcGdipEmfToWmfBits(hemf, cbData16, pData16, iMapMode, eFlags)
+*********************************************************************
+	DECLARE Long GdipEmfToWmfBits IN GDIPLUS.DLL AS xfcGdipEmfToWmfBits Long hemf, Long cbData16, String @pData16, Integer iMapMode, Integer eFlags
+	RETURN xfcGdipRecordMetafileI(m.hemf, m.cbData16, @m.pData16, m.iMapMode, m.eFlags)
+ENDFUNC
+
+*********************************************************************
+FUNCTION xfcDeleteEnhMetaFile(hemf)
+*********************************************************************
+	DECLARE Long DeleteEnhMetaFile IN WIN32API AS xfcDeleteEnhMetaFile Long hemf
+	RETURN xfcDeleteEnhMetaFile(m.hemf)
+ENDFUNC
+
+*********************************************************************
+FUNCTION xfcGetDC(thwnd)
+*********************************************************************
+	DECLARE Long GetDC IN WIN32API AS xfcGetDC Long hwnd
+	RETURN xfcGetDC(m.thwnd)
+ENDFUNC
+
+*********************************************************************
+FUNCTION xfcReleaseDC(thdc, thwnd)
+*********************************************************************
+	DECLARE Long ReleaseDC IN WIN32API AS xfcReleaseDC Long hdc, Long hwnd
+	RETURN xfcReleaseDC(m.thdc, m.thwnd)
 ENDFUNC
 
 
