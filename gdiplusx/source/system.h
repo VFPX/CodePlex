@@ -5,7 +5,7 @@
 
 ** Comenting out this line can reduce the compiled
 ** size of the library by as much as 20%
-*#DEFINE USE_MEMBERDATA
+#DEFINE USE_MEMBERDATA
 
 #DEFINE LANG_NEUTRAL 0x00
 
