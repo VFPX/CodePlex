@@ -12104,16 +12104,25 @@ DEFINE CLASS xfcImage AS xfcgpobject
 	**  string filename, bool useEmbeddedColorManagement
 	** Returns: Image
 	*********************************************************************
-	LPARAMETERS tcFilename ;
-					, tlUseEmbeddedColorManagement
+	LPARAMETERS tcFilename, ;
+				tlUseEmbeddedColorManagement
 		
 		*!ToDo: Test this function
-		LOCAL loImage, lhImage
+		LOCAL loImage, lhImage, lcTempFile
 		m.lhImage = 0
 		m.loImage = NULL
 		
 		LOCAL loExc AS Exception
 		TRY
+
+			m.tcFileName = FULLPATH(m.tcFileName)
+			IF FILE(m.tcFileName) AND EMPTY(SYS(2000,m.tcFileName))
+				** File is an embedded resource
+				m.lcTempFile = ADDBS(SYS(2023)) + SYS(2015) + "." + JUSTEXT(m.tcFileName)
+				STRTOFILE(FILETOSTR(m.tcFileName), m.lcTempFile)
+				m.tcFileName = m.tcTempFile
+			ENDIF
+			
 			IF m.tlUseEmbeddedColorManagement
 				This.SetStatus(xfcGdipLoadImageFromFileICM(STRCONV(m.tcFilename+0h00,5), @lhImage))
 			ELSE
@@ -12123,6 +12132,11 @@ DEFINE CLASS xfcImage AS xfcgpobject
 				m.loImage = CREATEOBJECT(This.Class)
 				m.loImage.Handle = m.lhImage
 			ENDIF
+			
+			IF NOT EMPTY(m.lcTempFile)
+				DELETE FILE (m.lcTempFile)
+			ENDIF
+			
 		CATCH TO loExc
 			THROW m.loExc
 		ENDTRY
@@ -12191,32 +12205,32 @@ DEFINE CLASS xfcImage AS xfcgpobject
 	**  Stream stream, bool useEmbeddedColorManagement
 	** Returns: Image
 	*********************************************************************
-	LPARAMETERS toStream AS xfcStream
-	*********** toStream AS xfcStream, tlUseEmbeddedColorManagement
-		
-		*!ToDo: Implement FunctionType = 2 (StreamICM)
+	LPARAMETERS toStream AS xfcStream, ;
+				tlUseEmbeddedColorManagement
+	*********** toStream AS xfcStream [, tlUseEmbeddedColorManagement]
+	*********** toStream AS LongPtr [, tlUseEmbeddedColorManagement]
+	*********** toStream AS VarBinary [, tlUseEmbeddedColorManagement]
+
 		*!ToDo: Test this function
 		
 		LOCAL loExc AS Exception
 		TRY
-			LOCAL loImage, lhImage
+			LOCAL loImage, lhImage, lhStream
 			m.lhImage = 0
 			m.loImage = NULL
 		
-			LOCAL lnFunctionType
-			m.lnFunctionType = 1
-			
-			DO CASE
-			CASE m.lnFunctionType = 1
-		
-				LOCAL lhStream
-				m.lhStream = IIF(VARTYPE(m.toStream) == "N", m.toStream, m.toStream.Handle)
-				This.SetStatus(xfcGdipLoadImageFromStream(m.lhStream, @lhImage))
-		
-			CASE m.lnFunctionType = 2
-				This.SetStatus(xfcGdipLoadImageFromStreamICM(m.liStream, @lhImage))
-		
+			DO CASE 
+			CASE VARTYPE(m.toStream) == "O"
+				m.lhStream = m.toStream.Handle
+			CASE VARTYPE(m.toStream) == "N"
+				m.lhStream = m.toStream
 			ENDCASE
+			
+			IF m.tlUseEmbeddedColorManagement
+				This.SetStatus(xfcGdipLoadImageFromStreamICM(m.lhStream, @lhImage))
+			ELSE
+				This.SetStatus(xfcGdipLoadImageFromStream(m.lhStream, @lhImage))
+			ENDIF
 		
 			IF m.lhImage <> 0
 				m.loImage = CREATEOBJECT(This.Class)
@@ -12230,6 +12244,27 @@ DEFINE CLASS xfcImage AS xfcgpobject
 		RETURN m.loImage
 	ENDFUNC
 
+
+	*********************************************************************
+	FUNCTION FromVarBinary
+	*********************************************************************
+	** Method: xfcImage.FromStream
+	**
+	** Creates an Image object from the specified VarBinary string.
+	**
+	** History:
+	**  2007/08/30: BDurban - Coded
+	**
+	** Returns: Image
+	*********************************************************************
+	LPARAMETERS tqBinary, ;
+				tlUseEmbeddedColorManagement
+
+
+	
+	ENDFUNC
+	
+	
 
 	*********************************************************************
 	FUNCTION GetBounds
@@ -13392,7 +13427,7 @@ DEFINE CLASS xfcImage AS xfcgpobject
 				m.loImage = m.tcFilename
 				m.loImage.PictureVal = This.GetPictureVal(lqClsidEncoder, lhEncoderParams)
 		
-			CASE VARTYPE(m.tcFileName) = "O" AND m.tcFileName.BaseName = "Stream"
+			CASE VARTYPE(m.tcFileName) = "O" AND "Stream" $ m.tcFileName.BaseName
 				m.loStream = m.tcFileName
 				This.SetStatus(xfcGdipSaveImageToStream_I(This.Handle, m.loStream.Handle, @lqClsidEncoder, lhEncoderParams))
 				
