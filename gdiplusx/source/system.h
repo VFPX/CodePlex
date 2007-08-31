@@ -1,6 +1,7 @@
 
 
 #DEFINE XFCCLASS_SYSTEM (ADDBS(JUSTPATH(This.ClassLibrary))+"System.prg")
+#DEFINE XFCCLASS_IO (ADDBS(JUSTPATH(This.ClassLibrary))+"System.IO.prg")
 
 ** Comenting out this line can reduce the compiled
 ** size of the library by as much as 20%
