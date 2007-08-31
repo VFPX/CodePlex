@@ -3084,7 +3084,8 @@ DEFINE CLASS xfcColorMatrix AS xfcDrawingBase OF System.Drawing.prg
 	*********************************************************************
 		LPARAMETERS toColorMatrixOne, ;
 					toColorMatrixTwo
-		LOCAL loCombinedMatrix, lnCounter, lnColumn, lnRow, lnCombinedValue m.loCombinedMatrix = NULL
+		LOCAL loCombinedMatrix, lnCounter, lnColumn, lnRow, lnCombinedValue 
+		m.loCombinedMatrix = NULL
 
 		TRY
 			IF NOT(VARTYPE(m.toColorMatrixOne)+VARTYPE(m.toColorMatrixOne)=="OO")
@@ -7613,7 +7614,7 @@ DEFINE CLASS xfcMetafile AS xfcimage OF System.Drawing.prg
 			m.lnWMFLen = xfcGdipEmfToWmfBits(m.lhEMF, 0, NULL, m.tiMapMode, m.tiFlags)
 			lqData = REPLICATE(0h00,m.lnWMFLen)
 			xfcGdipEmfToWmfBits(m.lhEMF, m.lnWMFLen, @lqData, m.tiMapMode, m.tiFlags)
-			fxcDeleteEnhMetaFile(m.lhEMF)
+			xfcDeleteEnhMetaFile(m.lhEMF)
 		CATCH TO loExc
 			THROW m.loExc
 		ENDTRY
