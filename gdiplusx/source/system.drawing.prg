@@ -1457,11 +1457,6 @@ DEFINE CLASS xfcBitmap AS xfcimage
 		#DEFINE CF_PALETTE   9
 		#DEFINE OBJ_BITMAP   7
 		
-		DECLARE LONG OpenClipboard IN Win32API LONG HWND
-		DECLARE LONG CloseClipboard IN Win32API
-		DECLARE LONG GetClipboardData IN Win32API LONG uFormat
-		DECLARE LONG DeleteObject IN Win32API LONG hObject
-		
 		LOCAL lhBitmap, lhBmp, lhPal
 		LOCAL loBitmap as xfcBitmap
 		
@@ -1470,16 +1465,16 @@ DEFINE CLASS xfcBitmap AS xfcimage
 		
 			m.lhBmp = 0
 			m.lhPal = 0
-			IF OpenClipboard(0) != 0
-				m.lhBmp = GetClipboardData(CF_BITMAP)
-				m.lhPal = GetClipboardData(CF_PALETTE)
-				CloseClipboard()
+			IF xfcOpenClipboard(0) != 0
+				m.lhBmp = xfcGetClipboardData(CF_BITMAP)
+				m.lhPal = xfcGetClipboardData(CF_PALETTE)
+				xfcCloseClipboard()
 		
 				m.lhBitmap = 0
 				m.loBitmap = NULL
 		
 				This.SetStatus(xfcGdipCreateBitmapFromHBITMAP(m.lhBmp, m.lhPal, @lhBitmap))
-				DeleteObject(m.lhBmp)
+				xfcDeleteObject(m.lhBmp)
 		
 				IF(m.lhBitmap <> 0)
 					m.loBitmap = CREATEOBJECT("xfcBitmap")
@@ -1625,23 +1620,8 @@ DEFINE CLASS xfcBitmap AS xfcimage
 				m.lnFunctionType = 1 && hWnd
 			ENDCASE
 			
-			Declare Long GetDesktopWindow in Win32API
-			Declare Long GetWindowRect in Win32API Long hwnd, String @ lpRect
-		    DECLARE INTEGER MoveWindow IN user32;
-		        INTEGER hWnd, INTEGER X, INTEGER Y,;
-			    INTEGER nWidth, INTEGER nHeight, INTEGER bRepaint
-			Declare Long GetWindowDC in Win32API Long hwnd
-		    DECLARE INTEGER GetDC IN user32 INTEGER hWnd
-		    DECLARE INTEGER ReleaseDC IN user32 INTEGER hWnd, INTEGER hDC
-		    DECLARE INTEGER CreateCompatibleDC IN gdi32 INTEGER hDC
-		    DECLARE INTEGER CreateCompatibleBitmap IN gdi32 INTEGER hDC, INTEGER Width, INTEGER Height
-		    DECLARE INTEGER SelectObject IN gdi32 INTEGER hdc, INTEGER
-		    DECLARE INTEGER DeleteObject IN gdi32 INTEGER hdc,
-		    DECLARE INTEGER BitBlt IN gdi32 INTEGER hdc, INTEGER nXDest, INTEGER nYDest, INTEGER nWidth, INTEGER nHeight, ;
-		            INTEGER hdcSrc, INTEGER nXSrc, INTEGER nYSrc, INTEGER nRop
-		
 			IF m.tHWnd = 0 && No parameter passed or zero, capture the whole Screen
-				m.tHWnd = GetDesktopWindow()
+				m.tHWnd = xfcGetDesktopWindow()
 			ENDIF
 		
 		   	m.lqRect = REPLICATE(CHR(0), 16)
@@ -1661,14 +1641,14 @@ DEFINE CLASS xfcBitmap AS xfcimage
 				m.lnLeft0  = m.lnLeft
 				m.lnTop0   = m.lnTop
 				m.llMoved  = .T.
-				= MoveWindow(m.tHWnd, 0, 0, m.lnWidth, m.lnHeight, 1)
-			    = xfcGetWindowRect(m.tHWnd, @lqRect)
+				=xfcMoveWindow(m.tHWnd, 0, 0, m.lnWidth, m.lnHeight, 1)
+			    =xfcGetWindowRect(m.tHWnd, @lqRect)
 			   	m.lnLeft   = CTOBIN(SUBSTR(m.lqRect,  1, 4),"4rs")
 		    	m.lnTop    = CTOBIN(SUBSTR(m.lqRect,  5, 4),"4rs")
 			ENDIF
 		
 		    LOCAL hdc, hbSave, hdcCompat, hbm
-		    hdc = GetWindowDC(m.tHWnd)
+		    hdc = xfcGetWindowDC(m.tHWnd)
 		
 		    m.hdcCompat = xfcCreateCompatibleDC(hDC)
 		    m.hbm = xfcCreateCompatibleBitmap(hDC, m.lnWidth, m.lnHeight)
@@ -1690,7 +1670,7 @@ DEFINE CLASS xfcBitmap AS xfcimage
 				m.loImage.Handle = m.lhImage
 			ENDIF
 		
-			DeleteObject(hbm)
+			xfcDeleteObject(hbm)
 			xfcReleaseDC(m.tHWnd, m.hdcCompat)
 			xfcReleaseDC(m.tHWnd, m.hDC)
 			IF m.lhImage <> m.lhBitmap
@@ -1701,7 +1681,7 @@ DEFINE CLASS xfcBitmap AS xfcimage
 				IF NOT ISNULL(m.loForm)	&& VFP Form
 					m.loForm.Move(m.lnLeft0, m.lnTop0)
 				ELSE
-					=MoveWindow(tHWnd, m.lnLeft0, m.lnTop0, m.lnWidth, m.lnHeight, 1)
+					=xfcMoveWindow(tHWnd, m.lnLeft0, m.lnTop0, m.lnWidth, m.lnHeight, 1)
 				ENDIF
 			ENDIF
 		
@@ -2008,27 +1988,19 @@ DEFINE CLASS xfcBitmap AS xfcimage
 		#DEFINE CF_PALETTE   9
 		#DEFINE OBJ_BITMAP   7
 		
-		DECLARE LONG OpenClipboard IN Win32API LONG HWND
-		DECLARE LONG CloseClipboard IN Win32API
-		DECLARE LONG EmptyClipboard IN Win32API
-		*DECLARE LONG GetClipboardData IN Win32API LONG uFormat
-		DECLARE LONG SetClipboardData IN Win32API LONG uFormat, LONG HMEM
-		DECLARE LONG CopyImage IN Win32API LONG hImage, LONG uType, LONG cx, LONG cy, LONG uFlags
-		DECLARE LONG DeleteObject IN Win32API LONG hObject
-		
 		LOCAL lhBitmap, lhBmp, lnStatus
 		
 		LOCAL loExc AS Exception
 		TRY
 		
 			m.lhBitmap = This.GetHbitmap(CREATEOBJECT("xfcColor", ARGB_LightGray))
-			m.lhBmp = CopyImage(lhBitmap, 0, 0, 0, 0)
-			DeleteObject(lhBitmap)
+			m.lhBmp = xfcCopyImage(lhBitmap, 0, 0, 0, 0)
+			xfcDeleteObject(lhBitmap)
 		
-			IF OpenClipboard(0) != 0
-				EmptyClipboard()
-				m.lnStatus = SetClipboardData(CF_BITMAP, m.lhBmp)
-				CloseClipboard()
+			IF xfcOpenClipboard(0) != 0
+				xfcEmptyClipboard()
+				m.lnStatus = xfcSetClipboardData(CF_BITMAP, m.lhBmp)
+				xfcCloseClipboard()
 			ENDIF
 		
 		CATCH TO loExc
@@ -6549,7 +6521,6 @@ DEFINE CLASS xfcGdipToken AS xfcObject OF System.PRG
 *************************************************************************
 *************************************************************************
 	namedcolors = .NULL.
-	streamptr = 0
 	PROTECTED gdiplustoken
 	gdiplustoken = 0
  
@@ -6765,32 +6736,6 @@ DEFINE CLASS xfcGdipToken AS xfcObject OF System.PRG
 		
 		RETURN NULL
 	ENDFUNC
-
-
-	*********************************************************************
-	FUNCTION StreamPtr_ACCESS
-	*********************************************************************
-		
-	**IF This.StreamPtr = 0
-			DECLARE Long CreateStreamOnHGlobal IN ole32 Long, Long, Long@
-			DECLARE Long GlobalAlloc IN WIN32API Long, Long
-		
-			LOCAL lHStream, lHGlobal
-			m.lHStream = 0
-			m.lHGlobal = GlobalAlloc(0x2002, 0)
-		
-			CreateStreamOnHGlobal(m.lHGlobal, 1, @lHStream)
-		
-			This.StreamPtr = m.lHStream
-	**ENDIF
-		
-		*To do: Modify this routine for the Access method
-		RETURN THIS.StreamPtr
-	ENDFUNC
-
-
-
-
 
 ENDDEFINE
 *************************************************************************
@@ -11280,7 +11225,7 @@ DEFINE CLASS xfcIcon AS xfcdrawingbase
 				This.iconData = 0h+m.toOriginal.iconData
 				IF ISNULL(m.toOriginal.iconData)
 					WITH m.toOriginal
-						This.Handle = CopyImage(.Handle, 1, .Width, .Height, 0)
+						This.Handle = xfcCopyImage(.Handle, 1, .Width, .Height, 0)
 					ENDWITH
 				ELSE
 					This.Initialize(m.tiWidth, m.tiHeight)
@@ -11725,7 +11670,7 @@ DEFINE CLASS xfcIcon AS xfcdrawingbase
 					m.liWidth = CTOBIN(SUBSTR(m.lqBitmap, 5, 4), "4rs")
 					m.liHeight = CTOBIN(SUBSTR(m.lqBitmap, 9, 4), "4rs")
 					
-					DeleteObject(m.lhBMColor)
+					xfcDeleteObject(m.lhBMColor)
 				ELSE
 					IF m.lhBMMask != 0
 						GetObject1(m.lhBMMask, LEN(m.lqBitmap), @lqBitmap)
@@ -11735,7 +11680,7 @@ DEFINE CLASS xfcIcon AS xfcdrawingbase
 				ENDIF
 				
 				IF m.lhBMMask != 0
-					DeleteObject(m.lhBMMask)
+					xfcDeleteObject(m.lhBMMask)
 				ENDIF
 				
 			** This.SetStatus(GdipSomeFunction???())
@@ -11955,7 +11900,9 @@ DEFINE CLASS xfcImage AS xfcgpobject
 		TRY
 			IF This.Handle <> 0
 				This.SetStatus(xfcGdipDisposeImage(This.Handle))
+				This.Handle = 0
 			ENDIF
+			
 		CATCH TO loExc
 			THROW m.loExc
 		ENDTRY
@@ -12096,6 +12043,7 @@ DEFINE CLASS xfcImage AS xfcgpobject
 	**  2006/03/07: Auto Generated
 	**	2006/03/08: BDurban - Coded
 	**  2006/12/09: CChalom - Fixed CreateNew(This.Class)
+	**	2007/08/31: BDurban - Added support for embedded reource files
 	**
 	** .NET Help ********************************************************
 	** http://msdn2.microsoft.com/en-us/library/System.Drawing.Image.FromFile%28vs.80%29.aspx
@@ -12108,7 +12056,7 @@ DEFINE CLASS xfcImage AS xfcgpobject
 				tlUseEmbeddedColorManagement
 		
 		*!ToDo: Test this function
-		LOCAL loImage, lhImage, lcTempFile
+		LOCAL loImage, lhImage
 		m.lhImage = 0
 		m.loImage = NULL
 		
@@ -12116,11 +12064,14 @@ DEFINE CLASS xfcImage AS xfcgpobject
 		TRY
 
 			m.tcFileName = FULLPATH(m.tcFileName)
+
+			** [workitem:10185]
+			** If this is an embedded resource, we need load from stream
 			IF FILE(m.tcFileName) AND EMPTY(SYS(2000,m.tcFileName))
 				** File is an embedded resource
-				m.lcTempFile = ADDBS(SYS(2023)) + SYS(2015) + "." + JUSTEXT(m.tcFileName)
-				STRTOFILE(FILETOSTR(m.tcFileName), m.lcTempFile)
-				m.tcFileName = m.tcTempFile
+				m.loStream = NEWOBJECT("xfcMemoryStream", XFCCLASS_IO, "", FILETOSTR(m.tcFileName), .T.)
+				m.loImage = This.FromStream(m.loStream, m.tlUseEmbeddedColorManagement)
+				EXIT
 			ENDIF
 			
 			IF m.tlUseEmbeddedColorManagement
@@ -12131,10 +12082,6 @@ DEFINE CLASS xfcImage AS xfcgpobject
 			IF m.lhImage <> 0
 				m.loImage = CREATEOBJECT(This.Class)
 				m.loImage.Handle = m.lhImage
-			ENDIF
-			
-			IF NOT EMPTY(m.lcTempFile)
-				DELETE FILE (m.lcTempFile)
 			ENDIF
 			
 		CATCH TO loExc
@@ -12573,16 +12520,6 @@ DEFINE CLASS xfcImage AS xfcgpobject
 		
 		*!*	*!ToDo: Test this function
 		
-		DECLARE INTEGER CreateCompatibleDC IN gdi32 INTEGER hdc
-		DECLARE INTEGER DeleteDC IN gdi32 INTEGER hdc
-		DECLARE INTEGER GetWindowDC IN user32 INTEGER hwnd
-		DECLARE RtlZeroMemory IN kernel32 As ZeroMemory;
-		      INTEGER dest, INTEGER numBytes
-		DECLARE INTEGER GetDIBits IN gdi32;
-		      INTEGER hdc, INTEGER hbmp, INTEGER uStartScan,;
-		      INTEGER cScanLines, INTEGER lpvBits, STRING @lpbi,;
-		      INTEGER uUsage
-		
 		#DEFINE RGBQUAD_SIZE     4
 		#DEFINE DIB_RGB_COLORS   0
 		#DEFINE BFHDR_SIZE      14
@@ -12631,10 +12568,10 @@ DEFINE CLASS xfcImage AS xfcgpobject
 			= ZeroMemory (m.lpBitsArray, m.lnBitsSize)
 		
 			LOCAL hdc, hMemDC, lnFileSize, lnOffBits, m.lcBFileHdr
-			m.lhDC = GetWindowDC(_screen.HWnd)
-			m.lhMemDC = CreateCompatibleDC (m.lhDC)
+			m.lhDC = xfcGetWindowDC(_screen.HWnd)
+			m.lhMemDC = xfcCreateCompatibleDC (m.lhDC)
 			= xfcReleaseDC (_screen.HWnd, m.lhDC)
-			= GetDIBits (m.lhMemDC, m.lhBitmap, 0, m.lnHeight, m.lpBitsArray, @lcBInfo, DIB_RGB_COLORS)
+			= xfcGetDIBits (m.lhMemDC, m.lhBitmap, 0, m.lnHeight, m.lpBitsArray, @lcBInfo, DIB_RGB_COLORS)
 		
 			m.lnFileSize = BFHDR_SIZE + BHDR_SIZE + m.lnRgbQuadSize + m.lnBitsSize
 			m.lnOffBits = BFHDR_SIZE + BHDR_SIZE + m.lnRgbQuadSize
@@ -12644,7 +12581,7 @@ DEFINE CLASS xfcImage AS xfcgpobject
 			m.lqBinary = m.lcBFileHdr + m.lcBInfo + SYS(2600, m.lpBitsArray, m.lnBitsSize)
 		
 			= xfcGlobalFree(m.lpBitsArray)
-			= DeleteDC (m.lhMemDC)
+			= xfcDeleteDC (m.lhMemDC)
 			= xfcDeleteObject (m.lhBitmap)
 		
 		CATCH TO loExc
@@ -12721,10 +12658,10 @@ DEFINE CLASS xfcImage AS xfcgpobject
 			m.lpBitsArray = xfcGlobalAlloc(GMEM_FIXED, m.lnBitsSize)
 			m.nStatus = ZeroMemory(m.lpBitsArray, m.lnBitsSize)
 		
-			m.lhDC = GetWindowDC(_SCREEN.HWnd)
-			m.lhMemDC = CreateCompatibleDC(m.lhDC)
+			m.lhDC = xfcGetWindowDC(_SCREEN.HWnd)
+			m.lhMemDC = xfcCreateCompatibleDC(m.lhDC)
 			m.nStatus = xfcReleaseDC(_SCREEN.HWnd, m.lhDC)
-			m.nStatus = GetDIBits(m.lhMemDC, m.lhBitmap, 0, m.lnHeight, m.lpBitsArray, @lcBInfo, DIB_RGB_COLORS)
+			m.nStatus = xfcGetDIBits(m.lhMemDC, m.lhBitmap, 0, m.lnHeight, m.lpBitsArray, @lcBInfo, DIB_RGB_COLORS)
 		
 			m.lnFileSize = BFHDR_SIZE + BHDR_SIZE + m.lnRgbQuadSize + m.lnBitsSize
 			m.lnOffBits = BFHDR_SIZE + BHDR_SIZE + m.lnRgbQuadSize
@@ -12733,7 +12670,7 @@ DEFINE CLASS xfcImage AS xfcgpobject
 			m.lqBinary = m.lcBFileHdr + m.lcBInfo + SYS(2600, m.lpBitsArray, m.lnBitsSize)
 		
 			m.nStatus = xfcGlobalFree(m.lpBitsArray)
-			m.nStatus = DeleteDC(m.lhMemDC)
+			m.nStatus = xfcDeleteDC(m.lhMemDC)
 			m.nStatus = xfcDeleteObject(m.lhBitmap)
 		
 		CATCH TO loExc
@@ -13491,38 +13428,6 @@ DEFINE CLASS xfcImage AS xfcgpobject
 	ENDFUNC
 
 
-	*********************************************************************
-	FUNCTION savetostring
-	*********************************************************************
-	LPARAMETERS toFormat AS xfcImageFormat
-		
-		LOCAL lcClsidEncoder, lcEncoderParams
-		lcClsidEncoder = NULL
-		lcEncoderParams = NULL
-		
-		DO CASE
-		CASE VARTYPE(m.toFormat) = "O" AND m.toFormat.BaseName = "ImageFormat"
-			lcClsidEncoder = m.toFormat.Guid.ToByteArray()
-			lcEncoderParams = NULL
-		ENDCASE
-		
-		LOCAL lHStream, lHGlobal, lHPtr, liSize
-		m.lHStream = This.StreamPtr
-		STORE 0 TO lHGlobal, lHPtr
-		m.lqBinary = 0h
-		
-		This.SetStatus(xfcGdipSaveImageToStream_I(This.Handle, m.lHStream, @lcClsidEncoder, @lcEncoderParams))
-		xfcGetHGlobalFromStream(m.lHStream, @lHGlobal)
-		liSize = xfcGlobalSize(m.lHGlobal)
-		m.lHPtr = xfcGlobalLock(m.lHGlobal)
-		
-		m.lqBinary = SYS(2600, m.lHPtr, m.liSize)
-		
-		xfcGlobalUnlock(m.lHGlobal)
-		
-		RETURN m.lqBinary
-	ENDFUNC
-
 
 	*********************************************************************
 	FUNCTION SelectActiveFrame
@@ -13639,28 +13544,6 @@ DEFINE CLASS xfcImage AS xfcgpobject
 
 
 	*********************************************************************
-	FUNCTION streamptr_ACCESS
-	*********************************************************************
-		
-		IF THIS.StreamPtr = 0
-			DECLARE Long CreateStreamOnHGlobal IN ole32 Long, Long, Long@
-	**	DECLARE Long GlobalAlloc IN WIN32API Long, Long
-		
-			LOCAL lHStream, lHGlobal
-			m.lHStream = 0
-	**	m.lHGlobal = xfcGlobalAlloc(0x2002, 0)
-	***	m.lHGlobal = xfcGlobalAlloc(0x2022, 0)
-		
-			CreateStreamOnHGlobal(m.lHGlobal, 1, @lHStream)
-		
-			This.StreamPtr = m.lHStream
-		ENDIF
-		
-		RETURN THIS.StreamPtr
-	ENDFUNC
-
-
-	*********************************************************************
 	FUNCTION ToPrinter
 	*********************************************************************
 	** Method: xfcImage.ToPrinter
@@ -13703,18 +13586,18 @@ DEFINE CLASS xfcImage AS xfcgpobject
 		
 		
 		* API declarations for Basic Printing
-		TRY
-			xfcImageToPrinterDeclareDLL(0)
-		CATCH
-			DECLARE Long Sleep IN WIN32API AS xfcImageToPrinterDeclareDLL Long
+		DECLARE INTEGER StartPage IN GDI32 INTEGER hdc
+		DECLARE INTEGER EndPage IN GDI32 INTEGER hdc
+		DECLARE INTEGER EndDoc IN GDI32 INTEGER hdc
+		DECLARE INTEGER StartDoc IN GDI32 INTEGER hdc, STRING lpdi
 		
-			DECLARE INTEGER CreateDC IN WIN32API STRING cDriver, STRING cDevice, STRING cOutput, STRING @cInitData
-			DECLARE INTEGER DeleteDC IN Win32API INTEGER nDC
-			DECLARE INTEGER StartPage IN GDI32 INTEGER hdc
-			DECLARE INTEGER EndPage IN GDI32 INTEGER hdc
-			DECLARE INTEGER EndDoc IN GDI32 INTEGER hdc
-			DECLARE INTEGER StartDoc IN GDI32 INTEGER hdc, STRING lpdi
-		ENDTRY
+		DECLARE INTEGER OpenPrinter IN winspool.drv STRING  @pPrinterName, INTEGER @phPrinter, INTEGER pDefault
+		DECLARE INTEGER ClosePrinter IN winspool.drv INTEGER hPrinter
+		DECLARE LONG EnumForms IN winspool.drv AS EnumForms LONG hPrinter, LONG Level, LONG pForm, LONG cbBuf, LONG @pcbNeeded, LONG @ pcReturned
+		DECLARE INTEGER HeapCreate IN WIN32API INTEGER dwOptions, INTEGER dwInitialSize, INTEGER dwMaxSize
+		DECLARE INTEGER HeapAlloc IN WIN32API INTEGER hHeap, INTEGER dwFlags, INTEGER dwBytes
+		DECLARE INTEGER HeapFree IN WIN32API INTEGER hHeap, INTEGER dwFlags, INTEGER lpMem
+		DECLARE HeapDestroy IN WIN32API INTEGER hHeap
 		
 		
 		LOCAL lnPrinterDC, lcDocInfo
@@ -13778,19 +13661,6 @@ DEFINE CLASS xfcImage AS xfcgpobject
 		
 			IF m.lnPageWidth = -1 OR m.lnPageHeight = -1
 				* API declarations for Getting Paper Size
-				TRY
-					xfcImageGetPaperSizeDeclareDLL(0)
-				CATCH
-					DECLARE Long Sleep IN WIN32API AS xfcImageGetPaperSizeDeclareDLL Long
-		
-					DECLARE INTEGER OpenPrinter IN winspool.drv STRING  @pPrinterName, INTEGER @phPrinter, INTEGER pDefault
-					DECLARE INTEGER ClosePrinter IN winspool.drv INTEGER hPrinter
-					DECLARE LONG EnumForms IN winspool.drv AS EnumForms LONG hPrinter, LONG Level, LONG pForm, LONG cbBuf, LONG @pcbNeeded, LONG @ pcReturned
-					DECLARE INTEGER HeapCreate IN WIN32API INTEGER dwOptions, INTEGER dwInitialSize, INTEGER dwMaxSize
-					DECLARE INTEGER HeapAlloc IN WIN32API INTEGER hHeap, INTEGER dwFlags, INTEGER dwBytes
-					DECLARE INTEGER HeapFree IN WIN32API INTEGER hHeap, INTEGER dwFlags, INTEGER lpMem
-					DECLARE HeapDestroy IN WIN32API INTEGER hHeap
-				ENDTRY
 		
 				LOCAL lhHeap
 				* Allocate a heap
@@ -13908,7 +13778,7 @@ DEFINE CLASS xfcImage AS xfcgpobject
 			
 		
 			* Get Printer DC for the selected Printer
-			m.lnPrinterDC = CreateDC(NULL, m.tcPrinterName+0h00, NULL, NULL)
+			m.lnPrinterDC = xfcCreateDC(NULL, m.tcPrinterName+0h00, NULL, NULL)
 		
 			* Start Printing
 			IF m.lnPrinterDC <> 0
@@ -13927,7 +13797,7 @@ DEFINE CLASS xfcImage AS xfcgpobject
 		
 				EndPage(m.lnPrinterDC)
 				EndDoc(m.lnPrinterDC)
-				DeleteDC(m.lnPrinterDC)
+				xfcDeleteDC(m.lnPrinterDC)
 			ENDIF
 		
 		CATCH TO loExc
@@ -14251,8 +14121,6 @@ DEFINE CLASS xfcImageAnimator AS xfcdrawingbase
 	ENDFUNC
 
 
-
-
 	#IFDEF USE_MEMBERDATA
 	PROTECTED _memberdata
 	_memberdata = [<VFPData>]+;
@@ -14457,16 +14325,7 @@ DEFINE CLASS _xfcknowncolortable AS xfcdrawingbase
 
  
 	*********************************************************************
-	FUNCTION Init
-	*********************************************************************
-		
-		
-		This._DeclareDLL()
-	ENDFUNC
-
-
-	*********************************************************************
-	FUNCTION argbtoknowncolor
+	FUNCTION ArgbToKnownColor
 	*********************************************************************
 	LPARAMETERS tiArgb, tlEnumOnly
 		
@@ -14498,7 +14357,7 @@ DEFINE CLASS _xfcknowncolortable AS xfcdrawingbase
 
 
 	*********************************************************************
-	FUNCTION knowncolortoargb
+	FUNCTION KnownColorToArgb
 	*********************************************************************
 	LPARAMETERS tiColor
 		
@@ -14532,7 +14391,7 @@ DEFINE CLASS _xfcknowncolortable AS xfcdrawingbase
 
 
 	*********************************************************************
-	FUNCTION nametoknowncolor
+	FUNCTION NameToKnownColor
 	*********************************************************************
 	LPARAMETERS tcColor, tlEnumOnly
 		
@@ -14559,14 +14418,6 @@ DEFINE CLASS _xfcknowncolortable AS xfcdrawingbase
 			ENDIF
 			
 			RETURN m.loColor
-	ENDFUNC
-
-
-	*********************************************************************
-	PROTECTED FUNCTION _declaredll
-	*********************************************************************
-		
-		DECLARE Long GetSysColor IN WIN32API Long
 	ENDFUNC
 
 
@@ -14794,9 +14645,6 @@ DEFINE CLASS _xfcknowncolortable AS xfcdrawingbase
 	PROTECTED FUNCTION _initcolortable
 	*********************************************************************
 		
-		
-		
-		
 			DIMENSION laColorTable[0xaf]
 			This._UpdateSystemColors(@m.laColorTable)
 			m.laColorTable[0x1b] = 0xffffff
@@ -14951,7 +14799,7 @@ DEFINE CLASS _xfcknowncolortable AS xfcdrawingbase
 	LPARAMETERS tiIndex
 		
 			LOCAL liRgb, liArgb
-			m.liRgb = GetSysColor(m.tiIndex)
+			m.liRgb = xfcGetSysColor(m.tiIndex)
 			
 			RETURN This._Encode(0xff, ;
 							BITAND(m.liRgb,0xff), ;
@@ -24001,7 +23849,6 @@ DEFINE CLASS xfcSystemColors AS xfcdrawingbase
 		TRY
 			DODEFAULT()
 			THIS.ADDPROPERTY("oColor",CREATEOBJECT("xfcColor"))
-			DECLARE INTEGER GetSysColor IN "user32" INTEGER nIndex
 		CATCH TO loExc
 			THROW m.loExc
 		ENDTRY
@@ -24049,7 +23896,7 @@ DEFINE CLASS xfcSystemColors AS xfcdrawingbase
 		LOCAL loColor
 		LOCAL loExc AS Exception
 		TRY
-			m.loColor = This.oColor.FromRGB(GetSysColor(COLOR_ACTIVEBORDER))
+			m.loColor = This.oColor.FromRGB(xfcGetSysColor(COLOR_ACTIVEBORDER))
 		CATCH TO loExc
 			THROW m.loExc
 		ENDTRY
@@ -24077,7 +23924,7 @@ DEFINE CLASS xfcSystemColors AS xfcdrawingbase
 		LOCAL loColor
 		LOCAL loExc AS Exception
 		TRY
-			m.loColor = This.oColor.FromRGB(GetSysColor(COLOR_CAPTIONTEXT))
+			m.loColor = This.oColor.FromRGB(xfcGetSysColor(COLOR_CAPTIONTEXT))
 		CATCH TO loExc
 			THROW m.loExc
 		ENDTRY
@@ -24105,7 +23952,7 @@ DEFINE CLASS xfcSystemColors AS xfcdrawingbase
 		LOCAL loColor
 		LOCAL loExc AS Exception
 		TRY
-			m.loColor = This.oColor.FromRGB(GetSysColor(COLOR_ACTIVECAPTION))
+			m.loColor = This.oColor.FromRGB(xfcGetSysColor(COLOR_ACTIVECAPTION))
 		CATCH TO loExc
 			THROW m.loExc
 		ENDTRY
@@ -24134,7 +23981,7 @@ DEFINE CLASS xfcSystemColors AS xfcdrawingbase
 		LOCAL loColor
 		LOCAL loExc AS Exception
 		TRY
-			m.loColor = This.oColor.FromRGB(GetSysColor(COLOR_APPWORKSPACE))
+			m.loColor = This.oColor.FromRGB(xfcGetSysColor(COLOR_APPWORKSPACE))
 		CATCH TO loExc
 			THROW m.loExc
 		ENDTRY
@@ -24162,7 +24009,7 @@ DEFINE CLASS xfcSystemColors AS xfcdrawingbase
 		LOCAL loColor
 		LOCAL loExc AS Exception
 		TRY
-			m.loColor = This.oColor.FromRGB(GetSysColor(COLOR_3DDKSHADOW))
+			m.loColor = This.oColor.FromRGB(xfcGetSysColor(COLOR_3DDKSHADOW))
 		CATCH TO loExc
 			THROW m.loExc
 		ENDTRY
@@ -24190,7 +24037,7 @@ DEFINE CLASS xfcSystemColors AS xfcdrawingbase
 		LOCAL loColor
 		LOCAL loExc AS Exception
 		TRY
-			m.loColor = This.oColor.FromRGB(GetSysColor(COLOR_3DSHADOW))
+			m.loColor = This.oColor.FromRGB(xfcGetSysColor(COLOR_3DSHADOW))
 		CATCH TO loExc
 			THROW m.loExc
 		ENDTRY
@@ -24218,7 +24065,7 @@ DEFINE CLASS xfcSystemColors AS xfcdrawingbase
 		LOCAL loColor
 		LOCAL loExc AS Exception
 		TRY
-			m.loColor = This.oColor.FromRGB(GetSysColor(COLOR_3DHIGHLIGHT))
+			m.loColor = This.oColor.FromRGB(xfcGetSysColor(COLOR_3DHIGHLIGHT))
 		CATCH TO loExc
 			THROW m.loExc
 		ENDTRY
@@ -24246,7 +24093,7 @@ DEFINE CLASS xfcSystemColors AS xfcdrawingbase
 		LOCAL loColor
 		LOCAL loExc AS Exception
 		TRY
-			m.loColor = This.oColor.FromRGB(GetSysColor(COLOR_3DLIGHT))
+			m.loColor = This.oColor.FromRGB(xfcGetSysColor(COLOR_3DLIGHT))
 		CATCH TO loExc
 			THROW m.loExc
 		ENDTRY
@@ -24273,7 +24120,7 @@ DEFINE CLASS xfcSystemColors AS xfcdrawingbase
 		LOCAL loColor
 		LOCAL loExc AS Exception
 		TRY
-			m.loColor = This.oColor.FromRGB(GetSysColor(COLOR_BTNTEXT))
+			m.loColor = This.oColor.FromRGB(xfcGetSysColor(COLOR_BTNTEXT))
 		CATCH TO loExc
 			THROW m.loExc
 		ENDTRY
@@ -24300,7 +24147,7 @@ DEFINE CLASS xfcSystemColors AS xfcdrawingbase
 		LOCAL loColor
 		LOCAL loExc AS Exception
 		TRY
-			m.loColor = This.oColor.FromRGB(GetSysColor(COLOR_3DFACE))
+			m.loColor = This.oColor.FromRGB(xfcGetSysColor(COLOR_3DFACE))
 		CATCH TO loExc
 			THROW m.loExc
 		ENDTRY
@@ -24327,7 +24174,7 @@ DEFINE CLASS xfcSystemColors AS xfcdrawingbase
 		LOCAL loColor
 		LOCAL loExc AS Exception
 		TRY
-			m.loColor = This.oColor.FromRGB(GetSysColor(COLOR_DESKTOP))
+			m.loColor = This.oColor.FromRGB(xfcGetSysColor(COLOR_DESKTOP))
 		CATCH TO loExc
 			THROW m.loExc
 		ENDTRY
@@ -24355,7 +24202,7 @@ DEFINE CLASS xfcSystemColors AS xfcdrawingbase
 		LOCAL loColor
 		LOCAL loExc AS Exception
 		TRY
-			m.loColor = This.oColor.FromRGB(GetSysColor(COLOR_GRAYTEXT))
+			m.loColor = This.oColor.FromRGB(xfcGetSysColor(COLOR_GRAYTEXT))
 		CATCH TO loExc
 			THROW m.loExc
 		ENDTRY
@@ -24384,7 +24231,7 @@ DEFINE CLASS xfcSystemColors AS xfcdrawingbase
 		LOCAL loColor
 		LOCAL loExc AS Exception
 		TRY
-			m.loColor = This.oColor.FromRGB(GetSysColor(COLOR_HIGHLIGHTTEXT))
+			m.loColor = This.oColor.FromRGB(xfcGetSysColor(COLOR_HIGHLIGHTTEXT))
 		CATCH TO loExc
 			THROW m.loExc
 		ENDTRY
@@ -24413,7 +24260,7 @@ DEFINE CLASS xfcSystemColors AS xfcdrawingbase
 		LOCAL loColor
 		LOCAL loExc AS Exception
 		TRY
-			m.loColor = This.oColor.FromRGB(GetSysColor(COLOR_HIGHLIGHT))
+			m.loColor = This.oColor.FromRGB(xfcGetSysColor(COLOR_HIGHLIGHT))
 		CATCH TO loExc
 			THROW m.loExc
 		ENDTRY
@@ -24441,7 +24288,7 @@ DEFINE CLASS xfcSystemColors AS xfcdrawingbase
 		LOCAL loColor
 		LOCAL loExc AS Exception
 		TRY
-			m.loColor = This.oColor.FromRGB(GetSysColor(COLOR_HOTLIGHT))
+			m.loColor = This.oColor.FromRGB(xfcGetSysColor(COLOR_HOTLIGHT))
 		CATCH TO loExc
 			THROW m.loExc
 		ENDTRY
@@ -24468,7 +24315,7 @@ DEFINE CLASS xfcSystemColors AS xfcdrawingbase
 		LOCAL loColor
 		LOCAL loExc AS Exception
 		TRY
-			m.loColor = This.oColor.FromRGB(GetSysColor(COLOR_INACTIVEBORDER))
+			m.loColor = This.oColor.FromRGB(xfcGetSysColor(COLOR_INACTIVEBORDER))
 		CATCH TO loExc
 			THROW m.loExc
 		ENDTRY
@@ -24496,7 +24343,7 @@ DEFINE CLASS xfcSystemColors AS xfcdrawingbase
 		LOCAL loColor
 		LOCAL loExc AS Exception
 		TRY
-			m.loColor = This.oColor.FromRGB(GetSysColor(COLOR_INACTIVECAPTIONTEXT))
+			m.loColor = This.oColor.FromRGB(xfcGetSysColor(COLOR_INACTIVECAPTIONTEXT))
 		CATCH TO loExc
 			THROW m.loExc
 		ENDTRY
@@ -24524,7 +24371,7 @@ DEFINE CLASS xfcSystemColors AS xfcdrawingbase
 		LOCAL loColor
 		LOCAL loExc AS Exception
 		TRY
-			m.loColor = This.oColor.FromRGB(GetSysColor(COLOR_INACTIVECAPTION))
+			m.loColor = This.oColor.FromRGB(xfcGetSysColor(COLOR_INACTIVECAPTION))
 		CATCH TO loExc
 			THROW m.loExc
 		ENDTRY
@@ -24551,7 +24398,7 @@ DEFINE CLASS xfcSystemColors AS xfcdrawingbase
 		LOCAL loColor
 		LOCAL loExc AS Exception
 		TRY
-			m.loColor = This.oColor.FromRGB(GetSysColor(COLOR_INFOTEXT))
+			m.loColor = This.oColor.FromRGB(xfcGetSysColor(COLOR_INFOTEXT))
 		CATCH TO loExc
 			THROW m.loExc
 		ENDTRY
@@ -24578,7 +24425,7 @@ DEFINE CLASS xfcSystemColors AS xfcdrawingbase
 		LOCAL loColor
 		LOCAL loExc AS Exception
 		TRY
-			m.loColor = This.oColor.FromRGB(GetSysColor(COLOR_INFOBK))
+			m.loColor = This.oColor.FromRGB(xfcGetSysColor(COLOR_INFOBK))
 		CATCH TO loExc
 			THROW m.loExc
 		ENDTRY
@@ -24605,7 +24452,7 @@ DEFINE CLASS xfcSystemColors AS xfcdrawingbase
 		LOCAL loColor
 		LOCAL loExc AS Exception
 		TRY
-			m.loColor = This.oColor.FromRGB(GetSysColor(COLOR_MENUTEXT))
+			m.loColor = This.oColor.FromRGB(xfcGetSysColor(COLOR_MENUTEXT))
 		CATCH TO loExc
 			THROW m.loExc
 		ENDTRY
@@ -24632,7 +24479,7 @@ DEFINE CLASS xfcSystemColors AS xfcdrawingbase
 		LOCAL loColor
 		LOCAL loExc AS Exception
 		TRY
-			m.loColor = This.oColor.FromRGB(GetSysColor(COLOR_MENU))
+			m.loColor = This.oColor.FromRGB(xfcGetSysColor(COLOR_MENU))
 		CATCH TO loExc
 			THROW m.loExc
 		ENDTRY
@@ -24659,7 +24506,7 @@ DEFINE CLASS xfcSystemColors AS xfcdrawingbase
 		LOCAL loColor
 		LOCAL loExc AS Exception
 		TRY
-			m.loColor = This.oColor.FromRGB(GetSysColor(COLOR_SCROLLBAR))
+			m.loColor = This.oColor.FromRGB(xfcGetSysColor(COLOR_SCROLLBAR))
 		CATCH TO loExc
 			THROW m.loExc
 		ENDTRY
@@ -24686,7 +24533,7 @@ DEFINE CLASS xfcSystemColors AS xfcdrawingbase
 		LOCAL loColor
 		LOCAL loExc AS Exception
 		TRY
-			m.loColor = This.oColor.FromRGB(GetSysColor(COLOR_WINDOWFRAME))
+			m.loColor = This.oColor.FromRGB(xfcGetSysColor(COLOR_WINDOWFRAME))
 		CATCH TO loExc
 			THROW m.loExc
 		ENDTRY
@@ -24713,7 +24560,7 @@ DEFINE CLASS xfcSystemColors AS xfcdrawingbase
 		LOCAL loColor
 		LOCAL loExc AS Exception
 		TRY
-			m.loColor = This.oColor.FromRGB(GetSysColor(COLOR_WINDOWTEXT))
+			m.loColor = This.oColor.FromRGB(xfcGetSysColor(COLOR_WINDOWTEXT))
 		CATCH TO loExc
 			THROW m.loExc
 		ENDTRY
@@ -24741,7 +24588,7 @@ DEFINE CLASS xfcSystemColors AS xfcdrawingbase
 		LOCAL loColor
 		LOCAL loExc AS Exception
 		TRY
-			m.loColor = This.oColor.FromRGB(GetSysColor(COLOR_WINDOW))
+			m.loColor = This.oColor.FromRGB(xfcGetSysColor(COLOR_WINDOW))
 		CATCH TO loExc
 			THROW m.loExc
 		ENDTRY
@@ -24828,7 +24675,6 @@ DEFINE CLASS xfcSystemIcons AS xfcdrawingbase
 		TRY
 			DODEFAULT()
 			This.oIcon = CREATEOBJECT("xfcIcon")
-			DECLARE INTEGER LoadIcon IN user32 INTEGER hInstance, INTEGER lpIconName
 		CATCH TO loExc
 			THROW m.loExc
 		ENDTRY
@@ -24875,7 +24721,7 @@ DEFINE CLASS xfcSystemIcons AS xfcdrawingbase
 		LOCAL loIcon, lhIcon
 		LOCAL loExc AS EXCEPTION
 		TRY
-			m.lhIcon = LoadIcon(0, IDI_APPLICATION)
+			m.lhIcon = xfcLoadIcon(0, IDI_APPLICATION)
 			IF(m.lhIcon <> 0)
 				m.loIcon = THIS.oIcon.FromHandle(m.lhIcon)
 			ENDIF
@@ -24905,7 +24751,7 @@ DEFINE CLASS xfcSystemIcons AS xfcdrawingbase
 		LOCAL loIcon, lhIcon
 		LOCAL loExc AS EXCEPTION
 		TRY
-			m.lhIcon = LoadIcon(0, IDI_ASTERISK)
+			m.lhIcon = xfcLoadIcon(0, IDI_ASTERISK)
 			IF(m.lhIcon <> 0)
 				m.loIcon = THIS.oIcon.FromHandle(m.lhIcon)
 			ENDIF
@@ -24935,7 +24781,7 @@ DEFINE CLASS xfcSystemIcons AS xfcdrawingbase
 		LOCAL loIcon, lhIcon
 		LOCAL loExc AS EXCEPTION
 		TRY
-			m.lhIcon = LoadIcon(0, IDI_ERROR)
+			m.lhIcon = xfcLoadIcon(0, IDI_ERROR)
 			IF(m.lhIcon <> 0)
 				m.loIcon = THIS.oIcon.FromHandle(m.lhIcon)
 			ENDIF
@@ -24965,7 +24811,7 @@ DEFINE CLASS xfcSystemIcons AS xfcdrawingbase
 		LOCAL loIcon, lhIcon
 		LOCAL loExc AS EXCEPTION
 		TRY
-			m.lhIcon = LoadIcon(0, IDI_EXCLAMATION)
+			m.lhIcon = xfcLoadIcon(0, IDI_EXCLAMATION)
 			IF(m.lhIcon <> 0)
 				m.loIcon = THIS.oIcon.FromHandle(m.lhIcon)
 			ENDIF
@@ -24995,7 +24841,7 @@ DEFINE CLASS xfcSystemIcons AS xfcdrawingbase
 		LOCAL loIcon, lhIcon
 		LOCAL loExc AS EXCEPTION
 		TRY
-			m.lhIcon = LoadIcon(0, IDI_HAND)
+			m.lhIcon = xfcLoadIcon(0, IDI_HAND)
 			IF(m.lhIcon <> 0)
 				m.loIcon = THIS.oIcon.FromHandle(m.lhIcon)
 			ENDIF
@@ -25025,7 +24871,7 @@ DEFINE CLASS xfcSystemIcons AS xfcdrawingbase
 		LOCAL loIcon, lhIcon
 		LOCAL loExc AS EXCEPTION
 		TRY
-			m.lhIcon = LoadIcon(0, IDI_INFORMATION)
+			m.lhIcon = xfcLoadIcon(0, IDI_INFORMATION)
 			IF(m.lhIcon <> 0)
 				m.loIcon = THIS.oIcon.FromHandle(m.lhIcon)
 			ENDIF
@@ -25055,7 +24901,7 @@ DEFINE CLASS xfcSystemIcons AS xfcdrawingbase
 		LOCAL loIcon, lhIcon
 		LOCAL loExc AS EXCEPTION
 		TRY
-			m.lhIcon = LoadIcon(0, IDI_QUESTION)
+			m.lhIcon = xfcLoadIcon(0, IDI_QUESTION)
 			IF(m.lhIcon <> 0)
 				m.loIcon = THIS.oIcon.FromHandle(m.lhIcon)
 			ENDIF
@@ -25085,7 +24931,7 @@ DEFINE CLASS xfcSystemIcons AS xfcdrawingbase
 		LOCAL loIcon, lhIcon
 		LOCAL loExc AS EXCEPTION
 		TRY
-			m.lhIcon = LoadIcon(0, IDI_WARNING)
+			m.lhIcon = xfcLoadIcon(0, IDI_WARNING)
 			IF(m.lhIcon <> 0)
 				m.loIcon = THIS.oIcon.FromHandle(m.lhIcon)
 			ENDIF
@@ -25115,7 +24961,7 @@ DEFINE CLASS xfcSystemIcons AS xfcdrawingbase
 		LOCAL loIcon, lhIcon
 		LOCAL loExc AS EXCEPTION
 		TRY
-			m.lhIcon = LoadIcon(0, IDI_WINLOGO)
+			m.lhIcon = xfcLoadIcon(0, IDI_WINLOGO)
 			IF(m.lhIcon <> 0)
 				m.loIcon = THIS.oIcon.FromHandle(m.lhIcon)
 			ENDIF
@@ -26588,20 +26434,6 @@ FUNCTION xfcCreateCompatibleBitmap(hDC, width, Height)
 ENDFUNC
 
 *********************************************************************
-FUNCTION xfcCreateCompatibleDC(hDC)
-*********************************************************************
-	DECLARE Integer CreateCompatibleDC IN WIN32API AS xfcCreateCompatibleDC Integer hDC
-	RETURN xfcCreateCompatibleDC(m.hDC)
-ENDFUNC
-
-*********************************************************************
-FUNCTION xfcGetDC(hWnd)
-*********************************************************************
-	DECLARE Integer GetDC IN WIN32API AS xfcGetDC Integer hWnd
-	RETURN xfcGetDC(m.hWnd)
-ENDFUNC
-
-*********************************************************************
 FUNCTION xfcGetWindowRect(hwnd, lpRect)
 *********************************************************************
 	DECLARE Long GetWindowRect IN WIN32API AS xfcGetWindowRect Long hwnd, String @lpRect
@@ -26844,13 +26676,6 @@ FUNCTION xfcGdipBeginContainerI(graphics, dstrect, srcRect, unit, State)
 ENDFUNC
 
 *********************************************************************
-FUNCTION xfcGdipCloneStringFormat(StringFormat, newFormat)
-*********************************************************************
-	DECLARE Long GdipCloneStringFormat IN GDIPLUS.DLL AS xfcGdipCloneStringFormat Long StringFormat, Long @newFormat
-	RETURN xfcGdipCloneStringFormat(m.StringFormat, @m.newFormat)
-ENDFUNC
-
-*********************************************************************
 FUNCTION xfcGdipComment(graphics, sizeData, nData)
 *********************************************************************
 	DECLARE Long GdipComment IN GDIPLUS.DLL AS xfcGdipComment Long graphics, Long sizeData, String @nData
@@ -26886,24 +26711,10 @@ FUNCTION xfcGdipCreateHalftonePalette()
 ENDFUNC
 
 *********************************************************************
-FUNCTION xfcGdipCreateStringFormat(formatAttributes, language, StringFormat)
-*********************************************************************
-	DECLARE Long GdipCreateStringFormat IN GDIPLUS.DLL AS xfcGdipCreateStringFormat Integer formatAttributes, Integer language, Long @StringFormat
-	RETURN xfcGdipCreateStringFormat(m.formatAttributes, m.language, @m.StringFormat)
-ENDFUNC
-
-*********************************************************************
 FUNCTION xfcGdipDeleteGraphics(graphics)
 *********************************************************************
 	DECLARE Long GdipDeleteGraphics IN GDIPLUS.DLL AS xfcGdipDeleteGraphics Long graphics
 	RETURN xfcGdipDeleteGraphics(m.graphics)
-ENDFUNC
-
-*********************************************************************
-FUNCTION xfcGdipDeleteStringFormat(StringFormat)
-*********************************************************************
-	DECLARE Long GdipDeleteStringFormat IN GDIPLUS.DLL AS xfcGdipDeleteStringFormat Long StringFormat
-	RETURN xfcGdipDeleteStringFormat(m.StringFormat)
 ENDFUNC
 
 *********************************************************************
@@ -28217,13 +28028,6 @@ FUNCTION xfcCopyImage(hImage, uType, cx, cy, uFlags)
 ENDFUNC
 
 *********************************************************************
-FUNCTION xfcDeleteObject(hObject)
-*********************************************************************
-	DECLARE Integer DeleteObject IN WIN32API AS xfcDeleteObject Integer hObject
-	RETURN xfcDeleteObject(m.hObject)
-ENDFUNC
-
-*********************************************************************
 FUNCTION xfcGlobalAlloc(nFlags, nSize)
 *********************************************************************
 	DECLARE Long GlobalAlloc IN WIN32API AS xfcGlobalAlloc Long nFlags, Long nSize
@@ -28847,7 +28651,8 @@ ENDFUNC
 
 #ENDIF
 
-#IFDEF USECLASS_XFCSTRINGFORMAT
+
+** Also used by xfcGraphics
 *********************************************************************
 FUNCTION xfcGdipCloneStringFormat(StringFormat, newFormat)
 *********************************************************************
@@ -28858,7 +28663,7 @@ ENDFUNC
 *********************************************************************
 FUNCTION xfcGdipCreateStringFormat(formatAttributes, language, StringFormat)
 *********************************************************************
-	DECLARE Long GdipCreateStringFormat IN GDIPLUS.DLL AS xfcGdipCreateStringFormat Long formatAttributes, Integer language, Long @StringFormat
+	DECLARE Long GdipCreateStringFormat IN GDIPLUS.DLL AS xfcGdipCreateStringFormat Integer formatAttributes, Integer language, Long @StringFormat
 	RETURN xfcGdipCreateStringFormat(m.formatAttributes, m.language, @m.StringFormat)
 ENDFUNC
 
@@ -28869,6 +28674,11 @@ FUNCTION xfcGdipDeleteStringFormat(StringFormat)
 	RETURN xfcGdipDeleteStringFormat(m.StringFormat)
 ENDFUNC
 
+
+
+
+
+#IFDEF USECLASS_XFCSTRINGFORMAT
 *********************************************************************
 FUNCTION xfcGdipGetStringFormatAlign(StringFormat, Align)
 *********************************************************************
@@ -29111,27 +28921,6 @@ ENDFUNC
 
 
 *********************************************************************
-FUNCTION CreateCompatibleDC(hdc)
-*********************************************************************
-	DECLARE Long CreateCompatibleDC IN WIN32API AS CreateCompatibleDC Long hdc
-	RETURN CreateCompatibleDC(m.hdc)
-ENDFUNC
-		      
-*********************************************************************
-FUNCTION DeleteDC(hdc)
-*********************************************************************
-	DECLARE Long DeleteDC IN WIN32API AS DeleteDC Long hdc
-	RETURN DeleteDC(m.hdc)
-ENDFUNC
-
-*********************************************************************
-FUNCTION GetWindowDC(hwnd)
-*********************************************************************
-	DECLARE Long GetWindowDC IN WIN32API AS GetWindowDC Long hwnd
-	RETURN GetWindowDC(m.hwnd)
-ENDFUNC
-
-*********************************************************************
 FUNCTION ZeroMemory(dest,numBytes)
 *********************************************************************
 	DECLARE Long RtlZeroMemory IN WIN32API AS ZeroMemory Integer dest, Integer numBytes
@@ -29139,20 +28928,12 @@ FUNCTION ZeroMemory(dest,numBytes)
 ENDFUNC
 		
 *********************************************************************
-FUNCTION GetDIBits(hdc, hbmp, uStartScan, cScanLines, lpvBits, lpbi, uUsage)
+FUNCTION xfcGetDIBits(hdc, hbmp, uStartScan, cScanLines, lpvBits, lpbi, uUsage)
 *********************************************************************
-	DECLARE Long GetDIBits IN WIN32API AS GetDIBits Integer hdc, Integer hbmp, Integer uStartScan, Integer cScanLines, Integer lpvBits, String @lpbi, Integer uUsage
-	RETURN GetDIBits(m.hdc, m.hbmp, m.uStartScan, m.cScanLines, m.lpvBits, @m.lpbi, m.uUsage)
+	DECLARE Long GetDIBits IN WIN32API AS xfcGetDIBits Integer hdc, Integer hbmp, Integer uStartScan, Integer cScanLines, Integer lpvBits, String @lpbi, Integer uUsage
+	RETURN xfcGetDIBits(m.hdc, m.hbmp, m.uStartScan, m.cScanLines, m.lpvBits, @m.lpbi, m.uUsage)
 ENDFUNC
 
-
-
-*********************************************************************
-FUNCTION xfcGetDC(hWnd)
-*********************************************************************
-	DECLARE Long GetDC IN WIN32API AS xfcGetDC Long hWnd
-	RETURN xfcGetDC(m.hWnd)
-ENDFUNC
 
 *********************************************************************
 FUNCTION xfcReleaseDC(hWnd, hDC)
@@ -29161,3 +28942,115 @@ FUNCTION xfcReleaseDC(hWnd, hDC)
 	RETURN xfcReleaseDC(m.hWnd, m.hDC)
 ENDFUNC
 
+
+*********************************************************************
+FUNCTION xfcDeleteObject(hObject)
+*********************************************************************
+	DECLARE Integer DeleteObject IN WIN32API AS xfcDeleteObject Integer hObject
+	RETURN xfcDeleteObject(m.hObject)
+ENDFUNC
+
+*********************************************************************
+FUNCTION xfcGetDC(hWnd)
+*********************************************************************
+	DECLARE Integer GetDC IN WIN32API AS xfcGetDC Integer hWnd
+	RETURN xfcGetDC(m.hWnd)
+ENDFUNC
+
+*********************************************************************
+FUNCTION xfcCreateCompatibleDC(hDC)
+*********************************************************************
+	DECLARE Integer CreateCompatibleDC IN WIN32API AS xfcCreateCompatibleDC Integer hDC
+	RETURN xfcCreateCompatibleDC(m.hDC)
+ENDFUNC
+
+*********************************************************************
+FUNCTION xfcDeleteDC(hdc)
+*********************************************************************
+	DECLARE Long DeleteDC IN WIN32API AS xfcDeleteDC Long hdc
+	RETURN xfcDeleteDC(m.hdc)
+ENDFUNC
+
+*********************************************************************
+FUNCTION xfcGetWindowDC(hwnd)
+*********************************************************************
+	DECLARE Long GetWindowDC IN WIN32API AS xfcGetWindowDC Long hwnd
+	RETURN xfcGetWindowDC(m.hwnd)
+ENDFUNC
+
+*********************************************************************
+FUNCTION xfcGetDesktopWindow()
+*********************************************************************
+	DECLARE Long GetDesktopWindow IN WIN32API AS xfcGetDesktopWindow
+	RETURN xfcGetDesktopWindow()
+ENDFUNC
+
+*********************************************************************
+FUNCTION xfcMoveWindow(hwnd, x, y, nWidth, nHeight, bRepaint)
+*********************************************************************
+	DECLARE Long MoveWindow IN WIN32API AS xfcMoveWindow INTEGER hWnd, INTEGER X, INTEGER Y, INTEGER nWidth, INTEGER nHeight, INTEGER bRepaint
+	RETURN xfcMoveWindow(m.hwnd, m.x, m.y, m.nWidth, m.nHeight, m.bRepaint)
+ENDFUNC
+
+*********************************************************************
+FUNCTION xfcOpenClipboard(hwnd)
+*********************************************************************
+	DECLARE Long OpenClipboard IN WIN32API AS xfcOpenClipboard Long hWnd
+	RETURN xfcOpenClipboard(m.hwnd)
+ENDFUNC
+
+*********************************************************************
+FUNCTION xfcCloseClipboard()
+*********************************************************************
+	DECLARE Long CloseClipboard IN WIN32API AS xfcCloseClipboard
+	RETURN xfcCloseClipboard()
+ENDFUNC
+
+*********************************************************************
+FUNCTION xfcGetClipboardData(uFormat)
+*********************************************************************
+	DECLARE Long GetClipboardData IN WIN32API AS xfcGetClipboardData Long uFormat
+	RETURN xfcGetClipboardData(m.uFormat)
+ENDFUNC
+
+*********************************************************************
+FUNCTION xfcEmptyClipboard()
+*********************************************************************
+	DECLARE Long EmptyClipboard IN WIN32API AS xfcEmptyClipboard
+	RETURN xfcEmptyClipboard()
+ENDFUNC
+
+*********************************************************************
+FUNCTION xfcSetClipboardData(uFormat, HMEM)
+*********************************************************************
+	DECLARE Long SetClipboardData IN WIN32API AS xfcSetClipboardData LONG uFormat, LONG HMEM
+	RETURN xfcSetClipboardData(m.uFormat, m.HMEM)
+ENDFUNC
+
+*********************************************************************
+FUNCTION xfcCopyImage(hImage, uType, cx, cy, uFlags)
+*********************************************************************
+	DECLARE Long CopyImage IN WIN32API AS xfcCopyImage LONG hImage, LONG uType, LONG cx, LONG cy, LONG uFlags
+	RETURN xfcCopyImage(m.hImage, m.uType, m.cx, m.cy, m.uFlags)
+ENDFUNC
+
+*********************************************************************
+FUNCTION xfcCreateDC(cDriver, cDevice, cOUtput, cInitData)
+*********************************************************************
+	DECLARE Long CreateDC IN WIN32API AS xfcCreateDC STRING cDriver, STRING cDevice, STRING cOutput, STRING @cInitData
+	RETURN xfcCreateDC(m.cDriver, m.cDevice, m.cOUtput, @m.cInitData)
+ENDFUNC
+
+*********************************************************************
+FUNCTION xfcGetSysColor(nIndex)
+*********************************************************************
+	DECLARE Long GetSysColor IN WIN32API AS xfcGetSysColor Long nIndex
+	RETURN xfcGetSysColor(m.nIndex)
+ENDFUNC
+
+*********************************************************************
+FUNCTION xfcLoadIcon(hInstance, lpIconName)
+*********************************************************************
+	DECLARE Long LoadIcon IN WIN32API AS xfcLoadIcon INTEGER hInstance, INTEGER lpIconName
+	RETURN xfcLoadIcon(m.hInstance, m.lpIconName)
+ENDFUNC
