@@ -68,7 +68,7 @@ _memberdata XML Metadata for customizable properties
 [PLATFORM] WINDOWS 
 [UNIQUEID] _1TP0L3VWK
 [CLASS] imgcanvas
-[CLASSLOC] ..\source\gdiplusx.vcx
+[CLASSLOC] ..\gdiplusx.vcx
 [BASECLASS] image
 [OBJNAME] Imgcanvas1
 [PARENT] Form1
@@ -492,7 +492,7 @@ Name = "Label5"
 [PLATFORM] WINDOWS 
 [UNIQUEID] _1TP0L3VWK
 [CLASS] imgcanvas
-[CLASSLOC] ..\source\gdiplusx.vcx
+[CLASSLOC] ..\gdiplusx.vcx
 [BASECLASS] image
 [OBJNAME] Imgcanvas2
 [PARENT] Form1
@@ -593,7 +593,7 @@ ENDPROC
 [OBJNAME] Image1
 [PARENT] Form1
 [START PROPERTIES]
-Picture = ("..\samples\image\foxprologo2.png")
+Picture = image\foxprologo2.png
 Stretch = 1
 Height = 60
 Left = 132
@@ -606,7 +606,7 @@ Name = "Image1"
 [PLATFORM] WINDOWS 
 [UNIQUEID] _1YK134XV1
 [CLASS] imgcanvas
-[CLASSLOC] ..\source\gdiplusx.vcx
+[CLASSLOC] ..\gdiplusx.vcx
 [BASECLASS] image
 [OBJNAME] Imgcanvas3
 [PARENT] Form1
