@@ -43,11 +43,9 @@ Name = "Form1"
 [END PROPERTIES]
 [START METHODS]
 PROCEDURE Init
-LOCAL lcSourcePath
+DO (LOCFILE("System.prg"))
 
-lcSourcePath = FULLPATH("..\source\", ADDBS(JUSTPATH(SYS(1271,This))))
 
-ADDPROPERTY(_screen, "System", NEWOBJECT("xfcSystem",lcSourcePath+"system.vcx"))
 
 ENDPROC
 [END METHODS]
