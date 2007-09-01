@@ -4,7 +4,7 @@ IF EMPTY(lcImage)
 	RETURN
 ENDIF
 
-_SCREEN.AddProperty("System", NEWOBJECT("_SCREEN.AddProperty("System", NEWOBJECT("xfcSystem", LOCFILE("system.vcx","vcx")))", LOCFILE("system.vcx"))) 
+DO LOCFILE("System.prg")
 
 LOCAL loImg AS xfcImage
 
