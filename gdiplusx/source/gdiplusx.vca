@@ -44,13 +44,11 @@ _hwnd
 _hbitmapold
 deleteosb
 renderosb
-declaredll
 createosb
 rectangle_access
 smoothingmode_assign
 textrenderinghint_assign
 interpolationmode_assign
-obmp_access
 width_access
 height_access
 backstyle_access
@@ -68,26 +66,19 @@ ENDIF
 ENDPROC
 PROCEDURE Init
 LOCAL lcPath
-This.DeclareDLL()
 
-DO LOCFILE("System.prg")
-
-*!*	IF VARTYPE(_SCREEN.System) <> "O"
-*!*		m.lcPath = ADDBS(JUSTPATH(SUBSTR(SYS(16), AT(" ",SYS(16),2)+1)))
-*!*		DO (m.lcPath+"system.prg")
-*!*	ENDIF
+IF VARTYPE(_SCREEN.System) <> "O"
+	m.lcPath = ADDBS(JUSTPATH(SUBSTR(SYS(16), AT(" ",SYS(16),2)+1)))
+	DO (m.lcPath+"system.prg")
+ENDIF
 
 This.CreateOSB()
 This.Controls=CREATEOBJECT("Collection")
 This.Setup()
 
 BINDEVENT(ThisForm, "Activate", This, "Draw")
+BINDEVENT(This.Parent, "Resize", This, "Resize")
 
-IF This.Parent.BaseClass == "Page"
-	BINDEVENT(This.Parent.Parent, "Resize", This, "Resize")
-ELSE
-	BINDEVENT(This.Parent, "Resize", This, "Resize")
-ENDIF
 ENDPROC
 PROCEDURE backstyle_access
 This.Draw()
@@ -126,53 +117,16 @@ ENDIF
 This._BMPWidth = m.tnWidth
 This._BMPHeight = m.tnHeight
 
-m.hdc = GetDC(0)
-m.hdcMem = CreateCompatibleDC(m.hdc)
-m.hBitmap = CreateCompatibleBitmap(m.hdc, m.tnWidth, m.tnHeight)
-IF m.hBitmap <> 0
-	This._hBitmapOld = SelectObject(m.hdcMem, m.hBitmap)
-ENDIF
-ReleaseDC(0,m.hdc)
+This.oBmp = _SCREEN.System.Drawing.Bitmap.New(m.tnWidth, m.tnHeight)
 
-This.hDC = m.hdcMem
-This.oGfx = _SCREEN.System.Drawing.Graphics.FromHDC(This.hDC)
-
+This.oGfx = _SCREEN.System.Drawing.Graphics.FromImage(This.oBmp)
 This.oGfx.SmoothingMode = This.SmoothingMode
 This.oGfx.TextRenderingHint = This.TextRenderingHint
 This.oGfx.InterpolationMode = This.InterpolationMode
-
-ENDPROC
-PROCEDURE declaredll
-DECLARE Long GetDC IN WIN32API Long
-DECLARE Long ReleaseDC IN WIN32API Long, Long
-DECLARE Long DeleteDC IN WIN32API Long
-DECLARE Long CreateCompatibleDC IN WIN32API Long hdc
-DECLARE Long CreateCompatibleBitmap IN WIN32API Long hdc, Long width, Long height
-DECLARE Long SelectObject IN WIN32API Long, Long
-DECLARE Long DeleteObject IN WIN32API Long
-DECLARE Long GetCurrentObject IN WIN32API Long, Integer
-DECLARE Long GetStockObject IN WIN32API Integer
-DECLARE Long GetObjectA IN WIN32API Long, Integer, String@
-
-DECLARE Long GetDIBits IN WIN32API Long hdc, Long hBitmap, Integer, Integer, Long, String@, Integer
-
-DECLARE Long SelectPalette IN WIN32API I Long hdc, Long hpalette, Long bool
-DECLARE Long RealizePalette IN WIN32API Long hdc
-
-DECLARE Long GlobalAlloc IN WIN32API Long, Long
-DECLARE Long GlobalUnlock IN WIN32API Long
-DECLARE Long GlobalFree IN WIN32API Long
-
 ENDPROC
 PROCEDURE deleteosb
-LOCAL hBitmap
-IF This.HDC <> 0
-	This.oGfx = NULL
-	DeleteObject(SelectObject(This.HDC, This._hBitmapOld))
-	DeleteDC(This.HDC)
-	This.HDC = 0
-	This.oBMP = NULL
-ENDIF
+This.oGfx = NULL
+This.oBMP = NULL
 ENDPROC
 PROCEDURE draw
 LPARAMETERS tnWidth, tnHeight
@@ -203,28 +157,6 @@ THIS.InterpolationMode = m.vNewVal
 This.oGfx.InterpolationMode = m.vNewVal
 
 ENDPROC
-PROCEDURE obmp_access
-*********************************************************************
-** Method: oBMP_Access
-**
-** Creates a Bitmap object for the current off screen bitmap
-**
-** History:
-**  2006/08/10: BDurban/CChalom - Coded
-*********************************************************************
-
-#DEFINE OBJ_BITMAP	7
-LOCAL hBitmap
-
-
-IF VARTYPE(This.oBmp) <> "O" AND This.HDC <> 0
-	m.hBitmap = GetCurrentObject(This.HDC, OBJ_BITMAP)
-	This.oBmp = _SCREEN.System.Drawing.Image.FromHBitmap(m.hBitmap)
-ENDIF
-
-RETURN This.oBmp
-
-ENDPROC
 PROCEDURE rectangle_access
 
 IF VARTYPE(This.Rectangle) <> "O"
@@ -238,65 +170,9 @@ RETURN This.Rectangle
 
 ENDPROC
 PROCEDURE renderosb
-** Create BMP file data from our OSB and assign it to the PictureVal
-** This routine keeps the entire process in memory so there is no disk I/O
-** This is also 20x to 30x faster than using the Bitmap.Save to Stream method
-
-LOCAL hBitmap, hdcMem, hdib
-LOCAL bm, bmWidth, bmHeight, bmPlanes, bmBitsPixel
-LOCAL bih, biSizeImage, biBitCount
-LOCAL hdib
-LOCAL hdc, hdc2, hdc3, hr, lhFile
-
-m.hdc = This.hDC
-m.hBitmap = GetCurrentObject(m.hdc, OBJ_BITMAP)
-
-m.qBitmap = REPLICATE(0h00, SIZEOF_BITMAP)
-GetObjectA(m.hBitmap, SIZEOF_BITMAP, @qBitmap)
-
-m.bmWidth = CTOBIN(SUBSTR(m.qBitmap,5,4),"4rs")
-m.bmHeight = CTOBIN(SUBSTR(m.qBitmap,9,4),"4rs")
-m.bmPlanes = CTOBIN(SUBSTR(m.qBitmap,17,2),"2rs")
-m.bmBitsPixel = CTOBIN(SUBSTR(m.qBitmap,19,2),"2rs")
-
-m.biBitCount = m.bmPlanes * m.bmBitsPixel
-m.biSizeImage = BITLSHIFT(BITRSHIFT((m.bmWidth*m.biBitCount)+31,5),2) * m.bmHeight
-
-m.bih = ;
-    BINTOC(SIZEOF_BITMAPINFOHEADER,"4rs")+;	&& biSize
-    BINTOC(m.bmWidth,"4rs")+;	&& biWidth
-    BINTOC(m.bmHeight,"4rs")+;	&& biHeight
-    BINTOC(1,"2rs")+;			&& biPlanes
-    BINTOC(m.biBitCount,"2rs")+;&& biBitCount
-    BINTOC(BI_RGB,"4rs")+;		&& biCompression
-    0h00000000+;				&& biSizeImage
-    0h00000000+;				&& biXPelsPerMeter
-    0h00000000+;				&& biYPelsPerMeter
-    0h00000000+;				&& biClrUsed
-    0h00000000					&& biClrImportant
-
-m.hdib = GlobalAlloc(GPTR, m.biSizeImage)
-
-m.hdc2 = GetDC(0)
-m.hdc3 = CreateCompatibleDC(hdc2)
-ReleaseDC(0,m.hdc2)
-m.hr = GetDIBits(m.hdc3, m.hBitmap, 0, m.bmHeight, m.hdib, @bih, DIB_RGB_COLORS)
-
-*!ToDo: We are currently not handling any palette stuff.
-** This will only work for 24bpp and 32bpp.
-m.bfOffBits = SIZEOF_BITMAPFILEHEADER + SIZEOF_BITMAPINFOHEADER && + size of palette
-m.bfSize = bfOffBits+biSizeImage
-m.bfh = ;
-	[BM]+;						&& bfType
-	BINTOC(m.bfSize,"4rs")+;	&& bfSize
-	0h0000+;					&& bfReserved1
-	0h0000+;					&& bfReserved2
-	BINTOC(m.bfOffBits,"4rs")	&& bfOffBits
-
-
 DO CASE
 CASE This.RenderMode = 0	&& Memory BITMAP
-	This.PictureVal = m.bfh+m.bih+SYS(2600, m.hdib, m.biSizeImage)
+	This.PictureVal = This.oBmp.GetPictureValfromHBitmap()
 	
 CASE This.RenderMode = 1	&& File BITMAP
 	IF EMPTY(This._tempfile)
@@ -306,10 +182,8 @@ CASE This.RenderMode = 1	&& File BITMAP
 		CLEAR RESOURCES (This._tempfile)
 		This._tempfile = ADDBS(SYS(2023))+SYS(2015)+".bmp"
 	ENDIF
-	
-	m.lhFile = FCREATE(This._tempfile)
-	FWRITE(m.lhFile, m.bfh+m.bih+SYS(2600, m.hdib, m.biSizeImage))
-	FCLOSE(m.lhFile)
+
+	This.oBmp.Save(This._tempfile, _Screen.System.Drawing.Imaging.ImageFormat.Bmp)
 	This.Picture = (This._tempfile)
 	
 CASE This.RenderMode = 2	&& File BITMAP using Container Picture
@@ -320,13 +194,10 @@ CASE This.RenderMode = 3	&& Client Window
 	
 ENDCASE
 
-GlobalFree(m.hdib)
-
 RETURN
 
 ENDPROC
 PROCEDURE resize
-
 IF This.Stretch = 0 AND This.Anchor > 0 && AND (m.nWidth <> This.Width OR m.nHeight <> This.Height)
 	This.Draw()
 ENDIF
@@ -401,7 +272,6 @@ _hbitmapold
 *beforedraw 
 *deleteosb 
 *renderosb 
-*declaredll 
 *createosb 
 *refresh Repaints a Form or control and refreshes any values.
 *setup 
@@ -411,7 +281,6 @@ _hbitmapold
 *textrenderinghint_assign 
 *interpolationmode_assign 
 *save 
-*obmp_access 
 *afterdraw 
 *getextent 
 *width_access 
@@ -421,14 +290,14 @@ _hbitmapold
 [START RESERVED6]
 Pixels[END RESERVED6]
 [START RESERVED8]
-system.drawing.h[END RESERVED8]
+drawing.h[END RESERVED8]
 
 [ RECORD]
 [PLATFORM] COMMENT 
 [UNIQUEID] RESERVED  
 [OBJNAME] imgcanvas
 [START RESERVED1]
-  system.drawing.hÆ]7 system.hÎx!7 gdiplusconstants.hÖ­5[END RESERVED1]
+ 	 drawing.h6£7 system.h>¤7 gdiplusconstants.hF¥7[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
