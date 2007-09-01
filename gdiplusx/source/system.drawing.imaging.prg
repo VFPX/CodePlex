@@ -4614,10 +4614,10 @@ DEFINE CLASS xfcFrameDimension AS xfcDrawingBase OF System.Drawing.prg
 *************************************************************************
 *************************************************************************
 	BaseName = "FrameDimension"
-	Guid = 0	&& Gets a globally unique identifier (GUID) that represents this FrameDimension object.
-	Page = 0	&& Gets the page dimension.
-	Resolution = 0	&& Gets the resolution dimension.
-	Time = 0	&& Gets the time dimension.
+	Guid = NULL			&& Gets a globally unique identifier (GUID) that represents this FrameDimension object.
+	Page = NULL			&& Gets the page dimension.
+	Resolution = NULL	&& Gets the resolution dimension.
+	Time = NULL			&& Gets the time dimension.
  
 	*********************************************************************
 	FUNCTION Init
@@ -4848,7 +4848,7 @@ DEFINE CLASS xfcFrameDimension AS xfcDrawingBase OF System.Drawing.prg
 		LOCAL loFrameDimension, loGuid
 		LOCAL loExc AS Exception
 		TRY
-			m.loGuid = NEWOBJECT("xfcGuid", XFCCLASS_SYSTEM, "", FrameDimensionTime)
+			m.loGuid = NEWOBJECT("xfcGuid", XFCCLASS_SYSTEM, "", FrameDimensionTime) 
 			m.loFrameDimension = CREATEOBJECT("xfcFrameDimension", m.loGuid)
 		CATCH TO loExc
 			THROW m.loExc
@@ -4873,19 +4873,20 @@ DEFINE CLASS xfcFrameDimension AS xfcDrawingBase OF System.Drawing.prg
 	**  [None]
 	** Returns: string
 	*********************************************************************
-		
-		
-		*!ToDo: Implement this function
-		*!ToDo: Test this function
-		ERROR 1999	&& Function not implemented
-		RETURN NULL
-		
 		LOCAL loExc AS Exception
 		TRY
 			LOCAL lcValue
 			m.lcValue = ""
-		** This.SetStatus(GdipSomeFunction???())
-		
+			DO CASE
+			CASE This.Guid.ToString() = FrameDimensionTime
+				m.lcValue = "Time"
+			CASE This.Guid.ToString() = FrameDimensionResolution  
+				m.lcValue = "Resolution"
+			CASE This.Guid.ToString() = FrameDimensionPage 
+				m.lcValue = "Page"
+			OTHERWISE
+				m.lcValue = This.Guid.ToString()
+			ENDCASE
 		CATCH TO loExc
 			THROW m.loExc
 		ENDTRY
@@ -4899,8 +4900,6 @@ DEFINE CLASS xfcFrameDimension AS xfcDrawingBase OF System.Drawing.prg
 	*********************************************************************
 		RETURN This.Guid.ToByteArray()
 	ENDFUNC
-
-
 
 
 	#IFDEF USE_MEMBERDATA
@@ -8561,9 +8560,10 @@ DEFINE CLASS xfcPropertyItem AS xfcDrawingBase OF System.Drawing.prg
 	Id = 0	&& Gets or sets the ID of the property.
 	Len = 0	&& Gets or sets the length of the property.
 	Type = 0	&& Gets or sets the type of the property.
-	Value = 0	&& Gets or sets the property value.
+	Value = 0h	&& Gets or sets the property value.
 	PROTECTED hmemory
 	hmemory = 0
+	DIMENSION _internalArray[1]
  
 	*********************************************************************
 	FUNCTION Init
@@ -8630,9 +8630,9 @@ DEFINE CLASS xfcPropertyItem AS xfcDrawingBase OF System.Drawing.prg
 
 
 	*********************************************************************
-	FUNCTION frommemptr
+	FUNCTION FromMemPtr
 	*********************************************************************
-	** Method: xfcPropertyItem.FromStruct
+	** Method: xfcPropertyItem.FromMemPtr
 	**
 	** History:
 	**  2006/04/18: BDurban - Coded
@@ -8660,6 +8660,94 @@ DEFINE CLASS xfcPropertyItem AS xfcDrawingBase OF System.Drawing.prg
 		ENDWITH
 		
 		RETURN m.loPropertyItem
+	ENDFUNC
+	
+	
+	*********************************************************************
+	FUNCTION GetValue
+	*********************************************************************
+	** Method: xfcPropertyItem.GetValue
+	**
+	** Returns the value associated with this PropertyItem as the type specified
+	**
+	** History:
+	**	2006/08/31: BDurban - Coded
+	**
+	** Returns: variant
+	*********************************************************************
+	
+		LOCAL leValue, llIsArray
+		m.leValue = 0h
+		m.llIsArray = .F.
+		
+		LOCAL loExc AS Exception
+		TRY
+			DO CASE
+			CASE This.Type = PropertyTagTypeByte 	&& 1
+				m.leValue = This.Value
+				
+			CASE This.Type = PropertyTagTypeASCII 	&& 2
+				m.leValue = ""+LEFT(This.Value,This.Length-1)
+				
+			CASE This.Type = PropertyTagTypeShort 	&& 3
+				DO CASE
+				CASE This.Len < 2
+					m.leValue = NULL
+				CASE This.Length > 2
+					DIMENSION This._InternalArray[This.Length/2]
+					FOR m.lnLoop = 1 TO This.Length/2
+						This._InternalArray[m.lnLoop] = CTOBIN(SUBSTR(This.Value,(m.lnLoop-1)*2,2), "2rs")
+						m.llIsArray = .T.
+					ENDFOR
+				OTHERWISE
+					m.leValue = CTOBIN(This.Value, "2rs")
+				ENDCASE
+				
+			CASE This.Type = PropertyTagTypeLong ;	&& 4
+			  OR This.Type = PropertyTagTypeSLONG 	&& 9
+				DO CASE
+				CASE This.Len < 4
+					m.leValue = NULL
+				CASE This.Length > 4
+					DIMENSION This._InternalArray[This.Length/4]
+					FOR m.lnLoop = 1 TO This.Length/4
+						This._InternalArray[m.lnLoop] = CTOBIN(SUBSTR(This.Value,(m.lnLoop-1)*4,4), "4rs")
+						m.llIsArray = .T.
+					ENDFOR
+				OTHERWISE
+					m.leValue = CTOBIN(This.Value, "4rs")
+				ENDCASE
+
+			CASE This.Type = PropertyTagTypeRational ; 	&& 5
+			  OR This.Type = PropertyTagTypeSRational 	&& 10
+				DO CASE
+				CASE This.Len < 8
+					m.leValue = NULL
+				CASE This.Length > 8
+					DIMENSION This._InternalArray[This.Length/8]
+					FOR m.lnLoop = 1 TO This.Length/8
+						This._InternalArray[m.lnLoop] = CTOBIN(SUBSTR(This.Value,(m.lnLoop-1)*8,4), "4rs") / CTOBIN(SUBSTR(This.Value,(m.lnLoop-1)*8+4,4), "4rs")
+						m.llIsArray = .T.
+					ENDFOR
+				OTHERWISE
+					m.leValue = CTOBIN(LEFT(This.Value,4),"4rs") / CTOBIN(RIGHT(This.Value,4),"4rs")
+				ENDCASE
+
+*			CASE This.Type = 6 
+*			CASE This.Type = PropertyTagTypeUndefined 	&& 7
+			OTHERWISE 
+				m.leValue = This.Value
+			ENDCASE
+		CATCH TO loExc
+			THROW m.loExc
+		ENDTRY
+		
+		IF m.llIsArray
+			RETURN @This._InternalArray
+		ELSE
+			RETURN m.leValue
+		ENDIF
+		
 	ENDFUNC
 
 
@@ -8812,7 +8900,7 @@ DEFINE CLASS xfcPropertyItem AS xfcDrawingBase OF System.Drawing.prg
 			m.lqValue = 0h
 			FOR lnStep = 1 TO This.Len STEP 8
 				m.lqValue = m.lqValue + BINTOC(SUBSTR(This.Value, lnStep, 4), "4rs")
-				m.lqValue = m.lqValue + BINTOC(SUBSTR(This.Value, lnStep+4, 4), "4rs")
+				m.lqValue = m.lqValue + SUBSTR(This.Value, lnStep+4, 4), "4rs")
 			ENDFOR
 			
 		ENDCASE
