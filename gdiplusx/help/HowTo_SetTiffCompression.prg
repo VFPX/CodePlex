@@ -23,11 +23,11 @@ WITH _SCREEN.System.Drawing
 	myEncoderParameters = .Imaging.EncoderParameters.New(1)
         
 	* Save the bitmap as a TIFF file with LZW compression.
-    myEncoderParameters.Param(1) = 	.Imaging.EncoderParameter.New(myEncoder, .Imaging.EncoderValue.CompressionLZW)
+    myEncoderParameters.Param.Add(.Imaging.EncoderParameter.New(myEncoder, .Imaging.EncoderValue.CompressionLZW))
     loMyBitmap.Save("c:\ImageLZW.tif", .Imaging.ImageFormat.Tiff, myEncoderParameters)
 
 	* Save the bitmap as a TIFF file with NONE compression.
-    myEncoderParameters.Param(1) = 	.Imaging.EncoderParameter.New(myEncoder, .Imaging.EncoderValue.CompressionNone)
+    myEncoderParameters.Param.Add(.Imaging.EncoderParameter.New(myEncoder, .Imaging.EncoderValue.CompressionNone))
     loMyBitmap.Save("c:\ImageNONE.tif", .Imaging.ImageFormat.Tiff, myEncoderParameters)
 
 
@@ -42,15 +42,15 @@ WITH _SCREEN.System.Drawing
 	* Go on with the compressions using the monochromatic version of the selected image
 
 	* Save the bitmap as a TIFF file with RLE compression.
-    myEncoderParameters.Param(1) = 	.Imaging.EncoderParameter.New(myEncoder, .Imaging.EncoderValue.CompressionRle)
+    myEncoderParameters.Param.Add(.Imaging.EncoderParameter.New(myEncoder, .Imaging.EncoderValue.CompressionRle))
     loMonoChrBmp.Save("c:\ImageRLE.tif", .Imaging.ImageFormat.Tiff, myEncoderParameters)
 
 	* Save the bitmap as a TIFF file with CCITT3 compression.
-    myEncoderParameters.Param(1) = 	.Imaging.EncoderParameter.New(myEncoder, .Imaging.EncoderValue.CompressionCCITT3)
+    myEncoderParameters.Param.Add(.Imaging.EncoderParameter.New(myEncoder, .Imaging.EncoderValue.CompressionCCITT3))
     loMonoChrBmp.Save("c:\ImageCCITT3.tif", .Imaging.ImageFormat.Tiff, myEncoderParameters)
 
 	* Save the bitmap as a TIFF file with CCITT4 compression.
-    myEncoderParameters.Param(1) = 	.Imaging.EncoderParameter.New(myEncoder, .Imaging.EncoderValue.CompressionCCITT4)
+    myEncoderParameters.Param.Add(.Imaging.EncoderParameter.New(myEncoder, .Imaging.EncoderValue.CompressionCCITT4))
     loMonoChrBmp.Save("c:\ImageCCITT4.tif", .Imaging.ImageFormat.Tiff, myEncoderParameters)
 
 ENDWITH 
