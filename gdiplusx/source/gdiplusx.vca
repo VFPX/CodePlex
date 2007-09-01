@@ -66,6 +66,7 @@ ENDIF
 ENDPROC
 PROCEDURE Init
 LOCAL lcPath
+This.DeclareDLL()
 
 IF VARTYPE(_SCREEN.System) <> "O"
 	m.lcPath = ADDBS(JUSTPATH(SUBSTR(SYS(16), AT(" ",SYS(16),2)+1)))
@@ -116,6 +117,9 @@ ENDIF
 
 This._BMPWidth = m.tnWidth
 This._BMPHeight = m.tnHeight
+
+m.tnWidth = MAX(m.tnWidth,1)
+m.tnHeight = MAX(m.tnHeight,1)
 
 This.oBmp = _SCREEN.System.Drawing.Bitmap.New(m.tnWidth, m.tnHeight)
 
@@ -286,6 +290,7 @@ _hbitmapold
 *width_access 
 *height_access 
 *backstyle_access 
+*declaredll 
 [END RESERVED3]
 [START RESERVED6]
 Pixels[END RESERVED6]
@@ -296,8 +301,6 @@ drawing.h[END RESERVED8]
 [PLATFORM] COMMENT 
 [UNIQUEID] RESERVED  
 [OBJNAME] imgcanvas
-[START RESERVED1]
- 	 drawing.h6£7 system.h>¤7 gdiplusconstants.hF¥7[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -315,7 +318,7 @@ Name = "imgthemebase"
 [END PROPERTIES]
 [START METHODS]
 PROCEDURE Init
-
+This.declaredll()
 This.IsXP = FILE(GETENV("windir")+"\system32\uxtheme.dll")
 
 DODEFAULT()
@@ -446,6 +449,7 @@ themepart
 themeclass
 isxp
 *themestate_assign 
+*declaredll 
 [END RESERVED3]
 [START RESERVED6]
 Pixels[END RESERVED6]
