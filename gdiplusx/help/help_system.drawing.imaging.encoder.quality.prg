@@ -14,7 +14,7 @@ WITH _SCREEN.System.Drawing
 
 
 	&& Create a Bitmap object based on a BMP file.
-	myBitmap = .Bitmap.New(GETPICT("BMP"))
+	myBitmap = .Bitmap.New(GETPICT())
 	
 	&& Get an ImageCodecInfo object that represents the JPEG codec.
 	myImageCodecInfo = GetEncoderInfo("image/jpeg")
@@ -32,17 +32,17 @@ WITH _SCREEN.System.Drawing
 	
 	&& Save the bitmap as a JPEG file with quality level 25.
 	myEncoderParameter = .Imaging.EncoderParameter.New(myEncoder, 25)
-	myEncoderParameters.Param[1] = myEncoderParameter
+	myEncoderParameters.Param.Add(myEncoderParameter)
 	myBitmap.Save("Shapes025.jpg", myImageCodecInfo, myEncoderParameters)
 
 	&& Save the bitmap as a JPEG file with quality level 50.
 	myEncoderParameter = .Imaging.EncoderParameter.New(myEncoder, 50)
-	myEncoderParameters.Param[1] = myEncoderParameter
+	myEncoderParameters.Param.Add(myEncoderParameter)
 	myBitmap.Save("Shapes050.jpg", myImageCodecInfo, myEncoderParameters)
 
 	&& Save the bitmap as a JPEG file with quality level 75.
 	myEncoderParameter = .Imaging.EncoderParameter.New(myEncoder, 75)
-	myEncoderParameters.Param[1] = myEncoderParameter
+	myEncoderParameters.Param.Add(myEncoderParameter)
 	myBitmap.Save("Shapes075.jpg", myImageCodecInfo, myEncoderParameters)
 
 ENDWITH
