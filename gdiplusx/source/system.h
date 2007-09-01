@@ -1,11 +1,11 @@
 
 
-#DEFINE XFCCLASS_SYSTEM (ADDBS(JUSTPATH(This.ClassLibrary))+"System.prg")
-#DEFINE XFCCLASS_IO (ADDBS(JUSTPATH(This.ClassLibrary))+"System.IO.prg")
-
 ** Comenting out this line can reduce the compiled
 ** size of the library by as much as 20%
 #DEFINE USE_MEMBERDATA
+
+#DEFINE XFCCLASS_SYSTEM (ADDBS(JUSTPATH(This.ClassLibrary))+"System.prg")
+#DEFINE XFCCLASS_IO (ADDBS(JUSTPATH(This.ClassLibrary))+"System.IO.prg")
 
 #DEFINE LANG_NEUTRAL 0x00
 
@@ -19,12 +19,9 @@
 
 #DEFINE EMPTY_VFPARRAY		.F.
 
-*#DEFINE USE_MEMBERDATA
-
 #DEFINE GMEM_FIXED          0x0000
 #DEFINE GMEM_MOVEABLE       0x0002
 #DEFINE GMEM_ZEROINIT       0x0040
 #DEFINE GHND                (GMEM_MOVEABLE + GMEM_ZEROINIT)
 #DEFINE GPTR                (GMEM_FIXED + GMEM_ZEROINIT)
 #DEFINE SRCCOPY				0x00CC0020
-
