@@ -8580,10 +8580,22 @@ DEFINE CLASS xfcPropertyItem AS xfcDrawingBase OF System.Drawing.prg
 	** Parameters:
 		
 	*********************************************************************
+	LPARAMETERS tiID, teValue, tiType
+	
 		*!ToDo: Test this function
 		LOCAL loExc AS Exception
 		TRY
-			DODEFAULT()
+			IF VARTYPE(tiId) = "N"
+				This.ID = m.tiID
+			ENDIF
+			
+			IF INLIST(VARTYPE(teValue),"C","N","Q","D","T")
+				This.Value = m.teValue
+			ENDIF
+			
+			IF VARTYPE(m.tiType) = "N"
+				This.Type = m.tiType
+			ENDIF
 			
 		** This.SetStatus(GdipSomeFunction???())
 		CATCH TO loExc
@@ -8620,10 +8632,11 @@ DEFINE CLASS xfcPropertyItem AS xfcDrawingBase OF System.Drawing.prg
 	*********************************************************************
 	FUNCTION New
 	*********************************************************************
+	LPARAMETERS tiID, teValue, tiType
 		
 		LOCAL loPropertyItem AS xfcPropertyItem
 		
-		m.loPropertyItem = CREATEOBJECT(This.Class)
+		m.loPropertyItem = CREATEOBJECT(This.Class, m.tiID, m.teValue, m.tiType)
 		
 		RETURN m.loPropertyItem
 	ENDFUNC
@@ -8649,7 +8662,7 @@ DEFINE CLASS xfcPropertyItem AS xfcDrawingBase OF System.Drawing.prg
 			.Type = CTOBIN(SYS(2600, m.thMem+0x08, 2), "2rs")
 			m.lhPtr = 0
 			m.lhPtr = CTOBIN(SYS(2600, m.thMem+0x0C, 4), "4rs")
-			.Value = SYS(2600, m.lhPtr, .Len)
+			.Value = 0h+SYS(2600, m.lhPtr, .Len)
 		
 			DO CASE
 			CASE .Type = PropertyTagTypeASCII
@@ -8687,14 +8700,28 @@ DEFINE CLASS xfcPropertyItem AS xfcDrawingBase OF System.Drawing.prg
 				m.leValue = This.Value
 				
 			CASE This.Type = PropertyTagTypeASCII 	&& 2
-				m.leValue = ""+LEFT(This.Value,This.Length-1)
+				IF This.Len < 1 OR LEN(This.Value) < 1
+					m.leValue = NULL
+				ELSE
+					m.leValue = ""+LEFT(This.Value,This.Len-1)
+					** Check for datetime
+					IF CHRTRAN(m.leValue,"0123456789","##########") == "####:##:## ##:##:##"
+						m.leValue = DATETIME( ;
+							VAL(SUBSTR(m.leValue,1,4)), + ;
+							VAL(SUBSTR(m.leValue,6,2)), + ;
+							VAL(SUBSTR(m.leValue,9,2)), + ;
+							VAL(SUBSTR(m.leValue,12,2)), + ;
+							VAL(SUBSTR(m.leValue,15,2)), + ;
+							VAL(SUBSTR(m.leValue,18,2)))
+					ENDIF
+				ENDIF
 				
 			CASE This.Type = PropertyTagTypeShort 	&& 3
 				DO CASE
-				CASE This.Len < 2
+				CASE This.Len < 2 OR LEN(This.Value) < 2
 					m.leValue = NULL
-				CASE This.Length > 2
-					DIMENSION This._InternalArray[This.Length/2]
+				CASE This.Len > 2
+					DIMENSION This._InternalArray[This.Len/2]
 					FOR m.lnLoop = 1 TO This.Length/2
 						This._InternalArray[m.lnLoop] = CTOBIN(SUBSTR(This.Value,(m.lnLoop-1)*2,2), "2rs")
 						m.llIsArray = .T.
@@ -8706,10 +8733,10 @@ DEFINE CLASS xfcPropertyItem AS xfcDrawingBase OF System.Drawing.prg
 			CASE This.Type = PropertyTagTypeLong ;	&& 4
 			  OR This.Type = PropertyTagTypeSLONG 	&& 9
 				DO CASE
-				CASE This.Len < 4
+				CASE This.Len < 4 OR LEN(This.Value) < 4
 					m.leValue = NULL
-				CASE This.Length > 4
-					DIMENSION This._InternalArray[This.Length/4]
+				CASE This.Len > 4
+					DIMENSION This._InternalArray[This.Len/4]
 					FOR m.lnLoop = 1 TO This.Length/4
 						This._InternalArray[m.lnLoop] = CTOBIN(SUBSTR(This.Value,(m.lnLoop-1)*4,4), "4rs")
 						m.llIsArray = .T.
@@ -8721,11 +8748,11 @@ DEFINE CLASS xfcPropertyItem AS xfcDrawingBase OF System.Drawing.prg
 			CASE This.Type = PropertyTagTypeRational ; 	&& 5
 			  OR This.Type = PropertyTagTypeSRational 	&& 10
 				DO CASE
-				CASE This.Len < 8
+				CASE This.Len < 8 OR LEN(This.Value) < 8
 					m.leValue = NULL
-				CASE This.Length > 8
-					DIMENSION This._InternalArray[This.Length/8]
-					FOR m.lnLoop = 1 TO This.Length/8
+				CASE This.Len > 8
+					DIMENSION This._InternalArray[This.Len/8]
+					FOR m.lnLoop = 1 TO This.Len/8
 						This._InternalArray[m.lnLoop] = CTOBIN(SUBSTR(This.Value,(m.lnLoop-1)*8,4), "4rs") / CTOBIN(SUBSTR(This.Value,(m.lnLoop-1)*8+4,4), "4rs")
 						m.llIsArray = .T.
 					ENDFOR
@@ -8819,17 +8846,15 @@ DEFINE CLASS xfcPropertyItem AS xfcDrawingBase OF System.Drawing.prg
 	** History:
 	**  2006/04/24: BDurban - Coded
 	*********************************************************************
-		LOCAL lcString, lnStep
+		LOCAL lcString, lnStep, lnNT
 		
 		m.lcString = ""
 		
 		DO CASE
-		CASE This.Type = PropertyTagTypeByte ;
-		  OR This.Type = PropertyTagTypeUndefined
-			m.lcString = "0h"+STRCONV(This.Value,15)
-			
 		CASE This.Type = PropertyTagTypeASCII
-			m.lcString = ""+This.Value
+			m.lnNT = AT(0h00, This.Value)
+			m.lnNT = EVL(m.lnNT, LEN(This.Value)+1)
+			m.lcString = ""+LEFT(This.Value,m.lnNT-1)
 			
 		CASE This.Type = PropertyTagTypeShort
 			FOR lnStep = 1 TO This.Len STEP 2
@@ -8851,6 +8876,13 @@ DEFINE CLASS xfcPropertyItem AS xfcDrawingBase OF System.Drawing.prg
 						ALLTRIM(STR(CTOBIN(SUBSTR(This.Value,lnStep,4),"4rs"))) + "/" + ;
 						ALLTRIM(STR(CTOBIN(SUBSTR(This.Value,lnStep+4,4),"4rs")))
 			ENDFOR
+			
+		CASE This.Type = PropertyTagTypeByte ;
+		  OR This.Type = PropertyTagTypeUndefined
+			m.lcString = "0h"+STRCONV(This.Value,15)
+		
+		OTHERWISE
+			m.lcString = "0h"+STRCONV(This.Value,15)
 			
 		ENDCASE
 		
@@ -8967,10 +8999,69 @@ DEFINE CLASS xfcPropertyItem AS xfcDrawingBase OF System.Drawing.prg
 	LPARAMETERS tqByte
 		
 		*!ToDo: Test this function
+		LOCAL lnDenominator, lnNumerator
 		
 		LOCAL loExc AS Exception
 		TRY
-			This.Value = 0h+NVL(m.tqByte,0h)
+			DO CASE
+			CASE INLIST(VARTYPE(m.tqByte),"D","T")
+				This.Value = PADL(YEAR(m.tqByte),4,"0")+":"+;
+							PADL(MONTH(m.tqByte),2,"0")+":"+;
+							PADL(DAY(m.tqByte),2,"0")+" "+;
+							PADL(HOUR(m.tqByte),2,"0")+":"+;
+							PADL(MINUTE(m.tqByte),2,"0")+":"+;
+							PADL(SEC(m.tqByte),2,"0")+CHR(0)
+				This.Len = LEN(This.Value)
+				This.Type = PropertyTagTypeASCII
+				  
+			CASE VARTYPE(m.tqByte) = "C"
+				This.Value = m.tqByte+CHR(0)
+				This.Len = LEN(This.Value)
+				This.Type = PropertyTagTypeASCII
+				  
+			CASE VARTYPE(m.tqByte) = "N"
+				IF INT(m.tqByte) = m.tqByte
+					This.Value = 0h+BINTOC(m.tqByte,"4rs")
+					This.Len = 4
+					This.Type = PropertyTagTypeLong
+				ELSE
+					IF m.tqByte < 0
+						m.lnDenominator = 1/m.tqByte
+						m.lnNumerator = 1
+						FOR lnLoop = 1 TO 8
+							IF m.lnDenominator = INT(m.lnDenominator)
+								EXIT
+							ENDIF
+							IF m.lnDenominator > (0x7fffffff/10)
+								EXIT
+							ENDIF
+							m.lnDenominator = m.lnDenominator * 10
+							m.lnNumerator = m.lnNumerator * 10
+						ENDFOR
+					ELSE
+						m.lnDenominator = 1
+						m.lnNumerator = m.tqByte
+						FOR lnLoop = 1 TO 8
+							IF m.lnNumerator = INT(m.lnNumerator)
+								EXIT
+							ENDIF
+							IF m.lnNumerator > (0x7fffffff/10)
+								EXIT
+							ENDIF
+							m.lnDenominator = m.lnDenominator * 10
+							m.lnNumerator = m.lnNumerator * 10
+						ENDFOR
+					ENDIF
+					This.Value = 0h+BINTOC(m.lnNumerator, "4rs")+BINTOC(m.lnDenominator, "4rs")
+					This.Len = 8
+					This.Type = PropertyTagTypeSRational 
+				ENDIF
+				
+			OTHERWISE
+				This.Value = 0h+NVL(m.tqByte,0h)
+				This.Len = LEN(m.tqByte)
+			ENDCASE
+			
 		CATCH TO loExc
 			THROW m.loExc
 		ENDTRY
