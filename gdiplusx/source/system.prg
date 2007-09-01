@@ -121,6 +121,7 @@ DEFINE CLASS xfcSystem AS xfcObject
 			SET PROCEDURE TO (ADDBS(JUSTPATH(This.ClassLibrary))+"System.Drawing.Drawing2D.PRG") ADDITIVE
 			SET PROCEDURE TO (ADDBS(JUSTPATH(This.ClassLibrary))+"System.Drawing.Imaging.PRG") ADDITIVE
 			SET PROCEDURE TO (ADDBS(JUSTPATH(This.ClassLibrary))+"System.Drawing.Text.PRG") ADDITIVE
+			SET PROCEDURE TO (ADDBS(JUSTPATH(This.ClassLibrary))+"System.IO.PRG") ADDITIVE
 		ENDIF
 	ENDFUNC
 
@@ -521,7 +522,7 @@ ENDDEFINE
 *************************************************************************
 *************************************************************************
 #IFDEF USECLASS_XFCOBJECT
-DEFINE CLASS xfcObject AS custom
+DEFINE CLASS xfcObject AS Custom
 *************************************************************************
 *************************************************************************
 *************************************************************************
