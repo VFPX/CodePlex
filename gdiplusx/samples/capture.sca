@@ -42,18 +42,44 @@ DoCreate = .T.
 ShowTips = .T.
 Caption = "Capture Screens and Forms"
 MaxButton = .F.
+_memberdata =       89<VFPData><memberdata name="launchimage" type="method" display="LaunchImage"/></VFPData>
+
 Name = "Form1"
 [END PROPERTIES]
 [START METHODS]
 PROCEDURE Init
+DO (LOCFILE("System.prg"))
+
+
 LOCAL lcFile
-lcFile = FULLPATH("Image\vfpxlogosmall.png")
+lcFile = LOCFILE("vfpxlogosmall.png")
 WITH Thisform
 	.txtFile.Value = lcFile
 	.Image1.Picture = lcFile
 ENDWITH
 ENDPROC
+PROCEDURE launchimage
+LPARAMETERS tcFileName
+
+DECLARE INTEGER ShellExecute ;
+          IN SHELL32.DLL ;
+          INTEGER nWinHandle,;
+          STRING cOperation,;
+          STRING cFileName,;
+          STRING cParameters,;
+          STRING cDirectory,;
+          INTEGER nShowWindow
+
+
+
+RETURN ShellExecute(0,"open",m.tcFileName,"","",1)
+
+ENDPROC
 [END METHODS]
+[START RESERVED3]
+_memberdata XML Metadata for customizable properties
+*launchimage 
+[END RESERVED3]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -164,10 +190,10 @@ loCaptureBmp = _screen.system.Drawing.Bitmap.FromScreen(Thisform.HWnd, ;
 	lnTotalWidth/2, lnTotalHeight/2, lnTotalWidth /2, lnTotalHeight /2)
 	
 LOCAL lcNewFile
-lcNewFile = FULLPATH("Samples\Outputs\" + "capturedBotRight.png")
+lcNewFile = PUTFILE("Save As","capturedBotRight.png")
 loCaptureBmp.Save(lcNewFile, _screen.system.Drawing.Imaging.ImageFormat.Png)
-RUN /N explorer.exe &lcNewFile
 
+ThisForm.LaunchImage(lcNewFile)
 
 RETURN
 ENDPROC
@@ -209,9 +235,11 @@ loCaptureBmp = _screen.system.Drawing.Bitmap.FromScreen(Thisform.HWnd, ;
 	0, 0, lnTotalWIdth /2, lnTotalHeight /2)
 	
 LOCAL lcNewFile
-lcNewFile = FULLPATH("Samples\Outputs\" + "capturedTopLeft.png")
+lcNewFile = PUTFILE("Save As","capturedTopLeft.png")
 loCaptureBmp.Save(lcNewFile, _screen.system.Drawing.Imaging.ImageFormat.Png)
-RUN /N explorer.exe &lcNewFile
+
+ThisForm.LaunchImage(lcNewFile)
+
 ENDPROC
 [END METHODS]
 
@@ -251,9 +279,10 @@ loCaptureBmp = _screen.system.Drawing.Bitmap.FromScreen(Thisform.HWnd, ;
 	lnTotalWidth/4, lnTotalHeight/4, lnTotalWidth /2, lnTotalHeight /2)
 	
 LOCAL lcNewFile
-lcNewFile = FULLPATH("Samples\Outputs\" + "capturedCenter.png")
+lcNewFile = PUTFILE("Save As","capturedCenter.png")
 loCaptureBmp.Save(lcNewFile, _screen.system.Drawing.Imaging.ImageFormat.Png)
-RUN /N explorer.exe &lcNewFile
+
+ThisForm.LaunchImage(lcNewFile)
 
 RETURN
 ENDPROC
@@ -285,9 +314,11 @@ PROCEDURE Click
 LOCAL loCaptureBmp as xfcBitmap
 loCaptureBmp = _screen.system.Drawing.Bitmap.FromScreen(Thisform.HWnd)
 
-lcNewFile = FULLPATH("Samples\Outputs\" + "Captured1.png")
+lcNewFile = PUTFILE("Save As","Captured1.png")
 loCaptureBmp.Save(lcNewFile, _screen.system.Drawing.Imaging.ImageFormat.Png)
-RUN /N explorer.exe &lcNewFile
+
+ThisForm.LaunchImage(lcNewFile)
+
 ENDPROC
 [END METHODS]
 
@@ -319,16 +350,20 @@ lnTitleHeight = SYSMETRIC(9)
 lnLeftBorder = SYSMETRIC(3)
 lnTopBorder = SYSMETRIC(4)
 
+
 LOCAL loCaptureBmp as xfcBitmap
 loCaptureBmp = _screen.system.Drawing.Bitmap.FromScreen(Thisform.HWnd, ;
 	lnLeftBorder, lnTitleHeight + lnTopBorder, ;
       Thisform.Width, ;
       Thisform.Height)
 
-LOCAL lcNewFile
-lcNewFile = FULLPATH("Samples\Outputs\" + "capturedNoBorders.png")
+
+lcNewFile = PUTFILE("Save As","capturedNoBorders.png")
 loCaptureBmp.Save(lcNewFile, _screen.system.Drawing.Imaging.ImageFormat.Png)
-RUN /N explorer.exe &lcNewFile
+
+ThisForm.LaunchImage(lcNewFile)
+
+
 ENDPROC
 [END METHODS]
 
@@ -358,9 +393,11 @@ PROCEDURE Click
 LOCAL loCaptureBmp as xfcBitmap
 loCaptureBmp = _screen.system.Drawing.Bitmap.FromScreen()
 
-lcNewFile = FULLPATH("Samples\Outputs\" + "CapturedScrn.png")
+lcNewFile = PUTFILE("Save As","CapturedScrn.png")
 loCaptureBmp.Save(lcNewFile, _screen.system.Drawing.Imaging.ImageFormat.Png)
-RUN /N explorer.exe &lcNewFile
+
+ThisForm.LaunchImage(lcNewFile)
+
 ENDPROC
 [END METHODS]
 
@@ -391,9 +428,11 @@ LOCAL loCaptureBmp as xfcBitmap
 loCaptureBmp = _screen.system.Drawing.Bitmap.FromScreen(Thisform)
 
 LOCAL lcNewFile
-lcNewFile = FULLPATH("Samples\Outputs\" + "captured1.png")
+lcNewFile = PUTFILE("Save As","captured1.png")
 loCaptureBmp.Save(lcNewFile, _screen.system.Drawing.Imaging.ImageFormat.Png)
-RUN /N explorer.exe &lcNewFile
+
+ThisForm.LaunchImage(lcNewFile)
+
 ENDPROC
 [END METHODS]
 
