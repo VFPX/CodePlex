@@ -36,7 +36,7 @@ Name = "Dataenvironment"
 [START PROPERTIES]
 Top = 0
 Left = 0
-Height = 300
+Height = 307
 Width = 457
 DoCreate = .T.
 Caption = "Lines - Resize this form !"
@@ -47,7 +47,7 @@ Name = "LINES"
 [PLATFORM] WINDOWS 
 [UNIQUEID] _1V00MAIPH
 [CLASS] imgcanvas
-[CLASSLOC] ..\source\gdiplusx.vcx
+[CLASSLOC] ..\gdiplusx.vcx
 [BASECLASS] image
 [OBJNAME] Imgcanvas1
 [PARENT] LINES
@@ -62,7 +62,7 @@ Name = "Imgcanvas1"
 [END PROPERTIES]
 [START METHODS]
 PROCEDURE beforedraw
-LOCAL loGfx AS xfcGraphics
+LOCAL loGfx AS xfcGraphics, lnHeight, lnWidth, lnWidth2
 
 loGfx = This.oGfx
 
@@ -70,18 +70,23 @@ This.Clear(0xffffff)
 
 **loGfx.SmoothingMode = 4
 
-i=0
-FOR x = 1 TO This.Width STEP This.Width/30
-	y = (This.Height/30)*i
-	loGfx.DrawLine(This.Pen2,0,y,x,This.Height)
-	loGfx.DrawLine(This.Pen1,0,This.Height-y,x,0)
-	i = i + 1
+m.lnHeight = This.Height
+m.lnWidth = This.Width
+m.lnWidth2 = m.lnWidth/30
+
+
+m.i=0
+FOR m.x = 1 TO m.lnWidth STEP m.lnWidth2
+	m.y = (m.lnHeight/30)*i
+	m.loGfx.DrawLine(This.Pen2,0,m.y,m.x,m.lnHeight)
+	m.loGfx.DrawLine(This.Pen1,0,m.lnHeight-m.y,m.x,0)
+	m.i = m.i + 1
 ENDFOR
 
-TRY
-	ThisForm.text1.Value = ThisForm.text1.Value + 1
-CATCH
-ENDTRY
+*!*	TRY
+*!*		ThisForm.text1.Value = ThisForm.text1.Value + 1
+*!*	CATCH
+*!*	ENDTRY
 
 ENDPROC
 PROCEDURE setup
