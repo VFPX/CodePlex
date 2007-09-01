@@ -41,6 +41,12 @@ AutoCenter = .T.
 Caption = "Rotation"
 Name = "Form1"
 [END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+DO (LOCFILE("System.prg"))
+
+ENDPROC
+[END METHODS]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -59,16 +65,13 @@ Name = "Imgcanvas1"
 [END PROPERTIES]
 [START METHODS]
 PROCEDURE beforedraw
-LOCAL System AS xfcSystem
-
-System = NEWOBJECT("xfcSystem","system")
 
 LOCAL loGfx AS xfcGraphics
 LOCAL loFont AS xfcFont
 LOCAL loBrush AS xfcSolidBrush
 LOCAL loState AS xfcGraphicsState
 
-WITH System.Drawing AS xfcDrawing
+WITH _SCREEN.System.Drawing AS xfcDrawing
 
 	This.Clear()
 
