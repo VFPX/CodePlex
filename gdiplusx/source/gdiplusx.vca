@@ -70,18 +70,24 @@ PROCEDURE Init
 LOCAL lcPath
 This.DeclareDLL()
 
-IF VARTYPE(_SCREEN.System) <> "O"
-	m.lcPath = ADDBS(JUSTPATH(SUBSTR(SYS(16), AT(" ",SYS(16),2)+1)))
-	DO (m.lcPath+"system.prg")
-ENDIF
+DO LOCFILE("System.prg")
+
+*!*	IF VARTYPE(_SCREEN.System) <> "O"
+*!*		m.lcPath = ADDBS(JUSTPATH(SUBSTR(SYS(16), AT(" ",SYS(16),2)+1)))
+*!*		DO (m.lcPath+"system.prg")
+*!*	ENDIF
 
 This.CreateOSB()
 This.Controls=CREATEOBJECT("Collection")
 This.Setup()
 
 BINDEVENT(ThisForm, "Activate", This, "Draw")
-BINDEVENT(This.Parent, "Resize", This, "Resize")
 
+IF This.Parent.BaseClass == "Page"
+	BINDEVENT(This.Parent.Parent, "Resize", This, "Resize")
+ELSE
+	BINDEVENT(This.Parent, "Resize", This, "Resize")
+ENDIF
 ENDPROC
 PROCEDURE backstyle_access
 This.Draw()
@@ -415,42 +421,14 @@ _hbitmapold
 [START RESERVED6]
 Pixels[END RESERVED6]
 [START RESERVED8]
-drawing.h[END RESERVED8]
+system.drawing.h[END RESERVED8]
 
 [ RECORD]
 [PLATFORM] COMMENT 
 [UNIQUEID] RESERVED  
 [OBJNAME] imgcanvas
 [START RESERVED1]
- 	 drawing.hŒı≠ê5 system.h÷ˆ≠ê5 gdiplusconstants.hﬁ˜≠ê5[END RESERVED1]
-
-[ RECORD]
-[PLATFORM] WINDOWS 
-[UNIQUEID] _1SZ0XT1S0
-[CLASS] checkbox
-[BASECLASS] checkbox
-[OBJNAME] temp
-[START PROPERTIES]
-Height = 17
-Width = 60
-Alignment = 0
-Caption = "Check1"
-Name = "temp"
-[END PROPERTIES]
-[START RESERVED1]
-Class[END RESERVED1]
-[START RESERVED2]
-1[END RESERVED2]
-[START RESERVED6]
-Pixels[END RESERVED6]
-
-[ RECORD]
-[PLATFORM] COMMENT 
-[UNIQUEID] RESERVED  
-[OBJNAME] temp
-[START PROPERTIES]
-Arial, 0, 9, 5, 15, 12, 32, 3, 0
-[END PROPERTIES]
+  system.drawing.h∆]7 system.hŒx!7 gdiplusconstants.h÷≠ê5[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
