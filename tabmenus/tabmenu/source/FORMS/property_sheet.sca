@@ -1,0 +1,382 @@
+SCCTEXT Version 4.0.0.2
+PLATFORM C(8,0),UNIQUEID C(10,0),TIMESTAMP N(10,0),CLASS M(4,0),CLASSLOC M(4,0),BASECLASS M(4,0),OBJNAME M(4,0),PARENT M(4,0),PROPERTIES M(4,0),PROTECTED M(4,0),METHODS M(4,0),OBJCODE M(4,0),OLE M(4,0),OLE2 M(4,0),RESERVED1 M(4,0),RESERVED2 M(4,0),RESERVED3 M(4,0),RESERVED4 M(4,0),RESERVED5 M(4,0),RESERVED6 M(4,0),RESERVED7 M(4,0),RESERVED8 M(4,0),USER M(4,0)
+1253
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] Screen    
+[START RESERVED1]
+VERSION =   3.00[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0870OVUEU
+[CLASS] dataenvironment
+[BASECLASS] dataenvironment
+[OBJNAME] Dataenvironment
+[START PROPERTIES]
+Left = 133
+Top = 128
+Width = 523
+Height = 322
+AutoOpenTables = .F.
+AutoCloseTables = .F.
+InitialSelectedAlias = "xproperties_sheet"
+Name = "Dataenvironment"
+[END PROPERTIES]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED4]
+1[END RESERVED4]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0870OVUEX
+[CLASS] form
+[BASECLASS] form
+[OBJNAME] Form1
+[START PROPERTIES]
+Top = 0
+Left = 0
+Height = 297
+Width = 424
+DoCreate = .T.
+Caption = "Extended Property Sheet"
+WindowType = 1
+BackColor = 192,192,192
+Name = "Form1"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+lParameters oTableManager,xPrpFld,cXproperty
+thisform.tablemanager=oTableManager
+ThisForm.TableFieldsGrid.Column6.controlsource=xPrpFld
+ThisForm.TableFieldsGrid.Column6.Header1.caption=cXproperty
+ENDPROC
+[END METHODS]
+[START RESERVED3]
+tablemanager underlying engine
+[END RESERVED3]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _08L0PJG60
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] Command4
+[PARENT] Form1
+[START PROPERTIES]
+Top = 270
+Left = 291
+Height = 23
+Width = 63
+Caption = "\<Save"
+TabIndex = 2
+Name = "Command4"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+Thisform.release
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _08L0PJG62
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] Command5
+[PARENT] Form1
+[START PROPERTIES]
+Top = 270
+Left = 357
+Height = 23
+Width = 63
+Caption = "\<Cancel"
+TabIndex = 3
+Name = "Command5"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+Thisform.release
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _08Z023JNW
+[CLASS] grid
+[BASECLASS] grid
+[OBJNAME] TableFieldsGrid
+[PARENT] Form1
+[START PROPERTIES]
+ColumnCount = 6
+FontBold = .T.
+FontName = "Arial"
+FontSize = 9
+DeleteMark = .F.
+GridLines = 2
+Height = 264
+Left = 2
+Panel = 1
+RecordMark = .T.
+RecordSource = "table_fields"
+RowHeight = 17
+ScrollBars = 2
+TabIndex = 1
+Top = 3
+Width = 420
+ForeColor = 0,0,0
+GridLineColor = 192,192,192
+Name = "TableFieldsGrid"
+Column1.FontBold = .T.
+Column1.FontName = "Arial"
+Column1.FontSize = 9
+Column1.ControlSource = "table_fields.field_no"
+Column1.Width = 27
+Column1.ForeColor = 0,0,0
+Column1.Name = "Column1"
+Column2.FontBold = .T.
+Column2.FontName = "Arial"
+Column2.FontSize = 9
+Column2.ControlSource = "table_fields.field_name"
+Column2.Width = 117
+Column2.ForeColor = 0,0,0
+Column2.Name = "Column2"
+Column3.FontBold = .T.
+Column3.FontName = "Arial"
+Column3.FontSize = 9
+Column3.ControlSource = "table_fields.field_type"
+Column3.Width = 30
+Column3.ForeColor = 0,0,0
+Column3.Name = "Column3"
+Column4.FontBold = .T.
+Column4.FontName = "Arial"
+Column4.FontSize = 9
+Column4.ControlSource = "table_fields.field_len"
+Column4.Width = 44
+Column4.ForeColor = 0,0,0
+Column4.Name = "Column4"
+Column5.FontBold = .T.
+Column5.FontName = "Arial"
+Column5.FontSize = 9
+Column5.ControlSource = "table_fields.field_dec"
+Column5.Width = 27
+Column5.ForeColor = 0,0,0
+Column5.Name = "Column5"
+Column6.FontBold = .T.
+Column6.FontName = "Arial"
+Column6.FontSize = 9
+Column6.Width = 137
+Column6.ForeColor = 0,0,0
+Column6.Name = "Column6"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE AfterRowColChange
+LPARAMETERS nColIndex
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _08Z023JO5
+[CLASS] header
+[BASECLASS] header
+[OBJNAME] Header1
+[PARENT] Form1.TableFieldsGrid.Column1
+[START PROPERTIES]
+FontBold = .T.
+FontName = "Arial"
+FontSize = 9
+Caption = "#SN"
+Name = "Header1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _08Z023JO6
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] Text1
+[PARENT] Form1.TableFieldsGrid.Column1
+[START PROPERTIES]
+FontBold = .T.
+FontName = "Arial"
+FontSize = 9
+BorderStyle = 0
+Margin = 0
+ForeColor = 0,0,0
+BackColor = 255,255,255
+Name = "Text1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _08Z023JO8
+[CLASS] header
+[BASECLASS] header
+[OBJNAME] Header1
+[PARENT] Form1.TableFieldsGrid.Column2
+[START PROPERTIES]
+FontBold = .T.
+FontName = "Arial"
+FontSize = 9
+Caption = "Field"
+Name = "Header1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _08Z023JO9
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] Text1
+[PARENT] Form1.TableFieldsGrid.Column2
+[START PROPERTIES]
+FontBold = .T.
+FontName = "Arial"
+FontSize = 9
+BorderStyle = 0
+Margin = 0
+ForeColor = 0,0,0
+BackColor = 255,255,255
+Name = "Text1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _08Z023JOB
+[CLASS] header
+[BASECLASS] header
+[OBJNAME] Header1
+[PARENT] Form1.TableFieldsGrid.Column3
+[START PROPERTIES]
+FontBold = .T.
+FontName = "Arial"
+FontSize = 9
+Caption = "Type"
+Name = "Header1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _08Z023JOC
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] Text1
+[PARENT] Form1.TableFieldsGrid.Column3
+[START PROPERTIES]
+FontBold = .T.
+FontName = "Arial"
+FontSize = 9
+BorderStyle = 0
+Margin = 0
+ForeColor = 0,0,0
+BackColor = 255,255,255
+Name = "Text1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _08Z023JOF
+[CLASS] header
+[BASECLASS] header
+[OBJNAME] Header1
+[PARENT] Form1.TableFieldsGrid.Column4
+[START PROPERTIES]
+FontBold = .T.
+FontName = "Arial"
+FontSize = 9
+Caption = "Lenght"
+Name = "Header1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _08Z023JOG
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] Text1
+[PARENT] Form1.TableFieldsGrid.Column4
+[START PROPERTIES]
+FontBold = .T.
+FontName = "Arial"
+FontSize = 9
+BorderStyle = 0
+Margin = 0
+ForeColor = 0,0,0
+BackColor = 255,255,255
+Name = "Text1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _08Z023JOI
+[CLASS] header
+[BASECLASS] header
+[OBJNAME] Header1
+[PARENT] Form1.TableFieldsGrid.Column5
+[START PROPERTIES]
+FontBold = .T.
+FontName = "Arial"
+FontSize = 9
+Caption = "Dec."
+Name = "Header1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _08Z023JOJ
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] Text1
+[PARENT] Form1.TableFieldsGrid.Column5
+[START PROPERTIES]
+FontBold = .T.
+FontName = "Arial"
+FontSize = 9
+BorderStyle = 0
+Margin = 0
+ForeColor = 0,0,0
+BackColor = 255,255,255
+Name = "Text1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _08Z023JOL
+[CLASS] header
+[BASECLASS] header
+[OBJNAME] Header1
+[PARENT] Form1.TableFieldsGrid.Column6
+[START PROPERTIES]
+FontBold = .T.
+Caption = "Header1"
+Name = "Header1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _08Z023JOM
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] Text1
+[PARENT] Form1.TableFieldsGrid.Column6
+[START PROPERTIES]
+FontBold = .T.
+BorderStyle = 0
+Margin = 0
+ForeColor = 0,0,0
+BackColor = 255,255,255
+Name = "Text1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[START PROPERTIES]
+Arial, 0, 9, 5, 15, 12, 32, 3, 0
+Arial, 1, 9, 6, 15, 12, 32, 3, 0
+[END PROPERTIES]
+[EOF]
