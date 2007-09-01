@@ -177,7 +177,7 @@ TRY
 		oSample.AddObject("ImgVFPXPowered", "Image")
 		oSample.ShowTips = .T.
 		WITH oSample.ImgVFPXPowered
-			.Picture = "\Image\vfpxpoweredby_alternative.gif"
+			.Picture = "Image\vfpxpoweredby_alternative.gif"
 			.Left = oSample.Width - .Width
 			.Top = oSample.Height - .Height
 			.Anchor = 192
@@ -373,6 +373,6 @@ Name = "Label2"
 [PLATFORM] COMMENT 
 [UNIQUEID] RESERVED  
 [START PROPERTIES]
-Arial, 0, 9, 5, 15, 12, 16, 3, 0
+Arial, 0, 9, 5, 15, 12, 32, 3, 0
 [END PROPERTIES]
 [EOF]
