@@ -12,7 +12,7 @@ lnFrames = loMultif.GetFrameCount()
 IF lnFrames > 1
 	FOR n = 0 TO lnFrames - 1
 		loMultif.SelectActiveFrame(.Imaging.FrameDimension.Page, n) 			
-		lcFrameFileName = "c:\Frame" + TRANSFORM(n + 1) + ".Tif"
+		lcFrameFileName = "c:\Frame" + TRANSFORM(n + 1) + ".bmp"
 		loMultif.Save(lcFrameFileName, .Imaging.ImageFormat.Bmp)
 	ENDFOR
 ELSE
