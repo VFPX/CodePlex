@@ -19,8 +19,14 @@ laRects(1) = .Rectangle.New(0, 0, 100, 200)
 laRects(2) = .Rectangle.New(100, 200, 250, 50)
 laRects(3) = .Rectangle.New(300, 0, 50, 100)
 
+
+* Retrieve the graphics object.
+* Initialize the graphics object to be able to draw in the _screen
+LOCAL loScreenGfx AS xfcGraphics
+loScreenGfx = .Graphics.FromHwnd(_Screen.HWnd)
+
 * Draw rectangles to screen.
-_SCREEN.Graphics.DrawRectangles(loBlackPen, @laRects)
+loSCreenGfx.DrawRectangles(loBlackPen, @laRects)
 
 ENDWITH 
 
