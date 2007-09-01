@@ -45,9 +45,9 @@ Name = "Form1"
 [END PROPERTIES]
 [START METHODS]
 PROCEDURE Init
-DODEFAULT()
+
 LOCAL lcPicture
-lcPicture = FULLPATH("\Image\GotData.gif")
+lcPicture = LOCFILE("GotData.gif")
 Thisform.txtFile.Value = lcPicture
 Thisform.Image1.Picture = lcPicture
 Thisform.Imgcanvas1.Draw()
@@ -62,7 +62,7 @@ mode
 [PLATFORM] WINDOWS 
 [UNIQUEID] _1TZ0QGKPH
 [CLASS] imgcanvas
-[CLASSLOC] ..\source\gdiplusx.vcx
+[CLASSLOC] ..\gdiplusx.vcx
 [BASECLASS] image
 [OBJNAME] Imgcanvas1
 [PARENT] Form1
@@ -302,7 +302,7 @@ Name = "Image2"
 [PLATFORM] COMMENT 
 [UNIQUEID] RESERVED  
 [START PROPERTIES]
-Arial, 0, 9, 5, 15, 12, 16, 3, 0
-Arial, 0, 8, 5, 14, 11, 14, 3, 0
+Arial, 0, 9, 5, 15, 12, 32, 3, 0
+Arial, 0, 8, 5, 14, 11, 29, 3, 0
 [END PROPERTIES]
 [EOF]
