@@ -18,9 +18,9 @@ WITH _SCREEN.System.Drawing
 	LOCAL myEncoderParameters AS xfcEncoderParameters
 
 	&& Create three Bitmap objects.
-	multif = .Bitmap.New(GETPICT("BMP"))
-	page2  = .Bitmap.New(GETPICT("BMP"))
-	page3  = .Bitmap.New(GETPICT("BMP"))
+	multif = .Bitmap.New(GETPICT())
+	page2  = .Bitmap.New(GETPICT())
+	page3  = .Bitmap.New(GETPICT())
 	
 	&& Get an ImageCodecInfo object that represents the TIFF codec.
 	myImageCodecInfo = GetEncoderInfo("image/tiff")
@@ -36,28 +36,26 @@ WITH _SCREEN.System.Drawing
 	&& EncoderParameter object in the array.
 	myEncoderParameters = .Imaging.EncoderParameters.New(1);
 	
-	#DEFINE EncoderValueFlush                20 
-	#DEFINE EncoderValueFrameDimensionPage   23 
 	
 	*!*	Save the first page (frame).
 	myEncoderParameter = .Imaging.EncoderParameter.New(myEncoder, .Imaging.EncoderValue.MultiFrame)
 
-	myEncoderParameters.Param[1] = myEncoderParameter
+	myEncoderParameters.Param.Add(myEncoderParameter)
 	multif.Save("c:\Multiframe.tif", myImageCodecInfo, myEncoderParameters)
 
 	*!*	Save the second page (frame).
 	myEncoderParameter = .Imaging.EncoderParameter.New(myEncoder, .Imaging.EncoderValue.FrameDimensionPage)
-	myEncoderParameters.Param[1] = myEncoderParameter
+	myEncoderParameters.Param.Add(myEncoderParameter)
 	multif.SaveAdd(page2, myEncoderParameters)
 
 	*!*	Save the third page (frame).
 	myEncoderParameter = .Imaging.EncoderParameter.New(myEncoder, .Imaging.EncoderValue.FrameDimensionPage)
-	myEncoderParameters.Param[1] = myEncoderParameter
+	myEncoderParameters.Param.Add(myEncoderParameter)
 	multif.SaveAdd(page3, myEncoderParameters)
 
 	*!*	Close the multiple-frame file.
 	myEncoderParameter = .Imaging.EncoderParameter.New(myEncoder, .Imaging.EncoderValue.Flush)
-	myEncoderParameters.Param[1] = myEncoderParameter
+	myEncoderParameters.Param.Add(myEncoderParameter)
 	multif.SaveAdd(myEncoderParameters)
 
 ENDWITH
