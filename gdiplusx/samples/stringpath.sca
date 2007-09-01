@@ -36,7 +36,7 @@ Name = "Dataenvironment"
 [START PROPERTIES]
 Top = 0
 Left = 0
-Height = 302
+Height = 306
 Width = 457
 DoCreate = .T.
 Caption = "Text to Graphics Path drawn using texture image"
@@ -66,7 +66,7 @@ _memberdata XML Metadata for customizable properties
 [PLATFORM] WINDOWS 
 [UNIQUEID] _1V00KWTK7
 [CLASS] imgcanvas
-[CLASSLOC] ..\source\gdiplusx.vcx
+[CLASSLOC] ..\gdiplusx.vcx
 [BASECLASS] image
 [OBJNAME] Imgcanvas1
 [PARENT] Form1
@@ -111,6 +111,6 @@ ENDPROC
 [PLATFORM] COMMENT 
 [UNIQUEID] RESERVED  
 [START PROPERTIES]
-Arial, 0, 9, 5, 15, 12, 16, 3, 0
+Arial, 0, 9, 5, 15, 12, 32, 3, 0
 [END PROPERTIES]
 [EOF]
