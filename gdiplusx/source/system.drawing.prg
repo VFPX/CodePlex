@@ -1,43 +1,5 @@
 #INCLUDE System.Drawing.h
 
-#DEFINE USECLASS_XFCGRAPHICS
-#DEFINE USECLASS_XFCREGION
-
-#DEFINE USECLASS_XFCCOLOR
-#DEFINE USECLASS_XFCCOLORS
-#DEFINE USECLASS_XFCBRUSH
-#DEFINE USECLASS_XFCBRUSHES
-#DEFINE USECLASS_XFCPEN
-#DEFINE USECLASS_XFCPENS
-#DEFINE USECLASS_XFCSOLIDBRUSH
-#DEFINE USECLASS_XFCSYSTEMBRUSHES
-#DEFINE USECLASS_XFCSYSTEMCOLORS
-#DEFINE USECLASS_XFCSYSTEMPENS
-#DEFINE USECLASS_XFCTEXTUREBRUSH
-
-#DEFINE USECLASS_XFCCHARACTERRANGE
-#DEFINE USECLASS_XFCFONT
-#DEFINE USECLASS_XFCFONTFAMILY
-#DEFINE USECLASS_XFCSTRINGFORMAT
-
-#DEFINE USECLASS_XFCPOINT
-#DEFINE USECLASS_XFCPOINTF
-#DEFINE USECLASS_XFCRECTANGLE
-#DEFINE USECLASS_XFCRECTANGLEF
-#DEFINE USECLASS_XFCSIZE
-#DEFINE USECLASS_XFCSIZEF
-
-#DEFINE USECLASS_XFCBITMAP
-#DEFINE USECLASS_XFCICON
-#DEFINE USECLASS_XFCIMAGE
-#DEFINE USECLASS_XFCIMAGEANIMATOR
-#DEFINE USECLASS__XFCIMAGEANIMATORTIMER
-#DEFINE USECLASS__XFCKNOWNCOLORTABLE
-#DEFINE USECLASS_XFCSYSTEMICONS
-
-*#DEFINE USECLASS_XFCCOLORTRANSLATOR
-*#DEFINE USECLASS_XFCTOOLBOXBITMAPATTRIBUTE
-
 LPARAMETER toObject
 
 IF VARTYPE(m.toObject) = "O"
@@ -12491,8 +12453,7 @@ DEFINE CLASS xfcImage AS xfcgpobject
 			
 			LOCAL lqBinary
 			LOCAL loStream as xfcMemoryStream
-			loStream = NEWOBJECT("xfcMemoryStream",XFCCLASS_SYSTEM)
-		
+			m.loStream = NEWOBJECT("xfcMemoryStream", XFCCLASS_IO)
 			This.SetStatus(xfcGdipSaveImageToStream_I(This.Handle, m.loStream.Handle, @lqClsidEncoder, lhEncoderParams))
 			m.lqBinary = loStream.Getbuffer()
 			loStream.Dispose()
@@ -12568,21 +12529,121 @@ DEFINE CLASS xfcImage AS xfcgpobject
 			= ZeroMemory (m.lpBitsArray, m.lnBitsSize)
 		
 			LOCAL hdc, hMemDC, lnFileSize, lnOffBits, m.lcBFileHdr
-			m.lhDC = xfcGetWindowDC(_screen.HWnd)
+			m.lhDC = xfcGetWindowDC(_SCREEN.HWnd)
 			m.lhMemDC = xfcCreateCompatibleDC (m.lhDC)
-			= xfcReleaseDC (_screen.HWnd, m.lhDC)
-			= xfcGetDIBits (m.lhMemDC, m.lhBitmap, 0, m.lnHeight, m.lpBitsArray, @lcBInfo, DIB_RGB_COLORS)
+			=xfcReleaseDC(_SCREEN.HWnd, m.lhDC)
+			=xfcGetDIBits (m.lhMemDC, m.lhBitmap, 0, m.lnHeight, m.lpBitsArray, @lcBInfo, DIB_RGB_COLORS)
 		
 			m.lnFileSize = BFHDR_SIZE + BHDR_SIZE + m.lnRgbQuadSize + m.lnBitsSize
-			m.lnOffBits = BFHDR_SIZE + BHDR_SIZE + m.lnRgbQuadSize
+			m.lnOffBits  = BFHDR_SIZE + BHDR_SIZE + m.lnRgbQuadSize
 			m.lcBFileHdr = "BM" + BINTOC(m.lnFileSize, "4RS") + BINTOC(0, "4RS") + BINTOC(m.lnOffBits, "4RS")
 		
 			LOCAL lqBinary
 			m.lqBinary = m.lcBFileHdr + m.lcBInfo + SYS(2600, m.lpBitsArray, m.lnBitsSize)
 		
-			= xfcGlobalFree(m.lpBitsArray)
-			= xfcDeleteDC (m.lhMemDC)
-			= xfcDeleteObject (m.lhBitmap)
+			=xfcGlobalFree(m.lpBitsArray)
+			=xfcDeleteDC(m.lhMemDC)
+			=xfcDeleteObject(m.lhBitmap)
+		
+		CATCH TO loExc
+			THROW m.loExc
+		ENDTRY
+		
+		RETURN m.lqBinary
+	ENDFUNC
+
+
+
+	*********************************************************************
+	FUNCTION xxGetPictureValfromHBitmap
+	*********************************************************************
+	** Method: xfcImage.GetPictureVal
+	**
+	** Returns a String containing the PictureVal of this Image object using the HBitmap GDI technique
+	**
+	** Remarks:
+	**
+	** History:
+	**	2007/04/15: CChalom - Coded
+	*********************************************************************
+		LPARAMETERS toImage AS Image
+		
+		*!*	*!ToDo: Test this function
+		
+		#DEFINE RGBQUAD_SIZE     4
+		#DEFINE DIB_RGB_COLORS   0
+		#DEFINE BFHDR_SIZE      14
+		#DEFINE BHDR_SIZE       40
+		* #DEFINE GMEM_FIXED     0
+		* #DEFINE BI_RGB         0
+		
+		
+		LOCAL loExc AS Exception
+		TRY
+		
+			LOCAL lhBitmap, lnWidth, lnHeight, lnBitsPerPixel
+			LOCAL lnBytesPerScan, lnBitsSize, lnRgbQuadSize
+			LOCAL lcBIHdr, lcRgbQuad, lcBInfo
+			LOCAL lpBitsArray
+			LOCAL hdc, hMemDC, lnFileSize, lnOffBits, m.lcBFileHdr
+			LOCAL lqBinary
+		
+			STORE 0 TO m.lnBytesPerScan, m.lnBitsSize, m.lnRgbQuadSize
+			m.lhBitmap = 0
+			This.SetStatus(xfcGdipCreateHBITMAPFromBitmap(This.Handle, @lhBitmap, ARGB_LightGray))
+		
+			m.lnWidth  = This.Width
+			m.lnHeight = This.Height
+			m.lnBitsPerPixel = This.GetPixelFormatSize(This.PixelFormat)
+		
+			m.lnBytesPerScan = INT((m.lnWidth * m.lnBitsPerPixel)/8)
+			IF MOD(m.lnBytesPerScan, 4) # 0
+				m.lnBytesPerScan = m.lnBytesPerScan + 4 - MOD(m.lnBytesPerScan, 4)
+			ENDIF
+		
+			m.lcBIHdr = ;
+				BINTOC(BHDR_SIZE, "4RS") + ;
+				BINTOC(m.lnWidth, "4RS") + ;
+				BINTOC(m.lnHeight, "4RS") + ;
+				(0h0100) + ;
+				CHR(MOD(m.lnBitsPerPixel,256)) + ;
+				CHR(INT(m.lnBitsPerPixel/256)) + ;
+				BINTOC(BI_RGB, "4RS") + ;
+				0h0000000000000000000000000000000000000000000000000000000000000000 + ;
+				0h0000000000000000000000000000000000000000000000000000000000000000 + ;
+				0h00000000000000000000000000000000
+		
+			IF m.lnBitsPerPixel <= 8
+				m.lnRgbQuadSize = (2^m.lnBitsPerPixel) * RGBQUAD_SIZE
+				m.lcRgbQuad = REPLICATE(0h00, m.lnRgbQuadSize)
+			ELSE
+				m.lcRgbQuad = ""
+			ENDIF
+			
+			m.lcBInfo = m.lcBIHdr + m.lcRgbQuad
+			m.lnBitsSize = m.lnHeight * m.lnBytesPerScan
+			m.lpBitsArray = xfcGlobalAlloc (GMEM_FIXED, m.lnBitsSize)
+			=ZeroMemory(m.lpBitsArray, m.lnBitsSize)
+		
+			m.lhDC = xfcGetWindowDC(_SCREEN.HWnd)
+			m.lhMemDC = xfcCreateCompatibleDC (m.lhDC)
+			=xfcReleaseDC(_SCREEN.HWnd, m.lhDC)
+			=xfcGetDIBits(m.lhMemDC, m.lhBitmap, 0, m.lnHeight, m.lpBitsArray, @lcBInfo, DIB_RGB_COLORS)
+		
+			m.lnFileSize = BFHDR_SIZE + BHDR_SIZE + m.lnRgbQuadSize + m.lnBitsSize
+			m.lnOffBits  = BFHDR_SIZE + BHDR_SIZE + m.lnRgbQuadSize
+			m.lcBFileHdr = "BM" + BINTOC(m.lnFileSize,"4RS") + 0h00000000 + BINTOC(m.lnOffBits,"4RS")
+		
+			m.lqBinary = 0h
+			IF VARTYPE(m.toImage) = "O"
+				m.toImage.PictureVal = m.lcBFileHdr + m.lcBInfo + SYS(2600, m.lpBitsArray, m.lnBitsSize)
+			ELSE
+				m.lqBinary = m.lcBFileHdr + m.lcBInfo + SYS(2600, m.lpBitsArray, m.lnBitsSize)
+			ENDIF
+		
+			=xfcGlobalFree(m.lpBitsArray)
+			=xfcDeleteDC (m.lhMemDC)
+			=xfcDeleteObject (m.lhBitmap)
 		
 		CATCH TO loExc
 			THROW m.loExc
@@ -22903,6 +22964,7 @@ DEFINE CLASS xfcStringFormat AS xfcgpobject
 	**
 	** History:
 	**  2006/03/07: Auto Generated
+	**	2007/08/31: Coded
 	**
 	** .NET Help ********************************************************
 	** http://msdn2.microsoft.com/en-us/library/System.Drawing.StringFormat.ToString%28vs.80%29.aspx
@@ -22910,19 +22972,10 @@ DEFINE CLASS xfcStringFormat AS xfcgpobject
 	**  [None]
 	** Returns: string
 	*********************************************************************
-		
-		
-		*!ToDo: Implement this function
-		*!ToDo: Test this function
-		ERROR 1999	&& Function not implemented
-		RETURN NULL
-		
 		LOCAL loExc AS Exception
 		TRY
 			LOCAL lcValue
-			m.lcValue = ("[StringFormat, FormatFlags=" + this.FormatFlags.ToString() + "]")
-		
-		
+			m.lcValue = ("[StringFormat, FormatFlags=" + This.FormatFlags.ToString() + "]")
 		CATCH TO loExc
 			THROW m.loExc
 		ENDTRY
