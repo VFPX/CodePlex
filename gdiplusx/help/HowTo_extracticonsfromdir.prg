@@ -3,7 +3,7 @@
 lcDir = "c:\MyIcons"
 lcPath = ADDBS(JUSTPATH(SYS(16)))+"..\source\"
 
-_SCREEN.AddProperty("System", NEWOBJECT("_SCREEN.AddProperty("System", NEWOBJECT("xfcSystem", LOCFILE("system.vcx","vcx")))", LOCFILE(lcPath+"system.vcx","vcx"))) 
+DO LOCFILE("System.prg")
 
 IF NOT DIRECTORY(lcDir)
 	MKDIR (lcDir)
@@ -18,7 +18,7 @@ LOCAL loBmp as xfcBitmap
 lcDirectory = GETDIR()
 lcPath = ADDBS(lcDirectory) + "*.*"
 
-nIconFiles = ADIR(gaICON, lcPath)  && Cria matriz
+nIconFiles = ADIR(gaICON, lcPath)  && Creates Array
 
 FOR nCount = 1 TO nIconFiles  && Loop para número de bancos de dados
 
