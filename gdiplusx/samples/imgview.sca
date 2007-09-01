@@ -34,7 +34,7 @@ Name = "Dataenvironment"
 [BASECLASS] form
 [OBJNAME] Form1
 [START PROPERTIES]
-Height = 462
+Height = 475
 Width = 554
 DoCreate = .T.
 AutoCenter = .T.
@@ -102,11 +102,14 @@ ENDPROC
 [START PROPERTIES]
 ColumnCount = 5
 Anchor = 15
+DeleteMark = .F.
 Height = 409
 Left = 12
 Panel = 1
+RecordMark = .F.
 RecordSource = "curImages"
 RowHeight = 74
+SplitBar = .F.
 Top = 12
 Width = 529
 HighlightStyle = 2
@@ -142,7 +145,7 @@ Name = "Header1"
 [PLATFORM] WINDOWS 
 [UNIQUEID] _2040K5AV3
 [CLASS] imgcanvas
-[CLASSLOC] ..\source\gdiplusx.vcx
+[CLASSLOC] ..\gdiplusx.vcx
 [BASECLASS] image
 [OBJNAME] Image1
 [PARENT] Form1.Grid1.Column1
