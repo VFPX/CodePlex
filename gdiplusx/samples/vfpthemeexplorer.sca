@@ -271,7 +271,7 @@ IF m.nHtheme > 0
 
   nHdc = oResource.hdc
 
-  nResult = GetThemePartSize(nHtheme, nHdc, nPartId, nStateId, nPrect, nSize, @cPartSize)
+  nResult = GetThemePartSize(nHtheme, nHdc, nPartId, nStateId, @nPrect, nSize, @cPartSize)
 
   IF m.nResult == S_OK
 
@@ -1033,10 +1033,10 @@ THISFORM.oSelectedNode = NODE
 ENDPROC
 [END METHODS]
 [BINSTART OLE]
-CHECKSUM=11977
+CHECKSUM=12541
 [BINEND OLE]
 [BINSTART OLE2]
-CHECKSUM=11934
+CHECKSUM=26800
 [BINEND OLE2]
 
 [ RECORD]
