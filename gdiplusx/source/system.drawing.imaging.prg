@@ -8908,42 +8908,12 @@ DEFINE CLASS xfcPropertyItem AS xfcDrawingBase OF System.Drawing.prg
 			This.hMemory = 0
 		ENDIF
 		
-		DO CASE
-		CASE This.Type = PropertyTagTypeByte ;
-		  OR This.Type = PropertyTagTypeUndefined
-			m.lqValue = This.Value
-			
-		CASE This.Type = PropertyTagTypeASCII
-			m.lqValue = This.Value+CHR(0)
-			
-		CASE This.Type = PropertyTagTypeShort
-			m.lqValue = 0h
-			FOR lnStep = 1 TO This.Len STEP 2
-				m.lqValue = m.lqValue + BINTOC(SUBSTR(This.Value, lnStep, 2), "2rs")
-			ENDFOR
-			
-		CASE This.Type = PropertyTagTypeLong ;
-		  OR This.Type = PropertyTagTypeSLONG
-			m.lqValue = 0h
-			FOR lnStep = 1 TO This.Len STEP 4
-				m.lqValue = m.lqValue + BINTOC(SUBSTR(This.Value, lnStep, 4), "4rs")
-			ENDFOR
-			
-		CASE This.Type = PropertyTagTypeRational ;
-		  OR This.Type = PropertyTagTypeSRational
-			m.lqValue = 0h
-			FOR lnStep = 1 TO This.Len STEP 8
-				m.lqValue = m.lqValue + BINTOC(SUBSTR(This.Value, lnStep, 4), "4rs")
-				m.lqValue = m.lqValue + SUBSTR(This.Value, lnStep+4, 4), "4rs")
-			ENDFOR
-			
-		ENDCASE
-		
+		m.lqValue = This.Value
 		This.hMemory = xfcGlobalAlloc(GMEM_FIXED, LEN(m.lqValue)+16)
 		
 		lqData = ;
 			BINTOC(This.Id, "4rs") + ;
-			BINTOC(xfcGlobalSize(This.hMemory), "4rs") + ;
+			BINTOC(LEN(m.lqValue), "4rs") + ;
 			BINTOC(This.Type, "4rs") + ;
 			BINTOC(This.hMemory+16, "4rs")
 		
