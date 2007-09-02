@@ -2731,10 +2731,6 @@ DEFINE CLASS xfcCharacterRange AS xfcdrawingbase
 	_memberdata = [<VFPData>]+;
 		[<memberdata name="equals" type="method" display="Equals"/>]+;
 		[<memberdata name="gethashcode" type="method" display="GetHashCode"/>]+;
-		[<memberdata name="gettype" type="method" display="GetType"/>]+;
-		[<memberdata name="tostring" type="method" display="ToString"/>]+;
-		[<memberdata name="finalize" type="method" display="Finalize"/>]+;
-		[<memberdata name="memberwiseclone" type="method" display="MemberwiseClone"/>]+;
 		[<memberdata name="first" type="property" display="First"/>]+;
 		[<memberdata name="length" type="property" display="Length"/>]+;
 		[</VFPData>]		
@@ -11815,9 +11811,7 @@ DEFINE CLASS xfcImage AS xfcgpobject
 
 	DIMENSION PropertyIdList[1]
 
-	DIMENSION PropertyItems[1]
-	** Gets all the property items (pieces of metadata) stored in this Image object.
-
+	PropertyItems = NULL	&& Gets all the property items (pieces of metadata) stored in this Image object.
  
 	*********************************************************************
 	FUNCTION Init
@@ -13215,42 +13209,34 @@ DEFINE CLASS xfcImage AS xfcgpobject
 	**
 	** History:
 	**  2006/03/07: Auto Generated
+	**	2007/09/01: BDurban - Coded
 	**
 	** .NET Help ********************************************************
 	** http://msdn2.microsoft.com/en-us/library/System.Drawing.Image.PropertyItems%28vs.80%29.aspx
 	** Returns: PropertyItem[]
 	*********************************************************************
-		
-	******** DELETE THIS LINE TO PREVENT CODE FROM BEING OVERWRITTEN ********
-		
-		*!ToDo: Implement this function
 		*!ToDo: Test this function
-		ERROR 1999	&& Function not implemented
-		RETURN NULL
-		
-		LOCAL loPropertyItem[1], lhPropertyItem[1]
-		m.lhPropertyItem[1] = 0
-		m.loPropertyItem[1] = NULL
+		LOCAL liPropCnt, loColl AS Collection, lnPropID, loProp
 		
 		LOCAL loExc AS Exception
 		TRY
-			LOCAL lnFunctionType
-			m.lnFunctionType = 0
-			
-			DO CASE
-			CASE m.lnFunctionType = 1
-				This.SetStatus(xfcGdipGetPropertyItemSize(This.Handle, m.liPropId, @liSize))
-			CASE m.lnFunctionType = 2
-				This.SetStatus(xfcGdipGetAllPropertyItems(This.Handle, m.liTotalBufferSize, m.liNumProperties, @lcAllItems))
-			ENDCASE
-				IF(m.lhPropertyItem[1] <> 0)
-					m.loPropertyItem[1] = NEWOBJECT("xfcPropertyItem",XFCCLASS_IMAGING)
-					m.loPropertyItem[1].Handle = m.lhPropertyItem[1]
+			m.liPropCnt = 0
+			This.SetStatus(xfcGdipGetPropertyCount(This.Handle, @liPropCnt))
+			IF VARTYPE(This.PropertyItems) <> "O" OR This.PropertyItems.Count <> m.liPropCnt
+				m.loColl = CREATEOBJECT("Collection")
+				m.lnPropID = This.PropertyIDList[1]	&& Initialize array
+				IF VARTYPE(m.lnPropID) == "N" && a NULL is returned when no properties are found
+					FOR EACH m.lnPropID IN This.PropertyIdList
+						m.loProp = This.GetPropertyItem(m.lnPropID)
+						m.loColl.Add(m.loProp, ALLTRIM(STR(m.lnPropID)))
+					ENDFOR
 				ENDIF
+				This.PropertyItems = m.loColl
+			ENDIF
 		CATCH TO loExc
 			THROW m.loExc
 		ENDTRY
-		RETURN m.loPropertyItem[1]
+		RETURN This.PropertyItems
 	ENDFUNC
 
 
@@ -20137,6 +20123,8 @@ DEFINE CLASS xfcRegion AS xfcgpobject
 *************************************************************************
 	BaseName = "Region"
 	lastresult = 0
+	
+	DIMENSION _InternalArray[1]
  
 	*********************************************************************
 	FUNCTION Init
@@ -20578,6 +20566,7 @@ DEFINE CLASS xfcRegion AS xfcgpobject
 	**
 	** History:
 	**  2006/03/07: Auto Generated
+	**	2007/09/01: BDurban - Coded
 	**
 	** .NET Help ********************************************************
 	** http://msdn2.microsoft.com/en-us/library/System.Drawing.Region.GetRegionScans%28vs.80%29.aspx
@@ -20586,35 +20575,34 @@ DEFINE CLASS xfcRegion AS xfcgpobject
 	** Returns: RectangleF[]
 	*********************************************************************
 	LPARAMETERS toMatrix AS xfcMatrix
-		
-		*!ToDo: Implement this function
 		*!ToDo: Test this function
-		ERROR 1999	&& Function not implemented
-		RETURN NULL
+		LOCAL liCount, liLoop, lqRects
 		
 		LOCAL loExc AS Exception
 		TRY
-			LOCAL loRectangleF[1]
-			m.loRectangleF[1] = NULL
-			LOCAL lnFunctionType
-			m.lnFunctionType = 0
+			m.liCount = 0
+			This.SetStatus(xfcGdipGetRegionScansCount(This.Handle, @m.liCount, m.toMatrix.Handle))
 			
-			DO CASE
-			CASE m.lnFunctionType = 1
-				This.SetStatus(xfcGdipGetRegionScansCount(This.Handle, @liCount, m.lhMatrix))
-			CASE m.lnFunctionType = 2
-				IF This.UsePrecision
-					This.SetStatus(xfcGdipGetRegionScans(This.Handle, @lcRects, @liCount, m.lhMatrix))
-				ELSE
-					This.SetStatus(xfcGdipGetRegionScansI(This.Handle, @lcRects, @liCount, m.lhMatrix))
-				ENDIF
-			ENDCASE
-			m.loRectangleF[1] = CREATEOBJECT("xfcRectangleF")
+			IF m.liCount > 0
+				DIMENSION This._InternalArray[m.liCount]
+				m.lqRects = 0h+REPLICATE(EMPTY_RECTANGLEF, m.liCount) 
+				This.SetStatus(xfcGdipGetRegionScans(This.Handle, @m.lqRects, m.liCount, m.toMatrix.Handle))
+				
+				FOR m.liLoop = 1 TO m.liCount
+					This._InternalArray[m.liLoop] = ;
+							CREATEOBJECT("xfcRectangleF", ;
+								SUBSTR(m.lqRects, (m.liLoop-1)*SIZEOF_RECTANGLEF+1, SIZEOF_RECTANGLEF))
+				ENDFOR
+			ENDIF
 		CATCH TO loExc
 			THROW m.loExc
 		ENDTRY
 		
-		RETURN m.loRectangleF[1]
+		IF m.liCount = 0
+			RETURN NULL
+		ELSE
+			RETURN @This._InternalArray
+		ENDIF
 	ENDFUNC
 
 
@@ -22891,6 +22879,7 @@ DEFINE CLASS xfcStringFormat AS xfcgpobject
 	**
 	** History:
 	**  2006/03/07: Auto Generated
+	**	2007/09/01: BDurban - Coded
 	**
 	** .NET Help ********************************************************
 	** http://msdn2.microsoft.com/en-us/library/System.Drawing.StringFormat.SetMeasurableCharacterRanges%28vs.80%29.aspx
@@ -22899,16 +22888,18 @@ DEFINE CLASS xfcStringFormat AS xfcgpobject
 	** Returns: void
 	*********************************************************************
 	LPARAMETERS taoRanges AS xfcCharacterRange
-		
-		*!ToDo: Implement this function
+
 		*!ToDo: Test this function
-		ERROR 1999	&& Function not implemented
-		RETURN NULL
+		LOCAL m.loCharRange AS xfcCharacterRange, lqRanges, liRangeCount
 		
 		LOCAL loExc AS Exception
 		TRY
-		
-			This.SetStatus(xfcGdipSetStringFormatMeasurableCharacterRanges(This.Handle, m.liRangeCount, @liRanges))
+			m.lqRanges = 0h
+			FOR EACH m.loCharRange IN m.taoRanges 
+				m.lqRanges = m.lqRanges + m.loCharRange.ToVarbinary()
+				m.liRangeCount = m.liRangeCount + 1
+			ENDFOR
+			This.SetStatus(xfcGdipSetStringFormatMeasurableCharacterRanges(This.Handle, m.liRangeCount, m.lqRanges))
 		
 		CATCH TO loExc
 			THROW m.loExc
@@ -28318,8 +28309,8 @@ ENDFUNC
 *********************************************************************
 FUNCTION xfcGdipGetRegionScans(region, rects, Count, matrix)
 *********************************************************************
-	DECLARE Long GdipGetRegionScans IN GDIPLUS.DLL AS xfcGdipGetRegionScans Long region, String @rects, Long @Count, Long matrix
-	RETURN xfcGdipGetRegionScans(m.region, @m.rects, @m.Count, m.matrix)
+	DECLARE Long GdipGetRegionScans IN GDIPLUS.DLL AS xfcGdipGetRegionScans Long region, String @rects, Long Count, Long matrix
+	RETURN xfcGdipGetRegionScans(m.region, @m.rects, m.Count, m.matrix)
 ENDFUNC
 
 *********************************************************************
@@ -28332,8 +28323,8 @@ ENDFUNC
 *********************************************************************
 FUNCTION xfcGdipGetRegionScansI(region, rects, Count, matrix)
 *********************************************************************
-	DECLARE Long GdipGetRegionScansI IN GDIPLUS.DLL AS xfcGdipGetRegionScansI Long region, String @rects, Long @Count, Long matrix
-	RETURN xfcGdipGetRegionScansI(m.region, @m.rects, @m.Count, m.matrix)
+	DECLARE Long GdipGetRegionScansI IN GDIPLUS.DLL AS xfcGdipGetRegionScansI Long region, String @rects, Long Count, Long matrix
+	RETURN xfcGdipGetRegionScansI(m.region, @m.rects, m.Count, m.matrix)
 ENDFUNC
 
 *********************************************************************
@@ -28570,8 +28561,8 @@ ENDFUNC
 *********************************************************************
 FUNCTION xfcGdipSetStringFormatMeasurableCharacterRanges(StringFormat, rangeCount, ranges)
 *********************************************************************
-	DECLARE Long GdipSetStringFormatMeasurableCharacterRanges IN GDIPLUS.DLL AS xfcGdipSetStringFormatMeasurableCharacterRanges Long StringFormat, Long rangeCount, Long @ranges
-	RETURN xfcGdipSetStringFormatMeasurableCharacterRanges(m.StringFormat, m.rangeCount, @m.ranges)
+	DECLARE Long GdipSetStringFormatMeasurableCharacterRanges IN GDIPLUS.DLL AS xfcGdipSetStringFormatMeasurableCharacterRanges Long StringFormat, Long rangeCount, String ranges
+	RETURN xfcGdipSetStringFormatMeasurableCharacterRanges(m.StringFormat, m.rangeCount, m.ranges)
 ENDFUNC
 
 *********************************************************************
