@@ -8689,7 +8689,7 @@ DEFINE CLASS xfcPropertyItem AS xfcDrawingBase OF System.Drawing.prg
 	** Returns: variant
 	*********************************************************************
 	
-		LOCAL leValue, llIsArray
+		LOCAL leValue, llIsArray, lnNT
 		m.leValue = 0h
 		m.llIsArray = .F.
 		
@@ -8703,7 +8703,9 @@ DEFINE CLASS xfcPropertyItem AS xfcDrawingBase OF System.Drawing.prg
 				IF This.Len < 1 OR LEN(This.Value) < 1
 					m.leValue = NULL
 				ELSE
-					m.leValue = ""+LEFT(This.Value,This.Len-1)
+					m.lnNT = AT(0h00, This.Value)
+					m.lnNT = EVL(m.lnNT, LEN(This.Value)+1)
+					m.leValue = ""+LEFT(This.Value,m.lnNT-1)
 					** Check for datetime
 					IF CHRTRAN(m.leValue,"0123456789","##########") == "####:##:## ##:##:##"
 						m.leValue = DATETIME( ;
@@ -8722,8 +8724,8 @@ DEFINE CLASS xfcPropertyItem AS xfcDrawingBase OF System.Drawing.prg
 					m.leValue = NULL
 				CASE This.Len > 2
 					DIMENSION This._InternalArray[This.Len/2]
-					FOR m.lnLoop = 1 TO This.Length/2
-						This._InternalArray[m.lnLoop] = CTOBIN(SUBSTR(This.Value,(m.lnLoop-1)*2,2), "2rs")
+					FOR m.lnLoop = 1 TO This.Len/2
+						This._InternalArray[m.lnLoop] = CTOBIN(SUBSTR(This.Value,(m.lnLoop-1)*2+1,2), "2rs")
 						m.llIsArray = .T.
 					ENDFOR
 				OTHERWISE
@@ -8737,8 +8739,8 @@ DEFINE CLASS xfcPropertyItem AS xfcDrawingBase OF System.Drawing.prg
 					m.leValue = NULL
 				CASE This.Len > 4
 					DIMENSION This._InternalArray[This.Len/4]
-					FOR m.lnLoop = 1 TO This.Length/4
-						This._InternalArray[m.lnLoop] = CTOBIN(SUBSTR(This.Value,(m.lnLoop-1)*4,4), "4rs")
+					FOR m.lnLoop = 1 TO This.Len/4
+						This._InternalArray[m.lnLoop] = CTOBIN(SUBSTR(This.Value,(m.lnLoop-1)*4+1,4), "4rs")
 						m.llIsArray = .T.
 					ENDFOR
 				OTHERWISE
@@ -8753,7 +8755,7 @@ DEFINE CLASS xfcPropertyItem AS xfcDrawingBase OF System.Drawing.prg
 				CASE This.Len > 8
 					DIMENSION This._InternalArray[This.Len/8]
 					FOR m.lnLoop = 1 TO This.Len/8
-						This._InternalArray[m.lnLoop] = CTOBIN(SUBSTR(This.Value,(m.lnLoop-1)*8,4), "4rs") / CTOBIN(SUBSTR(This.Value,(m.lnLoop-1)*8+4,4), "4rs")
+						This._InternalArray[m.lnLoop] = CTOBIN(SUBSTR(This.Value,(m.lnLoop-1)*8+1,4), "4rs") / CTOBIN(SUBSTR(This.Value,(m.lnLoop-1)*8+4+1,4), "4rs")
 						m.llIsArray = .T.
 					ENDFOR
 				OTHERWISE
