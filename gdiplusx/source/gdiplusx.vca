@@ -295,12 +295,14 @@ _hbitmapold
 [START RESERVED6]
 Pixels[END RESERVED6]
 [START RESERVED8]
-drawing.h[END RESERVED8]
+system.drawing.h[END RESERVED8]
 
 [ RECORD]
 [PLATFORM] COMMENT 
 [UNIQUEID] RESERVED  
 [OBJNAME] imgcanvas
+[START RESERVED1]
+  system.drawing.h&ú®ï7 system.h.ù®!7 gdiplusconstants.h6ûôà7[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
