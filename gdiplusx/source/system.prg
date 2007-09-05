@@ -104,6 +104,17 @@ DEFINE CLASS xfcSystem AS xfcObject
 		RETURN This.Single
 	ENDFUNC
 	
+	*********************************************************************
+	Byte = .NULL.
+	*********************************************************************
+	FUNCTION Byte_ACCESS
+	*********************************************************************
+		IF VARTYPE(This.Byte) <> "O"
+			This.Byte = CREATEOBJECT("xfcByte")
+		ENDIF
+		
+		RETURN This.Byte
+	ENDFUNC
 
 	*********************************************************************
 	FUNCTION Init
@@ -130,7 +141,8 @@ DEFINE CLASS xfcSystem AS xfcObject
 		[<memberdata name="eventhandler" type="property" display="EventHandler"/>]+;
 		[<memberdata name="enum" type="property" display="Enum"/>]+;
 		[<memberdata name="io" type="property" display="IO"/>]+;
-		[<memberdata name="checkclasslib" type="method" display="CheckClasslib"/>]+;
+		[<memberdata name="byte" type="property" display="Byte"/>]+;
+		[<memberdata name="single" type="property" display="Single"/>]+;
 		[</VFPData>]		
 	#ENDIF
 ENDDEFINE
@@ -655,6 +667,84 @@ ENDDEFINE
 #ENDIF
 *************************************************************************
 *************************************************************************
+
+*************************************************************************
+*************************************************************************
+*************************************************************************
+#IFDEF USECLASS_XFCBYTE
+DEFINE CLASS xfcByte AS xfcObject
+*************************************************************************
+*************************************************************************
+*************************************************************************
+
+	DIMENSION _InternalArray[1]
+ 
+ 	*********************************************************************
+	FUNCTION NewArray
+	*********************************************************************
+	LPARAMETERS tiByte
+	
+		IF VARTYPE(m.tiByte) = "Q"
+			LOCAL lqBinary, lqStruct, lnStep, lnSize
+			m.lqBinary = m.tiByte
+			m.lnSize = LEN(lqBinary)
+			DIMENSION This._InternalArray[m.lnSize]
+			FOR m.lnStep = 1 TO m.lnSize
+				This._InternalArray[m.lnStep] = ASC(SUBSTR(m.lqBinary, m.lnStep, 1))
+			ENDFOR
+			RETURN @This._InternalArray
+		ELSE
+			RETURN tiByte
+		ENDIF
+	ENDFUNC
+
+
+	*********************************************************************
+	FUNCTION NewVarBinary
+	*********************************************************************
+	LPARAMETERS teP1, teP2, teP3, tep4, teP5, teP6, teP7, ;
+					teP8, teP9, teP10, teP11, teP12, teP13, teP14, ;
+					teP15, teP16, teP17, teP18, teP19, teP20, teP21, ;
+					teP22, teP23, teP24, teP25, teP26, teP27, teP28
+		
+		LOCAL lnValue, lnLoop, lqBinary, laValue[1]
+		
+		m.lqBinary = 0h
+		
+		DO CASE
+		CASE VARTYPE(m.teP1)="N"
+			FOR m.lnLoop = 1 TO PCOUNT()
+				m.lnValue = EVALUATE("m.teP"+PADR(m.lnLoop,2))
+				IF VARTYPE(m.lnValue)="N"
+					m.lqBinary = m.lqBinary + CHR(m.lnValue)
+				ELSE
+					EXIT
+				ENDIF
+			ENDFOR
+			
+		CASE VARTYPE(m.teP1)="C" AND USED(m.teP1)
+			*! ToDo: Handle a cursor here
+			
+		CASE VARTYPE(m.teP1)="C"
+			FOR lnLoop = 1 TO ALINES(laValue, m.teP1, 1, ",")
+				m.lnValue = EVALUATE(laValue[m.lnLoop])
+				IF VARTYPE(m.lnValue)="N"
+					m.lqBinary = m.lqBinary + CHR(m.lnValue)
+				ELSE
+					EXIT
+				ENDIF
+			ENDFOR
+		ENDCASE
+		
+		RETURN m.lqBinary
+	ENDFUNC
+
+ENDDEFINE
+#ENDIF
+*************************************************************************
+*************************************************************************
+
+
 
 *************************************************************************
 *************************************************************************
