@@ -16681,6 +16681,8 @@ DEFINE CLASS xfcPoint AS xfcdrawingbase
 	X = 0	&& Gets or sets the x-coordinate of this Point.
 	Y = 0	&& Gets or sets the y-coordinate of this Point.
  
+ 	DIMENSION _InternalArray[1]
+
 	*********************************************************************
 	FUNCTION Init
 	*********************************************************************
@@ -16750,6 +16752,27 @@ DEFINE CLASS xfcPoint AS xfcdrawingbase
 	LPARAMETERS tiX, tiY
 		
 		RETURN CREATEOBJECT(This.Class, tiX, tiY)
+	ENDFUNC
+	
+
+	*********************************************************************
+	FUNCTION NewArray
+	*********************************************************************
+	LPARAMETERS tnX, tnY
+	
+		IF VARTYPE(m.tnX) = "Q" AND LEN(m.tnX) > SIZEOF_POINT AND MOD(LEN(m.tnX),SIZEOF_POINT)=0 
+			LOCAL lqBinary, lqStruct, lnStep, lnSize
+			m.lqBinary = m.tnX
+			m.lnSize = INT(LEN(lqBinary)/SIZEOF_POINT)
+			DIMENSION This._InternalArray[m.lnSize]
+			FOR lnStep = 1 TO m.lnSize
+				m.lqStruct = SUBSTR(m.lqBinary, (m.lnStep-1)*SIZEOF_POINT+1, SIZEOF_POINT)  
+				This._InternalArray[m.lnStep] = CREATEOBJECT(This.Class, m.lqStruct)
+			ENDFOR
+			RETURN @This._InternalArray
+		ELSE
+			RETURN CREATEOBJECT(This.Class, m.tnX, m.tnY)
+		ENDIF
 	ENDFUNC
 
 
@@ -17219,6 +17242,8 @@ DEFINE CLASS xfcPointF AS xfcdrawingbase
 	IsEmpty = .F.	&& Gets a value indicating whether this PointF is empty.
 	X = 0	&& Gets the x-coordinate of this PointF.
 	Y = 0	&& Gets the y-coordinate of this PointF.
+	
+	DIMENSION _InternalArray[1]
  
 	*********************************************************************
 	FUNCTION Init
@@ -17239,11 +17264,13 @@ DEFINE CLASS xfcPointF AS xfcdrawingbase
 	LPARAMETERS tnX, tnY
 		
 		*!ToDo: Test this function
+		LOCAL lqStruct, lqBinary
+		
 		LOCAL loExc AS Exception
 		TRY
 			DODEFAULT()
 			
-			LOCAL loPoint, lqStruct
+			LOCAL loPoint, lqStruct, lnStep, lnSize
 			DO CASE
 			CASE VARTYPE(m.tnX)+VARTYPE(m.tnY) == "NN"
 			
@@ -17252,7 +17279,7 @@ DEFINE CLASS xfcPointF AS xfcdrawingbase
 				m.loPoint.GetExtent(@tnX,@tnY)
 				
 			CASE VARTYPE(m.tnX) = "Q"
-				lqStruct = m.tnX
+				m.lqStruct = m.tnX
 				m.tnX = CTOBIN(SUBSTR(lqStruct,1,4),"n")
 				m.tnY = CTOBIN(SUBSTR(lqStruct,5,4),"n")
 				
@@ -17298,10 +17325,30 @@ DEFINE CLASS xfcPointF AS xfcdrawingbase
 	FUNCTION New
 	*********************************************************************
 	LPARAMETERS tnX, tnY
-		
+	
 		RETURN CREATEOBJECT(This.Class, m.tnX, m.tnY)
 	ENDFUNC
 
+
+	*********************************************************************
+	FUNCTION NewArray
+	*********************************************************************
+	LPARAMETERS tnX, tnY
+	
+		IF VARTYPE(m.tnX) = "Q" AND LEN(m.tnX) > SIZEOF_POINTF AND MOD(LEN(m.tnX),SIZEOF_POINTF)=0 
+			LOCAL lqBinary, lqStruct, lnStep, lnSize
+			m.lqBinary = m.tnX
+			m.lnSize = INT(LEN(lqBinary)/SIZEOF_POINTF)
+			DIMENSION This._InternalArray[m.lnSize]
+			FOR lnStep = 1 TO m.lnSize
+				m.lqStruct = SUBSTR(m.lqBinary, (m.lnStep-1)*SIZEOF_POINTF+1, SIZEOF_POINTF)  
+				This._InternalArray[m.lnStep] = CREATEOBJECT(This.Class, m.lqStruct)
+			ENDFOR
+			RETURN @This._InternalArray
+		ELSE
+			RETURN CREATEOBJECT(This.Class, m.tnX, m.tnY)
+		ENDIF
+	ENDFUNC
 
 	*********************************************************************
 	FUNCTION Equals
@@ -17606,6 +17653,8 @@ DEFINE CLASS xfcRectangle AS xfcdrawingbase
 	_height = 0
 	PROTECTED _width
 	_width = 0
+	
+	DIMENSION _InternalArray[1]
  
 	*********************************************************************
 	FUNCTION Init
@@ -17699,6 +17748,27 @@ DEFINE CLASS xfcRectangle AS xfcdrawingbase
 	LPARAMETERS tiX, tiY, tiWidth, tiHeight
 		
 		RETURN CREATEOBJECT(This.Class, m.tiX, m.tiY, m.tiWidth, m.tiHeight)
+	ENDFUNC
+
+
+	*********************************************************************
+	FUNCTION NewArray
+	*********************************************************************
+	LPARAMETERS tiX, tiY, tiWidth, tiHeight
+	
+		IF VARTYPE(m.tiX) = "Q" AND LEN(m.tiX) > SIZEOF_RECTANGLE AND MOD(LEN(m.tiX),SIZEOF_RECTANGLE)=0 
+			LOCAL lqBinary, lqStruct, lnStep, lnSize
+			m.lqBinary = m.tiX
+			m.lnSize = INT(LEN(lqBinary)/SIZEOF_RECTANGLE)
+			DIMENSION This._InternalArray[m.lnSize]
+			FOR lnStep = 1 TO m.lnSize
+				m.lqStruct = SUBSTR(m.lqBinary, (m.lnStep-1)*SIZEOF_RECTANGLE+1, SIZEOF_RECTANGLE)  
+				This._InternalArray[m.lnStep] = CREATEOBJECT(This.Class, m.lqStruct)
+			ENDFOR
+			RETURN @This._InternalArray
+		ELSE
+			RETURN CREATEOBJECT(This.Class, m.tiX, m.tiY, m.tiWidth, m.tiHeight)
+		ENDIF
 	ENDFUNC
 
 
@@ -18847,6 +18917,8 @@ DEFINE CLASS xfcRectangleF AS xfcdrawingbase
 	_height = 0.0
 	PROTECTED _width
 	_width = 0.0
+	
+	DIMENSION _InternalArray[1]
  
 	*********************************************************************
 	FUNCTION Init
@@ -18917,6 +18989,27 @@ DEFINE CLASS xfcRectangleF AS xfcdrawingbase
 	LPARAMETERS tnX, tnY, tnWidth, tnHeight
 		
 		RETURN CREATEOBJECT(This.Class, m.tnX, m.tnY, m.tnWidth, m.tnHeight)
+	ENDFUNC
+
+
+	*********************************************************************
+	FUNCTION NewArray
+	*********************************************************************
+	LPARAMETERS tnX, tnY, tnWidth, tnHeight
+	
+		IF VARTYPE(m.tnX) = "Q" AND LEN(m.tnX) > SIZEOF_RECTANGLEF AND MOD(LEN(m.tnX),SIZEOF_RECTANGLEF)=0 
+			LOCAL lqBinary, lqStruct, lnStep, lnSize
+			m.lqBinary = m.tnX
+			m.lnSize = INT(LEN(lqBinary)/SIZEOF_RECTANGLEF)
+			DIMENSION This._InternalArray[m.lnSize]
+			FOR lnStep = 1 TO m.lnSize
+				m.lqStruct = SUBSTR(m.lqBinary, (m.lnStep-1)*SIZEOF_RECTANGLEF+1, SIZEOF_RECTANGLEF)  
+				This._InternalArray[m.lnStep] = CREATEOBJECT(This.Class, m.lqStruct)
+			ENDFOR
+			RETURN @This._InternalArray
+		ELSE
+			RETURN CREATEOBJECT(This.Class, m.tnX, m.tnY, m.tnWidth, m.tnHeight)
+		ENDIF
 	ENDFUNC
 
 
