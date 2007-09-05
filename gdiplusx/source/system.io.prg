@@ -12,7 +12,8 @@
 #DEFINE EXCEPTION_ARGUMENTINVALID		"Argument is invalid"
 #DEFINE EXCEPTION_STREAMISCLOSED		"Stream is closed"
 #DEFINE EXCEPTION_WRITENOTSUPPORTED		"Write not supportd"
-
+#DEFINE EXCEPTION_MEMORYSTREAMISNOTEXPANDABLE	"MemoryStream is not expandable"
+#DEFINE	EXCEPTION_CAPACITYISTOOSMALL	"The Capacity is too small to hold the data"
 
 LPARAMETER toObject
 
@@ -87,6 +88,7 @@ DEFINE CLASS xfcMemoryStream AS xfcStream
 	CanSeek = .T.
 	CanTimeout = .T.
 	CanWrite = .T.
+	Capacity = 0
 	Handle = 0
 	hGlobalPtr = 0
 	Length = 0
@@ -145,11 +147,11 @@ DEFINE CLASS xfcMemoryStream AS xfcStream
 					m.tiIndex = 0
 					m.llCreateBuffer = .T.
 				ENDIF
-				This._capacity = m.tiCount
-				This._expandable = .T.
-				This._writable = m.tlWritable
+				This._expandable = .F.
+				This._writable = .T.
 				This._exposable = .F.
 				This._isVarBinary = VARTYPE(m.tqBuffer)=="Q"
+				This._capacity = m.tiCount
 			
 			** Buffer size is initialized
 			CASE VARTYPE(m.tqBuffer) = "N"
@@ -157,7 +159,7 @@ DEFINE CLASS xfcMemoryStream AS xfcStream
 				m.tiIndex = 0
 				m.tqBuffer = ""
 				m.llCreateBuffer = .T.
-				This._capacity = m.tiCount
+				m.tlWritable = .T.
 				This._expandable = .T.
 				This._writable = .T.
 				This._exposable = .T.
@@ -168,7 +170,7 @@ DEFINE CLASS xfcMemoryStream AS xfcStream
 				m.tiIndex = 0
 				m.tqBuffer = ""
 				m.llCreateBuffer = .T.
-				This._capacity = m.tiCount
+				m.tlWritable = .T.
 				This._expandable = .T.
 				This._writable = .T.
 				This._exposable = .T.
@@ -182,7 +184,9 @@ DEFINE CLASS xfcMemoryStream AS xfcStream
 				*!  - _isOpen
 				This._hGlobal = xfcGlobalAlloc(0x2022, m.tiCount)
 				*!ToDo: Check this return value
-				This.Write(m.tqBuffer, m.tiIndex, m.tiCount)
+				IF LEN(m.tqBuffer) > 0
+					This.Write(m.tqBuffer, m.tiIndex, m.tiCount)
+				ENDIF
 			ENDIF
 			
 			This.Position = 0
@@ -190,8 +194,8 @@ DEFINE CLASS xfcMemoryStream AS xfcStream
 			This._writable = m.tlWritable
 			This._capacity = m.tiCount
 			This._isOpen = (This._hGlobal <> 0)
-			This._expandable = .F.
 			This._exposable = m.tlPubliclyVisible
+			This.Length = LEN(m.tqBuffer)
 
 		CATCH TO loExc
 			THROW m.loExc
@@ -282,6 +286,37 @@ DEFINE CLASS xfcMemoryStream AS xfcStream
 
 
 	*********************************************************************
+	FUNCTION Capacity_ACCESS
+	*********************************************************************
+		RETURN THIS._capacity - This._origin
+	ENDFUNC
+	*********************************************************************
+	FUNCTION Capacity_ASSIGN
+	*********************************************************************
+	LPARAMETERS m.tiValue
+		LOCAL loExc AS Exception
+		TRY
+			IF NOT This._isOpen
+				ERROR EXCEPTION_STREAMISCLOSED
+			ENDIF
+			
+			IF m.tiValue <> This._capacity
+				IF NOT This._expandable
+					ERROR EXCEPTION_MEMORYSTREAMISNOTEXPANDABLE
+				ENDIF
+				IF m.tiValue < This.Length
+					ERROR EXCEPTION_ARGUMENTOUTOFRANGE
+				ENDIF
+				xfcGlobalRealloc(This._hGlobal, m.tiValue, 0x0040)
+				This._capacity = m.tiValue
+			ENDIF 
+		CATCH TO loExc
+			THROW m.loExc
+		ENDTRY
+	ENDFUNC
+
+
+	*********************************************************************
 	FUNCTION GetBuffer
 	*********************************************************************
 	** Method: xfcMemoryStream.GetBuffer
@@ -325,17 +360,16 @@ DEFINE CLASS xfcMemoryStream AS xfcStream
 		LOCAL lhStream
 		LOCAL loExc AS Exception
 		TRY
+			IF This._hGlobal = 0
+				This._hGlobal = xfcGlobalAlloc(0x2022, 0)
+			ENDIF
+			This.Capacity = This.Length
 			IF This._histream = 0
-				IF This._hGlobal = 0
-					This._hGlobal = xfcGlobalAlloc(0x2022, 0)
-				ENDIF
-
 				m.lhStream = 0
 				xfcCreateStreamOnHGlobal(This._hGlobal, 0, @m.lhStream)
 				This._histream = m.lhStream
 				This.Handle = This._histream
 			ENDIF
-		
 		CATCH TO loExc
 			THROW m.loExc
 		ENDTRY
@@ -380,7 +414,7 @@ DEFINE CLASS xfcMemoryStream AS xfcStream
 		LOCAL loExc AS Exception
 		TRY
 			IF This._hGlobal <> 0
-				This.Length = xfcGlobalSize(This._hGlobal)
+				*This.Length = xfcGlobalSize(This._hGlobal)
 			ELSE
 				This.Length = 0
 			ENDIF
@@ -475,10 +509,10 @@ DEFINE CLASS xfcMemoryStream AS xfcStream
 				ERROR EXCEPTION_ARGUMENTOUTOFRANGE 
 			ENDIF
 			
-			IF (LEN(m.tqBuffer)-m.tiOffset) < m.tiCount
-				*!ToDo: Error
-				ERROR EXCEPTION_ARGUMENTOUTOFRANGE 
-			ENDIF
+*!*				IF (LEN(m.tqBuffer)-m.tiOffset) < m.tiCount
+*!*					*!ToDo: Error
+*!*					ERROR EXCEPTION_ARGUMENTOUTOFRANGE 
+*!*				ENDIF
 			
 			m.lnNum = This.Length - This.Position
 			IF m.lnNum > m.tiCount
@@ -586,6 +620,9 @@ DEFINE CLASS xfcMemoryStream AS xfcStream
 		
 		LOCAL loExc AS Exception
 		TRY
+			m.tiOffset = IIF(PCOUNT() < 2, 0, m.tiOffset)
+			m.tiCount = IIF(PCOUNT() < 3, LEN(m.tqBuffer), m.tiCount)
+		
 			IF This._hGlobal = 0
 				*!ToDo: Error
 				ERROR EXCEPTION_STREAMISCLOSED 
@@ -616,13 +653,18 @@ DEFINE CLASS xfcMemoryStream AS xfcStream
 				ERROR EXCEPTION_ARGUMENTINVALID
 			ENDIF
 			IF m.lnNum > This.Length
-				m.lnNum = This.Length
+				IF m.lnNum > This.Capacity
+					ERROR EXCEPTION_CAPACITYISTOOSMALL
+				ENDIF
+				This.Length = m.lnNum 
 			ENDIF
 			
 			m.lhMemPtr = xfcGlobalLock(This._hGlobal)
-			*!ToDo: Check this return value to make sure we are at a valid memory location
-			SYS(2600, m.lhMemPtr + This.Position, m.tiCount, SUBSTR(m.tqBuffer, m.tiOffset+1, m.tiCount))
-			xfcGlobalUnlock(This._hGlobal)
+			IF m.lhMemPtr <> 0
+				*!ToDo: Check this return value to make sure we are at a valid memory location
+				SYS(2600, m.lhMemPtr + This.Position, m.tiCount, SUBSTR(m.tqBuffer, m.tiOffset+1, m.tiCount))
+				xfcGlobalUnlock(This._hGlobal)
+			ENDIF
 			This.Position = m.lnNum
 		
 		CATCH TO loExc
@@ -1157,6 +1199,13 @@ FUNCTION xfcReleaseStgMedium(pmedium)
 	DECLARE Long ReleaseStgMedium IN ole32 AS xfcReleaseStgMedium String pmedium
 	RETURN xfcReleaseStgMedium(m.pmedium)
 ENDFUNC
+
+*********************************************************************
+FUNCTION xfcGlobalRealloc(hMem, nSize, nFlags)
+*********************************************************************
+	DECLARE INTEGER GlobalReAlloc IN WIN32API AS xfcGlobalRealloc INTEGER hMem, Long nSize, Long nFlags
+	RETURN xfcGlobalRealloc(m.hMem, m.nSize, m.nFlags)
+ENDFUNC 
 
 
 #ENDIF
