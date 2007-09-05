@@ -1,22 +1,5 @@
 #INCLUDE System.Drawing.h
 
-#DEFINE USECLASS_XFCBITMAPDATA
-#DEFINE USECLASS_XFCCOLORMAP
-#DEFINE USECLASS_XFCCOLORMATRIX
-#DEFINE USECLASS_XFCCOLORPALETTE
-#DEFINE USECLASS_XFCENCODER
-#DEFINE USECLASS_XFCENCODERPARAMETER
-#DEFINE USECLASS_XFCENCODERPARAMETERS
-#DEFINE USECLASS_XFCFRAMEDIMENSION
-#DEFINE USECLASS_XFCIMAGEATTRIBUTES
-#DEFINE USECLASS_XFCIMAGECODECINFO
-#DEFINE USECLASS_XFCIMAGEFORMAT
-#DEFINE USECLASS_XFCMETAFILE
-#DEFINE USECLASS_XFCMETAFILEHEADER
-#DEFINE USECLASS_XFCMETAHEADER
-#DEFINE USECLASS_XFCPROPERTYITEM
-#DEFINE USECLASS_XFCWMFPLACEABLEFILEHEADER
-
 LPARAMETER toObject
 
 IF VARTYPE(m.toObject) = "O"
@@ -779,6 +762,7 @@ DEFINE CLASS xfcImaging AS xfcObject OF System.prg
 	** .NET Help ********************************************************
 	** http://msdn2.microsoft.com/en-us/library/System.Drawing.Imaging.MetafileFrameUnit%28vs.80%29.aspx
 	*********************************************************************
+	#IFDEF USECLASS_XFCMETAFILE
 		
 		*!ToDo: Test this method
 		
@@ -803,17 +787,24 @@ DEFINE CLASS xfcImaging AS xfcObject OF System.prg
 		ENDIF
 		
 		RETURN This.MetafileFrameUnit
+	#ELSE
+		ERROR "Class Metafile is disabled"
+	#ENDIF
 	ENDFUNC
 
 
 	*********************************************************************
 	FUNCTION MetaFileHeader_ACCESS
 	*********************************************************************
+	#IFDEF USECLASS_XFCMETAFILEHEADER
 		IF VARTYPE(This.MetaFileHeader) <> "O"
 			This.MetaFileHeader = CREATEOBJECT("xfcMetaFileHeader")
 		ENDIF
 		
 		RETURN THIS.MetaFileHeader
+	#ELSE
+		ERROR "Class MetafileHeader is disabled"
+	#ENDIF
 	ENDFUNC
 
 
@@ -830,6 +821,7 @@ DEFINE CLASS xfcImaging AS xfcObject OF System.prg
 	** .NET Help ********************************************************
 	** http://msdn2.microsoft.com/en-us/library/System.Drawing.Imaging.MetafileType%28vs.80%29.aspx
 	*********************************************************************
+	#IFDEF USECLASS_XFCMETAFILE
 		
 		*!ToDo: Test this method
 		
@@ -854,28 +846,37 @@ DEFINE CLASS xfcImaging AS xfcObject OF System.prg
 		ENDIF
 		
 		RETURN This.MetafileType
+	#ELSE
+		ERROR "Class Metafile is disabled"
+	#ENDIF
 	ENDFUNC
 
 
 	*********************************************************************
 	FUNCTION MetaFile_ACCESS
 	*********************************************************************
+	#IFDEF USECLASS_XFCMETAFILE
 		IF VARTYPE(This.MetaFile) <> "O"
 			This.MetaFile = CREATEOBJECT("xfcMetaFile")
 		ENDIF
-		
 		RETURN THIS.MetaFile
+	#ELSE
+		ERROR "Class Metafile is disabled"
+	#ENDIF
 	ENDFUNC
 
 
 	*********************************************************************
 	FUNCTION MetaHeader_ACCESS
 	*********************************************************************
+	#IFDEF USECLASS_XFCMETAHEADER
 		IF VARTYPE(This.MetaHeader) <> "O"
 			This.MetaHeader = CREATEOBJECT("xfcMetaHeader")
 		ENDIF
-		
 		RETURN THIS.MetaHeader
+	#ELSE
+		ERROR "Class MetaHeader is disabled"
+	#ENDIF
 	ENDFUNC
 
 
