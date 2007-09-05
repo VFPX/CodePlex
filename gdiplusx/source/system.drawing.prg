@@ -310,7 +310,6 @@ DEFINE CLASS xfcDrawing AS xfcObject OF System.PRG
 		RETURN THIS.Image
 	ENDFUNC
 
-
 	*********************************************************************
 	PROTECTED FUNCTION KnownColor_ACCESS
 	*********************************************************************
@@ -693,15 +692,13 @@ DEFINE CLASS xfcDrawing AS xfcObject OF System.PRG
 		RETURN This.KnownColor
 	ENDFUNC
 
-
 	*********************************************************************
 	FUNCTION Pens_ACCESS
 	*********************************************************************
 		IF VARTYPE(This.Pens) <> "O"
 			This.Pens = CREATEOBJECT("xfcPens")
 		ENDIF
-		
-		RETURN THIS.pens
+		RETURN THIS.Pens
 	ENDFUNC
 
 
@@ -710,9 +707,8 @@ DEFINE CLASS xfcDrawing AS xfcObject OF System.PRG
 	*********************************************************************
 		IF VARTYPE(This.Pen) <> "O"
 			This.Pen = CREATEOBJECT("xfcPen", This.Color)
-		ENDIF
-		
-		RETURN THIS.pen
+		ENDIF		
+		RETURN THIS.Pen
 	ENDFUNC
 
 
@@ -722,7 +718,6 @@ DEFINE CLASS xfcDrawing AS xfcObject OF System.PRG
 		IF VARTYPE(This.PointF) <> "O"
 			This.PointF = CREATEOBJECT("xfcPointF")
 		ENDIF
-		
 		RETURN THIS.PointF
 	ENDFUNC
 
@@ -733,7 +728,6 @@ DEFINE CLASS xfcDrawing AS xfcObject OF System.PRG
 		IF VARTYPE(This.Point) <> "O"
 			This.Point = CREATEOBJECT("xfcPoint")
 		ENDIF
-		
 		RETURN THIS.Point
 	ENDFUNC
 
@@ -744,7 +738,6 @@ DEFINE CLASS xfcDrawing AS xfcObject OF System.PRG
 		IF VARTYPE(This.RectangleF) <> "O"
 			This.RectangleF = CREATEOBJECT("xfcRectangleF")
 		ENDIF
-		
 		RETURN THIS.RectangleF
 	ENDFUNC
 
@@ -755,7 +748,6 @@ DEFINE CLASS xfcDrawing AS xfcObject OF System.PRG
 		IF VARTYPE(This.Rectangle) <> "O"
 			This.Rectangle = CREATEOBJECT("xfcRectangle")
 		ENDIF
-		
 		RETURN THIS.Rectangle
 	ENDFUNC
 
@@ -766,7 +758,6 @@ DEFINE CLASS xfcDrawing AS xfcObject OF System.PRG
 		IF VARTYPE(This.Region) <> "O"
 			This.Region = CREATEOBJECT("xfcRegion")
 		ENDIF
-		
 		RETURN THIS.Region
 	ENDFUNC
 
@@ -2764,6 +2755,7 @@ DEFINE CLASS xfcColor AS xfcdrawingbase
 	_knowncolortable = .NULL.
 	PROTECTED _state
 	_state = 0
+
  
 	*********************************************************************
 	FUNCTION Init
@@ -2949,7 +2941,6 @@ DEFINE CLASS xfcColor AS xfcdrawingbase
 		
 		RETURN This
 	ENDFUNC
-
 
 	*********************************************************************
 	PROTECTED FUNCTION Argb_ASSIGN
@@ -3195,9 +3186,7 @@ DEFINE CLASS xfcColor AS xfcdrawingbase
 	** Returns: Color
 	*********************************************************************
 	LPARAMETERS tiKnownColor AS EnumKnownColor
-		
 		*!ToDo: Test this function
-		
 		LOCAL loExc AS Exception
 		TRY
 			LOCAL loColor AS xfcColor
@@ -3231,9 +3220,7 @@ DEFINE CLASS xfcColor AS xfcdrawingbase
 	** Returns: Color
 	*********************************************************************
 	LPARAMETERS tcName
-		
 		*!ToDo: Test this function
-		
 		LOCAL loExc AS Exception
 		TRY
 			LOCAL loColor, liArgb
@@ -3275,9 +3262,7 @@ DEFINE CLASS xfcColor AS xfcdrawingbase
 	*********************************************************************
 	LPARAMETERS tiRed, tiGreen, tiBlue
 	*********** tiRgb
-		
 		*!ToDo: Test this function
-		
 		LOCAL loColor AS xfcColor, liArgb, liRGB
 		m.loColor = NULL
 		m.liArgb = 0
@@ -3288,7 +3273,7 @@ DEFINE CLASS xfcColor AS xfcdrawingbase
 			DO CASE
 			CASE PCOUNT() = 1	&& RGB
 				m.liRGB = m.tiRed
-				m.liArgb = BITLSHIFT(0xFF,24)+ + ;
+				m.liArgb = BITLSHIFT(0xFF,24)+ ;
 					BITLSHIFT(BITAND(m.liRGB,0x000000FF),16)+;
 					BITAND(m.liRGB,0x0000FF00)+;
 					BITRSHIFT(BITAND(m.liRGB,0x00FF0000),16)
@@ -3299,7 +3284,6 @@ DEFINE CLASS xfcColor AS xfcdrawingbase
 					BITLSHIFT(BITAND(m.tiGreen,0xFF),8)+;
 					BITAND(m.tiBlue,0xFF)
 			ENDCASE
-		** This.SetStatus(GdipSomeFunction???())
 				m.loColor = CREATEOBJECT("xfcColor")
 				m.loColor.argb = liArgb
 		CATCH TO loExc
@@ -3327,15 +3311,12 @@ DEFINE CLASS xfcColor AS xfcdrawingbase
 	**  [None]
 	** Returns: float
 	*********************************************************************
-		
 		*!ToDo: Test this function
-		
 		LOCAL loExc AS Exception
 		TRY
 			LOCAL lnValue
 			m.lnValue = 0.0
 			This.GetHSB(0,0,@lnValue)
-			
 		CATCH TO loExc
 			THROW m.loExc
 		ENDTRY
@@ -3527,9 +3508,7 @@ DEFINE CLASS xfcColor AS xfcdrawingbase
 	** http://msdn2.microsoft.com/en-us/library/System.Drawing.Color.G%28vs.80%29.aspx
 	** Returns: byte
 	*********************************************************************
-		
 		*!ToDo: Test this function
-		
 		LOCAL liByte
 		
 		LOCAL loExc AS Exception
@@ -3580,9 +3559,6 @@ DEFINE CLASS xfcColor AS xfcdrawingbase
 	** http://msdn2.microsoft.com/en-us/library/System.Drawing.Color.IsEmpty%28vs.80%29.aspx
 	** Returns: bool
 	*********************************************************************
-		
-		*!ToDo: Test this function
-		
 		RETURN (This._state = 0)
 	ENDFUNC
 
@@ -3603,7 +3579,6 @@ DEFINE CLASS xfcColor AS xfcdrawingbase
 	** http://msdn2.microsoft.com/en-us/library/System.Drawing.Color.IsKnownColor%28vs.80%29.aspx
 	** Returns: bool
 	*********************************************************************
-		
 		*!ToDo: Test this function
 		
 		LOCAL llValue
@@ -3674,9 +3649,7 @@ DEFINE CLASS xfcColor AS xfcdrawingbase
 	** http://msdn2.microsoft.com/en-us/library/System.Drawing.Color.IsSystemColor%28vs.80%29.aspx
 	** Returns: bool
 	*********************************************************************
-		
 		*!ToDo: Test this function
-		
 		LOCAL llValue
 		m.llValue = .F.
 		
@@ -3758,10 +3731,27 @@ DEFINE CLASS xfcColor AS xfcdrawingbase
 	**  [None]
 	** Returns: int
 	*********************************************************************
-		
 		RETURN BITLSHIFT(This.Argb,0)
 	ENDFUNC
 
+
+	*********************************************************************
+	FUNCTION ToRgb
+	*********************************************************************
+	** Method: xfcColor.ToRgb
+	**
+	** Gets the 24-bit RGB value of this Color structure. The Alpha channel is ignored
+	**
+	** History:
+	**	2006/09/02: BDurban - Coded
+	**
+	** Returns: int
+	*********************************************************************
+		RETURN BITRSHIFT(BITAND(This.Argb,0x00FF0000),16) + ;
+				BITAND(This.Argb,0x0000FF00) + ;
+				BITLSHIFT(BITAND(This.Argb,0x000000FF),16)
+	ENDFUNC
+	
 
 	*********************************************************************
 	FUNCTION ToKnownColor
@@ -3842,8 +3832,6 @@ DEFINE CLASS xfcColor AS xfcdrawingbase
 	ENDFUNC
 
 
-
-
 	#IFDEF USE_MEMBERDATA
 	PROTECTED _memberdata
 	_memberdata = [<VFPData>]+;
@@ -3857,6 +3845,7 @@ DEFINE CLASS xfcColor AS xfcdrawingbase
 		[<memberdata name="getsaturation" type="method" display="GetSaturation"/>]+;
 		[<memberdata name="gettype" type="method" display="GetType"/>]+;
 		[<memberdata name="toargb" type="method" display="ToArgb"/>]+;
+		[<memberdata name="torgb" type="method" display="ToRgb"/>]+;
 		[<memberdata name="toknowncolor" type="method" display="ToKnownColor"/>]+;
 		[<memberdata name="tostring" type="method" display="ToString"/>]+;
 		[<memberdata name="finalize" type="method" display="Finalize"/>]+;
@@ -7389,7 +7378,7 @@ DEFINE CLASS xfcGraphics AS xfcgpobject
 	*********************************************************************
 	LPARAMETERS toPen AS xfcPen, tnX1, tnY1, tnX2, tnY2, tnX3, tnY3, tnX4, tnY4
 	*********** toPen AS xfcPen, toPt1 AS xfcPoint, toPt2 AS xfcPoint, toPt3 AS xfcPoint, toPt4 AS xfcPoint
-		
+	#IFNDEF GDIPX_SIMPLEDRAWING
 		*!ToDo: Test this function
 		
 		LOCAL loPt1, loPt2, loPt3, loPt4
@@ -7424,6 +7413,9 @@ DEFINE CLASS xfcGraphics AS xfcgpobject
 		ENDTRY
 		
 		RETURN NULL
+	#ELSE
+		ERROR "Simple Drawing has been enabled"
+	#ENDIF
 	ENDFUNC
 
 
@@ -7446,7 +7438,7 @@ DEFINE CLASS xfcGraphics AS xfcgpobject
 	** Returns: void
 	*********************************************************************
 	LPARAMETERS toPen AS xfcPen, taoPoints AS xfcPoint
-		
+	#IFNDEF GDIPX_SIMPLEDRAWING
 		*!ToDo: Test this function
 		
 		LOCAL loExc AS Exception
@@ -7469,6 +7461,9 @@ DEFINE CLASS xfcGraphics AS xfcgpobject
 		ENDTRY
 		
 		RETURN NULL
+	#ELSE
+		ERROR "Simple Drawing has been enabled"
+	#ENDIF
 	ENDFUNC
 
 
@@ -8186,14 +8181,9 @@ DEFINE CLASS xfcGraphics AS xfcgpobject
 	** Returns: void
 	*********************************************************************
 	LPARAMETERS toPen AS xfcPen, toPath AS xfcGraphicsPath
-		
-		*!ToDo: Test this function
-		
 		LOCAL loExc AS Exception
 		TRY
-		
 			This.SetStatus(xfcGdipDrawPath(This.Handle, m.toPen.Handle, m.toPath.Handle))
-		
 		CATCH TO loExc
 			THROW m.loExc
 		ENDTRY
@@ -8474,7 +8464,7 @@ DEFINE CLASS xfcGraphics AS xfcgpobject
 		
 		RETURN NULL
 	ENDFUNC
-
+	
 
 	*********************************************************************
 	FUNCTION DrawStringJustified
@@ -8501,23 +8491,27 @@ DEFINE CLASS xfcGraphics AS xfcgpobject
 		LOCAL lhFont, lhGraphics, lhBrush, lcRectF
 		LOCAL N, lnSpaceWidth, lnLineHeight, lcText
 		LOCAL wImg, hImg, x0, y0
+		LOCAL loGfxState AS xfcGraphicsState
+		LOCAL lhTempStrFormat, lhStringFormat
+		LOCAL lhLeftAlignHandle
+		LOCAL lhRightAlignHandle
+		LOCAL lnWords, lnWordWidth, lnChars, lcCurrWord, lcCutWord, lnReduce
+		LOCAL llEndOfSentence, lnWordsWidth, lnWordsinLine, lnCurrWord, lnCurrLine, lnX, lnY
+		LOCAL lnWidthofBetween, lnStringFormatHandle, llLast
 			
 		#DEFINE EMPTY_RECT    REPLICATE(CHR(0),16)
-		
+		#DEFINE TextRenderingHintAntiAlias		4
 		
 		LOCAL loExc AS Exception
 		TRY
 			
-			m.X0   = toRectangle.Left
-			m.Y0   = toRectangle.Top
-			m.wImg = toRectangle.Width
-			m.hImg = toRectangle.Height
-		
+			m.X0   = m.toRectangle.Left
+			m.Y0   = m.toRectangle.Top
+			m.wImg = m.toRectangle.Width
+			m.hImg = m.toRectangle.Height
 		
 			* Save the current state of the graphics handle
-			LOCAL loGfxState AS xfcGraphicsState
 			m.loGfxState = This.Save()
-		
 		
 			* Store Gdi+ handles for MeasureString and DrawString
 			m.lhFont     = m.toFont.Handle
@@ -8525,24 +8519,20 @@ DEFINE CLASS xfcGraphics AS xfcgpobject
 			m.lhBrush    = m.toBrush.Handle
 			
 			* Obtain the Font Height to be used as Line Height
-			m.lnLineHeight = toFont.GetHeight(This)
+			m.lnLineHeight = m.toFont.GetHeight(This)
 		
 			* Adjust the Text String to ease detection of Carriage Returns
-			m.lcText = Strtran(m.tcString,CHR(13)+CHR(10), " <CR> ")
-			m.lcText = Strtran(m.lcText,CHR(13), " <CR> ")
+			m.lcText = STRTRAN(m.tcString,CHR(13)+CHR(10), " <CR> ")
+			m.lcText = STRTRAN(m.lcText,CHR(13), " <CR> ")
 			m.lcText = m.lcText + " <CR> "
-		
 		
 			* Ensure Measure String will bring the best measures possible
 			* Set to AntiAlias
-			#DEFINE TextRenderingHintAntiAlias		4
 			=xfcGdipSetTextRenderingHint(m.lhGraphics, TextRenderingHintAntiAlias)
-		
 		
 			* Create a String Format object with the Generic Typographic TO obtain
 			*   the most accurate String measurements
 			* Strange, but the recommended for this case is to use a "cloned" StringFormat
-			LOCAL lhTempStrFormat, lhStringFormat
 			STORE 0 TO m.lhTempStrFormat, m.lhStringFormat
 			= xfcGdipStringFormatGetGenericTypographic(@lhTempStrFormat)
 			= xfcGdipCloneStringFormat(m.lhTempStrFormat, @lhStringFormat)
@@ -8553,20 +8543,18 @@ DEFINE CLASS xfcGraphics AS xfcgpobject
 			= xfcGdipSetStringFormatFlags(m.lhStringFormat, StringFormatFlagsMeasureTrailingSpaces)
 		
 			* Create a StringFormat for LeftAlignment
-			LOCAL lhLeftAlignHandle
 			m.lhLeftAlignHandle = 0
 			= xfcGdipCreateStringFormat(0, 0, @lhLeftAlignHandle)
 			= xfcGdipSetStringFormatAlign(m.lhLeftAlignHandle, StringAlignmentNear)
 		
 			* Create a StringFormat for RightAlignment
-			LOCAL lhRightAlignHandle
 			m.lhRightAlignHandle = 0
 			= xfcGdipCreateStringFormat(0, 0, @lhRightAlignHandle)
 			= xfcGdipSetStringFormatAlign(m.lhRightAlignHandle, StringAlignmentFar)
 		
 		
 			* Measure Space for the given font
-			Store EMPTY_RECT TO m.lcRectF, pcBoundingBox
+			STORE EMPTY_RECT TO m.lcRectF, pcBoundingBox
 			= xfcGdipMeasureString( m.lhGraphics;
 				, STRCONV(" " + 0h00,5)	;
 				, 1 ;
@@ -8576,7 +8564,6 @@ DEFINE CLASS xfcGraphics AS xfcgpobject
 				, @pcBoundingBox, 0, 0)
 			m.lnSpaceWidth = CTOBIN(SUBSTR(pcBoundingBox, 9, 4), 'N') + 1
 			
-			LOCAL lnWords, lnWordWidth, lnChars, lcCurrWord, lcCutWord, lnReduce
 		
 			m.lnWords = GETWORDCOUNT(m.lcText)
 			DIMENSION laWords(lnWords,2)
@@ -8644,37 +8631,35 @@ DEFINE CLASS xfcGraphics AS xfcgpobject
 			
 		
 			* Start Drawing word by word
-			LOCAL llEndOfSentence, lnWordsWidth, lnWordsinLine, lnCurrWord, lnCurrLine, lnX, lnY
-			LOCAL lnWidthofBetween, lnStringFormatHandle, llLast
 			m.lnCurrWord = 1
 			m.lnCurrLine = 0
 		
-			FOR N = 1 TO m.lnWords
+			FOR m.N = 1 TO m.lnWords
 			
 				llEndOfSentence   = .F.
 				m.lnWordsWidth  = 0
 				m.lnWordsinLine = 0
 		
-				FOR z = N TO m.lnWords
-					IF laWords(z,1) = "<CR>"
-						llEndOfSentence = .T.
+				FOR m.z = m.N TO m.lnWords
+					IF m.laWords(z,1) = "<CR>"
+						m.llEndOfSentence = .T.
 						EXIT
 					ENDIF
 		
-					m.lnWordsWidth = m.lnWordsWidth + laWords(z,2) + m.lnSpaceWidth
+					m.lnWordsWidth = m.lnWordsWidth + m.laWords(z,2) + m.lnSpaceWidth
 					IF m.lnWordsWidth > m.wImg AND z > N
-						m.lnWordsWidth = m.lnWordsWidth - laWords(z,2) - (m.lnSpaceWidth * m.lnWordsinLine)
+						m.lnWordsWidth = m.lnWordsWidth - m.laWords(z,2) - (m.lnSpaceWidth * m.lnWordsinLine)
 						EXIT
 					ENDIF
 		
 					m.lnWordsinLine = m.lnWordsinLine + 1
 				ENDFOR
 		
-				IF z > m.lnWords
-					llEndOfSentence = .T.
+				IF m.z > m.lnWords
+					m.llEndOfSentence = .T.
 				ENDIF
 		
-				IF llEndOfSentence
+				IF m.llEndOfSentence
 					m.lnWidthOfBetween = m.lnSpaceWidth
 				ELSE
 					m.lnWidthOfBetween = (m.wImg - m.lnWordsWidth) / (m.lnWordsinLine - 1)
@@ -8683,28 +8668,28 @@ DEFINE CLASS xfcGraphics AS xfcgpobject
 				m.lnY = m.Y0 + (m.lnCurrLine * m.lnLineHeight)
 		
 				IF m.lnY > (m.hImg + m.Y0)
-					n = m.lnWords
+					m.n = m.lnWords
 					EXIT
 				ENDIF
 						
 				m.lnX = m.X0
 		
 				FOR m.lnCurrWord = 1 TO m.lnWordsinLine
-					llLast = .F.
-					IF laWords(N,1) = "<CR>" && Ignore
-						N = N + 1
+					m.llLast = .F.
+					IF m.laWords(N,1) = "<CR>" && Ignore
+						m.N = m.N + 1
 						LOOP
 					ENDIF
-					IF m.lnCurrWord = m.lnWordsinLine AND NOT llEndOfSentence && last word in sentence
-						llLast = .T.
+					IF m.lnCurrWord = m.lnWordsinLine AND NOT m.llEndOfSentence && last word in sentence
+						m.llLast = .T.
 					ENDIF
 		
 					IF m.lnWordsInLine = 1
 						m.lnX = m.X0
-						llLast = .F.
+						m.llLast = .F.
 					ENDIF
 		
-					IF llLast
+					IF m.llLast
 						m.lcRectF = BINTOC(m.X0,'F') + BINTOC(m.lnY,'F') + ;
 							BINTOC(m.wImg,'F') + BINTOC(m.lnY + m.lnLineHeight,'F')
 						m.lnStringFormatHandle = m.lhRightAlignHandle
@@ -8714,30 +8699,28 @@ DEFINE CLASS xfcGraphics AS xfcgpobject
 					ENDIF
 		
 					= xfcGdipDrawString(m.lhGraphics ;
-						, STRCONV(laWords(N,1) + 0h00,5) ;
-						, LEN(laWords(N,1)) ;
+						, STRCONV(m.laWords(N,1) + 0h00,5) ;
+						, LEN(m.laWords(N,1)) ;
 						, m.lhFont ;
 						, m.lcRectF ;
 						, m.lnStringFormatHandle ;
 						, m.lhBrush)
 		
-					m.lnX = m.lnX + laWords(N,2) + m.lnWidthOfBetween
-					N = N + 1 && Go to next word
-		
+					m.lnX = m.lnX + m.laWords(N,2) + m.lnWidthOfBetween
+					m.N = m.N + 1 && Go to next word
 				ENDFOR
 		
 				m.lnCurrLine = m.lnCurrLine + 1
 		
-				IF N >= m.lnWords
+				IF m.N >= m.lnWords
 					EXIT
 				ENDIF
 		
-				IF laWords(N,1) <> "<CR>"
-					N = N - 1 && Compensate ENDFOR
+				IF m.laWords(N,1) <> "<CR>"
+					m.N = m.N - 1 && Compensate ENDFOR
 				ENDIF
 		
 			ENDFOR
-			
 			
 			* Finished Measuring, so erase the temp objects
 		
@@ -8752,7 +8735,7 @@ DEFINE CLASS xfcGraphics AS xfcgpobject
 		
 		RETURN NULL
 	ENDFUNC
-
+	
 
 	*********************************************************************
 	FUNCTION EndContainer
@@ -8857,7 +8840,8 @@ DEFINE CLASS xfcGraphics AS xfcgpobject
 	*********** toMetafile AS xfcMetafile, toDestRect AS xfcRectangle, toSrcRect AS xfcRectangle, tiSrcUnit AS EnumGraphicsUnit, thCallback AS FuncPtr
 	*********** toMetafile AS xfcMetafile, toDestRect AS xfcRectangle, toSrcRect AS xfcRectangle, tiSrcUnit AS EnumGraphicsUnit, thCallback AS FuncPtr, tiCallbackData AS IntPtr
 	*********** toMetafile AS xfcMetafile, toDestRect AS xfcRectangle, toSrcRect AS xfcRectangle, tiUnit AS EnumGraphicsUnit, thCallback AS FuncPtr, tiCallbackData AS IntPtr, toImageAttr AS xfcImageAttributes
-		
+	#IFDEF USECLASS_XFCMETAFILE
+	 
 		*!ToDo: Implement this function
 		*!ToDo: Test this function
 		ERROR 1999	&& Function not implemented
@@ -8913,6 +8897,9 @@ DEFINE CLASS xfcGraphics AS xfcgpobject
 		ENDTRY
 		
 		RETURN NULL
+	#ELSE
+		ERROR "Metfile class is disabled"
+	#ENDIF
 	ENDFUNC
 
 
@@ -10019,7 +10006,7 @@ DEFINE CLASS xfcGraphics AS xfcgpobject
 	** Returns: void
 	*********************************************************************
 	LPARAMETERS toMatrix AS xfcMatrix, tiOrder AS EnumMatrixOrder
-		
+	#IFDEF USECLASS_XFCMATRIX
 		*!ToDo: Test this function
 		
 		LOCAL loExc AS Exception
@@ -10031,6 +10018,9 @@ DEFINE CLASS xfcGraphics AS xfcgpobject
 		ENDTRY
 		
 		RETURN NULL
+	#ELSE
+		ERROR "Matrix class is disabled"
+	#ENDIF
 	ENDFUNC
 
 
@@ -10852,9 +10842,8 @@ DEFINE CLASS xfcGraphics AS xfcgpobject
 	** http://msdn2.microsoft.com/en-us/library/System.Drawing.Graphics.Transform%28vs.80%29.aspx
 	** Returns: Matrix
 	*********************************************************************
-		
+	#IFDEF USECLASS_XFCMATRIX
 		*!ToDo: Test this function
-		
 		LOCAL loMatrix, lhMatrix
 		m.lhMatrix = 0
 		m.loMatrix = NULL
@@ -10870,6 +10859,9 @@ DEFINE CLASS xfcGraphics AS xfcgpobject
 			THROW m.loExc
 		ENDTRY
 		RETURN m.loMatrix
+	#ELSE
+		ERROR "Matrix class is disabled"
+	#ENDIF
 	ENDFUNC
 
 
@@ -12154,19 +12146,28 @@ DEFINE CLASS xfcImage AS xfcgpobject
 	*********************************************************************
 	FUNCTION FromVarBinary
 	*********************************************************************
-	** Method: xfcImage.FromStream
+	** Method: xfcImage.FromVarBinary
 	**
 	** Creates an Image object from the specified VarBinary string.
 	**
 	** History:
-	**  2007/08/30: BDurban - Coded
+	**  2007/09/02: BDurban - Coded
 	**
 	** Returns: Image
 	*********************************************************************
 	LPARAMETERS tqBinary, ;
 				tlUseEmbeddedColorManagement
 
-
+		LOCAL loStream AS xfcMemoryStream
+		LOCAL loExc AS Exception
+		TRY
+			m.loStream = NEWOBJECT("xfcMemoryStream", XFCCLASS_IO, "", m.tqBinary, .T.)
+			m.loImage = This.FromStream(m.loStream, m.tlUseEmbeddedColorManagement)
+		CATCH TO loExc
+			THROW m.loExc
+		ENDTRY
+		
+		RETURN m.loImage
 	
 	ENDFUNC
 	
@@ -12476,7 +12477,7 @@ DEFINE CLASS xfcImage AS xfcgpobject
 	**	2007/04/15: CChalom - Coded
 	*********************************************************************
 		
-		*!*	*!ToDo: Test this function
+		*!ToDo: Test this function
 		
 		#DEFINE RGBQUAD_SIZE     4
 		#DEFINE DIB_RGB_COLORS   0
@@ -12484,7 +12485,6 @@ DEFINE CLASS xfcImage AS xfcgpobject
 		#DEFINE BHDR_SIZE       40
 		* #DEFINE GMEM_FIXED     0
 		* #DEFINE BI_RGB         0
-		
 		
 		LOCAL loExc AS Exception
 		TRY
@@ -12512,7 +12512,7 @@ DEFINE CLASS xfcImage AS xfcgpobject
 		
 			m.lcBIHdr = BINTOC(BHDR_SIZE ,"4RS") + BINTOC(m.lnWidth,"4RS") + BINTOC(m.lnHeight, "4RS") + ;
 				(CHR(MOD(1,256)) + CHR(INT(1/256))) + (CHR(MOD(m.lnBitsPerPixel,256))+ CHR(INT(m.lnBitsPerPixel/256))) +;
-				BINTOC(BI_RGB, "4RS") + REPLI(CHR(0), 20)
+				BINTOC(BI_RGB, "4RS") + REPLI(0h00, 20)
 		
 			IF m.lnBitsPerPixel <= 8
 				m.lnRgbQuadSize = (2^m.lnBitsPerPixel) * RGBQUAD_SIZE
@@ -12550,193 +12550,6 @@ DEFINE CLASS xfcImage AS xfcgpobject
 	ENDFUNC
 
 
-
-	*********************************************************************
-	FUNCTION xxGetPictureValfromHBitmap
-	*********************************************************************
-	** Method: xfcImage.GetPictureVal
-	**
-	** Returns a String containing the PictureVal of this Image object using the HBitmap GDI technique
-	**
-	** Remarks:
-	**
-	** History:
-	**	2007/04/15: CChalom - Coded
-	*********************************************************************
-		LPARAMETERS toImage AS Image
-		
-		*!*	*!ToDo: Test this function
-		
-		#DEFINE RGBQUAD_SIZE     4
-		#DEFINE DIB_RGB_COLORS   0
-		#DEFINE BFHDR_SIZE      14
-		#DEFINE BHDR_SIZE       40
-		* #DEFINE GMEM_FIXED     0
-		* #DEFINE BI_RGB         0
-		
-		
-		LOCAL loExc AS Exception
-		TRY
-		
-			LOCAL lhBitmap, lnWidth, lnHeight, lnBitsPerPixel
-			LOCAL lnBytesPerScan, lnBitsSize, lnRgbQuadSize
-			LOCAL lcBIHdr, lcRgbQuad, lcBInfo
-			LOCAL lpBitsArray
-			LOCAL hdc, hMemDC, lnFileSize, lnOffBits, m.lcBFileHdr
-			LOCAL lqBinary
-		
-			STORE 0 TO m.lnBytesPerScan, m.lnBitsSize, m.lnRgbQuadSize
-			m.lhBitmap = 0
-			This.SetStatus(xfcGdipCreateHBITMAPFromBitmap(This.Handle, @lhBitmap, ARGB_LightGray))
-		
-			m.lnWidth  = This.Width
-			m.lnHeight = This.Height
-			m.lnBitsPerPixel = This.GetPixelFormatSize(This.PixelFormat)
-		
-			m.lnBytesPerScan = INT((m.lnWidth * m.lnBitsPerPixel)/8)
-			IF MOD(m.lnBytesPerScan, 4) # 0
-				m.lnBytesPerScan = m.lnBytesPerScan + 4 - MOD(m.lnBytesPerScan, 4)
-			ENDIF
-		
-			m.lcBIHdr = ;
-				BINTOC(BHDR_SIZE, "4RS") + ;
-				BINTOC(m.lnWidth, "4RS") + ;
-				BINTOC(m.lnHeight, "4RS") + ;
-				(0h0100) + ;
-				CHR(MOD(m.lnBitsPerPixel,256)) + ;
-				CHR(INT(m.lnBitsPerPixel/256)) + ;
-				BINTOC(BI_RGB, "4RS") + ;
-				0h0000000000000000000000000000000000000000000000000000000000000000 + ;
-				0h0000000000000000000000000000000000000000000000000000000000000000 + ;
-				0h00000000000000000000000000000000
-		
-			IF m.lnBitsPerPixel <= 8
-				m.lnRgbQuadSize = (2^m.lnBitsPerPixel) * RGBQUAD_SIZE
-				m.lcRgbQuad = REPLICATE(0h00, m.lnRgbQuadSize)
-			ELSE
-				m.lcRgbQuad = ""
-			ENDIF
-			
-			m.lcBInfo = m.lcBIHdr + m.lcRgbQuad
-			m.lnBitsSize = m.lnHeight * m.lnBytesPerScan
-			m.lpBitsArray = xfcGlobalAlloc (GMEM_FIXED, m.lnBitsSize)
-			=ZeroMemory(m.lpBitsArray, m.lnBitsSize)
-		
-			m.lhDC = xfcGetWindowDC(_SCREEN.HWnd)
-			m.lhMemDC = xfcCreateCompatibleDC (m.lhDC)
-			=xfcReleaseDC(_SCREEN.HWnd, m.lhDC)
-			=xfcGetDIBits(m.lhMemDC, m.lhBitmap, 0, m.lnHeight, m.lpBitsArray, @lcBInfo, DIB_RGB_COLORS)
-		
-			m.lnFileSize = BFHDR_SIZE + BHDR_SIZE + m.lnRgbQuadSize + m.lnBitsSize
-			m.lnOffBits  = BFHDR_SIZE + BHDR_SIZE + m.lnRgbQuadSize
-			m.lcBFileHdr = "BM" + BINTOC(m.lnFileSize,"4RS") + 0h00000000 + BINTOC(m.lnOffBits,"4RS")
-		
-			m.lqBinary = 0h
-			IF VARTYPE(m.toImage) = "O"
-				m.toImage.PictureVal = m.lcBFileHdr + m.lcBInfo + SYS(2600, m.lpBitsArray, m.lnBitsSize)
-			ELSE
-				m.lqBinary = m.lcBFileHdr + m.lcBInfo + SYS(2600, m.lpBitsArray, m.lnBitsSize)
-			ENDIF
-		
-			=xfcGlobalFree(m.lpBitsArray)
-			=xfcDeleteDC (m.lhMemDC)
-			=xfcDeleteObject (m.lhBitmap)
-		
-		CATCH TO loExc
-			THROW m.loExc
-		ENDTRY
-		
-		RETURN m.lqBinary
-	ENDFUNC
-
-
-	*********************************************************************
-	FUNCTION xGetPictureValfromHBitmap
-	*********************************************************************
-	** Method: xfcImage.GetPictureVal
-	**
-	** Returns a String containing the PictureVal of this Image object using the HBitmap GDI technique
-	**
-	** Remarks:
-	**
-	** History:
-	**	2007/04/15: CChalom - Coded
-	*********************************************************************
-		
-		*!*	*!ToDo: Test this function
-		      
-		#DEFINE RGBQUAD_SIZE     4
-		#DEFINE DIB_RGB_COLORS   0
-		#DEFINE BFHDR_SIZE      14
-		#DEFINE BHDR_SIZE       40
-		* #DEFINE GMEM_FIXED     0
-		* #DEFINE BI_RGB         0
-		
-		LOCAL hdc, hMemDC, lnFileSize, lnOffBits, m.lcBFileHdr
-		LOCAL lhBitmap, lnWidth, lnHeight, lnBitsPerPixel
-		LOCAL loBackground as xfcColor
-		LOCAL lnBytesPerScan, lnBitsSize, lnRgbQuadSize
-		LOCAL lcBIHdr, lcRgbQuad, lcBInfo
-		LOCAL lpBitsArray
-		LOCAL lqBinary, nStatus
-
-		LOCAL loExc AS Exception
-		TRY
-			m.lhBitmap = 0
-			This.SetStatus(xfcGdipCreateHBITMAPFromBitmap(This.Handle, @lhBitmap, ARGB_LightGray))
-		
-			m.lnWidth  = This.Width
-			m.lnHeight = This.Height
-			m.lnBitsPerPixel = This.GetPixelFormatSize(This.PixelFormat)
-		
-			STORE 0 TO m.lnBytesPerScan, m.lnBitsSize, m.lnRgbQuadSize
-		
-			m.lnBytesPerScan = INT((m.lnWidth * m.lnBitsPerPixel)/8)
-			IF MOD(m.lnBytesPerScan, 4) # 0
-				m.lnBytesPerScan = m.lnBytesPerScan + 4 - MOD(m.lnBytesPerScan, 4)
-			ENDIF
-		
-			m.lcBIHdr = ;
-				BINTOC(BHDR_SIZE ,"4RS") + ;
-				BINTOC(m.lnWidth,"4RS") + ;
-				BINTOC(m.lnHeight, "4RS") + ;
-				0h0101 + ;
-				(CHR(MOD(m.lnBitsPerPixel,256))+ CHR(INT(m.lnBitsPerPixel/256))) + ;
-				BINTOC(BI_RGB, "4RS") + ;
-				REPLICATE(CHR(0), 20)
-		
-			IF m.lnBitsPerPixel <= 8
-				m.lnRgbQuadSize = (2^m.lnBitsPerPixel) * RGBQUAD_SIZE
-				m.lcRgbQuad = REPLICATE(CHR(0), m.lnRgbQuadSize)
-			ELSE
-				m.lcRgbQuad = ""
-			ENDIF
-			m.lcBInfo = m.lcBIHdr + m.lcRgbQuad
-			m.lnBitsSize = m.lnHeight * m.lnBytesPerScan
-			m.lpBitsArray = xfcGlobalAlloc(GMEM_FIXED, m.lnBitsSize)
-			m.nStatus = ZeroMemory(m.lpBitsArray, m.lnBitsSize)
-		
-			m.lhDC = xfcGetWindowDC(_SCREEN.HWnd)
-			m.lhMemDC = xfcCreateCompatibleDC(m.lhDC)
-			m.nStatus = xfcReleaseDC(_SCREEN.HWnd, m.lhDC)
-			m.nStatus = xfcGetDIBits(m.lhMemDC, m.lhBitmap, 0, m.lnHeight, m.lpBitsArray, @lcBInfo, DIB_RGB_COLORS)
-		
-			m.lnFileSize = BFHDR_SIZE + BHDR_SIZE + m.lnRgbQuadSize + m.lnBitsSize
-			m.lnOffBits = BFHDR_SIZE + BHDR_SIZE + m.lnRgbQuadSize
-			m.lcBFileHdr = "BM" + BINTOC(m.lnFileSize, "4RS") + 0h00000000 + BINTOC(m.lnOffBits, "4RS")
-		
-			m.lqBinary = m.lcBFileHdr + m.lcBInfo + SYS(2600, m.lpBitsArray, m.lnBitsSize)
-		
-			m.nStatus = xfcGlobalFree(m.lpBitsArray)
-			m.nStatus = xfcDeleteDC(m.lhMemDC)
-			m.nStatus = xfcDeleteObject(m.lhBitmap)
-		
-		CATCH TO loExc
-			THROW m.loExc
-		ENDTRY
-		
-		RETURN m.lqBinary
-	ENDFUNC
 
 
 	*********************************************************************
@@ -12874,9 +12687,6 @@ DEFINE CLASS xfcImage AS xfcgpobject
 	** http://msdn2.microsoft.com/en-us/library/System.Drawing.Image.Height%28vs.80%29.aspx
 	** Returns: int
 	*********************************************************************
-		
-		*!ToDo: Test this function
-		
 		LOCAL liValue
 		m.liValue = 0
 		
@@ -12905,9 +12715,6 @@ DEFINE CLASS xfcImage AS xfcgpobject
 	** http://msdn2.microsoft.com/en-us/library/System.Drawing.Image.HorizontalResolution%28vs.80%29.aspx
 	** Returns: float
 	*********************************************************************
-		
-		*!ToDo: Test this function
-		
 		LOCAL lnValue
 		m.lnValue = 0.0
 		
@@ -13036,9 +12843,7 @@ DEFINE CLASS xfcImage AS xfcgpobject
 	** http://msdn2.microsoft.com/en-us/library/System.Drawing.Image.Palette%28vs.80%29.aspx
 	** Returns: ColorPalette
 	*********************************************************************
-		
 		*!ToDo: Test this function
-		
 		LOCAL loColorPalette, lnSize, lqBuffer
 		m.loColorPalette = NULL
 		LOCAL loExc AS Exception
@@ -13068,7 +12873,6 @@ DEFINE CLASS xfcImage AS xfcgpobject
 	**  2006/08/22: BDurban - Added check for parameter data type
 	*********************************************************************
 	LPARAMETERS toColorPalette AS xfcColorPalette
-		
 		*!ToDo: Test this function
 		LOCAL lqPalette
 		
@@ -13081,7 +12885,6 @@ DEFINE CLASS xfcImage AS xfcgpobject
 		CATCH TO loExc
 			THROW m.loExc
 		ENDTRY
-		
 		RETURN NULL
 	ENDFUNC
 
@@ -13136,9 +12939,6 @@ DEFINE CLASS xfcImage AS xfcgpobject
 	** http://msdn2.microsoft.com/en-us/library/System.Drawing.Image.PixelFormat%28vs.80%29.aspx
 	** Returns: PixelFormat
 	*********************************************************************
-		
-		*!ToDo: Test this function
-		
 		LOCAL liPixelFormat
 		m.liPixelFormat = 0
 		
@@ -13296,6 +13096,7 @@ DEFINE CLASS xfcImage AS xfcgpobject
 		LOCAL loExc AS Exception
 		TRY
 			This.SetStatus(xfcGdipRemovePropertyItem(This.Handle, m.tiPropid))
+			This.PropertyItems = NULL
 		CATCH TO loExc
 			THROW m.loExc
 		ENDTRY
@@ -13547,9 +13348,9 @@ DEFINE CLASS xfcImage AS xfcgpobject
 		LOCAL loExc AS Exception
 		TRY
 			LOCAL lcItem
-			*!ToDo: This is not going to work. Need to set asside a memory block	
 			m.lcItem = toPropItem.ToVarBinary()
 			This.SetStatus(xfcGdipSetPropertyItem(This.Handle, @lcItem))
+			This.PropertyItems = NULL
 		
 		CATCH TO loExc
 			THROW m.loExc
@@ -13904,9 +13705,6 @@ DEFINE CLASS xfcImage AS xfcgpobject
 	** http://msdn2.microsoft.com/en-us/library/System.Drawing.Image.Width%28vs.80%29.aspx
 	** Returns: int
 	*********************************************************************
-		
-		*!ToDo: Test this function
-		
 		LOCAL liValue
 		m.liValue = 0
 		
@@ -14897,10 +14695,6 @@ DEFINE CLASS _xfcknowncolortable AS xfcdrawingbase
 			m.laColorTable[0x19] = This._SystemColorToArgb(6)
 			m.laColorTable[0x1a] = This._SystemColorToArgb(8)
 	ENDFUNC
-
-
-
-
 
 ENDDEFINE
 #ENDIF
@@ -16055,7 +15849,7 @@ DEFINE CLASS xfcPen AS xfcgpobject
 	** Returns: void
 	*********************************************************************
 	LPARAMETERS toMatrix AS xfcMatrix, tiOrder AS EnumMatrixOrder
-		
+	#IFDEF USECLASS_XFCMATRIX
 		*!ToDo: Test this function
 		
 		LOCAL loExc AS Exception
@@ -16069,6 +15863,9 @@ DEFINE CLASS xfcPen AS xfcgpobject
 		ENDTRY
 		
 		RETURN NULL
+	#ELSE
+		ERROR "Matrix class is disabled"
+	#ENDIF
 	ENDFUNC
 
 
@@ -16319,7 +16116,7 @@ DEFINE CLASS xfcPen AS xfcgpobject
 	** http://msdn2.microsoft.com/en-us/library/System.Drawing.Pen.Transform%28vs.80%29.aspx
 	** Returns: Matrix
 	*********************************************************************
-		
+	#IFDEF USECLASS_XFCMATRIX
 		*!ToDo: Test this function
 		
 		LOCAL loMatrix, lhMatrix
@@ -16341,6 +16138,9 @@ DEFINE CLASS xfcPen AS xfcgpobject
 			THROW m.loExc
 		ENDTRY
 		RETURN m.loMatrix
+	#ELSE
+		ERROR "Matrix class is disabled"
+	#ENDIF
 	ENDFUNC
 
 
@@ -16431,9 +16231,6 @@ DEFINE CLASS xfcPen AS xfcgpobject
 	** http://msdn2.microsoft.com/en-us/library/System.Drawing.Pen.Width%28vs.80%29.aspx
 	** Returns: float
 	*********************************************************************
-		
-		*!ToDo: Test this function
-		
 		LOCAL lnValue
 		m.lnValue = 0.0
 		
@@ -16459,9 +16256,6 @@ DEFINE CLASS xfcPen AS xfcgpobject
 	**	2006/03/07: BDurban - Coded
 	*********************************************************************
 	LPARAMETERS tnValue
-		
-		*!ToDo: Test this function
-		
 		LOCAL loExc AS Exception
 		TRY
 			IF This._immutable
@@ -17105,16 +16899,12 @@ DEFINE CLASS xfcPoint AS xfcdrawingbase
 	** http://msdn2.microsoft.com/en-us/library/System.Drawing.Point.IsEmpty%28vs.80%29.aspx
 	** Returns: bool
 	*********************************************************************
-		
-		*!ToDo: Test this function
-		
 		LOCAL llValue
 		m.llValue = .F.
 		
 		LOCAL loExc AS Exception
 		TRY
-			m.llValue = (This.X = 0 ;
-				AND This.Y = 0)
+			m.llValue = (This.X = 0 AND This.Y = 0)
 		CATCH TO loExc
 			THROW m.loExc
 		ENDTRY
@@ -17735,9 +17525,6 @@ DEFINE CLASS xfcPointF AS xfcdrawingbase
 	** Returns: float
 	*********************************************************************
 	LPARAMETERS tnValue
-		
-		*!ToDo: Test this function
-		
 		LOCAL loExc AS Exception
 		TRY
 			This.X = tnValue+0.0
@@ -17765,9 +17552,6 @@ DEFINE CLASS xfcPointF AS xfcdrawingbase
 	** Returns: float
 	*********************************************************************
 	LPARAMETERS tnValue
-		
-		*!ToDo: Test this function
-		
 		LOCAL loExc AS Exception
 		TRY
 			This.Y = tnValue+0.0
@@ -20575,6 +20359,7 @@ DEFINE CLASS xfcRegion AS xfcgpobject
 	** Returns: RectangleF[]
 	*********************************************************************
 	LPARAMETERS toMatrix AS xfcMatrix
+	#IFDEF USECLASS_XFCMATRIX
 		*!ToDo: Test this function
 		LOCAL liCount, liLoop, lqRects
 		
@@ -20603,6 +20388,9 @@ DEFINE CLASS xfcRegion AS xfcgpobject
 		ELSE
 			RETURN @This._InternalArray
 		ENDIF
+	#ELSE
+		ERROR "Matrix class is disabled"
+	#ENDIF
 	ENDFUNC
 
 
@@ -20926,7 +20714,7 @@ DEFINE CLASS xfcRegion AS xfcgpobject
 	** Returns: void
 	*********************************************************************
 	LPARAMETERS toMatrix AS xfcMatrix
-		
+	#IFDEF USECLASS_XFCMATRIX
 		*!ToDo: Test this function
 		
 		LOCAL loExc AS Exception
@@ -20937,6 +20725,9 @@ DEFINE CLASS xfcRegion AS xfcgpobject
 		ENDTRY
 		
 		RETURN NULL
+	#ELSE
+		ERROR "Matrix class is disabled"
+	#ENDIF
 	ENDFUNC
 
 
@@ -23847,33 +23638,33 @@ DEFINE CLASS xfcSystemColors AS xfcdrawingbase
 *************************************************************************
 *************************************************************************
 *************************************************************************
-	ActiveBorder = 0	&& Gets a Color structure that is the color of the active window's border.
-	ActiveCaption = 0	&& Gets a Color structure that is the color of the background of the active window's title bar.
-	ActiveCaptionText = 0	&& Gets a Color structure that is the color of the text in the active window's title bar.
-	AppWorkspace = 0	&& Gets a Color structure that is the color of the application workspace. The application workspace is the area in a multiple-document view that is not being occupied by documents.
+	ActiveBorder = NULL	&& Gets a Color structure that is the color of the active window's border.
+	ActiveCaption = NULL	&& Gets a Color structure that is the color of the background of the active window's title bar.
+	ActiveCaptionText = NULL	&& Gets a Color structure that is the color of the text in the active window's title bar.
+	AppWorkspace = NULL	&& Gets a Color structure that is the color of the application workspace. The application workspace is the area in a multiple-document view that is not being occupied by documents.
 	BaseName = "SystemColors"
-	Control = 0	&& Gets a Color structure that is the face color of a 3-D element.
-	ControlDark = 0	&& Gets a Color structure that is the shadow color of a 3-D element. The shadow color is applied to parts of a 3-D element that face away from the light source.
-	ControlDarkDark = 0	&& Gets a Color structure that is the dark shadow color of a 3-D element. The dark shadow color is applied to the parts of a 3-D element that are the darkest color.
-	ControlLight = 0	&& Gets a Color structure that is the light color of a 3-D element. The light color is applied to parts of a 3-D element that face the light source.
-	ControlLightLight = 0	&& Gets a Color structure that is the highlight color of a 3-D element. The highlight color is applied to the parts of a 3-D element that are the lightest color.
-	ControlText = 0	&& Gets a Color structure that is the color of text in a 3-D element.
-	Desktop = 0	&& Gets a Color structure that is the color of the desktop.
-	GrayText = 0	&& Gets a Color structure that is the color of dimmed text. Items in a list that are disabled are displayed in dimmed text.
-	Highlight = 0	&& Gets a Color structure that is the color of the background of selected items. This includes selected menu items as well as selected text. For example, the Color structure may be the color used for the background of selected items in a list box.
-	HighlightText = 0	&& Gets a Color structure that is the color of the text of selected items. For example, the Color structure may be the color used for the text of selected items in a list box.
-	HotTrack = 0	&& Gets a Color structure that is the color used to designate a hot-tracked item. Single-clicking a hot-tracked item executes the item.
-	InactiveBorder = 0	&& Gets a Color structure that is the color of an inactive window's border.
-	InactiveCaption = 0	&& Gets a Color structure that is the color of the background of an inactive window's title bar.
-	InactiveCaptionText = 0	&& Gets a Color structure that is the color of the text in an inactive window's title bar.
-	Info = 0	&& Gets a Color structure that is the color of the background of a ToolTip.
-	InfoText = 0	&& Gets a Color structure that is the color of the text of a ToolTip.
-	Menu = 0	&& Gets a Color structure that is the color of a menu's background.
-	MenuText = 0	&& Gets a Color structure that is the color of a menu's text.
-	ScrollBar = 0	&& Gets a Color structure that is the color of the background of a scroll bar.
-	Window = 0	&& Gets a Color structure that is the color of the background in the client area of a window.
-	WindowFrame = 0	&& Gets a Color structure that is the color of a window frame.
-	WindowText = 0	&& Gets a Color structure that is the color of the text in the client area of a window.
+	Control = NULL	&& Gets a Color structure that is the face color of a 3-D element.
+	ControlDark = NULL	&& Gets a Color structure that is the shadow color of a 3-D element. The shadow color is applied to parts of a 3-D element that face away from the light source.
+	ControlDarkDark = NULL	&& Gets a Color structure that is the dark shadow color of a 3-D element. The dark shadow color is applied to the parts of a 3-D element that are the darkest color.
+	ControlLight = NULL	&& Gets a Color structure that is the light color of a 3-D element. The light color is applied to parts of a 3-D element that face the light source.
+	ControlLightLight = NULL	&& Gets a Color structure that is the highlight color of a 3-D element. The highlight color is applied to the parts of a 3-D element that are the lightest color.
+	ControlText = NULL	&& Gets a Color structure that is the color of text in a 3-D element.
+	Desktop = NULL	&& Gets a Color structure that is the color of the desktop.
+	GrayText = NULL	&& Gets a Color structure that is the color of dimmed text. Items in a list that are disabled are displayed in dimmed text.
+	Highlight = NULL	&& Gets a Color structure that is the color of the background of selected items. This includes selected menu items as well as selected text. For example, the Color structure may be the color used for the background of selected items in a list box.
+	HighlightText = NULL	&& Gets a Color structure that is the color of the text of selected items. For example, the Color structure may be the color used for the text of selected items in a list box.
+	HotTrack = NULL	&& Gets a Color structure that is the color used to designate a hot-tracked item. Single-clicking a hot-tracked item executes the item.
+	InactiveBorder = NULL	&& Gets a Color structure that is the color of an inactive window's border.
+	InactiveCaption = NULL	&& Gets a Color structure that is the color of the background of an inactive window's title bar.
+	InactiveCaptionText = NULL	&& Gets a Color structure that is the color of the text in an inactive window's title bar.
+	Info = NULL	&& Gets a Color structure that is the color of the background of a ToolTip.
+	InfoText = NULL	&& Gets a Color structure that is the color of the text of a ToolTip.
+	Menu = NULL	&& Gets a Color structure that is the color of a menu's background.
+	MenuText = NULL	&& Gets a Color structure that is the color of a menu's text.
+	ScrollBar = NULL	&& Gets a Color structure that is the color of the background of a scroll bar.
+	Window = NULL	&& Gets a Color structure that is the color of the background in the client area of a window.
+	WindowFrame = NULL	&& Gets a Color structure that is the color of a window frame.
+	WindowText = NULL	&& Gets a Color structure that is the color of the text in the client area of a window.
  
 	*********************************************************************
 	FUNCTION Init
@@ -23913,7 +23704,6 @@ DEFINE CLASS xfcSystemColors AS xfcdrawingbase
 	**  2006/03/07: Auto Generated
 	**	2006/05/08: CBoyd - Coded
 	*********************************************************************
-		
 		LOCAL loExc AS Exception
 		TRY
 			This.oColor=NULL
@@ -23939,15 +23729,13 @@ DEFINE CLASS xfcSystemColors AS xfcdrawingbase
 	** http://msdn2.microsoft.com/en-us/library/System.Drawing.SystemColors.ActiveBorder%28vs.80%29.aspx
 	** Returns: Color
 	*********************************************************************
-		
-		LOCAL loColor
 		LOCAL loExc AS Exception
 		TRY
-			m.loColor = This.oColor.FromRGB(xfcGetSysColor(COLOR_ACTIVEBORDER))
+			This.ActiveBorder = This.oColor.FromRGB(xfcGetSysColor(COLOR_ACTIVEBORDER))
 		CATCH TO loExc
 			THROW m.loExc
 		ENDTRY
-		RETURN m.loColor
+		RETURN This.ActiveBorder
 	ENDFUNC
 
 
@@ -23967,15 +23755,13 @@ DEFINE CLASS xfcSystemColors AS xfcdrawingbase
 	** http://msdn2.microsoft.com/en-us/library/System.Drawing.SystemColors.ActiveCaptionText%28vs.80%29.aspx
 	** Returns: Color
 	*********************************************************************
-		
-		LOCAL loColor
 		LOCAL loExc AS Exception
 		TRY
-			m.loColor = This.oColor.FromRGB(xfcGetSysColor(COLOR_CAPTIONTEXT))
+			This.ActiveCaptionText = This.oColor.FromRGB(xfcGetSysColor(COLOR_CAPTIONTEXT))
 		CATCH TO loExc
 			THROW m.loExc
 		ENDTRY
-		RETURN m.loColor
+		RETURN This.ActiveCaptionText
 	ENDFUNC
 
 
@@ -23995,15 +23781,13 @@ DEFINE CLASS xfcSystemColors AS xfcdrawingbase
 	** http://msdn2.microsoft.com/en-us/library/System.Drawing.SystemColors.ActiveCaption%28vs.80%29.aspx
 	** Returns: Color
 	*********************************************************************
-		
-		LOCAL loColor
 		LOCAL loExc AS Exception
 		TRY
-			m.loColor = This.oColor.FromRGB(xfcGetSysColor(COLOR_ACTIVECAPTION))
+			This.ActiveCaption = This.oColor.FromRGB(xfcGetSysColor(COLOR_ACTIVECAPTION))
 		CATCH TO loExc
 			THROW m.loExc
 		ENDTRY
-		RETURN m.loColor
+		RETURN This.ActiveCaption
 	ENDFUNC
 
 
@@ -24024,15 +23808,13 @@ DEFINE CLASS xfcSystemColors AS xfcdrawingbase
 	** http://msdn2.microsoft.com/en-us/library/System.Drawing.SystemColors.AppWorkspace%28vs.80%29.aspx
 	** Returns: Color
 	*********************************************************************
-		
-		LOCAL loColor
 		LOCAL loExc AS Exception
 		TRY
-			m.loColor = This.oColor.FromRGB(xfcGetSysColor(COLOR_APPWORKSPACE))
+			This.AppWorkspace = This.oColor.FromRGB(xfcGetSysColor(COLOR_APPWORKSPACE))
 		CATCH TO loExc
 			THROW m.loExc
 		ENDTRY
-		RETURN m.loColor
+		RETURN This.AppWorkspace
 	ENDFUNC
 
 
@@ -24052,15 +23834,13 @@ DEFINE CLASS xfcSystemColors AS xfcdrawingbase
 	** http://msdn2.microsoft.com/en-us/library/System.Drawing.SystemColors.ControlDarkDark%28vs.80%29.aspx
 	** Returns: Color
 	*********************************************************************
-		
-		LOCAL loColor
 		LOCAL loExc AS Exception
 		TRY
-			m.loColor = This.oColor.FromRGB(xfcGetSysColor(COLOR_3DDKSHADOW))
+			This.ControlDarkDark = This.oColor.FromRGB(xfcGetSysColor(COLOR_3DDKSHADOW))
 		CATCH TO loExc
 			THROW m.loExc
 		ENDTRY
-		RETURN m.loColor
+		RETURN This.ControlDarkDark
 	ENDFUNC
 
 
@@ -24080,15 +23860,13 @@ DEFINE CLASS xfcSystemColors AS xfcdrawingbase
 	** http://msdn2.microsoft.com/en-us/library/System.Drawing.SystemColors.ControlDark%28vs.80%29.aspx
 	** Returns: Color
 	*********************************************************************
-		
-		LOCAL loColor
 		LOCAL loExc AS Exception
 		TRY
-			m.loColor = This.oColor.FromRGB(xfcGetSysColor(COLOR_3DSHADOW))
+			This.ControlDark = This.oColor.FromRGB(xfcGetSysColor(COLOR_3DSHADOW))
 		CATCH TO loExc
 			THROW m.loExc
 		ENDTRY
-		RETURN m.loColor
+		RETURN This.ControlDark
 	ENDFUNC
 
 
@@ -24108,15 +23886,13 @@ DEFINE CLASS xfcSystemColors AS xfcdrawingbase
 	** http://msdn2.microsoft.com/en-us/library/System.Drawing.SystemColors.ControlLightLight%28vs.80%29.aspx
 	** Returns: Color
 	*********************************************************************
-		
-		LOCAL loColor
 		LOCAL loExc AS Exception
 		TRY
-			m.loColor = This.oColor.FromRGB(xfcGetSysColor(COLOR_3DHIGHLIGHT))
+			This.ControlLightLight = This.oColor.FromRGB(xfcGetSysColor(COLOR_3DHIGHLIGHT))
 		CATCH TO loExc
 			THROW m.loExc
 		ENDTRY
-		RETURN m.loColor
+		RETURN This.ControlLightLight
 	ENDFUNC
 
 
@@ -24136,15 +23912,13 @@ DEFINE CLASS xfcSystemColors AS xfcdrawingbase
 	** http://msdn2.microsoft.com/en-us/library/System.Drawing.SystemColors.ControlLight%28vs.80%29.aspx
 	** Returns: Color
 	*********************************************************************
-		
-		LOCAL loColor
 		LOCAL loExc AS Exception
 		TRY
-			m.loColor = This.oColor.FromRGB(xfcGetSysColor(COLOR_3DLIGHT))
+			This.ControlLight = This.oColor.FromRGB(xfcGetSysColor(COLOR_3DLIGHT))
 		CATCH TO loExc
 			THROW m.loExc
 		ENDTRY
-		RETURN m.loColor
+		RETURN This.ControlLight
 	ENDFUNC
 
 
@@ -24163,15 +23937,13 @@ DEFINE CLASS xfcSystemColors AS xfcdrawingbase
 	** http://msdn2.microsoft.com/en-us/library/System.Drawing.SystemColors.ControlText%28vs.80%29.aspx
 	** Returns: Color
 	*********************************************************************
-		
-		LOCAL loColor
 		LOCAL loExc AS Exception
 		TRY
-			m.loColor = This.oColor.FromRGB(xfcGetSysColor(COLOR_BTNTEXT))
+			This.ControlText = This.oColor.FromRGB(xfcGetSysColor(COLOR_BTNTEXT))
 		CATCH TO loExc
 			THROW m.loExc
 		ENDTRY
-		RETURN m.loColor
+		RETURN This.ControlText
 	ENDFUNC
 
 
@@ -24190,15 +23962,13 @@ DEFINE CLASS xfcSystemColors AS xfcdrawingbase
 	** http://msdn2.microsoft.com/en-us/library/System.Drawing.SystemColors.Control%28vs.80%29.aspx
 	** Returns: Color
 	*********************************************************************
-		
-		LOCAL loColor
 		LOCAL loExc AS Exception
 		TRY
-			m.loColor = This.oColor.FromRGB(xfcGetSysColor(COLOR_3DFACE))
+			This.Control = This.oColor.FromRGB(xfcGetSysColor(COLOR_3DFACE))
 		CATCH TO loExc
 			THROW m.loExc
 		ENDTRY
-		RETURN m.loColor
+		RETURN This.Control
 	ENDFUNC
 
 
@@ -24217,15 +23987,13 @@ DEFINE CLASS xfcSystemColors AS xfcdrawingbase
 	** http://msdn2.microsoft.com/en-us/library/System.Drawing.SystemColors.Desktop%28vs.80%29.aspx
 	** Returns: Color
 	*********************************************************************
-		
-		LOCAL loColor
 		LOCAL loExc AS Exception
 		TRY
-			m.loColor = This.oColor.FromRGB(xfcGetSysColor(COLOR_DESKTOP))
+			This.Desktop = This.oColor.FromRGB(xfcGetSysColor(COLOR_DESKTOP))
 		CATCH TO loExc
 			THROW m.loExc
 		ENDTRY
-		RETURN m.loColor
+		RETURN This.Desktop
 	ENDFUNC
 
 
@@ -24245,15 +24013,13 @@ DEFINE CLASS xfcSystemColors AS xfcdrawingbase
 	** http://msdn2.microsoft.com/en-us/library/System.Drawing.SystemColors.GrayText%28vs.80%29.aspx
 	** Returns: Color
 	*********************************************************************
-		
-		LOCAL loColor
 		LOCAL loExc AS Exception
 		TRY
-			m.loColor = This.oColor.FromRGB(xfcGetSysColor(COLOR_GRAYTEXT))
+			This.GrayText = This.oColor.FromRGB(xfcGetSysColor(COLOR_GRAYTEXT))
 		CATCH TO loExc
 			THROW m.loExc
 		ENDTRY
-		RETURN m.loColor
+		RETURN This.GrayText
 	ENDFUNC
 
 
@@ -24274,15 +24040,13 @@ DEFINE CLASS xfcSystemColors AS xfcdrawingbase
 	** http://msdn2.microsoft.com/en-us/library/System.Drawing.SystemColors.HighlightText%28vs.80%29.aspx
 	** Returns: Color
 	*********************************************************************
-		
-		LOCAL loColor
 		LOCAL loExc AS Exception
 		TRY
-			m.loColor = This.oColor.FromRGB(xfcGetSysColor(COLOR_HIGHLIGHTTEXT))
+			This.HighlightText = This.oColor.FromRGB(xfcGetSysColor(COLOR_HIGHLIGHTTEXT))
 		CATCH TO loExc
 			THROW m.loExc
 		ENDTRY
-		RETURN m.loColor
+		RETURN This.HighlightText
 	ENDFUNC
 
 
@@ -24303,15 +24067,13 @@ DEFINE CLASS xfcSystemColors AS xfcdrawingbase
 	** http://msdn2.microsoft.com/en-us/library/System.Drawing.SystemColors.Highlight%28vs.80%29.aspx
 	** Returns: Color
 	*********************************************************************
-		
-		LOCAL loColor
 		LOCAL loExc AS Exception
 		TRY
-			m.loColor = This.oColor.FromRGB(xfcGetSysColor(COLOR_HIGHLIGHT))
+			This.Highlight = This.oColor.FromRGB(xfcGetSysColor(COLOR_HIGHLIGHT))
 		CATCH TO loExc
 			THROW m.loExc
 		ENDTRY
-		RETURN m.loColor
+		RETURN This.Highlight
 	ENDFUNC
 
 
@@ -24331,15 +24093,13 @@ DEFINE CLASS xfcSystemColors AS xfcdrawingbase
 	** http://msdn2.microsoft.com/en-us/library/System.Drawing.SystemColors.HotTrack%28vs.80%29.aspx
 	** Returns: Color
 	*********************************************************************
-		
-		LOCAL loColor
 		LOCAL loExc AS Exception
 		TRY
-			m.loColor = This.oColor.FromRGB(xfcGetSysColor(COLOR_HOTLIGHT))
+			This.HotTrack = This.oColor.FromRGB(xfcGetSysColor(COLOR_HOTLIGHT))
 		CATCH TO loExc
 			THROW m.loExc
 		ENDTRY
-		RETURN m.loColor
+		RETURN This.HotTrack
 	ENDFUNC
 
 
@@ -24358,15 +24118,13 @@ DEFINE CLASS xfcSystemColors AS xfcdrawingbase
 	** http://msdn2.microsoft.com/en-us/library/System.Drawing.SystemColors.InactiveBorder%28vs.80%29.aspx
 	** Returns: Color
 	*********************************************************************
-		
-		LOCAL loColor
 		LOCAL loExc AS Exception
 		TRY
-			m.loColor = This.oColor.FromRGB(xfcGetSysColor(COLOR_INACTIVEBORDER))
+			This.InactiveBorder = This.oColor.FromRGB(xfcGetSysColor(COLOR_INACTIVEBORDER))
 		CATCH TO loExc
 			THROW m.loExc
 		ENDTRY
-		RETURN m.loColor
+		RETURN This.InactiveBorder
 	ENDFUNC
 
 
@@ -24386,15 +24144,13 @@ DEFINE CLASS xfcSystemColors AS xfcdrawingbase
 	** http://msdn2.microsoft.com/en-us/library/System.Drawing.SystemColors.InactiveCaptionText%28vs.80%29.aspx
 	** Returns: Color
 	*********************************************************************
-		
-		LOCAL loColor
 		LOCAL loExc AS Exception
 		TRY
-			m.loColor = This.oColor.FromRGB(xfcGetSysColor(COLOR_INACTIVECAPTIONTEXT))
+			This.InactiveCaptionText = This.oColor.FromRGB(xfcGetSysColor(COLOR_INACTIVECAPTIONTEXT))
 		CATCH TO loExc
 			THROW m.loExc
 		ENDTRY
-		RETURN m.loColor
+		RETURN This.InactiveCaptionText
 	ENDFUNC
 
 
@@ -24414,15 +24170,13 @@ DEFINE CLASS xfcSystemColors AS xfcdrawingbase
 	** http://msdn2.microsoft.com/en-us/library/System.Drawing.SystemColors.InactiveCaption%28vs.80%29.aspx
 	** Returns: Color
 	*********************************************************************
-		
-		LOCAL loColor
 		LOCAL loExc AS Exception
 		TRY
-			m.loColor = This.oColor.FromRGB(xfcGetSysColor(COLOR_INACTIVECAPTION))
+			This.InactiveCaption = This.oColor.FromRGB(xfcGetSysColor(COLOR_INACTIVECAPTION))
 		CATCH TO loExc
 			THROW m.loExc
 		ENDTRY
-		RETURN m.loColor
+		RETURN This.InactiveCaption
 	ENDFUNC
 
 
@@ -24441,15 +24195,13 @@ DEFINE CLASS xfcSystemColors AS xfcdrawingbase
 	** http://msdn2.microsoft.com/en-us/library/System.Drawing.SystemColors.InfoText%28vs.80%29.aspx
 	** Returns: Color
 	*********************************************************************
-		
-		LOCAL loColor
 		LOCAL loExc AS Exception
 		TRY
-			m.loColor = This.oColor.FromRGB(xfcGetSysColor(COLOR_INFOTEXT))
+			This.InfoText = This.oColor.FromRGB(xfcGetSysColor(COLOR_INFOTEXT))
 		CATCH TO loExc
 			THROW m.loExc
 		ENDTRY
-		RETURN m.loColor
+		RETURN This.InfoText
 	ENDFUNC
 
 
@@ -24468,15 +24220,13 @@ DEFINE CLASS xfcSystemColors AS xfcdrawingbase
 	** http://msdn2.microsoft.com/en-us/library/System.Drawing.SystemColors.Info%28vs.80%29.aspx
 	** Returns: Color
 	*********************************************************************
-		
-		LOCAL loColor
 		LOCAL loExc AS Exception
 		TRY
-			m.loColor = This.oColor.FromRGB(xfcGetSysColor(COLOR_INFOBK))
+			This.Info = This.oColor.FromRGB(xfcGetSysColor(COLOR_INFOBK))
 		CATCH TO loExc
 			THROW m.loExc
 		ENDTRY
-		RETURN m.loColor
+		RETURN This.Info
 	ENDFUNC
 
 
@@ -24495,15 +24245,13 @@ DEFINE CLASS xfcSystemColors AS xfcdrawingbase
 	** http://msdn2.microsoft.com/en-us/library/System.Drawing.SystemColors.MenuText%28vs.80%29.aspx
 	** Returns: Color
 	*********************************************************************
-		
-		LOCAL loColor
 		LOCAL loExc AS Exception
 		TRY
-			m.loColor = This.oColor.FromRGB(xfcGetSysColor(COLOR_MENUTEXT))
+			This.MenuText = This.oColor.FromRGB(xfcGetSysColor(COLOR_MENUTEXT))
 		CATCH TO loExc
 			THROW m.loExc
 		ENDTRY
-		RETURN m.loColor
+		RETURN This.MenuText
 	ENDFUNC
 
 
@@ -24522,15 +24270,13 @@ DEFINE CLASS xfcSystemColors AS xfcdrawingbase
 	** http://msdn2.microsoft.com/en-us/library/System.Drawing.SystemColors.Menu%28vs.80%29.aspx
 	** Returns: Color
 	*********************************************************************
-		
-		LOCAL loColor
 		LOCAL loExc AS Exception
 		TRY
-			m.loColor = This.oColor.FromRGB(xfcGetSysColor(COLOR_MENU))
+			This.Menu = This.oColor.FromRGB(xfcGetSysColor(COLOR_MENU))
 		CATCH TO loExc
 			THROW m.loExc
 		ENDTRY
-		RETURN m.loColor
+		RETURN This.Menu
 	ENDFUNC
 
 
@@ -24549,15 +24295,13 @@ DEFINE CLASS xfcSystemColors AS xfcdrawingbase
 	** http://msdn2.microsoft.com/en-us/library/System.Drawing.SystemColors.ScrollBar%28vs.80%29.aspx
 	** Returns: Color
 	*********************************************************************
-		
-		LOCAL loColor
 		LOCAL loExc AS Exception
 		TRY
-			m.loColor = This.oColor.FromRGB(xfcGetSysColor(COLOR_SCROLLBAR))
+			This.ScrollBar = This.oColor.FromRGB(xfcGetSysColor(COLOR_SCROLLBAR))
 		CATCH TO loExc
 			THROW m.loExc
 		ENDTRY
-		RETURN m.loColor
+		RETURN This.ScrollBar
 	ENDFUNC
 
 
@@ -24576,15 +24320,13 @@ DEFINE CLASS xfcSystemColors AS xfcdrawingbase
 	** http://msdn2.microsoft.com/en-us/library/System.Drawing.SystemColors.WindowFrame%28vs.80%29.aspx
 	** Returns: Color
 	*********************************************************************
-		
-		LOCAL loColor
 		LOCAL loExc AS Exception
 		TRY
-			m.loColor = This.oColor.FromRGB(xfcGetSysColor(COLOR_WINDOWFRAME))
+			This.WindowFrame = This.oColor.FromRGB(xfcGetSysColor(COLOR_WINDOWFRAME))
 		CATCH TO loExc
 			THROW m.loExc
 		ENDTRY
-		RETURN m.loColor
+		RETURN This.WindowFrame
 	ENDFUNC
 
 
@@ -24603,15 +24345,13 @@ DEFINE CLASS xfcSystemColors AS xfcdrawingbase
 	** http://msdn2.microsoft.com/en-us/library/System.Drawing.SystemColors.WindowText%28vs.80%29.aspx
 	** Returns: Color
 	*********************************************************************
-		
-		LOCAL loColor
 		LOCAL loExc AS Exception
 		TRY
-			m.loColor = This.oColor.FromRGB(xfcGetSysColor(COLOR_WINDOWTEXT))
+			This.WindowText = This.oColor.FromRGB(xfcGetSysColor(COLOR_WINDOWTEXT))
 		CATCH TO loExc
 			THROW m.loExc
 		ENDTRY
-		RETURN m.loColor
+		RETURN This.WindowText
 	ENDFUNC
 
 
@@ -24631,15 +24371,13 @@ DEFINE CLASS xfcSystemColors AS xfcdrawingbase
 	** http://msdn2.microsoft.com/en-us/library/System.Drawing.SystemColors.Window%28vs.80%29.aspx
 	** Returns: Color
 	*********************************************************************
-		
-		LOCAL loColor
 		LOCAL loExc AS Exception
 		TRY
-			m.loColor = This.oColor.FromRGB(xfcGetSysColor(COLOR_WINDOW))
+			This.Window = This.oColor.FromRGB(xfcGetSysColor(COLOR_WINDOW))
 		CATCH TO loExc
 			THROW m.loExc
 		ENDTRY
-		RETURN m.loColor
+		RETURN This.Window
 	ENDFUNC
 
 
@@ -24689,14 +24427,14 @@ DEFINE CLASS xfcSystemIcons AS xfcdrawingbase
 *************************************************************************
 *************************************************************************
 *************************************************************************
-	Asterisk = 0	&& Gets an Icon object that contains the system asterisk icon (WIN32: IDI_ASTERISK).
+	Asterisk = NULL	&& Gets an Icon object that contains the system asterisk icon (WIN32: IDI_ASTERISK).
 	BaseName = "SystemIcons"
-	Exclamation = 0	&& Gets an Icon object that contains the system exclamation icon (WIN32: IDI_EXCLAMATION).
-	Hand = 0	&& Gets an Icon object that contains the system hand icon (WIN32: IDI_HAND).
-	Information = 0	&& Gets an Icon object that contains the system information icon (WIN32: IDI_INFORMATION).
-	Question = 0	&& Gets an Icon object that contains the system question icon (WIN32: IDI_QUESTION).
-	Warning = 0	&& Gets an Icon object that contains the system warning icon (WIN32: IDI_WARNING).
-	WinLogo = 0	&& Gets an Icon object that contains the Windows logo icon (WIN32: IDI_WINLOGO).
+	Exclamation = NULL	&& Gets an Icon object that contains the system exclamation icon (WIN32: IDI_EXCLAMATION).
+	Hand = NULL	&& Gets an Icon object that contains the system hand icon (WIN32: IDI_HAND).
+	Information = NULL	&& Gets an Icon object that contains the system information icon (WIN32: IDI_INFORMATION).
+	Question = NULL	&& Gets an Icon object that contains the system question icon (WIN32: IDI_QUESTION).
+	Warning = NULL	&& Gets an Icon object that contains the system warning icon (WIN32: IDI_WARNING).
+	WinLogo = NULL	&& Gets an Icon object that contains the Windows logo icon (WIN32: IDI_WINLOGO).
 	PROTECTED oicon
 	oicon = .NULL.
  
@@ -25048,22 +24786,22 @@ DEFINE CLASS xfcSystemPens AS xfcdrawingbase
 *************************************************************************
 *************************************************************************
 *************************************************************************
-	ActiveCaptionText = 0	&& Gets a Pen object that is the color of the text in the active window's title bar.
+	ActiveCaptionText = NULL	&& Gets a Pen object that is the color of the text in the active window's title bar.
 	BaseName = "SystemPens"
-	Control = 0	&& Gets a Pen object that is the face color of a 3-D element.
-	ControlDark = 0	&& Gets a Pen object that is the shadow color of a 3-D element. The shadow color is applied to parts of a 3-D element that face away from the light source.
-	ControlDarkDark = 0	&& Gets a Pen object that is the dark shadow color of a 3-D element. The dark shadow color is applied to the parts of a 3-D element that are the darkest color.
-	ControlLight = 0	&& Gets a Pen object that is the light color of a 3-D element. The light color is applied to parts of a 3-D element that face the light source.
-	ControlLightLight = 0	&& Gets a Pen object that is the highlight color of a 3-D element. The highlight color is applied to the parts of a 3-D element that are the lightest color.
-	ControlText = 0	&& Gets a Pen object that is the color of text in a 3-D element.
-	GrayText = 0	&& Gets a Pen object that is the color of dimmed text. Items in a list that are disabled are displayed in dimmed text.
-	Highlight = 0	&& Gets a Pen object that is the color of the background of selected items. This includes selected menu items as well as selected text. For example, the pen may be the color used for the background of selected items in a list box.
-	HighlightText = 0	&& Gets a Pen object that is the color of the text of selected items. This includes selected menu items as well as selected text. For example, the pen may be the color used for the text of selected items in a list box.
-	InactiveCaptionText = 0	&& Gets a Pen object that is the color of the text in an inactive window's title bar.
-	InfoText = 0	&& Gets a Pen object that is the color of the text of a ToolTip.
-	MenuText = 0	&& Gets a Pen object that is the color of a menu's text.
-	WindowFrame = 0	&& Gets a Pen object that is the color of a window frame.
-	WindowText = 0	&& Gets a Pen object that is the color of the text in the client area of a window.
+	Control = NULL	&& Gets a Pen object that is the face color of a 3-D element.
+	ControlDark = NULL	&& Gets a Pen object that is the shadow color of a 3-D element. The shadow color is applied to parts of a 3-D element that face away from the light source.
+	ControlDarkDark = NULL	&& Gets a Pen object that is the dark shadow color of a 3-D element. The dark shadow color is applied to the parts of a 3-D element that are the darkest color.
+	ControlLight = NULL	&& Gets a Pen object that is the light color of a 3-D element. The light color is applied to parts of a 3-D element that face the light source.
+	ControlLightLight = NULL	&& Gets a Pen object that is the highlight color of a 3-D element. The highlight color is applied to the parts of a 3-D element that are the lightest color.
+	ControlText = NULL	&& Gets a Pen object that is the color of text in a 3-D element.
+	GrayText = NULL	&& Gets a Pen object that is the color of dimmed text. Items in a list that are disabled are displayed in dimmed text.
+	Highlight = NULL	&& Gets a Pen object that is the color of the background of selected items. This includes selected menu items as well as selected text. For example, the pen may be the color used for the background of selected items in a list box.
+	HighlightText = NULL	&& Gets a Pen object that is the color of the text of selected items. This includes selected menu items as well as selected text. For example, the pen may be the color used for the text of selected items in a list box.
+	InactiveCaptionText = NULL	&& Gets a Pen object that is the color of the text in an inactive window's title bar.
+	InfoText = NULL	&& Gets a Pen object that is the color of the text of a ToolTip.
+	MenuText = NULL	&& Gets a Pen object that is the color of a menu's text.
+	WindowFrame = NULL	&& Gets a Pen object that is the color of a window frame.
+	WindowText = NULL	&& Gets a Pen object that is the color of the text in the client area of a window.
  
 	*********************************************************************
 	FUNCTION Init
@@ -25558,9 +25296,7 @@ DEFINE CLASS xfcSystemPens AS xfcdrawingbase
 		ENDTRY
 		RETURN m.loPen
 	ENDFUNC
-
-
-
+	
 
 	#IFDEF USE_MEMBERDATA
 	PROTECTED _memberdata
@@ -25766,7 +25502,7 @@ DEFINE CLASS xfcTextureBrush AS xfcbrush
 	** Returns: void
 	*********************************************************************
 	LPARAMETERS toMatrix AS xfcMatrix, tiOrder AS EnumMatrixOrder
-		
+	#IFDEF USECLASS_XFCMATRIX
 		*!ToDo: Test this function
 		
 		LOCAL loExc AS Exception
@@ -25778,6 +25514,9 @@ DEFINE CLASS xfcTextureBrush AS xfcbrush
 		ENDTRY
 		
 		RETURN NULL
+	#ELSE
+		ERROR "Matrix class is disabled"
+	#ENDIF
 	ENDFUNC
 
 
@@ -25900,7 +25639,7 @@ DEFINE CLASS xfcTextureBrush AS xfcbrush
 	** http://msdn2.microsoft.com/en-us/library/System.Drawing.TextureBrush.Transform%28vs.80%29.aspx
 	** Returns: Matrix
 	*********************************************************************
-		
+	#IFDEF USECLASS_XFCMATRIX
 		*!ToDo: Test this function
 		
 		LOCAL loMatrix, lhMatrix
@@ -25918,6 +25657,9 @@ DEFINE CLASS xfcTextureBrush AS xfcbrush
 			THROW m.loExc
 		ENDTRY
 		RETURN m.loMatrix
+	#ELSE
+		ERROR "Matrix class is disabled"
+	#ENDIF
 	ENDFUNC
 
 
@@ -25935,7 +25677,7 @@ DEFINE CLASS xfcTextureBrush AS xfcbrush
 	**  2006/08/22: BDurban - Added check for parameter data type
 	*********************************************************************
 	LPARAMETERS toMatrix AS xfcMatrix
-		
+	#IFDEF USECLASS_XFCMATRIX
 		*!ToDo: Test this function
 		
 		LOCAL loExc AS Exception
@@ -25948,6 +25690,9 @@ DEFINE CLASS xfcTextureBrush AS xfcbrush
 		ENDTRY
 		
 		RETURN NULL
+	#ELSE
+		ERROR "Matrix class is disabled"
+	#ENDIF
 	ENDFUNC
 
 
@@ -26077,7 +25822,6 @@ ENDDEFINE
 #ENDIF
 *************************************************************************
 *************************************************************************
-
 
 
 #IFDEF USECLASS_XFCBITMAP
@@ -26519,6 +26263,7 @@ FUNCTION xfcGdipDrawArcI(graphics, pen, x, y, nWidth, Height, startAngle, sweepA
 	RETURN xfcGdipDrawArcI(m.graphics, m.pen, m.x, m.y, m.nWidth, m.Height, m.startAngle, m.sweepAngle)
 ENDFUNC
 
+#IFNDEF GDIPX_SIMPLEDRAWING 
 *********************************************************************
 FUNCTION xfcGdipDrawBezier(graphics, pen, x1, y1, x2, y2, x3, y3, x4, y4)
 *********************************************************************
@@ -26546,6 +26291,7 @@ FUNCTION xfcGdipDrawBeziersI(graphics, pen, pPoint, Count)
 	DECLARE Long GdipDrawBeziersI IN GDIPLUS.DLL AS xfcGdipDrawBeziersI Long graphics, Long pen, String @pPoint, Long Count
 	RETURN xfcGdipDrawBeziersI(m.graphics, m.pen, @m.pPoint, m.Count)
 ENDFUNC
+#ENDIF
 
 *********************************************************************
 FUNCTION xfcGdipDrawClosedCurve(graphics, pen, pPoint, Count)
@@ -26827,6 +26573,7 @@ FUNCTION xfcGdipEndContainer(graphics, State)
 	RETURN xfcGdipEndContainer(m.graphics, m.State)
 ENDFUNC
 
+#IFDEF USECLASS_XFCMETAFILE
 *********************************************************************
 FUNCTION xfcGdipEnumerateMetafileDestPoint(graphics, metafile, destPoint, lpEnumerateMetafileProc, callbackData, imageAttributes)
 *********************************************************************
@@ -26910,6 +26657,7 @@ FUNCTION xfcGdipEnumerateMetafileSrcRectDestRectI(graphics, metafile, destRect, 
 	DECLARE Long GdipEnumerateMetafileSrcRectDestRectI IN GDIPLUS.DLL AS xfcGdipEnumerateMetafileSrcRectDestRectI Long graphics, Long metafile, String @destRect, String @srcRect, Long srcUnit, Long lpEnumerateMetafileProc, Long callbackData, Long imageAttributes
 	RETURN xfcGdipEnumerateMetafileSrcRectDestRectI(m.graphics, m.metafile, @m.destRect, @m.srcRect, m.srcUnit, m.lpEnumerateMetafileProc, m.callbackData, m.imageAttributes)
 ENDFUNC
+#ENDIF
 
 *********************************************************************
 FUNCTION xfcGdipFillClosedCurve(graphics, brush, pPoint, Count)
