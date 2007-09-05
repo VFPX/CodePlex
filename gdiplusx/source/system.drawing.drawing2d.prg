@@ -4603,6 +4603,7 @@ DEFINE CLASS xfcGraphicsPathIterator AS xfcgpobject OF System.Drawing.prg
 	**
 	** History:
 	**  2006/03/07: Auto Generated
+	**	2007/09/04: BDurban - Coded
 	**
 	** .NET Help ********************************************************
 	** http://msdn2.microsoft.com/en-us/library/System.Drawing.Drawing2D.GraphicsPathIterator.CopyData%28vs.80%29.aspx
@@ -4610,24 +4611,35 @@ DEFINE CLASS xfcGraphicsPathIterator AS xfcgpobject OF System.Drawing.prg
 	**  ref PointF[] points, ref byte[] types, int startIndex, int endIndex
 	** Returns: int
 	*********************************************************************
-	LPARAMETERS taoPoints AS @xfcPointF, tqTypes AS @VarBinary, tiStartIndex, tiEndIndex
+	LPARAMETERS taoPoints AS xfcPointF, tacTypes AS Byte, tiStartIndex, tiEndIndex
 		
-		*!ToDo: Implement this function
-		*!ToDo: Test this function
-		ERROR 1999	&& Function not implemented
-		RETURN NULL
+		LOCAL lqPoints, lqTypes, loPointf AS xfcPointF, loByte AS xfcByte
 		
 		LOCAL loExc AS Exception
 		TRY
-			LOCAL liValue
-			m.liValue = 0
-			This.SetStatus(xfcGdipPathIterCopyData(This.Handle, @liResultCount, @lcPoints, @lcTypes, m.liStartIndex, m.liEndIndex))
+			LOCAL liResultCount
+			m.liResultCount = 0
+			
+			m.lqPoints = REPLICATE(EMPTY_POINTF,This.Count)
+			m.lqTypes = REPLICATE(0h00,This.Count)
+			
+			This.SetStatus(xfcGdipPathIterCopyData(This.Handle, @m.liResultCount, @m.lqPoints, @m.lqTypes, m.tiStartIndex, m.tiEndIndex))
+			
+			IF m.liResultCount < This.Count
+				m.lqPoints = LEFT(m.lqPoints, SIZEOF_POINTF*m.liResultCount) 
+				m.lqTypes = LEFT(m.lqTypes, m.liResultCount) 
+			ENDIF
+			
+			m.loPointf = NEWOBJECT("xfcPointf", XFCCLASS_DRAWING) 
+			taoPoints = m.loPointf.NewArray(m.lqPoints)
+			m.loByte = NEWOBJECT("xfcByte", XFCCLASS_SYSTEM) 
+			tacTypes = m.loByte.NewArray(m.lqTypes)
 		
 		CATCH TO loExc
 			THROW m.loExc
 		ENDTRY
 		
-		RETURN m.liValue
+		RETURN m.liResultCount
 	ENDFUNC
 
 
@@ -4682,23 +4694,33 @@ DEFINE CLASS xfcGraphicsPathIterator AS xfcgpobject OF System.Drawing.prg
 	*********************************************************************
 	LPARAMETERS taoPoints AS xfcPointF, taiTypes AS Byte
 		
-		*!ToDo: Implement this function
-		*!ToDo: Test this function
-		*ERROR 1999	&& Function not implemented
-		*RETURN NULL
+		LOCAL lqPoints, lqTypes, loPointf AS xfcPointF, loByte AS xfcByte
 		
 		LOCAL loExc AS Exception
 		TRY
-			LOCAL liCount, liResultCount
-			m.liCount = 0
+			LOCAL liResultCount
 			m.liResultCount = 0
-			This.SetStatus(xfcGdipPathIterEnumerate(THIs.Handle, @liResultCount, @lcPoints, @lcTypes, m.liCount))
+			
+			m.lqPoints = REPLICATE(EMPTY_POINTF,This.Count)
+			m.lqTypes = REPLICATE(0h00,This.Count)
+			
+			This.SetStatus(xfcGdipPathIterEnumerate(THIs.Handle, @m.liResultCount, @m.lqPoints, @m.lqTypes, This.Count))
+			
+			IF m.liResultCount < This.Count
+				m.lqPoints = LEFT(m.lqPoints, SIZEOF_POINTF*m.liResultCount) 
+				m.lqTypes = LEFT(m.lqTypes, m.liResultCount) 
+			ENDIF
+			
+			m.loPointf = NEWOBJECT("xfcPointf", XFCCLASS_DRAWING) 
+			taoPoints = m.loPointf.NewArray(m.lqPoints)
+			m.loByte = NEWOBJECT("xfcByte", XFCCLASS_SYSTEM) 
+			taiTypes = m.loByte.NewArray(m.lqTypes)
 		
 		CATCH TO loExc
 			THROW m.loExc
 		ENDTRY
 		
-		RETURN m.liCount
+		RETURN m.liResultCount
 	ENDFUNC
 
 
