@@ -1,23 +1,5 @@
 #INCLUDE System.Drawing.h
 
-#DEFINE USECLASS_XFCHATCHBRUSH
-#DEFINE USECLASS_XFCLINEARGRADIENTBRUSH
-
-#DEFINE USECLASS_XFCADJUSTABLEARROWCAP
-#DEFINE USECLASS_XFCCUSTOMLINECAP
-
-#DEFINE USECLASS_XFCGRAPHICSCONTAINER
-#DEFINE USECLASS_XFCGRAPHICSPATH
-#DEFINE USECLASS_XFCGRAPHICSPATHITERATOR
-#DEFINE USECLASS_XFCPATHDATA
-#DEFINE USECLASS_XFCPATHGRADIENTBRUSH
-
-#DEFINE USECLASS_XFCBLEND
-#DEFINE USECLASS_XFCCOLORBLEND
-#DEFINE USECLASS_XFCGRAPHICSSTATE
-#DEFINE USECLASS_XFCMATRIX
-#DEFINE USECLASS_XFCREGIONDATA
-
 LPARAMETER toObject
 
 IF VARTYPE(m.toObject) = "O"
@@ -779,7 +761,7 @@ DEFINE CLASS xfcDrawing2D AS xfcObject OF System.PRG
 	** .NET Help ********************************************************
 	** http://msdn2.microsoft.com/en-us/library/System.Drawing.Drawing2D.MatrixOrder%28vs.80%29.aspx
 	*********************************************************************
-		
+	#IFDEF USECLASS_XFCMATRIX
 		*!ToDo: Test this method
 		
 		IF VARTYPE(This.MatrixOrder) <> "O"
@@ -795,17 +777,24 @@ DEFINE CLASS xfcDrawing2D AS xfcObject OF System.PRG
 		ENDIF
 		
 		RETURN This.MatrixOrder
+	#ELSE
+		ERROR "Matrix class is disabled"
+	#ENDIF
 	ENDFUNC
 
 
 	*********************************************************************
-	FUNCTION matrix_ACCESS
+	FUNCTION Matrix_ACCESS
 	*********************************************************************
+	#IFDEF USECLASS_XFCMATRIX
 		IF VARTYPE(This.Matrix) <> "O"
 			This.Matrix = CREATEOBJECT("xfcMatrix")
 		ENDIF
 		
 		RETURN THIS.Matrix
+	#ELSE
+		ERROR "Matrix class is disabled"
+	#ENDIF
 	ENDFUNC
 
 
@@ -844,7 +833,7 @@ DEFINE CLASS xfcDrawing2D AS xfcObject OF System.PRG
 	** .NET Help ********************************************************
 	** http://msdn2.microsoft.com/en-us/library/System.Drawing.Drawing2D.PathPointType%28vs.80%29.aspx
 	*********************************************************************
-		
+	#IFDEF USECLASS_XFCGRAPHICSPATH
 		*!ToDo: Test this method
 		
 		IF VARTYPE(This.PathPointType) <> "O"
@@ -872,6 +861,9 @@ DEFINE CLASS xfcDrawing2D AS xfcObject OF System.PRG
 		ENDIF
 		
 		RETURN This.PathPointType
+	#ELSE
+		ERROR "Class GraphicsPath is disabled"
+	#ENDIF
 	ENDFUNC
 
 
@@ -3784,7 +3776,7 @@ DEFINE CLASS xfcGraphicsPath AS xfcgpobject OF System.Drawing.prg
 	*********************************************************************
 	LPARAMETERS toMatrix AS xfcMatrix, ;
 					tnFlatness
-		
+	#IFDEF USECLASS_XFCMATRIX
 		*!ToDo: Test this function
 		
 		LOCAL loExc AS Exception
@@ -3797,6 +3789,9 @@ DEFINE CLASS xfcGraphicsPath AS xfcgpobject OF System.Drawing.prg
 		ENDTRY
 		
 		RETURN NULL
+	#ELSE
+		ERROR "Matrix class is disabled"
+	#ENDIF
 	ENDFUNC
 
 
@@ -3822,7 +3817,7 @@ DEFINE CLASS xfcGraphicsPath AS xfcgpobject OF System.Drawing.prg
 	LPARAMETERS toMatrix AS xfcMatrix, ;
 					toPen AS xfcPen
 	*********** [None]
-		
+	#IFDEF USECLASS_XFCMATRIX
 		*!ToDo: Test this function
 		
 		LOCAL loExc AS Exception
@@ -3845,6 +3840,9 @@ DEFINE CLASS xfcGraphicsPath AS xfcgpobject OF System.Drawing.prg
 		ENDTRY
 		
 		RETURN m.loRectangleF
+	#ELSE
+		ERROR "Matrix class is disabled"
+	#ENDIF
 	ENDFUNC
 
 
@@ -4328,7 +4326,7 @@ DEFINE CLASS xfcGraphicsPath AS xfcgpobject OF System.Drawing.prg
 	** Returns: void
 	*********************************************************************
 	LPARAMETERS toMatrix AS xfcMatrix
-		
+	#IFDEF USECLASS_XFCMATRIX
 		*!ToDo: Test this function
 		
 		LOCAL loExc AS Exception
@@ -4341,6 +4339,9 @@ DEFINE CLASS xfcGraphicsPath AS xfcgpobject OF System.Drawing.prg
 		ENDTRY
 		
 		RETURN NULL
+	#ELSE
+		ERROR "Matrix class is disabled"
+	#ENDIF
 	ENDFUNC
 
 
@@ -4370,7 +4371,7 @@ DEFINE CLASS xfcGraphicsPath AS xfcgpobject OF System.Drawing.prg
 					toMatrix AS xfcMatrix, ;
 					tiWarpMode AS EnumWarpMode, ;
 					tnFlatness
-		
+	#IFDEF USECLASS_XFCMATRIX
 		*!ToDo: Test this function
 		
 		LOCAL loExc AS Exception
@@ -4401,6 +4402,9 @@ DEFINE CLASS xfcGraphicsPath AS xfcgpobject OF System.Drawing.prg
 		ENDTRY
 		
 		RETURN NULL
+	#ELSE
+		ERROR "Matrix class is disabled"
+	#ENDIF
 	ENDFUNC
 
 
@@ -4427,7 +4431,7 @@ DEFINE CLASS xfcGraphicsPath AS xfcgpobject OF System.Drawing.prg
 	LPARAMETERS toPen AS xfcPen, ;
 					toMatrix AS xfcMatrix, ;
 					tnFlatness
-		
+	#IFDEF USECLASS_XFCMATRIX
 		*!ToDo: Test this function
 		
 		LOCAL loExc AS Exception
@@ -4447,6 +4451,9 @@ DEFINE CLASS xfcGraphicsPath AS xfcgpobject OF System.Drawing.prg
 		ENDTRY
 		
 		RETURN NULL
+	#ELSE
+		ERROR "Matrix class is disabled"
+	#ENDIF
 	ENDFUNC
 
 
@@ -4591,8 +4598,8 @@ DEFINE CLASS xfcGraphicsPathIterator AS xfcgpobject OF System.Drawing.prg
 	*********************************************************************
 	** Method: xfcGraphicsPathIterator.CopyData
 	**
-	** Copies the PathPoints property and cref="P:System.Drawing.Drawing2D.GraphicsPath.PathTypes"/>
-	** property arrays of the associated GraphicsPath object into the two specified arrays.
+	** Copies the PathPoints property and PathTypes property arrays of the associated GraphicsPath
+	** into the two specified arrays.
 	**
 	** History:
 	**  2006/03/07: Auto Generated
@@ -4662,7 +4669,7 @@ DEFINE CLASS xfcGraphicsPathIterator AS xfcgpobject OF System.Drawing.prg
 	** Method: xfcGraphicsPathIterator.Enumerate
 	**
 	** Copies the PathPoints property and PathTypes property arrays of the associated GraphicsPath
-	** object into the two specified arrays.
+	** into the two specified arrays.
 	**
 	** History:
 	**  2006/03/07: Auto Generated
@@ -4677,8 +4684,8 @@ DEFINE CLASS xfcGraphicsPathIterator AS xfcgpobject OF System.Drawing.prg
 		
 		*!ToDo: Implement this function
 		*!ToDo: Test this function
-		ERROR 1999	&& Function not implemented
-		RETURN NULL
+		*ERROR 1999	&& Function not implemented
+		*RETURN NULL
 		
 		LOCAL loExc AS Exception
 		TRY
@@ -5709,7 +5716,7 @@ DEFINE CLASS xfcLinearGradientBrush AS xfcbrush OF System.Drawing.prg
 	*********************************************************************
 	LPARAMETERS toMatrix AS xfcMatrix, ;
 					tiOrder AS EnumMatrixOrder
-		
+	#IFDEF USECLASS_XFCMATRIX
 		*!ToDo: Test this function
 		
 		LOCAL loExc AS Exception
@@ -5722,6 +5729,9 @@ DEFINE CLASS xfcLinearGradientBrush AS xfcbrush OF System.Drawing.prg
 		ENDTRY
 		
 		RETURN NULL
+	#ELSE
+		ERROR "Matrix class is disabled"
+	#ENDIF
 	ENDFUNC
 
 
@@ -5954,7 +5964,7 @@ DEFINE CLASS xfcLinearGradientBrush AS xfcbrush OF System.Drawing.prg
 	** http://msdn2.microsoft.com/en-us/library/System.Drawing.Drawing2D.LinearGradientBrush.Transform%28vs.80%29.aspx
 	** Returns: Matrix
 	*********************************************************************
-		
+	#IFDEF USECLASS_XFCMATRIX
 		*!ToDo: Test this function
 		
 		LOCAL loMatrix AS xfcMatrix, lhMatrix
@@ -5972,6 +5982,9 @@ DEFINE CLASS xfcLinearGradientBrush AS xfcbrush OF System.Drawing.prg
 			THROW m.loExc
 		ENDTRY
 		RETURN m.loMatrix
+	#ELSE
+		ERROR "Matrix class is disabled"
+	#ENDIF
 	ENDFUNC
 
 
@@ -7630,7 +7643,7 @@ DEFINE CLASS xfcPathGradientBrush AS xfcbrush OF System.Drawing.prg
 	*********************************************************************
 	LPARAMETERS toMatrix AS xfcMatrix, ;
 					tiOrder AS EnumMatrixOrder
-		
+	#IFDEF USECLASS_XFCMATRIX
 		*!ToDo: Test this function
 		
 		LOCAL loExc AS Exception
@@ -7643,6 +7656,9 @@ DEFINE CLASS xfcPathGradientBrush AS xfcbrush OF System.Drawing.prg
 		ENDTRY
 		
 		RETURN NULL
+	#ELSE
+		ERROR "Matrix class is disabled"
+	#ENDIF
 	ENDFUNC
 
 
@@ -7993,7 +8009,7 @@ DEFINE CLASS xfcPathGradientBrush AS xfcbrush OF System.Drawing.prg
 	** http://msdn2.microsoft.com/en-us/library/System.Drawing.Drawing2D.PathGradientBrush.Transform%28vs.80%29.aspx
 	** Returns: Matrix
 	*********************************************************************
-		
+	#IFDEF USECLASS_XFCMATRIX
 		*!ToDo: Test this function
 		
 		LOCAL loMatrix AS xfcMatrix, lhMatrix
@@ -8011,6 +8027,9 @@ DEFINE CLASS xfcPathGradientBrush AS xfcbrush OF System.Drawing.prg
 			THROW m.loExc
 		ENDTRY
 		RETURN m.loMatrix
+	#ELSE
+		ERROR "Matrix class is disabled"
+	#ENDIF
 	ENDFUNC
 
 
@@ -8027,7 +8046,7 @@ DEFINE CLASS xfcPathGradientBrush AS xfcbrush OF System.Drawing.prg
 	**	2006/05/10: BDurban - Coded
 	*********************************************************************
 	LPARAMETERS toMatrix
-		
+	#IFDEF USECLASS_XFCMATRIX
 		*!ToDo: Test this function
 		LOCAL lhHandle
 		
@@ -8040,6 +8059,9 @@ DEFINE CLASS xfcPathGradientBrush AS xfcbrush OF System.Drawing.prg
 		ENDTRY
 		
 		RETURN NULL
+	#ELSE
+		ERROR "Matrix class is disabled"
+	#ENDIF
 	ENDFUNC
 
 
