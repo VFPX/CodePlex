@@ -11554,25 +11554,104 @@ DEFINE CLASS xfcIcon AS xfcdrawingbase
 	**
 	** History:
 	**  2006/03/07: Auto Generated
-	**
+	**  2007/09/06: CChalom Coded - Partial - missing tlQuality
 	** .NET Help ********************************************************
 	** http://msdn2.microsoft.com/en-us/library/System.Drawing.Icon.Save%28vs.80%29.aspx
 	** Parameters:
 	**  Stream outputStream
 	** Returns: void
 	*********************************************************************
-	LPARAMETERS toOutputStream AS xfcStream
-		
-		*!ToDo: Implement this function
-		*!ToDo: Test this function
-		ERROR 1999	&& Function not implemented
-		RETURN NULL
+	LPARAMETERS toOutputStreamortcFile, tlQuality
+	*********** tcFileName [, tlQuality]
+
+	*!Todo: Allow users to work with high quality icons
+
+		LOCAL lnFunctionType
+		DO CASE 
+
+		CASE VARTYPE(toOutputStreamortcFile) = "O"
+			LOCAL loStream as xfcMemoryStream
+			m.loStream = m.toOutputStreamortcFile
+			m.lnFunctionType = 1 && Stream
+
+		CASE VARTYPE(toOutputStreamortcFile) = "C"
+			LOCAL lcDestFile
+			m.lcDestFile = m.toOutputStreamortcFile
+			m.lnFunctionType = 2 && Save to File
+
+		ENDCASE
 		
 		LOCAL loExc AS Exception
 		TRY
+
+			LOCAL lhIcon
+			m.lhIcon = This.Handle
 		
-		** This.SetStatus(GdipSomeFunction???())
-		
+				*!* typedef struct tagPICTDESC 
+				*!* { 
+				*!* UINT cbSizeofstruct; 
+				*!* UINT picType; 
+				*!* HICON hicon; 
+				*!* } icon; 
+				*!* struct 
+				*!* { 
+				*!* HENHMETAFILE hemf; 
+				*!* } emf; 
+				*!* } ; 
+				*!* } PICTDESC
+			   
+			IF NOT m.tlQuality && Use Original .NET bad quality Icons (16 colors)
+
+				#DEFINE PICTYPE_ICON 3
+				#DEFINE IPERSISTSTREAM 	"{00000109-0000-0000-C000-000000000046}"
+				#DEFINE GUID_IPicture 0h8109F87B32BF1A108BBB00AA00300CAB
+
+				LOCAL lcPictDesc, lqGuid, loIconObj
+				m.lcPictDesc = BINTOC(16,"4RS") + ; && Size of Structure
+					BINTOC(PICTYPE_ICON, "4RS") + ; && Type of Image
+					BINTOC(m.lhIcon, "4RS") + ; && Image Handle
+					BINTOC(0, "4RS")
+
+				*!* http://msdn2.microsoft.com/en-us/library/ms694511.aspx
+				*!* STDAPI OleCreatePictureIndirect( 
+				*!* PICTDESC* pPictDesc, //Pointer to the structure of parameters for picture
+				*!* REFIID riid, //Reference to the identifier of the interface
+				*!* BOOL fOwn, //Whether the picture is to be destroyed
+				*!* If TRUE, the picture object is to destroy its picture when the object is destroyed. If FALSE, the caller is responsible for destroying the picture.
+				*!* VOID** ppvObj //Address of output variable that receives the 
+				*!* // interface pointer requested in riid
+
+
+				LOCAL loGuid as xfcGuid
+				m.loGuid = NEWOBJECT("xfcGuid", XFCCLASS_SYSTEM, "", IPictureGuid)
+				m.lqGuid = loGuid.ToVarbinary()
+
+
+				LOCAL loImg
+				m.loImg = 0
+				DECLARE LONG OleCreatePictureIndirect IN oleaut32 STRING @PictDesc , STRING @riid , LONG Own , OBJECT @Obj
+				OleCreatePictureIndirect(@lcPictDesc, @lqGuid, 0, @loImg)
+
+
+				DO CASE 
+				CASE m.lnFunctionType = 1 && Stream
+					LOCAL lcTempFile, lnSize
+					m.lcTempFile = FORCEEXT(ADDBS(SYS(2023)) + SYS(2015), "ICO")
+					SAVEPICTURE(m.loImg, m.lcTempFile)
+					m.lcBinary = FILETOSTR(lcTempFile)
+					CLEAR RESOURCES (m.lcTempFile)
+					DELETE FILE (m.lcTempFile)
+					lnSize = LEN(m.lcBinary)
+					loStream.Capacity = lnSize
+					loStream.Write(m.lcBinary,0,lnSize)
+
+				CASE m.lnFunctionType = 2 && FileName
+					SAVEPICTURE(m.loImg, m.lcDestFile)
+			
+				ENDCASE
+			
+			ENDIF
+						
 		CATCH TO loExc
 			THROW m.loExc
 		ENDTRY
@@ -11693,11 +11772,10 @@ DEFINE CLASS xfcIcon AS xfcdrawingbase
 	** Returns: string
 	*********************************************************************
 		
-		
 		*!ToDo: Implement this function
 		*!ToDo: Test this function
-		ERROR 1999	&& Function not implemented
-		RETURN NULL
+		*!*	ERROR 1999	&& Function not implemented
+		RETURN "[Icon]"
 		
 		LOCAL loExc AS Exception
 		TRY
@@ -12113,7 +12191,7 @@ DEFINE CLASS xfcImage AS xfcgpobject
 		
 		LOCAL loExc AS Exception
 		TRY
-			LOCAL loImage, lhImage, lhStream
+			LOCAL loImage, lhImage, lhStream, loStream AS xfcStream
 			m.lhImage = 0
 			m.loImage = NULL
 		
@@ -12122,6 +12200,9 @@ DEFINE CLASS xfcImage AS xfcgpobject
 				m.lhStream = m.toStream.Handle
 			CASE VARTYPE(m.toStream) == "N"
 				m.lhStream = m.toStream
+			CASE VARTYPE(m.toStream) == "Q"
+				m.loStream = NEWOBJECT("xfcMemoryStream", XFCCLASS_IO, "", m.toStream) 
+				m.lhStream = m.loStream.Handle
 			ENDCASE
 			
 			IF m.tlUseEmbeddedColorManagement
