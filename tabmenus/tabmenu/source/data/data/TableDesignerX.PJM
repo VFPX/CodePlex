@@ -24,4 +24,10 @@ AutoIncrement=.F.
 [OLEServers]
 [OLEServersEnd]
 [ProjectFiles]
+ 925854884,K,run_tdx.scx,.F.,.T.,1252,,,
+ 925854888,K,forms\tabledesignerx.scx,.F.,.F.,1253,,,
+ 925854888,K,forms\property_sheet.scx,.F.,.F.,1253,,,
+ 925854905,T,include\tdx.h,.F.,.F.,1252,,,
+ 925854913,M,menus\tdx_list.mnx,.F.,.F.,1252,,,
+ 925854918,P,progs\table_manager.prg,.F.,.F.,1252,,,
 [EOF]
