@@ -1,0 +1,29 @@
+Version=  1.20
+Author=
+Company=
+Address=
+City=
+State=
+Zip=
+Country=
+SaveCode=.T.
+Debug=.T.
+Encrypt=.F.
+NoLogo=.F.
+CommentStyle=1
+Comments=
+CompanyName=
+FileDescription=
+LegalCopyright=
+LegalTrademarks=
+ProductName=
+Major=
+Minor=
+Revision=
+AutoIncrement=.F.
+[OLEServers]
+G:\Development\VFPBuild\VfpProjectBuilder\vfpprojectbuilder.exe,projectbuilder,VfpProjectBuilder,VfpProjectBuilder Type Library,9644768,{9AF6E077-4512-468D-A0A2-F62DE13EA95A}
+VfpProjectBuilder,g:\development\vfpbuild\vfpprojectbuilder\vfpprojectbuilder.prg,VfpProjectBuilder.VfpProjectBuilder,0,ProjectBuilder.VfpProjectBuilder,,2,{F03E7393-D0C2-4285-9769-D37D3F0FD7A5},{32F5C8C2-2D5B-404D-A3A1-D7B698B8A028}
+[OLEServersEnd]
+[ProjectFiles]
+[EOF]
