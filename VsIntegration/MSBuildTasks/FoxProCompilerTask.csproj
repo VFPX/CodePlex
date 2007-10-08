@@ -1,0 +1,113 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="2.0">
+  <PropertyGroup>
+    <ProductVersion>9.0.20706</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{68B54816-884B-48A1-949C-DBBDE2A5C412}</ProjectGuid>
+    <ProjectTypeGuids>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <AssemblyName>Microsoft.Samples.VisualStudio.FoxProTasks</AssemblyName>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Microsoft.Samples.VisualStudio.FoxProTasks</RootNamespace>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <OutputPath>..\bin\Debug\</OutputPath>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugSymbols>true</DebugSymbols>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <OutputPath>..\bin\Release\</OutputPath>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    <DefineConstants>TRACE</DefineConstants>
+    <DebugSymbols>true</DebugSymbols>
+    <Optimize>true</Optimize>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.Build.Framework, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+    <Reference Include="Microsoft.Build.Utilities" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs">
+    </Compile>
+    <Compile Include="Compiler.cs" />
+    <Compile Include="CompilerErrorSink.cs" />
+    <Compile Include="ExperimentalCompiler.cs" />
+    <Compile Include="ICompiler.cs" />
+    <Compile Include="FoxProCompilerTask.cs">
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <AppDesigner Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="FoxPro.targets" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram1.cd" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <SubType>Designer</SubType>
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="VisualFoxpro">
+      <Guid>{002D2B11-C1FA-4193-B134-D86EAECC5250}</Guid>
+      <VersionMajor>9</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+    </COMReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+    </VisualStudio>
+  </ProjectExtensions>
+  <!--The following is used for deploying the task and target to Program Files\MSBuild\...-->
+  <PropertyGroup>
+    <DeployDestination>$(MSBuildExtensionsPath)\Microsoft\FoxPro\1.0\</DeployDestination>
+  </PropertyGroup>
+  <Target Name="AfterBuild">
+    <Message Text="Deploying..." />
+    <MakeDir Directories="$(DeployDestination)" Condition="!Exists($(DeployDestination))" />
+    <CreateItem Include="$(OutputPath)\*.dll" AdditionalMetadata="Visible=false">
+      <Output TaskParameter="Include" ItemName="DeployToMSBuild" />
+    </CreateItem>
+    <CreateItem Include="$(OutputPath)\*.pdb" AdditionalMetadata="Visible=false">
+      <Output TaskParameter="Include" ItemName="DeployToMSBuild" />
+    </CreateItem>
+    <Copy SourceFiles="%(DeployToMSBuild.Identity)" DestinationFolder="$(DeployDestination)" SkipUnchangedFiles="true" />
+  </Target>
+  <ItemGroup>
+    <DeployToMSBuild Include="FoxPro.targets">
+      <Visible>false</Visible>
+    </DeployToMSBuild>
+  </ItemGroup>
+</Project>

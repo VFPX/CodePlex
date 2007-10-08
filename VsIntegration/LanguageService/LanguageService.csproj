@@ -1,0 +1,188 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.20706</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{DA16C614-B1B9-42F1-8513-4C9E601041CB}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Microsoft.Samples.VisualStudio.FoxProLanguageService</RootNamespace>
+    <AssemblyName>FoxPro.LanguageService</AssemblyName>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NoWarn>414</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NoWarn>414</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="EnvDTE" />
+    <Reference Include="EnvDTE80" />
+    <Reference Include="Microsoft.VisualStudio.OLE.Interop" />
+    <Reference Include="Microsoft.VisualStudio.Package.LanguageService.9.0" />
+    <Reference Include="Microsoft.VisualStudio.Shell.9.0" />
+    <Reference Include="Microsoft.VisualStudio.Shell.Interop" />
+    <Reference Include="Microsoft.VisualStudio.Shell.Interop.8.0" />
+    <Reference Include="Microsoft.VisualStudio.Shell.Interop.9.0" />
+    <Reference Include="Microsoft.VisualStudio.TextManager.Interop" />
+    <Reference Include="Microsoft.VisualStudio.TextManager.Interop.8.0" />
+    <Reference Include="Microsoft.VisualStudio.TextManager.Interop.9.0" />
+    <Reference Include="System" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="VsLangProj" />
+  </ItemGroup>
+  <!-- FoxPro References -->
+  <PropertyGroup>
+    <FoxProSources Condition="'$(FoxProSources)'==''">..\FoxPro\Public\Src</FoxProSources>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="IronMath" Condition="!Exists('$(FoxProSources)\IronMath\IronMath.csproj')" />
+    <ProjectReference Include="$(FoxProSources)\IronMath\IronMath.csproj" Condition="Exists('$(FoxProSources)\IronMath\IronMath.csproj')">
+      <Project>{23392B2F-6141-418B-A442-E4D7ABE15774}</Project>
+      <Name>IronMath</Name>
+    </ProjectReference>
+    <Reference Include="FoxPro" Condition="!Exists('$(FoxProSources)\FoxPro\FoxPro.csproj')" />
+    <ProjectReference Include="$(FoxProSources)\FoxPro\FoxPro.csproj" Condition="Exists('$(FoxProSources)\FoxPro\FoxPro.csproj')">
+      <Project>{16ED1884-8B08-4787-B598-7C9D60519075}</Project>
+      <Name>FoxPro</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ContainedLanguage\CodeBlocksEnumerator.cs" />
+    <Compile Include="ContainedLanguage\ContainedSource.cs" />
+    <Compile Include="ContainedLanguage\ContainedViewFilter.cs" />
+    <Compile Include="ContainedLanguage\LanguageTextOps.cs" />
+    <Compile Include="ContainedLanguage\ProvideIntellisenseProvider.cs" />
+    <Compile Include="ContainedLanguage\FoxProCompletionSet.cs" />
+    <Compile Include="ContainedLanguage\FoxProContainedLanguage.CodeSupport.cs" />
+    <Compile Include="ContainedLanguage\FoxProContainedLanguage.cs" />
+    <Compile Include="ContainedLanguage\FoxProIntellisenseProvider.cs" />
+    <Compile Include="ContainedLanguage\TextViewWrapper.cs" />
+    <Compile Include="Engine\Analyzer.cs" />
+    <Compile Include="Engine\Definitions.cs" />
+    <Compile Include="Engine\Engine.cs" />
+    <Compile Include="Engine\Inferred.cs" />
+    <Compile Include="Engine\Locator.cs" />
+    <Compile Include="Engine\Modules.cs" />
+    <Compile Include="Engine\Scope.cs" />
+    <Compile Include="Engine\ScopeWalker.cs" />
+    <Compile Include="FileCodeModel\CodeDomCodeAttribute.cs" />
+    <Compile Include="FileCodeModel\CodeDomCodeClass.cs" />
+    <Compile Include="FileCodeModel\CodeDomCodeDelegate.cs" />
+    <Compile Include="FileCodeModel\CodeDomCodeElement.cs" />
+    <Compile Include="FileCodeModel\CodeDomCodeElements.cs" />
+    <Compile Include="FileCodeModel\CodeDomCodeEnum.cs" />
+    <Compile Include="FileCodeModel\CodeDomCodeFunction.cs" />
+    <Compile Include="FileCodeModel\CodeDomCodeInterface.cs" />
+    <Compile Include="FileCodeModel\CodeDomCodeNamespace.cs" />
+    <Compile Include="FileCodeModel\CodeDomCodeParameter.cs" />
+    <Compile Include="FileCodeModel\CodeDomCodeProperty.cs" />
+    <Compile Include="FileCodeModel\CodeDomCodeStruct.cs" />
+    <Compile Include="FileCodeModel\CodeDomCodeType.cs" />
+    <Compile Include="FileCodeModel\CodeDomCodeTypeRef.cs" />
+    <Compile Include="FileCodeModel\CodeDomCodeVariable.cs" />
+    <Compile Include="FileCodeModel\FileCodeMerger.cs" />
+    <Compile Include="FileCodeModel\FileCodeModel.cs" />
+    <Compile Include="FileCodeModel\FoxProCodeModel.cs" />
+    <Compile Include="FileCodeModel\FoxProCodeModelFactory.cs" />
+    <Compile Include="FileCodeModel\SimpleCodeElement.cs" />
+    <Compile Include="FileCodeModel\StringMerger.cs" />
+    <Compile Include="FileCodeModel\TextBufferMerger.cs" />
+    <Compile Include="FileCodeModel\TextPoint.cs" />
+    <Compile Include="HierarchyListener.cs" />
+    <Compile Include="Library.cs" />
+    <Compile Include="LibraryNode.cs" />
+    <Compile Include="FoxProColorableItem.cs" />
+    <Compile Include="FoxProConstants.cs" />
+    <Compile Include="FoxProDeclarations.cs" />
+    <Compile Include="FoxProLanguage.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="FoxProLibraryManager.cs" />
+    <Compile Include="FoxProLibraryNode.cs" />
+    <Compile Include="FoxProMethods.cs" />
+    <Compile Include="FoxProModuleId.cs" />
+    <Compile Include="FoxProPackage.cs" />
+    <Compile Include="FoxProScanner.cs" />
+    <Compile Include="FoxProScope.cs" />
+    <Compile Include="FoxProSink.cs" />
+    <Compile Include="FoxProSource.cs" />
+    <Compile Include="FoxProViewFilter.cs" />
+    <Compile Include="RegisterSnippetsAttribute.cs" />
+    <Compile Include="Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="SnippetsEnumerator.cs" />
+    <Compile Include="TextLineEventListener.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources.resx">
+      <SubType>Designer</SubType>
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="CodeSnippets\SnippetsIndex.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="CodeSnippets\Snippets\class.snippet">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="CodeSnippets\Snippets\ctor.snippet">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="CodeSnippets\Snippets\else.snippet">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="CodeSnippets\Snippets\for.snippet">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="CodeSnippets\Snippets\if.snippet">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="CodeSnippets\Snippets\while.snippet">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="VisualFoxpro">
+      <Guid>{002D2B11-C1FA-4193-B134-D86EAECC5250}</Guid>
+      <VersionMajor>9</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+    </COMReference>
+  </ItemGroup>
+  <PropertyGroup>
+    <TargetRegistryRoot Condition=" '$(TargetRegistryRoot)' == '' ">Software\Microsoft\VisualStudio\9.0Exp</TargetRegistryRoot>
+    <RegisterOutputPackage Condition="'$(RegisterOutputPackage)' == ''">true</RegisterOutputPackage>
+    <RegisterWithCodebase>true</RegisterWithCodebase>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Condition="Exists('$(MSBuildProjectDirectory)\..\..\..\Tools\Build\Microsoft.VsSDK.targets')" Project="$(MSBuildProjectDirectory)\..\..\..\Tools\Build\Microsoft.VsSDK.targets" />
+</Project>

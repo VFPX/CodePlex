@@ -1,0 +1,165 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="2.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <ProductVersion>9.0.20706</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{16041FE4-7A5D-4DFD-9A79-A92B6A81E291}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <NoStandardLibraries>false</NoStandardLibraries>
+    <AssemblyName>FoxProProject</AssemblyName>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <Optimize>false</Optimize>
+    <OutputPath>..\bin\Debug\</OutputPath>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <WarningLevel>4</WarningLevel>
+    <IncrementalBuild>false</IncrementalBuild>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NoWarn>414</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>false</DebugSymbols>
+    <Optimize>true</Optimize>
+    <OutputPath>..\bin\Release\</OutputPath>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+    <DefineConstants>TRACE</DefineConstants>
+    <WarningLevel>4</WarningLevel>
+    <IncrementalBuild>false</IncrementalBuild>
+    <NoWarn>414</NoWarn>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="EnvDTE" />
+    <Reference Include="EnvDTE80" />
+    <Reference Include="FoxPro" />
+    <Reference Include="Microsoft.Windows.Design.Host" />
+    <Reference Include="Microsoft.Windows.Design.Interaction" />
+    <Reference Include="Microsoft.VisualStudio.Designer.Interfaces" />
+    <Reference Include="Microsoft.VisualStudio.OLE.Interop" />
+    <Reference Include="Microsoft.VisualStudio.Package.LanguageService.9.0" />
+    <Reference Include="Microsoft.VisualStudio.Shell.9.0" />
+    <Reference Include="Microsoft.VisualStudio.Shell.Interop" />
+    <Reference Include="Microsoft.VisualStudio.Shell.Interop.8.0" />
+    <Reference Include="Microsoft.VisualStudio.Shell.Interop.9.0" />
+    <Reference Include="Microsoft.VisualStudio.TextManager.Interop" />
+    <Reference Include="Microsoft.VisualStudio.TextManager.Interop.8.0" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="VSLangProj" />
+  </ItemGroup>
+  <PropertyGroup>
+    <VSSDKCSharpIncPath>$(MSBuildProjectDirectory)\..\SDK\Common\Source\CSharp</VSSDKCSharpIncPath>
+    <CommonRegAttributes>$(VSSDKCSharpIncPath)\RegistrationAttributes</CommonRegAttributes>
+    <ProjectBasePath>$(VSSDKCSharpIncPath)\Project</ProjectBasePath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(CommonRegAttributes)\ProvideMSBuildTargetAttribute.cs">
+      <Link>RegistrationAttributes\ProvideMSBuildTargetAttribute.cs</Link>
+    </Compile>
+    <Compile Include="AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Automation.cs" />
+    <Compile Include="ConfigurationPropertyPages.cs" />
+    <Compile Include="EditorFactory.cs" />
+    <Compile Include="PropertyPages.cs" />
+    <Compile Include="FoxProConfigProvider.cs" />
+    <Compile Include="FoxProFileNode.cs" />
+    <Compile Include="FoxProFileNodeProperties.cs" />
+    <Compile Include="FoxProMenus.cs" />
+    <Compile Include="FoxProProject.cs" />
+    <Compile Include="FoxProProjectNodeProperties.cs" />
+    <Compile Include="ProjectDocumentsListenerForMainFileUpdates.cs" />
+    <Compile Include="Resources.cs" />
+    <Compile Include="SelectionElementValueChangedListener.cs" />
+    <Compile Include="VSMDFoxProProvider.cs" />
+    <Compile Include="$(CommonRegAttributes)\SingleFileGeneratorSupportRegistrationAttribute.cs">
+      <Link>RegistrationAttributes\SingleFileGeneratorSupportRegistrationAttribute.cs</Link>
+      <Visible>true</Visible>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <VSCTCompile Include="PkgCmd.vsct">
+      <ResourceName>1000</ResourceName>
+    </VSCTCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources.resx">
+      <MergeWithCTO>true</MergeWithCTO>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ZipItem Include="Templates\ProjectItems\Class\__TemplateIcon.ico" />
+    <None Include="Templates\ProjectItems\Class\Class.prg" />
+    <ZipItem Include="Templates\ProjectItems\Class\FoxPro.vstemplate" />
+    <ZipItem Include="Templates\ProjectItems\ResX\Resource.resX">
+      <SubType>Designer</SubType>
+    </ZipItem>
+    <ZipItem Include="Templates\ProjectItems\ResX\Resource.vstemplate" />
+    <ZipItem Include="Templates\ProjectItems\ResX\Resource_Resx.ico" />
+    <ZipItem Include="Templates\ProjectItems\Text\Text.ico" />
+    <ZipItem Include="Templates\ProjectItems\Text\TextFile.txt" />
+    <ZipItem Include="Templates\ProjectItems\Text\TextFile.vstemplate" />
+  </ItemGroup>
+  <ItemGroup>
+    <ZipProject Include="Templates\Projects\ClassLibrary\__TemplateIcon.ico">
+      <OutputSubPath>Windows</OutputSubPath>
+    </ZipProject>
+    <None Include="Templates\Projects\ClassLibrary\Class.prg">
+      <OutputSubPath>Windows</OutputSubPath>
+    </None>
+    <ZipProject Include="Templates\Projects\ClassLibrary\IPClassLib.vstemplate">
+      <OutputSubPath>Windows</OutputSubPath>
+    </ZipProject>
+    <ZipProject Include="Templates\Projects\ClassLibrary\FoxProDll.foxproproj">
+      <OutputSubPath>Windows</OutputSubPath>
+    </ZipProject>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\LanguageService\LanguageService.csproj">
+      <Project>{DA16C614-B1B9-42F1-8513-4C9E601041CB}</Project>
+      <Name>LanguageService</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\FoxProImageList.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="VisualFoxpro">
+      <Guid>{002D2B11-C1FA-4193-B134-D86EAECC5250}</Guid>
+      <VersionMajor>9</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+    </COMReference>
+  </ItemGroup>
+  <PropertyGroup>
+    <TargetRegistryRoot Condition=" '$(TargetRegistryRoot)' == '' ">Software\Microsoft\VisualStudio\9.0Exp</TargetRegistryRoot>
+    <RegisterOutputPackage Condition="'$(RegisterOutputPackage)' == ''">true</RegisterOutputPackage>
+    <RegisterWithCodebase>true</RegisterWithCodebase>
+    <VsTemplateLanguage>FoxPro</VsTemplateLanguage>
+  </PropertyGroup>
+  <!-- This imports the files that make up the project base classes. -->
+  <Import Project="$(ProjectBasePath)\ProjectBase.Files" />
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+  <Import Project="..\SDK\Tools\Build\Microsoft.VsSDK.targets" />
+  <ProjectExtensions>
+    <VisualStudio>
+    </VisualStudio>
+  </ProjectExtensions>
+  <Target Name="AfterBuild">
+    <!--Register the Project output folder so the WPF Designer can find the FoxProEventProvider class-->
+    <Exec IgnoreExitCode="true" Command="reg add HKCU\Software\Microsoft\.NETFramework\AssemblyFolders\FoxProProject /f /ve /d &quot;$(TargetDir)\&quot;" />
+  </Target>
+</Project>

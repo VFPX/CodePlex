@@ -1,0 +1,112 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FoxProProject", "Project\FoxProProject.csproj", "{16041FE4-7A5D-4DFD-9A79-A92B6A81E291}"
+	ProjectSection(ProjectDependencies) = postProject
+		{DA16C614-B1B9-42F1-8513-4C9E601041CB} = {DA16C614-B1B9-42F1-8513-4C9E601041CB}
+		{68B54816-884B-48A1-949C-DBBDE2A5C412} = {68B54816-884B-48A1-949C-DBBDE2A5C412}
+		{7C43F9AA-D4EE-40EB-A92A-7723B277F183} = {7C43F9AA-D4EE-40EB-A92A-7723B277F183}
+		{88CAACDB-81E0-4785-8E9F-9BC1AD37997D} = {88CAACDB-81E0-4785-8E9F-9BC1AD37997D}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FoxProCompilerTask", "MSBuildTasks\FoxProCompilerTask.csproj", "{68B54816-884B-48A1-949C-DBBDE2A5C412}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleWindow", "ConsoleWindow\ConsoleWindow.csproj", "{88CAACDB-81E0-4785-8E9F-9BC1AD37997D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{DA16C614-B1B9-42F1-8513-4C9E601041CB} = {DA16C614-B1B9-42F1-8513-4C9E601041CB}
+		{68B54816-884B-48A1-949C-DBBDE2A5C412} = {68B54816-884B-48A1-949C-DBBDE2A5C412}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Interfaces", "Interfaces\Interfaces.csproj", "{7C43F9AA-D4EE-40EB-A92A-7723B277F183}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LanguageService", "LanguageService\LanguageService.csproj", "{DA16C614-B1B9-42F1-8513-4C9E601041CB}"
+EndProject
+Global
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 6
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = https://tfs01.codeplex.com/
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = ConsoleWindow\\ConsoleWindow.csproj
+		SccProjectName1 = ConsoleWindow
+		SccLocalPath1 = ConsoleWindow
+		SccProjectUniqueName2 = Interfaces\\Interfaces.csproj
+		SccProjectName2 = Interfaces
+		SccLocalPath2 = Interfaces
+		SccProjectUniqueName3 = LanguageService\\LanguageService.csproj
+		SccProjectName3 = LanguageService
+		SccLocalPath3 = LanguageService
+		SccProjectUniqueName4 = MSBuildTasks\\FoxProCompilerTask.csproj
+		SccProjectName4 = MSBuildTasks
+		SccLocalPath4 = MSBuildTasks
+		SccProjectUniqueName5 = Project\\FoxProProject.csproj
+		SccProjectName5 = Project
+		SccLocalPath5 = Project
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|Mixed Platforms = Debug|Mixed Platforms
+		Debug|Win32 = Debug|Win32
+		Release|Any CPU = Release|Any CPU
+		Release|Mixed Platforms = Release|Mixed Platforms
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{16041FE4-7A5D-4DFD-9A79-A92B6A81E291}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{16041FE4-7A5D-4DFD-9A79-A92B6A81E291}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{16041FE4-7A5D-4DFD-9A79-A92B6A81E291}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{16041FE4-7A5D-4DFD-9A79-A92B6A81E291}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{16041FE4-7A5D-4DFD-9A79-A92B6A81E291}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{16041FE4-7A5D-4DFD-9A79-A92B6A81E291}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{16041FE4-7A5D-4DFD-9A79-A92B6A81E291}.Release|Any CPU.Build.0 = Release|Any CPU
+		{16041FE4-7A5D-4DFD-9A79-A92B6A81E291}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{16041FE4-7A5D-4DFD-9A79-A92B6A81E291}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{16041FE4-7A5D-4DFD-9A79-A92B6A81E291}.Release|Win32.ActiveCfg = Release|Any CPU
+		{68B54816-884B-48A1-949C-DBBDE2A5C412}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{68B54816-884B-48A1-949C-DBBDE2A5C412}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{68B54816-884B-48A1-949C-DBBDE2A5C412}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{68B54816-884B-48A1-949C-DBBDE2A5C412}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{68B54816-884B-48A1-949C-DBBDE2A5C412}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{68B54816-884B-48A1-949C-DBBDE2A5C412}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{68B54816-884B-48A1-949C-DBBDE2A5C412}.Release|Any CPU.Build.0 = Release|Any CPU
+		{68B54816-884B-48A1-949C-DBBDE2A5C412}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{68B54816-884B-48A1-949C-DBBDE2A5C412}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{68B54816-884B-48A1-949C-DBBDE2A5C412}.Release|Win32.ActiveCfg = Release|Any CPU
+		{88CAACDB-81E0-4785-8E9F-9BC1AD37997D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{88CAACDB-81E0-4785-8E9F-9BC1AD37997D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{88CAACDB-81E0-4785-8E9F-9BC1AD37997D}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{88CAACDB-81E0-4785-8E9F-9BC1AD37997D}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{88CAACDB-81E0-4785-8E9F-9BC1AD37997D}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{88CAACDB-81E0-4785-8E9F-9BC1AD37997D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{88CAACDB-81E0-4785-8E9F-9BC1AD37997D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{88CAACDB-81E0-4785-8E9F-9BC1AD37997D}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{88CAACDB-81E0-4785-8E9F-9BC1AD37997D}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{88CAACDB-81E0-4785-8E9F-9BC1AD37997D}.Release|Win32.ActiveCfg = Release|Any CPU
+		{7C43F9AA-D4EE-40EB-A92A-7723B277F183}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7C43F9AA-D4EE-40EB-A92A-7723B277F183}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7C43F9AA-D4EE-40EB-A92A-7723B277F183}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{7C43F9AA-D4EE-40EB-A92A-7723B277F183}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{7C43F9AA-D4EE-40EB-A92A-7723B277F183}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{7C43F9AA-D4EE-40EB-A92A-7723B277F183}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7C43F9AA-D4EE-40EB-A92A-7723B277F183}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7C43F9AA-D4EE-40EB-A92A-7723B277F183}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{7C43F9AA-D4EE-40EB-A92A-7723B277F183}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{7C43F9AA-D4EE-40EB-A92A-7723B277F183}.Release|Win32.ActiveCfg = Release|Any CPU
+		{DA16C614-B1B9-42F1-8513-4C9E601041CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA16C614-B1B9-42F1-8513-4C9E601041CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DA16C614-B1B9-42F1-8513-4C9E601041CB}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{DA16C614-B1B9-42F1-8513-4C9E601041CB}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{DA16C614-B1B9-42F1-8513-4C9E601041CB}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{DA16C614-B1B9-42F1-8513-4C9E601041CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DA16C614-B1B9-42F1-8513-4C9E601041CB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DA16C614-B1B9-42F1-8513-4C9E601041CB}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{DA16C614-B1B9-42F1-8513-4C9E601041CB}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{DA16C614-B1B9-42F1-8513-4C9E601041CB}.Release|Win32.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+		DebugSamples90.Connect = 1;Configure Project for VSIP Experimental Environment;ConfigVSIPDebug
+	EndGlobalSection
+EndGlobal
