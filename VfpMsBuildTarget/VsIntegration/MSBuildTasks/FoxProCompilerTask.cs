@@ -48,54 +48,33 @@ namespace VFPX.FoxProIntegration.FoxProTasks
 			set { sourceFiles = value; }
 		}
 
-		private string outputAssembly;
+		private string outputBinary;
 		/// <summary>
 		/// Output Assembly (including extension)
 		/// </summary>
 		[Required()]
-		public string OutputAssembly
+		public string OutputBinary
 		{
-			get { return outputAssembly; }
-			set { outputAssembly = value; }
+			get { return outputBinary; }
+			set { outputBinary = value; }
 		}
 
-		private ITaskItem[] referencedAssemblies = new ITaskItem[0];
+		private ITaskItem[] referencedBinaries = new ITaskItem[0];
 		/// <summary>
-		/// List of dependent assemblies
+		/// List of dependent binaries (fll, dll)
 		/// </summary>
-		public ITaskItem[] ReferencedAssemblies
+		public ITaskItem[] ReferencedBinaries
 		{
-			get { return referencedAssemblies; }
+			get { return referencedBinaries; }
 			set
 			{
 				if (value != null)
 				{
-					referencedAssemblies = value;
+					referencedBinaries = value;
 				}
 				else
 				{
-					referencedAssemblies = new ITaskItem[0];
-				}
-
-			}
-		}
-
-		private ITaskItem[] resourceFiles = new ITaskItem[0];
-		/// <summary>
-		/// List of resource files
-		/// </summary>
-		public ITaskItem[] ResourceFiles
-		{
-			get { return resourceFiles; }
-			set
-			{
-				if (value != null)
-				{
-					resourceFiles = value;
-				}
-				else
-				{
-					resourceFiles = new ITaskItem[0];
+					referencedBinaries = new ITaskItem[0];
 				}
 
 			}
@@ -114,8 +93,7 @@ namespace VFPX.FoxProIntegration.FoxProTasks
 
 		private string targetKind;
 		/// <summary>
-		/// Target type (exe, winexe, library)
-		/// These will be mapped to System.Reflection.Emit.PEFileKinds
+		/// Target type (exe, dll)
 		/// </summary>
 		public string TargetKind
 		{
@@ -170,9 +148,9 @@ namespace VFPX.FoxProIntegration.FoxProTasks
 			if (compiler == null)
 			{
 				if (UseExperimentalCompiler)
-					compiler = new ExperimentalCompiler(new List<string>(this.SourceFiles), this.OutputAssembly, errorSink);
+					compiler = new ExperimentalCompiler(new List<string>(this.SourceFiles), this.OutputBinary, errorSink);
 				else
-					compiler = new Compiler(new List<string>(this.SourceFiles), this.OutputAssembly, errorSink);
+					compiler = new Compiler(new List<string>(this.SourceFiles), this.OutputBinary, errorSink);
 			}
 
 			if (!InitializeCompiler())
@@ -194,12 +172,12 @@ namespace VFPX.FoxProIntegration.FoxProTasks
 			{
 				case "exe":
 					{
-						compiler.TargetKind = System.Reflection.Emit.PEFileKinds.ConsoleApplication;
+            compiler.TargetKind = TargetKind;
 						break;
 					}
-				case "library":
+				case "dll":
 					{
-						compiler.TargetKind = System.Reflection.Emit.PEFileKinds.Dll;
+            compiler.TargetKind = TargetKind;
 						break;
 					}
 				default:
@@ -215,38 +193,12 @@ namespace VFPX.FoxProIntegration.FoxProTasks
 			compiler.SourceFiles = new List<string>(this.SourceFiles);
 
 			// References require a bit more work since our compiler expects us to pass the Assemblies (and not just paths)
-			compiler.ReferencedAssemblies = new List<string>();
+			compiler.ReferencedBinaries = new List<string>();
 
-			foreach (ITaskItem assemblyReference in this.ReferencedAssemblies)
+			foreach (ITaskItem assemblyReference in this.ReferencedBinaries)
 			{
-				compiler.ReferencedAssemblies.Add(assemblyReference.ItemSpec);
+				compiler.ReferencedBinaries.Add(assemblyReference.ItemSpec);
 			}
-
-			// Add each resource
-			List<FoxPro.Hosting.ResourceFile> resourcesList = new List<FoxPro.Hosting.ResourceFile>();
-			
-            foreach (ITaskItem resource in this.ResourceFiles)
-			{
-				bool publicVisibility = true;
-				
-                string access = resource.GetMetadata("Access");
-				
-                if (String.CompareOrdinal("Private", access) == 0)
-					publicVisibility = false;
-				
-                string filename = resource.ItemSpec;
-				
-                string logicalName = resource.GetMetadata("LogicalName");
-				
-                if (String.IsNullOrEmpty(logicalName))
-					logicalName = Path.GetFileName(resource.ItemSpec);
-
-				FoxPro.Hosting.ResourceFile resourceFile = new FoxPro.Hosting.ResourceFile(logicalName, filename, publicVisibility);
-				
-                resourcesList.Add(resourceFile);
-			}
-			compiler.ResourceFiles = resourcesList;
-
 			return true;
 		}
 	}
