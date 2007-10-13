@@ -1,0 +1,519 @@
+SCCTEXT Version 4.0.0.2
+PLATFORM C(8,0),UNIQUEID C(10,0),TIMESTAMP N(10,0),CLASS M(4,0),CLASSLOC M(4,0),BASECLASS M(4,0),OBJNAME M(4,0),PARENT M(4,0),PROPERTIES M(4,0),PROTECTED M(4,0),METHODS M(4,0),OBJCODE M(4,0),OLE M(4,0),OLE2 M(4,0),RESERVED1 M(4,0),RESERVED2 M(4,0),RESERVED3 M(4,0),RESERVED4 M(4,0),RESERVED5 M(4,0),RESERVED6 M(4,0),RESERVED7 M(4,0),RESERVED8 M(4,0),USER M(4,0)
+1252
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] Screen    
+[START RESERVED1]
+VERSION =   3.00[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _25V0MBNUZ
+[CLASS] dataenvironment
+[BASECLASS] dataenvironment
+[OBJNAME] Dataenvironment
+[START PROPERTIES]
+Top = 220
+Left = 1
+Width = 520
+Height = 200
+DataSource = .NULL.
+Name = "Dataenvironment"
+[END PROPERTIES]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED4]
+1[END RESERVED4]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _25V0MBNV0
+[CLASS] form
+[BASECLASS] form
+[OBJNAME] Form1
+[START PROPERTIES]
+Top = 8
+Left = 12
+Height = 339
+Width = 594
+DoCreate = .T.
+ShowTips = .T.
+Caption = "Table Design Center "
+tdxcount = 1
+Name = "Form1"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+Local cRoot,cProc
+cRoot = justpath( justpath(sys(1271,this)) )    &&This Form resides under .\forms
+
+cProc=Set('PROCEDURE')
+
+If !'TABLE_MANAGER'$cProc
+  set procedure to ( cRoot + '\progs\table_manager.prg' )  additive
+endif
+
+=TdxSetup(cRoot)
+
+*** Srdjan Djordjevic 03 oct 2007
+thisform.ComboRecent.clear()
+oTDXLOG.populate_combo_recent(thisform.ComboRecent)
+
+thisform.TDXList.init
+thisform.refresh
+
+ENDPROC
+PROCEDURE QueryUnload
+*** Srdjan Djordjevic 08 oct 2007
+thisform.CloseAllTdxSessions()
+ENDPROC
+PROCEDURE closealltdxsessions
+*** Srdjan Djordjevic 08 oct 2007
+local oTDX
+for i=1 to alen(thisform.aTDX,1)
+    oTDX=thisform.aTDX(i,2)
+    if type('oTDX.Name') ='C'
+        oTdx.ReleaseOpenForms()
+    endif
+next
+
+if type('oTDXLOG.NAME') ='C'
+    oTDXLOG=.f.
+    release oTDXLOG
+endif
+
+ENDPROC
+PROCEDURE list_rclick
+lparameters cAction
+MessageBox('['+cAction+']' + ' On Right Click - Under Construction')
+
+
+
+ENDPROC
+PROCEDURE modify_structure
+LPARAMETERS cTable
+local oTDX,  nCount, lFound
+
+IF VARTYPE(cTable) <> 'C'
+    cTable = getfile('dbf')
+endif
+
+if empty(cTable)
+   return
+endif
+
+    *** BYN 27/08/2007 added logic to check for existance of table
+    ***                name in the list if so just open it
+    lFound = .f.
+
+    for nCount = 1 to thisform.TDXList.listcount
+
+        *** BYN 27/08/2007 compare table pathname
+        if lower(thisform.aTDX[nCount, 1]) = lower(cTable)
+            oTDX=thisform.aTDX[nCount,2]
+
+
+
+            if type('oTDX.oFrontForm.name') = 'C'
+                *** BYN 27/08/2007 if tdx session is open
+                oTDX.oFrontForm.windowstate=0
+                oTDX.oFrontForm.Pageframe1.Page1.TableFieldsGrid.setfocus()
+            else
+
+                *** BYN 27/08/2007 else modify in a tdx session
+                oTDX.modify_structure()
+
+            endif
+
+            lFound = .t.
+        endif
+
+    endfor
+
+
+    *** BYN 27/08/2007 a new table name selected
+    if !lFound
+
+        oTDX = thisform.register_tdx_session(cTable)  &&Centralised object creation
+        If Type('oTdx') = 'O'
+           thisform.TDXList.additem(proper(cTable))
+           oTDX.modify_structure()
+        endif
+
+    endif
+
+
+ENDPROC
+PROCEDURE register_tdx_session
+lparameters cTable
+
+local oTdx
+oTdx=createobject('TableDesignerX',cTable) && Create instance of TableDesigner Object
+
+If Type('oTDX') = 'O'
+   thisform.aTDX(thisform.tdxcount,1) = cTable  && Table Name
+   thisform.aTDX(thisform.tdxcount,2) = oTdx    && Store Object reference to array element
+   thisform.tdxcount=thisform.tdxcount+1
+   return oTdx
+endif
+Return .f.
+
+ENDPROC
+[END METHODS]
+[START RESERVED3]
+tdxcount TDX Counter 
+^atdx[100,3] Array Holding references to TDX session objects
+*list_rclick List Right Click Handler
+*register_tdx_session Create & Register TDX Object 
+*modify_structure Start New Modify Table Session
+*closealltdxsessions Close All Open  Table Modificattion sessions
+[END RESERVED3]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2740UFSK0
+[CLASS] shape
+[BASECLASS] shape
+[OBJNAME] Shape2
+[PARENT] Form1
+[START PROPERTIES]
+Top = 68
+Left = 0
+Height = 269
+Width = 592
+SpecialEffect = 0
+Name = "Shape2"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _25V0MBNUZ
+[CLASS] shape
+[BASECLASS] shape
+[OBJNAME] Shape1
+[PARENT] Form1
+[START PROPERTIES]
+Top = 9
+Left = 0
+Height = 43
+Width = 592
+SpecialEffect = 0
+Name = "Shape1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _25V0MBNUZ
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] ModiStruBttn
+[PARENT] Form1
+[START PROPERTIES]
+Top = 308
+Left = 322
+Height = 22
+Width = 138
+Caption = "Modify Table"
+Name = "ModiStruBttn"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+thisform.modify_structure()
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _25V0NSKEH
+[CLASS] listbox
+[BASECLASS] listbox
+[OBJNAME] TDXList
+[PARENT] Form1
+[START PROPERTIES]
+FontBold = .F.
+FontSize = 9
+Height = 179
+Left = 4
+Top = 125
+Width = 579
+ItemForeColor = 128,0,128
+Name = "TDXList"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+local nCnt,oTdx
+for nCnt = 1 to this.listcount
+
+    if this.selected(nCnt)  && Is item selected?
+        oTdx=thisform.aTdx(nCnt,2)
+
+        if type('oTDX.oFrontForm.name') = 'C'  &&Form is Minimised
+            oTdx.oFrontForm.windowstate=0
+            oTdx.oFrontForm.Pageframe1.Page1.TableFieldsGrid.setfocus()
+        else
+
+            if type('oTdx') <> 'O'
+                oTdx=thisform.register_tdx_session( this.list(nCnt) )
+                oTdx.modify_structure(this.list(nCnt))
+            else
+                &&Session is already active - just show front form
+                oTdx.ShowInterface()
+            ENDIF
+
+        endif
+
+    endif
+
+
+endfor
+
+ENDPROC
+PROCEDURE RightClick
+do .\menus\tdx_list.mpr
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _25V0NYGXY
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] Command2
+[PARENT] Form1
+[START PROPERTIES]
+Top = 308
+Left = 470
+Height = 23
+Width = 112
+Caption = "Close All Sessions"
+Name = "Command2"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+if thisform.tdxcount > 1
+    if !question('Close All Modify Table sessions - Proceed ?')
+        return
+    endif
+endif
+
+thisform.CloseAllTDXSessions()
+
+thisform.release
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _25V0MBNUZ
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] Command3
+[PARENT] Form1
+[START PROPERTIES]
+Top = 308
+Left = 164
+Height = 22
+Width = 135
+Caption = "Create Table "
+Name = "Command3"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+CREATE
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _25V0MBNUZ
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] Command4
+[PARENT] Form1
+[START PROPERTIES]
+Top = 308
+Left = 7
+Height = 22
+Width = 135
+Caption = "Create/Open Database"
+Name = "Command4"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+*** BYN 27/08/2007 made code create / open instead of just create
+
+*** How about two buttons? One for create new database and one for
+*** Opening existing and populating listbox with all tables from there
+*** for easier handling
+*** As it is now is not really functional as you have to trough
+*** get file name dialogs
+*** Srdjan Djordjevic 05 OCT 2007
+
+
+OPEN DATABASE ?
+
+IF EMPTY(DBC())
+	CREATE DATABASE
+ENDIF
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _25V0MBNUZ
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label1
+[PARENT] Form1
+[START PROPERTIES]
+AutoSize = .T.
+Caption = "Database"
+Height = 17
+Left = 6
+Top = 82
+Width = 56
+Name = "Label1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _260138WYJ
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] Text1
+[PARENT] Form1
+[START PROPERTIES]
+FontSize = 8
+FontUnderline = .F.
+Height = 20
+Left = 66
+ReadOnly = .T.
+Top = 79
+Width = 517
+ForeColor = 128,0,128
+Name = "Text1"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Refresh
+*** BYN 27/08/2007 added textbox and label to display database name
+THIS.VALUE = DBC()
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2730QR3HU
+[CLASS] tdxcombo
+[CLASSLOC] ..\libs\tdx_base.vcx
+[BASECLASS] combobox
+[OBJNAME] ComboRecent
+[PARENT] Form1
+[START PROPERTIES]
+ControlSource = "oTdxLog.x_last_edited"
+Height = 22
+Left = 66
+SpecialEffect = 0
+Top = 25
+Width = 517
+BorderStyle = 1
+Name = "ComboRecent"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE DblClick
+if len(alltrim(this.value)) > 0
+    thisform.modify_structure(alltrim(this.value))
+endif
+
+ENDPROC
+PROCEDURE InteractiveChange
+if len(alltrim(this.value)) > 0
+    thisform.modify_structure(alltrim(this.value))
+endif
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _25V0MBNUZ
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label2
+[PARENT] Form1
+[START PROPERTIES]
+AutoSize = .T.
+Caption = "Tables"
+Height = 17
+Left = 8
+Top = 27
+Width = 40
+Name = "Label2"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _25V0MBNUZ
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label3
+[PARENT] Form1
+[START PROPERTIES]
+AutoSize = .F.
+Caption = " Recently Modified"
+Height = 15
+Left = 5
+Top = 2
+Width = 103
+Name = "Label3"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2740UFSK1
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label4
+[PARENT] Form1
+[START PROPERTIES]
+AutoSize = .F.
+Caption = "Currently Modified "
+Height = 15
+Left = 5
+Top = 61
+Width = 105
+Name = "Label4"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2740UFSK2
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label5
+[PARENT] Form1
+[START PROPERTIES]
+AutoSize = .T.
+Caption = "Tables"
+Height = 17
+Left = 5
+Top = 106
+Width = 40
+Name = "Label5"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[START PROPERTIES]
+Arial, 0, 9, 5, 15, 12, 32, 3, 0
+Arial, 0, 8, 5, 14, 11, 29, 3, 0
+[END PROPERTIES]
+[EOF]
