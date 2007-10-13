@@ -1,0 +1,2253 @@
+SCCTEXT Version 4.0.0.2
+PLATFORM C(8,0),UNIQUEID C(10,0),TIMESTAMP N(10,0),CLASS M(4,0),CLASSLOC M(4,0),BASECLASS M(4,0),OBJNAME M(4,0),PARENT M(4,0),PROPERTIES M(4,0),PROTECTED M(4,0),METHODS M(4,0),OBJCODE M(4,0),OLE M(4,0),OLE2 M(4,0),RESERVED1 M(4,0),RESERVED2 M(4,0),RESERVED3 M(4,0),RESERVED4 M(4,0),RESERVED5 M(4,0),RESERVED6 M(4,0),RESERVED7 M(4,0),RESERVED8 M(4,0),USER M(4,0)
+1253
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] Screen    
+[START RESERVED1]
+VERSION =   3.00[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0870OVUEU
+[CLASS] dataenvironment
+[BASECLASS] dataenvironment
+[OBJNAME] Dataenvironment
+[START PROPERTIES]
+Top = 128
+Left = 133
+Width = 523
+Height = 322
+AutoOpenTables = .F.
+AutoCloseTables = .F.
+DataSource = .NULL.
+Name = "Dataenvironment"
+[END PROPERTIES]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED4]
+1[END RESERVED4]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0870OVUEX
+[CLASS] form
+[BASECLASS] form
+[OBJNAME] Form1
+[START PROPERTIES]
+Top = 15
+Left = 32
+Height = 481
+Width = 753
+DoCreate = .T.
+Caption = "TableDesignerX"
+WindowType = 0
+Name = "Form1"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+lParameters oTableManager
+*************************************
+thisform.tablemanager=oTableManager
+thisform.tablemanager.oFrontForm=this
+
+*************************************
+ThisForm.ShowDatabase.controlsource='thisform.tablemanager.x_database'
+ThisForm.ShowTable.controlsource='thisform.tablemanager.x_table'
+*************************************
+
+
+
+ThisForm.Pageframe1.Page1.TableFieldsGrid.setfocus()
+ThisForm.Pageframe1.Page3.lbl_TableReccount.caption=in_brackets(allt(str(thisform.tablemanager.x_reccount)))
+ThisForm.Pageframe1.Page3.lbl_TableFieldsNo.caption=in_brackets(allt(str(thisform.tablemanager.x_fcount)))
+ThisForm.Pageframe1.Page3.lbl_table_len.caption=in_brackets(allt(str(thisform.tablemanager.x_recsize)))
+ThisForm.Pageframe1.Page3.lbl_table_codepage.caption=in_brackets(allt(str(thisform.tablemanager.x_cpdbf)))
+ENDPROC
+PROCEDURE QueryUnload
+thisform.TableManager.ReleaseSubForms()
+
+ENDPROC
+PROCEDURE Refresh
+ogrd=ThisForm.Pageframe1.Page1.TableFieldsGrid
+		oGrd.SetAll("dynamicbackcolor", ;
+			"IIF(table_fields.tdx_stat<>' ',RGB(255,255,0), RGB(255,255,255))", "Column")
+
+ENDPROC
+PROCEDURE getexp_dialog
+lparameters cOldVal
+local cNewVal
+cNewVal=''
+select (thisform.tablemanager.x_alias)
+GETEXPR 'Enter Expression' TO cNewVal
+if !empty(cNewVal)
+   return cNewVal
+   else
+   return cOldVal
+endif
+select table_fields
+
+ENDPROC
+[END METHODS]
+[START RESERVED3]
+tablemanager underlying engine
+*getexp_dialog 
+[END RESERVED3]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _25V0Z8BCS
+[CLASS] shape
+[BASECLASS] shape
+[OBJNAME] Shape1
+[PARENT] Form1
+[START PROPERTIES]
+Top = 411
+Left = 3
+Height = 56
+Width = 748
+SpecialEffect = 0
+Name = "Shape1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0870PEM5N
+[CLASS] pageframe
+[BASECLASS] pageframe
+[OBJNAME] Pageframe1
+[PARENT] Form1
+[START PROPERTIES]
+ErasePage = .T.
+PageCount = 3
+TabStretch = 1
+TabStyle = 1
+Top = 3
+Left = 3
+Width = 748
+Height = 406
+TabIndex = 1
+Name = "Pageframe1"
+Page1.FontBold = .F.
+Page1.Caption = "Fields"
+Page1.ForeColor = 64,0,64
+Page1.Name = "Page1"
+Page2.FontBold = .F.
+Page2.Caption = "Indexes"
+Page2.ForeColor = 0,0,0
+Page2.Name = "Page2"
+Page3.FontBold = .F.
+Page3.Caption = "Table"
+Page3.ForeColor = 0,0,0
+Page3.Name = "Page3"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Page1.Activate
+this.refresh
+
+ENDPROC
+PROCEDURE Page2.Activate
+this.refresh
+
+ENDPROC
+PROCEDURE Page3.Activate
+this.refresh
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0870OVUEU
+[CLASS] shape
+[BASECLASS] shape
+[OBJNAME] Shape1
+[PARENT] Form1.Pageframe1.Page1
+[START PROPERTIES]
+Top = 11
+Left = 491
+Height = 86
+Width = 248
+SpecialEffect = 0
+Name = "Shape1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0870OVUEU
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label1
+[PARENT] Form1.Pageframe1.Page1
+[START PROPERTIES]
+FontSize = 8
+Caption = "Display"
+Height = 17
+Left = 498
+Top = 4
+Width = 43
+TabIndex = 20
+Name = "Label1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0870OVUEX
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label2
+[PARENT] Form1.Pageframe1.Page1
+[START PROPERTIES]
+AutoSize = .T.
+FontSize = 8
+Caption = "Caption"
+Height = 16
+Left = 498
+Top = 23
+Width = 38
+TabIndex = 21
+Name = "Label2"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0870PEM5N
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label3
+[PARENT] Form1.Pageframe1.Page1
+[START PROPERTIES]
+AutoSize = .T.
+FontSize = 8
+Caption = "Input Mask:"
+Height = 16
+Left = 498
+Top = 44
+Width = 56
+TabIndex = 22
+Name = "Label3"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0870OVUEX
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label4
+[PARENT] Form1.Pageframe1.Page1
+[START PROPERTIES]
+AutoSize = .T.
+FontSize = 8
+Caption = "Format"
+Height = 16
+Left = 497
+Top = 66
+Width = 35
+TabIndex = 23
+Name = "Label4"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0870OVUEU
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] Text1
+[PARENT] Form1.Pageframe1.Page1
+[START PROPERTIES]
+FontSize = 8
+ControlSource = "table_fields.field_capt"
+Height = 23
+Left = 574
+TabIndex = 3
+Top = 18
+Width = 132
+Name = "Text1"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE DblClick
+thisform.tablemanager.set_property_all(this.controlsource,'Caption')
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0870OVUEX
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] Text2
+[PARENT] Form1.Pageframe1.Page1
+[START PROPERTIES]
+FontSize = 8
+ControlSource = "table_fields.field_imsk"
+Height = 23
+Left = 574
+TabIndex = 5
+Top = 43
+Width = 132
+Name = "Text2"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE DblClick
+thisform.tablemanager.set_property_all(this.controlsource,'Input Mask')
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0870OVUEV
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] Text3
+[PARENT] Form1.Pageframe1.Page1
+[START PROPERTIES]
+FontSize = 8
+ControlSource = "table_fields.field_FMT"
+Height = 23
+Left = 574
+TabIndex = 7
+Top = 68
+Width = 132
+Name = "Text3"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE DblClick
+thisform.tablemanager.set_property_all(this.controlsource,'Format')
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0870OVUEU
+[CLASS] shape
+[BASECLASS] shape
+[OBJNAME] Shape2
+[PARENT] Form1.Pageframe1.Page1
+[START PROPERTIES]
+Top = 106
+Left = 491
+Height = 86
+Width = 248
+SpecialEffect = 0
+Name = "Shape2"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0870OVUEV
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label5
+[PARENT] Form1.Pageframe1.Page1
+[START PROPERTIES]
+AutoSize = .T.
+FontSize = 8
+Caption = "Field Validation"
+Height = 16
+Left = 498
+Top = 100
+Width = 74
+TabIndex = 24
+Name = "Label5"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0870QZTYJ
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label6
+[PARENT] Form1.Pageframe1.Page1
+[START PROPERTIES]
+AutoSize = .T.
+FontSize = 8
+Caption = "Rule:"
+Height = 16
+Left = 498
+Top = 118
+Width = 26
+TabIndex = 25
+Name = "Label6"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0870QZTYL
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label7
+[PARENT] Form1.Pageframe1.Page1
+[START PROPERTIES]
+AutoSize = .T.
+FontSize = 8
+Caption = "Message:"
+Height = 16
+Left = 498
+Top = 139
+Width = 49
+TabIndex = 26
+Name = "Label7"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _08C1ERHEF
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label8
+[PARENT] Form1.Pageframe1.Page1
+[START PROPERTIES]
+AutoSize = .T.
+FontSize = 8
+Caption = "Default Value:"
+Height = 16
+Left = 497
+Top = 161
+Width = 70
+TabIndex = 27
+Name = "Label8"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _08D02IR8O
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] Text4
+[PARENT] Form1.Pageframe1.Page1
+[START PROPERTIES]
+FontSize = 8
+ControlSource = "table_fields.field_rule"
+Height = 23
+Left = 574
+TabIndex = 9
+Top = 113
+Width = 132
+Name = "Text4"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE DblClick
+thisform.tablemanager.set_property_all(this.controlsource,'Field Rule')
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0870OVUEX
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] Text5
+[PARENT] Form1.Pageframe1.Page1
+[START PROPERTIES]
+FontSize = 8
+ControlSource = "table_fields.field_err"
+Height = 23
+Left = 574
+TabIndex = 11
+Top = 138
+Width = 132
+Name = "Text5"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE DblClick
+thisform.tablemanager.set_property_all(this.controlsource,'Validation Message')
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _08C1ERHEL
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] Text6
+[PARENT] Form1.Pageframe1.Page1
+[START PROPERTIES]
+FontSize = 8
+ControlSource = "table_fields.field_defa"
+Height = 23
+Left = 574
+TabIndex = 13
+Top = 163
+Width = 132
+Name = "Text6"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE DblClick
+thisform.tablemanager.set_property_all(this.controlsource,'Default Value')
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0870OVUEU
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label9
+[PARENT] Form1.Pageframe1.Page1
+[START PROPERTIES]
+AutoSize = .T.
+FontSize = 8
+Caption = "Field Comment:"
+Height = 16
+Left = 493
+Top = 262
+Width = 74
+TabIndex = 28
+Name = "Label9"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _08K07GRVN
+[CLASS] editbox
+[BASECLASS] editbox
+[OBJNAME] Edit1
+[PARENT] Form1.Pageframe1.Page1
+[START PROPERTIES]
+Height = 67
+Left = 491
+TabIndex = 19
+Top = 278
+Width = 248
+ControlSource = "table_fields.field_comm"
+Name = "Edit1"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE DblClick
+thisform.tablemanager.set_property_all(this.controlsource,'Field Comment')
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _08K07GRVP
+[CLASS] shape
+[BASECLASS] shape
+[OBJNAME] Shape3
+[PARENT] Form1.Pageframe1.Page1
+[START PROPERTIES]
+Top = 201
+Left = 491
+Height = 59
+Width = 248
+SpecialEffect = 0
+Name = "Shape3"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0870OVUEX
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label10
+[PARENT] Form1.Pageframe1.Page1
+[START PROPERTIES]
+AutoSize = .T.
+FontSize = 8
+Caption = "Map Field Type to Classes"
+Height = 16
+Left = 499
+Top = 195
+Width = 128
+TabIndex = 29
+Name = "Label10"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0870PEM5N
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label11
+[PARENT] Form1.Pageframe1.Page1
+[START PROPERTIES]
+AutoSize = .T.
+FontSize = 8
+Caption = "Display Library:"
+Height = 16
+Left = 499
+Top = 213
+Width = 77
+TabIndex = 30
+Name = "Label11"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0870OVUEU
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label12
+[PARENT] Form1.Pageframe1.Page1
+[START PROPERTIES]
+AutoSize = .T.
+FontSize = 8
+Caption = "Display Class: "
+Height = 16
+Left = 499
+Top = 234
+Width = 73
+TabIndex = 31
+Name = "Label12"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0870OVUEV
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] Text7
+[PARENT] Form1.Pageframe1.Page1
+[START PROPERTIES]
+FontSize = 8
+ControlSource = "table_fields.field_CLLB"
+Height = 23
+Left = 575
+TabIndex = 15
+Top = 208
+Width = 159
+Name = "Text7"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0870QZTYJ
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] Text8
+[PARENT] Form1.Pageframe1.Page1
+[START PROPERTIES]
+FontSize = 8
+ControlSource = "table_fields.field_CLSS"
+Height = 23
+Left = 575
+TabIndex = 17
+Top = 233
+Width = 132
+Name = "Text8"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0870OVUEU
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] Command1
+[PARENT] Form1.Pageframe1.Page1
+[START PROPERTIES]
+Top = 19
+Left = 710
+Height = 23
+Width = 25
+Caption = "..."
+TabIndex = 4
+TabStop = .F.
+Name = "Command1"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+This.Parent.Text1.value = thisform.getexp_dialog(This.Parent.Text1.value)
+
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _26O1DYDWX
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] Command2
+[PARENT] Form1.Pageframe1.Page1
+[START PROPERTIES]
+Top = 43
+Left = 710
+Height = 23
+Width = 25
+Caption = "..."
+TabIndex = 6
+TabStop = .F.
+Name = "Command2"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+This.Parent.Text2.value = thisform.getexp_dialog(This.Parent.Text2.value)
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0870OVUEX
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] Command3
+[PARENT] Form1.Pageframe1.Page1
+[START PROPERTIES]
+Top = 67
+Left = 710
+Height = 23
+Width = 25
+Caption = "..."
+TabIndex = 8
+TabStop = .F.
+Name = "Command3"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+This.Parent.Text3.value = thisform.getexp_dialog(This.Parent.Text3.value)
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0870OVUEU
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] Command4
+[PARENT] Form1.Pageframe1.Page1
+[START PROPERTIES]
+Top = 114
+Left = 710
+Height = 23
+Width = 25
+Caption = "..."
+TabIndex = 10
+TabStop = .F.
+Name = "Command4"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+This.Parent.Text4.value = thisform.getexp_dialog(This.Parent.Text4.value)
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0870OVUEV
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] Command5
+[PARENT] Form1.Pageframe1.Page1
+[START PROPERTIES]
+Top = 138
+Left = 710
+Height = 23
+Width = 25
+Caption = "..."
+TabIndex = 12
+TabStop = .F.
+Name = "Command5"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+This.Parent.Text5.value = thisform.getexp_dialog(This.Parent.Text5.value)
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0870QZTYJ
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] Command6
+[PARENT] Form1.Pageframe1.Page1
+[START PROPERTIES]
+Top = 162
+Left = 710
+Height = 23
+Width = 25
+Caption = "..."
+TabIndex = 14
+TabStop = .F.
+Name = "Command6"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+This.Parent.Text6.value = thisform.getexp_dialog(This.Parent.Text6.value)
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0870OVUEX
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] Command8
+[PARENT] Form1.Pageframe1.Page1
+[START PROPERTIES]
+Top = 233
+Left = 710
+Height = 23
+Width = 25
+Caption = "..."
+TabIndex = 18
+TabStop = .F.
+Name = "Command8"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+LOCAL aClassLib(2)  && Create an array, initialized to .F.
+cCurrentDir = CURDIR( )  && Save the current directory
+AGETCLASS(aClassLib)
+CD (cCurrentDir)  && Switch to the previous directory
+if type('aClassLib(2)') ='C'
+This.Parent.Text7.value =aClassLib(1)
+This.Parent.Text8.value =aClassLib(2)
+endif
+
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _26O1CU9KO
+[CLASS] grid
+[BASECLASS] grid
+[OBJNAME] TableFieldsGrid
+[PARENT] Form1.Pageframe1.Page1
+[START PROPERTIES]
+ColumnCount = 5
+FontBold = .F.
+FontName = "Arial"
+FontSize = 8
+AllowAddNew = .T.
+DeleteMark = .F.
+GridLines = 2
+HeaderHeight = 24
+Height = 334
+Left = 3
+Panel = 1
+RecordMark = .T.
+RecordSource = "table_fields"
+RowHeight = 20
+ScrollBars = 2
+TabIndex = 1
+Top = 11
+Width = 482
+ForeColor = 0,0,0
+GridLineColor = 192,192,192
+Name = "TableFieldsGrid"
+Column1.FontBold = .F.
+Column1.FontName = "Arial"
+Column1.FontSize = 8
+Column1.ControlSource = "table_fields.field_name"
+Column1.Width = 96
+Column1.ForeColor = 0,0,0
+Column1.Name = "Column2"
+Column2.FontBold = .F.
+Column2.FontName = "Arial"
+Column2.FontSize = 8
+Column2.ControlSource = "table_fields.field_tyds"
+Column2.Width = 91
+Column2.ForeColor = 0,0,0
+Column2.Name = "Column3"
+Column3.FontBold = .F.
+Column3.FontName = "Arial"
+Column3.FontSize = 8
+Column3.ControlSource = "table_fields.field_len"
+Column3.Width = 45
+Column3.ForeColor = 0,0,0
+Column3.Name = "Column4"
+Column4.FontBold = .F.
+Column4.FontName = "Arial"
+Column4.FontSize = 8
+Column4.ControlSource = "table_fields.field_dec"
+Column4.Width = 44
+Column4.ForeColor = 0,0,0
+Column4.Name = "Column5"
+Column5.FontBold = .F.
+Column5.FontName = "Arial"
+Column5.FontSize = 8
+Column5.ControlSource = "table_fields.field_null"
+Column5.CurrentControl = "Check1"
+Column5.Width = 16
+Column5.Sparse = .F.
+Column5.ForeColor = 0,0,0
+Column5.Name = "Column6"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE AfterRowColChange
+LPARAMETERS nColIndex
+thisform.lockscreen=.t.
+This.Parent.Text1.refresh
+This.Parent.Text2.refresh
+This.Parent.Text3.refresh
+This.Parent.Text4.refresh
+This.Parent.Text5.refresh
+This.Parent.Text6.refresh
+This.Parent.Text7.refresh
+This.Parent.Text8.refresh
+This.Parent.Edit1.refresh
+thisform.lockscreen=.f.
+
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _26O1CU9KR
+[CLASS] header
+[BASECLASS] header
+[OBJNAME] Header1
+[PARENT] Form1.Pageframe1.Page1.TableFieldsGrid.Column2
+[START PROPERTIES]
+FontBold = .F.
+FontName = "Arial"
+FontSize = 8
+Caption = "Field"
+Name = "Header1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _26O1CU9KS
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] Text1
+[PARENT] Form1.Pageframe1.Page1.TableFieldsGrid.Column2
+[START PROPERTIES]
+FontBold = .F.
+FontName = "Arial"
+FontSize = 8
+BorderStyle = 0
+Margin = 0
+ForeColor = 0,0,0
+BackColor = 255,255,255
+Name = "Text1"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Valid
+thisform.tablemanager.UpdateChangeStatus()
+RETURN .t.
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _26O1CU9KT
+[CLASS] header
+[BASECLASS] header
+[OBJNAME] Header1
+[PARENT] Form1.Pageframe1.Page1.TableFieldsGrid.Column3
+[START PROPERTIES]
+FontBold = .F.
+FontName = "Arial"
+FontSize = 8
+Caption = "Type"
+Name = "Header1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2720NKA01
+[CLASS] tdxcombo
+[CLASSLOC] ..\libs\tdx_base.vcx
+[BASECLASS] combobox
+[OBJNAME] Tdxcombo1
+[PARENT] Form1.Pageframe1.Page1.TableFieldsGrid.Column3
+[START PROPERTIES]
+FontBold = .F.
+ColumnCount = 0
+ColumnWidths = ""
+RowSourceType = 6
+RowSource = "fieldtypes.field_tyds"
+ControlSource = "Table_fields.Field_tyds"
+FirstElement = 1
+Height = 19
+Left = 276
+NumberOfElements = 0
+Top = 477
+Width = 100
+Name = "Tdxcombo1"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Valid
+thisform.tablemanager.UpdateChangeStatus()
+RETURN .t.
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _26O1CU9KV
+[CLASS] header
+[BASECLASS] header
+[OBJNAME] Header1
+[PARENT] Form1.Pageframe1.Page1.TableFieldsGrid.Column4
+[START PROPERTIES]
+FontBold = .F.
+FontName = "Arial"
+FontSize = 8
+Caption = "Lenght"
+Name = "Header1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _26O1DYDXD
+[CLASS] tdxspinner
+[CLASSLOC] ..\libs\tdx_base.vcx
+[BASECLASS] spinner
+[OBJNAME] fldLen
+[PARENT] Form1.Pageframe1.Page1.TableFieldsGrid.Column4
+[START PROPERTIES]
+FontBold = .F.
+Height = 24
+KeyboardHighValue = 255
+KeyboardLowValue = 0
+Left = 765
+SpinnerHighValue = 255.00
+SpinnerLowValue =   0.00
+Top = 152
+Width = 63
+ControlSource = "table_fields.field_len"
+Name = "fldLen"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Valid
+thisform.tablemanager.UpdateChangeStatus()
+RETURN .t.
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _26O1CU9KX
+[CLASS] header
+[BASECLASS] header
+[OBJNAME] Header1
+[PARENT] Form1.Pageframe1.Page1.TableFieldsGrid.Column5
+[START PROPERTIES]
+FontBold = .F.
+FontName = "Arial"
+FontSize = 8
+Caption = "Dec."
+Name = "Header1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _26O1E4GCN
+[CLASS] tdxspinner
+[CLASSLOC] ..\libs\tdx_base.vcx
+[BASECLASS] spinner
+[OBJNAME] flddec
+[PARENT] Form1.Pageframe1.Page1.TableFieldsGrid.Column5
+[START PROPERTIES]
+FontBold = .F.
+Height = 19
+KeyboardHighValue = 14
+KeyboardLowValue = 0
+Left = 778
+SpinnerHighValue =  14.00
+SpinnerLowValue =   0.00
+Top = 230
+Width = 53
+ControlSource = "table_fields.field_dec"
+Name = "flddec"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Valid
+thisform.tablemanager.UpdateChangeStatus()
+RETURN .t.
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _26O1CU9KZ
+[CLASS] header
+[BASECLASS] header
+[OBJNAME] Header1
+[PARENT] Form1.Pageframe1.Page1.TableFieldsGrid.Column6
+[START PROPERTIES]
+FontBold = .F.
+FontName = "Arial"
+FontSize = 8
+Caption = "Null"
+Name = "Header1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _26O1CU9L0
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] Text1
+[PARENT] Form1.Pageframe1.Page1.TableFieldsGrid.Column6
+[START PROPERTIES]
+BorderStyle = 0
+Margin = 0
+ForeColor = 0,0,0
+BackColor = 255,255,255
+Name = "Text1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _26O1CU9L1
+[CLASS] checkbox
+[BASECLASS] checkbox
+[OBJNAME] Check1
+[PARENT] Form1.Pageframe1.Page1.TableFieldsGrid.Column6
+[START PROPERTIES]
+FontBold = .F.
+FontName = "Arial"
+FontSize = 8
+Alignment = 0
+Caption = ""
+Visible = .T.
+Name = "Check1"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Valid
+thisform.tablemanager.UpdateChangeStatus()
+RETURN .t.
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0870OVUEU
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] InsertBttn
+[PARENT] Form1.Pageframe1.Page1
+[START PROPERTIES]
+Top = 347
+Left = 14
+Height = 23
+Width = 65
+Caption = "Insert"
+TabIndex = 6
+TabStop = .F.
+Name = "InsertBttn"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+thisform.tablemanager.add_field()
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _26O1FDIMW
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] RemoveBttn
+[PARENT] Form1.Pageframe1.Page1
+[START PROPERTIES]
+Top = 347
+Left = 84
+Height = 23
+Width = 64
+Caption = "Remove "
+TabIndex = 8
+TabStop = .F.
+Name = "RemoveBttn"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+thisform.tablemanager.remove_field()
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0870OVUEU
+[CLASS] grid
+[BASECLASS] grid
+[OBJNAME] tableIndexesGrid
+[PARENT] Form1.Pageframe1.Page2
+[START PROPERTIES]
+ColumnCount = 6
+FontBold = .F.
+DeleteMark = .F.
+GridLines = 2
+Height = 324
+Left = 11
+Panel = 1
+RecordSource = "table_indexes"
+ScrollBars = 2
+TabIndex = 1
+Top = 8
+Width = 471
+ForeColor = 0,0,0
+GridLineColor = 192,192,192
+Name = "tableIndexesGrid"
+Column1.FontBold = .F.
+Column1.ControlSource = "table_indexes.xtagno"
+Column1.Width = 28
+Column1.ForeColor = 0,0,0
+Column1.Name = "Column1"
+Column2.FontBold = .F.
+Column2.ControlSource = "table_indexes.xtagname"
+Column2.Width = 102
+Column2.ForeColor = 0,0,0
+Column2.Name = "Column2"
+Column3.FontBold = .F.
+Column3.ControlSource = "table_indexes.xtagtype"
+Column3.Width = 60
+Column3.ForeColor = 0,0,0
+Column3.Name = "Column3"
+Column4.FontBold = .F.
+Column4.ControlSource = "table_indexes.xtagexp"
+Column4.Width = 117
+Column4.ForeColor = 0,0,0
+Column4.Name = "Column4"
+Column5.FontBold = .F.
+Column5.ControlSource = "table_indexes.xtagfilter"
+Column5.Width = 83
+Column5.ForeColor = 0,0,0
+Column5.Name = "Column5"
+Column6.FontBold = .F.
+Column6.ControlSource = "table_indexes.xtagasc"
+Column6.Width = 40
+Column6.ForeColor = 0,0,0
+Column6.Name = "Column6"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE AfterRowColChange
+LPARAMETERS nColIndex
+this.parent.refresh
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _08K07GRZ2
+[CLASS] header
+[BASECLASS] header
+[OBJNAME] Header1
+[PARENT] Form1.Pageframe1.Page2.tableIndexesGrid.Column1
+[START PROPERTIES]
+Caption = "#No"
+Name = "Header1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _08K07GRZ3
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] Text1
+[PARENT] Form1.Pageframe1.Page2.tableIndexesGrid.Column1
+[START PROPERTIES]
+BorderStyle = 0
+Margin = 0
+ForeColor = 0,0,0
+BackColor = 255,255,255
+Name = "Text1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _08K07GRZ5
+[CLASS] header
+[BASECLASS] header
+[OBJNAME] Header1
+[PARENT] Form1.Pageframe1.Page2.tableIndexesGrid.Column2
+[START PROPERTIES]
+Caption = "Index Tag"
+Name = "Header1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _08K07GRZ6
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] Text1
+[PARENT] Form1.Pageframe1.Page2.tableIndexesGrid.Column2
+[START PROPERTIES]
+BorderStyle = 0
+Margin = 0
+ForeColor = 0,0,0
+BackColor = 255,255,255
+Name = "Text1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _08K07GRZ9
+[CLASS] header
+[BASECLASS] header
+[OBJNAME] Header1
+[PARENT] Form1.Pageframe1.Page2.tableIndexesGrid.Column3
+[START PROPERTIES]
+Caption = "Type"
+Name = "Header1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _08K07GRZA
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] Text1
+[PARENT] Form1.Pageframe1.Page2.tableIndexesGrid.Column3
+[START PROPERTIES]
+BorderStyle = 0
+Margin = 0
+ForeColor = 0,0,0
+BackColor = 255,255,255
+Name = "Text1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _08K07GRZC
+[CLASS] header
+[BASECLASS] header
+[OBJNAME] Header1
+[PARENT] Form1.Pageframe1.Page2.tableIndexesGrid.Column4
+[START PROPERTIES]
+Caption = "Index Expression"
+Name = "Header1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _08K07GRZE
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] Text1
+[PARENT] Form1.Pageframe1.Page2.tableIndexesGrid.Column4
+[START PROPERTIES]
+BorderStyle = 0
+Margin = 0
+ForeColor = 0,0,0
+BackColor = 255,255,255
+Name = "Text1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _08K07GRZG
+[CLASS] header
+[BASECLASS] header
+[OBJNAME] Header1
+[PARENT] Form1.Pageframe1.Page2.tableIndexesGrid.Column5
+[START PROPERTIES]
+Caption = "Filter"
+Name = "Header1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _08K07GRZH
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] Text1
+[PARENT] Form1.Pageframe1.Page2.tableIndexesGrid.Column5
+[START PROPERTIES]
+BorderStyle = 0
+Margin = 0
+ForeColor = 0,0,0
+BackColor = 255,255,255
+Name = "Text1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _08L0MOTH8
+[CLASS] header
+[BASECLASS] header
+[OBJNAME] Header1
+[PARENT] Form1.Pageframe1.Page2.tableIndexesGrid.Column6
+[START PROPERTIES]
+Caption = "Asc/Desc"
+Name = "Header1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _08L0MOTH9
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] Text1
+[PARENT] Form1.Pageframe1.Page2.tableIndexesGrid.Column6
+[START PROPERTIES]
+BorderStyle = 0
+Margin = 0
+ForeColor = 0,0,0
+BackColor = 255,255,255
+Name = "Text1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _08V01KEUA
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] Command1
+[PARENT] Form1.Pageframe1.Page2
+[START PROPERTIES]
+Top = 66
+Left = 496
+Height = 23
+Width = 61
+Caption = "Insert"
+TabIndex = 8
+Name = "Command1"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+=MessageBox('Under Construction')
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _08V01KEUE
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] Command2
+[PARENT] Form1.Pageframe1.Page2
+[START PROPERTIES]
+Top = 90
+Left = 496
+Height = 23
+Width = 61
+Caption = "Delete"
+TabIndex = 10
+Name = "Command2"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+=MessageBox('Under Construction')
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _08L0QNPBQ
+[CLASS] shape
+[BASECLASS] shape
+[OBJNAME] Shape4
+[PARENT] Form1.Pageframe1.Page3
+[START PROPERTIES]
+Top = 29
+Left = 11
+Height = 69
+Width = 507
+SpecialEffect = 0
+Name = "Shape4"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0870OVUEU
+[CLASS] shape
+[BASECLASS] shape
+[OBJNAME] Shape1
+[PARENT] Form1.Pageframe1.Page3
+[START PROPERTIES]
+Top = 151
+Left = 272
+Height = 86
+Width = 248
+SpecialEffect = 0
+Name = "Shape1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _08L0QNPBU
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label9
+[PARENT] Form1.Pageframe1.Page3
+[START PROPERTIES]
+AutoSize = .T.
+FontSize = 8
+Caption = "Table Comment:"
+Height = 16
+Left = 274
+Top = 22
+Width = 78
+TabIndex = 18
+Name = "Label9"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _08L0QNPBW
+[CLASS] editbox
+[BASECLASS] editbox
+[OBJNAME] Edit1
+[PARENT] Form1.Pageframe1.Page3
+[START PROPERTIES]
+Height = 55
+Left = 272
+TabIndex = 2
+Top = 38
+Width = 241
+ControlSource = "table_self.table_cmt"
+Name = "Edit1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _08L0QNPBY
+[CLASS] shape
+[BASECLASS] shape
+[OBJNAME] Shape3
+[PARENT] Form1.Pageframe1.Page3
+[START PROPERTIES]
+Top = 151
+Left = 10
+Height = 59
+Width = 248
+SpecialEffect = 0
+Name = "Shape3"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0870OVUEU
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label10
+[PARENT] Form1.Pageframe1.Page3
+[START PROPERTIES]
+AutoSize = .T.
+FontSize = 8
+Caption = "Record Validation"
+Height = 16
+Left = 18
+Top = 145
+Width = 87
+TabIndex = 19
+Name = "Label10"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0870OVUEU
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label11
+[PARENT] Form1.Pageframe1.Page3
+[START PROPERTIES]
+AutoSize = .T.
+FontSize = 8
+Caption = "Rule:"
+Height = 16
+Left = 18
+Top = 163
+Width = 26
+TabIndex = 22
+Name = "Label11"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _08L0QNPC4
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label12
+[PARENT] Form1.Pageframe1.Page3
+[START PROPERTIES]
+AutoSize = .T.
+FontSize = 8
+Caption = "Message: "
+Height = 16
+Left = 18
+Top = 184
+Width = 52
+TabIndex = 24
+Name = "Label12"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _08K07GRVN
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] Text7
+[PARENT] Form1.Pageframe1.Page3
+[START PROPERTIES]
+FontSize = 8
+ControlSource = "table_self.table_rule"
+Height = 23
+Left = 94
+TabIndex = 3
+Top = 158
+Width = 132
+Name = "Text7"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _08L0QNPC8
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] Text8
+[PARENT] Form1.Pageframe1.Page3
+[START PROPERTIES]
+FontSize = 8
+ControlSource = "table_fields.table_err"
+Height = 23
+Left = 94
+TabIndex = 5
+Top = 183
+Width = 132
+Name = "Text8"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _08L0QNPCB
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] Command7
+[PARENT] Form1.Pageframe1.Page3
+[START PROPERTIES]
+Top = 159
+Left = 229
+Height = 23
+Width = 25
+Caption = "..."
+TabIndex = 4
+Name = "Command7"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+select (thisform.tablemanager.x_alias)
+GETEXPR 'Enter Expression' TO  This.Parent.Text7.value
+select xcurrent
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _08L0QNPCD
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] Command8
+[PARENT] Form1.Pageframe1.Page3
+[START PROPERTIES]
+Top = 183
+Left = 229
+Height = 23
+Width = 25
+Caption = "..."
+TabIndex = 6
+Name = "Command8"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+select (thisform.tablemanager.x_alias)
+GETEXPR 'Enter Expression' TO  This.Parent.Text8.value
+select xcurrent
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _08L0QNPCF
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label1
+[PARENT] Form1.Pageframe1.Page3
+[START PROPERTIES]
+FontSize = 8
+Caption = "Triggers"
+Height = 17
+Left = 279
+Top = 144
+Width = 43
+TabIndex = 14
+Name = "Label1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _08L0QNPCH
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label2
+[PARENT] Form1.Pageframe1.Page3
+[START PROPERTIES]
+AutoSize = .T.
+FontSize = 8
+Caption = "Insert Trigger:"
+Height = 16
+Left = 279
+Top = 163
+Width = 69
+TabIndex = 15
+Name = "Label2"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _08L0QNPCJ
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label3
+[PARENT] Form1.Pageframe1.Page3
+[START PROPERTIES]
+AutoSize = .T.
+FontSize = 8
+Caption = "Update Trigger:"
+Height = 16
+Left = 279
+Top = 184
+Width = 76
+TabIndex = 16
+Name = "Label3"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _08L0QNPCL
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label4
+[PARENT] Form1.Pageframe1.Page3
+[START PROPERTIES]
+AutoSize = .T.
+FontSize = 8
+Caption = "Delete Trigger:"
+Height = 16
+Left = 278
+Top = 206
+Width = 72
+TabIndex = 17
+Name = "Label4"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _08L0QNPCM
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] Text1
+[PARENT] Form1.Pageframe1.Page3
+[START PROPERTIES]
+FontSize = 8
+ControlSource = "table_self.table_ins"
+Height = 23
+Left = 355
+TabIndex = 7
+Top = 158
+Width = 132
+Name = "Text1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _08L0QNPCP
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] Text2
+[PARENT] Form1.Pageframe1.Page3
+[START PROPERTIES]
+FontSize = 8
+ControlSource = "table_self.table_upd"
+Height = 23
+Left = 355
+TabIndex = 9
+Top = 183
+Width = 132
+Name = "Text2"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _08L0QNPCR
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] Text3
+[PARENT] Form1.Pageframe1.Page3
+[START PROPERTIES]
+FontSize = 8
+ControlSource = "table_self.table_del"
+Height = 23
+Left = 355
+TabIndex = 11
+Top = 208
+Width = 132
+Name = "Text3"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0870OVUEU
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] Command1
+[PARENT] Form1.Pageframe1.Page3
+[START PROPERTIES]
+Top = 159
+Left = 491
+Height = 23
+Width = 25
+Caption = "..."
+TabIndex = 8
+Name = "Command1"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+select (thisform.tablemanager.x_alias)
+GETEXPR 'Enter Expression' TO  This.Parent.Text1.value
+select xcurrent
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _08K07GRVN
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] Command2
+[PARENT] Form1.Pageframe1.Page3
+[START PROPERTIES]
+Top = 183
+Left = 491
+Height = 23
+Width = 25
+Caption = "..."
+TabIndex = 10
+Name = "Command2"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+select (thisform.tablemanager.x_alias)
+GETEXPR 'Enter Expression' TO  This.Parent.Text2.value
+select xcurrent
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _08L0QNPCZ
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] Command3
+[PARENT] Form1.Pageframe1.Page3
+[START PROPERTIES]
+Top = 207
+Left = 491
+Height = 23
+Width = 25
+Caption = "..."
+TabIndex = 12
+Name = "Command3"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+select (thisform.tablemanager.x_alias)
+GETEXPR 'Enter Expression' TO  This.Parent.Text3.value
+select xcurrent
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0870OVUEU
+[CLASS] shape
+[BASECLASS] shape
+[OBJNAME] Shape2
+[PARENT] Form1.Pageframe1.Page3
+[START PROPERTIES]
+Top = 103
+Left = 10
+Height = 39
+Width = 509
+SpecialEffect = 0
+Name = "Shape2"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0870OVUEU
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label5
+[PARENT] Form1.Pageframe1.Page3
+[START PROPERTIES]
+AutoSize = .T.
+FontSize = 8
+Caption = "Table Name:"
+Height = 16
+Left = 19
+Top = 22
+Width = 61
+TabIndex = 21
+Name = "Label5"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _08L0QNPDI
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] Text4
+[PARENT] Form1.Pageframe1.Page3
+[START PROPERTIES]
+FontSize = 8
+ControlSource = "table_self.table_name"
+Height = 23
+Left = 18
+TabIndex = 1
+Top = 38
+Width = 249
+Name = "Text4"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _08L0QNPDL
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label6
+[PARENT] Form1.Pageframe1.Page3
+[START PROPERTIES]
+AutoSize = .T.
+FontSize = 8
+Caption = "Statistics:"
+Height = 16
+Left = 19
+Top = 98
+Width = 49
+TabIndex = 20
+Name = "Label6"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _08L0QNPDN
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label7
+[PARENT] Form1.Pageframe1.Page3
+[START PROPERTIES]
+AutoSize = .T.
+FontSize = 8
+Caption = "Database: "
+Height = 16
+Left = 20
+Top = 64
+Width = 54
+TabIndex = 23
+Name = "Label7"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0870OVUEU
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label8
+[PARENT] Form1.Pageframe1.Page3
+[START PROPERTIES]
+AutoSize = .T.
+FontSize = 8
+Caption = "Records:"
+Height = 16
+Left = 18
+Top = 118
+Width = 46
+TabIndex = 19
+Name = "Label8"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0870OVUEU
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label13
+[PARENT] Form1.Pageframe1.Page3
+[START PROPERTIES]
+AutoSize = .T.
+FontSize = 8
+Caption = "Fields:"
+Height = 16
+Left = 119
+Top = 118
+Width = 33
+TabIndex = 19
+Name = "Label13"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0870OVUEU
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label14
+[PARENT] Form1.Pageframe1.Page3
+[START PROPERTIES]
+AutoSize = .T.
+FontSize = 8
+Caption = "Length:"
+Height = 16
+Left = 207
+Top = 118
+Width = 38
+TabIndex = 19
+Name = "Label14"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0870OVUEU
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label15
+[PARENT] Form1.Pageframe1.Page3
+[START PROPERTIES]
+AutoSize = .T.
+FontSize = 8
+Caption = "Code Page:"
+Height = 16
+Left = 311
+Top = 118
+Width = 57
+TabIndex = 19
+Name = "Label15"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0870OVUEU
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] lbl_TableReccount
+[PARENT] Form1.Pageframe1.Page3
+[START PROPERTIES]
+AutoSize = .F.
+FontBold = .F.
+FontSize = 8
+Caption = "[0]"
+Height = 16
+Left = 80
+Top = 118
+Width = 31
+TabIndex = 19
+Name = "lbl_TableReccount"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0870OVUEU
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] lbl_TableFieldsNo
+[PARENT] Form1.Pageframe1.Page3
+[START PROPERTIES]
+AutoSize = .F.
+FontBold = .F.
+FontSize = 8
+Caption = "[0]"
+Height = 16
+Left = 167
+Top = 118
+Width = 31
+TabIndex = 19
+Name = "lbl_TableFieldsNo"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0870OVUEU
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] lbl_table_len
+[PARENT] Form1.Pageframe1.Page3
+[START PROPERTIES]
+AutoSize = .F.
+FontBold = .F.
+FontSize = 8
+Caption = "[0]"
+Height = 16
+Left = 259
+Top = 118
+Width = 31
+TabIndex = 19
+Name = "lbl_table_len"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _08V027C5W
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] lbl_table_codepage
+[PARENT] Form1.Pageframe1.Page3
+[START PROPERTIES]
+AutoSize = .F.
+FontBold = .F.
+FontSize = 8
+Caption = "[0]"
+Height = 16
+Left = 379
+Top = 118
+Width = 31
+TabIndex = 19
+Name = "lbl_table_codepage"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _08L0PJG60
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] Command4
+[PARENT] Form1
+[START PROPERTIES]
+Top = 440
+Left = 533
+Height = 23
+Width = 104
+Caption = "\<Commit Changes"
+TabIndex = 2
+Name = "Command4"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+thisform.tablemanager.save_changes()
+Thisform.release
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _08L0PJG62
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] Command5
+[PARENT] Form1
+[START PROPERTIES]
+Top = 440
+Left = 642
+Height = 23
+Width = 104
+Cancel = .T.
+Caption = "\<Drop Changes "
+TabIndex = 3
+Name = "Command5"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+thisform.tablemanager.revert_changes()
+Thisform.release
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0870OVUEU
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label2
+[PARENT] Form1
+[START PROPERTIES]
+AutoSize = .T.
+FontSize = 8
+Caption = "Database "
+Height = 16
+Left = 11
+Top = 421
+Width = 51
+TabIndex = 21
+Name = "Label2"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _25V0Z8BCU
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label3
+[PARENT] Form1
+[START PROPERTIES]
+AutoSize = .T.
+FontSize = 8
+Caption = "Table "
+Height = 16
+Left = 11
+Top = 442
+Width = 31
+TabIndex = 22
+Name = "Label3"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _25V0Z8BCV
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] ShowDatabase
+[PARENT] Form1
+[START PROPERTIES]
+FontSize = 8
+ControlSource = "xcurrent.xdbc"
+Height = 23
+Left = 93
+ReadOnly = .T.
+TabIndex = 3
+Top = 415
+Width = 395
+ForeColor = 128,0,128
+Name = "ShowDatabase"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE DblClick
+thisform.tablemanager.set_property_all(this.controlsource,'Caption')
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _25V0Z8BCW
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] ShowTable
+[PARENT] Form1
+[START PROPERTIES]
+FontSize = 8
+ControlSource = "xcurrent.xtable"
+Height = 23
+Left = 93
+ReadOnly = .T.
+TabIndex = 5
+Top = 439
+Width = 395
+ForeColor = 128,0,128
+Name = "ShowTable"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE DblClick
+thisform.tablemanager.set_property_all(this.controlsource,'Input Mask')
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[START PROPERTIES]
+Arial, 0, 9, 5, 15, 12, 32, 3, 0
+Arial, 0, 8, 5, 14, 11, 29, 3, 0
+[END PROPERTIES]
+[EOF]
