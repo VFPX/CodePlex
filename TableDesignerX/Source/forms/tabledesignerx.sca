@@ -269,6 +269,12 @@ Name = "Text1"
 PROCEDURE DblClick
 thisform.tablemanager.set_property_all(this.controlsource,'Caption')
 ENDPROC
+PROCEDURE Valid
+*** BYN 31/10/2007 added logic to update underlying cursor
+THISFORM.tablemanager.UpdateChangeStatus()
+RETURN .T.
+
+ENDPROC
 [END METHODS]
 
 [ RECORD]
@@ -292,6 +298,12 @@ Name = "Text2"
 PROCEDURE DblClick
 thisform.tablemanager.set_property_all(this.controlsource,'Input Mask')
 ENDPROC
+PROCEDURE Valid
+*** BYN 31/10/2007 added logic to update underlying cursor
+THISFORM.tablemanager.UpdateChangeStatus()
+RETURN .T.
+
+ENDPROC
 [END METHODS]
 
 [ RECORD]
@@ -314,6 +326,12 @@ Name = "Text3"
 [START METHODS]
 PROCEDURE DblClick
 thisform.tablemanager.set_property_all(this.controlsource,'Format')
+ENDPROC
+PROCEDURE Valid
+*** BYN 31/10/2007 added logic to update underlying cursor
+THISFORM.tablemanager.UpdateChangeStatus()
+RETURN .T.
+
 ENDPROC
 [END METHODS]
 
@@ -430,6 +448,12 @@ Name = "Text4"
 PROCEDURE DblClick
 thisform.tablemanager.set_property_all(this.controlsource,'Field Rule')
 ENDPROC
+PROCEDURE Valid
+*** BYN 31/10/2007 added logic to update underlying cursor
+THISFORM.tablemanager.UpdateChangeStatus()
+RETURN .T.
+
+ENDPROC
 [END METHODS]
 
 [ RECORD]
@@ -453,6 +477,12 @@ Name = "Text5"
 PROCEDURE DblClick
 thisform.tablemanager.set_property_all(this.controlsource,'Validation Message')
 ENDPROC
+PROCEDURE Valid
+*** BYN 31/10/2007 added logic to update underlying cursor
+THISFORM.tablemanager.UpdateChangeStatus()
+RETURN .T.
+
+ENDPROC
 [END METHODS]
 
 [ RECORD]
@@ -475,6 +505,12 @@ Name = "Text6"
 [START METHODS]
 PROCEDURE DblClick
 thisform.tablemanager.set_property_all(this.controlsource,'Default Value')
+ENDPROC
+PROCEDURE Valid
+*** BYN 31/10/2007 added logic to update underlying cursor
+THISFORM.tablemanager.UpdateChangeStatus()
+RETURN .T.
+
 ENDPROC
 [END METHODS]
 
@@ -516,6 +552,12 @@ Name = "Edit1"
 [START METHODS]
 PROCEDURE DblClick
 thisform.tablemanager.set_property_all(this.controlsource,'Field Comment')
+ENDPROC
+PROCEDURE Valid
+*** BYN 31/10/2007 added logic to update underlying cursor
+THISFORM.tablemanager.UpdateChangeStatus()
+RETURN .T.
+
 ENDPROC
 [END METHODS]
 
@@ -609,6 +651,14 @@ Top = 208
 Width = 159
 Name = "Text7"
 [END PROPERTIES]
+[START METHODS]
+PROCEDURE Valid
+*** BYN 31/10/2007 added logic to update underlying cursor
+THISFORM.tablemanager.UpdateChangeStatus()
+RETURN .T.
+
+ENDPROC
+[END METHODS]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -627,6 +677,14 @@ Top = 233
 Width = 132
 Name = "Text8"
 [END PROPERTIES]
+[START METHODS]
+PROCEDURE Valid
+*** BYN 31/10/2007 added logic to update underlying cursor
+THISFORM.tablemanager.UpdateChangeStatus()
+RETURN .T.
+
+ENDPROC
+[END METHODS]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
