@@ -1,878 +1,883 @@
-=tdxSetup( JustPath(JustPath( Sys(16) )))
-do form run_tdx.scx  &&Run Control Panel Form
+=tdxSetup( JUSTPATH(JUSTPATH( SYS(16) )))
+DO FORM run_tdx.scx  &&Run Control Panel Form
 
 
 *************************************************************
 * Table Designer X - Engine
 * Prototype
 *************************************************************
-define class TableDesignerX as session
-    x_designerform ='.\forms\TableDesignerX.scx'
+DEFINE CLASS TableDesignerX AS SESSION
+	x_designerform ='.\forms\TableDesignerX.scx'
 
-    x_table=''
-    x_table_name=''
+	x_table=''
+	x_table_name=''
 
-    x_database=''
-    x_database_name=''
+	x_database=''
+	x_database_name=''
 
-    x_alias=''
+	x_alias=''
 
-    x_BelongsToDatabase=.f.
+	x_BelongsToDatabase=.F.
 
-    x_tdx_id = 0  &&Counter for session unique field ID
+	x_tdx_id = 0  &&Counter for session unique field ID
 
 
-    ****************
-    x_reccount=0
-    x_recsize=0
-    x_cpdbf=0
-    x_fcount =0
-    ****************
+	****************
+	x_reccount=0
+	x_recsize=0
+	x_cpdbf=0
+	x_fcount =0
+	****************
 
 
-    **** Object References to UI Forms
-    oFrontForm=.f.
-
-    nSubFormCount=0
-    declare aSubForms(100)
-    ***********************************
-
-    procedure init
-        lparameters cTable
-        =tdx_set_sys_env()
-        this.x_table = proper(cTable)
-        this.x_table_name=justfname(cTable)
-
-        if !this.open_selected_table()
-            messagebox('Could not Open table - Exclusive access needed!')
-            return .f.
-        endif
-
-        select ( juststem(this.x_table)  )
-        this.x_alias = alias()
-        this.x_database =  proper( cursorgetprop("Database") )  && Displays database name
-
-        if len(allt(this.x_database)) > 0
-            this.x_database_name=justfname(this.x_database)
-            this.x_BelongsToDatabase=.t.
-            open database (this.x_database) shared
-        else
-            this.x_database = 'Free Table'
-            this.x_BelongsToDatabase=.f.
-        endif
-
-
-        return .t.
-
-
-
-    procedure open_selected_table
-        local ok, oErr as exception
-        ok=.t.
-        try
-            use (this.x_table) in 0 exclusive
-
-        catch to oErr
-            if oErr.errorno > 0
-                ok=.f.
-            endif
-        endtry
-        return ok
-
-
-
-    procedure LoadTableStructure
-        *************************
-        this.CreateCursors()
-        this.ReadFieldProperties()
-        this.ReadIndexProperties()
-        this.ReadTableProperties()
-        **************************
-
-
-
-    procedure modify_structure
-        this.LoadTableStructure()
-        this.ShowInterface()
-
-
-    procedure  ShowInterface
-        select table_fields
-        go top
-        this.CheckForFieldChanges()
-        do form (this.x_designerform) with this
-
-
-
-    procedure CreateCursors
-        **Structure compatible with temp. table created by
-        **copy structure extended + set of fields necessary
-        **to hold other field properties + few utility fields
-        ** Djordjevic Srdjan 03 Oct 2007
-        create cursor table_fields  (  ;
-            TDX_ID      I(4)  , ;
-            TDX_STAT    C(1)  , ;
-            FIELD_NO    C(3)  , ;
-            FIELD_NAME  C(20) , ;
-            FIELD_TYPE  C(1)  , ;
-            FIELD_UNTY  C(2)  , ;
-            FIELD_TYDS  C(20) , ;
-            FIELD_LEN   n(3,0), ;
-            FIELD_DEC   n(3,0), ;
-            FIELD_NULL  L, ;
-            FIELD_NOCP  L, ;
-            FIELD_DEFA C(254), ;
-            FIELD_RULE   C(254), ;
-            FIELD_ERR   C(254), ;
-            FIELD_CAPT C(254), ;
-            FIELD_COMM C(254),  ;
-            FIELD_FMT  C(254), ;
-            FIELD_IMSK C(254) , ;
-            FIELD_CLLB  C(254) , ;
-            FIELD_CLSS   C(254) , ;
-            TABLE_NAME   C(128), ;
-            TABLE_RULE   C(254), ;
-            TABLE_ERR   C(254), ;
-            TABLE_CMT   C(254), ;
-            INS_TRIG   C(254), ;
-            UPD_TRIG   C(254), ;
-            DEL_TRIG   C(254),;
-            FIELD_NEXT  I(4), ;
-            FIELD_STEP  I(4) )
-        ***Added last two fields
-
-        local aStru1(1)
-        afields(aStru1)
-        create cursor origfields from array aStru1
-        index on TDX_ID tag fldid
-        set order to fldid
-
-
-
-        create cursor table_self (  ;
-            TABLE_NAME   C(128), ;
-            TABLE_PATH   C(254), ;
-            TABLE_RULE   C(254), ;
-            TABLE_RUTX   C(254), ;
-            TABLE_ERR   C(254), ;
-            TABLE_INS   C(254), ;
-            TABLE_UPD   C(254), ;
-            TABLE_DEL   C(254), ;
-            TABLE_CMT C(254))
-
-        local aStru2(1)
-        afields(aStru2)
-        create cursor origtable from array aStru2
-
-
-
-        create cursor table_indexes  (  ;
-            xtagno       C(3)   , ;
-            xtagname     C(20)  , ;
-            xtagexp      C(254) , ;
-            xtagtype     C(10)  , ;
-            xtagasc      C(1)  , ;
-            xtagfilter   C(254))
-        index on xtagno tag xkey
-
-
-        local aStru3(1)
-        afields(aStru3)
-        create cursor origkeys from array aStru3
-
-
-
-        create cursor xcurrent (  ;
-            xdbc   C(100) , ;
-            xtable C(100) , ;
-            xstart t  , ;
-            xcommit t  )
-
-        select xcurrent
-        scatter memvar blank
-        m.xstart = datetime()
-        insert into xcurrent from memvar
-        go top
-
-
-        create cursor FieldTypes  (  ;
-            FIELD_TYDS  C(20),   ;
-            FIELD_UNTY   C(2))
-
-        m.FIELD_TYDS='Blob'
-        m.FIELD_UNTY='W'
-        insert into FieldTypes from memvar
-
-        m.FIELD_TYDS='Character'
-        m.FIELD_UNTY='C'
-        insert into FieldTypes from memvar
-
-        m.FIELD_TYDS='Character(Binary)'
-        m.FIELD_UNTY='CB'
-        insert into FieldTypes from memvar
-
-        m.FIELD_TYDS='Currency'
-        m.FIELD_UNTY='Y'
-        insert into FieldTypes from memvar
+	**** Object References to UI Forms
+	oFrontForm=.F.
+
+	nSubFormCount=0
+	DECLARE aSubForms(100)
+	***********************************
+
+	PROCEDURE INIT
+		LPARAMETERS cTable
+		=tdx_set_sys_env()
+		THIS.x_table = PROPER(cTable)
+		THIS.x_table_name=JUSTFNAME(cTable)
+
+		IF !THIS.open_selected_table()
+			MESSAGEBOX('Could not Open table - Exclusive access needed!')
+			RETURN .F.
+		ENDIF
+
+		SELECT ( JUSTSTEM(THIS.x_table)  )
+		THIS.x_alias = ALIAS()
+		THIS.x_database =  PROPER( CURSORGETPROP("Database") )  && Displays database name
+
+		IF LEN(ALLT(THIS.x_database)) > 0
+			THIS.x_database_name=JUSTFNAME(THIS.x_database)
+			THIS.x_BelongsToDatabase=.T.
+			OPEN DATABASE (THIS.x_database) SHARED
+		ELSE
+			THIS.x_database = 'Free Table'
+			THIS.x_BelongsToDatabase=.F.
+		ENDIF
+
+
+		RETURN .T.
+
+
+
+	PROCEDURE open_selected_table
+		LOCAL ok, oErr AS EXCEPTION
+		ok=.T.
+		TRY
+			USE (THIS.x_table) IN 0 EXCLUSIVE
+
+		CATCH TO oErr
+			IF oErr.ERRORNO > 0
+				ok=.F.
+			ENDIF
+		ENDTRY
+		RETURN ok
+
+
+
+	PROCEDURE LoadTableStructure
+		*************************
+		THIS.CreateCursors()
+		THIS.ReadFieldProperties()
+		THIS.ReadIndexProperties()
+		THIS.ReadTableProperties()
+		**************************
+
+
+
+	PROCEDURE modify_structure
+		THIS.LoadTableStructure()
+		THIS.ShowInterface()
+
+
+	PROCEDURE  ShowInterface
+		SELECT table_fields
+		GO TOP
+		THIS.CheckForFieldChanges()
+		DO FORM (THIS.x_designerform) WITH THIS
+
+
+
+	PROCEDURE CreateCursors
+		**Structure compatible with temp. table created by
+		**copy structure extended + set of fields necessary
+		**to hold other field properties + few utility fields
+		** Djordjevic Srdjan 03 Oct 2007
+		CREATE CURSOR table_fields  (  ;
+			TDX_ID      I(4)  , ;
+			TDX_STAT    C(1)  , ;
+			FIELD_NO    C(3)  , ;
+			FIELD_NAME  C(20) , ;
+			FIELD_TYPE  C(1)  , ;
+			FIELD_UNTY  C(2)  , ;
+			FIELD_TYDS  C(20) , ;
+			FIELD_LEN   N(3,0), ;
+			FIELD_DEC   N(3,0), ;
+			FIELD_NULL  L, ;
+			FIELD_NOCP  L, ;
+			FIELD_DEFA C(254), ;
+			FIELD_RULE   C(254), ;
+			FIELD_ERR   C(254), ;
+			FIELD_CAPT C(254), ;
+			FIELD_COMM C(254),  ;
+			FIELD_FMT  C(254), ;
+			FIELD_IMSK C(254) , ;
+			FIELD_CLLB  C(254) , ;
+			FIELD_CLSS   C(254) , ;
+			TABLE_NAME   C(128), ;
+			TABLE_RULE   C(254), ;
+			TABLE_ERR   C(254), ;
+			TABLE_CMT   C(254), ;
+			INS_TRIG   C(254), ;
+			UPD_TRIG   C(254), ;
+			DEL_TRIG   C(254),;
+			FIELD_NEXT  I(4), ;
+			FIELD_STEP  I(4) )
+		***Added last two fields
+
+		LOCAL aStru1(1)
+		AFIELDS(aStru1)
+		CREATE CURSOR origfields FROM ARRAY aStru1
+		INDEX ON TDX_ID TAG fldid
+		SET ORDER TO fldid
+
+
+
+		CREATE CURSOR table_self (  ;
+			TABLE_NAME   C(128), ;
+			TABLE_PATH   C(254), ;
+			TABLE_RULE   C(254), ;
+			TABLE_RUTX   C(254), ;
+			TABLE_ERR   C(254), ;
+			TABLE_INS   C(254), ;
+			TABLE_UPD   C(254), ;
+			TABLE_DEL   C(254), ;
+			TABLE_CMT C(254))
+
+		LOCAL aStru2(1)
+		AFIELDS(aStru2)
+		CREATE CURSOR origtable FROM ARRAY aStru2
+
+
+
+		CREATE CURSOR table_indexes  (  ;
+			xtagno       C(3)   , ;
+			xtagname     C(20)  , ;
+			xtagexp      C(254) , ;
+			xtagtype     C(10)  , ;
+			xtagasc      C(1)  , ;
+			xtagfilter   C(254))
+		INDEX ON xtagno TAG xkey
+
+
+		LOCAL aStru3(1)
+		AFIELDS(aStru3)
+		CREATE CURSOR origkeys FROM ARRAY aStru3
+
+
+
+		CREATE CURSOR xcurrent (  ;
+			xdbc   C(100) , ;
+			xtable C(100) , ;
+			xstart T  , ;
+			xcommit T  )
+
+		SELECT xcurrent
+		SCATTER MEMVAR BLANK
+		m.xstart = DATETIME()
+		INSERT INTO xcurrent FROM MEMVAR
+		GO TOP
+
+
+		CREATE CURSOR FieldTypes  (  ;
+			FIELD_TYDS  C(20),   ;
+			FIELD_UNTY   C(2))
+
+		m.FIELD_TYDS='Blob'
+		m.FIELD_UNTY='W'
+		INSERT INTO FieldTypes FROM MEMVAR
+
+		m.FIELD_TYDS='Character'
+		m.FIELD_UNTY='C'
+		INSERT INTO FieldTypes FROM MEMVAR
+
+		m.FIELD_TYDS='Character(Binary)'
+		m.FIELD_UNTY='CB'
+		INSERT INTO FieldTypes FROM MEMVAR
+
+		m.FIELD_TYDS='Currency'
+		m.FIELD_UNTY='Y'
+		INSERT INTO FieldTypes FROM MEMVAR
 
-        m.FIELD_TYDS='Date'
-        m.FIELD_UNTY='D'
-        insert into FieldTypes from memvar
+		m.FIELD_TYDS='Date'
+		m.FIELD_UNTY='D'
+		INSERT INTO FieldTypes FROM MEMVAR
 
-        m.FIELD_TYDS='DateTime'
-        m.FIELD_UNTY='T'
-        insert into FieldTypes from memvar
+		m.FIELD_TYDS='DateTime'
+		m.FIELD_UNTY='T'
+		INSERT INTO FieldTypes FROM MEMVAR
 
-        m.FIELD_TYDS='Double'
-        m.FIELD_UNTY='B'
-        insert into FieldTypes from memvar
+		m.FIELD_TYDS='Double'
+		m.FIELD_UNTY='B'
+		INSERT INTO FieldTypes FROM MEMVAR
 
-        m.FIELD_TYDS='Float'
-        m.FIELD_UNTY='F'
-        insert into FieldTypes from memvar
+		m.FIELD_TYDS='Float'
+		m.FIELD_UNTY='F'
+		INSERT INTO FieldTypes FROM MEMVAR
 
-        m.FIELD_TYDS='General'
-        m.FIELD_UNTY='G'
-        insert into FieldTypes from memvar
+		m.FIELD_TYDS='General'
+		m.FIELD_UNTY='G'
+		INSERT INTO FieldTypes FROM MEMVAR
 
-        m.FIELD_TYDS='Integer'
-        m.FIELD_UNTY='I'
-        insert into FieldTypes from memvar
+		m.FIELD_TYDS='Integer'
+		m.FIELD_UNTY='I'
+		INSERT INTO FieldTypes FROM MEMVAR
 
-        m.FIELD_TYDS='Integer(AutoInc)'
-        m.FIELD_UNTY='IA'
-        insert into FieldTypes from memvar
+		m.FIELD_TYDS='Integer(AutoInc)'
+		m.FIELD_UNTY='IA'
+		INSERT INTO FieldTypes FROM MEMVAR
 
-        m.FIELD_TYDS='Logical'
-        m.FIELD_UNTY='L'
-        insert into FieldTypes from memvar
+		m.FIELD_TYDS='Logical'
+		m.FIELD_UNTY='L'
+		INSERT INTO FieldTypes FROM MEMVAR
 
-        m.FIELD_TYDS='Memo'
-        m.FIELD_UNTY='M'
-        insert into FieldTypes from memvar
+		m.FIELD_TYDS='Memo'
+		m.FIELD_UNTY='M'
+		INSERT INTO FieldTypes FROM MEMVAR
 
-        m.FIELD_TYDS='Memo(Binary)'
-        m.FIELD_UNTY='MB'
-        insert into FieldTypes from memvar
+		m.FIELD_TYDS='Memo(Binary)'
+		m.FIELD_UNTY='MB'
+		INSERT INTO FieldTypes FROM MEMVAR
 
-        m.FIELD_TYDS='Numeric'
-        m.FIELD_UNTY='N'
-        insert into FieldTypes from memvar
+		m.FIELD_TYDS='Numeric'
+		m.FIELD_UNTY='N'
+		INSERT INTO FieldTypes FROM MEMVAR
 
-        m.FIELD_TYDS='Varbinary'
-        m.FIELD_UNTY='Q'
-        insert into FieldTypes from memvar
+		m.FIELD_TYDS='Varbinary'
+		m.FIELD_UNTY='Q'
+		INSERT INTO FieldTypes FROM MEMVAR
 
 
-        m.FIELD_TYDS='Varchar'
-        m.FIELD_UNTY='V'
-        insert into FieldTypes from memvar
+		m.FIELD_TYDS='Varchar'
+		m.FIELD_UNTY='V'
+		INSERT INTO FieldTypes FROM MEMVAR
 
-        m.FIELD_TYDS='Varchar(Binary)'
-        m.FIELD_UNTY='VB'
-        insert into FieldTypes from memvar
+		m.FIELD_TYDS='Varchar(Binary)'
+		m.FIELD_UNTY='VB'
+		INSERT INTO FieldTypes FROM MEMVAR
 
-        *        browse normal
-        *        copy to FieldTypes
+		*        browse normal
+		*        copy to FieldTypes
 
 
-        *** Might be redundant all together
-        *** Or kept and used for multidetailed structure report maybe
-        ***********************************************************
-        select xcurrent                                          &&
-        go top                                                   &&
-        replace xcurrent.xdbc   with this.x_database             &&
-        replace xcurrent.xtable with this.x_table                &&
-        ***********************************************************
+		*** Might be redundant all together
+		*** Or kept and used for multidetailed structure report maybe
+		***********************************************************
+		SELECT xcurrent                                          &&
+		GO TOP                                                   &&
+		REPLACE xcurrent.xdbc   WITH THIS.x_database             &&
+		REPLACE xcurrent.xtable WITH THIS.x_table                &&
+		***********************************************************
 
 
 
 
 
 
-    procedure close_cursors
+	PROCEDURE close_cursors
 
-        select xcurrent
-        use
+		SELECT xcurrent
+		USE
 
-        select table_fields
-        use
+		SELECT table_fields
+		USE
 
-        select table_indexes
-        use
+		SELECT table_indexes
+		USE
 
-        select table_self
-        use
+		SELECT table_self
+		USE
 
-        ****************************
-        select origfields
-        use
+		****************************
+		SELECT origfields
+		USE
 
-        select origkeys
-        use
+		SELECT origkeys
+		USE
 
-        select origtable
-        use
+		SELECT origtable
+		USE
 
-        select FieldTypes
-        use
+		SELECT FieldTypes
+		USE
 
 
 
-    procedure set_property_all
-        lparameters cfield,cXproperty
-        local cfield,cXproperty,ok_pressed
-        select table_fields
-        go top
-        do form .\forms\property_sheet.scx with this,cfield,cXproperty
+	PROCEDURE set_property_all
+		LPARAMETERS cfield,cXproperty
+		LOCAL cfield,cXproperty,ok_pressed
+		SELECT table_fields
+		GO TOP
+		DO FORM .\FORMS\property_sheet.scx WITH THIS,cfield,cXproperty
 
-    procedure register_edit_form
-        lparameters oEditForm
-        this.nSubFormCount=this.nSubFormCount+1
-        this.aSubForms(this.nSubFormCount)=oEditForm
+	PROCEDURE register_edit_form
+		LPARAMETERS oEditForm
+		THIS.nSubFormCount=THIS.nSubFormCount+1
+		THIS.aSubForms(THIS.nSubFormCount)=oEditForm
 
 
 
-    procedure new_id
-        this.x_tdx_id = this.x_tdx_id+1
-        return this.x_tdx_id
+	PROCEDURE new_id
+		THIS.x_tdx_id = THIS.x_tdx_id+1
+		RETURN THIS.x_tdx_id
 
 
 
-    procedure ReadIndexProperties
-        local I
-        select table_indexes
-        scatter memvar blank
-        select (this.x_alias)
-        for I = 1 to 254
-            if !empty(tag(I))  && Checks for tags in the index
-                m.xtagname=upper(tag(I))
-                *    set order to (m.xtagname)
-                m.xtagexp =key(I)
-                m.xtagno  =tagno(m.xtagname)
-                do case
+	PROCEDURE ReadIndexProperties
+		LOCAL I
+		SELECT table_indexes
+		SCATTER MEMVAR BLANK
+		SELECT (THIS.x_alias)
+		FOR I = 1 TO 254
+			IF !EMPTY(TAG(I))  && Checks for tags in the index
+				m.xtagname=UPPER(TAG(I))
+				*    set order to (m.xtagname)
+				m.xtagexp =KEY(I)
+				m.xtagno  =TAGNO(m.xtagname)
+				DO CASE
 
-                    case primary(m.xtagno)
-                        m.xtagtype='PRIMARY'
+					CASE PRIMARY(m.xtagno)
+						m.xtagtype='PRIMARY'
 
-                    case candidate(m.xtagno)
-                        m.xtagtype='CANDIDATE'
+					CASE CANDIDATE(m.xtagno)
+						m.xtagtype='CANDIDATE'
 
-                    otherwise
-                        m.xtagtype='REGULAR'
+					OTHERWISE
+						m.xtagtype='REGULAR'
 
-                endcase
-                m.xtagfilter=sys(2021,m.xtagno)
-                m.xtagasc  =iif(descending(m.xtagno),'D','A')
-                m.xtagno=str(m.xtagno,3,0)
-                insert into table_indexes from memvar
-                insert into origkeys from memvar
+				ENDCASE
+				m.xtagfilter=SYS(2021,m.xtagno)
+				m.xtagasc  =IIF(DESCENDING(m.xtagno),'D','A')
+				m.xtagno=STR(m.xtagno,3,0)
+				INSERT INTO table_indexes FROM MEMVAR
+				INSERT INTO origkeys FROM MEMVAR
 
-            endif
-        next
-        select table_indexes
-        go top
+			ENDIF
+		NEXT
+		SELECT table_indexes
+		GO TOP
 
 
 
-    procedure ReadFieldProperties
-        lparameters cTable
-        local cTable,cFieldName,I
+	PROCEDURE ReadFieldProperties
+		LPARAMETERS cTable
+		LOCAL cTable,cFieldName,I
 
 
-        if this.x_BelongsToDatabase
-            set database to (this.x_database)
-        endif
+		IF THIS.x_BelongsToDatabase
+			SET DATABASE TO (THIS.x_database)
+		ENDIF
 
-        select (this.x_alias)
-        copy structure extended to temp
+		SELECT (THIS.x_alias)
+		COPY STRUCTURE EXTENDED TO temp
 
-        use temp in 0 exclusive
-        select temp
+		USE temp IN 0 EXCLUSIVE
+		SELECT temp
 
-        go top
-        I=0
-        scan
-            I=I+1
-            scatter memvar memo
-            m.TDX_ID = this.new_id()
-            m.FIELD_NO   = padl(alltrim(str(I)),3,'0')
-            m.FIELD_UNTY  = '  '  &&Unique Type Code - Gets value in below method call
-            m.FIELD_TYDS = this.field_type2name(temp.FIELD_TYPE , temp.FIELD_NOCP , temp.FIELD_STEP )
-            select (this.x_alias)
-            cFieldName=this.x_alias + '.' + allt(m.FIELD_NAME)
+		GO TOP
+		I=0
+		SCAN
+			I=I+1
+			SCATTER MEMVAR MEMO
+			m.TDX_ID = THIS.new_id()
+			m.FIELD_NO   = PADL(ALLTRIM(STR(I)),3,'0')
+			m.FIELD_UNTY  = '  '  &&Unique Type Code - Gets value in below method call
+			m.FIELD_TYDS = THIS.field_type2name(temp.FIELD_TYPE , temp.FIELD_NOCP , temp.FIELD_STEP )
+			SELECT (THIS.x_alias)
+			cFieldName=THIS.x_alias + '.' + ALLT(m.FIELD_NAME)
 
-            if this.x_BelongsToDatabase
+			IF THIS.x_BelongsToDatabase
 
-                m.FIELD_CAPT = dbgetprop(cFieldName, "Field", "Caption")
-                m.FIELD_INPM = dbgetprop(cFieldName, "Field", "Inputmask")
-                m.FIELD_FMT  = dbgetprop(cFieldName, "Field", "Format")
-                m.FIELD_COMM = dbgetprop(cFieldName, "Field", "Comment")
-                m.FIELD_CLLB = dbgetprop(cFieldName, "Field", "DisplayClassLibrary")
-                m.FIELD_CLSS = dbgetprop(cFieldName, "Field", "DisplayClass")
+				m.FIELD_CAPT = DBGETPROP(cFieldName, "Field", "Caption")
+				m.FIELD_INPM = DBGETPROP(cFieldName, "Field", "Inputmask")
+				m.FIELD_FMT  = DBGETPROP(cFieldName, "Field", "Format")
+				m.FIELD_COMM = DBGETPROP(cFieldName, "Field", "Comment")
+				m.FIELD_CLLB = DBGETPROP(cFieldName, "Field", "DisplayClassLibrary")
+				m.FIELD_CLSS = DBGETPROP(cFieldName, "Field", "DisplayClass")
 
-            endif
+			ENDIF
 
-            insert into table_fields from memvar
-            insert into origfields     from memvar
+			INSERT INTO table_fields FROM MEMVAR
+			INSERT INTO origfields     FROM MEMVAR
 
-            if I=1
-                insert into table_self   from memvar
-            endif
+			IF I=1
+				INSERT INTO table_self   FROM MEMVAR
+			ENDIF
 
-            select temp
-        endscan
-        select temp
-        use
-        erase temp.*
-        select table_fields
-        *       browse normal
-        go top
+			SELECT temp
+		ENDSCAN
+		SELECT temp
+		USE
+		ERASE temp.*
+		SELECT table_fields
+		*       browse normal
+		GO TOP
 
-    procedure ReadTableProperties
-        select (this.x_alias)
-        this.x_reccount=reccount()
-        this.x_recsize =recsize()
-        this.x_cpdbf   =cpdbf()
-        this.x_fcount  =fcount()
+	PROCEDURE ReadTableProperties
+		SELECT (THIS.x_alias)
+		THIS.x_reccount=RECCOUNT()
+		THIS.x_recsize =RECSIZE()
+		THIS.x_cpdbf   =CPDBF()
+		THIS.x_fcount  =FCOUNT()
 
-        if this.x_BelongsToDatabase
+		IF THIS.x_BelongsToDatabase
 
-            m.TABLE_PATH  = dbgetprop( this.x_alias , "Table", "Path")
+			m.TABLE_PATH  = DBGETPROP( THIS.x_alias , "Table", "Path")
 
-            m.TABLE_RULE  = dbgetprop( this.x_alias , "Table", "RuleExpression")
-            m.TABLE_ERR   = dbgetprop( this.x_alias , "Table", "RuleExpression")
+			m.TABLE_RULE  = DBGETPROP( THIS.x_alias , "Table", "RuleExpression")
+			m.TABLE_ERR   = DBGETPROP( THIS.x_alias , "Table", "RuleExpression")
 
-            m.TABLE_INS   = dbgetprop( this.x_alias , "Table", "InsertTrigger")
-            m.TABLE_UPD   = dbgetprop( this.x_alias , "Table", "UpdateTrigger")
-            m.TABLE_DEL   = dbgetprop( this.x_alias , "Table", "DeleteTrigger")
+			m.TABLE_INS   = DBGETPROP( THIS.x_alias , "Table", "InsertTrigger")
+			m.TABLE_UPD   = DBGETPROP( THIS.x_alias , "Table", "UpdateTrigger")
+			m.TABLE_DEL   = DBGETPROP( THIS.x_alias , "Table", "DeleteTrigger")
 
-            m.TABLE_CMT   = dbgetprop( this.x_alias , "Table", "Comment")
+			m.TABLE_CMT   = DBGETPROP( THIS.x_alias , "Table", "Comment")
 
-        endif
+		ENDIF
 
-        select table_self
-        gather memvar  &&Record is already added and table name written
+		SELECT table_self
+		GATHER MEMVAR  &&Record is already added and table name written
 
-        scatter memvar
-        insert into origtable from memvar
+		SCATTER MEMVAR
+		INSERT INTO origtable FROM MEMVAR
 
 
 
-    procedure save_changes
-        this.ReleaseSubForms()
-        ***We would need exclusive acces only at this point
-        this.SaveCorePropertiesField()
-        this.SaveCorePropertiesIndex()
-        this.SaveTableProperties()
+	PROCEDURE save_changes
+		THIS.ReleaseSubForms()
+		***We would need exclusive acces only at this point
+		THIS.SaveCorePropertiesField()
+		THIS.SaveCorePropertiesIndex()
+		THIS.SaveTableProperties()
 
 
-        select xcurrent
-        *browse normal
-        scatter name oLogRec
-        oLogRec.xcommit=datetime()
+		SELECT xcurrent
+		*browse normal
+		SCATTER NAME oLogRec
+		oLogRec.xcommit=DATETIME()
 
-        if type('oTDXLOG.NAME') = 'C'
-            oTDXLOG.Dump2LogTable(oLogRec)
-            *oTDXLOG.browse_log()
-        endif
+		IF TYPE('oTDXLOG.NAME') = 'C'
+			oTDXLOG.Dump2LogTable(oLogRec)
+			*oTDXLOG.browse_log()
+		ENDIF
 
-        this.oFrontForm=.f.
-        this.LoadTableStructure()
+		THIS.oFrontForm=.F.
+		THIS.LoadTableStructure()
 
 
 
-    procedure revert_changes
-        this.ReleaseSubForms()
-        this.oFrontForm=.f.
-        this.LoadTableStructure()
+	PROCEDURE revert_changes
+		THIS.ReleaseSubForms()
+		THIS.oFrontForm=.F.
+		THIS.LoadTableStructure()
 
 
 
 
-    procedure CheckForFieldChanges
-        select table_fields
-        local sv_rec
-        sv_rec=recno()
-        go top
-        scan
-            this.UpdateChangeStatus()
-        endscan
-        select table_fields
-        go sv_rec
+	PROCEDURE CheckForFieldChanges
+		SELECT table_fields
+		LOCAL sv_rec
+		sv_rec=RECNO()
+		GO TOP
+		SCAN
+			THIS.UpdateChangeStatus()
+		ENDSCAN
+		SELECT table_fields
+		GO sv_rec
 
 
 
-    procedure UpdateChangeStatus
-        select table_fields
-        local oFR,oBR
-        replace table_fields.TDX_STAT with  ' '  &&Reset back tdx_stat
-        scatter name oFR
-        if seek(table_fields.TDX_ID,'origfields','fldid')
-            select origfields
-            scatter name oBR
-            select table_fields
-            if compobj(oBR,oFR)
-                replace table_fields.TDX_STAT with  ' '  &&No Changes
-            else
-                replace table_fields.TDX_STAT with 'C'  &&Changed
-            endif
-            return
-        endif
-        **It is New Field
-        replace table_fields.TDX_STAT with 'N'  &&New
+	PROCEDURE UpdateChangeStatus
+		SELECT table_fields
+		LOCAL oFR,oBR
+		REPLACE table_fields.TDX_STAT WITH  ' '  &&Reset back tdx_stat
+		SCATTER NAME oFR
+		IF SEEK(table_fields.TDX_ID,'origfields','fldid')
+			SELECT origfields
+			SCATTER NAME oBR
+			SELECT table_fields
+			IF COMPOBJ(oBR,oFR)
+				REPLACE table_fields.TDX_STAT WITH  ' '  &&No Changes
+			ELSE
+				REPLACE table_fields.TDX_STAT WITH 'C'  &&Changed
+			ENDIF
+			RETURN
+		ENDIF
+		**It is New Field
+		REPLACE table_fields.TDX_STAT WITH 'N'  &&New
 
 
 
 
 
-    procedure SaveCorePropertiesField
-        local aa
-        select (this.x_alias)
+	PROCEDURE SaveCorePropertiesField
+		LOCAL aa
+		SELECT (THIS.x_alias)
 
 
-        select table_fields
-        go top
+		SELECT table_fields
+		GO TOP
 
 
 
-        scan
+		SCAN
 
-            ****Primitive saving for dbc held properties via DBSetProp
-            ****Major aproach/procedure will be needed here
+			****Primitive saving for dbc held properties via DBSetProp
+			****Major aproach/procedure will be needed here
 
-            if !this.x_BelongsToDatabase  &&Skip for free tables
-                loop
-            endif
+			IF !THIS.x_BelongsToDatabase  &&Skip for free tables
+				LOOP
+			ENDIF
 
-            aa=this.x_alias + '.' + allt(table_fields.FIELD_NAME)
+			aa = THIS.x_alias + '.' + ALLT(table_fields.FIELD_NAME)
 
-            if alltr(dbgetprop(aa, "Field", "Caption")) <> allt(table_fields.FIELD_CAPT)
-                =dbsetprop(aa, "Field", "Caption",allt(table_fields.FIELD_CAPT))
-            endif
+			*** BYN 01/11/2007 PADR() instead of ALLTRIM() because
+			***                DBGETPROP() returns trimmed values
+			IF PADR(DBGETPROP(aa, "Field", "Caption"), 254) <> table_fields.FIELD_CAPT
+				DBSETPROP(aa, "Field", "Caption",ALLT(table_fields.FIELD_CAPT))
+			ENDIF
 
-            if allt(dbgetprop(aa, "Field", "Inputmask")) <> allt(table_fields.FIELD_IMSK)
-                =dbsetprop(aa, "Field", "Inputmask",allt(table_fields.FIELD_IMSK))
-            endif
+			IF PADR(DBGETPROP(aa, "Field", "Inputmask"), 254) <> table_fields.FIELD_IMSK
+				DBSETPROP(aa, "Field", "Inputmask",ALLT(table_fields.FIELD_IMSK))
+			ENDIF
 
-            if allt(dbgetprop(aa, "Field", "Format"))<>allt(table_fields.FIELD_FMT)
-                =dbsetprop(aa, "Field", "Format",allt(table_fields.FIELD_FMT))
-            endif
+			IF PADR(DBGETPROP(aa, "Field", "Format"), 254) <> table_fields.FIELD_FMT
+				DBSETPROP(aa, "Field", "Format",ALLT(table_fields.FIELD_FMT))
+			ENDIF
 
-            if allt(dbgetprop(aa, "Field", "Comment")) <> allt(table_fields.FIELD_COMM)
-                =dbsetprop(aa, "Field", "Comment",allt(table_fields.FIELD_COMM))
-            endif
+			IF PADR(DBGETPROP(aa, "Field", "Comment"), 254) <> table_fields.FIELD_COMM
+				DBSETPROP(aa, "Field", "Comment",ALLT(table_fields.FIELD_COMM))
+			ENDIF
 
 
-            if empty(allt(table_fields.FIELD_CLLB)) or empty(allt(table_fields.FIELD_CLSS))
-                loop
-            endif
+			*** BYN 01/11/2007 if either are empty ythe other should be empty too
+			IF EMPTY(ALLT(table_fields.FIELD_CLLB)) OR EMPTY(ALLT(table_fields.FIELD_CLSS))
+				REPLACE table_fields.FIELD_CLLB WITH "", ;
+					table_fields.FIELD_CLSS WITH ""
+			ENDIF
 
-            if allt(dbgetprop(aa, "Field", "DisplayClassLibrary")) <> allt(table_fields.FIELD_CLLB)
-                =dbsetprop(aa, "Field", "DisplayClassLibrary",table_fields.FIELD_CLLB)
-            endif
+			IF PADR(DBGETPROP(aa, "Field", "DisplayClassLibrary"), 254) <> table_fields.FIELD_CLLB
+				DBSETPROP(aa, "Field", "DisplayClassLibrary",table_fields.FIELD_CLLB)
+			ENDIF
 
-            if allt(dbgetprop(aa, "Field", "DisplayClass")) <> allt(table_fields.FIELD_CLSS)
-                =dbsetprop(aa, "Field", "DisplayClass",table_fields.FIELD_CLSS)
-            endif
+			IF PADR(DBGETPROP(aa, "Field", "DisplayClass"), 254) <> table_fields.FIELD_CLSS
+				DBSETPROP(aa, "Field", "DisplayClass",table_fields.FIELD_CLSS)
+			ENDIF
+		ENDSCAN
 
-        endscan
 
-    procedure SaveTableProperties
-        **To be developed
+	PROCEDURE SaveTableProperties
+		**To be developed
 
-    procedure SaveCorePropertiesIndex
-        **To be developed
 
+	PROCEDURE SaveCorePropertiesIndex
+		**To be developed
 
 
 
 
-    procedure ReleaseOpenForms
-        ***** 04 OCT 2007 Djordjevic Srdjan
 
-        this.ReleaseSubForms()
+	PROCEDURE ReleaseOpenForms
+		***** 04 OCT 2007 Djordjevic Srdjan
 
-        if type('this.oFrontForm.name') = 'C'
-            this.oFrontForm.release
-        endif
+		THIS.ReleaseSubForms()
 
+		IF TYPE('this.oFrontForm.name') = 'C'
+			THIS.oFrontForm.RELEASE
+		ENDIF
 
-    procedure ReleaseSubForms
-        ***** 04 OCT 2007 Djordjevic Srdjan
-        local I,oSubForm
-        for I=1 to 100
-            oSubForm=this.aSubForms(I)
-            if type('oSubForm.name') ='C'
-                oSubForm.release
-                this.aSubForms(I)=.f.
-            endif
-        next
-        this.nSubFormCount=0
 
+	PROCEDURE ReleaseSubForms
+		***** 04 OCT 2007 Djordjevic Srdjan
+		LOCAL I,oSubForm
+		FOR I=1 TO 100
+			oSubForm=THIS.aSubForms(I)
+			IF TYPE('oSubForm.name') ='C'
+				oSubForm.RELEASE
+				THIS.aSubForms(I)=.F.
+			ENDIF
+		NEXT
+		THIS.nSubFormCount=0
 
 
 
-        ******************************************************
-        * Utilities
-        ******************************************************
 
+		******************************************************
+		* Utilities
+		******************************************************
 
-    procedure field_type2name
-        lparameters cType,lNoCp,nStep
-        m.FIELD_UNTY = cType
-        do case
 
-            case cType='W'
-                return 'Blob'
+	PROCEDURE field_type2name
+		LPARAMETERS cType,lNoCp,nStep
+		m.FIELD_UNTY = cType
+		DO CASE
 
-            case cType='C'
-                if lNoCp
-                    m.FIELD_UNTY='CB'
-                    return 'Character(Binary)'
-                else
-                    return 'Character'
-                endif
+			CASE cType='W'
+				RETURN 'Blob'
 
+			CASE cType='C'
+				IF lNoCp
+					m.FIELD_UNTY='CB'
+					RETURN 'Character(Binary)'
+				ELSE
+					RETURN 'Character'
+				ENDIF
 
-            case cType='N'
-                return 'Numeric'
 
+			CASE cType='N'
+				RETURN 'Numeric'
 
-            case cType='D'
-                return 'Date'
 
-            case cType='T'
-                return 'DateTime'
+			CASE cType='D'
+				RETURN 'Date'
 
+			CASE cType='T'
+				RETURN 'DateTime'
 
-            case cType='I'
-                if nStep > 0
-                    m.FIELD_UNTY='IA'
-                    return 'Integer(AutoInc)'
-                else
-                    return 'Integer'
-                endif
 
-            case cType='L'
-                return 'Logical'
+			CASE cType='I'
+				IF nStep > 0
+					m.FIELD_UNTY='IA'
+					RETURN 'Integer(AutoInc)'
+				ELSE
+					RETURN 'Integer'
+				ENDIF
 
-            case cType='Y'
-                return 'Currency'
+			CASE cType='L'
+				RETURN 'Logical'
 
+			CASE cType='Y'
+				RETURN 'Currency'
 
-            case cType='M'
-                if lNoCp
-                    m.FIELD_UNTY='MB'
-                    return 'Memo(Binary)'
-                else
-                    return 'Memo'
-                endif
 
+			CASE cType='M'
+				IF lNoCp
+					m.FIELD_UNTY='MB'
+					RETURN 'Memo(Binary)'
+				ELSE
+					RETURN 'Memo'
+				ENDIF
 
 
-            case cType='G'
-                return 'General'
 
+			CASE cType='G'
+				RETURN 'General'
 
-            case cType='V'
-                if lNoCp
-                    m.FIELD_UNTY='VB'
-                    return 'Varchar(Binary)'
-                else
-                    return 'Varchar'
-                endif
 
-            case cType='B'
-                return 'Double'
+			CASE cType='V'
+				IF lNoCp
+					m.FIELD_UNTY='VB'
+					RETURN 'Varchar(Binary)'
+				ELSE
+					RETURN 'Varchar'
+				ENDIF
 
-            case cType='F'
-                return 'Float'
+			CASE cType='B'
+				RETURN 'Double'
 
-            case cType='Q'
-                return 'Varbinary'
+			CASE cType='F'
+				RETURN 'Float'
 
-            otherwise
-                return cType + '- Unknown Type'
+			CASE cType='Q'
+				RETURN 'Varbinary'
 
-        endcase
+			OTHERWISE
+				RETURN cType + '- Unknown Type'
 
+		ENDCASE
 
 
 
 
 
-        ************************************************************
-        *  THE END
-        ************************************************************
-enddefine
 
+		************************************************************
+		*  THE END
+		************************************************************
+ENDDEFINE
 
 
 
-define class tdx_log as session
-    x_logtable='tdxlog.dbf'
-    x_last_edited=''
 
+DEFINE CLASS tdx_log AS SESSION
+	x_logtable='tdxlog.dbf'
+	x_last_edited=''
 
 
 
-    procedure init
-        =tdx_set_sys_env()
-        this.open_tables()
 
+	PROCEDURE INIT
+		=tdx_set_sys_env()
+		THIS.open_tables()
 
-    procedure open_tables
-        if !file(this.x_logtable) &&
-            this.create_log_dbf()
-        endif
-        use (this.x_logtable) in 0 shared alias tdxlog
-        select tdxlog
-        go bottom
-        this.x_last_edited = tdxlog.xtable
-        go top
 
+	PROCEDURE open_tables
+		IF !FILE(THIS.x_logtable) &&
+			THIS.create_log_dbf()
+		ENDIF
+		USE (THIS.x_logtable) IN 0 SHARED ALIAS tdxlog
+		SELECT tdxlog
+		GO BOTTOM
+		THIS.x_last_edited = tdxlog.xtable
+		GO TOP
 
 
 
-    procedure create_log_dbf
-        local cLogTable
-        cLogTable = juststem(this.x_logtable)
-        create table &cLogTable  free ;
-            (xdbc        C(100) , ;
-            xtable      C(100) , ;
-            xstart       t  , ;
-            xcommit      t  )
 
-        select  (  cLogTable )
-        use
+	PROCEDURE create_log_dbf
+		LOCAL cLogTable
+		cLogTable = JUSTSTEM(THIS.x_logtable)
+		CREATE TABLE &cLogTable  FREE ;
+			(xdbc        C(100) , ;
+			xtable      C(100) , ;
+			xstart       T  , ;
+			xcommit      T  )
 
+		SELECT  (  cLogTable )
+		USE
 
-    procedure Dump2LogTable
-        lparameters oRec
-        select tdxlog
-        append blank
-        gather name oRec
 
-    procedure populate_combo_recent
-        lparameters oList
-        select tdxlog
-        go bottom
-        if eof()
-            oList.enabled=.f.
-            return
-        endif
+	PROCEDURE Dump2LogTable
+		LPARAMETERS oRec
+		SELECT tdxlog
+		APPEND BLANK
+		GATHER NAME oRec
 
-        oList.value=tdxlog.xtable
+	PROCEDURE populate_combo_recent
+		LPARAMETERS oList
+		SELECT tdxlog
+		GO BOTTOM
+		IF EOF()
+			oList.ENABLED=.F.
+			RETURN
+		ENDIF
 
-        select distinct tdxlog.xtable from tdxlog into cursor recentlyused
-        local I
-        scan
-            if !file(recentlyused.xtable)
-                loop
-            endif
-            if oList.listcount < 50
-                oList.additem(recentlyused.xtable)
-            else
-                exit
-            endif
-        endscan
-        select recentlyused
-        use
+		oList.VALUE=tdxlog.xtable
 
-    procedure browse_log
-        select tdxlog
-        browse normal
+		SELECT DISTINCT tdxlog.xtable FROM tdxlog INTO CURSOR RECENTLYUSED
+		LOCAL I
+		SCAN
+			IF !FILE(RECENTLYUSED.xtable)
+				LOOP
+			ENDIF
+			IF oList.LISTCOUNT < 50
+				oList.ADDITEM(RECENTLYUSED.xtable)
+			ELSE
+				EXIT
+			ENDIF
+		ENDSCAN
+		SELECT RECENTLYUSED
+		USE
 
+	PROCEDURE browse_log
+		SELECT tdxlog
+		BROWSE NORMAL
 
-enddefine
 
+ENDDEFINE
 
 
-Function tdxSetup
-lparameters cRoot
 
-set default to (cRoot)
-set path to (cRoot)
-set path to ;data;include;forms;BITMAPS;help;LIBS;menus;PROGS;TEMPLATES;REPORTS additive
+FUNCTION tdxSetup
+	LPARAMETERS cRoot
 
-Local cProc
-cProc=Set('PROCEDURE')
-If !'TABLE_MANAGER'$cProc
-  set procedure to ( cRoot + '\progs\table_manager.prg' )  additive
-endif  
+	SET DEFAULT TO (cRoot)
+	SET PATH TO (cRoot)
+	SET PATH TO ;DATA;INCLUDE;FORMS;BITMAPS;HELP;LIBS;MENUS;PROGS;TEMPLATES;REPORTS ADDITIVE
 
-if type('oTDXLOG.NAME') <> 'C'
-    public oTDXLOG
-    oTDXLOG=createobject('tdx_log')
-endif
+	LOCAL cProc
+	cProc=SET('PROCEDURE')
+	IF !'TABLE_MANAGER'$cProc
+		SET PROCEDURE TO ( cRoot + '\progs\table_manager.prg' )  ADDITIVE
+	ENDIF
 
+	IF TYPE('oTDXLOG.NAME') <> 'C'
+		PUBLIC oTDXLOG
+		oTDXLOG=CREATEOBJECT('tdx_log')
+	ENDIF
 
 
 
-****************** Utility Functions*******************
-*                                                     *
-*******************************************************
 
-function tdx_set_sys_env
-    ******************Default Environment Settings
-    set talk off
-    set console off
-    set century on
-    set deleted on
-    set exclusive off
-    set safety on
-    set deleted on
-    set century on
-    set date to british
-    set near off
-    *******************
+	****************** Utility Functions*******************
+	*                                                     *
+	*******************************************************
 
-    ***************************
-    * Simple Messagebox Wrapper
-    ***************************
-function question
-    parameters cMessageText
-    cMessageTitle = 'Question:'
-    nDialogType = 4 + 32 + 256
-    *  4 = Yes and No buttons
-    *  32 = Question mark icon
-    *  256 = Second button is default
-    nAnswer = messagebox(cMessageText, nDialogType, cMessageTitle)
-    do case
+FUNCTION tdx_set_sys_env
+	******************Default Environment Settings
+	SET TALK OFF
+	SET CONSOLE OFF
+	SET CENTURY ON
+	SET DELETED ON
+	SET EXCLUSIVE OFF
+	SET SAFETY ON
+	SET DELETED ON
+	SET CENTURY ON
+	SET DATE TO british
+	SET NEAR OFF
+	*******************
 
-        case nAnswer = 6
-            return .t.
+	***************************
+	* Simple Messagebox Wrapper
+	***************************
+FUNCTION question
+	PARAMETERS cMessageText
+	cMessageTitle = 'Question:'
+	nDialogType = 4 + 32 + 256
+	*  4 = Yes and No buttons
+	*  32 = Question mark icon
+	*  256 = Second button is default
+	nAnswer = MESSAGEBOX(cMessageText, nDialogType, cMessageTitle)
+	DO CASE
 
-        case nAnswer = 7
-            return .f.
+		CASE nAnswer = 6
+			RETURN .T.
 
-    endcase
+		CASE nAnswer = 7
+			RETURN .F.
 
+	ENDCASE
 
-    *Unused yet by tdx but might come handy later
-function StringToArray
-    lparameters pstring,pdlm,myarray
-    *******************************************************
-    * String to array conversion
-    *******************************************************
-    ** receives Delimited String, Dlm.Char and array passed
-    ** by reference
-    ** Fills up that array with delimited values
-    ** Returns number of those values (array size)
-    *******************************************************
-    declare myarray(occurs(pdlm,pstring)+1)
-    for I = 1 to alen(myarray)
-        if atc(pdlm,pstring)>0
-            myarray(I)=left(pstring,atc(pdlm,pstring)-1)
-            pstring=right(pstring,len(pstring)-atc(pdlm,pstring))
-        else
-            myarray(I)=pstring
-        endif
-    next
-    return alen(myarray)
 
+	*Unused yet by tdx but might come handy later
+FUNCTION StringToArray
+	LPARAMETERS pstring,pdlm,myarray
+	*******************************************************
+	* String to array conversion
+	*******************************************************
+	** receives Delimited String, Dlm.Char and array passed
+	** by reference
+	** Fills up that array with delimited values
+	** Returns number of those values (array size)
+	*******************************************************
+	DECLARE myarray(OCCURS(pdlm,pstring)+1)
+	FOR I = 1 TO ALEN(myarray)
+		IF ATC(pdlm,pstring)>0
+			myarray(I)=LEFT(pstring,ATC(pdlm,pstring)-1)
+			pstring=RIGHT(pstring,LEN(pstring)-ATC(pdlm,pstring))
+		ELSE
+			myarray(I)=pstring
+		ENDIF
+	NEXT
+	RETURN ALEN(myarray)
 
-function in_brackets
-    lparameters cString
-    return '[' + cString + ']'
+
+FUNCTION in_brackets
+	LPARAMETERS cString
+	RETURN '[' + cString + ']'
