@@ -1624,7 +1624,7 @@ DEFINE CLASS xfcBitmap AS xfcimage
 			ENDIF
 		
 			xfcDeleteObject(hbm)
-			xfcReleaseDC(m.tHWnd, m.hdcCompat)
+			xfcDeleteDC(m.hdcCompat)
 			xfcReleaseDC(m.tHWnd, m.hDC)
 			IF m.lhImage <> m.lhBitmap
 				This.SetStatus(xfcGdipDisposeImage(m.lhBitmap))
@@ -2341,6 +2341,10 @@ DEFINE CLASS xfcBrushes AS xfcdrawingbase
 	WhiteSmoke = .NULL.	&& Gets a system defined Brush object
 	Yellow = .NULL.	&& Gets a system defined Brush object
 	YellowGreen = .NULL.	&& Gets a system defined Brush object
+
+	#IFDEF USE_MEMBERDATA
+	_Memberdata = ""	
+	#ENDIF
  
 	*********************************************************************
 	FUNCTION Init
@@ -4938,8 +4942,8 @@ DEFINE CLASS xfcFont AS xfcgpobject
 				m.loFont = m.teFamily
 				m.lhFontFamily = m.loFont.FontFamily.Handle
 				m.teFamily = m.loFont.FontFamily
-				m.tiStyle = m.tnSize
-				m.tnSize = m.loFont.Size
+				m.tiStyle = m.tnEmSize
+				m.tnEmSize = m.loFont.Size
 				m.tiUnit = m.loFont.Unit
 			ENDCASE
 			
@@ -23067,8 +23071,8 @@ DEFINE CLASS xfcSystemBrushes AS xfcdrawingbase
 	ScrollBar = 0	&& Gets a SolidBrush object that is the color of the background of a scroll bar.
 	Window = 0	&& Gets a SolidBrush object that is the color of the background in the client area of a window.
 	WindowText = 0	&& Gets a SolidBrush object that is the color of the text in the client area of a window.
-	PROTECTED osyscolor
-	osyscolor = .NULL.
+	PROTECTED oSysColor
+	oSysColor = .NULL.
  
 	*********************************************************************
 	FUNCTION Init
@@ -24976,6 +24980,8 @@ DEFINE CLASS xfcSystemPens AS xfcdrawingbase
 	MenuText = NULL	&& Gets a Pen object that is the color of a menu's text.
 	WindowFrame = NULL	&& Gets a Pen object that is the color of a window frame.
 	WindowText = NULL	&& Gets a Pen object that is the color of the text in the client area of a window.
+	PROTECTED oSysColor
+	oSysColor = .NULL.
  
 	*********************************************************************
 	FUNCTION Init
@@ -24998,7 +25004,7 @@ DEFINE CLASS xfcSystemPens AS xfcdrawingbase
 		LOCAL loExc AS Exception
 		TRY
 			DODEFAULT()
-			This.AddObject("oSysColor", "xfcSystemColor")
+			This.oSysColor = CREATEOBJECT("xfcSystemColors")
 		CATCH TO loExc
 			THROW m.loExc
 		ENDTRY
