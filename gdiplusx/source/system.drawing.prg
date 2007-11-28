@@ -1150,6 +1150,7 @@ DEFINE CLASS xfcBitmap AS xfcimage
 	**  2006/03/07: Auto Generated
 	**	2006/03/10: BDurban - Coded, partial
 	**  2006/08/25: CChalom - Coded 3 more overloads, still not finished
+	**  2007/11/04: CChalom - Coded one more overload for Width, Height, PixelFormat
 	**
 	** .NET Help ********************************************************
 	** http://msdn2.microsoft.com/en-us/library/System.Drawing.Bitmap.Bitmap%28vs.80%29.aspx
@@ -1221,6 +1222,15 @@ DEFINE CLASS xfcBitmap AS xfcimage
 				m.tiWidth = m.tiWidth.Width
 				m.lnFunctionType = 5
 			
+
+		** Width, Height, PixelFormat
+			CASE LEFT(m.lcVarType,4) == "NNNL"
+				m.tiFormat = EVL(m.tiStride, 0)
+				m.tiStride = 0
+				m.tiScan0 = 0
+				m.lnFunctionType = 5
+
+
 		** Width, Height, Stride, Format, Scan0
 			CASE LEFT(m.lcVarType,2) == "NN"
 				m.tiStride = EVL(m.tiStride, 0)
@@ -1309,6 +1319,7 @@ DEFINE CLASS xfcBitmap AS xfcimage
 	ENDFUNC
 
 
+
 	*********************************************************************
 	FUNCTION Destroy
 	*********************************************************************
@@ -1393,7 +1404,7 @@ DEFINE CLASS xfcBitmap AS xfcimage
 	*********************************************************************
 	** Method: xfcBitmap.FromClipboard
 	**
-	** Sends the Image to the clipboard
+	** Creates a Bitmap from the clipboard data
 	**
 	** History:
 	**  2007/02/02: CChalom - Coded (Adapted from FromClipboard Method from GPIMAGE from Alexander Golovlev)
@@ -1533,11 +1544,13 @@ DEFINE CLASS xfcBitmap AS xfcimage
 	**
 	** History:
 	**	2006/08/26: CChalom - Coded
+	**	2007/11/26: CChalom - Added new overload allowing to capture a form object
 	*********************************************************************
 	LPARAMETERS tHWnd, ;
 					tiX, tiY, tiWidth, tiHeight, ;
 					tlEnsureVisible
 	*********** toForm [, tiX, tiY, tiWidth, tiHeight [, tlEnsureVisible]]
+	*********** toControl [, tlEnsureVisible]
 		
 		*!ToDo: Test this function
 		
@@ -1568,6 +1581,45 @@ DEFINE CLASS xfcBitmap AS xfcimage
 					ENDIF
 				ENDIF
 				m.tHWnd = loForm.HWnd
+				
+
+
+			CASE VARTYPE(m.tHWnd) = "O" AND m.tHWnd.BaseClass <> "Form"
+
+				LOCAL loControl as Control 
+				m.loControl = m.tHWnd
+				m.tlEnsureVisible = m.tiX
+				
+				m.lnFunctionType = 3 && VFP Object inside a form
+
+				LOCAL lnTitleHeight, lnLeftBorder, lnTopBorder
+				lnTitleHeight = SYSMETRIC(9)
+				lnLeftBorder = SYSMETRIC(3)
+				lnTopBorder = SYSMETRIC(4)
+
+				m.tiY = This.OBJTOCLIENTEX(loControl, 1) + m.lnTitleHeight + m.lnTopBorder
+				m.tiX = This.OBJTOCLIENTEX(loControl, 2) + m.lnLeftBorder 
+				m.tiWidth = loControl.Width
+				m.tiHeight = loControl.Height
+
+				DO WHILE NOT UPPER(m.loControl.BaseClass) == [FORM]
+					m.loControl = m.loControl.Parent
+				ENDDO
+				
+				m.loForm = m.loControl
+				m.tHWnd = m.loForm.HWnd
+
+				IF m.tlEnsureVisible
+					IF m.loForm.Left < 0 OR m.loForm.Top < 0
+						*!ToDo: Need to check if too far right also
+						m.lnLeft0 = m.loForm.Left
+						m.lnTop0 = m.loForm.Top
+						m.loForm.Move(0,0)
+						m.llMoved = .T.
+					ENDIF
+				ENDIF
+
+				
 			CASE VARTYPE(m.tHWnd) <> "N"
 				m.tHWnd = 0
 				m.lnFunctionType = 1 && hWnd
@@ -1577,7 +1629,7 @@ DEFINE CLASS xfcBitmap AS xfcimage
 				m.tHWnd = xfcGetDesktopWindow()
 			ENDIF
 		
-		   	m.lqRect = REPLICATE(CHR(0), 16)
+		   	m.lqRect = EMPTY_RECTANGLE
 		
 		    m.lnStat = xfcGetWindowRect(m.tHWnd, @lqRect)
 		   	m.lnLeft   = CTOBIN(SUBSTR(m.lqRect,  1, 4),"4rs")
@@ -1587,7 +1639,7 @@ DEFINE CLASS xfcBitmap AS xfcimage
 			m.lnWidth  = m.lnRight - m.lnLeft
 			m.lnHeight = m.lnBottom - m.lnTop
 		
-			*! ToDo: Need to chec the position of the parent window, not just the desktop
+			*! ToDo: Need to check the position of the parent window, not just the desktop
 			IF m.tlEnsureVisible AND m.lnRight > SYSMETRIC(1) OR m.lnBottom > SYSMETRIC(2) ;
 				OR m.lnLeft < 0 OR m.lnTop < 0
 		
@@ -1624,7 +1676,7 @@ DEFINE CLASS xfcBitmap AS xfcimage
 			ENDIF
 		
 			xfcDeleteObject(hbm)
-			xfcDeleteDC(m.hdcCompat)
+			xfcReleaseDC(m.tHWnd, m.hdcCompat)
 			xfcReleaseDC(m.tHWnd, m.hDC)
 			IF m.lhImage <> m.lhBitmap
 				This.SetStatus(xfcGdipDisposeImage(m.lhBitmap))
@@ -1644,6 +1696,71 @@ DEFINE CLASS xfcBitmap AS xfcimage
 		
 		RETURN m.loImage
 	ENDFUNC
+
+
+	*********************************************************************
+	FUNCTION ObjToClientEx
+	*********************************************************************
+	** Method: xfcBitmap.ObjToClientEx
+	**
+	** This replaces OBJTOCLIENT that has bugs with pageframes and SP2
+	**
+	** History:
+	**	2007/11/26: CAlloatti/CChalom - Coded Made small adaptation from the original code from Carlos Alloatti in his CTL32SContainer
+	*********************************************************************
+	PARAMETERS toControl, tnType && 1 = Top  2 = Left
+
+	*!* TabOrientation parameters
+	#DEFINE CON_TABOR_TOP							0
+	#DEFINE CON_TABOR_BOTTOM						1
+	#DEFINE CON_TABOR_LEFT							2
+	#DEFINE CON_TABOR_RIGHT							3
+
+	LOCAL lnPosition AS INTEGER
+	m.lnPosition = 0
+
+	DO CASE
+
+	CASE m.tnType = 1 && Top
+		DO WHILE NOT UPPER(m.toControl.BASECLASS) == [FORM]
+			IF PEMSTATUS(m.toControl, [Top],5) THEN && Defined Property
+				m.lnPosition = m.lnPosition + m.toControl.TOP
+			ENDIF
+			IF UPPER(m.toControl.BASECLASS) == [PAGE] THEN
+				IF m.toControl.PARENT.TABORIENTATION = CON_TABOR_TOP THEN	&& Top
+					m.lnPosition = m.lnPosition + ;
+						m.toControl.PARENT.HEIGHT - ;
+						m.toControl.PARENT.PAGEHEIGHT - ;
+						m.toControl.PARENT.BORDERWIDTH * 2
+				ELSE
+					m.lnPosition = m.lnPosition + 1
+				ENDIF
+			ENDIF
+			m.toControl = m.toControl.PARENT
+		ENDDO
+
+	CASE m.tnType = 2 && Left
+		DO WHILE NOT UPPER(m.toControl.BASECLASS) == [FORM]
+			IF PEMSTATUS(m.toControl, [Left], 5) THEN && Defined Property
+				m.lnPosition = m.lnPosition + m.toControl.LEFT
+			ENDIF
+			IF UPPER(m.toControl.BASECLASS) == [PAGE]
+				IF m.toControl.PARENT.TABORIENTATION = CON_TABOR_LEFT THEN	&& Left
+					m.lnPosition = m.lnPosition + ;
+						m.toControl.PARENT.WIDTH - ;
+						m.toControl.PARENT.PAGEWIDTH - ;
+						m.toControl.PARENT.BORDERWIDTH * 2
+				ELSE
+					m.lnPosition = m.lnPosition + 1
+				ENDIF
+			ENDIF
+			m.toControl = m.toControl.PARENT
+		ENDDO
+
+	ENDCASE
+
+	RETURN m.lnPosition
+
 
 
 	*********************************************************************
@@ -1851,6 +1968,141 @@ DEFINE CLASS xfcBitmap AS xfcimage
 		
 		RETURN NULL
 	ENDFUNC
+
+
+	*********************************************************************
+	FUNCTION ApplyColorMatrix
+	*********************************************************************
+	** Method: xfcBitmap.ApplyColorMatrix
+	**
+	** Aplies the recived ColorMatrix to the current image
+	**
+	** History:
+	**	2007/11/21: CChalom - Coded
+	**
+	*********************************************************************
+	LPARAMETERS toClrMatrix AS xfcColorMatrix, tiFormat AS EnumPixelFormat
+		
+		*!ToDo: Test this function
+		
+		LOCAL loExc AS Exception
+		TRY
+		
+			m.tiFormat = EVL(m.tiFormat, PixelFormat32bppARGB)
+		
+			LOCAL loBmp AS xfcBitmap
+			LOCAL loGfx AS xfcGraphics
+			LOCAL loAttr AS xfcImageAttributes
+			LOCAL loBmpOrig AS xfcBitmap
+			LOCAL loRect AS xfcRectangle
+			m.loBmp = CREATEOBJECT(This.Class, This.Width, This.Height, m.tiFormat)
+			m.loGfx = CREATEOBJECT("xfcGraphics")
+			m.loGfx = m.loGfx.FromImage(m.loBmp)
+			m.loGfx.Clear(CREATEOBJECT("xfcColor", ARGB_White))
+			m.loAttr = NEWOBJECT("xfcImageAttributes", XFCCLASS_IMAGING)
+			m.loAttr.SetColorMatrix(m.toClrMatrix)
+			m.loRect = CREATEOBJECT("xfcRectangle", 0, 0, This.Width, This.Height)
+			
+			m.loGfx.DrawImage(This, m.loRect, m.loRect, UnitPixel, m.loAttr)
+				
+			IF This.Handle <> 0
+				This.Destroy()
+				
+				m.loBmpOrig = m.loBmp.Clone(m.loRect, m.loBmp.PixelFormat)
+				This.Handle = m.loBmpOrig.Handle
+				m.loBmpOrig.Handle = 0
+			ENDIF
+			
+			m.loGfx = NULL
+			m.loBmp = NULL
+			m.loAttr = NULL
+				
+		CATCH TO loExc
+			THROW m.loExc
+		ENDTRY
+		
+		RETURN NULL
+	ENDFUNC
+
+
+
+	*********************************************************************
+	FUNCTION GetMask
+	*********************************************************************
+	** Method: xfcBitmap.GetMask
+	**
+	** Provides the Mask bitmap from the current image
+	**
+	** History:
+	**	2007/11/22: CChalom - Coded
+	**
+	*********************************************************************
+	LPARAMETERS tiFormat AS EnumPixelFormat
+		
+		*!ToDo: Test this function
+		
+		LOCAL loExc AS Exception
+		TRY
+		
+			LOCAL lnBitsPerPixel
+			lnBitsPerPixel = This.GetPixelFormatSize(This.PixelFormat)
+
+			LOCAL loMaskBmp as xfcBitmap
+			m.tiFormat = EVL(m.tiFormat, PixelFormat24bppRGB)
+
+			IF lnBitsPerPixel = 32 && Has alpha enabled
+
+				m.loMaskBmp = This.Clone()
+
+				LOCAL loMaskMatrix as xfcColorMatrix
+				m.loMaskMatrix = NEWOBJECT("xfcColorMatrix", XFCCLASS_IMAGING)
+				m.loMaskMatrix = m.loMaskMatrix.New( ;
+					 0, 0, 0, 0, 0, ;
+					 0, 0, 0, 0, 0, ;
+					 0, 0, 0, 0, 0, ;
+					-1,-1,-1, 1, 0, ;
+					 0, 0, 0, 0, 1)
+
+				m.loMaskBmp.ApplyColorMatrix(m.loMaskMatrix, m.tiFormat)
+				m.loMaskMatrix = NULL
+				
+			ELSE 
+			
+				LOCAL loGfx AS xfcGraphics
+				LOCAL loAttr AS xfcImageAttributes
+				LOCAL loRect AS xfcRectangle
+				LOCAL loClrMatrix as xfcColorMatrix
+				m.loMaskBmp = CREATEOBJECT(This.Class, This.Width, This.Height, PixelFormat24bppRGB)
+				m.loGfx = CREATEOBJECT("xfcGraphics")
+				m.loGfx = m.loGfx.FromImage(m.loMaskBmp)
+				m.loGfx.Clear(CREATEOBJECT("xfcColor", ARGB_White))
+				m.loAttr = NEWOBJECT("xfcImageAttributes", XFCCLASS_IMAGING)
+				m.loClrMatrix = NEWOBJECT("xfcColorMatrix", XFCCLASS_IMAGING)
+				m.loClrMatrix = m.loClrMatrix.New( ;
+					0.2, 0.2, 0.2, 0, 0, ;
+					0.2, 0.2, 0.2, 0, 0, ;
+					0.1, 0.1, 0.1, 0, 0, ;
+					0.0, 0.0, 0.0, 1, 0, ;
+					0.0, 0.0, 0.0, 0, 1)
+				m.loAttr.SetColorMatrix(m.loClrMatrix)
+
+				*!* Set the Threshold to 0.5, that will make all non-white pixels turn black
+				*!* In our case will turn all less RGB(128,128,128) pixels to black, and RGB(128,128,128) to white
+				m.loAttr.SetThreshold(0.5)
+
+				m.loRect = CREATEOBJECT("xfcRectangle", 0, 0, This.Width, This.Height)
+			
+				m.loGfx.DrawImage(This, m.loRect, m.loRect, UnitPixel, m.loAttr)
+					
+			ENDIF 
+	
+		CATCH TO loExc
+			THROW m.loExc
+		ENDTRY
+		
+		RETURN m.loMaskBmp
+	ENDFUNC
+
 
 
 	*********************************************************************
@@ -7059,11 +7311,11 @@ DEFINE CLASS xfcGraphics AS xfcgpobject
 		LOCAL lcRect
 		TRY
 			IF This.UsePrecision
-				m.lcRect = REPLICATE(BINTOC(0.0,"n"),4)
+				m.lcRect = EMPTY_RECTANGLEF
 				This.SetStatus(xfcGdipGetClipBounds(This.Handle, @lcRect))
 				m.loRectangle = CREATEOBJECT("xfcRectangleF", m.lcRect)
 			ELSE
-				m.lcRect = REPLICATE(BINTOC(0.0,"n"),4)
+				m.lcRect = EMPTY_RECTANGLE
 				This.SetStatus(xfcGdipGetClipBoundsI(This.Handle, @lcRect))
 				m.loRectangle = CREATEOBJECT("xfcRectangle", m.lcRect)
 			ENDIF
@@ -8503,7 +8755,6 @@ DEFINE CLASS xfcGraphics AS xfcgpobject
 		LOCAL llEndOfSentence, lnWordsWidth, lnWordsinLine, lnCurrWord, lnCurrLine, lnX, lnY
 		LOCAL lnWidthofBetween, lnStringFormatHandle, llLast
 			
-		#DEFINE EMPTY_RECT    REPLICATE(CHR(0),16)
 		#DEFINE TextRenderingHintAntiAlias		4
 		
 		LOCAL loExc AS Exception
@@ -8558,7 +8809,7 @@ DEFINE CLASS xfcGraphics AS xfcgpobject
 		
 		
 			* Measure Space for the given font
-			STORE EMPTY_RECT TO m.lcRectF, pcBoundingBox
+			STORE EMPTY_RECTANGLE TO m.lcRectF, pcBoundingBox
 			= xfcGdipMeasureString( m.lhGraphics;
 				, STRCONV(" " + 0h00,5)	;
 				, 1 ;
@@ -8579,7 +8830,7 @@ DEFINE CLASS xfcGraphics AS xfcgpobject
 		
 				laWords(N,1) = GETWORDNUM(m.lcText, N)
 				m.lcCurrWord = laWords(N,1)
-				STORE EMPTY_RECT TO m.lcRectF, pcBoundingBox
+				STORE EMPTY_RECTANGLE TO m.lcRectF, pcBoundingBox
 				= xfcGdipMeasureString(m.lhGraphics;
 					, STRCONV(m.lcCurrWord + 0h00,5)	;
 					, LENC(m.lcCurrWord) ;
@@ -8594,7 +8845,7 @@ DEFINE CLASS xfcGraphics AS xfcgpobject
 					DO WHILE .T.
 						m.lnChars = ROUND((LENC(m.lcCurrWord) / (m.lnWordWidth / m.wImg)),0) - m.lnReduce
 						m.lcCutWord = SUBSTR(m.lcCurrWord, 1, m.lnChars)
-						STORE EMPTY_RECT TO m.lcRectF, pcBoundingBox
+						STORE EMPTY_RECTANGLE TO m.lcRectF, pcBoundingBox
 						= xfcGdipMeasureString(m.lhGraphics;
 							, STRCONV(m.lcCutWord + 0h00,5)	;
 							, LENC(m.lcCutWord) ;
@@ -10999,13 +11250,13 @@ DEFINE CLASS xfcGraphics AS xfcgpobject
 		LOCAL loExc AS Exception
 		TRY
 			IF This.UsePrecision
-				m.lcRect = REPLICATE(BINTOC(0,"4rs"),4)
+				m.lcRect = EMPTY_RECTANGLEF
 				This.SetStatus(xfcGdipGetVisibleClipBounds(This.Handle, @lcRect))
-				m.loRectangle = CREATEOBJECT("xfcRectangle", lcRect)
-			ELSE
-				m.lcRect = REPLICATE(BINTOC(0,"n"),4)
-				This.SetStatus(xfcGdipGetVisibleClipBoundsI(This.Handle, @lcRect))
 				m.loRectangle = CREATEOBJECT("xfcRectangleF", lcRect)
+			ELSE
+				m.lcRect = EMPTY_RECTANGLE
+				This.SetStatus(xfcGdipGetVisibleClipBoundsI(This.Handle, @lcRect))
+				m.loRectangle = CREATEOBJECT("xfcRectangle", lcRect)
 			ENDIF
 		CATCH TO loExc
 			THROW m.loExc
@@ -11879,6 +12130,9 @@ DEFINE CLASS xfcImage AS xfcgpobject
 	VerticalResolution = 0	&& Gets the vertical resolution, in pixels-per-inch, of this Image object.
 	Width = 0
 	Height = 0
+
+	PROTECTED _oStream
+	_oStream = NULL && Stores the MemoryStream Object used for the method "FromVarBinary"
 	
 	DIMENSION FrameDimensionsList[1]
 	** Gets an array of GUIDs that represent the dimensions of frames within this Image object.
@@ -12189,7 +12443,6 @@ DEFINE CLASS xfcImage AS xfcgpobject
 				tlUseEmbeddedColorManagement
 	*********** toStream AS xfcStream [, tlUseEmbeddedColorManagement]
 	*********** toStream AS LongPtr [, tlUseEmbeddedColorManagement]
-	*********** toStream AS VarBinary [, tlUseEmbeddedColorManagement]
 
 		*!ToDo: Test this function
 		
@@ -12204,9 +12457,6 @@ DEFINE CLASS xfcImage AS xfcgpobject
 				m.lhStream = m.toStream.Handle
 			CASE VARTYPE(m.toStream) == "N"
 				m.lhStream = m.toStream
-			CASE VARTYPE(m.toStream) == "Q"
-				m.loStream = NEWOBJECT("xfcMemoryStream", XFCCLASS_IO, "", m.toStream) 
-				m.lhStream = m.loStream.Handle
 			ENDCASE
 			
 			IF m.tlUseEmbeddedColorManagement
@@ -12237,6 +12487,7 @@ DEFINE CLASS xfcImage AS xfcgpobject
 	**
 	** History:
 	**  2007/09/02: BDurban - Coded
+	**  2007/11/24: CAlloatti / CChalom - Added _oStream Property to store the temp Stream during the existance of this Image object
 	**
 	** Returns: Image
 	*********************************************************************
@@ -12247,7 +12498,9 @@ DEFINE CLASS xfcImage AS xfcgpobject
 		LOCAL loExc AS Exception
 		TRY
 			m.loStream = NEWOBJECT("xfcMemoryStream", XFCCLASS_IO, "", m.tqBinary, .T.)
-			m.loImage = This.FromStream(m.loStream, m.tlUseEmbeddedColorManagement)
+			This._oStream = m.loSTream
+			m.loImage = This.FromStream(m.loStream.Handle, m.tlUseEmbeddedColorManagement)
+
 		CATCH TO loExc
 			THROW m.loExc
 		ENDTRY
@@ -12255,7 +12508,6 @@ DEFINE CLASS xfcImage AS xfcgpobject
 		RETURN m.loImage
 	
 	ENDFUNC
-	
 	
 
 	*********************************************************************
@@ -12283,7 +12535,7 @@ DEFINE CLASS xfcImage AS xfcgpobject
 		TRY
 			LOCAL loRectangleF, lcStruct
 			m.loRectangleF = NULL
-			lcStruct = REPLICATE(BINTOC(0.0,"f"),4)
+			lcStruct = EMPTY_RECTANGLEF
 			This.SetStatus(xfcGdipGetImageBounds(This.Handle, @lcStruct, @tiPageUnit))
 			m.loRectangleF = CREATEOBJECT("xfcRectangleF", m.lcStruct)
 		CATCH TO loExc
@@ -21230,6 +21482,36 @@ DEFINE CLASS xfcSize AS xfcdrawingbase
 
 
 	*********************************************************************
+	FUNCTION ToRectangle
+	*********************************************************************
+	** Method: xfcSize.ToRectangle
+	**
+	** History:
+	**	2007/11/27: CChalom - Coded
+	*********************************************************************
+		
+		*!ToDo: Test this function
+		
+		LOCAL loRect AS xfcRectangle
+		LOCAL liWidth, liHeight
+		
+		m.loRect = NULL
+		STORE 0 TO m.liWidth, m.liHeight
+		
+		LOCAL loExc AS Exception
+		TRY
+			m.liWidth   = This.Width
+			m.liHeight  = This.Height
+			m.loRect = CREATEOBJECT("xfcRectangle", 0, 0, m.liWidth, m.liHeight)
+		CATCH TO loExc
+			THROW m.loExc
+		ENDTRY
+		
+		RETURN m.loRect
+	ENDFUNC
+
+
+	*********************************************************************
 	FUNCTION Equals
 	*********************************************************************
 	** Method: xfcSize.Equals
@@ -21719,6 +22001,36 @@ DEFINE CLASS xfcSizeF AS xfcdrawingbase
 	LPARAMETERS tnWidth, tnHeight
 		
 		RETURN CREATEOBJECT(This.Class, m.tnWidth, m.tnHeight)
+	ENDFUNC
+
+
+	*********************************************************************
+	FUNCTION ToRectangleF
+	*********************************************************************
+	** Method: xfcSizeF.ToRectangleF
+	**
+	** History:
+	**	2007/11/28: CChalom - Coded
+	*********************************************************************
+		
+		*!ToDo: Test this function
+		
+		LOCAL loRect AS xfcRectangleF
+		LOCAL lnWidth, lnHeight
+		
+		m.loRect = NULL
+		STORE 0 TO m.lnWidth, m.lnHeight
+		
+		LOCAL loExc AS Exception
+		TRY
+			m.liWidth   = This.Width
+			m.liHeight  = This.Height
+			m.loRect = CREATEOBJECT("xfcRectangleF", 0, 0, m.lnWidth, m.lnHeight)
+		CATCH TO loExc
+			THROW m.loExc
+		ENDTRY
+		
+		RETURN m.loRect
 	ENDFUNC
 
 
