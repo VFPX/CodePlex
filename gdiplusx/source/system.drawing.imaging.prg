@@ -1441,7 +1441,9 @@ DEFINE CLASS xfcColorMap AS xfcDrawingBase OF System.Drawing.prg
 	** History:
 	** 2006/05/02: BDurban - Coded
 	** 2006/08/08: CChalom - Updated and Tested
+	** 2007/11/21: CChalom - Fixed Array and Varbinary support
 	*********************************************************************
+
 	LPARAMETERS taColorMap AS xfcColorMap
 		LOCAL lqBinary, loColorMap
 		m.lqBinary = 0h
@@ -1455,18 +1457,21 @@ DEFINE CLASS xfcColorMap AS xfcDrawingBase OF System.Drawing.prg
 			FOR EACH loColorMap AS xfcColorMap IN taColorMap FOXOBJECT
 				m.lqBinary = m.lqBinary + m.loColorMap.ToVarbinary()
 			ENDFOR
+
+		CASE VARTYPE(m.taColorMap) = "Q"
+			m.lqBinary = m.taColorMap
 			
-		CASE VARTYPE(m.taPoint) = "O"
+		CASE VARTYPE(m.taColorMap) = "O"
 			m.loColorMap = m.taColorMap
 			m.lqBinary = m.loColorMap.ToVarbinary()
 			
-		CASE VARTYPE(m.taColorMap) = "N"
+		OTHERWISE
+			m.lqBinary = NULL
+
 		** Test
 		ENDCASE
 		RETURN m.lqBinary
 	ENDFUNC
-
-
 
 
 	#IFDEF USE_MEMBERDATA
@@ -5660,6 +5665,7 @@ DEFINE CLASS xfcImageAttributes AS xfcgpobject OF System.Drawing.prg
 	** 2006/03/07: Auto Generated
 	** 2006/05/02: BDurban - Coded
 	** 2006/08/08: CChalom - Fixed and Tested
+	** 2007/11/21: CChalom - Fixed Array and Varbinary support
 	**
 	** .NET Help ********************************************************
 	** http://msdn2.microsoft.com/en-us/library/System.Drawing.Imaging.ImageAttributes.SetRemapTable%28vs.80%29.aspx
@@ -5668,16 +5674,20 @@ DEFINE CLASS xfcImageAttributes AS xfcgpobject OF System.Drawing.prg
 	** ColorMap[] map, ColorAdjustType type
 	** Returns: void
 	*********************************************************************
-	LPARAMETERS toColorMap AS xfcColorMap, ;
+	LPARAMETERS taoColorMap AS xfcColorMap, ;
 		tiType AS EnumColorAdjustType
 		
 		LOCAL loExc AS Exception
 		
 		TRY
-			LOCAL lqMap
 			m.tiType = EVL(m.tiType, ColorAdjustTypeDefault)
-			m.lqMap = toColorMap.ToVarBinary()
-			
+
+			LOCAL loClrMap as xfcColorMap
+			m.loClrMap = CREATEOBJECT("xfcColorMap")
+
+			LOCAL lqMap
+			m.lqMap = m.loClrMap.ToVarBinary(@taoColorMap)
+
 			This.SetStatus(xfcGdipSetImageAttributesRemapTable(This.Handle, m.tiType, TRUE, LEN(m.lqMap)/4, @m.lqMap))
 		CATCH TO loExc
 			THROW m.loExc
@@ -5685,6 +5695,8 @@ DEFINE CLASS xfcImageAttributes AS xfcgpobject OF System.Drawing.prg
 		RETURN NULL
 		
 	ENDFUNC
+
+
 
 
 	*********************************************************************
