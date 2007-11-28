@@ -120,14 +120,28 @@ DEFINE CLASS xfcSystem AS xfcObject
 	FUNCTION Init
 	*********************************************************************
 
+		LOCAL lcClassPath
+		lcClassPath = IIF(EMPTY(This.ClassLibrary), "", ADDBS(JUSTPATH(This.ClassLibrary)))
+
 		IF _Vfp.StartMode = 0 && development version of Visual FoxPro was started in an interactive session.
-			SET PROCEDURE TO (This.ClassLibrary) ADDITIVE
-			SET PROCEDURE TO (ADDBS(JUSTPATH(This.ClassLibrary))+"System.Drawing.PRG") ADDITIVE
-			SET PROCEDURE TO (ADDBS(JUSTPATH(This.ClassLibrary))+"System.Drawing.Drawing2D.PRG") ADDITIVE
-			SET PROCEDURE TO (ADDBS(JUSTPATH(This.ClassLibrary))+"System.Drawing.Imaging.PRG") ADDITIVE
-			SET PROCEDURE TO (ADDBS(JUSTPATH(This.ClassLibrary))+"System.Drawing.Text.PRG") ADDITIVE
-			SET PROCEDURE TO (ADDBS(JUSTPATH(This.ClassLibrary))+"System.IO.PRG") ADDITIVE
+			SET PROCEDURE TO (lcClassPath + "System.PRG") ADDITIVE
+			SET PROCEDURE TO (lcClassPath + "System.Drawing.PRG") ADDITIVE
+			SET PROCEDURE TO (lcClassPath + "System.Drawing.Drawing2D.PRG") ADDITIVE
+			SET PROCEDURE TO (lcClassPath + "System.Drawing.Imaging.PRG") ADDITIVE
+			SET PROCEDURE TO (lcClassPath + "System.Drawing.Text.PRG") ADDITIVE
+			SET PROCEDURE TO (lcClassPath + "System.IO.PRG") ADDITIVE
 		ENDIF
+
+*!*			IF _Vfp.StartMode = 0 && development version of Visual FoxPro was started in an interactive session.
+*!*				SET PROCEDURE TO (This.ClassLibrary) ADDITIVE
+*!*				SET PROCEDURE TO (ADDBS(JUSTPATH(This.ClassLibrary))+"System.Drawing.PRG") ADDITIVE
+*!*				SET PROCEDURE TO (ADDBS(JUSTPATH(This.ClassLibrary))+"System.Drawing.Drawing2D.PRG") ADDITIVE
+*!*				SET PROCEDURE TO (ADDBS(JUSTPATH(This.ClassLibrary))+"System.Drawing.Imaging.PRG") ADDITIVE
+*!*				SET PROCEDURE TO (ADDBS(JUSTPATH(This.ClassLibrary))+"System.Drawing.Text.PRG") ADDITIVE
+*!*				SET PROCEDURE TO (ADDBS(JUSTPATH(This.ClassLibrary))+"System.IO.PRG") ADDITIVE
+*!*			ENDIF
+
+
 	ENDFUNC
 
 
