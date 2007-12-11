@@ -13743,6 +13743,8 @@ DEFINE CLASS xfcImage AS xfcgpobject
 	**  2007/02/02: CChalom - added parameter for orientation
 	**  2007/04/28: CChalom / SBerezniker - added code to determine Width and Height when PRTINFO() returns -1
 	**  2007/04/29: CChalom - added Stretch and Alignment parameters
+	**  2007/11/28: CChalom - fixed to allow printing images of all resolutions
+	**  2007/11/29: CChalom / SBerezniker - added code to determine Margins
 	*********************************************************************
 	LPARAMETERS tnStretch, tcPrinterName, tnOrientation, tnAlignment
 		
@@ -13786,6 +13788,11 @@ DEFINE CLASS xfcImage AS xfcgpobject
 		DECLARE INTEGER HeapAlloc IN WIN32API INTEGER hHeap, INTEGER dwFlags, INTEGER dwBytes
 		DECLARE INTEGER HeapFree IN WIN32API INTEGER hHeap, INTEGER dwFlags, INTEGER lpMem
 		DECLARE HeapDestroy IN WIN32API INTEGER hHeap
+
+		DECLARE INTEGER GetDeviceCaps IN gdi32 INTEGER hdc, INTEGER nIndex 
+
+		#DEFINE PHYSICALOFFSETX 112 
+		#DEFINE PHYSICALOFFSETY 113 	
 		
 		
 		LOCAL lnPrinterDC, lcDocInfo
@@ -13837,15 +13844,12 @@ DEFINE CLASS xfcImage AS xfcgpobject
 			LOCAL lnImgWidth, lnImgHeight
 			m.lnImgWidth = loImg.Width
 			m.lnImgHeight = loImg.Height
-		
-		
+	
 		
 			* Get the dimensions of the Paper
-			LOCAL lnPaperWidth, lnPaperHeight, lnHorRes, lnVertRes
+			LOCAL lnPaperWidth, lnPaperHeight
 			m.lnPageWidth = PRTINFO(4)
 			m.lnPageHeight = PRTINFO(3)
-			m.lnHorRes = loImg.HorizontalResolution
-			m.lnVertRes = loImg.VerticalResolution
 		
 			IF m.lnPageWidth = -1 OR m.lnPageHeight = -1
 				* API declarations for Getting Paper Size
@@ -13885,11 +13889,25 @@ DEFINE CLASS xfcImage AS xfcgpobject
 		
 			ENDIF
 		
-		
+
 			* Adjust page Width and Height
-			m.lnPageWidth = (m.lnPageWidth / 100 / 2.54) * m.lnHorRes
-			m.lnPageHeight = (m.lnPageHeight / 100 / 2.54) * m.lnVertRes
+			m.lnPageWidth = (m.lnPageWidth / 2.54)
+			m.lnPageHeight = (m.lnPageHeight / 2.54)
 		
+			* Get Printer DC for the selected Printer
+			m.lnPrinterDC = xfcCreateDC(NULL, m.tcPrinterName+0h00, NULL, NULL)
+
+			* Get the margins
+			LOCAL lnHorOffSet, lnVertOffSet
+			lnHorOffset = GetDeviceCaps(lnPrinterDC, PHYSICALOFFSETX) 
+			lnVertOffSet = GetDeviceCaps(lnPrinterDC, PHYSICALOFFSETY) 
+
+
+			* Adjust paper size
+			lnPageWidth  = lnPageWidth  - (2 * lnHorOffSet)
+			lnPageHeight = lnPageHeight - (2 * lnVertOffSet)
+	
+
 		
 			* Get the dimensions of the Image
 			IF m.tnStretch = 0 && Clip
@@ -13918,6 +13936,7 @@ DEFINE CLASS xfcImage AS xfcgpobject
 		
 			ENDIF
 		
+
 		
 			LOCAL x, y
 			DO CASE
@@ -13963,11 +13982,10 @@ DEFINE CLASS xfcImage AS xfcgpobject
 		
 			ENDCASE
 		
-			
-		
-			* Get Printer DC for the selected Printer
-			m.lnPrinterDC = xfcCreateDC(NULL, m.tcPrinterName+0h00, NULL, NULL)
-		
+			* Adjust coordinates to start after the TopLeft margin
+			x = x + lnHorOffSet
+			y = y + lnHorOffSet		
+	
 			* Start Printing
 			IF m.lnPrinterDC <> 0
 				m.lcDocInfo = PADR(CHR(20), 20, CHR(0)) && Fake DocInfo Struct
