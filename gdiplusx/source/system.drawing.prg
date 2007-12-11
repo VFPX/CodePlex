@@ -2305,6 +2305,8 @@ DEFINE CLASS xfcBitmap AS xfcimage
 		[<memberdata name="toclipboard" type="method" display="ToClipboard"/>]+;
 		[<memberdata name="toprinter" type="method" display="ToPrinter"/>]+;
 		[<memberdata name="fromclipboard" type="method" display="FromClipboard"/>]+;
+		[<memberdata name="getmask" type="method" display="GetMask"/>]+;
+		[<memberdata name="applycolormatrix" type="method" display="ApplyColorMatrix"/>]+;
 		[</VFPData>]		
 	#ENDIF
 ENDDEFINE
