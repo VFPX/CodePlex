@@ -32,7 +32,7 @@ Name = "Dataenvironment"
 [UNIQUEID] _1WG1E5WSK
 [CLASS] form
 [BASECLASS] form
-[OBJNAME] vfpthemeexplorer
+[OBJNAME] VFPTHEMEEXPLORER
 [START PROPERTIES]
 Height = 612
 Width = 673
@@ -57,7 +57,7 @@ cpart =
 cpartconstant = 
 nheight = 0
 nwidth = 0
-Name = "vfpthemeexplorer"
+Name = "VFPTHEMEEXPLORER"
 [END PROPERTIES]
 [START METHODS]
 PROCEDURE Destroy
@@ -73,8 +73,6 @@ IF _VFP.STARTMODE = 4
 ENDIF
 ENDPROC
 PROCEDURE Init
-SET STEP ON
-
 THIS.LoadTreeView()
 
 DO FORM ResourceCanvas NAME THIS.oCanvas NOSHOW
@@ -1016,7 +1014,7 @@ nwidth
 [CLASS] olecontrol
 [BASECLASS] olecontrol
 [OBJNAME] oTreeView
-[PARENT] vfpthemeexplorer
+[PARENT] VFPTHEMEEXPLORER
 [START PROPERTIES]
 Top = 0
 Left = 0
@@ -1035,7 +1033,7 @@ THISFORM.oSelectedNode = NODE
 ENDPROC
 [END METHODS]
 [BINSTART OLE]
-CHECKSUM=8175
+CHECKSUM=44936
 [BINEND OLE]
 [BINSTART OLE2]
 CHECKSUM=26800
@@ -1047,7 +1045,7 @@ CHECKSUM=26800
 [CLASS] container
 [BASECLASS] container
 [OBJNAME] DisplayPane
-[PARENT] vfpthemeexplorer
+[PARENT] VFPTHEMEEXPLORER
 [START PROPERTIES]
 Anchor = 15
 Top = 0
@@ -1065,7 +1063,7 @@ Name = "DisplayPane"
 [CLASS] optiongroup
 [BASECLASS] optiongroup
 [OBJNAME] Optiongroup1
-[PARENT] vfpthemeexplorer.DisplayPane
+[PARENT] VFPTHEMEEXPLORER.DisplayPane
 [START PROPERTIES]
 ButtonCount = 3
 Anchor = 3
@@ -1110,7 +1108,7 @@ Option3.Name = "Option3"
 [CLASS] textbox
 [BASECLASS] textbox
 [OBJNAME] txtHeight
-[PARENT] vfpthemeexplorer.DisplayPane
+[PARENT] VFPTHEMEEXPLORER.DisplayPane
 [START PROPERTIES]
 Anchor = 3
 ControlSource = "THISFORM.nImageHeight"
@@ -1135,7 +1133,7 @@ ENDPROC
 [CLASS] label
 [BASECLASS] label
 [OBJNAME] Label1
-[PARENT] vfpthemeexplorer.DisplayPane
+[PARENT] VFPTHEMEEXPLORER.DisplayPane
 [START PROPERTIES]
 Anchor = 3
 BackStyle = 0
@@ -1153,7 +1151,7 @@ Name = "Label1"
 [CLASS] textbox
 [BASECLASS] textbox
 [OBJNAME] txtWidth
-[PARENT] vfpthemeexplorer.DisplayPane
+[PARENT] VFPTHEMEEXPLORER.DisplayPane
 [START PROPERTIES]
 Anchor = 3
 ControlSource = "THISFORM.nImageWidth"
@@ -1178,7 +1176,7 @@ ENDPROC
 [CLASS] label
 [BASECLASS] label
 [OBJNAME] Label2
-[PARENT] vfpthemeexplorer.DisplayPane
+[PARENT] VFPTHEMEEXPLORER.DisplayPane
 [START PROPERTIES]
 Anchor = 3
 BackStyle = 0
@@ -1196,7 +1194,7 @@ Name = "Label2"
 [CLASS] shape
 [BASECLASS] shape
 [OBJNAME] shpCanvas
-[PARENT] vfpthemeexplorer.DisplayPane
+[PARENT] VFPTHEMEEXPLORER.DisplayPane
 [START PROPERTIES]
 Top = 108
 Left = 9
@@ -1214,7 +1212,7 @@ Name = "shpCanvas"
 [CLASS] label
 [BASECLASS] label
 [OBJNAME] Label3
-[PARENT] vfpthemeexplorer.DisplayPane
+[PARENT] VFPTHEMEEXPLORER.DisplayPane
 [START PROPERTIES]
 Anchor = 3
 BackStyle = 0
@@ -1232,7 +1230,7 @@ Name = "Label3"
 [CLASS] textbox
 [BASECLASS] textbox
 [OBJNAME] txtClass
-[PARENT] vfpthemeexplorer.DisplayPane
+[PARENT] VFPTHEMEEXPLORER.DisplayPane
 [START PROPERTIES]
 ControlSource = "THISFORM.cClass"
 Height = 23
@@ -1248,7 +1246,7 @@ Name = "txtClass"
 [CLASS] label
 [BASECLASS] label
 [OBJNAME] lblPart
-[PARENT] vfpthemeexplorer.DisplayPane
+[PARENT] VFPTHEMEEXPLORER.DisplayPane
 [START PROPERTIES]
 Anchor = 3
 BackStyle = 0
@@ -1267,7 +1265,7 @@ Name = "lblPart"
 [CLASS] textbox
 [BASECLASS] textbox
 [OBJNAME] txtPart
-[PARENT] vfpthemeexplorer.DisplayPane
+[PARENT] VFPTHEMEEXPLORER.DisplayPane
 [START PROPERTIES]
 ControlSource = "THISFORM.cPart"
 Height = 23
@@ -1284,7 +1282,7 @@ Name = "txtPart"
 [CLASS] textbox
 [BASECLASS] textbox
 [OBJNAME] txtPartConstant
-[PARENT] vfpthemeexplorer.DisplayPane
+[PARENT] VFPTHEMEEXPLORER.DisplayPane
 [START PROPERTIES]
 ControlSource = "THISFORM.cPartConstant"
 Height = 23
@@ -1302,7 +1300,7 @@ Name = "txtPartConstant"
 [CLASSLOC] splitter.vcx
 [BASECLASS] shape
 [OBJNAME] SplitBar
-[PARENT] vfpthemeexplorer
+[PARENT] VFPTHEMEEXPLORER
 [START PROPERTIES]
 Top = 0
 Left = 264
