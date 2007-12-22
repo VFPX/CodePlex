@@ -65,7 +65,6 @@ ENDIF
 ENDPROC
 PROCEDURE Init
 LOCAL lcPath
-This.DeclareDLL()
 
 IF VARTYPE(_SCREEN.System) <> "O"
 	m.lcPath = ADDBS(JUSTPATH(SUBSTR(SYS(16), AT(" ",SYS(16),2)+1)))
@@ -118,11 +117,13 @@ This._BMPHeight = m.tnHeight
 m.tnWidth = MAX(m.tnWidth,1)
 m.tnHeight = MAX(m.tnHeight,1)
 
-IF INLIST(This.RenderMode, 1, 2) && Render to File
-	This.oBmp = _Screen.System.Drawing.Bitmap.New(m.tnWidth, m.tnHeight, 0, _Screen.System.Drawing.Imaging.PixelFormat.Format24bppRGB)
+IF This.RenderMode = 1 && Render to File
+	This.oBmp = _Screen.System.Drawing.Bitmap.New(m.tnWidth, m.tnHeight, _Screen.System.Drawing.Imaging.PixelFormat.Format24bppRGB)
 ELSE
 	This.oBmp = _SCREEN.System.Drawing.Bitmap.New(m.tnWidth, m.tnHeight)
 ENDIF
+
+
 
 This.oGfx = _SCREEN.System.Drawing.Graphics.FromImage(This.oBmp)
 This.oGfx.SmoothingMode = This.SmoothingMode
@@ -174,12 +175,19 @@ ENDIF
 RETURN This.Rectangle
 
 ENDPROC
+PROCEDURE rendermode_assign
+LPARAMETERS vNewVal
+*To do: Modify this routine for the Assign method
+THIS.RenderMode = m.vNewVal
+This.CreateOSB()
+ENDPROC
 PROCEDURE renderosb
 DO CASE
 CASE This.RenderMode = 0	&& Memory BITMAP
 	This.PictureVal = This.oBmp.GetPictureValfromHBitmap()
 	
 CASE This.RenderMode = 1	&& File BITMAP
+
 	IF EMPTY(This._tempfile)
 		This._tempfile = ADDBS(SYS(2023))+SYS(2015)+".bmp"
 	ELSE
@@ -191,11 +199,6 @@ CASE This.RenderMode = 1	&& File BITMAP
 	This.oBmp.Save(This._tempfile, _Screen.System.Drawing.Imaging.ImageFormat.Bmp)
 	This.Picture = (This._tempfile)
 	
-CASE This.RenderMode = 2	&& File BITMAP using Container Picture
-	*!ToDo: Finish This
-
-CASE This.RenderMode = 3	&& Client Window
-	*!ToDo: Finish this
 
 CASE This.RenderMode = 4	&& Memory PNG
 	This.PictureVal = This.oBmp.GetPictureVal(_Screen.System.Drawing.Imaging.ImageFormat.Png)
@@ -203,7 +206,6 @@ CASE This.RenderMode = 4	&& Memory PNG
 ENDCASE
 
 RETURN
-
 ENDPROC
 PROCEDURE resize
 IF This.Stretch = 0 AND This.Anchor > 0 && AND (m.nWidth <> This.Width OR m.nHeight <> This.Height)
@@ -294,6 +296,7 @@ _hbitmapold
 *height_access 
 *backstyle_access 
 *declaredll 
+*rendermode_assign 
 [END RESERVED3]
 [START RESERVED6]
 Pixels[END RESERVED6]
@@ -305,7 +308,7 @@ system.drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] imgcanvas
 [START RESERVED1]
-  system.drawing.h^nä"7 system.hfo∏%7 gdiplusconstants.hnpôê7[END RESERVED1]
+  system.drawing.hÓ-⁄Ñï7 system.hˆ.⁄Ñï7 gdiplusconstants.h˛/⁄Ñï7[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -323,8 +326,8 @@ Name = "imgthemebase"
 [END PROPERTIES]
 [START METHODS]
 PROCEDURE Init
-This.declaredll()
 This.IsXP = FILE(GETENV("windir")+"\system32\uxtheme.dll")
+This.DeclareDll()
 
 DODEFAULT()
 ENDPROC
@@ -408,7 +411,8 @@ DECLARE LONG GetThemeInt IN UXTHEME LONG hTheme, LONG iPartId, LONG iStateId, LO
 DECLARE LONG GetThemeIntList IN UXTHEME LONG hTheme, LONG iPartId, LONG iStateId, LONG iPropId, LONG @pIntList
 DECLARE LONG GetThemeMargins IN UXTHEME LONG hTheme, LONG hdc, LONG iPartId, LONG iStateId, LONG iPropId, LONG @pMargins
 DECLARE LONG GetThemeMetric IN UXTHEME LONG hTheme, LONG hDC, LONG iPartId, LONG iStateId, LONG iPropId, LONG @piVal
-DECLARE LONG GetThemePartSize IN UXTHEME LONG hTheme, LONG hdc, LONG iPartId, LONG iStateId, LONG @pRect, STRING eSize, STRING @size
+DECLARE LONG GetThemePartSize IN UXTHEME INTEGER hTheme, INTEGER hdc, INTEGER iPartId, INTEGER iStateId, INTEGER @pRect, INTEGER eSize, STRING @SIZE
+
 DECLARE LONG GetThemePosition IN UXTHEME LONG hTheme, LONG iPartId, LONG iStateId, LONG iPropId, LONG @pPoint
 DECLARE LONG GetThemePropertyOrigin IN UXTHEME LONG hTheme, LONG iPartId, LONG iStateId, LONG iPropId, LONG @pOrigin
 DECLARE LONG GetThemeRect IN UXTHEME LONG hTheme, LONG iPartId, LONG iStateId, LONG iPropId, LONG @pRect
@@ -435,7 +439,6 @@ DECLARE SetThemeAppProperties IN UXTHEME STRING props
 DECLARE LONG SetWindowTheme IN UXTHEME LONG hWnd, STRING textSubAppName, STRING textSubIdList
 
 ENDTRY
-
 ENDPROC
 PROCEDURE themestate_assign
 LPARAMETERS vNewVal
@@ -454,7 +457,6 @@ themepart
 themeclass
 isxp
 *themestate_assign 
-*declaredll 
 [END RESERVED3]
 [START RESERVED6]
 Pixels[END RESERVED6]
