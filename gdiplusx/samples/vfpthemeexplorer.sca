@@ -73,6 +73,7 @@ IF _VFP.STARTMODE = 4
 ENDIF
 ENDPROC
 PROCEDURE Init
+SET STEP ON
 
 THIS.LoadTreeView()
 
@@ -120,7 +121,7 @@ THIS.IXMLDOMELEMENT.LOAD(LOCFILE("uxtheme.xml"))
 
 IF NOT EMPTY(THIS.IXMLDOMELEMENT.parseError.errorCode)
 
-  MESSAGEBOX("Faild to load XML.")
+  MESSAGEBOX("Failed to load XML.")
 
   RETURN .F.
 
@@ -130,21 +131,22 @@ DECLARE LONG OpenThemeData IN UXTHEME ;
   LONG HWND, ;
   STRING classList
 
-DECLARE LONG GetThemeColor IN UXTHEME ;
-  LONG hTheme, ;
-  LONG iPartId, ;
-  LONG iStateId, ;
-  LONG iPropId, ;
-  LONG @pColor
+*!*	DECLARE LONG GetThemeColor IN UXTHEME ;
+*!*	  LONG hTheme, ;
+*!*	  LONG iPartId, ;
+*!*	  LONG iStateId, ;
+*!*	  LONG iPropId, ;
+*!*	  LONG @pColor
 
-DECLARE LONG GetThemePartSize IN UXTHEME ;
-  INTEGER hTheme, ;
-  INTEGER hdc, ;
-  INTEGER iPartId, ;
-  INTEGER iStateId, ;
-  INTEGER @pRect, ;
-  INTEGER eSize, ;
-  STRING @SIZE
+* No Need, Already declared in ImgThemeBase
+*!*	DECLARE LONG GetThemePartSize IN UXTHEME ;
+*!*	  INTEGER hTheme, ;
+*!*	  INTEGER hdc, ;
+*!*	  INTEGER iPartId, ;
+*!*	  INTEGER iStateId, ;
+*!*	  INTEGER @pRect, ;
+*!*	  INTEGER eSize, ;
+*!*	  STRING @SIZE
 
 * Create a collection for GetThemeColor parameters.
 *---------------------------------------------------
@@ -1033,7 +1035,7 @@ THISFORM.oSelectedNode = NODE
 ENDPROC
 [END METHODS]
 [BINSTART OLE]
-CHECKSUM=12541
+CHECKSUM=8175
 [BINEND OLE]
 [BINSTART OLE2]
 CHECKSUM=26800
