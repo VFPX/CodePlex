@@ -1,0 +1,280 @@
+SCCTEXT Version 4.0.0.2
+PLATFORM C(8,0),UNIQUEID C(10,0),TIMESTAMP N(10,0),CLASS M(4,0),CLASSLOC M(4,0),BASECLASS M(4,0),OBJNAME M(4,0),PARENT M(4,0),PROPERTIES M(4,0),PROTECTED M(4,0),METHODS M(4,0),OBJCODE M(4,0),OLE M(4,0),OLE2 M(4,0),RESERVED1 M(4,0),RESERVED2 M(4,0),RESERVED3 M(4,0),RESERVED4 M(4,0),RESERVED5 M(4,0),RESERVED6 M(4,0),RESERVED7 M(4,0),RESERVED8 M(4,0),USER M(4,0)
+1252
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] Screen    
+[START RESERVED1]
+VERSION =   3.00[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _28B1DAQLU
+[CLASS] dataenvironment
+[BASECLASS] dataenvironment
+[OBJNAME] Dataenvironment
+[START PROPERTIES]
+Top = 0
+Left = 0
+Width = 0
+Height = 0
+DataSource = .NULL.
+Name = "Dataenvironment"
+[END PROPERTIES]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED4]
+1[END RESERVED4]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _28B1DAQLY
+[CLASS] form
+[BASECLASS] form
+[OBJNAME] Form1
+[START PROPERTIES]
+Top = 0
+Left = 0
+Height = 392
+Width = 573
+DoCreate = .T.
+Caption = "Form1"
+x = .F.
+y = .F.
+obitmap = .F.
+_memberdata =      253<VFPData><memberdata name="createeffect" type="method" display="CreateEffect"/><memberdata name="obitmap" type="property" display="oBitmap"/><memberdata name="x" type="property" display="X"/><memberdata name="y" type="property" display="Y"/></VFPData>
+
+Name = "Form1"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE createeffect
+LOCAL loBmp as xfcBitmap
+LOCAL loGfx as xfcGraphics
+
+LOCAL lnSeconds, n, lnWidth, lnHeight
+
+lnSeconds = SECONDS()
+
+lnWidth  = Thisform.Imgcanvas1.Width
+lnHeight = Thisform.Imgcanvas1.Height
+
+WITH _Screen.System.Drawing
+
+loSrc = .Bitmap.FromFile(Thisform.TxtFile.Value)
+
+loBmp = .Bitmap.New(loSrc, lnWidth, lnHeight)
+loGfx = Thisform.Imgcanvas1.oGfx
+Thisform.oBitmap = loBmp
+
+FOR n = -lnHeight TO lnHeight
+	Thisform.X = 0
+	Thisform.Y = n
+	Thisform.Imgcanvas1.Draw()
+ENDFOR
+
+ENDWITH
+
+MESSAGEBOX("Elapsed : " + TRANSFORM(SECONDS() - lnSeconds) + " Seconds", 64)
+ENDPROC
+[END METHODS]
+[START RESERVED3]
+x
+y
+obitmap
+_memberdata XML Metadata for customizable properties
+*createeffect 
+[END RESERVED3]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _28B1DAQLZ
+[CLASS] imgcanvas
+[CLASSLOC] source\gdiplusx.vcx
+[BASECLASS] image
+[OBJNAME] Imgcanvas1
+[PARENT] Form1
+[START PROPERTIES]
+Height = 336
+Left = 228
+Top = 48
+Width = 336
+Name = "Imgcanvas1"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE beforedraw
+LOCAL loGfx as xfcGraphics && This is to enable Intellisense for "oGfx"
+loGfx = This.oGfx
+
+loGfx.Clear(_Screen.System.Drawing.Color.White)
+
+IF VARTYPE(Thisform.oBitmap) <> "O"
+	RETURN
+ENDIF
+
+loGfx.DrawImage(Thisform.oBitmap, Thisform.X, Thisform.Y)
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _28B1DAQMA
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] Command3
+[PARENT] Form1
+[START PROPERTIES]
+Top = 12
+Left = 12
+Height = 25
+Width = 96
+Anchor = 1
+Picture = (home() + "/graphics/bitmaps/outline/open.bmp")
+Caption = "Get Picture"
+TabIndex = 1
+PicturePosition = 1
+PictureMargin = 1
+Name = "Command3"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+LOCAL lcFile
+lcFile = GETPICT()
+IF EMPTY(lcFile)
+	RETURN
+ENDIF
+Thisform.txtFile.Value = lcFile
+Thisform.Container1.Visible = .T.
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _28B1DAQMB
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] txtFile
+[PARENT] Form1
+[START PROPERTIES]
+FontSize = 8
+Anchor = 131
+Enabled = .F.
+Height = 25
+Left = 120
+TabIndex = 2
+Top = 12
+Width = 444
+DisabledBackColor = 255,255,255
+DisabledForeColor = 0,0,0
+Name = "txtFile"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _28C00BXIF
+[CLASS] container
+[BASECLASS] container
+[OBJNAME] Container1
+[PARENT] Form1
+[START PROPERTIES]
+Top = 60
+Left = 12
+Width = 200
+Height = 200
+BorderWidth = 0
+Name = "Container1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _28C00BXIG
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] Command1
+[PARENT] Form1.Container1
+[START PROPERTIES]
+Top = 47
+Left = 4
+Height = 27
+Width = 192
+Caption = "   0 - PictureVal - BMP"
+Alignment = 0
+Name = "Command1"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+Thisform.Imgcanvas1.RenderMode = 0 && PictureVal / BMP
+Thisform.CreateEffect()
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _28C00BXIH
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] Command2
+[PARENT] Form1.Container1
+[START PROPERTIES]
+Top = 95
+Left = 4
+Height = 27
+Width = 192
+Caption = "   4 - PictureVal - PNG"
+Alignment = 0
+Name = "Command2"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+Thisform.Imgcanvas1.RenderMode = 4 && PictureVal / BMP
+Thisform.CreateEffect()
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _28C00BXII
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] Command4
+[PARENT] Form1.Container1
+[START PROPERTIES]
+Top = 143
+Left = 4
+Height = 27
+Width = 192
+Caption = "   1 - Picture - TMP FILES (DISK)"
+Alignment = 0
+Name = "Command4"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+Thisform.Imgcanvas1.RenderMode = 1 && PictureVal / BMP
+Thisform.CreateEffect()
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _28C00BXIJ
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label1
+[PARENT] Form1.Container1
+[START PROPERTIES]
+Caption = "Rendering Modes"
+Height = 17
+Left = 4
+Top = 11
+Width = 120
+Name = "Label1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[START PROPERTIES]
+Arial, 0, 9, 5, 15, 12, 32, 3, 0
+Arial, 0, 8, 5, 14, 11, 29, 3, 0
+[END PROPERTIES]
+[EOF]
