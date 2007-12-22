@@ -1998,7 +1998,7 @@ DEFINE CLASS xfcBitmap AS xfcimage
 			m.loBmp = CREATEOBJECT(This.Class, This.Width, This.Height, m.tiFormat)
 			m.loGfx = CREATEOBJECT("xfcGraphics")
 			m.loGfx = m.loGfx.FromImage(m.loBmp)
-			m.loGfx.Clear(CREATEOBJECT("xfcColor", ARGB_White))
+			m.loGfx.Clear(CREATEOBJECT("xfcColor", ARGB_Transparent))
 			m.loAttr = NEWOBJECT("xfcImageAttributes", XFCCLASS_IMAGING)
 			m.loAttr.SetColorMatrix(m.toClrMatrix)
 			m.loRect = CREATEOBJECT("xfcRectangle", 0, 0, This.Width, This.Height)
