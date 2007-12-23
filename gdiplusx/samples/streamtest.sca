@@ -107,13 +107,13 @@ loImgFormat = EVALUATE("_Screen.System.Drawing.Imaging." + Thisform.Combo1.Value
 
 WITH _SCREEN.System.Drawing
 
-
 * Sample 1 - Using GetPictureVal new function
 lnSecs = SECONDS()
 Thisform.Image1.Visible = .T.
 FOR n = 1 TO lnTimes
 	loBmp = .Bitmap.FromFile(lcFile)
-	Thisform.Image1.PictureVal = loBmp.GetPictureVal(loImgFormat)
+	lcBuffer = loBmp.GetPictureVal(loImgFormat)
+	Thisform.Image1.PictureVal = lcBuffer
 
 	IF llProgress
 		WAIT WINDOW ("Test 1 - Using GetPictureVal Function - " + TRANSFORM((n/lnTimes)*100, "999.9") + "%") NOWAIT
@@ -167,26 +167,22 @@ Thisform.Label3.Visible = .T.
 lnSecs = SECONDS()
 Thisform.Image4.Visible = .T.
 FOR n = 1 TO lnTimes
-*!*		LOCAL loStream as xfcMemoryStream
-*!*		loStream = _Screen.System.IO.MemoryStream.New()
-*!*		loBmp = .Bitmap.FromFile(lcFile)
-*!*		loBmp.Save(loStream, loImgFormat) && Save directly to the Stream object
+	LOCAL loStream as xfcMemoryStream
+	loStream = _Screen.System.IO.MemoryStream.New()
+	loBmp = .Bitmap.FromFile(lcFile)
+	loBmp.Save(loStream, loImgFormat) && Save directly to the Stream object
 
-*!*		LOCAL loBmp2 as xfcBitmap
-*!*		loBmp2 = _Screen.System.Drawing.Bitmap.FromStream(loStream)	
-*!*		Thisform.Image4.PictureVal = loBmp2.GetPictureVal(loImgFormat)
-	
-*!*		loBmp = .Bitmap.FromFile(lcFile)
-*!*		loBmp.GetPictureValfromHBitmap(Thisform.Image4)	
+	LOCAL loBmp2 as xfcBitmap
+	loBmp2 = _Screen.System.Drawing.Bitmap.FromStream(loStream)	
+	Thisform.Image4.PictureVal = loBmp2.GetPictureVal(loImgFormat)
 
 	IF llProgress
 		WAIT WINDOW ("Test 4 - Saving to a stream, loading from stream and use GetPictureVal - " + TRANSFORM((n/lnTimes)*100, "999.9") + "%") NOWAIT
 	ENDIF
 ENDFOR
-*!*	loBmp.Dispose()
-*!*	loBmp.Dispose()
-*!*	loBmp2.Dispose()
-*!*	loStream = NULL
+loBmp.Dispose()
+loBmp2.Dispose()
+loStream = NULL
 Thisform.Label4.Caption = "Test 4 - Saving to a stream, loading from stream and use GetPictureVal" + ;
 	CHR(13) + TRANSFORM(SECONDS() - lnSecs) + " seconds"
 Thisform.Label4.Visible = .T.
@@ -197,7 +193,8 @@ lnSecs = SECONDS()
 Thisform.Image5.Visible = .T.
 FOR n = 1 TO lnTimes
 	loBmp = .Bitmap.FromFile(lcFile)
-	Thisform.Image5.PictureVal = loBmp.GetPictureValfromHBitmap()
+	lcBuffer = loBmp.GetPictureValfromHBitmap()
+	Thisform.Image5.PictureVal = lcBuffer
 	IF llProgress
 		WAIT WINDOW ("Test 5 - Using GetPictureValfromHBitmap Function - " + TRANSFORM((n/lnTimes)*100, "999.9") + "%") NOWAIT
 	ENDIF
@@ -624,7 +621,7 @@ Left = 792
 Height = 25
 Width = 72
 Anchor = 12
-Picture = ..\new samples\
+Picture = ..\gdiplusx_20070831\new samples\
 Caption = "Go !"
 TabIndex = 1
 PicturePosition = 1
