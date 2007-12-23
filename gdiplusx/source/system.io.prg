@@ -414,7 +414,7 @@ DEFINE CLASS xfcMemoryStream AS xfcStream
 		LOCAL loExc AS Exception
 		TRY
 			IF This._hGlobal <> 0
-				*This.Length = xfcGlobalSize(This._hGlobal)
+				This.Length = xfcGlobalSize(This._hGlobal)
 			ELSE
 				This.Length = 0
 			ENDIF
