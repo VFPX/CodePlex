@@ -33,6 +33,8 @@ obmp = (NULL)
 rendermode = 0
 _hwnd = 0
 _hbitmapold = 0
+_csize = 
+_lredrawnow = .F.
 Name = "imgcanvas"
 [END PROPERTIES]
 [START PROTECTED]
@@ -64,6 +66,17 @@ ENDIF
 
 ENDPROC
 PROCEDURE Init
+*********************************************************************
+** Method: ImgCanvas.Init
+**
+** Initializes the ImageCanvas
+**
+** History:
+**	2006/../..: BDurban - Coded
+**	2007/12/23: CWollenhaupt - Fixed observations below
+**
+*********************************************************************
+
 LOCAL lcPath
 
 IF VARTYPE(_SCREEN.System) <> "O"
@@ -75,8 +88,113 @@ This.CreateOSB()
 This.Controls=CREATEOBJECT("Collection")
 This.Setup()
 
-BINDEVENT(ThisForm, "Activate", This, "Draw")
-BINDEVENT(This.Parent, "Resize", This, "Resize")
+*========================================================================================
+* Changes to the original class:
+*
+* - Bind the Form's Activate method to a new Activate method in this control. Previously
+*   the method was bound to Draw which forces a redraw. By redirecting this to Activate
+*   we can use additionally checks to confirm that we actually need to redraw the
+*   control. In addition, we only have to draw the control the first time the form is
+*   activated. After that any need to redraw is triggered by a Resize, the UIEnabled
+*   event or an explicit call to Draw.
+*
+* - Pages don't have a Resize event. In order to add this control a page it must respond
+*   to the PageFrame's Resize event after VFP completed the Resize event. Otherwise the
+*   PageWidth and PageHeight properties still contain the old values.
+*
+*========================================================================================
+
+BINDEVENT(Thisform, "Activate", This, "Activate")
+IF This.Parent.BaseClass == "Page"
+	BINDEVENT(This.Parent.Parent, "Resize", This, "Resize", 1)
+ELSE
+	BINDEVENT(This.Parent, "Resize", This, "Resize")
+ENDIF
+ENDPROC
+PROCEDURE UIEnable
+*********************************************************************
+** Method: ImgCanvas.UIEnable
+**
+** Occurs for all objects contained in a Page objects whenever the page is activated or deactivated
+**
+** History:
+**	2007/12/23: CWollenhaupt - Coded - observations below
+**
+*********************************************************************
+
+*========================================================================================
+* Using the form's Activate event only works for controls that reside on the form
+* directly. It doesn't work for controls on a pageframe when the pageframe is anchored
+* and resizes automatically. Controls on invisible pages aren't notified. Therefore we
+* use the UIEnable event to redraw controls when the page becomes visible.
+*========================================================================================
+
+LPARAMETERS lEnable
+
+LOCAL lcNewSize
+IF m.lEnable
+	m.lcNewSize = BINTOC(This.Width, "4rs") + BINTOC(This.Height, "4rs")
+	IF NOT This._cSize == m.lcNewSize
+		This.Draw()
+	ENDIF
+ENDIF
+
+ENDPROC
+PROCEDURE _lredrawnow_assign
+*********************************************************************
+** Method: lRedrawNow_Assign
+**
+** History:
+**	2007/12/23: CWollenhaupt - Coded - observations below
+**
+*********************************************************************
+
+*========================================================================================
+* Force the control to resize itself. Draw additionaly ensures that we only draw the
+* control when it is visible.
+*========================================================================================
+LPARAMETERS tlNow
+
+IF m.tlNow
+	This._lRedrawNow = .T.
+	This.Draw()
+	This._lRedrawNow = .F.
+ENDIF
+
+ENDPROC
+PROCEDURE activate
+*********************************************************************
+** Method: ImgCanvas.Activate
+**
+** Occurs when the Image Canvas is activated for the 1st time
+**
+** History:
+**	2007/12/23: CWollenhaupt - Coded - observations below
+**
+*********************************************************************
+
+*========================================================================================
+* We cannot display a control properly during the initialization of a form. Because the
+* form is invisible while it's loaded, it doesn't trigger any Resize event when the size
+* changes or controls are moved around. Nor are several properties updated correctly at
+* this point. The form becomes visible when the Activate event is triggered.
+*
+* The control might have been drawn already, for instance, by calling the Draw method
+* directly. If the control's size hasn't changed, there's no need to repeat drawing the
+* control. However, if the size differs we now have to redraw the control with the
+* actual size.
+*
+* Activate can fire repeatedly. There's little advantage of frequently drawing the same
+* image. Hence, we unbind the control once it was triggered.
+*
+*========================================================================================
+
+LOCAL lcNewSize
+m.lcNewSize = BINTOC(This.Width, "4rs") + BINTOC(This.Height, "4rs")
+IF NOT This._cSize == m.lcNewSize
+	This.Draw()
+ENDIF
+UNBINDEVENTS(Thisform,"Activate",This,"Activate")
 
 ENDPROC
 PROCEDURE backstyle_access
@@ -135,7 +253,33 @@ This.oGfx = NULL
 This.oBMP = NULL
 ENDPROC
 PROCEDURE draw
+*********************************************************************
+** Method: ImgCanvas.Draw
+**
+** Aplies the recived ColorMatrix to the current image
+**
+** History:
+**	2006/../..: BDurban - Coded
+**	2007/12/23: CWollenhaupt - Fixed observations below
+**
+*********************************************************************
+
 LPARAMETERS tnWidth, tnHeight
+
+
+*========================================================================================
+* When we have many GDI+ objects on a form we have to make sure that we don't redraw
+* them too many times as this reduces performance quite a bit. While the form is not
+* visible we cannot rely on the current dimension. It might change without us being
+* notified. Therefore we filter calls only redrawing when there's actually something to
+* do.
+*========================================================================================
+
+IF NOT This._lRedrawNow AND NOT Thisform.Visible
+	RETURN
+ENDIF
+
+This._cSize = BINTOC(This.Width,"4rs") + BINTOC(This.Height,"4rs")
 
 IF EMPTY(m.tnWidth)
 	m.tnWidth = This.Width
@@ -148,7 +292,6 @@ ENDIF
 This.BeforeDraw()
 This.RenderOSB()
 This.AfterDraw()
-
 ENDPROC
 PROCEDURE height_access
 IF This.Parent.BaseClass = "Column"
@@ -276,6 +419,8 @@ obmp
 rendermode 0 = Memory BMP ; 1 = File BMP ; 4 = Memory PNG
 _hwnd
 _hbitmapold
+_csize
+_lredrawnow
 *draw Repaints a Form object.
 *clear Clears the contents of a ComboBox or ListBox control.
 *beforedraw 
@@ -297,6 +442,8 @@ _hbitmapold
 *backstyle_access 
 *declaredll 
 *rendermode_assign 
+*_lredrawnow_assign 
+*activate 
 [END RESERVED3]
 [START RESERVED6]
 Pixels[END RESERVED6]
@@ -308,7 +455,7 @@ system.drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] imgcanvas
 [START RESERVED1]
-  system.drawing.hî-Ú„•7 system.hö.Ú„•7 gdiplusconstants.hþ/Ú„•7[END RESERVED1]
+  system.drawing.h¦ÜÖ¦•7 system.h®ÝÖ¦•7 gdiplusconstants.h¶ÞÖ¦•7[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
