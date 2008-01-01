@@ -4026,20 +4026,19 @@ DEFINE CLASS xfcGraphicsPath AS xfcgpobject OF System.Drawing.prg
 		
 		*!ToDo: Test this function
 		
-		LOCAL loPathData, lhPathData
-		m.lhPathData = 0
+		LOCAL loPathData AS xfcPathData
+		LOCAL lhPathData
 		m.loPathData = NULL
 		
 		LOCAL loExc AS Exception
 		TRY
-			This.SetStatus(xfcGdipGetPathData(This.Handle, @lcPathData))
-			IF(m.lhPathData <> 0)
-				m.loPathData = CREATEOBJECT("xfcPathData")
-				m.loPathData.Handle = m.lhPathData
-			ENDIF
+			m.loPathData = CREATEOBJECT("xfcPathData", This.PointCount)
+			m.lhPathData = m.loPathData.Handle
+			This.SetStatus(xfcGdipGetPathData(This.Handle, m.lhPathData))
 		CATCH TO loExc
 			THROW m.loExc
 		ENDTRY
+		
 		RETURN m.loPathData
 	ENDFUNC
 
@@ -4442,7 +4441,7 @@ DEFINE CLASS xfcGraphicsPath AS xfcgpobject OF System.Drawing.prg
 			IF VARTYPE(m.toMatrix) = "O"
 				m.lhMatrix = m.tomatrix.Handle
 			ENDIF
-			m.tnFlatness = EVL(m.tnFLatness, 0.00)
+			m.tnFlatness = EVL(m.tnFLatness, 0.6666667)
 			
 			This.SetStatus(xfcGdipWidenPath(This.Handle, m.toPen.Handle, m.lhMatrix, m.tnFlatness))
 		
@@ -6995,12 +6994,19 @@ DEFINE CLASS xfcPathData AS xfcDrawingBase OF System.Drawing.prg
 	BaseName = "PathData"
 	PROTECTED _count
 	_count = 0
+	
 	DIMENSION Points[1]
 	** Gets or sets an array of PointF structures that represents the points through which the path is constructed.
 
 	DIMENSION Types[1]
 	** Gets or sets the types of the corresponding points in the path.
-
+	
+	PROTECTED _hTypes
+	_hTypes = 0
+	PROTECTED _hPoints
+	_hPoints = 0
+	
+	Handle = 0
  
 	*********************************************************************
 	FUNCTION Init
@@ -7018,7 +7024,7 @@ DEFINE CLASS xfcPathData AS xfcDrawingBase OF System.Drawing.prg
 	** Parameters:
 	**  [None]
 	*********************************************************************
-	LPARAMETERS lqBinary
+	LPARAMETERS lnCount
 		
 		*!ToDo: Test this function
 		LOCAL lnLoop, lqPoint, liOffset
@@ -7028,11 +7034,18 @@ DEFINE CLASS xfcPathData AS xfcDrawingBase OF System.Drawing.prg
 			DODEFAULT()
 			
 			DO CASE
-			CASE VARTYPE(m.lqBinary) = "Q"
-				m.liOffset = 1
+			CASE VARTYPE(m.lnCount) = "N"
 			
-				This._count = CTOBIN(SUBSTR(m.lqBinary,1,4),"4rs")
-				m.liOffset = m.liOffset + 1
+				LOCAL lhPathData
+				m.lhPathData = xfcGlobalAlloc(GMEM_FIXED, m.lnCount*9+4+4+4)
+				SYS(2600,m.lhPathData,4,BINTOC(m.lnCount,"4rs"))
+				SYS(2600,m.lhPathData+4,4,BINTOC(m.lhPathData+12,"4rs"))
+				SYS(2600,m.lhPathData+8,4,BINTOC(m.lhPathData+12+(m.lnCount*8),"4rs"))			
+			
+				This.Handle = m.lhPathData
+				This._count = CTOBIN(SYS(2600, m.lhPathData, 4), "4rs")
+				This._hPoints = CTOBIN(SYS(2600, m.lhPathData+4, 4), "4rs")
+				This._hTypes = CTOBIN(SYS(2600, m.lhPathData+8, 4), "4rs")
 				
 				IF This._count < 1
 					DIMENSION This.Points[1], This.Types[1]
@@ -7040,19 +7053,8 @@ DEFINE CLASS xfcPathData AS xfcDrawingBase OF System.Drawing.prg
 					This.Points = NULL
 					This.Types = NULL
 				ELSE	
-					DIMENSION This.Points[This._count], This.Types[This._count]		
-					FOR m.lnLoop = 1 TO This._count
-						lqPoint = SUBSTR(m.lqBinary, m.liOffset, LEN(EMPTY_POINTF))
-						This.Points[m.lnLoop]=NEWOBJECT("xfcPointF", XFCCLASS_DRAWING, "",m.lqPoint)
-						m.liOffset = m.liOffset + LEN(EMPTY_POINTF)
-					ENDFOR
-						
-					FOR m.lnLoop = 1 TO This._count
-						This.Types[m.lnLoop]=ASC(SUBSTR(m.lqBinary, m.liOffset, 1))
-						m.liOffset = m.liOffset + 1
-					ENDFOR
+					DIMENSION This.Points[This._count], This.Types[This._count]	
 				ENDIF
-				
 			OTHERWISE
 				DIMENSION This.Points[1], This.Types[1]
 				This._count = 0
@@ -7071,9 +7073,64 @@ DEFINE CLASS xfcPathData AS xfcDrawingBase OF System.Drawing.prg
 	*********************************************************************
 	FUNCTION New
 	*********************************************************************
-	LPARAMETERS lqBinary
+	LPARAMETERS lhBinary
 		
-		RETURN CREATEOBJECT(This.Class, m.lqBinary)
+		RETURN CREATEOBJECT(This.Class, m.lhBinary)
+	ENDFUNC
+
+	*********************************************************************
+	FUNCTION Destroy
+	*********************************************************************
+		IF This.Handle <> 0
+			xfcGlobalFree(This.Handle)
+		ENDIF
+	ENDFUNC
+
+	
+	*********************************************************************
+	FUNCTION Points_ACCESS
+	*********************************************************************
+	** Property: Points (Access)
+	**
+	** Gets or sets an array of PointF structures that represents the points through which
+	** the path is constructed.
+	**
+	** History:
+	**	2007/12/28: BDurban - Coded
+	*********************************************************************
+	LPARAMETERS tiIndex
+		
+		*!ToDo: Test this function
+		LOCAL lqPoint, loPoint AS xfcPointF
+		
+		LOCAL loExc AS Exception
+		TRY
+			m.loPoint = m.loPoint = NULL
+			
+			IF ISNULL(m.tiIndex)
+				m.tiIndex = 1
+			ENDIF
+			
+			IF m.tiIndex > This._count
+				ERROR 230	&& Array Diminsins are invalid
+			ENDIF
+			
+			IF VARTYPE(This.Points[m.tiIndex]) <> "O"
+				IF This._hPoints > 0
+					m.lqPoint = 0h+SYS(2600, This._hPoints+((m.tiIndex-1)*8), 8)
+				ELSE
+					m.lqPoint = EMPTY_POINTF
+				ENDIF 
+				
+				This.Points[m.tiIndex] = NEWOBJECT("xfcPointF", XFCCLASS_DRAWING, "", m.lqPoint)
+			ENDIF
+			m.loPoint = NEWOBJECT("xfcPointF", XFCCLASS_DRAWING, "", This.Points[m.tiIndex].X, This.Points[m.tiIndex].Y)
+			
+		CATCH TO loExc
+			THROW m.loExc
+		ENDTRY
+		
+		RETURN m.loPoint
 	ENDFUNC
 
 
@@ -7089,7 +7146,7 @@ DEFINE CLASS xfcPathData AS xfcDrawingBase OF System.Drawing.prg
 	**  2006/03/07: Auto Generated
 	**	2006/05/11: BDurban - Coded
 	*********************************************************************
-	LPARAMETERS toPnt AS xfcPointF, tiIndex1
+	LPARAMETERS toPnt AS xfcPointF, tiIndex
 		
 		*!ToDo: Test this function
 		
@@ -7113,44 +7170,7 @@ DEFINE CLASS xfcPathData AS xfcDrawingBase OF System.Drawing.prg
 		
 		RETURN NULL
 	ENDFUNC
-
-
-	*********************************************************************
-	FUNCTION tovarbinary
-	*********************************************************************
-	** Method: xfcPathData.ToVarbinary
-	**
-	** Returns a binary representation of this PathData class
-	**
-	** History:
-	**  2006/05/11: BDurban - Coded
-	**  2006/07/08: BDurban - Changed method name
-	*********************************************************************
-		LOCAL lqBinary, liCount, lnLoop, loPnt AS xfcPointF, liType AS Byte
-		
-		*!ToDo: Test this function
-		
-		LOCAL loExc AS Exception
-		TRY
-			
-			m.liCount = This._count
-			m.lqBinary = BINTOC(m.liCount, "4rs")
-		
-			FOR m.lnLoop = 1 TO m.liCount
-				m.lqBinary = m.lqBinary + This.Points[m.lnLoop].ToVarbinary()
-			ENDFOR
-		
-			FOR m.lnLoop = 1 TO m.liCount
-				m.lqBinary = m.lqBinary + CHR(This.Types[m.lnLoop])
-			ENDFOR
-			
-		CATCH TO loExc
-			THROW m.loExc
-		ENDTRY
-		
-		RETURN m.lqBinary
-	ENDFUNC
-
+	
 
 	*********************************************************************
 	FUNCTION Types_ASSIGN
@@ -7163,7 +7183,7 @@ DEFINE CLASS xfcPathData AS xfcDrawingBase OF System.Drawing.prg
 	**  2006/03/07: Auto Generated
 	**	2006/05/11: BDurban - Coded
 	*********************************************************************
-	LPARAMETERS tiType AS Byte, tiIndex1
+	LPARAMETERS tiType AS Byte, tiIndex
 		
 		*!ToDo: Test this function
 		
@@ -7172,6 +7192,8 @@ DEFINE CLASS xfcPathData AS xfcDrawingBase OF System.Drawing.prg
 			DO CASE
 			CASE ISNULL(m.tiIndex)
 				This.Types = m.tiType
+			CASE VARTYPE(m.tiType) = "N"
+				This.Types[m.tiIndex] = INT(m.tiType)
 			OTHERWISE
 				*!ToDo: Error handling?
 			ENDCASE
@@ -8766,8 +8788,8 @@ ENDFUNC
 *********************************************************************
 FUNCTION xfcGdipGetPathData(path, pdata)
 *********************************************************************
-	DECLARE Long GdipGetPathData IN GDIPLUS.DLL AS xfcGdipGetPathData Long path, String @pdata
-	RETURN xfcGdipGetPathData(m.path, @m.pdata)
+	DECLARE Long GdipGetPathData IN GDIPLUS.DLL AS xfcGdipGetPathData Long path, Long pdata
+	RETURN xfcGdipGetPathData(m.path, m.pdata)
 ENDFUNC
 
 *********************************************************************
@@ -9625,3 +9647,19 @@ ENDFUNC
 
 
 #ENDIF
+
+
+
+*********************************************************************
+FUNCTION xfcGlobalAlloc(nFlags, nSize)
+*********************************************************************
+	DECLARE Long GlobalAlloc IN WIN32API AS xfcGlobalAlloc Long nFlags, Long nSize
+	RETURN xfcGlobalAlloc(m.nFlags, m.nSize)
+ENDFUNC
+
+*********************************************************************
+FUNCTION xfcGlobalFree(nHandle)
+*********************************************************************
+	DECLARE Long GlobalFree IN WIN32API AS xfcGlobalFree Long nHandle
+	RETURN xfcGlobalFree(m.nHandle)
+ENDFUNC
