@@ -7388,7 +7388,7 @@ DEFINE CLASS xfcMetafile AS xfcimage OF System.Drawing.prg
 		** Handles overloads: 3
 			CASE LEFT(lcVarType, 2) == "NL"
 				m.lhEMF = m.tcFileName
-				m.liDeleteEmf = IIF(m.lhDCRef, 0, 1)
+				m.liDeleteEmf = IIF(m.thDCRef, 0, 1)
 				m.lnFunctionType = 2
 			
 			*! ToDo:	
