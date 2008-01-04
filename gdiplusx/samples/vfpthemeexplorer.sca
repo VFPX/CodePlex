@@ -73,78 +73,17 @@ IF _VFP.STARTMODE = 4
 ENDIF
 ENDPROC
 PROCEDURE Init
-THIS.LoadTreeView()
-
-DO FORM ResourceCanvas NAME THIS.oCanvas NOSHOW
-
-SHOW WINDOW resourcecanvas IN vfpthemeexplorer
-
-THISFORM.ResizeCanvas()
-
-BINDEVENT(THIS, "Resize", THIS, "OnResize", 1)
-
-THIS.oSelectedNode = THISFORM.oTreeView.Nodes(1)
-
-THIS.MINHEIGHT = INT(THIS.HEIGHT / 2)
-THIS.MINWIDTH = INT(THIS.WIDTH / 2)
-
-IF _VFP.STARTMODE = 4
-
-  _SCREEN.CLOSABLE = .F.
-
-  ON SHUTDOWN CLEAR EVENTS
-
-  SHOW WINDOW vfpthemeexplorer
-
-  READ EVENTS
-
-ELSE
-
-  SHOW WINDOW vfpthemeexplorer
-
-ENDIF
-
-ENDPROC
-PROCEDURE Load
-
-*?STREXTRACT(JUSTPATH(SYS(16)), " ", "", 2)
-
-SET PATH TO STREXTRACT(JUSTPATH(SYS(16)), " ", "", 2) ADDITIVE
-
 THIS.IXMLDOMELEMENT = CREATEOBJECT("Msxml2.DomDocument.4.0")
-
 THIS.IXMLDOMELEMENT.ASYNC = .F.
-
 THIS.IXMLDOMELEMENT.LOAD(LOCFILE("uxtheme.xml"))
 
 IF NOT EMPTY(THIS.IXMLDOMELEMENT.parseError.errorCode)
-
-  MESSAGEBOX("Failed to load XML.")
-
-  RETURN .F.
-
+	MESSAGEBOX("Failed to load XML.")
+	RETURN .F.
 ENDIF
 
-DECLARE LONG OpenThemeData IN UXTHEME ;
-  LONG HWND, ;
-  STRING classList
+DECLARE LONG OpenThemeData IN UXTHEME LONG HWND, STRING classList
 
-*!*	DECLARE LONG GetThemeColor IN UXTHEME ;
-*!*	  LONG hTheme, ;
-*!*	  LONG iPartId, ;
-*!*	  LONG iStateId, ;
-*!*	  LONG iPropId, ;
-*!*	  LONG @pColor
-
-* No Need, Already declared in ImgThemeBase
-*!*	DECLARE LONG GetThemePartSize IN UXTHEME ;
-*!*	  INTEGER hTheme, ;
-*!*	  INTEGER hdc, ;
-*!*	  INTEGER iPartId, ;
-*!*	  INTEGER iStateId, ;
-*!*	  INTEGER @pRect, ;
-*!*	  INTEGER eSize, ;
-*!*	  STRING @SIZE
 
 * Create a collection for GetThemeColor parameters.
 *---------------------------------------------------
@@ -175,30 +114,31 @@ THIS.oProps.ADD("BORDERCOLORHINT","3822")
 THIS.oProps.ADD("ACCENTCOLORHINT","3823")
 
 
-*!*	DECLARE LONG GetThemePartSize IN UXTHEME ;
-*!*	  INTEGER hTheme, ;
-*!*	  INTEGER hdc, ;
-*!*	  INTEGER iPartId, ;
-*!*	  INTEGER iStateId, ;
-*!*	  INTEGER @pRect, ;
-*!*	  INTEGER eSize, ;
-*!*	  STRING @SIZE
 
-*!*	hTheme
-*!*	    [in] Handle to a window's specified theme data. Use OpenThemeData to create an HTHEME.
-*!*	hdc
-*!*	    [in] Handle to a device context (HDC) to select fonts into.
-*!*	iPartId
-*!*	    [in] Value of type int that specifies the part to calculate the size of. See Parts and States.
-*!*	iStateId
-*!*	    [in] Value of type int that specifies the state of the part. See Parts and States.
-*!*	prc
-*!*	    [in] Pointer to a RECT structure that contains the rectangle used for the part drawing destination. This parameter may be set to NULL.
-*!*	eSize
-*!*	    [in] Enumerated type that specifies the type of size to retrieve. See THEME_SIZE for a list of type values.
-*!*	psz
-*!*	    [out] Pointer to a SIZE structure that receives the dimensions of the specified part.
+THIS.LoadTreeView()
 
+DO FORM ResourceCanvas NAME THIS.oCanvas NOSHOW
+SHOW WINDOW ResourceCanvas IN vfpthemeexplorer
+
+THISFORM.ResizeCanvas()
+BINDEVENT(THIS, "Resize", THIS, "OnResize", 1)
+
+THIS.oSelectedNode = THISFORM.oTreeView.Nodes(1)
+
+THIS.MINHEIGHT = INT(THIS.HEIGHT / 2)
+THIS.MINWIDTH = INT(THIS.WIDTH / 2)
+
+IF _VFP.STARTMODE = 4
+	_SCREEN.CLOSABLE = .F.
+	ON SHUTDOWN CLEAR EVENTS
+	SHOW WINDOW vfpthemeexplorer
+	READ EVENTS
+ELSE
+	SHOW WINDOW vfpthemeexplorer
+ENDIF
+ENDPROC
+PROCEDURE Load
+DO LOCFILE("System.prg")
 ENDPROC
 PROCEDURE createcanvas
 
@@ -225,7 +165,6 @@ With THIS.oCanvas
 ENDWITH
 ENDPROC
 PROCEDURE drawresource
-
 *!*	TS_MIN Receives the minimum size of a visual style part.
 *!*	TS_TRUE Receives the size of the visual style part that will best fit the available space.
 *!*	TS_DRAW Receives the size that the theme manager uses to draw a part.
@@ -250,27 +189,18 @@ LOCAL cUnicodeClass AS STRING, ;
   oResource AS imgThemeBase IN GdiPlusX.vcx
 
 oResource = NULL
-
 cUnicodeClass = STRCONV(m.cClass + 0h00, 5)
-
 nPrect = 0
-
 nSize = INT(THISFORM.nSize)
-
 cPartSize = SPACE(8)
-
 oCanvas = THISFORM.oCanvas
-
 nHtheme = OpenThemeData(0, m.cUnicodeClass)
 
 IF m.nHtheme > 0
 
   oCanvas.NEWOBJECT("oResource" + TRANSFORM(oCanvas.CONTROLCOUNT + 1), "imgThemeBase", "GdiPlusX.vcx")
-
   oResource = oCanvas.CONTROLS(oCanvas.CONTROLCOUNT)
-
   nHdc = oResource.hdc
-
   nResult = GetThemePartSize(nHtheme, nHdc, nPartId, nStateId, @nPrect, nSize, @cPartSize)
 
   IF m.nResult == S_OK
@@ -287,41 +217,26 @@ IF m.nHtheme > 0
     *!*	cy    Specifies the rectangle's height. The units depend on which function uses this.
 
     IF m.nSize = 1 AND THISFORM.lResize
-
-      nWidth = THISFORM.nImageWidth
-
-      nHeight = THISFORM.nImageHeight
-
+		nWidth = THISFORM.nImageWidth
+		nHeight = THISFORM.nImageHeight
     ELSE
-
-      nWidth = INT(CTOBIN(LEFT(cPartSize, 4),"RS"))
-
-      nHeight = INT(CTOBIN(RIGHT(cPartSize, 4),"RS"))
-
+		nWidth = INT(CTOBIN(LEFT(cPartSize, 4),"RS"))
+		nHeight = INT(CTOBIN(RIGHT(cPartSize, 4),"RS"))
     ENDIF
 
     oResource.TOP = m.nTop
-
     oResource.LEFT = m.nLeft
-
     oResource.WIDTH = m.nWidth
-
     oResource.HEIGHT = m.nHeight
-
     oResource.themeclass = m.cUnicodeClass
-
     oResource.themepart = m.nPartId
-
     oResource.themestate = m.nStateId
-
     oResource.ANCHOR = 3
-
     oResource.VISIBLE = .T.
 
   ELSE
 
     oResource = NULL
-
     oCanvas.REMOVEOBJECT(oCanvas.CONTROLS(oCanvas.CONTROLCOUNT).NAME)
 
   ENDIF
@@ -331,7 +246,6 @@ IF m.nHtheme > 0
 ENDIF
 
 RETURN oResource
-
 ENDPROC
 PROCEDURE drawthemecolors
 
@@ -489,7 +403,6 @@ RETURN oReturn
 
 ENDPROC
 PROCEDURE loadtreeview
-
 #DEFINE tvwChild 4
 
 LOCAL oXmlDom AS Msxml2.DOMDocument
@@ -497,49 +410,33 @@ LOCAL oXmlDom AS Msxml2.DOMDocument
 oXmlDom = THISFORM.IXMLDOMELEMENT
 
 LOCAL cClass, cPart, cState, cId AS STRING
-
 LOCAL oClasses, oParts, oStates, oClassElement, oPartElement, oStateElement AS Msxml2.IXMLDOMNode
-
 LOCAL oRootNode, oClassNode, oPartNode AS MSComctlLib.NODE
-
 LOCAL oTreeView AS MSComctlLib.ITreeView
 
 oTreeView = THISFORM.oTreeView
-
 oClasses = oXmlDom.selectNodes("ThemeData/Class")
 
 FOR EACH oClassElement IN oClasses
-
   cClass = oClassElement.GetAttribute("name")
-
   oClassNode = oTreeView.Nodes.ADD(, , "C" + m.cClass, m.cClass)
-
   oParts = oClassElement.selectNodes("Part")
 
   FOR EACH oPartElement IN oParts
-
     cPart = oPartElement.GetAttribute("name")
-
     cId = oPartElement.GetAttribute("id")
-
     oPartNode = oTreeView.Nodes.ADD(oClassNode, tvwChild, "P" + cPart + "I:" + cId, cPart + " (" + cId + ")")
-
     oStates = oPartElement.selectNodes("State")
 
     FOR EACH oStateElement IN oStates
-
       cState = oStateElement.GetAttribute("name")
-
       cId = oStateElement.GetAttribute("id")
-
       oTreeView.Nodes.ADD(oPartNode, tvwChild, "S" + cState + "P" + cPart + "I:" + cId, cState + " (" + cId + ")")
-
     ENDFOR
 
   ENDFOR
 
 ENDFOR
-
 ENDPROC
 PROCEDURE lresize_assign
 
@@ -679,45 +576,35 @@ THISFORM.RENDER()
 
 ENDPROC
 PROCEDURE render
-
 LOCAL oChildNode AS MSComctlLib.NODE, ;
   oGrandChildNode AS MSComctlLib.NODE, ;
   oNode AS MSComctlLib.NODE, ;
   nLeft, nTop, nMaxHeight AS INTEGER, ;
-  oResource AS imgThemebase IN GdiPlusX.vcx, ;
+  oResource AS imgThemeBase IN GdiPlusX.vcx, ;
   oCanvas AS FORM, ;
   lOldLockScreen AS Logical, ;
   oColor AS SHAPE, ;
   nColor AS INTEGER
 
 oCanvas = THISFORM.oCanvas
-
 lOldLockScreen = oCanvas.LOCKSCREEN
 
 oCanvas.LOCKSCREEN = .T.
 
 IF THIS.nPartSize != 3
-
-  THISFORM.nImageWidth = 0
-
-  THISFORM.nImageHeight = 0
-
+	THISFORM.nImageWidth = 0
+	THISFORM.nImageHeight = 0
 ENDIF
 
 nLeft = 4
-
 nTop = 4
-
 nMaxHeight = 0
-
 oNode = THISFORM.oSelectedNode
 
 * Clear all existing controls
 *-----------------------------
 DO WHILE oCanvas.CONTROLCOUNT > 0
-
-  oCanvas.REMOVEOBJECT(oCanvas.CONTROLS[1].NAME)
-
+	oCanvas.REMOVEOBJECT(oCanvas.CONTROLS[1].NAME)
 ENDDO
 
 ACTIVATE WINDOW resourcecanvas
@@ -736,20 +623,14 @@ DO CASE
       oGrandChildNode = oChildNode.CHILD
 
       FOR nGrandChild = 1 TO oChildNode.children
-
         oParams = THISFORM.EvaluateNode(oGrandChildNode)
-
         oResource = THISFORM.DrawResource(oParams.cClass, oParams.nPartId, oParams.nStateId, m.nTop, m.nLeft)
 
         IF !ISNULL(oResource)
-
-          nLeft = oResource.LEFT + oResource.WIDTH + 4
-
-          nMaxHeight = IIF(oResource.HEIGHT > nMaxHeight, oResource.HEIGHT, nMaxHeight)
-
-          oResource = NULL
-
-        ENDIF
+			nLeft = oResource.LEFT + oResource.WIDTH + 4
+			nMaxHeight = IIF(oResource.HEIGHT > nMaxHeight, oResource.HEIGHT, nMaxHeight)
+			oResource = NULL
+		ENDIF
 
         oGrandChildNode = oGrandChildNode.NEXT
 
@@ -762,27 +643,18 @@ DO CASE
       oCanvas.ADDOBJECT("oText" + TRANSFORM(oCanvas.CONTROLCOUNT + 1), "textbox")
 
       oText = oCanvas.CONTROLS(oCanvas.CONTROLCOUNT)
-
       oText.TOP = m.nTop
-
       oText.HEIGHT = 23
-
       oText.LEFT = m.nTempLeft
-
       oText.VALUE = oParams.cPart
-
       oText.WIDTH = (LEN(oText.VALUE) * (FONTMETRIC(6) + 4)) + 5&&96
-
       oText.VISIBLE = .T.
 
       * Start a new row
       *----------------------------
       nTop = nTop + MAX(oText.Height, nMaxHeight) + 4
-
       nLeft = 4
-
       nMaxHeight = 0
-
       oChildNode = oChildNode.NEXT
 
     ENDFOR
@@ -797,27 +669,18 @@ DO CASE
     FOR nChild = 1 TO oNode.children
 
       oParams = THISFORM.EvaluateNode(oChildNode)
-
       oResource = THISFORM.DrawResource(oParams.cClass, oParams.nPartId, oParams.nStateId, m.nTop, m.nLeft)
-
       nTempLeft = oResource.LEFT + oResource.WIDTH + 4
 
       * Add a state value text box.
       *------------------------------------
       oCanvas.ADDOBJECT("oText" + TRANSFORM(oCanvas.CONTROLCOUNT + 1), "textbox")
-
       oText = oCanvas.CONTROLS(oCanvas.CONTROLCOUNT)
-
       oText.TOP = m.nTop
-
       oText.HEIGHT = 23
-
       oText.LEFT = m.nTempLeft
-
       oText.VALUE = TRANSFORM(oParams.nStateID)
-
       oText.WIDTH = (LEN(oText.VALUE) * FONTMETRIC(6)) + 15 &&96
-
       oText.VISIBLE = .T.
 
       nTempLeft = oText.LEFT + oText.WIDTH + 4
@@ -825,23 +688,15 @@ DO CASE
       * Add a state constant text box.
       *------------------------------------
       oCanvas.ADDOBJECT("oText" + TRANSFORM(oCanvas.CONTROLCOUNT + 1), "textbox")
-
       oText = oCanvas.CONTROLS(oCanvas.CONTROLCOUNT)
-
       oText.TOP = m.nTop
-
       oText.HEIGHT = 23
-
       oText.LEFT = m.nTempLeft
-
       oText.VALUE = oParams.cState
-
       oText.WIDTH = LEN(oText.VALUE) * (FONTMETRIC(6) + 4) &&96
-
       oText.VISIBLE = .T.
 
       THISFORM.nImageWidth = oResource.WIDTH
-
       THISFORM.nImageHeight = oResource.HEIGHT
 
       IF !ISNULL(oResource)
@@ -849,7 +704,6 @@ DO CASE
         * Start a new row
         *----------------------------
         nTop = nTop + MAX(oResource.HEIGHT, 23) + 4
-
         oResource = NULL
 
       ENDIF
@@ -864,11 +718,9 @@ DO CASE
     * Draw the resource
     *-----------------------------------------
     oParams = THISFORM.EvaluateNode(oNode)
-
     oResource = THISFORM.DrawResource(oParams.cClass, oParams.nPartId, oParams.nStateId, m.nTop, m.nLeft)
 
     THISFORM.nImageWidth = oResource.WIDTH
-
     THISFORM.nImageHeight = oResource.HEIGHT
 
     nTempLeft = oResource.LEFT + oResource.WIDTH + 4
@@ -876,19 +728,12 @@ DO CASE
     * Add a state value text box.
     *------------------------------------
     oCanvas.ADDOBJECT("oText" + TRANSFORM(oCanvas.CONTROLCOUNT + 1), "textbox")
-
     oText = oCanvas.CONTROLS(oCanvas.CONTROLCOUNT)
-
     oText.TOP = m.nTop
-
     oText.HEIGHT = 23
-
     oText.LEFT = m.nTempLeft
-
     oText.VALUE = TRANSFORM(oParams.nStateID)
-
     oText.WIDTH = (LEN(oText.VALUE) * FONTMETRIC(6)) + 15 &&96
-
     oText.VISIBLE = .T.
 
     nTempLeft = oText.LEFT + oText.WIDTH + 4
@@ -898,19 +743,12 @@ DO CASE
     oCanvas.ADDOBJECT("oText" + TRANSFORM(oCanvas.CONTROLCOUNT + 1), "textbox")
 
     oText = oCanvas.CONTROLS(oCanvas.CONTROLCOUNT)
-
     oText.TOP = m.nTop
-
     oText.HEIGHT = 23
-
     oText.LEFT = m.nTempLeft
-
     oText.VALUE = oParams.cState
-
     oText.WIDTH = LEN(oText.VALUE) * (FONTMETRIC(6) + 4) &&96
-
     oText.VISIBLE = .T.
-
 
     nTop = m.nTop + MAX(oResource.HEIGHT, 23) + 4
 
@@ -925,11 +763,8 @@ THISFORM.nStateId = oParams.nStateId
 THISFORM.DrawThemeColors(m.nTop)
 
 oCanvas.LOCKSCREEN = m.lOldLockScreen
-
 THISFORM.DisplayPane.txtHeight.REFRESH()
-
 THISFORM.DisplayPane.TXTWIDTH.REFRESH()
-
 ENDPROC
 PROCEDURE resizecanvas
 
@@ -1033,7 +868,7 @@ THISFORM.oSelectedNode = NODE
 ENDPROC
 [END METHODS]
 [BINSTART OLE]
-CHECKSUM=44936
+CHECKSUM=9013
 [BINEND OLE]
 [BINSTART OLE2]
 CHECKSUM=26800
