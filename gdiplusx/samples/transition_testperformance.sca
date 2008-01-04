@@ -134,7 +134,6 @@ CASE lnOption = 5 && Open Rectangle
 	
 	Thisform.X = 0
 	Thisform.Y = 0
-	Thisform.oBitmap = loWorkBmp
 
 	loWorkBmp = loBmp.Clone()
 	loGfx = .Graphics.FromImage(loWorkBmp)
@@ -155,6 +154,8 @@ CASE lnOption = 5 && Open Rectangle
 		ENDIF
 		loCloned = loBmp.Clone(.Rectangle.New(x, y, w, h))
 		loGfx.DrawImage(loCloned, x, y)
+
+		Thisform.oBitmap = loWorkBmp
 		Thisform.Imgcanvas1.Draw()
 	ENDFOR
 
