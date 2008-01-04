@@ -19,7 +19,7 @@ Height = 162
 Width = 182
 ogfx = (NULL)
 hdc = 0
-_memberdata =     1033<VFPData><memberdata name="beforedraw" type="method" display="BeforeDraw"/><memberdata name="hdc" type="property" display="HDC"/><memberdata name="ogfx" type="property" display="oGfx"/><memberdata name="refresh" type="method" display="Refresh"/><memberdata name="clear" type="method" display="Clear"/><memberdata name="draw" type="method" display="Draw"/><memberdata name="controls" type="property" display="Controls"/><memberdata name="setup" type="method" display="SetUp"/><memberdata name="save" type="method" display="Save"/><memberdata name="afterdraw" type="method" display="AfterDraw"/><memberdata name="interpolationmode" type="property" display="InterpolationMode"/><memberdata name="rectangle" type="property" display="Rectangle"/><memberdata name="rendermode" type="property" display="RenderMode"/><memberdata name="smoothingmode" type="property" display="SmoothingMode"/><memberdata name="textrenderinghint" type="property" display="TextRenderingHint"/><memberdata name="obmp" type="property" display="oBmp"/></VFPData>
+_memberdata =     1183<VFPData><memberdata name="beforedraw" type="method" display="BeforeDraw"/><memberdata name="hdc" type="property" display="HDC"/><memberdata name="ogfx" type="property" display="oGfx"/><memberdata name="refresh" type="method" display="Refresh"/><memberdata name="clear" type="method" display="Clear"/><memberdata name="draw" type="method" display="Draw"/><memberdata name="controls" type="property" display="Controls"/><memberdata name="setup" type="method" display="SetUp"/><memberdata name="save" type="method" display="Save"/><memberdata name="afterdraw" type="method" display="AfterDraw"/><memberdata name="interpolationmode" type="property" display="InterpolationMode"/><memberdata name="rectangle" type="property" display="Rectangle"/><memberdata name="rendermode" type="property" display="RenderMode"/><memberdata name="smoothingmode" type="property" display="SmoothingMode"/><memberdata name="textrenderinghint" type="property" display="TextRenderingHint"/><memberdata name="obmp" type="property" display="oBmp"/><memberdata name="drawwheninvisible" type="property" display="DrawWhenInvisible"/><memberdata name="lredrawnow" type="property" display="lRedrawNow"/></VFPData>
 
 controls = (NULL)
 _bmpwidth = 0
@@ -34,7 +34,8 @@ rendermode = 0
 _hwnd = 0
 _hbitmapold = 0
 _csize = 
-_lredrawnow = .F.
+drawwheninvisible = .F.
+lredrawnow = .F.
 Name = "imgcanvas"
 [END PROPERTIES]
 [START PROTECTED]
@@ -137,28 +138,6 @@ IF m.lEnable
 	IF NOT This._cSize == m.lcNewSize
 		This.Draw()
 	ENDIF
-ENDIF
-
-ENDPROC
-PROCEDURE _lredrawnow_assign
-*********************************************************************
-** Method: lRedrawNow_Assign
-**
-** History:
-**	2007/12/23: CWollenhaupt - Coded - observations below
-**
-*********************************************************************
-
-*========================================================================================
-* Force the control to resize itself. Draw additionaly ensures that we only draw the
-* control when it is visible.
-*========================================================================================
-LPARAMETERS tlNow
-
-IF m.tlNow
-	This._lRedrawNow = .T.
-	This.Draw()
-	This._lRedrawNow = .F.
 ENDIF
 
 ENDPROC
@@ -275,7 +254,7 @@ LPARAMETERS tnWidth, tnHeight
 * do.
 *========================================================================================
 
-IF NOT This._lRedrawNow AND NOT Thisform.Visible
+IF NOT This.lRedrawNow AND NOT Thisform.Visible AND NOT This.DrawWhenInvisible
 	RETURN
 ENDIF
 
@@ -304,6 +283,28 @@ PROCEDURE interpolationmode_assign
 LPARAMETERS vNewVal
 THIS.InterpolationMode = m.vNewVal
 This.oGfx.InterpolationMode = m.vNewVal
+
+ENDPROC
+PROCEDURE lredrawnow_assign
+*********************************************************************
+** Method: lRedrawNow_Assign
+**
+** History:
+**	2007/12/23: CWollenhaupt - Coded - observations below
+**
+*********************************************************************
+
+*========================================================================================
+* Force the control to resize itself. Draw additionaly ensures that we only draw the
+* control when it is visible.
+*========================================================================================
+LPARAMETERS tlNow
+
+IF m.tlNow
+	This.lRedrawNow = .T.
+	This.Draw()
+	This.lRedrawNow = .F.
+ENDIF
 
 ENDPROC
 PROCEDURE rectangle_access
@@ -420,7 +421,8 @@ rendermode 0 = Memory BMP ; 1 = File BMP ; 4 = Memory PNG
 _hwnd
 _hbitmapold
 _csize
-_lredrawnow
+drawwheninvisible
+lredrawnow
 *draw Repaints a Form object.
 *clear Clears the contents of a ComboBox or ListBox control.
 *beforedraw 
@@ -442,8 +444,8 @@ _lredrawnow
 *backstyle_access 
 *declaredll 
 *rendermode_assign 
-*_lredrawnow_assign 
-*activate 
+*activate Occurs when a FormSet, Form, or Page object becomes active or when a ToolBar object is shown.
+*lredrawnow_assign 
 [END RESERVED3]
 [START RESERVED6]
 Pixels[END RESERVED6]
@@ -455,7 +457,7 @@ system.drawing.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] imgcanvas
 [START RESERVED1]
-  system.drawing.h¦ÜÖ¦•7 system.h®ÝÖ¦•7 gdiplusconstants.h¶ÞÖ¦•7[END RESERVED1]
+  system.drawing.hÖàñ“#8 system.hÞáñ“#8 gdiplusconstants.hæâñ“#8[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
