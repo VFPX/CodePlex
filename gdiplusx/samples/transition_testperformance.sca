@@ -49,6 +49,17 @@ omatrix = 0
 Name = "Form1"
 [END PROPERTIES]
 [START METHODS]
+PROCEDURE Init
+Thisform.TxtFile.Value = LOCFILE("CebolinhaBMPSmall.Bmp")
+Thisform.X = 0
+Thisform.Y = 0
+
+WITH _Screen.System.Drawing
+	Thisform.oBitmap = .Bitmap.New(.Bitmap.FromFile(Thisform.TxtFile.Value), Thisform.Imgcanvas1.Width, Thisform.Imgcanvas1.Height)
+	Thisform.Imgcanvas1.DrawWhenInvisible = .T.
+	Thisform.Imgcanvas1.Draw()
+ENDWITH
+ENDPROC
 PROCEDURE createeffect
 LOCAL loBmp as xfcBitmap
 LOCAL loGfx as xfcGraphics
@@ -259,10 +270,6 @@ IF EMPTY(lcFile)
 ENDIF
 
 Thisform.txtFile.Value = lcFile
-Thisform.Container1.Visible = .T.
-
-Thisform.X = 0
-Thisform.Y = 0
 
 lnWidth  = Thisform.Imgcanvas1.Width
 lnHeight = Thisform.Imgcanvas1.Height
@@ -308,7 +315,7 @@ Left = 12
 Width = 200
 Height = 180
 BorderWidth = 0
-Visible = .F.
+Visible = .T.
 Name = "Container1"
 [END PROPERTIES]
 
