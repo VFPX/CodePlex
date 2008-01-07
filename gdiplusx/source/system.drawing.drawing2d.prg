@@ -9,7 +9,7 @@ ENDIF
 *************************************************************************
 *************************************************************************
 *************************************************************************
-DEFINE CLASS xfcDrawing2D AS xfcObject OF System.PRG
+DEFINE CLASS xfcDrawing2D AS xfcNamespace OF System.PRG
 *************************************************************************
 *************************************************************************
 *************************************************************************
@@ -1227,7 +1227,7 @@ DEFINE CLASS xfcAdjustableArrowCap AS xfccustomlinecap
 			This.SetStatus(xfcGdipCreateAdjustableArrowCap(m.tnHeight, m.tnWidth, m.liIsFilled, @lhCap))
 			This.Handle = m.lhCap
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN
@@ -1259,7 +1259,7 @@ DEFINE CLASS xfcAdjustableArrowCap AS xfccustomlinecap
 		TRY
 			This.SetStatus(xfcGdipGetAdjustableArrowCapFillState(This.Handle, @liFillState))
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN (m.liFillState = TRUE)
 	ENDFUNC
@@ -1284,7 +1284,7 @@ DEFINE CLASS xfcAdjustableArrowCap AS xfccustomlinecap
 		TRY
 			This.SetStatus(xfcGdipSetAdjustableArrowCapFillState(This.Handle, IIF(m.tlFillState, TRUE, FALSE)))
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -1317,7 +1317,7 @@ DEFINE CLASS xfcAdjustableArrowCap AS xfccustomlinecap
 			This.SetStatus(xfcGdipGetAdjustableArrowCapHeight(This.Handle, @lnHeight))
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN m.lnHeight
 	ENDFUNC
@@ -1342,7 +1342,7 @@ DEFINE CLASS xfcAdjustableArrowCap AS xfccustomlinecap
 		TRY
 			This.SetStatus(xfcGdipSetAdjustableArrowCapHeight(This.Handle, m.tnHeight))
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -1375,7 +1375,7 @@ DEFINE CLASS xfcAdjustableArrowCap AS xfccustomlinecap
 			This.SetStatus(xfcGdipGetAdjustableArrowCapMiddleInset(This.Handle, @tnMiddleInset))
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN m.tnMiddleInset
 	ENDFUNC
@@ -1400,7 +1400,7 @@ DEFINE CLASS xfcAdjustableArrowCap AS xfccustomlinecap
 		TRY
 			This.SetStatus(xfcGdipSetAdjustableArrowCapMiddleInset(This.Handle, m.tnMiddleInset))
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -1433,7 +1433,7 @@ DEFINE CLASS xfcAdjustableArrowCap AS xfccustomlinecap
 			This.SetStatus(xfcGdipGetAdjustableArrowCapWidth(This.Handle, @lnWidth))
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN m.lnWidth
 	ENDFUNC
@@ -1458,7 +1458,7 @@ DEFINE CLASS xfcAdjustableArrowCap AS xfccustomlinecap
 		TRY
 			This.SetStatus(xfcGdipSetAdjustableArrowCapWidth(This.Handle, m.tnWidth))
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -1564,7 +1564,7 @@ DEFINE CLASS xfcBlend AS xfcDrawingBase OF System.Drawing.prg
 			ENDIF
 			
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN
@@ -1617,7 +1617,7 @@ DEFINE CLASS xfcBlend AS xfcDrawingBase OF System.Drawing.prg
 		** This.SetStatus(GdipSomeFunction???())
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN m.leValue
 	ENDFUNC
@@ -1655,7 +1655,7 @@ DEFINE CLASS xfcBlend AS xfcDrawingBase OF System.Drawing.prg
 				ENDIF
 			ENDCASE
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -1698,7 +1698,7 @@ DEFINE CLASS xfcBlend AS xfcDrawingBase OF System.Drawing.prg
 		** This.SetStatus(GdipSomeFunction???())
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN m.leValue
 	ENDFUNC
@@ -1738,7 +1738,7 @@ DEFINE CLASS xfcBlend AS xfcDrawingBase OF System.Drawing.prg
 				ENDIF
 			ENDCASE
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -1831,7 +1831,7 @@ DEFINE CLASS xfcColorBlend AS xfcDrawingBase OF System.Drawing.prg
 			ENDIF
 			
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN
@@ -1886,7 +1886,7 @@ DEFINE CLASS xfcColorBlend AS xfcDrawingBase OF System.Drawing.prg
 		** This.SetStatus(GdipSomeFunction???())
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN m.leValue
 	ENDFUNC
@@ -1925,7 +1925,7 @@ DEFINE CLASS xfcColorBlend AS xfcDrawingBase OF System.Drawing.prg
 				ENDIF
 			ENDCASE
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -1968,7 +1968,7 @@ DEFINE CLASS xfcColorBlend AS xfcDrawingBase OF System.Drawing.prg
 		** This.SetStatus(GdipSomeFunction???())
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN m.leValue
 	ENDFUNC
@@ -2008,7 +2008,7 @@ DEFINE CLASS xfcColorBlend AS xfcDrawingBase OF System.Drawing.prg
 				ENDIF
 			ENDCASE
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -2101,7 +2101,7 @@ DEFINE CLASS xfcCustomLineCap AS xfcgpobject OF System.Drawing.prg
 			This.Handle = m.lhCustomCap
 			
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN
@@ -2124,7 +2124,7 @@ DEFINE CLASS xfcCustomLineCap AS xfcgpobject OF System.Drawing.prg
 		TRY
 		This.SetStatus(xfcGdipDeleteCustomLineCap(This.Handle))
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN
 	ENDFUNC
@@ -2167,7 +2167,7 @@ DEFINE CLASS xfcCustomLineCap AS xfcgpobject OF System.Drawing.prg
 			This.SetStatus(xfcGdipGetCustomLineCapBaseCap(This.Handle, @liLineCap))
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN m.liLineCap
 	ENDFUNC
@@ -2192,7 +2192,7 @@ DEFINE CLASS xfcCustomLineCap AS xfcgpobject OF System.Drawing.prg
 		TRY
 			This.SetStatus(xfcGdipSetCustomLineCapBaseCap(This.Handle, m.tiLineCap))
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -2225,7 +2225,7 @@ DEFINE CLASS xfcCustomLineCap AS xfcgpobject OF System.Drawing.prg
 			This.SetStatus(xfcGdipGetCustomLineCapBaseInset(This.Handle, @lnInset))
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN m.lnInset
 	ENDFUNC
@@ -2250,7 +2250,7 @@ DEFINE CLASS xfcCustomLineCap AS xfcgpobject OF System.Drawing.prg
 		TRY
 			This.SetStatus(xfcGdipSetCustomLineCapBaseInset(This.Handle, m.tnInset))
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -2288,7 +2288,7 @@ DEFINE CLASS xfcCustomLineCap AS xfcgpobject OF System.Drawing.prg
 				m.loClonedCap.Handle = m.lhClonedCap
 			ENDIF
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN m.loobject
@@ -2322,7 +2322,7 @@ DEFINE CLASS xfcCustomLineCap AS xfcgpobject OF System.Drawing.prg
 			This.SetStatus(xfcGdipGetCustomLineCapStrokeCaps(This.Handle, @tiStartCap, @tiEndCap))
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -2356,7 +2356,7 @@ DEFINE CLASS xfcCustomLineCap AS xfcgpobject OF System.Drawing.prg
 			This.SetStatus(xfcGdipSetCustomLineCapStrokeCaps(This.Handle, m.tiStartCap, m.tiEndCap))
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -2390,7 +2390,7 @@ DEFINE CLASS xfcCustomLineCap AS xfcgpobject OF System.Drawing.prg
 			This.SetStatus(xfcGdipGetCustomLineCapStrokeJoin(This.Handle, @liLineJoin))
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN m.liLineJoin
 	ENDFUNC
@@ -2416,7 +2416,7 @@ DEFINE CLASS xfcCustomLineCap AS xfcgpobject OF System.Drawing.prg
 		TRY
 			This.SetStatus(xfcGdipSetCustomLineCapStrokeJoin(This.Handle, m.tiLineJoin))
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -2450,7 +2450,7 @@ DEFINE CLASS xfcCustomLineCap AS xfcgpobject OF System.Drawing.prg
 			This.SetStatus(xfcGdipGetCustomLineCapWidthScale(This.Handle, @lnWidthScale))
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN m.lnWidthScale
 	ENDFUNC
@@ -2476,7 +2476,7 @@ DEFINE CLASS xfcCustomLineCap AS xfcgpobject OF System.Drawing.prg
 		TRY
 			This.SetStatus(xfcGdipSetCustomLineCapWidthScale(This.Handle, m.tnWidthScale))
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -2553,7 +2553,7 @@ DEFINE CLASS xfcGraphicsContainer AS xfcDrawingBase OF System.Drawing.prg
 			
 		** This.SetStatus(GdipSomeFunction???())
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN
@@ -2577,7 +2577,7 @@ DEFINE CLASS xfcGraphicsContainer AS xfcDrawingBase OF System.Drawing.prg
 		TRY
 	** This.SetStatus(GdipSomeFunction???())
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN
 	ENDFUNC
@@ -2698,7 +2698,7 @@ DEFINE CLASS xfcGraphicsPath AS xfcgpobject OF System.Drawing.prg
 			This.Handle = m.lhPath
 			
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN
@@ -2721,7 +2721,7 @@ DEFINE CLASS xfcGraphicsPath AS xfcgpobject OF System.Drawing.prg
 		TRY
 		This.SetStatus(xfcGdipDeletePath(This.Handle))
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN
 	ENDFUNC
@@ -2798,7 +2798,7 @@ DEFINE CLASS xfcGraphicsPath AS xfcgpobject OF System.Drawing.prg
 			ENDIF
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -2852,7 +2852,7 @@ DEFINE CLASS xfcGraphicsPath AS xfcgpobject OF System.Drawing.prg
 			ENDCASE
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -2909,7 +2909,7 @@ DEFINE CLASS xfcGraphicsPath AS xfcgpobject OF System.Drawing.prg
 			ENDIF
 			
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -2979,7 +2979,7 @@ DEFINE CLASS xfcGraphicsPath AS xfcgpobject OF System.Drawing.prg
 			ENDIF
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -3074,7 +3074,7 @@ DEFINE CLASS xfcGraphicsPath AS xfcgpobject OF System.Drawing.prg
 			ENDCASE
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -3127,7 +3127,7 @@ DEFINE CLASS xfcGraphicsPath AS xfcgpobject OF System.Drawing.prg
 			ENDCASE
 			
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -3186,7 +3186,7 @@ DEFINE CLASS xfcGraphicsPath AS xfcgpobject OF System.Drawing.prg
 			ENDCASE
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -3243,7 +3243,7 @@ DEFINE CLASS xfcGraphicsPath AS xfcgpobject OF System.Drawing.prg
 			ENDIF
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -3278,7 +3278,7 @@ DEFINE CLASS xfcGraphicsPath AS xfcgpobject OF System.Drawing.prg
 			This.SetStatus(xfcGdipAddPathPath(This.Handle, m.lhAddingPath, IIF(m.tlConnect,1,0)))
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -3328,7 +3328,7 @@ DEFINE CLASS xfcGraphicsPath AS xfcgpobject OF System.Drawing.prg
 			ENDCASE
 			
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -3385,7 +3385,7 @@ DEFINE CLASS xfcGraphicsPath AS xfcgpobject OF System.Drawing.prg
 			ENDIF
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -3434,7 +3434,7 @@ DEFINE CLASS xfcGraphicsPath AS xfcgpobject OF System.Drawing.prg
 			ENDCASE
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -3491,7 +3491,7 @@ DEFINE CLASS xfcGraphicsPath AS xfcgpobject OF System.Drawing.prg
 			ENDIF
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -3547,7 +3547,7 @@ DEFINE CLASS xfcGraphicsPath AS xfcgpobject OF System.Drawing.prg
 			ENDCASE
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -3580,7 +3580,7 @@ DEFINE CLASS xfcGraphicsPath AS xfcgpobject OF System.Drawing.prg
 			This.SetStatus(xfcGdipClearPathMarkers(This.Handle))
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -3619,7 +3619,7 @@ DEFINE CLASS xfcGraphicsPath AS xfcgpobject OF System.Drawing.prg
 				m.loClonePath.Handle = m.lhClonePath
 			ENDIF
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN m.loClonePath
@@ -3653,7 +3653,7 @@ DEFINE CLASS xfcGraphicsPath AS xfcgpobject OF System.Drawing.prg
 			This.SetStatus(xfcGdipClosePathFigures(This.Handle))
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -3688,7 +3688,7 @@ DEFINE CLASS xfcGraphicsPath AS xfcgpobject OF System.Drawing.prg
 			This.SetStatus(xfcGdipClosePathFigure(This.Handle))
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -3722,7 +3722,7 @@ DEFINE CLASS xfcGraphicsPath AS xfcgpobject OF System.Drawing.prg
 			This.SetStatus(xfcGdipGetPathFillMode(This.Handle, m.liFillmode))
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN m.liFillMode
 	ENDFUNC
@@ -3748,7 +3748,7 @@ DEFINE CLASS xfcGraphicsPath AS xfcgpobject OF System.Drawing.prg
 		TRY
 			This.SetStatus(xfcGdipSetPathFillMode(This.Handle, m.tiFillmode))
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -3785,7 +3785,7 @@ DEFINE CLASS xfcGraphicsPath AS xfcgpobject OF System.Drawing.prg
 			This.SetStatus(xfcGdipFlattenPath(This.Handle, m.toMatrix.Handle, m.tnFlatness))
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -3836,7 +3836,7 @@ DEFINE CLASS xfcGraphicsPath AS xfcgpobject OF System.Drawing.prg
 			*!*	This.SetStatus(xfcGdipGetPathWorldBoundsI(This.Handle, @lcBounds, m.lhMatrix, m.lhPen))
 			m.loRectangleF = NEWOBJECT("xfcRectangleF", XFCCLASS_DRAWING, "", m.lqRect)
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN m.loRectangleF
@@ -3875,7 +3875,7 @@ DEFINE CLASS xfcGraphicsPath AS xfcgpobject OF System.Drawing.prg
 			This.SetStatus(xfcGdipGetPathLastPoint(This.Handle, @lqLastPoint))
 			m.loPoint = m.loPoint.New(m.lqLastPoint)
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN m.loPoint
@@ -3938,7 +3938,7 @@ DEFINE CLASS xfcGraphicsPath AS xfcgpobject OF System.Drawing.prg
 			ENDIF
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN (m.liResult = 1)
@@ -4000,7 +4000,7 @@ DEFINE CLASS xfcGraphicsPath AS xfcgpobject OF System.Drawing.prg
 			ENDIF
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN (m.liResult = 1)
@@ -4036,7 +4036,7 @@ DEFINE CLASS xfcGraphicsPath AS xfcgpobject OF System.Drawing.prg
 			m.lhPathData = m.loPathData.Handle
 			This.SetStatus(xfcGdipGetPathData(This.Handle, m.lhPathData))
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN m.loPathData
@@ -4088,7 +4088,7 @@ DEFINE CLASS xfcGraphicsPath AS xfcgpobject OF System.Drawing.prg
 				This.PathPoints[m.tiIndex] = m.loPoint
 			ENDIF
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN m.loPoint
@@ -4136,7 +4136,7 @@ DEFINE CLASS xfcGraphicsPath AS xfcgpobject OF System.Drawing.prg
 				This.PathTypes[m.tiIndex] = m.liType
 			ENDIF
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN m.liType
 	ENDFUNC
@@ -4168,7 +4168,7 @@ DEFINE CLASS xfcGraphicsPath AS xfcgpobject OF System.Drawing.prg
 			This.SetStatus(xfcGdipGetPointCount(This.Handle, @liCount))
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN m.liCount
 	ENDFUNC
@@ -4200,7 +4200,7 @@ DEFINE CLASS xfcGraphicsPath AS xfcgpobject OF System.Drawing.prg
 			This.SetStatus(xfcGdipResetPath(This.Handle))
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -4233,7 +4233,7 @@ DEFINE CLASS xfcGraphicsPath AS xfcgpobject OF System.Drawing.prg
 			This.SetStatus(xfcGdipReversePath(This.Handle))
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -4266,7 +4266,7 @@ DEFINE CLASS xfcGraphicsPath AS xfcgpobject OF System.Drawing.prg
 			This.SetStatus(xfcGdipSetPathMarker(This.Handle))
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -4300,7 +4300,7 @@ DEFINE CLASS xfcGraphicsPath AS xfcgpobject OF System.Drawing.prg
 			This.SetStatus(xfcGdipStartPathFigure(This.Handle))
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -4334,7 +4334,7 @@ DEFINE CLASS xfcGraphicsPath AS xfcgpobject OF System.Drawing.prg
 			This.SetStatus(xfcGdipTransformPath(This.Handle, m.toMatrix.Handle))
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -4397,7 +4397,7 @@ DEFINE CLASS xfcGraphicsPath AS xfcgpobject OF System.Drawing.prg
 			This.SetStatus(xfcGdipWarpPath(This.Handle, m.lhMatrix, m.lqPoints, m.liCount, m.lnSrcx, m.lnSrcy, m.lnSrcwidth, m.lnSrcheight, m.tiWarpMode, m.tnFlatness))
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -4446,7 +4446,7 @@ DEFINE CLASS xfcGraphicsPath AS xfcgpobject OF System.Drawing.prg
 			This.SetStatus(xfcGdipWidenPath(This.Handle, m.toPen.Handle, m.lhMatrix, m.tnFlatness))
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -4554,7 +4554,7 @@ DEFINE CLASS xfcGraphicsPathIterator AS xfcgpobject OF System.Drawing.prg
 			This.SetStatus(xfcGdipCreatePathIter(@lhIterator, m.lhPath))
 			This.Handle = m.lhIterator
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN
@@ -4577,7 +4577,7 @@ DEFINE CLASS xfcGraphicsPathIterator AS xfcgpobject OF System.Drawing.prg
 		TRY
 		This.SetStatus(xfcGdipDeletePathIter(This.Handle))
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN
 	ENDFUNC
@@ -4635,7 +4635,7 @@ DEFINE CLASS xfcGraphicsPathIterator AS xfcgpobject OF System.Drawing.prg
 			tacTypes = m.loByte.NewArray(m.lqTypes)
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN m.liResultCount
@@ -4668,7 +4668,7 @@ DEFINE CLASS xfcGraphicsPathIterator AS xfcgpobject OF System.Drawing.prg
 			This.SetStatus(xfcGdipPathIterGetCount(This.Handle, @liCount))
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN m.liCount
 	ENDFUNC
@@ -4716,7 +4716,7 @@ DEFINE CLASS xfcGraphicsPathIterator AS xfcgpobject OF System.Drawing.prg
 			taiTypes = m.loByte.NewArray(m.lqTypes)
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN m.liResultCount
@@ -4751,7 +4751,7 @@ DEFINE CLASS xfcGraphicsPathIterator AS xfcgpobject OF System.Drawing.prg
 			This.SetStatus(xfcGdipPathIterHasCurve(This.Handle, @liHasCurve))
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN (m.liHasCurve=TRUE)
@@ -4797,7 +4797,7 @@ DEFINE CLASS xfcGraphicsPathIterator AS xfcgpobject OF System.Drawing.prg
 			ENDCASE
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN m.liResultCount
@@ -4836,7 +4836,7 @@ DEFINE CLASS xfcGraphicsPathIterator AS xfcgpobject OF System.Drawing.prg
 			m.tiPathType = ASC(lqPathType)
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN m.liResultCount
@@ -4885,7 +4885,7 @@ DEFINE CLASS xfcGraphicsPathIterator AS xfcgpobject OF System.Drawing.prg
 			ENDCASE
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN m.liResultCount
@@ -4918,7 +4918,7 @@ DEFINE CLASS xfcGraphicsPathIterator AS xfcgpobject OF System.Drawing.prg
 			This.SetStatus(xfcGdipPathIterRewind(This.Handle))
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -4951,7 +4951,7 @@ DEFINE CLASS xfcGraphicsPathIterator AS xfcgpobject OF System.Drawing.prg
 			This.SetStatus(xfcGdipPathIterGetSubpathCount(This.Handle, @liCount))
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN m.liCount
 	ENDFUNC
@@ -5107,7 +5107,7 @@ DEFINE CLASS xfcHatchBrush AS xfcbrush OF System.Drawing.prg
 			ENDIF
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN
@@ -5166,7 +5166,7 @@ DEFINE CLASS xfcHatchBrush AS xfcbrush OF System.Drawing.prg
 				m.loColor = NEWOBJECT("xfcColor", XFCCLASS_DRAWING)
 				m.loColor.FromARGB(m.liArgb)
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN m.loColor
 	ENDFUNC
@@ -5223,7 +5223,7 @@ DEFINE CLASS xfcHatchBrush AS xfcbrush OF System.Drawing.prg
 				m.loColor = NEWOBJECT("xfcColor", XFCCLASS_DRAWING)
 				m.loColor.FromARGB(m.liArgb)
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN m.loColor
 	ENDFUNC
@@ -5265,7 +5265,7 @@ DEFINE CLASS xfcHatchBrush AS xfcbrush OF System.Drawing.prg
 		TRY
 			This.SetStatus(xfcGdipGetHatchStyle(This.Handle, @liHatchstyle))
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN m.liHatchStyle
 	ENDFUNC
@@ -5413,7 +5413,7 @@ DEFINE CLASS xfcLinearGradientBrush AS xfcbrush OF System.Drawing.prg
 			
 			This.Handle = m.lhLineGradient
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN
@@ -5478,7 +5478,7 @@ DEFINE CLASS xfcLinearGradientBrush AS xfcbrush OF System.Drawing.prg
 			This.SetStatus(xfcGdipGetLineBlend(This.Handle, @lqFactors, @lqPositions, m.liCount))
 			m.loBlend = CREATEOBJECT("xfcBlend", m.liCount, m.lqFactors, m.lqPositions)
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN m.loBlend
 	ENDFUNC
@@ -5510,7 +5510,7 @@ DEFINE CLASS xfcLinearGradientBrush AS xfcbrush OF System.Drawing.prg
 				This.SetStatus(xfcGdipSetLineBlend(This.Handle, @lqFactors, @lqPositions, m.liCount))
 			ENDIF
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -5543,7 +5543,7 @@ DEFINE CLASS xfcLinearGradientBrush AS xfcbrush OF System.Drawing.prg
 		TRY
 			This.SetStatus(xfcGdipGetLineGammaCorrection(This.Handle, @liUseGammaCorrection))
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN (m.liUseGammaCorrection=1)
 	ENDFUNC
@@ -5569,7 +5569,7 @@ DEFINE CLASS xfcLinearGradientBrush AS xfcbrush OF System.Drawing.prg
 		TRY
 			This.SetStatus(xfcGdipSetLineGammaCorrection(This.Handle, IIF(m.tlValue, 1, 0)))
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -5604,7 +5604,7 @@ DEFINE CLASS xfcLinearGradientBrush AS xfcbrush OF System.Drawing.prg
 			This.SetStatus(xfcGdipGetLinePresetBlend(This.Handle, @lqColors, @lqPositions, m.liCount))
 			m.loBlend = CREATEOBJECT("xfcColorBlend", m.liCount, m.lqColors, m.lqPositions)
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN m.loBlend
 	ENDFUNC
@@ -5635,7 +5635,7 @@ DEFINE CLASS xfcLinearGradientBrush AS xfcbrush OF System.Drawing.prg
 				This.SetStatus(xfcGdipSetLinePresetBlend(This.Handle, m.lqColors, m.lqPositions, m.liCount))
 			ENDIF
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -5672,7 +5672,7 @@ DEFINE CLASS xfcLinearGradientBrush AS xfcbrush OF System.Drawing.prg
 			m.liArgb = CTOBIN(SUBSTR(m.lcColors,(tnIndex-1)*4+1,4),"4rs")
 			m.loColor = NEWOBJECT("xfcColor", XFCCLASS_DRAWING, "", m.liArgb)
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN m.loColor
 	ENDFUNC
@@ -5709,7 +5709,7 @@ DEFINE CLASS xfcLinearGradientBrush AS xfcbrush OF System.Drawing.prg
 				This.SetStatus(xfcGdipSetLineColors(This.Handle, m.liArgb1, m.liArgb2))
 			ENDIF
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -5746,7 +5746,7 @@ DEFINE CLASS xfcLinearGradientBrush AS xfcbrush OF System.Drawing.prg
 			This.SetStatus(xfcGdipMultiplyLineTransform(This.Handle, m.toMatrix.Handle, m.tiOrder))
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -5788,7 +5788,7 @@ DEFINE CLASS xfcLinearGradientBrush AS xfcbrush OF System.Drawing.prg
 		** This.SetStatus(xfcGdipGetLineRectI(This.Handle, @lcRect))
 			m.loRectangleF = NEWOBJECT("xfcRectangleF", XFCCLASS_DRAWING, "", m.lqRect)
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN m.loRectangleF
 	ENDFUNC
@@ -5818,7 +5818,7 @@ DEFINE CLASS xfcLinearGradientBrush AS xfcbrush OF System.Drawing.prg
 		TRY
 			This.SetStatus(xfcGdipResetLineTransform(This.Handle))
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -5854,7 +5854,7 @@ DEFINE CLASS xfcLinearGradientBrush AS xfcbrush OF System.Drawing.prg
 			m.toOrder = EVL(m.tiOrder, MatrixOrderPrepend)
 			This.SetStatus(xfcGdipRotateLineTransform(This.Handle, m.tnAngle, m.tiOrder))
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -5890,7 +5890,7 @@ DEFINE CLASS xfcLinearGradientBrush AS xfcbrush OF System.Drawing.prg
 			m.tiOrder = EVL(m.tiOrder, MatrixOrderPrepend)
 			This.SetStatus(xfcGdipScaleLineTransform(m.lhBrush, m.tnSx, m.tnSy, m.tiOrder))
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -5926,7 +5926,7 @@ DEFINE CLASS xfcLinearGradientBrush AS xfcbrush OF System.Drawing.prg
 			m.tnScale = EVL(m.tnScale, 0.0)
 			This.SetStatus(xfcGdipSetLineLinearBlend(This.Handle, m.tnFocus, m.tnScale))
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -5962,7 +5962,7 @@ DEFINE CLASS xfcLinearGradientBrush AS xfcbrush OF System.Drawing.prg
 			This.SetStatus(xfcGdipSetLineSigmaBlend(This.Handle, m.tnFocus, m.tnScale))
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -6000,7 +6000,7 @@ DEFINE CLASS xfcLinearGradientBrush AS xfcbrush OF System.Drawing.prg
 				m.loMatrix.Handle = m.lhMatrix
 			ENDIF
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN m.loMatrix
 	#ELSE
@@ -6031,7 +6031,7 @@ DEFINE CLASS xfcLinearGradientBrush AS xfcbrush OF System.Drawing.prg
 			m.lhHandle = IIF(VARTYPE(m.toMatrix)="O", m.toMatrix.Handle, 0)
 			This.SetStatus(xfcGdipSetLineTransform(This.Handle, m.lhHandle))
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -6067,7 +6067,7 @@ DEFINE CLASS xfcLinearGradientBrush AS xfcbrush OF System.Drawing.prg
 			m.tiOrder = EVL(m.tiOrder, MatrixOrderPrepend)
 			This.SetStatus(xfcGdipTranslateLineTransform(This.Handle, m.tnDx, m.tnDy, m.tiOrder))
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -6100,7 +6100,7 @@ DEFINE CLASS xfcLinearGradientBrush AS xfcbrush OF System.Drawing.prg
 			This.SetStatus(xfcGdipGetLineWrapMode(This.Handle, @liWrapmode))
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN m.liWrapMode
 	ENDFUNC
@@ -6125,7 +6125,7 @@ DEFINE CLASS xfcLinearGradientBrush AS xfcbrush OF System.Drawing.prg
 		TRY
 			This.SetStatus(xfcGdipSetLineWrapMode(This.Handle, m.tiWrapMode))
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -6248,7 +6248,7 @@ DEFINE CLASS xfcMatrix AS xfcgpobject OF System.Drawing.prg
 			This.Handle = m.lhMatrix
 			
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN
@@ -6271,7 +6271,7 @@ DEFINE CLASS xfcMatrix AS xfcgpobject OF System.Drawing.prg
 		TRY
 		This.SetStatus(xfcGdipDeleteMatrix(This.Handle))
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN
 	ENDFUNC
@@ -6316,7 +6316,7 @@ DEFINE CLASS xfcMatrix AS xfcgpobject OF System.Drawing.prg
 				m.loMatrix.Handle = m.lhMatrix
 			ENDIF
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN m.loMatrix
@@ -6369,7 +6369,7 @@ DEFINE CLASS xfcMatrix AS xfcgpobject OF System.Drawing.prg
 			ENDCASE
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN m.leValue
 	ENDFUNC
@@ -6404,7 +6404,7 @@ DEFINE CLASS xfcMatrix AS xfcgpobject OF System.Drawing.prg
 			This.SetStatus(xfcGdipIsMatrixEqual(This.Handle, m.toMatrix2.Handle, @liResult))
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN (m.liResult = TRUE)
@@ -6440,7 +6440,7 @@ DEFINE CLASS xfcMatrix AS xfcgpobject OF System.Drawing.prg
 		** This.SetStatus(GdipSomeFunction???())
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN m.liValue
@@ -6473,7 +6473,7 @@ DEFINE CLASS xfcMatrix AS xfcgpobject OF System.Drawing.prg
 			This.SetStatus(xfcGdipInvertMatrix(This.Handle))
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -6506,7 +6506,7 @@ DEFINE CLASS xfcMatrix AS xfcgpobject OF System.Drawing.prg
 			This.SetStatus(xfcGdipIsMatrixIdentity(This.Handle, @liResult))
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN (m.liResult = TRUE)
 	ENDFUNC
@@ -6538,7 +6538,7 @@ DEFINE CLASS xfcMatrix AS xfcgpobject OF System.Drawing.prg
 			This.SetStatus(xfcGdipIsMatrixInvertible(This.Handle, @liResult))
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN (m.liResult = TRUE)
 	ENDFUNC
@@ -6573,7 +6573,7 @@ DEFINE CLASS xfcMatrix AS xfcgpobject OF System.Drawing.prg
 			This.SetStatus(xfcGdipMultiplyMatrix(This.Handle, m.toMatrix.Handle, m.tiOrder))
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -6649,7 +6649,7 @@ DEFINE CLASS xfcMatrix AS xfcgpobject OF System.Drawing.prg
 		TRY
 			This.SetStatus(xfcGdipSetMatrixElements(This.Handle, 1, 0, 0, 1, 0, 0))
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -6686,7 +6686,7 @@ DEFINE CLASS xfcMatrix AS xfcgpobject OF System.Drawing.prg
 			This.SetStatus(xfcGdipRotateMatrix(This.Handle, m.tnAngle, m.tiOrder))
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -6728,7 +6728,7 @@ DEFINE CLASS xfcMatrix AS xfcgpobject OF System.Drawing.prg
 			This.SetStatus(xfcGdipTranslateMatrix(This.Handle, toPoint.X, toPoint.Y, m.tiOrder))
 		ENDIF
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN NULL
 		
@@ -6765,7 +6765,7 @@ DEFINE CLASS xfcMatrix AS xfcgpobject OF System.Drawing.prg
 			This.SetStatus(xfcGdipScaleMatrix(This.Handle, m.tnScaleX, m.tnScaleY, m.tiOrder))
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -6801,7 +6801,7 @@ DEFINE CLASS xfcMatrix AS xfcgpobject OF System.Drawing.prg
 			This.SetStatus(xfcGdipShearMatrix(This.Handle, m.tnShearX, m.tnShearY, m.tiOrder))
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -6851,7 +6851,7 @@ DEFINE CLASS xfcMatrix AS xfcgpobject OF System.Drawing.prg
 			m.loPoint = NULL
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -6901,7 +6901,7 @@ DEFINE CLASS xfcMatrix AS xfcgpobject OF System.Drawing.prg
 			ENDCASE
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -6938,7 +6938,7 @@ DEFINE CLASS xfcMatrix AS xfcgpobject OF System.Drawing.prg
 			This.SetStatus(xfcGdipTranslateMatrix(This.Handle, m.tnOffsetX, m.tnOffsetY, m.tiOrder))
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -7063,7 +7063,7 @@ DEFINE CLASS xfcPathData AS xfcDrawingBase OF System.Drawing.prg
 			ENDCASE
 			
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN
@@ -7127,7 +7127,7 @@ DEFINE CLASS xfcPathData AS xfcDrawingBase OF System.Drawing.prg
 			m.loPoint = NEWOBJECT("xfcPointF", XFCCLASS_DRAWING, "", This.Points[m.tiIndex].X, This.Points[m.tiIndex].Y)
 			
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN m.loPoint
@@ -7165,7 +7165,7 @@ DEFINE CLASS xfcPathData AS xfcDrawingBase OF System.Drawing.prg
 				*!ToDo: Error handling?
 			ENDCASE
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -7198,7 +7198,7 @@ DEFINE CLASS xfcPathData AS xfcDrawingBase OF System.Drawing.prg
 				*!ToDo: Error handling?
 			ENDCASE
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -7315,7 +7315,7 @@ DEFINE CLASS xfcPathGradientBrush AS xfcbrush OF System.Drawing.prg
 			This.Handle = m.lhPolyGradient
 			
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN
@@ -7367,7 +7367,7 @@ DEFINE CLASS xfcPathGradientBrush AS xfcbrush OF System.Drawing.prg
 				m.loBlend = CREATEOBJECT("xfcBlend", m.liCount, m.lqFactors, m.lqPositions)
 			ENDIF
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN m.loBlend
 	ENDFUNC
@@ -7399,7 +7399,7 @@ DEFINE CLASS xfcPathGradientBrush AS xfcbrush OF System.Drawing.prg
 				This.SetStatus(xfcGdipSetPathGradientBlend(This.Handle, m.lqFactors, m.lqPositions, m.liCount))
 			ENDIF
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -7433,7 +7433,7 @@ DEFINE CLASS xfcPathGradientBrush AS xfcbrush OF System.Drawing.prg
 			This.SetStatus(xfcGdipGetPathGradientCenterColor(This.Handle, @liArgb))
 			m.loColor = NEWOBJECT("xfcColor", m.liArgb)
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN m.loColor
 	ENDFUNC
@@ -7460,7 +7460,7 @@ DEFINE CLASS xfcPathGradientBrush AS xfcbrush OF System.Drawing.prg
 				This.SetStatus(xfcGdipSetPathGradientCenterColor(This.Handle, m.toColor.ARGB))
 			ENDIF
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -7495,7 +7495,7 @@ DEFINE CLASS xfcPathGradientBrush AS xfcbrush OF System.Drawing.prg
 		*!*	This.SetStatus(xfcGdipGetPathGradientCenterPointI(This.Handle, @lcPoints))
 			m.loPointF = NEWOBJECT("xfcPointF",XFCCLASS_DRAWING, "", m.lqPoint)
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN m.loPointF
 	ENDFUNC
@@ -7529,7 +7529,7 @@ DEFINE CLASS xfcPathGradientBrush AS xfcbrush OF System.Drawing.prg
 				ENDCASE
 			ENDIF
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -7563,7 +7563,7 @@ DEFINE CLASS xfcPathGradientBrush AS xfcbrush OF System.Drawing.prg
 			This.SetStatus(xfcGdipGetPathGradientFocusScales(This.Handle, @lnXScale, @lnYScale))
 			m.loPointF = NEWOBJECT("xfcPointF", XFCCLASS_DRAWING)
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN m.loPointF
 	ENDFUNC
@@ -7593,7 +7593,7 @@ DEFINE CLASS xfcPathGradientBrush AS xfcbrush OF System.Drawing.prg
 				This.SetStatus(xfcGdipSetPathGradientFocusScales(This.Handle, m.lnXScale, m.lnYScale))
 			ENDIF
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -7628,7 +7628,7 @@ DEFINE CLASS xfcPathGradientBrush AS xfcbrush OF System.Drawing.prg
 			This.SetStatus(xfcGdipGetPathGradientPresetBlend(This.Handle, @lqColors, @lqPositions, m.liCount))
 			m.loBlend = CREATEOBJECT("xfcColorBlend", m.liCount, m.lqColors, m.lqPositions)
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN m.loBlend
 	ENDFUNC
@@ -7659,7 +7659,7 @@ DEFINE CLASS xfcPathGradientBrush AS xfcbrush OF System.Drawing.prg
 				This.SetStatus(xfcGdipSetPathGradientPresetBlend(This.Handle, m.lqColors, m.lqPositions, m.liCount))
 			ENDIF
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -7696,7 +7696,7 @@ DEFINE CLASS xfcPathGradientBrush AS xfcbrush OF System.Drawing.prg
 			This.SetStatus(xfcGdipMultiplyPathGradientTransform(This.Handle, m.toMatrix.Handle, m.tiOrder))
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -7735,7 +7735,7 @@ DEFINE CLASS xfcPathGradientBrush AS xfcbrush OF System.Drawing.prg
 		*!*	This.SetStatus(xfcGdipGetPathGradientRectI(This.Handle, @lqRect))
 			m.loRectangleF = NEWOBJECT("xfcRectangleF", lqRect)
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN m.loRectangleF
 	ENDFUNC
@@ -7767,7 +7767,7 @@ DEFINE CLASS xfcPathGradientBrush AS xfcbrush OF System.Drawing.prg
 			This.SetStatus(xfcGdipResetPathGradientTransform(This.Handle))
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -7803,7 +7803,7 @@ DEFINE CLASS xfcPathGradientBrush AS xfcbrush OF System.Drawing.prg
 			This.SetStatus(xfcGdipRotatePathGradientTransform(This.Handle, m.tnAngle, m.tiOrder))
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -7840,7 +7840,7 @@ DEFINE CLASS xfcPathGradientBrush AS xfcbrush OF System.Drawing.prg
 			This.SetStatus(xfcGdipScalePathGradientTransform(This.Handle, m.tnSx, m.tnSy, m.tiOrder))
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -7876,7 +7876,7 @@ DEFINE CLASS xfcPathGradientBrush AS xfcbrush OF System.Drawing.prg
 			This.SetStatus(xfcGdipSetPathGradientLinearBlend(This.Handle, m.tnFocus, m.tnScale))
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -7913,7 +7913,7 @@ DEFINE CLASS xfcPathGradientBrush AS xfcbrush OF System.Drawing.prg
 			This.SetStatus(xfcGdipSetPathGradientSigmaBlend(This.Handle, m.tnFocus, m.tnScale))
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -7961,7 +7961,7 @@ DEFINE CLASS xfcPathGradientBrush AS xfcbrush OF System.Drawing.prg
 			ENDIF
 			
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN m.loColor
@@ -7985,7 +7985,7 @@ DEFINE CLASS xfcPathGradientBrush AS xfcbrush OF System.Drawing.prg
 				m.loColor[1] = NEWOBJECT("xfcColor",XFCCLASS_DRAWING)
 				m.loColor[1].FromARGB(m.liArgb)
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN m.loColor[1]
 	ENDFUNC
@@ -8030,7 +8030,7 @@ DEFINE CLASS xfcPathGradientBrush AS xfcbrush OF System.Drawing.prg
 				ENDIF
 			ENDIF	
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -8068,7 +8068,7 @@ DEFINE CLASS xfcPathGradientBrush AS xfcbrush OF System.Drawing.prg
 				m.loMatrix.Handle = m.lhMatrix
 			ENDIF
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN m.loMatrix
 	#ELSE
@@ -8099,7 +8099,7 @@ DEFINE CLASS xfcPathGradientBrush AS xfcbrush OF System.Drawing.prg
 			m.lhHandle = IIF(VARTYPE(m.toMatrix)="O",m.toMatrix.Handle,0)
 			This.SetStatus(xfcGdipSetPathGradientTransform(This.Handle, m.lhHandle))
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -8138,7 +8138,7 @@ DEFINE CLASS xfcPathGradientBrush AS xfcbrush OF System.Drawing.prg
 			m.tiOrder = EVL(m.tiOrder, MatrixOrderPrepend)
 			This.SetStatus(xfcGdipTranslatePathGradientTransform(This.Handle, m.tnDx, m.tnDy, m.tiOrder))
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -8172,7 +8172,7 @@ DEFINE CLASS xfcPathGradientBrush AS xfcbrush OF System.Drawing.prg
 			This.SetStatus(xfcGdipGetPathGradientWrapMode(This.Handle, @liWrapmode))
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN m.liWrapMode
 	ENDFUNC
@@ -8198,7 +8198,7 @@ DEFINE CLASS xfcPathGradientBrush AS xfcbrush OF System.Drawing.prg
 		TRY
 			This.SetStatus(xfcGdipSetPathGradientWrapMode(This.Handle, m.tiWrapmode))
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -8301,7 +8301,7 @@ DEFINE CLASS xfcRegionData AS xfcDrawingBase OF System.Drawing.prg
 		TRY
 			This.Data = 0h+m.tqBinary
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
