@@ -9,7 +9,7 @@ ENDIF
 *************************************************************************
 *************************************************************************
 *************************************************************************
-DEFINE CLASS xfcImaging AS xfcObject OF System.prg
+DEFINE CLASS xfcImaging AS xfcNamespace OF System.prg
 *************************************************************************
 *************************************************************************
 *************************************************************************
@@ -1104,7 +1104,7 @@ DEFINE CLASS xfcBitmapData AS xfcDrawingBase OF System.Drawing.prg
 			
 		** This.SetStatus(GdipSomeFunction???())
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN
@@ -1165,7 +1165,7 @@ DEFINE CLASS xfcBitmapData AS xfcDrawingBase OF System.Drawing.prg
 		TRY
 			This._height = INT(m.tiValue)
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -1196,7 +1196,7 @@ DEFINE CLASS xfcBitmapData AS xfcDrawingBase OF System.Drawing.prg
 		TRY
 			This.PixelFormat = INT(m.tiPixelFormat)
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -1226,7 +1226,7 @@ DEFINE CLASS xfcBitmapData AS xfcDrawingBase OF System.Drawing.prg
 		TRY
 			This.Reserved = INT(m.tiValue)
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -1257,7 +1257,7 @@ DEFINE CLASS xfcBitmapData AS xfcDrawingBase OF System.Drawing.prg
 		TRY
 			This.Scan0 = INT(m.tiValue)
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -1287,7 +1287,7 @@ DEFINE CLASS xfcBitmapData AS xfcDrawingBase OF System.Drawing.prg
 		TRY
 			This.Stride = INT(m.tiValue)
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -1349,7 +1349,7 @@ DEFINE CLASS xfcBitmapData AS xfcDrawingBase OF System.Drawing.prg
 		TRY
 			This._width = INT(m.tiValue)
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -1417,7 +1417,7 @@ DEFINE CLASS xfcColorMap AS xfcDrawingBase OF System.Drawing.prg
 			This.OldColor = NEWOBJECT("xfcColor", XFCCLASS_DRAWING, "", ARGB_Black)
 			This.NewColor = NEWOBJECT("xfcColor", XFCCLASS_DRAWING, "", ARGB_Black)
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN
@@ -1622,7 +1622,7 @@ DEFINE CLASS xfcColorMatrix AS xfcDrawingBase OF System.Drawing.prg
 			ENDCASE
 			
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN
@@ -1676,7 +1676,7 @@ DEFINE CLASS xfcColorMatrix AS xfcDrawingBase OF System.Drawing.prg
 		TRY
 			m.lnValue = This.Item[1,1]
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN m.lnValue
 	ENDFUNC
@@ -1701,7 +1701,7 @@ DEFINE CLASS xfcColorMatrix AS xfcDrawingBase OF System.Drawing.prg
 		TRY
 			This.Item[1,1] = m.tnValue+0.00
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -1733,7 +1733,7 @@ DEFINE CLASS xfcColorMatrix AS xfcDrawingBase OF System.Drawing.prg
 		TRY
 			m.lnValue = This.Item[1,2]
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN m.lnValue
 	ENDFUNC
@@ -1758,7 +1758,7 @@ DEFINE CLASS xfcColorMatrix AS xfcDrawingBase OF System.Drawing.prg
 		TRY
 			This.Item[1,2] = m.tnValue+0.00
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -1790,7 +1790,7 @@ DEFINE CLASS xfcColorMatrix AS xfcDrawingBase OF System.Drawing.prg
 		TRY
 			m.lnValue = This.Item[1,3]
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN m.lnValue
 	ENDFUNC
@@ -1815,7 +1815,7 @@ DEFINE CLASS xfcColorMatrix AS xfcDrawingBase OF System.Drawing.prg
 		TRY
 			This.Item[1,3] = m.tnValue+0.00
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -1847,7 +1847,7 @@ DEFINE CLASS xfcColorMatrix AS xfcDrawingBase OF System.Drawing.prg
 		TRY
 			m.lnValue = This.Item[1,4]
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN m.lnValue
 	ENDFUNC
@@ -1872,7 +1872,7 @@ DEFINE CLASS xfcColorMatrix AS xfcDrawingBase OF System.Drawing.prg
 		TRY
 			This.Item[1,4] = m.tnValue+0.00
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -1904,7 +1904,7 @@ DEFINE CLASS xfcColorMatrix AS xfcDrawingBase OF System.Drawing.prg
 		TRY
 			m.lnValue = This.Item[1,5]
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN m.lnValue
 	ENDFUNC
@@ -1929,7 +1929,7 @@ DEFINE CLASS xfcColorMatrix AS xfcDrawingBase OF System.Drawing.prg
 		TRY
 			This.Item[1,5] = m.tnValue+0.00
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -1961,7 +1961,7 @@ DEFINE CLASS xfcColorMatrix AS xfcDrawingBase OF System.Drawing.prg
 		TRY
 			m.lnValue = This.Item[2,1]
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN m.lnValue
 	ENDFUNC
@@ -1986,7 +1986,7 @@ DEFINE CLASS xfcColorMatrix AS xfcDrawingBase OF System.Drawing.prg
 		TRY
 			This.Item[2,1] = m.tnValue+0.00
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -2018,7 +2018,7 @@ DEFINE CLASS xfcColorMatrix AS xfcDrawingBase OF System.Drawing.prg
 		TRY
 			m.lnValue = This.Item[2,2]
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN m.lnValue
 	ENDFUNC
@@ -2043,7 +2043,7 @@ DEFINE CLASS xfcColorMatrix AS xfcDrawingBase OF System.Drawing.prg
 		TRY
 			This.Item[2,2] = m.tnValue+0.00
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -2075,7 +2075,7 @@ DEFINE CLASS xfcColorMatrix AS xfcDrawingBase OF System.Drawing.prg
 		TRY
 			m.lnValue = This.Item[2,3]
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN m.lnValue
 	ENDFUNC
@@ -2100,7 +2100,7 @@ DEFINE CLASS xfcColorMatrix AS xfcDrawingBase OF System.Drawing.prg
 		TRY
 			This.Item[2,3] = m.tnValue+0.00
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -2132,7 +2132,7 @@ DEFINE CLASS xfcColorMatrix AS xfcDrawingBase OF System.Drawing.prg
 		TRY
 			m.lnValue = This.Item[2,4]
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN m.lnValue
 	ENDFUNC
@@ -2157,7 +2157,7 @@ DEFINE CLASS xfcColorMatrix AS xfcDrawingBase OF System.Drawing.prg
 		TRY
 			This.Item[2,4] = m.tnValue+0.00
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -2189,7 +2189,7 @@ DEFINE CLASS xfcColorMatrix AS xfcDrawingBase OF System.Drawing.prg
 		TRY
 			m.lnValue = This.Item[2,5]
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN m.lnValue
 	ENDFUNC
@@ -2214,7 +2214,7 @@ DEFINE CLASS xfcColorMatrix AS xfcDrawingBase OF System.Drawing.prg
 		TRY
 			This.Item[2,5] = m.tnValue+0.00
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -2246,7 +2246,7 @@ DEFINE CLASS xfcColorMatrix AS xfcDrawingBase OF System.Drawing.prg
 		TRY
 			m.lnValue = This.Item[3,1]
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN m.lnValue
 	ENDFUNC
@@ -2271,7 +2271,7 @@ DEFINE CLASS xfcColorMatrix AS xfcDrawingBase OF System.Drawing.prg
 		TRY
 			This.Item[3,1] = m.tnValue+0.00
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -2303,7 +2303,7 @@ DEFINE CLASS xfcColorMatrix AS xfcDrawingBase OF System.Drawing.prg
 		TRY
 			m.lnValue = This.Item[3,2]
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN m.lnValue
 	ENDFUNC
@@ -2328,7 +2328,7 @@ DEFINE CLASS xfcColorMatrix AS xfcDrawingBase OF System.Drawing.prg
 		TRY
 			This.Item[3,2] = m.tnValue+0.00
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -2360,7 +2360,7 @@ DEFINE CLASS xfcColorMatrix AS xfcDrawingBase OF System.Drawing.prg
 		TRY
 			m.lnValue = This.Item[3,3]
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN m.lnValue
 	ENDFUNC
@@ -2385,7 +2385,7 @@ DEFINE CLASS xfcColorMatrix AS xfcDrawingBase OF System.Drawing.prg
 		TRY
 			This.Item[3,3] = m.tnValue+0.00
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -2417,7 +2417,7 @@ DEFINE CLASS xfcColorMatrix AS xfcDrawingBase OF System.Drawing.prg
 		TRY
 			m.lnValue = This.Item[3,4]
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN m.lnValue
 	ENDFUNC
@@ -2442,7 +2442,7 @@ DEFINE CLASS xfcColorMatrix AS xfcDrawingBase OF System.Drawing.prg
 		TRY
 			This.Item[3,4] = m.tnValue+0.00
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -2474,7 +2474,7 @@ DEFINE CLASS xfcColorMatrix AS xfcDrawingBase OF System.Drawing.prg
 		TRY
 			m.lnValue = This.Item[3,5]
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN m.lnValue
 	ENDFUNC
@@ -2499,7 +2499,7 @@ DEFINE CLASS xfcColorMatrix AS xfcDrawingBase OF System.Drawing.prg
 		TRY
 			This.Item[3,5] = m.tnValue+0.00
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -2531,7 +2531,7 @@ DEFINE CLASS xfcColorMatrix AS xfcDrawingBase OF System.Drawing.prg
 		TRY
 			m.lnValue = This.Item[4,1]
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN m.lnValue
 	ENDFUNC
@@ -2556,7 +2556,7 @@ DEFINE CLASS xfcColorMatrix AS xfcDrawingBase OF System.Drawing.prg
 		TRY
 			This.Item[4,1] = m.tnValue+0.00
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -2588,7 +2588,7 @@ DEFINE CLASS xfcColorMatrix AS xfcDrawingBase OF System.Drawing.prg
 		TRY
 			m.lnValue = This.Item[4,2]
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN m.lnValue
 	ENDFUNC
@@ -2613,7 +2613,7 @@ DEFINE CLASS xfcColorMatrix AS xfcDrawingBase OF System.Drawing.prg
 		TRY
 			This.Item[4,2] = m.tnValue+0.00
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -2645,7 +2645,7 @@ DEFINE CLASS xfcColorMatrix AS xfcDrawingBase OF System.Drawing.prg
 		TRY
 			m.lnValue = This.Item[4,3]
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN m.lnValue
 	ENDFUNC
@@ -2670,7 +2670,7 @@ DEFINE CLASS xfcColorMatrix AS xfcDrawingBase OF System.Drawing.prg
 		TRY
 			This.Item[4,3] = m.tnValue+0.00
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -2702,7 +2702,7 @@ DEFINE CLASS xfcColorMatrix AS xfcDrawingBase OF System.Drawing.prg
 		TRY
 			m.lnValue = This.Item[4,4]
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN m.lnValue
 	ENDFUNC
@@ -2727,7 +2727,7 @@ DEFINE CLASS xfcColorMatrix AS xfcDrawingBase OF System.Drawing.prg
 		TRY
 			This.Item[4,4] = m.tnValue+0.00
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -2759,7 +2759,7 @@ DEFINE CLASS xfcColorMatrix AS xfcDrawingBase OF System.Drawing.prg
 		TRY
 			m.lnValue = This.Item[4,5]
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN m.lnValue
 	ENDFUNC
@@ -2784,7 +2784,7 @@ DEFINE CLASS xfcColorMatrix AS xfcDrawingBase OF System.Drawing.prg
 		TRY
 			This.Item[4,5] = m.tnValue+0.00
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -2816,7 +2816,7 @@ DEFINE CLASS xfcColorMatrix AS xfcDrawingBase OF System.Drawing.prg
 		TRY
 			m.lnValue = This.Item[5,1]
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN m.lnValue
 	ENDFUNC
@@ -2841,7 +2841,7 @@ DEFINE CLASS xfcColorMatrix AS xfcDrawingBase OF System.Drawing.prg
 		TRY
 			This.Item[5,1] = m.tnValue+0.00
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -2873,7 +2873,7 @@ DEFINE CLASS xfcColorMatrix AS xfcDrawingBase OF System.Drawing.prg
 		TRY
 			m.lnValue = This.Item[5,2]
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN m.lnValue
 	ENDFUNC
@@ -2898,7 +2898,7 @@ DEFINE CLASS xfcColorMatrix AS xfcDrawingBase OF System.Drawing.prg
 		TRY
 			This.Item[5,2] = m.tnValue+0.00
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -2930,7 +2930,7 @@ DEFINE CLASS xfcColorMatrix AS xfcDrawingBase OF System.Drawing.prg
 		TRY
 			m.lnValue = This.Item[5,3]
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN m.lnValue
 	ENDFUNC
@@ -2955,7 +2955,7 @@ DEFINE CLASS xfcColorMatrix AS xfcDrawingBase OF System.Drawing.prg
 		TRY
 			This.Item[5,3] = m.tnValue+0.00
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -2987,7 +2987,7 @@ DEFINE CLASS xfcColorMatrix AS xfcDrawingBase OF System.Drawing.prg
 		TRY
 			m.lnValue = This.Item[5,4]
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN m.lnValue
 	ENDFUNC
@@ -3012,7 +3012,7 @@ DEFINE CLASS xfcColorMatrix AS xfcDrawingBase OF System.Drawing.prg
 		TRY
 			This.Item[5,4] = m.tnValue+0.00
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -3044,7 +3044,7 @@ DEFINE CLASS xfcColorMatrix AS xfcDrawingBase OF System.Drawing.prg
 		TRY
 			m.lnValue = This.Item[5,5]
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN m.lnValue
 	ENDFUNC
@@ -3069,7 +3069,7 @@ DEFINE CLASS xfcColorMatrix AS xfcDrawingBase OF System.Drawing.prg
 		TRY
 			This.Item[5,5] = m.tnValue+0.00
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -3140,7 +3140,7 @@ DEFINE CLASS xfcColorMatrix AS xfcDrawingBase OF System.Drawing.prg
 			ENDFOR
 
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN m.loCombinedMatrix
@@ -3174,7 +3174,7 @@ DEFINE CLASS xfcColorMatrix AS xfcDrawingBase OF System.Drawing.prg
 			ENDFOR
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN m.lqMatrix
@@ -3292,7 +3292,7 @@ DEFINE CLASS xfcColorPalette AS xfcDrawingBase OF System.Drawing.prg
 			ENDIF		
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN
@@ -3345,7 +3345,7 @@ DEFINE CLASS xfcColorPalette AS xfcDrawingBase OF System.Drawing.prg
 				m.loColor = NEWOBJECT("xfcColor", XFCCLASS_DRAWING, "", m.liArgb)
 			ENDCASE
 		CATCH TO loExc
-		   THROW m.loExc
+		   THROW_EXCEPTION
 		ENDTRY
 		RETURN m.loColor
 	ENDFUNC
@@ -3389,7 +3389,7 @@ DEFINE CLASS xfcColorPalette AS xfcDrawingBase OF System.Drawing.prg
 			ENDCASE
 			
 		CATCH TO loExc
-		   THROW m.loExc
+		   THROW_EXCEPTION
 		ENDTRY
 		RETURN
 	ENDFUNC
@@ -3419,7 +3419,7 @@ DEFINE CLASS xfcColorPalette AS xfcDrawingBase OF System.Drawing.prg
 		TRY
 			m.liValue = CTOBIN(SUBSTR(This._Binary,1,4),"4rs")
 		CATCH TO loExc
-		THROW m.loExc
+		THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN m.liValue
@@ -3443,7 +3443,7 @@ DEFINE CLASS xfcColorPalette AS xfcDrawingBase OF System.Drawing.prg
 		TRY
 			This._Binary = STUFF(This._Binary,1,4,BINTOC(m.tiValue,"4rs"))
 		CATCH TO loExc
-		THROW m.loExc
+		THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN
@@ -3530,7 +3530,7 @@ DEFINE CLASS xfcEncoder AS xfcDrawingBase OF System.Drawing.prg
 			This._guid = m.toGuid
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN
@@ -3553,7 +3553,7 @@ DEFINE CLASS xfcEncoder AS xfcDrawingBase OF System.Drawing.prg
 		TRY
 			This.Guid = NULL
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN
 	ENDFUNC
@@ -4085,7 +4085,7 @@ DEFINE CLASS xfcEncoderParameter AS xfcDrawingBase OF System.Drawing.prg
 			This.Encoder = m.toEncoder
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN
@@ -4136,7 +4136,7 @@ DEFINE CLASS xfcEncoderParameter AS xfcDrawingBase OF System.Drawing.prg
 		TRY
 			RELEASE This
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -4199,7 +4199,7 @@ DEFINE CLASS xfcEncoderParameter AS xfcDrawingBase OF System.Drawing.prg
 				This.Encoder = CREATEOBJECT("xfcEncoder", m.toEncoder)
 			ENDCASE
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -4422,7 +4422,7 @@ DEFINE CLASS xfcEncoderParameters AS xfcDrawingBase OF System.Drawing.prg
 			ENDIF
 			
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN
@@ -4447,7 +4447,7 @@ DEFINE CLASS xfcEncoderParameters AS xfcDrawingBase OF System.Drawing.prg
 				xfcLocalFree(This._Handle)
 			ENDIF
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN
 	ENDFUNC
@@ -4511,7 +4511,7 @@ DEFINE CLASS xfcEncoderParameters AS xfcDrawingBase OF System.Drawing.prg
 				This.Param = m.toParam
 			ENDIF
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -4651,7 +4651,7 @@ DEFINE CLASS xfcFrameDimension AS xfcDrawingBase OF System.Drawing.prg
 			m.toGuid = IIF(VARTYPE(m.toGuid)="O", m.toGuid, NEWOBJECT("xfcGuid", XFCCLASS_SYSTEM))
 			THIS.Guid = m.toGuid
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN
@@ -4672,7 +4672,7 @@ DEFINE CLASS xfcFrameDimension AS xfcDrawingBase OF System.Drawing.prg
 		TRY
 			This.Guid = NULL
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN
 	ENDFUNC
@@ -4715,7 +4715,7 @@ DEFINE CLASS xfcFrameDimension AS xfcDrawingBase OF System.Drawing.prg
 			m.llValue = This.ToVarBinary() == m.toFD.ToVarBinary()
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN m.llValue
@@ -4752,7 +4752,7 @@ DEFINE CLASS xfcFrameDimension AS xfcDrawingBase OF System.Drawing.prg
 		** This.SetStatus(GdipSomeFunction???())
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN m.liValue
@@ -4801,7 +4801,7 @@ DEFINE CLASS xfcFrameDimension AS xfcDrawingBase OF System.Drawing.prg
 			m.loGuid = NEWOBJECT("xfcGuid", XFCCLASS_SYSTEM, "", FrameDimensionPage)
 			m.loFrameDimension = CREATEOBJECT("xfcFrameDimension", m.loGuid)
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN m.loFrameDimension
 	ENDFUNC
@@ -4829,7 +4829,7 @@ DEFINE CLASS xfcFrameDimension AS xfcDrawingBase OF System.Drawing.prg
 			m.loGuid = NEWOBJECT("xfcGuid", XFCCLASS_SYSTEM, "", FrameDimensionResolution)
 			m.loFrameDimension = CREATEOBJECT("xfcFrameDimension", m.loGuid)
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN m.loFrameDimension
 	ENDFUNC
@@ -4857,7 +4857,7 @@ DEFINE CLASS xfcFrameDimension AS xfcDrawingBase OF System.Drawing.prg
 			m.loGuid = NEWOBJECT("xfcGuid", XFCCLASS_SYSTEM, "", FrameDimensionTime) 
 			m.loFrameDimension = CREATEOBJECT("xfcFrameDimension", m.loGuid)
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN m.loFrameDimension
 	ENDFUNC
@@ -4894,7 +4894,7 @@ DEFINE CLASS xfcFrameDimension AS xfcDrawingBase OF System.Drawing.prg
 				m.lcValue = This.Guid.ToString()
 			ENDCASE
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN m.lcValue
@@ -4968,7 +4968,7 @@ DEFINE CLASS xfcImageAttributes AS xfcgpobject OF System.Drawing.prg
 			This.SetStatus(xfcGdipCreateImageAttributes(@lhImageattr))
 			This.Handle = m.lhImageattr
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN
@@ -4991,7 +4991,7 @@ DEFINE CLASS xfcImageAttributes AS xfcgpobject OF System.Drawing.prg
 		TRY
 			This.SetStatus(xfcGdipDisposeImageAttributes(This.Handle))
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN
 	ENDFUNC
@@ -5054,7 +5054,7 @@ DEFINE CLASS xfcImageAttributes AS xfcgpobject OF System.Drawing.prg
 			This.SetStatus(xfcGdipSetImageAttributesColorKeys(This.Handle, m.tiType, FALSE, 0x00, 0x00))
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -5088,7 +5088,7 @@ DEFINE CLASS xfcImageAttributes AS xfcgpobject OF System.Drawing.prg
 			m.tiType = EVL(m.tiType, ColorAdjustTypeDefault)
 			This.SetStatus(xfcGdipSetImageAttributesColorMatrix(This.Handle, m.tiType, FALSE, NULL, NULL, ColorMatrixFlagsDefault))
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -5123,7 +5123,7 @@ DEFINE CLASS xfcImageAttributes AS xfcgpobject OF System.Drawing.prg
 			This.SetStatus(xfcGdipSetImageAttributesGamma(This.Handle, m.tiType, FALSE, 0.0))
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -5158,7 +5158,7 @@ DEFINE CLASS xfcImageAttributes AS xfcgpobject OF System.Drawing.prg
 			m.tiType = EVL(m.tiType, ColorAdjustTypeDefault)
 			This.SetStatus(xfcGdipSetImageAttributesNoOp(This.Handle, m.tiType, FALSE))
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -5192,7 +5192,7 @@ DEFINE CLASS xfcImageAttributes AS xfcgpobject OF System.Drawing.prg
 			This.SetStatus(xfcGdipSetImageAttributesOutputChannel(This.Handle, m.tiType, FALSE, ColorChannelFlagsLast))
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -5228,7 +5228,7 @@ DEFINE CLASS xfcImageAttributes AS xfcgpobject OF System.Drawing.prg
 			This.SetStatus(xfcGdipSetImageAttributesOutputChannelColorProfile(This.Handle, m.tiType, FALSE, NULL))
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -5262,7 +5262,7 @@ DEFINE CLASS xfcImageAttributes AS xfcgpobject OF System.Drawing.prg
 			m.tiType = EVL(m.tiType, ColorAdjustTypeDefault)
 			This.SetStatus(xfcGdipSetImageAttributesRemapTable(This.Handle, m.tiType, FALSE, 0, NULL))
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -5297,7 +5297,7 @@ DEFINE CLASS xfcImageAttributes AS xfcgpobject OF System.Drawing.prg
 			This.SetStatus(xfcGdipSetImageAttributesThreshold(This.Handle, m.tiType, FALSE, 0.0))
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -5335,7 +5335,7 @@ DEFINE CLASS xfcImageAttributes AS xfcgpobject OF System.Drawing.prg
 				m.loCloneImageattr.Handle = m.lhCloneImageattr
 			ENDIF
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN m.loCloneImageattr
@@ -5368,7 +5368,7 @@ DEFINE CLASS xfcImageAttributes AS xfcgpobject OF System.Drawing.prg
 		TRY
 			This.SetStatus(xfcGdipGetImageAttributesAdjustedPalette(This.Handle, m.toPalette.ToVarBinary(), m.tiType))
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -5429,7 +5429,7 @@ DEFINE CLASS xfcImageAttributes AS xfcgpobject OF System.Drawing.prg
 			This.SetStatus(xfcGdipSetImageAttributesColorKeys(This.Handle, m.tiType, TRUE, m.toColorLow.Argb, m.toColorHigh.Argb))
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -5467,7 +5467,7 @@ DEFINE CLASS xfcImageAttributes AS xfcgpobject OF System.Drawing.prg
 			This.SetStatus(xfcGdipSetImageAttributesColorMatrix(This.Handle, m.tiType, TRUE, m.toNewColorMatrix.ToVarBinary(), toGrayMatrix.ToVarBinary(), m.tiFlags))
 			
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -5505,7 +5505,7 @@ DEFINE CLASS xfcImageAttributes AS xfcgpobject OF System.Drawing.prg
 			This.SetStatus(xfcGdipSetImageAttributesColorMatrix(This.Handle, m.tiType, TRUE, m.toNewColorMatrix.ToVarBinary(), NULL, m.tiFlags))
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -5541,7 +5541,7 @@ DEFINE CLASS xfcImageAttributes AS xfcgpobject OF System.Drawing.prg
 			This.SetStatus(xfcGdipSetImageAttributesGamma(This.Handle, m.tiType, TRUE, m.tnGamma))
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -5576,7 +5576,7 @@ DEFINE CLASS xfcImageAttributes AS xfcgpobject OF System.Drawing.prg
 			This.SetStatus(xfcGdipSetImageAttributesNoOp(This.Handle, m.tiType, TRUE))
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -5612,7 +5612,7 @@ DEFINE CLASS xfcImageAttributes AS xfcgpobject OF System.Drawing.prg
 			This.SetStatus(xfcGdipSetImageAttributesOutputChannel(This.Handle, m.tiType, TRUE, m.tiFlags))
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -5647,7 +5647,7 @@ DEFINE CLASS xfcImageAttributes AS xfcgpobject OF System.Drawing.prg
 			m.tiType = EVL(m.tiType, ColorAdjustTypeDefault)
 			This.SetStatus(xfcGdipSetImageAttributesOutputChannelColorProfile(This.Handle, m.tiType, TRUE, STRCONV(tcColorProfileFilename+0h00,5)))
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -5690,7 +5690,7 @@ DEFINE CLASS xfcImageAttributes AS xfcgpobject OF System.Drawing.prg
 
 			This.SetStatus(xfcGdipSetImageAttributesRemapTable(This.Handle, m.tiType, TRUE, LEN(m.lqMap)/4, @m.lqMap))
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN NULL
 		
@@ -5728,7 +5728,7 @@ DEFINE CLASS xfcImageAttributes AS xfcgpobject OF System.Drawing.prg
 			This.SetStatus(xfcGdipSetImageAttributesThreshold(This.Handle, m.tiType, TRUE, m.tnThreshold))
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -5772,7 +5772,7 @@ DEFINE CLASS xfcImageAttributes AS xfcgpobject OF System.Drawing.prg
 			
 			This.SetStatus(xfcGdipSetImageAttributesWrapMode(This.Handle, m.tiMode, m.liArgb, m.liClamp))
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -5865,7 +5865,7 @@ DEFINE CLASS xfcImageCodecInfo AS xfcDrawingBase OF System.Drawing.prg
 		TRY
 			DODEFAULT()
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN
@@ -5887,7 +5887,7 @@ DEFINE CLASS xfcImageCodecInfo AS xfcDrawingBase OF System.Drawing.prg
 			This.Clsid=NULL
 			This.FormatID=NULL
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN
 	ENDFUNC
@@ -5915,7 +5915,7 @@ DEFINE CLASS xfcImageCodecInfo AS xfcDrawingBase OF System.Drawing.prg
 				This.Clsid = NEWOBJECT("xfcGuid", XFCCLASS_SYSTEM, "")
 			ENDIF
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN This.Clsid
 	ENDFUNC
@@ -5938,7 +5938,7 @@ DEFINE CLASS xfcImageCodecInfo AS xfcDrawingBase OF System.Drawing.prg
 				This.Clsid = m.toGuid
 			ENDIF
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 	ENDFUNC
 
@@ -5980,7 +5980,7 @@ DEFINE CLASS xfcImageCodecInfo AS xfcDrawingBase OF System.Drawing.prg
 				This.CodecName = m.tcNewValue
 			ENDIF
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 	ENDFUNC
 
@@ -6026,7 +6026,7 @@ DEFINE CLASS xfcImageCodecInfo AS xfcDrawingBase OF System.Drawing.prg
 				This.DllName = m.tcNewValue
 			ENDIF
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 	ENDFUNC
 
@@ -6070,7 +6070,7 @@ DEFINE CLASS xfcImageCodecInfo AS xfcDrawingBase OF System.Drawing.prg
 				This.FileNameExtension = m.tcNewValue
 			ENDIF
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 	ENDFUNC
 
@@ -6114,7 +6114,7 @@ DEFINE CLASS xfcImageCodecInfo AS xfcDrawingBase OF System.Drawing.prg
 				This.Flags = m.tcNewValue
 			ENDIF
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 	ENDFUNC
 
@@ -6156,7 +6156,7 @@ DEFINE CLASS xfcImageCodecInfo AS xfcDrawingBase OF System.Drawing.prg
 				This.FormatDescription = m.tcNewValue
 			ENDIF
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 	ENDFUNC
 
@@ -6183,7 +6183,7 @@ DEFINE CLASS xfcImageCodecInfo AS xfcDrawingBase OF System.Drawing.prg
 				This.FormatID = NEWOBJECT("xfcGuid", XFCCLASS_SYSTEM, "")
 			ENDIF
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN This.FormatID
 	ENDFUNC
@@ -6206,7 +6206,7 @@ DEFINE CLASS xfcImageCodecInfo AS xfcDrawingBase OF System.Drawing.prg
 				This.FormatID = m.toGuid
 			ENDIF
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 	ENDFUNC
 
@@ -6233,7 +6233,7 @@ DEFINE CLASS xfcImageCodecInfo AS xfcDrawingBase OF System.Drawing.prg
 		TRY
 			m.loDecoders = This._GetEnDecoders(2)
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN m.loDecoders
@@ -6263,7 +6263,7 @@ DEFINE CLASS xfcImageCodecInfo AS xfcDrawingBase OF System.Drawing.prg
 		TRY
 			m.loEncoders = This._GetEnDecoders(1)
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN m.loEncoders
@@ -6309,7 +6309,7 @@ DEFINE CLASS xfcImageCodecInfo AS xfcDrawingBase OF System.Drawing.prg
 				This.MimeType = m.tcNewValue
 			ENDIF
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 	ENDFUNC
 
@@ -6330,7 +6330,7 @@ DEFINE CLASS xfcImageCodecInfo AS xfcDrawingBase OF System.Drawing.prg
 				This.SignatureCount = m.tnNewValue
 			ENDIF
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 	ENDFUNC
 
@@ -6372,7 +6372,7 @@ DEFINE CLASS xfcImageCodecInfo AS xfcDrawingBase OF System.Drawing.prg
 				This.SignatureMasks = m.tcNewValue
 			ENDIF
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 	ENDFUNC
 
@@ -6416,7 +6416,7 @@ DEFINE CLASS xfcImageCodecInfo AS xfcDrawingBase OF System.Drawing.prg
 				This.SignaturePatterns = m.tcNewValue
 			ENDIF
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 	ENDFUNC
 
@@ -6437,7 +6437,7 @@ DEFINE CLASS xfcImageCodecInfo AS xfcDrawingBase OF System.Drawing.prg
 				This.SignatureSize = m.tnNewValue
 			ENDIF
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 	ENDFUNC
 
@@ -6479,7 +6479,7 @@ DEFINE CLASS xfcImageCodecInfo AS xfcDrawingBase OF System.Drawing.prg
 				This.Version = m.tnNewValue
 			ENDIF
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 	ENDFUNC
 
@@ -6507,7 +6507,7 @@ DEFINE CLASS xfcImageCodecInfo AS xfcDrawingBase OF System.Drawing.prg
 			taImageCodecInfo(12) = "SignaturePatterns"
 			taImageCodecInfo(13) = "SignatureMasks"
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN
@@ -6588,7 +6588,7 @@ DEFINE CLASS xfcImageCodecInfo AS xfcDrawingBase OF System.Drawing.prg
 			
 			ENDIF
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN m.loEnDecoders
@@ -6712,7 +6712,7 @@ DEFINE CLASS xfcImageFormat AS xfcDrawingBase OF System.Drawing.prg
 			ENDCASE
 			
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN
@@ -6761,7 +6761,7 @@ DEFINE CLASS xfcImageFormat AS xfcDrawingBase OF System.Drawing.prg
 				This.Bmp = CREATEOBJECT(This.Class, NEWOBJECT("xfcGuid", XFCCLASS_SYSTEM, "", ImageFormatBMP))
 			ENDIF
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN This.Bmp
 	ENDFUNC
@@ -6791,7 +6791,7 @@ DEFINE CLASS xfcImageFormat AS xfcDrawingBase OF System.Drawing.prg
 				This.Emf = CREATEOBJECT(This.Class, NEWOBJECT("xfcGuid", XFCCLASS_SYSTEM, "", ImageFormatEMF))
 			ENDIF
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN This.Emf
 	ENDFUNC
@@ -6825,7 +6825,7 @@ DEFINE CLASS xfcImageFormat AS xfcDrawingBase OF System.Drawing.prg
 			m.llValue = This.Guid.ToByteArray() == m.toImgFormat.Guid.ToByteArray()
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN m.llValue
@@ -6856,7 +6856,7 @@ DEFINE CLASS xfcImageFormat AS xfcDrawingBase OF System.Drawing.prg
 				This.Exif = CREATEOBJECT(This.Class, NEWOBJECT("xfcGuid", XFCCLASS_SYSTEM, "", ImageFormatEXIF))
 			ENDIF
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN This.Exif
 	ENDFUNC
@@ -6920,7 +6920,7 @@ DEFINE CLASS xfcImageFormat AS xfcDrawingBase OF System.Drawing.prg
 		** This.SetStatus(GdipSomeFunction???())
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN m.liValue
@@ -6952,7 +6952,7 @@ DEFINE CLASS xfcImageFormat AS xfcDrawingBase OF System.Drawing.prg
 				This.Gif = CREATEOBJECT(This.Class, NEWOBJECT("xfcGuid", XFCCLASS_SYSTEM, "", ImageFormatGIF))
 			ENDIF
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN This.Gif
 	ENDFUNC
@@ -6983,7 +6983,7 @@ DEFINE CLASS xfcImageFormat AS xfcDrawingBase OF System.Drawing.prg
 				This.Gif = CREATEOBJECT(This.Class, NEWOBJECT("xfcGuid", XFCCLASS_SYSTEM, "", ImageFormatIcon))
 			ENDIF
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN This.Gif
 	ENDFUNC
@@ -7014,7 +7014,7 @@ DEFINE CLASS xfcImageFormat AS xfcDrawingBase OF System.Drawing.prg
 				This.Jpeg = CREATEOBJECT(This.Class, NEWOBJECT("xfcGuid", XFCCLASS_SYSTEM, "", ImageFormatJPEG))
 			ENDIF
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN This.Jpeg
 	ENDFUNC
@@ -7044,7 +7044,7 @@ DEFINE CLASS xfcImageFormat AS xfcDrawingBase OF System.Drawing.prg
 				This.MemoryBmp = CREATEOBJECT(This.Class, NEWOBJECT("xfcGuid", XFCCLASS_SYSTEM, "", ImageFormatMemoryBMP))
 			ENDIF
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN This.MemoryBmp
 	ENDFUNC
@@ -7075,7 +7075,7 @@ DEFINE CLASS xfcImageFormat AS xfcDrawingBase OF System.Drawing.prg
 				This.Png = CREATEOBJECT(This.Class, NEWOBJECT("xfcGuid", XFCCLASS_SYSTEM, "", ImageFormatPNG))
 			ENDIF
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN This.Png
 	ENDFUNC
@@ -7106,7 +7106,7 @@ DEFINE CLASS xfcImageFormat AS xfcDrawingBase OF System.Drawing.prg
 				This.Tiff = CREATEOBJECT(This.Class, NEWOBJECT("xfcGuid", XFCCLASS_SYSTEM, "", ImageFormatTIFF))
 			ENDIF
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN This.Tiff
 	ENDFUNC
@@ -7163,7 +7163,7 @@ DEFINE CLASS xfcImageFormat AS xfcDrawingBase OF System.Drawing.prg
 			ENDCASE
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN m.lcValue
@@ -7195,7 +7195,7 @@ DEFINE CLASS xfcImageFormat AS xfcDrawingBase OF System.Drawing.prg
 				This.Wmf = CREATEOBJECT(This.Class, NEWOBJECT("xfcGuid", XFCCLASS_SYSTEM, "", ImageFormatWMF))
 			ENDIF
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN This.Wmf
 	ENDFUNC
@@ -7438,7 +7438,7 @@ DEFINE CLASS xfcMetafile AS xfcimage OF System.Drawing.prg
 			This.Handle = m.lhMetafile
 			
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN
@@ -7486,7 +7486,7 @@ DEFINE CLASS xfcMetafile AS xfcimage OF System.Drawing.prg
 			This.SetStatus(xfcGdipGetHemfFromMetafile(This.Handle, @lHEmf))
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN m.lHEmf
@@ -7554,7 +7554,7 @@ DEFINE CLASS xfcMetafile AS xfcimage OF System.Drawing.prg
 			m.loMetafileHeader = CREATEOBJECT("xfcMetafileHeader", m.lqHeader)
 			
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN m.loMetafileHeader
@@ -7590,7 +7590,7 @@ DEFINE CLASS xfcMetafile AS xfcimage OF System.Drawing.prg
 			This.SetStatus(xfcGdipPlayMetafileRecord(This.Handle, m.lcRecordType, m.liFlags, m.liDataSize, @lcData))
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -7628,7 +7628,7 @@ DEFINE CLASS xfcMetafile AS xfcimage OF System.Drawing.prg
 			xfcGdipEmfToWmfBits(m.lhEMF, m.lnWMFLen, @lqData, m.tiMapMode, m.tiFlags)
 			xfcDeleteEnhMetaFile(m.lhEMF)
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN m.lqData
@@ -7737,7 +7737,7 @@ DEFINE CLASS xfcMetafileHeader AS xfcDrawingBase OF System.Drawing.prg
 			ENDIF
 			
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN
@@ -7800,7 +7800,7 @@ DEFINE CLASS xfcMetafileHeader AS xfcDrawingBase OF System.Drawing.prg
 			m.lnHeight = CTOBIN(SUBSTR(This._binary,37,4),"4rs")
 			m.loRectangle = NEWOBJECT("xfcRectangle", m.lnX, m.lnY, m.lnWidth, m.lnHeight)
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN m.loRectangle
 	ENDFUNC
@@ -8214,7 +8214,7 @@ DEFINE CLASS xfcMetafileHeader AS xfcDrawingBase OF System.Drawing.prg
 			m.loMetaHeader = CREATEOBJECT("xfcMetaHeader")
 			m.loMetaHeader.Handle = m.lhMetaHeader
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN m.loMetaHeader
 	ENDFUNC
@@ -8313,7 +8313,7 @@ DEFINE CLASS xfcMetaHeader AS xfcDrawingBase OF System.Drawing.prg
 		TRY
 			This.HeaderSize = INT(m.tiValue)
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -8343,7 +8343,7 @@ DEFINE CLASS xfcMetaHeader AS xfcDrawingBase OF System.Drawing.prg
 		TRY
 			This.MaxRecord = INT(m.tiValue)
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -8373,7 +8373,7 @@ DEFINE CLASS xfcMetaHeader AS xfcDrawingBase OF System.Drawing.prg
 		TRY
 			This.NoObjects = INT(m.tiValue)
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -8403,7 +8403,7 @@ DEFINE CLASS xfcMetaHeader AS xfcDrawingBase OF System.Drawing.prg
 			&& Reserved, 0x0000
 			This.NoParameters = INT(m.tiValue)
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -8432,7 +8432,7 @@ DEFINE CLASS xfcMetaHeader AS xfcDrawingBase OF System.Drawing.prg
 		TRY
 			This.Size = INT(m.tiValue)
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -8456,7 +8456,7 @@ DEFINE CLASS xfcMetaHeader AS xfcDrawingBase OF System.Drawing.prg
 				BINTOC(This.MaxRecord,"4rs")+;
 				BINTOC(This.NoParameters,"2rs")
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN m.lqData
@@ -8497,7 +8497,7 @@ DEFINE CLASS xfcMetaHeader AS xfcDrawingBase OF System.Drawing.prg
 			&& 1 = memory, 2 = file
 			This.Type = INT(m.tiValue)
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -8528,7 +8528,7 @@ DEFINE CLASS xfcMetaHeader AS xfcDrawingBase OF System.Drawing.prg
 			&& 0x0100 or 0x0300 if supports DIBs
 			This.Version = INT(m.tiValue)
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -8612,7 +8612,7 @@ DEFINE CLASS xfcPropertyItem AS xfcDrawingBase OF System.Drawing.prg
 			
 		** This.SetStatus(GdipSomeFunction???())
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN
@@ -8636,7 +8636,7 @@ DEFINE CLASS xfcPropertyItem AS xfcDrawingBase OF System.Drawing.prg
 				xfcGlobalFree(This.hMemory)
 			ENDIF
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN
 	ENDFUNC
@@ -8781,7 +8781,7 @@ DEFINE CLASS xfcPropertyItem AS xfcDrawingBase OF System.Drawing.prg
 				m.leValue = This.Value
 			ENDCASE
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		IF m.llIsArray
@@ -8816,7 +8816,7 @@ DEFINE CLASS xfcPropertyItem AS xfcDrawingBase OF System.Drawing.prg
 		TRY
 			This.Id = m.tiValue
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -8846,7 +8846,7 @@ DEFINE CLASS xfcPropertyItem AS xfcDrawingBase OF System.Drawing.prg
 		TRY
 			This.Len = m.tiValue
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -8959,7 +8959,7 @@ DEFINE CLASS xfcPropertyItem AS xfcDrawingBase OF System.Drawing.prg
 		TRY
 			This.Type = m.tiValue
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -9048,7 +9048,7 @@ DEFINE CLASS xfcPropertyItem AS xfcDrawingBase OF System.Drawing.prg
 			ENDCASE
 			
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -9120,7 +9120,7 @@ DEFINE CLASS xfcWmfPlaceableFileHeader AS xfcDrawingBase OF System.Drawing.prg
 		TRY
 			DODEFAULT()
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN
@@ -9152,7 +9152,7 @@ DEFINE CLASS xfcWmfPlaceableFileHeader AS xfcDrawingBase OF System.Drawing.prg
 			This.BboxBottom = INT(m.tiValue)
 			This._CalcChecksum()
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -9184,7 +9184,7 @@ DEFINE CLASS xfcWmfPlaceableFileHeader AS xfcDrawingBase OF System.Drawing.prg
 			This.BboxLeft = INT(m.tiValue)
 			This._CalcChecksum()
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -9216,7 +9216,7 @@ DEFINE CLASS xfcWmfPlaceableFileHeader AS xfcDrawingBase OF System.Drawing.prg
 			This.BboxRight = INT(m.tiValue)
 			This._CalcChecksum()
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -9248,7 +9248,7 @@ DEFINE CLASS xfcWmfPlaceableFileHeader AS xfcDrawingBase OF System.Drawing.prg
 			This.BboxTop = INT(m.tiValue)
 			This._CalcChecksum()
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -9282,7 +9282,7 @@ DEFINE CLASS xfcWmfPlaceableFileHeader AS xfcDrawingBase OF System.Drawing.prg
 		TRY
 		** This.SetStatus(GdipSomeFunction???())
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -9313,7 +9313,7 @@ DEFINE CLASS xfcWmfPlaceableFileHeader AS xfcDrawingBase OF System.Drawing.prg
 			This.Hmf = INT(m.tiValue)
 			This._CalcChecksum()
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -9344,7 +9344,7 @@ DEFINE CLASS xfcWmfPlaceableFileHeader AS xfcDrawingBase OF System.Drawing.prg
 			This.Inch = INT(m.tiValue)
 			This._CalcChecksum()
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -9375,7 +9375,7 @@ DEFINE CLASS xfcWmfPlaceableFileHeader AS xfcDrawingBase OF System.Drawing.prg
 			This.Key = INT(m.tiValue)
 			This._CalcChecksum()
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -9406,7 +9406,7 @@ DEFINE CLASS xfcWmfPlaceableFileHeader AS xfcDrawingBase OF System.Drawing.prg
 			This.Reserved = INT(m.tiValue)
 			This._CalcChecksum()
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
