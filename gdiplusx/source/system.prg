@@ -15,7 +15,7 @@ ENDIF
 *************************************************************************
 *************************************************************************
 *************************************************************************
-DEFINE CLASS xfcSystem AS xfcObject
+DEFINE CLASS xfcSystem AS xfcNamespace 
 *************************************************************************
 *************************************************************************
 *************************************************************************
@@ -193,7 +193,7 @@ DEFINE CLASS xfcenum AS xfcObject
 			This._DeleteHidden(@m.aryMembers)
 			m.lvReturn = GETPEM(m.toEnum, m.aryMembers(tnIndex))
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN m.lvReturn
 	ENDFUNC
@@ -221,7 +221,7 @@ DEFINE CLASS xfcenum AS xfcObject
 				ENDIF
 			ENDFOR
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN m.lcReturn
 	ENDFUNC
@@ -238,7 +238,7 @@ DEFINE CLASS xfcenum AS xfcObject
 			=AMEMBERS(this._amembers, m.toEnum, 0)
 			=This._DeleteHidden()
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN @this._amembers
 	ENDFUNC
@@ -260,7 +260,7 @@ DEFINE CLASS xfcenum AS xfcObject
 				This._amembers(m.lnCounter) = GETPEM(m.toEnum, m.aryMembers(lnCounter))
 			ENDFOR
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN @This._amembers
 	ENDFUNC
@@ -274,7 +274,7 @@ DEFINE CLASS xfcenum AS xfcObject
 		TRY
 			m.llReturn = !EMPTY(This.GetNameByValue(m.toEnum, m.tvValue))
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN
 	ENDFUNC
@@ -288,7 +288,7 @@ DEFINE CLASS xfcenum AS xfcObject
 		TRY
 			m.lvReturn = GETPEM(m.toEnum, tcMemberName)
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN m.lvReturn
 	ENDFUNC
@@ -537,11 +537,51 @@ ENDDEFINE
 *************************************************************************
 
 
+*************************************************************************
+*************************************************************************
+*************************************************************************
+DEFINE CLASS xfcNamespace AS Custom
+*************************************************************************
+*************************************************************************
+*************************************************************************
+	PROTECTED COMMENT
+	PROTECTED CONTROLCOUNT
+	PROTECTED CONTROLS
+	PROTECTED HEIGHT
+	PROTECTED HELPCONTEXTID
+	PROTECTED LEFT
+	PROTECTED NAME
+	PROTECTED OBJECTS
+	PROTECTED PICTURE
+	PROTECTED TAG
+	PROTECTED TOP
+	PROTECTED WHATSTHISHELPID
+	PROTECTED WIDTH
+	
+	PROTECTED FUNCTION READEXPRESSION
+	ENDFUNC
+	PROTECTED FUNCTION READMETHOD
+	ENDFUNC
+	PROTECTED FUNCTION REMOVEOBJECT
+	ENDFUNC
+	PROTECTED FUNCTION RESETTODEFAULT
+	ENDFUNC
+	PROTECTED FUNCTION SAVEASCLASS
+	ENDFUNC
+	PROTECTED FUNCTION SHOWWHATSTHIS
+	ENDFUNC
+	PROTECTED FUNCTION WRITEEXPRESSION
+	ENDFUNC
+	PROTECTED FUNCTION WRITEMETHOD
+	ENDFUNC
+ENDDEFINE
+*************************************************************************
+*************************************************************************
+
 
 *************************************************************************
 *************************************************************************
 *************************************************************************
-#IFDEF USECLASS_XFCOBJECT
 DEFINE CLASS xfcObject AS Custom
 *************************************************************************
 *************************************************************************
@@ -668,7 +708,6 @@ DEFINE CLASS xfcObject AS Custom
 	#IFDEF USE_MEMBERDATA
 	PROTECTED _memberdata
 	_memberdata = [<VFPData>]+;
-		[<memberdata name="createnew" type="method" display="CreateNew"/>]+;
 		[<memberdata name="new" type="method" display="New"/>]+;
 		[<memberdata name="memberwiseclone" type="method" display="MemberwiseClone"/>]+;
 		[<memberdata name="gethashcode" type="method" display="GetHashCode"/>]+;
@@ -678,7 +717,6 @@ DEFINE CLASS xfcObject AS Custom
 		[</VFPData>]		
 	#ENDIF
 ENDDEFINE
-#ENDIF
 *************************************************************************
 *************************************************************************
 
