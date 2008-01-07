@@ -9,7 +9,7 @@ ENDIF
 *************************************************************************
 *************************************************************************
 *************************************************************************
-DEFINE CLASS xfctext AS xfcobject OF System.PRG
+DEFINE CLASS xfctext AS xfcNamespace OF System.PRG
 *************************************************************************
 *************************************************************************
 *************************************************************************
@@ -185,7 +185,7 @@ DEFINE CLASS xfcFontCollection AS xfcGPObject OF System.Drawing.prg
 			This.Families = NULL
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN
@@ -245,7 +245,7 @@ DEFINE CLASS xfcFontCollection AS xfcGPObject OF System.Drawing.prg
 			This.Families = m.loFamilyColl
 			
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		ENDIF
@@ -314,7 +314,7 @@ DEFINE CLASS xfcInstalledFontCollection AS xfcFontCollection
 			This.SetStatus(xfcGdipNewInstalledFontCollection(@lhFontCollection))
 			This.Handle = m.lhFontCollection
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN
@@ -388,7 +388,7 @@ DEFINE CLASS xfcPrivateFontCollection AS xfcFontCollection
 			This.SetStatus(xfcGdipNewPrivateFontCollection(@m.lhFontCollection))
 			This.Handle = m.lhFontCollection
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN
@@ -414,7 +414,7 @@ DEFINE CLASS xfcPrivateFontCollection AS xfcFontCollection
 				THIs.Handle = 0
 			ENDIF
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN
 	ENDFUNC
@@ -456,7 +456,7 @@ DEFINE CLASS xfcPrivateFontCollection AS xfcFontCollection
 			This.SetStatus(xfcGdipPrivateAddFontFile(This.Handle, STRCONV(m.tcFilename,5)))
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
@@ -490,7 +490,7 @@ DEFINE CLASS xfcPrivateFontCollection AS xfcFontCollection
 			This.SetStatus(xfcGdipPrivateAddMemoryFont(This.Handle, m.tiMemory, m.tiLength))
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN NULL
