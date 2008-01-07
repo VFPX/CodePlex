@@ -31,7 +31,7 @@ ENDIF
 *************************************************************************
 *************************************************************************
 #IFDEF USECLASS_XFCIO
-DEFINE CLASS xfcio AS xfcObject
+DEFINE CLASS xfcio AS xfcNamespace OF System.prg
 *************************************************************************
 *************************************************************************
 *************************************************************************
@@ -198,7 +198,7 @@ DEFINE CLASS xfcMemoryStream AS xfcStream
 			This.Length = LEN(m.tqBuffer)
 
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN
@@ -232,7 +232,7 @@ DEFINE CLASS xfcMemoryStream AS xfcStream
 				This._hGlobal = 0
 			ENDIF
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN
 	ENDFUNC
@@ -311,7 +311,7 @@ DEFINE CLASS xfcMemoryStream AS xfcStream
 				This._capacity = m.tiValue
 			ENDIF 
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 	ENDFUNC
 
@@ -340,7 +340,7 @@ DEFINE CLASS xfcMemoryStream AS xfcStream
 							SYS(2600, m.lhMemPtr, This.Length)
 			xfcGlobalUnlock(This._hGlobal)
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN m.lqBinary
@@ -371,7 +371,7 @@ DEFINE CLASS xfcMemoryStream AS xfcStream
 				This.Handle = This._histream
 			ENDIF
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN This._histream
@@ -419,7 +419,7 @@ DEFINE CLASS xfcMemoryStream AS xfcStream
 				This.Length = 0
 			ENDIF
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN THIS.Length
@@ -444,7 +444,7 @@ DEFINE CLASS xfcMemoryStream AS xfcStream
 			ENDIF
 
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN THIS.Position
@@ -467,7 +467,7 @@ DEFINE CLASS xfcMemoryStream AS xfcStream
 			This.Position = m.tnValue
 
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 	ENDFUNC
 	
@@ -531,7 +531,7 @@ DEFINE CLASS xfcMemoryStream AS xfcStream
 			This.Position = This.Position + m.lnNum
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN m.lnNum
@@ -584,7 +584,7 @@ DEFINE CLASS xfcMemoryStream AS xfcStream
 			ENDCASE
 			
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN This.Position
@@ -668,7 +668,7 @@ DEFINE CLASS xfcMemoryStream AS xfcStream
 			This.Position = m.lnNum
 		
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN
@@ -743,7 +743,7 @@ DEFINE CLASS xfcStream AS xfcObject
 			xfcCreateStreamOnHGlobal(m.lHGlobal, 1, @m.lHStream)
 			This.Handle = m.lHStream
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN
@@ -776,7 +776,7 @@ DEFINE CLASS xfcStream AS xfcObject
 			*	xfcGlobalUnlock(m.lHGlobal)
 			xfcGlobalFree(m.lhGlobal)
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		RETURN
 	ENDFUNC
@@ -1000,7 +1000,7 @@ DEFINE CLASS xfcStream AS xfcObject
 				ENDIF
 			ENDIF
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN m.tiByte
@@ -1088,7 +1088,7 @@ DEFINE CLASS xfcStream AS xfcObject
 		TRY
 			This.Write(CHR(m.tiByte), This.Position, 1)
 		CATCH TO loExc
-			THROW m.loExc
+			THROW_EXCEPTION
 		ENDTRY
 		
 		RETURN
