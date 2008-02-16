@@ -25,9 +25,26 @@ DataSource = .NULL.
 Name = "Dataenvironment"
 [END PROPERTIES]
 [START RESERVED2]
-1[END RESERVED2]
+2[END RESERVED2]
 [START RESERVED4]
 1[END RESERVED4]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _27U0OD0V7
+[CLASS] cursor
+[BASECLASS] cursor
+[OBJNAME] Cursor1
+[PARENT] Dataenvironment
+[START PROPERTIES]
+Top = 20
+Left = 10
+Height = 90
+Width = 90
+Alias = "origfields"
+CursorSource = ..\origfields.dbf
+Name = "Cursor1"
+[END PROPERTIES]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -36,10 +53,10 @@ Name = "Dataenvironment"
 [BASECLASS] form
 [OBJNAME] Form1
 [START PROPERTIES]
-Top = 15
-Left = 32
-Height = 481
-Width = 753
+Top = 10
+Left = 11
+Height = 503
+Width = 752
 DoCreate = .T.
 Caption = "TableDesignerX"
 WindowType = 0
@@ -80,7 +97,9 @@ lparameters cOldVal
 local cNewVal
 cNewVal=''
 select (thisform.tablemanager.x_alias)
-GETEXPR 'Enter Expression' TO cNewVal
+GETEXPR 'Enter Expression' TO cNewVal ;
+   TYPE 'C' DEFAULT cOldVal
+
 if !empty(cNewVal)
    return cNewVal
    else
@@ -103,7 +122,7 @@ tablemanager underlying engine
 [OBJNAME] Shape1
 [PARENT] Form1
 [START PROPERTIES]
-Top = 411
+Top = 446
 Left = 3
 Height = 56
 Width = 748
@@ -126,7 +145,7 @@ TabStyle = 1
 Top = 3
 Left = 3
 Width = 748
-Height = 406
+Height = 443
 TabIndex = 1
 Name = "Pageframe1"
 Page1.FontBold = .F.
@@ -165,7 +184,7 @@ ENDPROC
 [OBJNAME] Shape1
 [PARENT] Form1.Pageframe1.Page1
 [START PROPERTIES]
-Top = 11
+Top = 7
 Left = 491
 Height = 86
 Width = 248
@@ -184,8 +203,8 @@ Name = "Shape1"
 FontSize = 8
 Caption = "Display"
 Height = 17
-Left = 498
-Top = 4
+Left = 499
+Top = 2
 Width = 43
 TabIndex = 20
 Name = "Label1"
@@ -204,7 +223,7 @@ FontSize = 8
 Caption = "Caption"
 Height = 16
 Left = 498
-Top = 23
+Top = 19
 Width = 38
 TabIndex = 21
 Name = "Label2"
@@ -223,7 +242,7 @@ FontSize = 8
 Caption = "Input Mask:"
 Height = 16
 Left = 498
-Top = 44
+Top = 40
 Width = 56
 TabIndex = 22
 Name = "Label3"
@@ -242,7 +261,7 @@ FontSize = 8
 Caption = "Format"
 Height = 16
 Left = 497
-Top = 66
+Top = 62
 Width = 35
 TabIndex = 23
 Name = "Label4"
@@ -261,7 +280,7 @@ ControlSource = "table_fields.field_capt"
 Height = 23
 Left = 574
 TabIndex = 3
-Top = 18
+Top = 14
 Width = 132
 Name = "Text1"
 [END PROPERTIES]
@@ -271,7 +290,8 @@ thisform.tablemanager.set_property_all(this.controlsource,'Caption')
 ENDPROC
 PROCEDURE Valid
 *** BYN 31/10/2007 added logic to update underlying cursor
-THISFORM.tablemanager.UpdateChangeStatus()
+THISFORM.tablemanager.CheckForFieldChanges()
+WAIT WINDOW 1
 RETURN .T.
 
 ENDPROC
@@ -290,7 +310,7 @@ ControlSource = "table_fields.field_imsk"
 Height = 23
 Left = 574
 TabIndex = 5
-Top = 43
+Top = 39
 Width = 132
 Name = "Text2"
 [END PROPERTIES]
@@ -319,7 +339,7 @@ ControlSource = "table_fields.field_FMT"
 Height = 23
 Left = 574
 TabIndex = 7
-Top = 68
+Top = 64
 Width = 132
 Name = "Text3"
 [END PROPERTIES]
@@ -343,7 +363,7 @@ ENDPROC
 [OBJNAME] Shape2
 [PARENT] Form1.Pageframe1.Page1
 [START PROPERTIES]
-Top = 106
+Top = 102
 Left = 491
 Height = 86
 Width = 248
@@ -364,7 +384,7 @@ FontSize = 8
 Caption = "Field Validation"
 Height = 16
 Left = 498
-Top = 100
+Top = 96
 Width = 74
 TabIndex = 24
 Name = "Label5"
@@ -383,7 +403,7 @@ FontSize = 8
 Caption = "Rule:"
 Height = 16
 Left = 498
-Top = 118
+Top = 114
 Width = 26
 TabIndex = 25
 Name = "Label6"
@@ -402,7 +422,7 @@ FontSize = 8
 Caption = "Message:"
 Height = 16
 Left = 498
-Top = 139
+Top = 135
 Width = 49
 TabIndex = 26
 Name = "Label7"
@@ -421,7 +441,7 @@ FontSize = 8
 Caption = "Default Value:"
 Height = 16
 Left = 497
-Top = 161
+Top = 157
 Width = 70
 TabIndex = 27
 Name = "Label8"
@@ -440,7 +460,7 @@ ControlSource = "table_fields.field_rule"
 Height = 23
 Left = 574
 TabIndex = 9
-Top = 113
+Top = 109
 Width = 132
 Name = "Text4"
 [END PROPERTIES]
@@ -469,7 +489,7 @@ ControlSource = "table_fields.field_err"
 Height = 23
 Left = 574
 TabIndex = 11
-Top = 138
+Top = 134
 Width = 132
 Name = "Text5"
 [END PROPERTIES]
@@ -498,7 +518,7 @@ ControlSource = "table_fields.field_defa"
 Height = 23
 Left = 574
 TabIndex = 13
-Top = 163
+Top = 159
 Width = 132
 Name = "Text6"
 [END PROPERTIES]
@@ -527,7 +547,7 @@ FontSize = 8
 Caption = "Field Comment:"
 Height = 16
 Left = 493
-Top = 262
+Top = 304
 Width = 74
 TabIndex = 28
 Name = "Label9"
@@ -544,7 +564,7 @@ Name = "Label9"
 Height = 67
 Left = 491
 TabIndex = 19
-Top = 278
+Top = 319
 Width = 248
 ControlSource = "table_fields.field_comm"
 Name = "Edit1"
@@ -563,13 +583,13 @@ ENDPROC
 
 [ RECORD]
 [PLATFORM] WINDOWS 
-[UNIQUEID] _08K07GRVP
+[UNIQUEID] _0870OVUEU
 [CLASS] shape
 [BASECLASS] shape
 [OBJNAME] Shape3
 [PARENT] Form1.Pageframe1.Page1
 [START PROPERTIES]
-Top = 201
+Top = 197
 Left = 491
 Height = 59
 Width = 248
@@ -590,7 +610,7 @@ FontSize = 8
 Caption = "Map Field Type to Classes"
 Height = 16
 Left = 499
-Top = 195
+Top = 191
 Width = 128
 TabIndex = 29
 Name = "Label10"
@@ -598,7 +618,7 @@ Name = "Label10"
 
 [ RECORD]
 [PLATFORM] WINDOWS 
-[UNIQUEID] _0870PEM5N
+[UNIQUEID] _0870OVUEU
 [CLASS] label
 [BASECLASS] label
 [OBJNAME] Label11
@@ -609,7 +629,7 @@ FontSize = 8
 Caption = "Display Library:"
 Height = 16
 Left = 499
-Top = 213
+Top = 209
 Width = 77
 TabIndex = 30
 Name = "Label11"
@@ -628,7 +648,7 @@ FontSize = 8
 Caption = "Display Class: "
 Height = 16
 Left = 499
-Top = 234
+Top = 230
 Width = 73
 TabIndex = 31
 Name = "Label12"
@@ -647,8 +667,8 @@ ControlSource = "table_fields.field_CLLB"
 Height = 23
 Left = 575
 TabIndex = 15
-Top = 208
-Width = 159
+Top = 204
+Width = 131
 Name = "Text7"
 [END PROPERTIES]
 [START METHODS]
@@ -673,8 +693,8 @@ ControlSource = "table_fields.field_CLSS"
 Height = 23
 Left = 575
 TabIndex = 17
-Top = 233
-Width = 132
+Top = 229
+Width = 158
 Name = "Text8"
 [END PROPERTIES]
 [START METHODS]
@@ -694,7 +714,7 @@ ENDPROC
 [OBJNAME] Command1
 [PARENT] Form1.Pageframe1.Page1
 [START PROPERTIES]
-Top = 19
+Top = 15
 Left = 710
 Height = 23
 Width = 25
@@ -719,7 +739,7 @@ ENDPROC
 [OBJNAME] Command2
 [PARENT] Form1.Pageframe1.Page1
 [START PROPERTIES]
-Top = 43
+Top = 39
 Left = 710
 Height = 23
 Width = 25
@@ -742,7 +762,7 @@ ENDPROC
 [OBJNAME] Command3
 [PARENT] Form1.Pageframe1.Page1
 [START PROPERTIES]
-Top = 67
+Top = 63
 Left = 710
 Height = 23
 Width = 25
@@ -765,7 +785,7 @@ ENDPROC
 [OBJNAME] Command4
 [PARENT] Form1.Pageframe1.Page1
 [START PROPERTIES]
-Top = 114
+Top = 110
 Left = 710
 Height = 23
 Width = 25
@@ -788,7 +808,7 @@ ENDPROC
 [OBJNAME] Command5
 [PARENT] Form1.Pageframe1.Page1
 [START PROPERTIES]
-Top = 138
+Top = 134
 Left = 710
 Height = 23
 Width = 25
@@ -811,7 +831,7 @@ ENDPROC
 [OBJNAME] Command6
 [PARENT] Form1.Pageframe1.Page1
 [START PROPERTIES]
-Top = 162
+Top = 158
 Left = 710
 Height = 23
 Width = 25
@@ -834,7 +854,7 @@ ENDPROC
 [OBJNAME] Command8
 [PARENT] Form1.Pageframe1.Page1
 [START PROPERTIES]
-Top = 233
+Top = 204
 Left = 710
 Height = 23
 Width = 25
@@ -867,63 +887,69 @@ ENDPROC
 [PARENT] Form1.Pageframe1.Page1
 [START PROPERTIES]
 ColumnCount = 5
-FontBold = .F.
+FontBold = .T.
 FontName = "Arial"
 FontSize = 8
 AllowAddNew = .T.
 DeleteMark = .F.
 GridLines = 2
 HeaderHeight = 24
-Height = 334
+Height = 380
 Left = 3
 Panel = 1
 RecordMark = .T.
 RecordSource = "table_fields"
-RowHeight = 20
+RowHeight = 21
 ScrollBars = 2
 TabIndex = 1
-Top = 11
-Width = 482
+Top = 7
+Width = 486
 ForeColor = 0,0,0
 GridLineColor = 192,192,192
 Name = "TableFieldsGrid"
-Column1.FontBold = .F.
+Column1.FontBold = .T.
 Column1.FontName = "Arial"
 Column1.FontSize = 8
 Column1.ControlSource = "table_fields.field_name"
 Column1.Width = 96
 Column1.ForeColor = 0,0,0
-Column1.Name = "Column2"
-Column2.FontBold = .F.
+Column1.Name = "Column1"
+Column2.FontBold = .T.
 Column2.FontName = "Arial"
 Column2.FontSize = 8
 Column2.ControlSource = "table_fields.field_tyds"
 Column2.Width = 91
 Column2.ForeColor = 0,0,0
-Column2.Name = "Column3"
-Column3.FontBold = .F.
+Column2.Name = "Column2"
+Column3.FontBold = .T.
 Column3.FontName = "Arial"
 Column3.FontSize = 8
 Column3.ControlSource = "table_fields.field_len"
 Column3.Width = 45
+Column3.Format = "Z"
+Column3.InputMask = "999"
 Column3.ForeColor = 0,0,0
-Column3.Name = "Column4"
-Column4.FontBold = .F.
+Column3.Name = "Column3"
+Column4.FontBold = .T.
 Column4.FontName = "Arial"
 Column4.FontSize = 8
+Column4.ColumnOrder = 4
 Column4.ControlSource = "table_fields.field_dec"
 Column4.Width = 44
+Column4.Format = "Z"
+Column4.InputMask = "99"
 Column4.ForeColor = 0,0,0
-Column4.Name = "Column5"
-Column5.FontBold = .F.
+Column4.Name = "Column4"
+Column5.FontBold = .T.
 Column5.FontName = "Arial"
 Column5.FontSize = 8
+Column5.ColumnOrder = 5
 Column5.ControlSource = "table_fields.field_null"
 Column5.CurrentControl = "Check1"
 Column5.Width = 16
 Column5.Sparse = .F.
 Column5.ForeColor = 0,0,0
-Column5.Name = "Column6"
+Column5.Name = "Column5"
 [END PROPERTIES]
 [START METHODS]
 PROCEDURE AfterRowColChange
@@ -942,6 +968,12 @@ thisform.lockscreen=.f.
 
 
 ENDPROC
+PROCEDURE Init
+This.column3.DynamicCurrentControl = "DynamicGridControl(this.column3)"
+This.column4.DynamicCurrentControl = "DynamicGridControl(this.column4)"
+Thisform.LockScreen = .F.
+
+ENDPROC
 [END METHODS]
 
 [ RECORD]
@@ -950,9 +982,9 @@ ENDPROC
 [CLASS] header
 [BASECLASS] header
 [OBJNAME] Header1
-[PARENT] Form1.Pageframe1.Page1.TableFieldsGrid.Column2
+[PARENT] Form1.Pageframe1.Page1.TableFieldsGrid.Column1
 [START PROPERTIES]
-FontBold = .F.
+FontBold = .T.
 FontName = "Arial"
 FontSize = 8
 Caption = "Field"
@@ -965,9 +997,9 @@ Name = "Header1"
 [CLASS] textbox
 [BASECLASS] textbox
 [OBJNAME] Text1
-[PARENT] Form1.Pageframe1.Page1.TableFieldsGrid.Column2
+[PARENT] Form1.Pageframe1.Page1.TableFieldsGrid.Column1
 [START PROPERTIES]
-FontBold = .F.
+FontBold = .T.
 FontName = "Arial"
 FontSize = 8
 BorderStyle = 0
@@ -990,9 +1022,9 @@ ENDPROC
 [CLASS] header
 [BASECLASS] header
 [OBJNAME] Header1
-[PARENT] Form1.Pageframe1.Page1.TableFieldsGrid.Column3
+[PARENT] Form1.Pageframe1.Page1.TableFieldsGrid.Column2
 [START PROPERTIES]
-FontBold = .F.
+FontBold = .T.
 FontName = "Arial"
 FontSize = 8
 Caption = "Type"
@@ -1005,10 +1037,10 @@ Name = "Header1"
 [CLASS] tdxcombo
 [CLASSLOC] ..\libs\tdx_base.vcx
 [BASECLASS] combobox
-[OBJNAME] Tdxcombo1
-[PARENT] Form1.Pageframe1.Page1.TableFieldsGrid.Column3
+[OBJNAME] CmbType
+[PARENT] Form1.Pageframe1.Page1.TableFieldsGrid.Column2
 [START PROPERTIES]
-FontBold = .F.
+FontBold = .T.
 ColumnCount = 0
 ColumnWidths = ""
 RowSourceType = 6
@@ -1020,7 +1052,7 @@ Left = 276
 NumberOfElements = 0
 Top = 477
 Width = 100
-Name = "Tdxcombo1"
+Name = "CmbType"
 [END PROPERTIES]
 [START METHODS]
 PROCEDURE Valid
@@ -1036,9 +1068,9 @@ ENDPROC
 [CLASS] header
 [BASECLASS] header
 [OBJNAME] Header1
-[PARENT] Form1.Pageframe1.Page1.TableFieldsGrid.Column4
+[PARENT] Form1.Pageframe1.Page1.TableFieldsGrid.Column3
 [START PROPERTIES]
-FontBold = .F.
+FontBold = .T.
 FontName = "Arial"
 FontSize = 8
 Caption = "Lenght"
@@ -1051,10 +1083,10 @@ Name = "Header1"
 [CLASS] tdxspinner
 [CLASSLOC] ..\libs\tdx_base.vcx
 [BASECLASS] spinner
-[OBJNAME] fldLen
-[PARENT] Form1.Pageframe1.Page1.TableFieldsGrid.Column4
+[OBJNAME] fldLenSpinner
+[PARENT] Form1.Pageframe1.Page1.TableFieldsGrid.Column3
 [START PROPERTIES]
-FontBold = .F.
+FontBold = .T.
 Height = 24
 KeyboardHighValue = 255
 KeyboardLowValue = 0
@@ -1064,7 +1096,7 @@ SpinnerLowValue =   0.00
 Top = 152
 Width = 63
 ControlSource = "table_fields.field_len"
-Name = "fldLen"
+Name = "fldLenSpinner"
 [END PROPERTIES]
 [START METHODS]
 PROCEDURE Valid
@@ -1076,13 +1108,38 @@ ENDPROC
 
 [ RECORD]
 [PLATFORM] WINDOWS 
+[UNIQUEID] _27U0ZOQ40
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] NoLenTextBox
+[PARENT] Form1.Pageframe1.Page1.TableFieldsGrid.Column3
+[START PROPERTIES]
+BorderStyle = 0
+Enabled = .F.
+Height = 22
+Left = 768
+Top = 168
+Width = 48
+DisabledBackColor = 255,255,255
+Name = "NoLenTextBox"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+Thisform.LockScreen = .T.
+This.Parent.Parent.Init()
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
 [UNIQUEID] _26O1CU9KX
 [CLASS] header
 [BASECLASS] header
 [OBJNAME] Header1
-[PARENT] Form1.Pageframe1.Page1.TableFieldsGrid.Column5
+[PARENT] Form1.Pageframe1.Page1.TableFieldsGrid.Column4
 [START PROPERTIES]
-FontBold = .F.
+FontBold = .T.
 FontName = "Arial"
 FontSize = 8
 Caption = "Dec."
@@ -1095,10 +1152,10 @@ Name = "Header1"
 [CLASS] tdxspinner
 [CLASSLOC] ..\libs\tdx_base.vcx
 [BASECLASS] spinner
-[OBJNAME] flddec
-[PARENT] Form1.Pageframe1.Page1.TableFieldsGrid.Column5
+[OBJNAME] FlddecSpinner
+[PARENT] Form1.Pageframe1.Page1.TableFieldsGrid.Column4
 [START PROPERTIES]
-FontBold = .F.
+FontBold = .T.
 Height = 19
 KeyboardHighValue = 14
 KeyboardLowValue = 0
@@ -1108,7 +1165,7 @@ SpinnerLowValue =   0.00
 Top = 230
 Width = 53
 ControlSource = "table_fields.field_dec"
-Name = "flddec"
+Name = "FlddecSpinner"
 [END PROPERTIES]
 [START METHODS]
 PROCEDURE Valid
@@ -1120,13 +1177,39 @@ ENDPROC
 
 [ RECORD]
 [PLATFORM] WINDOWS 
+[UNIQUEID] _27U0WWKM9
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] NoDecTextBox
+[PARENT] Form1.Pageframe1.Page1.TableFieldsGrid.Column4
+[START PROPERTIES]
+BorderStyle = 0
+ControlSource = "table_fields.field_dec"
+Enabled = .F.
+Height = 21
+Left = 792
+Top = 108
+Width = 45
+DisabledBackColor = 255,255,255
+Name = "NoDecTextBox"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+Thisform.LockScreen = .T.
+This.Parent.Parent.Init()
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
 [UNIQUEID] _26O1CU9KZ
 [CLASS] header
 [BASECLASS] header
 [OBJNAME] Header1
-[PARENT] Form1.Pageframe1.Page1.TableFieldsGrid.Column6
+[PARENT] Form1.Pageframe1.Page1.TableFieldsGrid.Column5
 [START PROPERTIES]
-FontBold = .F.
+FontBold = .T.
 FontName = "Arial"
 FontSize = 8
 Caption = "Null"
@@ -1139,7 +1222,7 @@ Name = "Header1"
 [CLASS] textbox
 [BASECLASS] textbox
 [OBJNAME] Text1
-[PARENT] Form1.Pageframe1.Page1.TableFieldsGrid.Column6
+[PARENT] Form1.Pageframe1.Page1.TableFieldsGrid.Column5
 [START PROPERTIES]
 BorderStyle = 0
 Margin = 0
@@ -1154,9 +1237,9 @@ Name = "Text1"
 [CLASS] checkbox
 [BASECLASS] checkbox
 [OBJNAME] Check1
-[PARENT] Form1.Pageframe1.Page1.TableFieldsGrid.Column6
+[PARENT] Form1.Pageframe1.Page1.TableFieldsGrid.Column5
 [START PROPERTIES]
-FontBold = .F.
+FontBold = .T.
 FontName = "Arial"
 FontSize = 8
 Alignment = 0
@@ -1180,9 +1263,9 @@ ENDPROC
 [OBJNAME] InsertBttn
 [PARENT] Form1.Pageframe1.Page1
 [START PROPERTIES]
-Top = 347
+Top = 389
 Left = 14
-Height = 23
+Height = 21
 Width = 65
 Caption = "Insert"
 TabIndex = 6
@@ -1203,9 +1286,9 @@ ENDPROC
 [OBJNAME] RemoveBttn
 [PARENT] Form1.Pageframe1.Page1
 [START PROPERTIES]
-Top = 347
+Top = 389
 Left = 84
-Height = 23
+Height = 21
 Width = 64
 Caption = "Remove "
 TabIndex = 8
@@ -1217,6 +1300,117 @@ PROCEDURE Click
 thisform.tablemanager.remove_field()
 ENDPROC
 [END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _27U0NYTHO
+[CLASS] shape
+[BASECLASS] shape
+[OBJNAME] Shape4
+[PARENT] Form1.Pageframe1.Page1
+[START PROPERTIES]
+Top = 263
+Left = 491
+Height = 39
+Width = 248
+SpecialEffect = 0
+Name = "Shape4"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _27U0NYTHP
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label13
+[PARENT] Form1.Pageframe1.Page1
+[START PROPERTIES]
+AutoSize = .T.
+FontSize = 8
+Caption = "Auto Increment"
+Height = 16
+Left = 499
+Top = 257
+Width = 75
+TabIndex = 29
+Name = "Label13"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0870OVUEU
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label14
+[PARENT] Form1.Pageframe1.Page1
+[START PROPERTIES]
+AutoSize = .T.
+FontSize = 8
+Caption = "NextValue"
+Height = 16
+Left = 517
+Top = 278
+Width = 52
+TabIndex = 30
+Name = "Label14"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0870OVUEX
+[CLASS] tdxspinner
+[CLASSLOC] ..\libs\tdx_base.vcx
+[BASECLASS] spinner
+[OBJNAME] NextValSpinner
+[PARENT] Form1.Pageframe1.Page1
+[START PROPERTIES]
+BorderStyle = 1
+Height = 22
+Left = 575
+SpecialEffect = 0
+Top = 274
+Width = 81
+ControlSource = "table_fields.field_next"
+Name = "NextValSpinner"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _27U0O72E3
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label15
+[PARENT] Form1.Pageframe1.Page1
+[START PROPERTIES]
+AutoSize = .T.
+FontSize = 8
+Caption = "Step"
+Height = 16
+Left = 662
+Top = 278
+Width = 24
+TabIndex = 30
+Name = "Label15"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _27U0O72E4
+[CLASS] tdxspinner
+[CLASSLOC] ..\libs\tdx_base.vcx
+[BASECLASS] spinner
+[OBJNAME] Tdxspinner1
+[PARENT] Form1.Pageframe1.Page1
+[START PROPERTIES]
+BorderStyle = 1
+Height = 22
+Left = 688
+SpecialEffect = 0
+Top = 274
+Width = 47
+ControlSource = "table_fields.field_step"
+Name = "Tdxspinner1"
+[END PROPERTIES]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -2174,7 +2368,7 @@ Name = "lbl_table_codepage"
 [OBJNAME] Command4
 [PARENT] Form1
 [START PROPERTIES]
-Top = 440
+Top = 475
 Left = 533
 Height = 23
 Width = 104
@@ -2197,7 +2391,7 @@ ENDPROC
 [OBJNAME] Command5
 [PARENT] Form1
 [START PROPERTIES]
-Top = 440
+Top = 475
 Left = 642
 Height = 23
 Width = 104
@@ -2226,7 +2420,7 @@ FontSize = 8
 Caption = "Database "
 Height = 16
 Left = 11
-Top = 421
+Top = 456
 Width = 51
 TabIndex = 21
 Name = "Label2"
@@ -2245,7 +2439,7 @@ FontSize = 8
 Caption = "Table "
 Height = 16
 Left = 11
-Top = 442
+Top = 477
 Width = 31
 TabIndex = 22
 Name = "Label3"
@@ -2265,7 +2459,7 @@ Height = 23
 Left = 93
 ReadOnly = .T.
 TabIndex = 3
-Top = 415
+Top = 450
 Width = 395
 ForeColor = 128,0,128
 Name = "ShowDatabase"
@@ -2290,7 +2484,7 @@ Height = 23
 Left = 93
 ReadOnly = .T.
 TabIndex = 5
-Top = 439
+Top = 474
 Width = 395
 ForeColor = 128,0,128
 Name = "ShowTable"
@@ -2302,10 +2496,38 @@ ENDPROC
 [END METHODS]
 
 [ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0870OVUEU
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] NoLenTextBox
+[PARENT] Form1
+[START PROPERTIES]
+BorderStyle = 1
+ControlSource = "table_fields.field_len"
+Enabled = .F.
+Height = 22
+Left = 768
+ReadOnly = .F.
+Top = 168
+Width = 48
+DisabledBackColor = 209,209,209
+Name = "NoLenTextBox"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+Thisform.LockScreen = .T.
+This.Parent.Parent.Init()
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
 [PLATFORM] COMMENT 
 [UNIQUEID] RESERVED  
 [START PROPERTIES]
 Arial, 0, 9, 5, 15, 12, 32, 3, 0
-Arial, 0, 8, 5, 14, 11, 29, 3, 0
+Arial, 0, 8, 5, 14, 11, 30, 3, 0
+Arial, 1, 8, 5, 14, 11, 29, 3, 0
 [END PROPERTIES]
 [EOF]
