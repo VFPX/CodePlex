@@ -1,0 +1,27 @@
+Version=  1.20
+Author=Lisa Slater Nicholls
+Company=Spacefold
+Address=
+City=
+State=
+Zip=
+Country=
+SaveCode=.T.
+Debug=.F.
+Encrypt=.T.
+NoLogo=.F.
+CommentStyle=1
+Comments=
+CompanyName=
+FileDescription=
+LegalCopyright=
+LegalTrademarks=
+ProductName=
+Major=
+Minor=
+Revision=
+AutoIncrement=.F.
+[OLEServers]
+[OLEServersEnd]
+[ProjectFiles]
+[EOF]
