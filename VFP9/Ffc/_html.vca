@@ -1,0 +1,3645 @@
+SCCTEXT Version 4.0.0.2
+PLATFORM C(8,0),UNIQUEID C(10,0),TIMESTAMP N(10,0),CLASS M(4,0),CLASSLOC M(4,0),BASECLASS M(4,0),OBJNAME M(4,0),PARENT M(4,0),PROPERTIES M(4,0),PROTECTED M(4,0),METHODS M(4,0),OBJCODE M(4,0),OLE M(4,0),OLE2 M(4,0),RESERVED1 M(4,0),RESERVED2 M(4,0),RESERVED3 M(4,0),RESERVED4 M(4,0),RESERVED5 M(4,0),RESERVED6 M(4,0),RESERVED7 M(4,0),RESERVED8 M(4,0),USER M(4,0)
+1252
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] Class     
+[START RESERVED1]
+VERSION =   3.00[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RM308MS1I
+[CLASS] _custom
+[CLASSLOC] _base.vcx
+[BASECLASS] custom
+[OBJNAME] _htmltag
+[START PROPERTIES]
+htmltext = 
+tagname = 
+lendtag = .T.
+coutfile = 
+cgetfileext = htm;html;asp
+clastgetfileext = 
+lhtmlobject = .T.
+tagtext = 
+cattributes = 
+ctempoutfile = 
+nindex = 0
+csourcefile = 
+nitemcount = 0
+osource = .NULL.
+ie = .NULL.
+oitemcollection = .NULL.
+cieclass = InternetExplorer.Application
+citemcollectionclass = _ItemCollection
+citemcollectionclasslibrary = (IIF(VERSION(2)=0,"",HOME()+"FFC\")+"_HTML.vcx")
+nattributecount = 0
+cdefaulttagclass = _HTMLTag
+cdefaulttagclasslibrary = (IIF(VERSION(2)=0,"",HOME()+"FFC\")+"_HTML.vcx")
+cindenttext = 
+cindentchar = (CHR(9))
+nindentcharcount = 1
+cscope = 
+ltagcrlf = .T.
+litemcrlf = .T.
+oparent = .NULL.
+nmaxtagwidth = 0
+lautosetitems = .T.
+ltaglowercase = .T.
+cnorefreshielinktaglist = 
+cproperties = 
+cgenhtmlalias = 
+cgenhtmltable = (IIF(VERSION(2)=0,"",HOME())+"GenHTML.dbf")
+nsourcelistcount = 0
+cevaltextclass = _EvalText
+cevaltextclasslibrary = (IIF(VERSION(2)=0,"",HOME()+"FFC\")+"_HTML.vcx")
+oevaltext = .NULL.
+orecord = .NULL.
+oproperties = .NULL.
+ouser = .NULL.
+lenabled = .T.
+lautoevaltext = .T.
+cruncodeprogram = (IIF(VERSION(2)=0,"",HOME()+"FFC\")+"RunCode.prg")
+lrelativepath = .T.
+otopparent = .NULL.
+cstyletagclass = _StyleTag
+cstyletagclasslibrary = (IIF(VERSION(2)=0,"",HOME()+"FFC\")+"_HTML.vcx")
+cxmltagclass = _XMLTag
+cxmltagclasslibrary = (IIF(VERSION(2)=0,"",HOME()+"FFC\")+"_HTML.vcx")
+ltranslatespecialchars = .T.
+nworkarea = 0
+cfileext = htm
+lfullendtag = .T.
+lautosetobjectrefs = .T.
+Name = "_htmltag"
+[END PROPERTIES]
+[START PROTECTED]
+lhtmlobject
+[END PROTECTED]
+[START METHODS]
+PROCEDURE Destroy
+IF NOT DODEFAULT()
+	RETURN .F.
+ENDIF
+this.Clear
+this.ReleaseObjects
+this.ReleaseIELink
+this.DeleteTempOutFile
+
+ENDPROC
+PROCEDURE Error
+LPARAMETERS nError, cMethod, nLine
+LOCAL lcMethod
+EXTERNAL ARRAY __RunCodeError
+
+IF nError=1426 OR nError=1945
+	RETURN
+ENDIF
+lcMethod=LOWER(ALLTRIM(cMethod))
+IF lcMethod=="runcode"
+	RETURN __RunCodeError(ERROR(),0,"RunCode","",MESSAGE())
+ENDIF
+IF NOT DODEFAULT(nError, cMethod, nLine)
+	RETURN .F.
+ENDIF
+
+ENDPROC
+PROCEDURE Init
+IF NOT DODEFAULT()
+	RETURN .F.
+ENDIF
+this.oTopParent=this
+IF this.lAutoSetItems
+	this.SetItems
+ENDIF
+
+ENDPROC
+PROCEDURE addattribute
+LPARAMETERS tcMember
+LOCAL lcMember,lnCount
+
+IF EMPTY(tcMember)
+	RETURN .F.
+ENDIF
+lcMember=ALLTRIM(tcMember)
+FOR lnCount = 1 TO this.nAttributeCount
+	IF LOWER(ALLTRIM(this.aAttributes[lnCount]))==LOWER(lcMember)
+		RETURN
+	ENDIF
+ENDFOR
+this.nAttributeCount=this.nAttributeCount+1
+DIMENSION this.aAttributes[this.nAttributeCount]
+this.aAttributes[this.nAttributeCount]=lcMember
+
+ENDPROC
+PROCEDURE addcomment
+LPARAMETERS tvItem,tnIndex
+LOCAL lcComment
+
+IF VARTYPE(tvItem)=="O"
+	RETURN 0
+ENDIF
+lcComment=TRANSFORM(tvItem)
+IF CR$lcComment OR LF$lcComment
+	lcComment=CR_LF+lcComment+CR_LF
+ENDIF
+RETURN this.AddItem("<!--"+lcComment+"-->",tnIndex)
+
+ENDPROC
+PROCEDURE addcrlfitem
+LPARAMETERS tvCount,tnIndex
+LOCAL lnCount
+
+lnCount=IIF(VARTYPE(tvCount)=="N",INT(tvCount),1)
+IF lnCount<1
+	RETURN 0
+ENDIF
+RETURN this.AddItem(REPLICATE(CR_LF,lnCount),tnIndex)
+
+ENDPROC
+PROCEDURE addevalitem
+LPARAMETERS tcItem,tnIndex
+
+IF VARTYPE(tcItem)=="O" OR EMPTY(tcItem)
+	RETURN 0
+ENDIF
+RETURN this.AddItem(EVAL_ITEM+TRANSFORM(tcItem),tnIndex)
+
+ENDPROC
+PROCEDURE addgenhtmlfield
+LPARAMETERS tcExpr,tnIndex,tcID
+LOCAL lvItem
+
+lvItem=this.GetGenHTMLField(tcExpr,tcID)
+IF EMPTY(lvItem)
+	RETURN 0
+ENDIF
+RETURN this.AddItem(lvItem,tnIndex)
+
+ENDPROC
+PROCEDURE additem
+LPARAMETERS tvItem,tnIndex
+LOCAL lcItem,lnIndex,oItem,lnItem,lcIndentText,lnCount
+LOCAL laItem[1]
+
+IF INLIST(VARTYPE(tvItem),"X","L") OR (VARTYPE(tvItem)=="C" AND tvItem=="")
+	RETURN 0
+ENDIF
+lnCount=this.nItemCount+1
+lnIndex=IIF(VARTYPE(tnIndex)=="N",INT(tnIndex),lnCount)
+lnIndex=MAX(MIN(lnIndex,lnCount),1)
+DIMENSION this.Item[lnCount]
+IF lnIndex<lnCount
+	DIMENSION laItem[lnCount]
+	ACOPY(this.Item,laItem)
+	AINS(laItem,lnIndex)
+	FOR lnItem = (lnIndex+1) TO lnCount
+		oItem=this.Item[lnItem-1]
+		laItem[lnItem]=oItem
+		IF VARTYPE(oItem)#"O" OR NOT PEMSTATUS(oItem,"lHTMLObject",5)
+			LOOP
+		ENDIF
+		oItem.nIndex=oItem.nIndex+1
+	ENDFOR
+	ACOPY(laItem,this.Item)
+ENDIF
+lcIndentText=this.cIndentText+REPLICATE(this.cIndentChar,this.nIndentCharCount)
+IF VARTYPE(tvItem)=="O"
+	IF PEMSTATUS(tvItem,"lIndent",5) AND tvItem.lIndent
+		tvItem.cIndentText=lcIndentText
+	ENDIF
+	this.Item[lnIndex]=tvItem
+	RETURN lnIndex
+ENDIF
+IF this.lIndent AND this.lItemCRLF
+	lcItem=lcIndentText
+ELSE
+	lcItem=""
+ENDIF
+lcItem=lcItem+TRANSFORM(tvItem)
+this.Item[lnIndex]=lcItem
+RETURN lnIndex
+
+ENDPROC
+PROCEDURE addstyletag
+LPARAMETERS tvTagName,tnIndex
+LOCAL oTag
+
+oTag=this.NewStyleTag(tvTagName)
+IF VARTYPE(oTag)#"O"
+	RETURN .NULL.
+ENDIF
+RETURN this.AddTag(oTag)
+
+ENDPROC
+PROCEDURE addtag
+LPARAMETERS tvTagName,tnIndex
+LOCAL oTag,lcVarType
+
+lcVarType=VARTYPE(tvTagName)
+DO CASE
+	CASE INLIST(lcVarType,"C","L")
+		oTag=this.NewTag(tvTagName)
+		IF VARTYPE(oTag)#"O"
+			RETURN .NULL.
+		ENDIF
+		oTag.nIndex=this.AddItem(oTag,tnIndex)
+	CASE lcVarType=="O"
+		oTag=tvTagName
+		oTag.nIndex=this.AddItem(oTag,tnIndex)
+	OTHERWISE
+		RETURN .NULL.
+ENDCASE
+RETURN oTag
+
+ENDPROC
+PROCEDURE addtagitem
+LPARAMETERS tvItem,tnIndex
+
+IF VARTYPE(tvItem)=="C"
+	RETURN this.AddItem("<"+IIF(this.lTagLowerCase,LOWER(ALLTRIM(tvItem)), ;
+			UPPER(ALLTRIM(tvItem)))+">",tnIndex)
+ENDIF
+RETURN this.AddItem(tvItem,tnIndex)
+
+ENDPROC
+PROCEDURE addtagnoend
+LPARAMETERS tvTagName,tnIndex
+LOCAL oTag
+
+oTag=this.NewTagNoEnd(tvTagName)
+IF VARTYPE(oTag)#"O"
+	RETURN .NULL.
+ENDIF
+RETURN this.AddTag(oTag,tnIndex)
+
+ENDPROC
+PROCEDURE addtext
+LPARAMETERS tcText,tnIndex
+
+IF VARTYPE(tcText)#"C" OR EMPTY(tcText)
+	RETURN 0
+ENDIF
+RETURN this.AddItem(this.ValidText(tcText),tnIndex)
+
+ENDPROC
+PROCEDURE addxmltag
+LPARAMETERS tvTagName,tnIndex
+LOCAL oTag
+
+oTag=this.NewXMLTag(tvTagName)
+IF VARTYPE(oTag)#"O"
+	RETURN .NULL.
+ENDIF
+RETURN this.AddTag(oTag)
+
+ENDPROC
+PROCEDURE clear
+WAIT CLEAR
+this.ReleaseAttributes
+this.ReleaseItems
+this.TagName=""
+
+ENDPROC
+PROCEDURE coutfile_assign
+LPARAMETERS vNewVal
+LOCAL lcOutFile
+
+lcOutFile=ALLTRIM(m.vNewVal)
+IF EMPTY(JUSTEXT(lcOutFile))
+	lcOutFile=FORCEEXT(lcOutFile,"htm")
+ENDIF
+this.cOutFile=lcOutFile
+
+ENDPROC
+PROCEDURE createielink
+LPARAMETERS tlShow
+LOCAL oIE
+
+this.ReleaseIELink
+oIE=NEWOBJECT(this.cIEClass)
+IF VARTYPE(oIE)#"O"
+	this.IE=.NULL.
+	RETURN .F.
+ENDIF
+this.IE=oIE
+IF tlShow
+	this.Show
+ENDIF
+
+ENDPROC
+PROCEDURE createoutfile
+LPARAMETERS tcOutFile
+LOCAL lcOutFile
+
+IF EMPTY(tcOutFile)
+	this.cTempOutFile=FORCEEXT(SYS(2023)+"\"+LOWER(SYS(2015)),this.cFileExt)
+	this.cOutFile=this.cTempOutFile
+ENDIF
+lcOutFile=ALLTRIM(this.cOutFile)
+IF NOT this.SaveFile(lcOutFile) OR EMPTY(SYS(2000,lcOutFile))
+	RETURN ""
+ENDIF
+RETURN ALLTRIM(lcOutFile)
+
+ENDPROC
+PROCEDURE deleteoutfile
+IF EMPTY(this.cOutFile) OR NOT FILE(this.cOutFile)
+	RETURN .F.
+ENDIF
+ERASE (this.cOutFile)
+IF FILE(this.cOutFile)
+	RETURN .F.
+ENDIF
+
+ENDPROC
+PROCEDURE deletetempoutfile
+IF EMPTY(this.cTempOutFile) OR NOT FILE(this.cTempOutFile)
+	RETURN .F.
+ENDIF
+ERASE (this.cTempOutFile)
+IF FILE(this.cTempOutFile)
+	RETURN .F.
+ENDIF
+
+ENDPROC
+PROCEDURE document_access
+IF ISNULL(this.IE) OR TYPE("this.IE.Document")#"O"
+	RETURN .NULL.
+ENDIF
+RETURN this.IE.Document
+
+ENDPROC
+PROCEDURE document_assign
+LPARAMETERS vNewVal
+
+ERROR 1743
+
+ENDPROC
+PROCEDURE evaltext
+LPARAMETERS tcText
+
+RETURN this.oEvalText.EvalText(tcText)
+
+ENDPROC
+PROCEDURE filepath
+LPARAMETERS tcFileName
+
+IF VARTYPE(tcFileName)#"C" OR EMPTY(tcFileName)
+	RETURN ""
+ENDIF
+IF this.lRelativePath
+	RETURN LOWER(SYS(2014,tcFileName,this.cOutFile))
+ENDIF
+RETURN LOWER(FULLPATH(tcFileName,this.cOutFile))
+
+ENDPROC
+PROCEDURE genscript
+IF TYPE("this.oRecord.GenScript")#"C"
+	RETURN .F.
+ENDIF
+RETURN this.RunCode(this.oRecord.GenScript,.F.,.T.)
+
+ENDPROC
+PROCEDURE getattributes
+LPARAMETERS tnTagWidthOffset
+LOCAL lnTagWidthOffset,lcAttribute,lcAttributes,lcAttributes2,lcAttrib
+LOCAL lnMaxTagWidth,lnCount,lcVarType,lcDelimiter
+LOCAL llTagDeclaration,llTagDeclarationAdded
+
+lnTagWidthOffset=IIF(VARTYPE(tnTagWidthOffset)=="N",tnTagWidthOffset,0)
+lnMaxTagWidth=this.nMaxTagWidth-lnTagWidthOffset
+lcAttributes=""
+llTagDeclaration=this.lTagDeclaration
+llTagDeclarationAdded=.F.
+lcDeclarationIndent=";"+IIF(this.lItemCRLF,CR_LF+this.cIndentChar+this.cIndentText," ")
+IF this.lSortAttributes
+	ASORT(this.aAttributes)
+ENDIF
+FOR lnCount = 1 TO this.nAttributeCount
+	lcAttrib=this.aAttributes[lnCount]
+	DO CASE
+		CASE this.lTagLowerCase
+			lcAttrib=LOWER(lcAttrib)
+		CASE this.lTagUpperCase
+			lcAttrib=LOWER(lcAttrib)
+	ENDCASE
+	tvAttribValue=EVALUATE("this."+this.aAttributes[lnCount])
+	lcVarType=VARTYPE(tvAttribValue)
+	IF LEFT(lcAttrib,1)=="_"
+		lcAttrib=SUBSTR(lcAttrib,2)
+	ENDIF
+	DO CASE
+		CASE INLIST(lcVarType,"O","X")
+			LOOP
+		CASE llTagDeclaration
+			lcAttrib=STRTRAN(lcAttrib,"_","-")
+			IF llTagDeclarationAdded
+				lcAttrib=lcDeclarationIndent+lcAttrib
+			ELSE
+				llTagDeclarationAdded=.T.
+			ENDIF
+			IF lcVarType=="L"
+				lcAttribute=lcAttrib+" "
+			ELSE
+				tvAttribValue=TRANSFORM(tvAttribValue)
+				lcAttribute=lcAttrib+": "+tvAttribValue
+			ENDIF
+		CASE lcVarType=="L"
+			IF NOT tvAttribValue
+				LOOP
+			ENDIF
+			lcAttribute=lcAttrib
+		CASE lcVarType=="T"
+			lcAttribute=lcAttrib+[="]+TRANSFORM(tvAttribValue)+["]
+		CASE lcVarType#"C"
+			lcAttribute=lcAttrib+"="+TRANSFORM(tvAttribValue)
+		OTHERWISE
+			tvAttribValue=TRANSFORM(tvAttribValue)
+			lcDelimiter=IIF(["]$tvAttribValue,['],["])
+			lcAttribute=lcAttrib+"="+lcDelimiter+tvAttribValue+lcDelimiter
+	ENDCASE
+	IF llTagDeclaration
+		lcAttributes2=ALLTRIM(lcAttributes+lcAttribute)
+	ELSE
+		lcAttributes2=ALLTRIM(lcAttributes+" "+lcAttribute)
+	ENDIF
+	IF this.nMaxTagWidth=0 OR LEN(lcAttributes2)<=lnMaxTagWidth
+		lcAttributes=lcAttributes2
+	ELSE
+		lcAttributes=ALLTRIM(lcAttributes+CR_LF+" "+lcAttribute)
+		lnMaxTagWidth=lnMaxTagWidth+this.nMaxTagWidth
+	ENDIF
+ENDFOR
+IF this.lAutoEvalText AND VARTYPE(lcAttributes)=="C" AND ;
+		"{{"$lcAttributes AND "}}"$lcAttributes
+	lcAttributes=this.EvalText(lcAttributes)
+ENDIF
+RETURN ALLTRIM(lcAttributes)
+
+ENDPROC
+PROCEDURE getfile
+LPARAMETERS tcFileExt
+LOCAL lcFileExt
+
+IF EMPTY(tcFileExt) OR VARTYPE(tcFileExt)#"C"
+	lcFileExt=this.cGetFileExt
+	IF NOT EMPTY(this.cLastGetFileExt)
+		lcFileExt=this.cLastGetFileExt+STRTRAN(";"+lcFileExt,";"+this.cLastGetFileExt,"")
+	ENDIF
+ELSE
+	lcFileExt=LOWER(ALLTRIM(tcFileExt))
+ENDIF
+RETURN LOWER(PUTFILE(M_SAVE_LOC,"",lcFileExt))
+
+ENDPROC
+PROCEDURE getgenhtmlfield
+LPARAMETERS tcExpr,tcID
+LOCAL lcID,lcExpr,lvResult,llGenHTMLUsed,lcAlias,lnLastSelect,lnLastRecNo
+
+IF EMPTY(this.cGenHTMLAlias) AND this#this.oParent
+	RETURN this.oParent.GetGenHTMLField(tcExpr,tcID)
+ENDIF
+lvResult=.NULL.
+IF VARTYPE(tcExpr)#"C" OR EMPTY(tcExpr)
+	RETURN lvResult
+ENDIF
+lcExpr=LOWER(ALLTRIM(tcExpr))
+lcID=IIF(VARTYPE(tcID)#"C","",LOWER(ALLTRIM(tcID)))
+lnLastSelect=SELECT()
+lcAlias=this.cGenHTMLAlias
+IF USED(lcAlias)
+	llGenHTMLUsed=.T.
+	SELECT (lcAlias)
+ELSE
+	llGenHTMLUsed=.F.
+	IF EMPTY(this.cGenHTMLTable) OR NOT FILE(this.cGenHTMLTable)
+		RETURN lvResult
+	ENDIF
+	SELECT 0
+	USE (this.cGenHTMLTable) AGAIN SHARED
+	SET FILTER TO NOT DELETED()
+	LOCATE
+ENDIF
+lnLastRecNo=IIF(EOF() OR RECNO()>RECCOUNT(),0,RECNO())
+IF lnLastRecNo>0 AND TYPE(tcExpr)#"U"
+	IF NOT EMPTY(lcID)
+		LOCATE FOR LOWER(ALLTRIM(ID))==lcID
+	ENDIF
+	lvResult=IIF(EOF(),"",TRANSFORM(EVALUATE(lcExpr)))
+ENDIF
+IF llGenHTMLUsed
+	IF lnLastRecNo>0
+		GO lnLastRecNo
+	ENDIF
+ELSE
+	USE
+ENDIF
+SELECT (lnLastSelect)
+RETURN lvResult
+
+ENDPROC
+PROCEDURE gethtmlelementtext
+LPARAMETERS tvItem
+LOCAL lcHTMLText,lvItem,lcVarType,lnEvalItemLen
+
+IF ISNULL(tvItem)
+	RETURN ""
+ENDIF
+lvItem=tvItem
+lcVarType=VARTYPE(lvItem)
+lnEvalItemLen=LEN(EVAL_ITEM)
+IF lcVarType=="C" AND LEFT(lvItem,lnEvalItemLen)==EVAL_ITEM
+	lvItem=EVALUATE(SUBSTR(lvItem,lnEvalItemLen+1))
+	lcVarType=VARTYPE(lvItem)
+	IF lcVarType=="O"
+		RETURN this.GetHTMLElementText(lvItem)
+	ENDIF
+ENDIF
+IF lcVarType=="X"
+	RETURN ""
+ENDIF
+IF lcVarType=="O"
+	IF NOT PEMSTATUS(lvItem,"lHTMLObject",5)
+		IF PEMSTATUS(lvItem,"HTMLText",5)
+			lcHTMLText=lvItem.HTMLText
+			IF VARTYPE(lcHTMLText)=="C"
+				RETURN lcHTMLText
+			ENDIF
+		ENDIF
+		RETURN ""
+	ENDIF
+	RETURN lvItem.HTMLText
+ENDIF
+lcHTMLText=TRANSFORM(lvItem)
+IF this.lAutoEvalText AND VARTYPE(lcHTMLText)=="C" AND ;
+		"{{"$lcHTMLText AND "}}"$lcHTMLText
+	lcHTMLText=this.EvalText(lcHTMLText)
+ENDIF
+lcHTMLText=this.TranslateItem(lcHTMLText)
+IF this.lItemCRLF
+	lcHTMLText=lcHTMLText+CR_LF
+ENDIF
+IF this.lAutoEvalText AND VARTYPE(lcHTMLText)=="C" AND ;
+		"{{"$lcHTMLText AND "}}"$lcHTMLText
+	lcHTMLText=this.EvalText(lcHTMLText)
+ENDIF
+RETURN lcHTMLText
+
+ENDPROC
+PROCEDURE gethtmltext
+LOCAL lcHTMLText,lcSubHTMLText,lcTagName,lcTagText,lcIndentText,llTagDeclaration,llSubText
+
+IF NOT this.lEnabled
+	RETURN ""
+ENDIF
+llTagDeclaration=this.lTagDeclaration
+lcIndentText=IIF(this.lTagCRLF,this.cIndentText,"")
+lcTagName=this.TagName
+lcTagText=this.TagText
+lcHTMLText=lcIndentText
+DO CASE
+	CASE llTagDeclaration
+		IF NOT EMPTY(lcTagName) OR NOT EMPTY(lcTagText)
+			DO CASe
+				CASE EMPTY(lcTagName)
+					lcHTMLText=lcHTMLText+lcTagText
+				CASE this.lItemCRLF
+					lcHTMLText=lcHTMLText+ALLTRIM(lcTagName+CR_LF+this.cIndentChar+"{"+lcTagText)
+				OTHERWISE
+					lcHTMLText=lcHTMLText+ALLTRIM(lcTagName+" {"+lcTagText)
+			ENDCASE
+		ENDIF
+	CASE lcTagName=="!--"
+		lcHTMLText=lcHTMLText+"<"+lcTagName+lcTagText
+	CASE NOT EMPTY(lcTagName) OR NOT EMPTY(lcTagText)
+		IF EMPTY(lcTagName)
+			lcHTMLText=lcHTMLText+"<"+lcTagText
+		ELSE
+			IF EMPTY(lcTagText)
+				lcHTMLText=lcHTMLText+"<"+lcTagName
+			ELSE
+				lcHTMLText=lcHTMLText+"<"+lcTagName+" "+lcTagText
+			ENDIF
+			IF this.lEmptyTag AND NOT this.lEndTag
+				lcHTMLText=lcHTMLText+"/"
+			ENDIF
+		ENDIF
+		lcHTMLText=lcHTMLText+">"
+ENDCASE
+IF NOT llTagDeclaration AND this.lTagCRLF AND this.lItemCRLF AND NOT EMPTY(lcHTMLText)
+	lcHTMLText=lcHTMLText+CR_LF
+ENDIF
+lcSubHTMLText=this.GetObjectRefItems()+this.GetItems()
+llSubText=(NOT EMPTY(lcSubHTMLText))
+IF llSubText
+	IF NOT llTagDeclaration AND NOT EMPTY(lcHTMLText) AND NOT EMPTY(lcSubHTMLText) AND ;
+			this.lTagCRLF AND NOT this.lItemCRLF AND ;
+			LEFT(STRTRAN(lcSubHTMLText,this.cIndentChar,""),1)=="<"
+		lcHTMLText=lcHTMLText+CR_LF
+	ENDIF
+	lcHTMLText=lcHTMLText+lcSubHTMLText
+ENDIF
+IF ALLTRIM(STRTRAN(lcHTMLText,this.cIndentChar,""))=="<>"
+	RETURN ""
+ENDIF
+IF llTagDeclaration
+	IF EMPTY(lcHTMLText)
+		RETURN lcHTMLText
+	ENDIF
+	IF NOT EMPTY(lcTagName)
+		IF this.lTagCRLF
+			lcHTMLText=lcHTMLText+"}"+CR_LF
+		ELSE
+			lcHTMLText=lcHTMLText+"}"
+		ENDIF
+	ENDIF
+	RETURN lcHTMLText
+ENDIF
+IF EMPTY(lcTagName)
+	RETURN lcHTMLText
+ENDIF
+IF this.lEndTag
+	IF lcTagName=="!--"
+		lcHTMLText=lcHTMLText+lcIndentText+"-->"
+	ELSE
+		DO CASE
+			CASE NOT llSubText AND NOT this.lFullEndTag AND RIGHT(lcHTMLText,1)==">"
+				lcHTMLText=LEFT(lcHTMLText,LEN(lcHTMLText)-1)+"/>"
+			CASE RIGHT(lcHTMLText,2)==CR_LF
+				lcHTMLText=lcHTMLText+lcIndentText+"</"+lcTagName+">"
+			OTHERWISE
+				lcHTMLText=lcHTMLText+"</"+lcTagName+">"
+		ENDCASE
+	ENDIF
+	IF this.lTagCRLF AND NOT EMPTY(lcHTMLText)
+		lcHTMLText=lcHTMLText+CR_LF
+	ENDIF
+ENDIF
+RETURN lcHTMLText
+
+ENDPROC
+PROCEDURE getietag
+LPARAMETERS tvID
+LOCAL lcID,oDocument,oTag,lcVarType
+
+oDocument=this.Document
+IF VARTYPE(oDocument)#"O"
+	RETURN .NULL.
+ENDIF
+lcVarType=VARTYPE(tvID)
+DO CASE
+	CASE lcVarType=="O"
+		lcID=IIF(PEMSTATUS(tvID,"ID",5),ALLTRIM(tvID.ID),"")
+	CASE lcVarType=="L" OR EMPTY(tvID)
+		lcID=this.ID
+	CASE lcVarType=="C"
+		lcID=ALLTRIM(tvID)
+	OTHERWISE
+		RETURN .NULL.
+ENDCASE
+IF VARTYPE(lcID)#"C" OR EMPTY(lcID)
+	RETURN .NULL.
+ENDIF
+oTag=oDocument.All(lcID)
+RETURN oTag
+
+ENDPROC
+PROCEDURE getitemcollection
+IF this.lRelease
+	RETURN .NULL.
+ENDIF
+IF VARTYPE(this.oItemCollection)#"O"
+	this.oItemCollection=NEWOBJECT(this.cItemCollectionClass, ;
+			this.cItemCollectionClassLibrary,"",this)
+ENDIF
+RETURN this.oItemCollection
+
+ENDPROC
+PROCEDURE getitemcount
+LOCAL lnCount
+
+lnCount=ALEN(this.Item)
+IF lnCount=1 AND INLIST(VARTYPE(this.Item[1]),"X","L")
+	lnCount=0
+ENDIF
+RETURN lnCount
+
+ENDPROC
+PROCEDURE getitems
+LOCAL lcHTMLText,lcHTMLElementText,lnCount
+
+lcHTMLText=""
+FOR lnCount = 1 TO this.nItemCount
+	lcHTMLElementText=this.GetHTMLElementText(this.Item[lnCount])
+	lcHTMLText=lcHTMLText+lcHTMLElementText
+ENDFOR
+RETURN lcHTMLText
+
+ENDPROC
+PROCEDURE getobjectrefitems
+LOCAL lcHTMLText,lcHTMLElementText,lcObjName,lnCount
+
+lcHTMLText=""
+FOR lnCount = 1 TO this.nObjectRefCount
+	lcObjName=this.aObjectRefs[lnCount,1]
+	lcHTMLElementText=this.GetHTMLElementText(EVALUATE("this."+lcObjName))
+	lcHTMLText=lcHTMLText+lcHTMLElementText
+ENDFOR
+RETURN lcHTMLText
+
+ENDPROC
+PROCEDURE gettags
+LPARAMETERS tcTagName,tlTagDeclaration
+LOCAL oAllTags,lcTagName
+
+oAllTags=this.NewTag(.F.,.T.)
+IF VARTYPE(oAllTags)#"O"
+	RETURN .NULL.
+ENDIF
+lcTagName=IIF(EMPTY(tcTagName),"",ALLTRIM(tcTagName))
+this.UpdateChildAllTags(oAllTags,lcTagName,tlTagDeclaration)
+RETURN oAllTags
+
+ENDPROC
+PROCEDURE gettagtext
+LOCAL lcTagText,lcTagText2,lcAttributes,lcTagName,lnTagWidthOffset
+
+lcAttributes=ALLTRIM(this.cAttributes)
+lcTagName=ALLTRIM(this.TagName+" ")
+lnTagWidthOffset=LEN(lcAttributes)+LEN(lcTagName)
+lcTagText=this.GetAttributes()
+IF EMPTY(lcAttributes)
+	RETURN lcTagText
+ENDIF
+lcTagText2=ALLTRIM(lcTagText+" "+lcAttributes)
+IF this.nMaxTagWidth=0 OR LEN(lcTagText2)<=(this.nMaxTagWidth-lnTagWidthOffset)
+	RETURN lcTagText2
+ENDIF
+RETURN ALLTRIM(lcTagText+CR_LF+" "+lcAttributes)
+
+ENDPROC
+PROCEDURE height_assign
+LPARAMETERS vNewVal
+
+this.AddAttribute("Height")
+this.Height=m.vNewVal
+
+ENDPROC
+PROCEDURE hexcolor
+LPARAMETERS tnColor
+LOCAL lcRed,lcGreen,lcBlue
+
+IF VARTYPE(tnColor)#"N"
+	RETURN ""
+ENDIF
+lcRed=RIGHT(TRANSFORM(MOD(tnColor,256),"@0"),2)
+lcGreen=RIGHT(TRANSFORM(MOD(INT(tnColor/256),256),"@0"),2)
+lcBlue=RIGHT(TRANSFORM(INT(tnColor/65536),"@0"),2)
+RETURN "#"+lcRed+lcGreen+lcBlue
+
+ENDPROC
+PROCEDURE htmltext_access
+RETURN this.GetHTMLText()
+
+ENDPROC
+PROCEDURE htmltext_assign
+LPARAMETERS vNewVal
+
+ERROR 1743
+
+ENDPROC
+PROCEDURE ie_access
+IF ISNULL(this.IE)
+	RETURN .NULL.
+ENDIF
+IF TYPE("this.IE.Visible")#"L" OR VARTYPE(this.IE)#"O"
+	this.IE=.NULL.
+	RETURN .NULL.
+ENDIF
+RETURN this.IE
+
+ENDPROC
+PROCEDURE ie_assign
+LPARAMETERS vNewVal
+LOCAL oIE,oItem,lnCount
+
+this.IE=m.vNewVal
+oIE=this.IE
+IF this.lRelease
+	RETURN
+ENDIF
+FOR lnCount = 1 TO this.nItemCount
+	oItem=this.Item[lnCount]
+	IF VARTYPE(oItem)#"O" OR NOT PEMSTATUS(oItem,"lHTMLObject",5) OR oItem=this
+		LOOP
+	ENDIF
+	oItem.IE=oIE
+ENDFOR
+
+ENDPROC
+PROCEDURE ietag_access
+RETURN this.GetIETag()
+
+ENDPROC
+PROCEDURE ietag_assign
+LPARAMETERS vNewVal
+
+ERROR 1743
+
+ENDPROC
+PROCEDURE inherittag
+LPARAMETERS toChild,toParent
+
+IF VARTYPE(toChild)#"O" OR VARTYPE(toParent)#"O"
+	RETURN .F.
+ENDIF
+toChild.oParent=toParent
+toChild.oTopParent=toParent.oTopParent
+toChild.lTagDeclaration=toParent.lTagDeclaration
+toChild.lTagLowerCase=toParent.lTagLowerCase
+toChild.lTagUpperCase=toParent.lTagUpperCase
+toChild.lTagCRLF=toParent.lTagCRLF
+toChild.lItemCRLF=toParent.lItemCRLF
+toChild.cIndentChar=toParent.cIndentChar
+toChild.cIndentText=toParent.cIndentText
+toChild.lIndent=toParent.lIndent
+toChild.nMaxTagWidth=toParent.nMaxTagWidth
+toChild.cGenHTMLTable=toParent.cGenHTMLTable
+toChild.cGenHTMLAlias=toParent.cGenHTMLAlias
+toChild.lAutoEvalText=toParent.lAutoEvalText
+toChild.lTranslateSpecialChars=toParent.lTranslateSpecialChars
+toChild.IE=toParent.IE
+
+ENDPROC
+PROCEDURE item_access
+LPARAMETERS nIndex
+
+IF VARTYPE(m.nIndex)#"N"
+	RETURN this.GetItemCollection()
+ENDIF
+RETURN this.Item[m.nIndex]
+
+ENDPROC
+PROCEDURE item_assign
+LPARAMETERS vNewVal,nIndex
+
+IF VARTYPE(m.nIndex)#"N"
+	RETURN this.GetItemCollection()
+ENDIF
+this.Item[m.nIndex]=m.vNewVal
+
+ENDPROC
+PROCEDURE lielink_access
+RETURN (VARTYPE(this.IE)=="O")
+
+ENDPROC
+PROCEDURE lielink_assign
+LPARAMETERS vNewVal
+
+ERROR 1743
+
+ENDPROC
+PROCEDURE ltaglowercase_access
+RETURN (this.lTagLowerCase AND NOT this.lTagUpperCase)
+
+ENDPROC
+PROCEDURE ltaglowercase_assign
+LPARAMETERS vNewVal
+
+IF m.vNewVal AND this.lTagUpperCase
+	this.lTagUpperCase=.F.
+ENDIF
+this.lTagLowerCase=m.vNewVal
+
+ENDPROC
+PROCEDURE ltaguppercase_access
+RETURN this.lTagUpperCase
+
+ENDPROC
+PROCEDURE ltaguppercase_assign
+LPARAMETERS vNewVal
+
+IF m.vNewVal AND this.lTagLowerCase
+	this.lTagLowerCase=.F.
+ENDIF
+this.lTagUpperCase=m.vNewVal
+
+ENDPROC
+PROCEDURE msgbox
+LPARAMETERS tcMessage,tnType
+LOCAL lnType,lnResult,lnLastSelect
+
+lnType=IIF(VARTYPE(tnType)=="N",tnType,48)
+lnLastSelect=SELECT()
+SELECT 0
+WAIT CLEAR
+lnResult=MESSAGEBOX(tcMessage,lnType,M_GENHTML_LOC)
+WAIT CLEAR
+SELECT (lnLastSelect)
+RETURN lnResult
+
+ENDPROC
+PROCEDURE name_assign
+LPARAMETERS vNewVal
+
+this.AddAttribute("Name")
+this.Name=m.vNewVal
+
+ENDPROC
+PROCEDURE navigate
+LPARAMETERS tcURL,tlShow
+LOCAL lcURL,oIE
+
+IF NOT this.lIELink
+	RETURN .F.
+ENDIF
+lcURL=IIF(VARTYPE(tcURL)=="C",ALLTRIM(tcURL),"")
+oIE=this.IE
+IF this.lNavigateHost
+	IF TYPE("oIE.oHost")#"O"
+		RETURN .F.
+	ENDIF
+	oIE=this.IE.oHost
+ENDIF
+IF EMPTY(lcURL)
+	oIE.GoHome
+ELSE
+	oIE.Navigate(lcURL)
+ENDIF
+IF tlShow
+	oIE.Visible=.T.
+ENDIF
+
+ENDPROC
+PROCEDURE newstyletag
+LPARAMETERS tcTagName
+
+RETURN this.NewTag(tcTagName,.T.,this.cStyleTagClass,this.cStyleTagClassLibrary)
+
+ENDPROC
+PROCEDURE newtag
+LPARAMETERS tcTagName,tlNoInherit,tcTagClass,tcTagClassLibrary
+LOCAL oTag,lcTagClass,lcTagClassLibrary
+
+lcTagClass=IIF(EMPTY(tcTagClass),this.cDefaultTagClass,tcTagClass)
+lcTagClassLibrary=IIF(EMPTY(tcTagClassLibrary),this.cDefaultTagClassLibrary,tcTagClassLibrary)
+oTag=NEWOBJECT(lcTagClass,lcTagClassLibrary)
+IF VARTYPE(oTag)#"O"
+	RETURN .NULL.
+ENDIF
+IF VARTYPE(tcTagName)=="C" AND NOT EMPTY(tcTagName)
+	oTag.TagName=tcTagName
+ENDIF
+IF NOT tlNoInherit
+	this.InheritTag(oTag,this)
+ENDIF
+RETURN oTag
+
+ENDPROC
+PROCEDURE newtagnoend
+LPARAMETERS tcTagName,tlNoInherit
+LOCAL oTag
+
+oTag=this.NewTag(tcTagName,tlNoInherit)
+IF VARTYPE(oTag)#"O"
+	RETURN oTag
+ENDIF
+oTag.lEndTag=.F.
+RETURN oTag
+
+ENDPROC
+PROCEDURE newxmltag
+LPARAMETERS tcTagName
+
+RETURN this.NewTag(tcTagName,.T.,this.cXMLTagClass,this.cXMLTagClassLibrary)
+
+ENDPROC
+PROCEDURE nitemcount_access
+RETURN this.GetItemCount()
+
+ENDPROC
+PROCEDURE nitemcount_assign
+LPARAMETERS vNewVal
+
+RETURN this.SetItemCount(m.vNewVal)
+
+ENDPROC
+PROCEDURE oevaltext_access
+IF VARTYPE(this.oEvalText)#"O"
+	this.oEvalText=NEWOBJECT(this.cEvalTextClass,this.cEvalTextClassLibrary)
+ENDIF
+RETURN this.oEvalText
+
+ENDPROC
+PROCEDURE refresh
+this.RefreshIELink
+
+ENDPROC
+PROCEDURE refreshielink
+LOCAL oIETag
+
+IF NOT this.lIELink
+	RETURN .F.
+ENDIF
+oIETag=this.IETag
+IF VARTYPE(oIETag)#"O" OR TYPE("oIETag.TagName")#"C" OR ;
+		ATC(oIETag.TagName+",",ALLTRIM(this.cNoRefreshIELinkTagList)+",")>0
+	IF EMPTY(this.cOutFile)
+		IF VARTYPE(this.oParent)=="O" AND this#this.oParent
+			RETURN this.oParent.RefreshIELink()
+		ENDIF
+		RETURN .F.
+	ENDIF
+	IF NOT this.SaveFile()
+		RETURN .F.
+	ENDIF
+	RETURN this.Navigate(this.cOutFile)
+ENDIF
+oIETag.OuterHTML=this.HTMLText
+
+ENDPROC
+PROCEDURE release
+this.Clear
+this.ReleaseObjects
+IF NOT DODEFAULT()
+	RETURN .F.
+ENDIF
+
+ENDPROC
+PROCEDURE releaseattributes
+LOCAL lcAttrib,tvAttribValue,lnCount
+
+FOR lnCount = 1 TO this.nAttributeCount
+	lcAttrib=this.aAttributes[lnCount]
+	this.aAttributes[lnCount]=.NULL.
+	IF VARTYPE(lcAttrib)#"C" OR EMPTY(lcAttrib) OR NOT PEMSTATUS(this,lcAttrib,4)
+		this.aAttributes[lnCount]=.NULL.
+		LOOP
+	ENDIF
+	tvAttribValue=EVALUATE("this."+lcAttrib)
+	IF VARTYPE(tvAttribValue)#"O" OR NOT PEMSTATUS(tvAttribValue,"lHTMLObject",5) OR ;
+			tvAttribValue=this
+		this.&lcAttrib=.NULL.
+		LOOP
+	ENDIF
+	tvAttribValue.Release
+	tvAttribValue=.NULL.
+	this.&lcAttrib=.NULL.
+ENDFOR
+this.nAttributeCount=0
+DIMENSION this.aAttributes[1]
+this.aAttributes=.NULL.
+
+ENDPROC
+PROCEDURE releaseielink
+LPARAMETERS tlQuitIE
+
+IF NOT this.lIELink
+	RETURN .F.
+ENDIF
+IF tlQuitIE AND NOT PEMSTATUS(this.IE,"AddProperty",5)
+	this.IE.Quit
+ENDIF
+this.IE=.NULL.
+
+ENDPROC
+PROCEDURE releaseitems
+LOCAL oItem,lnCount
+
+FOR lnCount = 1 TO ALEN(this.Item)
+	oItem=this.Item[lnCount]
+	IF VARTYPE(oItem)#"O" OR NOT PEMSTATUS(oItem,"lHTMLObject",5) OR oItem=this
+		LOOP
+	ENDIF
+	this.Item[lnCount].Release
+	this.Item[lnCount]=.NULL.
+ENDFOR
+DIMENSION this.Item[1]
+this.Item[1]=.NULL.
+
+ENDPROC
+PROCEDURE releaseobjects
+this.oHost=.NULL.
+this.oTopParent=.NULL.
+this.oParent=.NULL.
+this.oRecord=.NULL.
+this.oSource=.NULL.
+this.oUser=.NULL.
+this.oEvalText=.NULL.
+this.oProperties=.NULL.
+this.oItemCollection=.NULL.
+
+ENDPROC
+PROCEDURE runcode
+LPARAMETERS tcCode,tlFile,__tlIgnoreErrors
+
+DO (this.cRunCodeProgram) WITH (tcCode),(tlFile),(__tlIgnoreErrors)
+RETURN
+
+*-- Dummy lines for adding files to project.
+DO RunCode.prg
+
+ENDPROC
+PROCEDURE runscript
+LPARAMETERS tcID
+LOCAL lcCode
+
+lcCode=this.GetGenHTMLField("Script",tcID)
+IF EMPTY(lcCode)
+	RETURN .F.
+ENDIF
+RETURN this.RunCode(lcCode)
+
+ENDPROC
+PROCEDURE savefile
+LPARAMETERS tcOutFile
+LOCAL lcOutFile,lcHTMLText
+
+lcOutFile=ALLTRIM(IIF(VARTYPE(tcOutFile)=="C",tcOutFile,this.cOutFile))
+IF EMPTY(lcOutFile)
+	lcOutFile=this.GetFile()
+	IF EMPTY(lcOutFile)
+		RETURN .F.
+	ENDIF
+	IF EMPTY(JUSTEXT(lcOutFile))
+		lcOutFile=FORCEEXT(lcOutFile,this.cFileExt)
+	ENDIF
+	this.cOutFile=lcOutFile
+ENDIF
+IF EMPTY(JUSTEXT(lcOutFile))
+	lcOutFile=FORCEEXT(lcOutFile,this.cFileExt)
+	this.cOutFile=lcOutFile
+ENDIF
+lcHTMLText=this.HTMLText
+IF EMPTY(lcHTMLText)
+	RETURN .F.
+ENDIF
+RETURN (STRTOFILE(lcHTMLText,lcOutFile)>0)
+
+ENDPROC
+PROCEDURE sethost
+this.oHost=this
+
+ENDPROC
+PROCEDURE setitemcount
+LPARAMETERS tnNewCount
+LOCAL lnOldItemCount,lnNewItemCount,lnCount
+
+lnOldItemCount=this.nItemCount
+lnNewItemCount=MAX(INT(tnNewCount),0)
+IF lnNewItemCount=0
+	DIMENSION this.Item[1]
+	this.Item=.NULL.
+	RETURN
+ENDIF
+DIMENSION this.Item[lnNewItemCount]
+IF lnNewItemCount>lnOldItemCount
+	FOR lnCount = (lnOldItemCount+1) TO lnNewItemCount
+		this.Item[lnCount]=.NULL.
+	ENDFOR
+ENDIF
+
+ENDPROC
+PROCEDURE setproperties
+LPARAMETERS tcProperties
+LOCAL lcProperties,lnAtPos,lnAtPos2,lcProperty,lcProperty2,lcValue,lvValue,lvOldValue
+LOCAL lcMemLine,lnMemLine,lnMemLineCount,lcVarType
+LOCAL laMemLines[1]
+PRIVATE oTHIS
+
+IF this.lRelease OR VARTYPE(tcProperties)#"C" OR EMPTY(tcProperties)
+	RETURN
+ENDIF
+lcProperties=tcProperties
+oTHIS=this
+lnMemLineCount=ALINES(laMemLines,lcProperties)
+FOR lnMemLine = 1 TO lnMemLineCount
+	lcMemLine=laMemLines[lnMemLine]
+	IF EMPTY(lcMemLine) OR LEFT(lcMemLine,1)=="*"
+		LOOP
+	ENDIF
+	lnAtPos=AT("=",lcMemLine)
+	IF lnAtPos=0 OR ATC("oTHIS.",lcMemLine)>0
+		&lcMemLine
+		LOOP
+	ENDIF
+	lcProperty=ALLTRIM(LEFT(lcMemLine,lnAtPos-1))
+	lnAtPos2=AT("[",lcProperty)
+	IF lnAtPos2=0
+		lnAtPos2=AT("(",lcProperty)
+		IF lnAtPos2>0
+			lcProperty=STRTRAN(STRTRAN(lcProperty,"(","["),")","]")
+		ENDIF
+	ENDIF
+	lcProperty2=IIF(lnAtPos2=0,lcProperty,ALLTRIM(LEFT(lcProperty,lnAtPos2-1)))
+	IF EMPTY(lcProperty2) OR (NOT "."$lcProperty2 AND NOT ","$lcProperty2 AND ;
+			(PEMSTATUS(this,lcProperty2,5) AND (PEMSTATUS(this,lcProperty2,1) OR ;
+			PEMSTATUS(this,lcProperty2,2) OR ;
+			NOT PEMSTATUS(this,lcProperty2,3)=="Property")))
+		LOOP
+	ENDIF
+	lvOldValue=this.&lcProperty
+	lcVarType=VARTYPE(lvOldValue)
+	lcValue=ALLTRIM(SUBSTR(lcMemLine,lnAtPos+1))
+	DO CASE
+		CASE LEFT(lcValue,1)=="(" AND RIGHT(lcValue,1)==")"
+			lvValue=EVALUATE(SUBSTR(lcValue,2,LEN(lcValue)-2))
+		CASE lcVarType=="C"
+			lvValue=lcValue
+		CASE lcVarType=="N"
+			lvValue=VAL(lcValue)
+		CASE lcVarType=="L"
+			lvValue=EVALUATE(lcValue)
+			lvValue=(TYPE("lvValue")=="L" AND lvValue)
+		OTHERWISE
+			lvValue=lcValue
+	ENDCASE
+	this.&lcProperty=lvValue
+	LOOP
+ENDFOR
+oTHIS=.NULL.
+
+ENDPROC
+PROCEDURE shellexecute
+LPARAMETERS tcFileName,tcWorkDir,tcOperation,tcParams
+LOCAL lcFileName,lcWorkDir,lcOperation,lcParams
+
+IF EMPTY(tcFileName)
+	RETURN -1
+ENDIF
+lcFileName=ALLTRIM(tcFileName)
+lcWorkDir=IIF(TYPE("tcWorkDir")="C",ALLTRIM(tcWorkDir),"")
+lcOperation=IIF(TYPE("tcOperation")="C" AND NOT EMPTY(tcOperation),ALLTRIM(tcOperation),"Open")
+lcParams=IIF(TYPE("tcParams")="C" AND NOT EMPTY(tcParams),ALLTRIM(tcParams),"")
+
+DECLARE INTEGER ShellExecute ;
+	    IN SHELL32.DLL ;
+	    INTEGER nWinHandle,;
+	    STRING cOperation,;
+	    STRING cFileName,;
+	    STRING cParameters,;
+	    STRING cDirectory,;
+	    INTEGER nShowWindow
+RETURN ShellExecute(0,lcOperation,lcFileName,lcParams,lcWorkDir,1)
+
+ENDPROC
+PROCEDURE show
+LOCAL lcOutFile
+
+lcOutFile=this.CreateOutFile(this.cOutFile)
+IF EMPTY(lcOutFile)
+	RETURN .F.
+ENDIF
+IF TYPE("this.IE.Visible")=="L"
+	this.Navigate(lcOutFile,.T.)
+ELSE
+	this.ShellExecute(lcOutFile)
+ENDIF
+
+ENDPROC
+PROCEDURE tagname_access
+LOCAL lcTagName
+
+lcTagName=this.TagName
+IF this.lTagLowerCase
+	lcTagName=LOWER(ALLTRIM(lcTagName))
+ELSE
+	IF this.lTagUpperCase
+		lcTagName=UPPER(ALLTRIM(lcTagName))
+	ENDIF
+ENDIF
+IF this.lAutoEvalText AND VARTYPE(lcTagName)=="C" AND ;
+		"{{"$lcTagName AND "}}"$lcTagName
+	lcTagName=this.EvalText(lcTagName)
+ENDIF
+RETURN ALLTRIM(lcTagName)
+
+ENDPROC
+PROCEDURE tagname_assign
+LPARAMETERS vNewVal
+
+IF VARTYPE(m.vNewVal)#"C"
+	ERROR 1732
+	RETURN
+ENDIF
+this.TagName=m.vNewVal
+
+ENDPROC
+PROCEDURE tagtext_access
+RETURN this.GetTagText()
+
+ENDPROC
+PROCEDURE tagtext_assign
+LPARAMETERS vNewVal
+
+ERROR 1743
+
+ENDPROC
+PROCEDURE this_access
+LPARAMETERS cMember
+
+IF PEMSTATUS(this,cMember,5)
+	RETURN this
+ENDIF
+this.AddProperty(cMember,.NULL.)
+IF PEMSTATUS(this,cMember,5)
+	this.AddAttribute(cMember)
+ENDIF
+RETURN this
+
+ENDPROC
+PROCEDURE translateitem
+LPARAMETERS tcItem
+
+IF VARTYPE(tcItem)#"C"
+	RETURN ""
+ENDIF
+RETURN tcItem
+
+ENDPROC
+PROCEDURE updatechildalltags
+LPARAMETERS toAllTags,tcTagName,tlTagDeclaration
+LOCAL lcTagName,oItem,oTag,lnCount
+
+lcTagName=ALLTRIM(tcTagName)
+FOR lnCount = 1 TO this.nItemCount
+	oItem=this.Item[lnCount]
+	IF VARTYPE(oItem)#"O" OR NOT PEMSTATUS(oItem,"lHTMLObject",5) OR oItem=this
+		LOOP
+	ENDIF
+	IF (EMPTY(lcTagName) OR LOWER(oItem.TagName)==LOWER(lcTagName)) AND ;
+			oItem.lTagDeclaration=tlTagDeclaration
+		oTag=toAllTags.AddTag(oItem)
+	ENDIF
+	oItem.UpdateChildAllTags(toAllTags,lcTagName,tlTagDeclaration)
+ENDFOR
+
+ENDPROC
+PROCEDURE updatechildtags
+LPARAMETERS tcProperty
+LOCAL lcProperty,oItem,lnCount
+
+IF this.lRelease
+	RETURN .F.
+ENDIF
+lcProperty=IIF(VARTYPE(tcProperty)=="C",ALLTRIM(tcProperty),"")
+IF NOT EMPTY(lcProperty) AND NOT PEMSTATUS(this,lcProperty,5)
+	RETURN .F.
+ENDIF
+FOR lnCount = 1 TO this.nItemCount
+	oItem=this.Item[lnCount]
+	IF VARTYPE(oItem)#"O" OR NOT PEMSTATUS(oItem,"lHTMLObject",5) OR oItem=this
+		LOOP
+	ENDIF
+	IF EMPTY(lcProperty)
+		this.InheritTag(oItem,this)
+	ELSE
+		oItem.&lcProperty=this.&lcProperty
+	ENDIF
+	oItem.UpdateChildTags(lcProperty)
+ENDFOR
+
+ENDPROC
+PROCEDURE validtext
+LPARAMETERS tcText
+
+IF VARTYPE(tcText)#"C"
+	RETURN ""
+ENDIF
+IF NOT this.lTranslateSpecialChars
+	RETURN tcText
+ENDIF
+RETURN STRTRAN(STRTRAN(STRTRAN(STRTRAN(tcText, ;
+		[-],[&ndash;]),[<],[&lt;]),[>],[&gt;]),[ ],[&nbsp;])
+
+ENDPROC
+PROCEDURE viewsource
+LPARAMETERS tlNoWait,tlNoEdit
+LOCAL lcOutFile
+
+lcOutFile=this.CreateOutFile(this.cOutFile)
+IF EMPTY(lcOutFile)
+	RETURN .F.
+ENDIF
+IF tlNoWait
+	IF tlNoEdit
+		MODIFY FILE (lcOutFile) NOEDIT NOWAIT IN SCREEN
+	ELSE
+		MODIFY FILE (lcOutFile) NOWAIT IN SCREEN
+	ENDIF
+	RETURN
+ENDIF
+IF tlNoEdit
+	MODIFY FILE (lcOutFile) NOEDIT IN SCREEN
+ELSE
+	MODIFY FILE (lcOutFile) IN SCREEN
+ENDIF
+IF lcOutFile==this.cTempOutFile
+	this.DeleteTempOutFile
+	this.cOutFile=""
+ENDIF
+
+ENDPROC
+PROCEDURE width_assign
+LPARAMETERS vNewVal
+
+this.AddAttribute("Width")
+this.Width=m.vNewVal
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+htmltext
+tagname
+lendtag
+coutfile
+cgetfileext
+clastgetfileext
+lhtmlobject
+tagtext
+cattributes
+ctempoutfile
+nindex
+csourcefile
+nitemcount
+osource
+ie
+lielink
+oitemcollection
+cieclass
+citemcollectionclass
+citemcollectionclasslibrary
+lemptytag
+nattributecount
+cdefaulttagclass
+cdefaulttagclasslibrary
+cindenttext
+cindentchar
+nindentcharcount
+lindent
+cscope
+ltagcrlf
+litemcrlf
+oparent
+nmaxtagwidth
+lautosetitems
+document
+lnavigatehost
+ietag
+ltaglowercase
+ltagdeclaration
+ltaguppercase
+cnorefreshielinktaglist
+cproperties
+cgenhtmlalias
+cgenhtmltable
+nsourcelistcount
+cevaltextclass
+cevaltextclasslibrary
+oevaltext
+orecord
+oproperties
+lsortattributes
+ouser
+lenabled
+lautoevaltext
+cruncodeprogram
+lrelativepath
+otopparent
+cstyletagclass
+cstyletagclasslibrary
+cxmltagclass
+cxmltagclasslibrary
+ltranslatespecialchars
+nworkarea
+cfileext
+lfullendtag
+*htmltext_access 
+*htmltext_assign 
+*gethtmltext 
+*gethtmlelementtext 
+*viewsource 
+*savefile 
+^item[1,0] 
+*getfile 
+*tagtext_access 
+*tagtext_assign 
+*gettagtext 
+*additem Adds a new item to a ComboBox or ListBox control, optionally allowing you to specify the item's index.
+*addtag 
+*releaseitems 
+*shellexecute 
+*show Displays a Form and specifies if the Form is modal or modeless.
+*createoutfile 
+*coutfile_assign 
+*deletetempoutfile 
+*deleteoutfile 
+*releaseielink 
+*createielink 
+*item_access 
+*item_assign 
+*getitemcollection 
+^aattributes[1,0] 
+*addattribute 
+*this_access 
+*getattributes 
+*tagname_access 
+*tagname_assign 
+*newtag 
+*name_assign 
+*height_assign 
+*width_assign 
+*refreshielink 
+*addtagitem 
+*gettags 
+*updatechildalltags 
+*setitems 
+*ie_access 
+*document_access 
+*document_assign 
+*lielink_access 
+*lielink_assign 
+*refresh Repaints a Form or control and refreshes any values.
+*navigate 
+*getietag 
+*ietag_access 
+*ietag_assign 
+*ie_assign 
+*addcrlfitem 
+*inherittag 
+*updatechildtags 
+*addstyletag 
+*addtagnoend 
+*newstyletag 
+*newtagnoend 
+*ltaglowercase_access 
+*ltaglowercase_assign 
+*ltaguppercase_access 
+*ltaguppercase_assign 
+*addevalitem 
+*getitems 
+*getobjectrefitems 
+*setproperties 
+*clear Clears the contents of a ComboBox or ListBox control.
+*addcomment 
+*addgenhtmlfield 
+*getgenhtmlfield 
+*validtext 
+*addtext 
+*oevaltext_access 
+*evaltext 
+*translateitem 
+*msgbox 
+*runcode 
+*runscript 
+*releaseattributes 
+*genscript 
+*filepath 
+*releaseobjects 
+*nitemcount_access 
+*nitemcount_assign 
+*setitemcount 
+*getitemcount 
+*addxmltag 
+*newxmltag 
+*hexcolor 
+^asourcelist[1,0] 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED7]
+HTML tag class.[END RESERVED7]
+[START RESERVED8]
+_html.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _htmltag
+[START RESERVED1]
+  _html.hV_C”ƒ0[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RM402LCXL
+[CLASS] _htmltag
+[CLASSLOC] _html.vcx
+[BASECLASS] custom
+[OBJNAME] _htmldocument
+[START PROPERTIES]
+ogentag = .NULL.
+lheadtag = .T.
+lbodytag = .T.
+tagname = HTML
+cnorefreshielinktaglist = html,head,body,style
+Name = "_htmldocument"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE generate
+IF this.lRelease
+	RETURN .F.
+ENDIF
+IF VARTYPE(this.oGenTag)=="O"
+	this.oGenTag.Clear
+ENDIF
+
+ENDPROC
+PROCEDURE setitems
+IF NOT DODEFAULT()
+	RETURN .F.
+ENDIF
+IF this.lHeadTag
+	this.Head=this.AddTag("HEAD")
+	this.Head.Title=this.Head.AddTag("TITLE")
+ENDIF
+IF this.lBodyTag
+	this.Body=this.AddTag("BODY")
+ENDIF
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+ogentag
+lmessagebar
+lheadtag
+lbodytag
+*generate 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED7]
+HTML document class.[END RESERVED7]
+[START RESERVED8]
+_html.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _htmldocument
+[START RESERVED1]
+  _html.hV_C”ƒ0[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RNC0ZN1RM
+[CLASS] _custom
+[CLASSLOC] _base.vcx
+[BASECLASS] custom
+[OBJNAME] _itemcollection
+[START PROPERTIES]
+length = 0
+count = 0
+lautosetobjectrefs = .T.
+Name = "_itemcollection"
+[END PROPERTIES]
+[START PROTECTED]
+length_access
+length_assign
+[END PROTECTED]
+[START METHODS]
+PROCEDURE Init
+LPARAMETERS toHost
+
+IF NOT DODEFAULT()
+	RETURN .F.
+ENDIF
+IF VARTYPE(toHost)=="O"
+	this.oHost=toHost
+ENDIF
+
+ENDPROC
+PROCEDURE count_access
+RETURN this.GetItemCount()
+
+ENDPROC
+PROCEDURE count_assign
+LPARAMETERS vNewVal
+
+RETURN this.SetItemCount(vNewVal)
+
+ENDPROC
+PROCEDURE getitemcount
+RETURN this.oHost.nItemCount
+
+ENDPROC
+PROCEDURE length_access
+RETURN this.GetItemCount()
+
+ENDPROC
+PROCEDURE length_assign
+LPARAMETERS vNewVal
+
+RETURN this.SetItemCount(m.vNewVal)
+
+ENDPROC
+PROCEDURE setitemcount
+LPARAMETERS tnNewCount
+
+RETURN this.oHost.SetItemCount(tnNewCount)
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+length
+count
+*length_access 
+*length_assign 
+*getitemcount 
+*count_access 
+*count_assign 
+*setitemcount 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED7]
+Items collection class.[END RESERVED7]
+[START RESERVED8]
+_html.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _itemcollection
+[START RESERVED1]
+  _html.hV_C”ƒ0[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RQ00ZDDXU
+[CLASS] _form
+[CLASSLOC] _base.vcx
+[BASECLASS] form
+[OBJNAME] _htmlsaveasdialog
+[START PROPERTIES]
+DataSession = 2
+Height = 120
+Width = 358
+DoCreate = .T.
+ShowTips = .T.
+AutoCenter = .T.
+BorderStyle = 2
+Caption = "Save As HTML"
+FontName = "MS Sans Serif"
+FontSize = 8
+MaxButton = .F.
+MinButton = .F.
+KeyPreview = .T.
+WindowType = 1
+AlwaysOnTop = .T.
+HelpContextID = 229996601
+osaveashtml = .NULL.
+Name = "_htmlsaveasdialog"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Activate
+ACTIVATE SCREEN
+SET MESSAGE TO
+
+ENDPROC
+PROCEDURE Deactivate
+ACTIVATE SCREEN
+SET MESSAGE TO
+
+ENDPROC
+PROCEDURE Init
+SET TALK OFF
+SET COMPATIBLE OFF
+SET CONFIRM ON
+SET EXACT OFF
+SET EXCLUSIVE OFF
+SET MEMOWIDTH TO 1024
+SET MULTILOCKS ON
+SET SAFETY OFF
+WAIT CLEAR
+this.SetFont
+
+ENDPROC
+PROCEDURE KeyPress
+LPARAMETERS nKeyCode, nShiftAltCtrl
+
+IF nKeyCode=27
+	this.Release
+ENDIF
+
+ENDPROC
+PROCEDURE Load
+IF NOT DODEFAULT()
+	RETURN .F.
+ENDIF
+SET SAFETY ON
+
+ENDPROC
+PROCEDURE QueryUnload
+this.Enabled=.F.
+this.Visible=.F.
+
+ENDPROC
+PROCEDURE Release
+this.QueryUnload
+
+ENDPROC
+PROCEDURE setfont
+IF FONTMETRIC(1,"MS Sans Serif",8,"")#13 OR ;
+		FONTMETRIC(4,"MS Sans Serif",8,"")#2 OR ;
+		FONTMETRIC(6,"MS Sans Serif",8,"")#5 OR ;
+		FONTMETRIC(7,"MS Sans Serif",8,"")#11
+	this.lLargeFont=.T.
+	this.SetAll("FontName","Arial")
+	RETURN
+ENDIF
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+6[END RESERVED2]
+[START RESERVED3]
+osaveashtml
+llargefont
+*setfont 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED7]
+Save As HTML dialog.[END RESERVED7]
+[START RESERVED8]
+_html.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RQ00ZIP37
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] txtOutFile
+[PARENT] _htmlsaveasdialog
+[START PROPERTIES]
+FontName = "MS Sans Serif"
+FontSize = 8
+Format = "K"
+Height = 24
+Left = 8
+ReadOnly = .T.
+TabIndex = 3
+TabStop = .F.
+Top = 85
+Width = 315
+Name = "txtOutFile"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE InteractiveChange
+thisform.cmdOK.Refresh
+
+
+ENDPROC
+PROCEDURE ProgrammaticChange
+this.InteractiveChange
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RQ00ZIP3I
+[CLASS] optiongroup
+[BASECLASS] optiongroup
+[OBJNAME] opgShow
+[PARENT] _htmlsaveasdialog
+[START PROPERTIES]
+AutoSize = .T.
+ButtonCount = 3
+Value = 1
+Height = 63
+Left = 8
+Top = 12
+Width = 189
+TabIndex = 5
+Name = "opgShow"
+Option1.FontName = "MS Sans Serif"
+Option1.FontSize = 8
+Option1.Caption = "\<Save file for later use"
+Option1.Value = 1
+Option1.Height = 15
+Option1.Left = 5
+Option1.Top = 5
+Option1.Width = 117
+Option1.AutoSize = .T.
+Option1.Name = "optSave"
+Option2.FontName = "MS Sans Serif"
+Option2.FontSize = 8
+Option2.Caption = "Save and \<edit file"
+Option2.Height = 15
+Option2.Left = 5
+Option2.Top = 24
+Option2.Width = 100
+Option2.AutoSize = .T.
+Option2.Name = "optEdit"
+Option3.FontName = "MS Sans Serif"
+Option3.FontSize = 8
+Option3.Caption = "Save file and \<view in web browser"
+Option3.Height = 15
+Option3.Left = 5
+Option3.Top = 43
+Option3.Width = 179
+Option3.AutoSize = .T.
+Option3.Name = "optView"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RQ00ZTMJV
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] cmdOK
+[PARENT] _htmlsaveasdialog
+[START PROPERTIES]
+Top = 12
+Left = 276
+Height = 23
+Width = 75
+FontName = "MS Sans Serif"
+FontSize = 8
+Caption = "OK"
+Default = .T.
+TabIndex = 1
+Name = "cmdOK"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+thisform.oSaveAsHTML.cOutFile=ALLTRIM(thisform.txtOutFile.Value)
+thisform.oSaveAsHTML.nShow=thisform.opgShow.Value-1
+thisform.Release
+
+ENDPROC
+PROCEDURE Refresh
+this.Enabled=(NOT EMPTY(thisform.txtOutFile.Value))
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RQ00ZTMKI
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] cmdCancel
+[PARENT] _htmlsaveasdialog
+[START PROPERTIES]
+Top = 41
+Left = 276
+Height = 23
+Width = 75
+FontName = "MS Sans Serif"
+FontSize = 8
+Cancel = .T.
+Caption = "Cancel"
+TabIndex = 2
+Name = "cmdCancel"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+thisform.oSaveAsHTML.cOutFile=""
+thisform.Release
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RQ10PIY6E
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] cmdOutFile
+[PARENT] _htmlsaveasdialog
+[START PROPERTIES]
+Top = 85
+Left = 327
+Height = 23
+Width = 24
+FontName = "MS Sans Serif"
+FontSize = 8
+Caption = "..."
+TabIndex = 4
+Name = "cmdOutFile"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+LOCAL lcFileName
+
+lcFileName=LOWER(GETFILE("htm;html;asp",M_SAVE_LOC,M_SAVE_LOC,0,M_SAVE_AS_LOC))
+IF EMPTY(lcFileName)
+	RETURN
+ENDIF
+thisform.txtOutFile.Value=lcFileName
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _htmlsaveasdialog
+[START PROPERTIES]
+MS Sans Serif, 0, 8, 5, 13, 11, 11, 2, 0
+[END PROPERTIES]
+[START RESERVED1]
+  _html.hV_C”ƒ0[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RQ8176GB7
+[CLASS] _htmltag
+[CLASSLOC] _html.vcx
+[BASECLASS] custom
+[OBJNAME] _xmltag
+[START PROPERTIES]
+xmltext = 
+lxmlobject = .T.
+lindent = .T.
+litemcrlf = .F.
+cgetfileext = xml;htm;html;asp
+ltranslatespecialchars = .F.
+cfileext = xml
+lfullendtag = .F.
+Name = "_xmltag"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE xmltext_access
+RETURN this.HTMLText
+
+ENDPROC
+PROCEDURE xmltext_assign
+LPARAMETERS m.vNewVal
+
+ERROR 1743
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+xmltext
+lxmlobject
+*xmltext_access 
+*xmltext_assign 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED7]
+XML tag class.[END RESERVED7]
+[START RESERVED8]
+_html.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _xmltag
+[START RESERVED1]
+  _html.hV_C”ƒ0[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RQE10UIHY
+[CLASS] _custom
+[CLASSLOC] _base.vcx
+[BASECLASS] custom
+[OBJNAME] _htmlcreatetable
+[START PROPERTIES]
+ctableversion = ("1.4")
+Name = "_htmlcreatetable"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE createtable
+LPARAMETERS tcFileName
+LOCAL lcFileName,lcCreateFileName,lcClass,lnLastSelect,lcPlatform,lcFileExt
+
+IF VARTYPE(tcFileName)#"C" OR EMPTY(tcFileName)
+	RETURN .F.
+ENDIF
+lcFileName=ALLTRIM(tcFileName)
+lcClass=LOWER(this.Class)
+lnLastSelect=SELECT()
+SELECT 0
+USE (this.ClassLibrary) AGAIN SHARED
+SET FILTER TO NOT DELETED() AND LOWER(ObjName)==lcClass
+LOCATE
+IF EOF()
+	USE
+	SELECT (lnLastSelect)
+	RETURN .F.
+ENDIF
+SET NOCPTRANS TO user
+SCAN ALL FOR NOT EMPTY(User)
+	lcPlatform=UPPER(ALLTRIM(Platform))
+	DO CASE
+		CASE lcPlatform=="WINDOWS"
+			lcFileExt="dbf"
+		CASE lcPlatform=="COMMENT"
+			lcFileExt="fpt"
+		OTHERWISE
+			LOOP
+	ENDCASE
+	lcCreateFileName=FORCEEXT(lcFileName,lcFileExt)
+	STRTOFILE(User,lcCreateFileName)
+ENDSCAN
+SET NOCPTRANS TO
+USE
+SELECT (lnLastSelect)
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+ctableversion
+*createtable 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+_html.h[END RESERVED8]
+[START USER]
+0c0   H‚                   TYPE       C                  ID         C                  LINKS      M%                  TEXT       M)                  DESC       M-                  CLASSNAME  M1                  CLASSLIB   M5                  MODULE     M9                  PICTURE    M=                  PROPERTIES MA                  HTML       ME                  STYLE      MI                  SCRIPT     MM                  PRESCRIPT  MQ                  GENSCRIPT  MU                  POSTSCRIPT MY                  HEADSTART  M]                  HEADEND    Ma                  BODYSTART  Me                  BODYEND    Mi                  UPDATED    Tm                 COMMENT    Mu                  USER       My                  VERSION    M}                  SAVE       L                                                                                                                                                                                                                                                                                          DEFAULT     VFPDefault                                                         	                                           ì    LAYOUT      ListTable                                                                                                       LAYOUT      DetailTable                                                                                                     LAYOUT      TabCtlList                     !   (   )       *   +               ,                                                 LAYOUT      TabCtlDetail            -   .   /   6   7       8   9               :                                                 LAYOUT      TabCtlHierarchical      ;   <   4  F   G       H   I               J                                                 OPTIONS     ListOptions                         `   a                                                                             OPTIONS     TabListOptions                      b   c                                                                             OPTIONS     TabDetailOptions                    d   e                                                                             OPTIONS     TabHierOptions                      f   g                                                                             OPTIONS     StaticOptions                       h   i                                                                             GLOBALSTYLE GlobalTableStyle                                                                                                      STYLE       TropicalParadiseStyle       j   k                                   l   m                                             STYLE       DesertCalmStyle             o   p                           q       r                                                 STYLE       Graffiti                    s   t                           u       w                                                 STYLE       TitleHeader                 x   y                                       P                              }             STYLE       LedgerList                     ‚                                   ƒ                                                 STYLE       WB00486                     †   ‡                               ˆ   Š                                                 STYLE       WB00516                     Œ                                  Ž                                                    STYLE       WB00531                     ’   “                               ”   –                                                 STYLE       WB00546                     ˜   ™                               š   œ                                                 STYLE       WB00673                     ž   Ÿ                                   ¢                                                 STYLE       WB00703                     ¤   ¥                               ¦   ¨                                                 STYLE       WB00720                     ª   «                               ¬   ®                                                 STYLE       WB00742                     °   ±                               ²   ´                                                 STYLE       WB00756                     ¶   ·                               ¸   º                                                 STYLE       WB00760                     ¼   ½                               ¾   À                                                 STYLE       WB00780                     Â   Ã                               Ä   Æ                                                 STYLE       WB00785                     È   É                               Ê   Ì                                                 STYLE       WB00819                     Î   Ï                               Ð   Ò                                                 STYLE       WB01231                     Ô   Õ                               Ö   Ø                                                 STYLE       WB01276                     Ú   Û                               Ü   Þ                                                 STYLE       WB01306                     à   á                               â   ä                                                 STYLE       WB01308                     æ   ç                               è   ê                                                 STYLE       WB01741                     ì   í                               î   ð                                                 STYLE       WB01844                     ò   ó                               ô   ö                                                 STYLE       WB01845                     ø   ù                               ú   ü                                                 STYLE       WB01846                     þ   |                               ÿ   z                                                 STYLE       WB01847                     Y   X                               D   B                                                 SCRIPT      SortTableColumn                                         F                                                            SCRIPT      NavButtonsCode                                                                                                      SCRIPT      NavButtons                                              Z                                                             SCRIPT      SetBodyImage                                                    K                                                     SCRIPT      DataPaging                                                                                                          SCRIPT      FrameScript                                                                                                          SCRIPT      FilterScript                                            =                                                             SCRIPT      PageButtons                                                                                                         WIZARD      WIZARD                  ñ                                          ò                                               [END USER]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _htmlcreatetable
+[START RESERVED1]
+  _html.hV_C”ƒ0[END RESERVED1]
+[START USER]
+  ó   @                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              listview.bmp 9 7  ÊŒ4 2 2  ÊŒ
+9 5  ÊŒ5 9 2 1  ÊŒâ3       _oHTML.Body.bgColor="silver"
+                                1.2a                                                          GlobalTableStyle                                              Static List View                                             This style displays data formatted in a tabular layout with field column headers. 
+
+This style is recommended for read-only/display type web pages involving small to moderate amounts of data. The output generated is static so it can be used with most web browsers.
+                                                  listview.bmp                                                  Options=ListOptions                                           4_oHTML.nTableStyle=0
+_oHTML.Body.bgColor="silver"
+          GlobalTableStyle                                              Static Detail View                                           This style displays data formatted in a columnar layout with each record separated by a line.
+
+This style is recommended for read-only/display type web pages involving small to moderate amounts of data. The output generated is static so it can be used with most web browsers.
+ generated is static so it can be      detailview.bmp                                                Options=StaticOptions                                         4_oHTML.nTableStyle=1
+_oHTML.Body.bgColor="silver"
+          GlobalTableStyle                                              Tabular List                                                 ¨This style displays data formatted in a tabular layout with column headers that provide sorting capabilities.  Buttons are also provided to navigate through pages of data.
+
+This style is recommended for read-only/display type web pages involving small to moderate amounts of data.
+
+It uses the Tabular Data Control which requires Microsoft Internet Explorer 4.0 or higher. Memo fields are not supported with this layout.                      _TabDataControl                                               3(IIF(VERSION(2)=0,"",HOME()+"FFC\")+"_HTMLSty.vcx")           tablist.bmp                                                   Options=TabListOptions                                        6_oHTML.nTableStyle=100
+_oHTML.Body.bgColor="silver"
+        GlobalTableStyle
+                                            Tabular Detail                                               ƒThis style displays data formatted in a columnar layout.  Navigation buttons are also provided to navigate through individual records.
+
+This style is recommended for read-only/display type web pages involving small to moderate amounts of data.
+
+It uses the Tabular Data Control which requires Microsoft Internet Explorer 4.0 or higher. Memo fields are not supported with this layout.                                                           _TabDataControl                                               3(IIF(VERSION(2)=0,"",HOME()+"FFC\")+"_HTMLSty.vcx")           tabdetail.bmp                                                 Options=TabDetailOptions                                      6_oHTML.nTableStyle=101
+_oHTML.Body.bgColor="silver"
+        GlobalTableStyle                                              Tabular Hierarchical                                          ÿ<script language=vbscript>
+
+function DataFilter(vFilterValue)
+	{{_OHTML.cDataSrc}}.object.Filter = {{_OHTML.cDataSrc}}.recordset.Fields({{TRANS(_OHTML.nLinkField)}}).Name & " = " & vFilterValue
+	{{_OHTML.cDataSrc}}.Reset()
+end function
+
+</script>
+                                                               9cImageID = "WB01847_"
+_oHTML.RunScript("SetBodyImage")
+                                                                     :cImageID2 = "WB01847_"
+_oHTML.RunScript("SetBodyImage")
+                                                                    _TabDataControl                                               3(IIF(VERSION(2)=0,"",HOME()+"FFC\")+"_HTMLSty.vcx")           tabhier.bmp                                                    Frames=2
+Options=TabHierOptions                              6_oHTML.nTableStyle=102
+_oHTML.Body.bgColor="silver"
+       IF TYPE("m.cImageID2")="C" AND !EMPTY(m.cImageID2) AND TYPE("oEngine.BaseClass")="C" AND oEngine.lCopyImages AND oEngine.nWizAction # 9
+	cImageFile = HOME() + "WIZARDS\GRAPHICS\" + m.cImageID2 + ".GIF"
+	cNewImageFile = ADDBS(JUSTPATH(_oHTML.cOutFile))+m.cImageID2 + ".GIF"
+	IF FILE(m.cImageFile) AND !FILE(m.cNewImageFile )
+		COPY FILE (m.cImageFile) TO (m.cNewImageFile)
+		PRIVATE cImageID
+		cImageID = m.cImageID2
+	ENDIF
+ENDIF
+
+IF TYPE("m.cImageID") = "C" AND !EMPTY(m.cImageID)
+	PRIVATE cImageFile
+	cImageFile = m.cImageID + ".GIF"
+	* Check if file in same location as HTM outfile
+	IF !FILE(ADDBS(JUSTPATH(_oHTML.cOutFile)) + m.cImageFile)
+		cImageFile = HOME() + "WIZARDS\GRAPHICS\" + m.cImageFile
+	ENDIF
+	_oHTML.Body.background = cImageFile
+ENDIF
+                                                           $Adds a background image to web page.                          Squiggle background                                          F<table align=left cellspacing=3 cellpadding=3>
+  <tr>
+    <td><input type=button id=first value="  |<  "></td>
+    <td><input type=button id=backward value="  <  "></td>
+    <td><input type=button id=forward value="  >  "></td>
+    <td><input type=button id=end value="  >|  "></td>
+  </tr>
+</table>
+<br>
+<br>
+<hr>
+                                                        _ListOptions                                                  3(IIF(VERSION(2)=0,"",HOME()+"FFC\")+"_HTMLSty.vcx")           _TabListOptions                                               3(IIF(VERSION(2)=0,"",HOME()+"FFC\")+"_HTMLSty.vcx")           _TabDetailOptions                                             3(IIF(VERSION(2)=0,"",HOME()+"FFC\")+"_HTMLSty.vcx")           _TabHierOptions                                               3(IIF(VERSION(2)=0,"",HOME()+"FFC\")+"_HTMLSty.vcx")           _StaticOptions                                                3(IIF(VERSION(2)=0,"",HOME()+"FFC\")+"_HTMLSty.vcx")           Tropical Paradise                                             .This visual style gives a look with sea tones.                _oHTML.Body.bgColor="cyan"
+                                  I_oHTML.oGenTag.Style="color: blue; font-size: 12pt; font-family: Verdana"                                                     Desert Calm                                                   1This visual style gives a look with desert tones.             8table {color: red; font-size: 12pt; font-family: Tahoma}      _oHTML.Body.bgColor="pink"                                    Graffiti                                                      *Get out the spray paint and have some fun.                    @table {color: blue; font-size: 14pt; font-family: Comic Sans MS}                                                              6_oHTML.Body.background=HOME()+"wizards\wizstone.bmp"
+        Data Headerradise                                             -Add a caption containing name of data source.                 9cImageID = "WB01846_"
+_oHTML.RunScript("SetBodyImage")
+                                                                     $Adds a background image to web page.                          ÈlcTitle = _oHTML.Head.Title.Item
+IF TYPE("lcTitle")="C" AND !EMPTY(ALLTRIM(lcTitle))
+	loTitleHead = _oHTML.Body.AddTag("H2",2)
+	loTitleHead.AddItem(ALLTRIM(lcTitle))
+	? loTitleHead.nIndex
+ENDIF
+                                                      Ledger List                                                   &Add a ledger style look to your table.                        y_oHTML.cTHAttributes=[bgcolor="gray"]
+_oHTML.cTDAttributes=[bgcolor="{{IIF(MOD(INT((RECNO()-1)/1),2)=0,'','green')}}"]
+                                                                     Marble background                                             $Adds a background image to web page.                          ;cImageID22 = "WB00486_"
+_oHTML.RunScript("SetBodyImage")
+                                                                   9cImageID = "WB00486_"
+_oHTML.RunScript("SetBodyImage")
+                                                                     Sandstone background                                          $Adds a background image to web page.                          :cImageID2 = "WB00516_"
+_oHTML.RunScript("SetBodyImage")
+                                                                    9cImageID = "WB00516_"
+_oHTML.RunScript("SetBodyImage")
+                                                                     Rock background                                               $Adds a background image to web page.                          :cImageID2 = "WB00531_"
+_oHTML.RunScript("SetBodyImage")
+                                                                    9cImageID = "WB00531_"
+_oHTML.RunScript("SetBodyImage")
+                                                                     Prism background                                              $Adds a background image to web page.                          :cImageID2 = "WB00546_"
+_oHTML.RunScript("SetBodyImage")
+                                                                    9cImageID = "WB00546_"
+_oHTML.RunScript("SetBodyImage")
+                                                                     Music background                                              $Adds a background image to web page.                          :cImageID2 = "WB00673_"
+_oHTML.RunScript("SetBodyImage")
+                                                                    9cImageID = "WB00673_"
+_oHTML.RunScript("SetBodyImage")
+                                                                     Leaf background                                               $Adds a background image to web page.                          :cImageID2 = "WB00703_"
+_oHTML.RunScript("SetBodyImage")
+                                                                    9cImageID = "WB00703_"
+_oHTML.RunScript("SetBodyImage")
+                                                                     Fossil background                                             $Adds a background image to web page.                          :cImageID2 = "WB00720_"
+_oHTML.RunScript("SetBodyImage")
+                                                                    9cImageID = "WB00720_"
+_oHTML.RunScript("SetBodyImage")
+                                                                     Flower background                                             $Adds a background image to web page.                          :cImageID2 = "WB00742_"
+_oHTML.RunScript("SetBodyImage")
+                                                                    9cImageID = "WB00742_"
+_oHTML.RunScript("SetBodyImage")
+                                                                     Tulip background                                              $Adds a background image to web page.                          :cImageID2 = "WB00756_"
+_oHTML.RunScript("SetBodyImage")
+                                                                    9cImageID = "WB00756_"
+_oHTML.RunScript("SetBodyImage")
+                                                                     Sand background                                               $Adds a background image to web page.                          :cImageID2 = "WB00760_"
+_oHTML.RunScript("SetBodyImage")
+                                                                    9cImageID = "WB00760_"
+_oHTML.RunScript("SetBodyImage")
+                                                                     Southwest background                                          $Adds a background image to web page.                          :cImageID2 = "WB00780_"
+_oHTML.RunScript("SetBodyImage")
+                                                                    9cImageID = "WB00780_"
+_oHTML.RunScript("SetBodyImage")
+                                                                     Stained glass background                                      $Adds a background image to web page.                          :cImageID2 = "WB00785_"
+_oHTML.RunScript("SetBodyImage")
+                                                                    9cImageID = "WB00785_"
+_oHTML.RunScript("SetBodyImage")
+                                                                     Dust background                                               $Adds a background image to web page.                          :cImageID2 = "WB00819_"
+_oHTML.RunScript("SetBodyImage")
+                                                                    9cImageID = "WB00819_"
+_oHTML.RunScript("SetBodyImage")
+                                                                     Ram background                                                $Adds a background image to web page.                          :cImageID2 = "WB01231_"
+_oHTML.RunScript("SetBodyImage")
+                                                                    9cImageID = "WB01231_"
+_oHTML.RunScript("SetBodyImage")
+                                                                     Waves background                                              $Adds a background image to web page.                          :cImageID2 = "WB01276_"
+_oHTML.RunScript("SetBodyImage")
+                                                                    9cImageID = "WB01276_"
+_oHTML.RunScript("SetBodyImage")
+                                                                     Desert background                                             $Adds a background image to web page.                          :cImageID2 = "WB01306_"
+_oHTML.RunScript("SetBodyImage")
+                                                                    9cImageID = "WB01306_"
+_oHTML.RunScript("SetBodyImage")
+                                                                     Stars background                                              $Adds a background image to web page.                          :cImageID2 = "WB01308_"
+_oHTML.RunScript("SetBodyImage")
+                                                                    9cImageID = "WB01308_"
+_oHTML.RunScript("SetBodyImage")
+                                                                     Hands background                                              $Adds a background image to web page.                          :cImageID2 = "WB01741_"
+_oHTML.RunScript("SetBodyImage")
+                                                                    9cImageID = "WB01741_"
+_oHTML.RunScript("SetBodyImage")
+                                                                     Grid background                                               $Adds a background image to web page.                          :cImageID2 = "WB01844_"
+_oHTML.RunScript("SetBodyImage")
+                                                                    9cImageID = "WB01844_"
+_oHTML.RunScript("SetBodyImage")
+                                                                     Speckle background1_"
+_oHTML.RunScript("SetBodyImage")      $Adds a background image to web page.                          :cImageID2 = "WB01845_"
+_oHTML.RunScript("SetBodyImage")
+                                                                    9cImageID = "WB01845_"
+_oHTML.RunScript("SetBodyImage")
+                                                                     Granite background                                            :cImageID2 = "WB01846_"
+_oHTML.RunScript("SetBodyImage")
+                                                                   _<table align=left cellspacing=3 cellpadding=3>
+  <br>
+  <tr>
+    <td><input type=button id=prevpage value="{{IIF(_OHTML.lSkipFrame,"<Prev Page"," < ")}}" onclick="PagePrevious()"></td>
+    <td><input type=button id=nextpage value="{{IIF(_OHTML.lSkipFrame,"Next Page>"," > ")}}" onclick="PageNext()"></td>
+  </tr>
+</table>
+<br>
+<br>
+<br>
+<hr>.aProps[lnAlen,5] = tlGen     !<script language=vbscript>
+
+Sub backward_onClick()
+  if {{_oHTML.cDataSrc}}.recordset.AbsolutePosition > 1 then
+    {{_oHTML.cDataSrc}}.recordset.movePrevious()
+  end if
+End Sub
+
+Sub forward_onClick()
+  if {{_oHTML.cDataSrc}}.recordset.AbsolutePosition <> {{_oHTML.cDataSrc}}.recordset.RecordCount then
+    {{_oHTML.cDataSrc}}.recordset.moveNext()
+  end if
+End Sub
+
+Sub first_onClick()
+    {{_oHTML.cDataSrc}}.recordset.moveFirst()
+End Sub
+
+Sub end_onClick()
+   {{_oHTML.cDataSrc}}.recordset.moveLast()
+End Sub
+
+</script>
+                            ð<script language=vbs>
+' Page methods for use with Tab Data Control
+
+Sub PagePrevious
+	 {{_oHTML.cTableID}}.previousPage()
+	nPageSize = 0 - ( {{_oHTML.cTableID}}.rows.length-1)
+	nCurrentPos =   {{_oHTML.cDataSrc}}.recordset.AbsolutePosition
+	if nCurrentPos+nPageSize > 0 then
+		{{_oHTML.cDataSrc}}.recordset.Move nPageSize
+	else
+		{{_oHTML.cDataSrc}}.recordset.MoveFirst
+	end if	
+	{{IIF(_OHTML.lSkipFrame,"rem ","")}}parent.Frames("Frame2").datafilter({{_oHTML.cDataSrc}}.recordset.Fields(0).Value)
+End Sub
+
+Sub PageNext
+	 {{_oHTML.cTableID}}.nextPage()
+	nPageSize = {{_oHTML.cTableID}}.rows.length-1
+	nCurrentPos =  {{_oHTML.cDataSrc}}.recordset.AbsolutePosition
+	if nCurrentPos+nPageSize <  {{_oHTML.cDataSrc}}.recordset.RecordCount then
+		{{_oHTML.cDataSrc}}.recordset.Move nPageSize
+	else
+		{{_oHTML.cDataSrc}}.recordset.MoveLast
+	end if	
+	{{IIF(_OHTML.lSkipFrame,"rem ","")}}parent.Frames("Frame2").datafilter({{_oHTML.cDataSrc}}.recordset.Fields(0).Value)
+End Sub
+
+</script>
+             Å<script language=vbscript>
+
+Sub selectrecord(oTableRow)
+	{{_OHTML.cDataSrc}}.recordset.AbsolutePosition=oTableRow.RecordNumber
+	HilightTableRow("{{_OHTML.cHighlightColor}}")
+	{{IIF(_OHTML.lSkipFrame,"rem ","")}}parent.Frames("Frame2").datafilter({{_OHTML.cDataSrc}}.recordset.Fields({{TRANS(_OHTML.nLinkField)}}).Value)
+End sub
+
+Sub {{_OHTML.cTableID}}_onreadystatechange()
+	if {{_OHTML.cTableID}}.readyState = "complete" then
+		{{_OHTML.cDataSrc}}_onrowenter = HandleRowEnter()
+	end if
+End sub
+
+Function HandleRowEnter()
+	HilightTableRow("{{_OHTML.cHighlightColor}}")
+End function 
+
+Sub {{_OHTML.cDataSrc}}_onrowexit()
+	HilightTableRow("")
+End sub
+
+Sub HilightTableRow(cColor)
+	nRow = {{_OHTML.cDataSrc}}.recordset.AbsolutePosition
+	nPage = {{_OHTML.cDataSrc}}.recordset.AbsolutePage
+	nPageMax = {{_OHTML.cTableID}}.rows.length-1
+	nPageRows = {{_OHTML.cTableID}}.datapagesize
+	if nPageMax < 1 then
+		exit sub
+	end if
+	nRow = nRow MOD nPageRows
+	if nRow = 0 then
+		nRow = nPageMax
+	end if
+	if nRow > nPageRows then
+		nRow = 1
+	end if
+	{{_OHTML.cTableID}}.rows(nPageMax).style.backgroundColor = ""
+	{{_OHTML.cTableID}}.rows(nRow).style.backgroundColor = cColor
+End sub
+
+</script>
+                                                        bThis style displays data formatted in a split view with a column list in left frame and detail in right frame. It can be used for one-many style relationships. 
+
+This style is recommended for read-only/display type web pages involving small to moderate amounts of data.
+
+It uses the Tabular Data Control which requires Microsoft Internet Explorer 4.0 or higher. Memo fields are not supported with this layout.
+
+Note: since this layout uses frames, some visual styles and advanced settings may not function properly. 
+
+If you are experiencing problems where the detail frame is not refreshing properly (i.e., no data appearing), you may want to change the Filter field. The Tabular Data Control sometimes has problems filtering data based on a numeric Filter field. Try changing the Filter field to a character field. To do this, go to Step 1 of the Wizard and move the character field to the top of the Selected Fields list.
+
+If you are switching datasources in Step 1 between previews, you should go into the Options dialog and click on the Reset Datasource button to reset any pre-existing 1Many relationships.                           M<script language=vbs>
+
+Dim cField
+Dim lSortAscend
+cField = ""
+lSortAscend = True
+
+Sub tblvfpdataheader_OnClick
+	Dim cID
+	cID = window.event.srcElement.ID
+	if cID = cField then
+		lSortAscend = Not lSortAscend
+	else
+		cField = cId
+		lSortAscend = true
+	end if
+	if lSortAscend = True then
+		{{_oHTML.cDataSrc}}.SortColumn = "+" & cField
+	else
+		{{_oHTML.cDataSrc}}.SortColumn = "-" & cField
+	end if
+	{{_oHTML.cDataSrc}}.Reset()
+	{{IIF(_OHTML.lSkipFrame,"rem ","")}}parent.Frames("Frame2").datafilter({{_oHTML.cDataSrc}}.recordset.Fields(0).Value)
+End Sub
+
+</script>
+                                                 âIF  VARTYPE(_oHTML.Body)#"O"
+	RETURN
+ENDIF
+lcTitle = _oHTML.Head.Title.Item[1]
+IF TYPE("lcTitle")="C" AND !EMPTY(ALLTRIM(lcTitle))
+	loTitleHead = _oHTML.Body.AddTag("H2",1)
+	loTitleHead.AddItem(ALLTRIM(lcTitle))
+ENDIF
+                             TropicalParadiseStyle
+ListTable                              '_oHTML.Head.Title.AddText("Customer")
+                        TropicalParadiseStyle
+ListTable                              '_oHTML.Head.Title.AddText("Customer")
+                       1.3                                                           1.3                                                           1.3                                                           1.3                                                           1.3                                                           1.3                                                           1.3                                                           1.3                                                           1.3                                                           1.3                                                           1.3                                                           1.3                                                           1.3                                                           1.3                                                           1.3                                                           1.3                                                           1.2                                                           test                                                          test                                                          1.2                                                           GlobalTableStyle                                              Static List View                                             This style displays data formatted in a tabular layout with field column headers. 
+
+This style is recommended for read-only/display type web pages involving small to moderate amounts of data. The output generated is static so it can be used with most web browsers.
+                                                  listview.bmp                                                  Options=ListOptions                                           4_oHTML.nTableStyle=0
+_oHTML.Body.bgColor="silver"
+          test                                                          GlobalTableStyle                                              Tabular List                                                 ¨This style displays data formatted in a tabular layout with column headers that provide sorting capabilities.  Buttons are also provided to navigate through pages of data.
+
+This style is recommended for read-only/display type web pages involving small to moderate amounts of data.
+
+It uses the Tabular Data Control which requires Microsoft Internet Explorer 4.0 or higher. Memo fields are not supported with this layout.                      _TabDataControl                                               3(IIF(VERSION(2)=0,"",HOME()+"FFC\")+"_HTMLSty.vcx")           tablist.bmp                                                   Options=TabListOptions                                        6_oHTML.nTableStyle=100
+_oHTML.Body.bgColor="silver"
+        test                                                          1.2                                                           GlobalTableStyle                                              Static List View                                             This style displays data formatted in a tabular layout with field column headers. 
+
+This style is recommended for read-only/display type web pages involving small to moderate amounts of data. The output generated is static so it can be used with most web browsers.
+                                                  listview.bmp                                                  Options=ListOptions                                           4_oHTML.nTableStyle=0
+_oHTML.Body.bgColor="silver"
+          test                                                          1.2                                                           GlobalTableStyle                                              Static List View                                             This style displays data formatted in a tabular layout with field column headers. 
+
+This style is recommended for read-only/display type web pages involving small to moderate amounts of data. The output generated is static so it can be used with most web browsers.
+                                                  listview.bmp                                                  Options=ListOptions                                           4_oHTML.nTableStyle=0
+_oHTML.Body.bgColor="silver"
+          test                                                          GlobalTableStyle                                              Static Detail View                                           This style displays data formatted in a columnar layout with each record separated by a line.
+
+This style is recommended for read-only/display type web pages involving small to moderate amounts of data. The output generated is static so it can be used with most web browsers.
+                                       detailview.bmp                                                Options=StaticOptions                                         4_oHTML.nTableStyle=1
+_oHTML.Body.bgColor="silver"
+          1.2                                                            TropicalParadiseStyle
+ListTable                              '_oHTML.Head.Title.AddText("Customer")
+                       1.2                                                           	ListTable                                                     '_oHTML.Head.Title.AddText("Supercls")
+                       	ListTable                                                     '_oHTML.Head.Title.AddText("Supercls")
+                       1.2                                                           test                                                          1.2                                                           GlobalTableStyle                                              Static List View                                             This style displays data formatted in a tabular layout with field column headers. 
+
+This style is recommended for read-only/display type web pages involving small to moderate amounts of data. The output generated is static so it can be used with most web browsers.
+                                                  listview.bmp                                                  Options=ListOptions                                           4_oHTML.nTableStyle=0
+_oHTML.Body.bgColor="silver"
+          test                                                          1.2                                                           GlobalTableStyle                                              Static List View                                             This style displays data formatted in a tabular layout with field column headers. 
+
+This style is recommended for read-only/display type web pages involving small to moderate amounts of data. The output generated is static so it can be used with most web browsers.
+                                                  listview.bmp                                                  Options=ListOptions                                           4_oHTML.nTableStyle=0
+_oHTML.Body.bgColor="silver"
+          test                                                          	ListTable                                                     '_oHTML.Head.Title.AddText("Supercls")
+                       test                                                          	ListTable                                                     '_oHTML.Head.Title.AddText("Supercls")
+                       	ListTable                                                     '_oHTML.Head.Title.AddText("Supercls")
+                       	ListTable                                                     '_oHTML.Head.Title.AddText("Supercls")
+                       	ListTable                                                     '_oHTML.Head.Title.AddText("Supercls")
+                       	ListTable                                                     '_oHTML.Head.Title.AddText("Supercls")
+                       1.2                                                           	ListTable                                                     '_oHTML.Head.Title.AddText("Supercls")
+                       1.2                                                           	ListTable                                                     '_oHTML.Head.Title.AddText("Supercls")
+                       1.2                                                           1.2                                                           test                                                          1.2                                                           GlobalTableStyle                                              Static List View                                             This style displays data formatted in a tabular layout with field column headers. 
+
+This style is recommended for read-only/display type web pages involving small to moderate amounts of data. The output generated is static so it can be used with most web browsers.
+                                                  listview.bmp                                                  Options=ListOptions                                           4_oHTML.nTableStyle=0
+_oHTML.Body.bgColor="silver"
+          test                                                          1.4                                                           TitleHeader
+TabCtlHierarchical                               '_oHTML.Head.Title.AddText("Customer")
+                       TitleHeader
+TabCtlHierarchical                               '_oHTML.Head.Title.AddText("Customer")
+                       TitleHeader
+TabCtlHierarchical                               '_oHTML.Head.Title.AddText("Customer")
+                 [END USER]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RRI0NPCNH
+[CLASS] _custom
+[CLASSLOC] _base.vcx
+[BASECLASS] custom
+[OBJNAME] _evaltext
+[START PROPERTIES]
+ctext = 
+Name = "_evaltext"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE evaltext
+LPARAMETERS tcText
+LOCAL lcText,lcNewText,lcEvalStr,lnAtPos,lnAtPos2,lnAtPos3,lnAtPos4
+LOCAL lnCount,lnCount2,llEvlMode,lcOldStr,lcNewStr
+
+IF INLIST(VARTYPE(m.tcText),"X","O") OR EMPTY(m.tcText)
+	RETURN ""
+ENDIF
+m.lcText=TRANSFORM(m.tcText)
+m.lcNewText=m.lcText
+m.lnAtPos3=1
+DO WHILE .T.
+	m.lnAtPos=AT("{{",SUBSTR(m.lcText,m.lnAtPos3))
+	IF m.lnAtPos=0
+		EXIT
+	ENDIF
+	m.lnAtPos2=AT("}}",SUBSTR(m.lcText,m.lnAtPos+m.lnAtPos3-1))
+	IF m.lnAtPos2=0
+		EXIT
+	ENDIF
+	m.lnAtPos4=AT("{{",SUBSTR(m.lcText,m.lnAtPos+m.lnAtPos3+1))
+	IF m.lnAtPos4>0 AND m.lnAtPos4<m.lnAtPos2
+		m.lnAtPos4=OCCURS("{{",SUBSTR(m.lcText,m.lnAtPos+m.lnAtPos3-1,;
+				m.lnAtPos2-m.lnAtPos4))
+		m.lnAtPos4=AT("{{",SUBSTR(m.lcText,m.lnAtPos+m.lnAtPos3-1),m.lnAtPos4)
+		m.lcOldStr=SUBSTR(m.lcText,m.lnAtPos+m.lnAtPos3-1,m.lnAtPos2+1)
+		m.lcEvalStr=SUBSTR(m.lcOldStr,3,LEN(m.lcOldStr)-2)
+		m.lcOldStr=this.EvalText(m.lcEvalStr)
+		m.lcText=STRTRAN(m.lcText,m.lcEvalStr,m.lcOldStr)
+		m.lcNewText=STRTRAN(m.lcNewText,m.lcEvalStr,m.lcOldStr)
+		LOOP
+	ENDIF
+	m.lcOldStr=SUBSTR(m.lcText,m.lnAtPos+m.lnAtPos3-1,m.lnAtPos2+1)
+	m.lcEvalStr=ALLTRIM(SUBSTR(m.lcOldStr,3,LEN(m.lcOldStr)-4))
+	m.llEvlMode=.F.
+	DO CASE
+		CASE EMPTY(m.lcEvalStr)
+			m.lcEvalStr=""
+		CASE LEFT(m.lcEvalStr,2)=="&."
+			m.lcEvalStr=SUBSTR(m.lcEvalStr,3)
+			&lcEvalStr &&;
+			Error occurred during macro substitution of {{&. <expC> }}.
+			m.lcEvalStr=""
+		CASE LEFT(m.lcEvalStr,1)=="*"
+			RETURN ""
+		CASE LEFT(m.lcEvalStr,1)=="<"
+			m.lcEvalStr=FILETOSTR(SUBSTR(m.lcEvalStr,2)) &&;
+			Error occurred during evaluation of {{< <file> }}.
+		OTHERWISE
+			m.lcEvalStr=EVALUATE(m.lcEvalStr) &&;
+			Error occurred during evaluation of {{ <expC> }}.
+	ENDCASE
+	m.lcNewStr=IIF(VARTYPE(m.lcEvalStr)=="O","",TRANSFORM(m.lcEvalStr))
+	m.lcNewText=STRTRAN(m.lcNewText,m.lcOldStr,m.lcNewStr)
+	m.lnAtPos2=m.lnAtPos+LEN(m.lcNewStr)
+	IF m.lnAtPos2<=0
+		EXIT
+	ENDIF
+	m.lnAtPos3=m.lnAtPos3+m.lnAtPos2
+ENDDO
+lnCount2=0
+DO WHILE "{{"$m.lcNewText AND "}}"$m.lcNewText
+	lnCount=LEN(m.lcNewText)
+	m.lcNewText=this.EvalText(m.lcNewText)
+	IF lnCount=LEN(m.lcNewText)
+		IF lnCount2>=2
+			EXIT
+		ENDIF
+		lnCount2=lnCount2+1
+	ENDIF
+ENDDO
+RETURN m.lcNewText
+
+ENDPROC
+PROCEDURE strtranc
+LPARAMETERS ExpC1,ExpC2,ExpC3,ExpN1,ExpN2
+LOCAL lcExpr,lnAtPos,lnAtPos2,lnCount,lnCount2
+
+IF EMPTY(m.ExpC1) OR EMPTY(m.ExpC2)
+	RETURN m.ExpC1
+ENDIF
+lcExpr=m.ExpC1
+IF TYPE("m.ExpN1")#"N"
+	m.ExpN1=1
+ENDIF
+IF TYPE("m.ExpN2")#"N"
+	m.ExpN2=LEN(m.ExpC1)
+ENDIF
+IF m.ExpN1<1 OR m.ExpN2<1
+	RETURN m.ExpC1
+ENDIF
+m.lnCount=0
+m.lnCount2=0
+m.lnAtPos2=1
+DO WHILE .T.
+	m.lnAtPos=ATC(m.ExpC2,SUBSTR(lcExpr,m.lnAtPos2))
+	IF m.lnAtPos=0
+		EXIT
+	ENDIF
+	m.lnCount=m.lnCount+1
+	IF m.lnCount<m.ExpN1
+		m.lnAtPos2=m.lnAtPos+m.lnAtPos2+LEN(m.ExpC2)-1
+		LOOP
+	ENDIF
+	lcExpr=LEFT(lcExpr,m.lnAtPos+m.lnAtPos2-2)+m.ExpC3+;
+	       SUBSTR(lcExpr,m.lnAtPos+m.lnAtPos2+LEN(m.ExpC2)-1)
+	m.lnCount2=m.lnCount2+1
+	IF m.lnCount2>=m.ExpN2
+		EXIT
+	ENDIF
+	m.lnAtPos2=m.lnAtPos+m.lnAtPos2+LEN(m.ExpC3)-1
+	IF m.lnAtPos2>LEN(lcExpr)
+		EXIT
+	ENDIF
+ENDDO
+RETURN lcExpr
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+ctext
+*evaltext 
+*strtranc 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+_html.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _evaltext
+[START RESERVED1]
+  _html.hV_C”ƒ0[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RRL0U231Z
+[CLASS] _htmldocument
+[CLASSLOC] _html.vcx
+[BASECLASS] custom
+[OBJNAME] _htmltable
+[START PROPERTIES]
+nfieldcount = 0
+csourcetable = ""
+ntablestyle = 0
+cthattributes = 
+ctrattributes = 
+ctdattributes = 
+cpregeneratetablescript = 
+cpostgeneratetablescript = 
+cscope = ALL
+Name = "_htmltable"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE generate
+LOCAL lcSourceFile,llSuccessful,lnLastSelect,llView,lcAlias,lnLastRecNo,lnRecNo
+
+IF NOT DODEFAULT() OR EMPTY(this.cSourceFile)
+	RETURN .F.
+ENDIF
+lcSourceFile=ALLTRIM(this.cSourceFile)
+lnLastSelect=SELECT()
+lnLastRecNo=IIF(USED() AND NOT EOF(),RECNO(),0)
+llView=("!"$lcSourceFile)
+this.lOpenTable=(llView OR NOT EMPTY(JUSTEXT(lcSourceFile)))
+IF this.lOpenTable
+	IF NOT llView AND NOT FILE(lcSourceFile)
+		this.MsgBox(M_FILE_LOC+[ "]+lcSourceFile+[" ]+M_NOT_FOUND_LOC+[.])
+		RETURN .F.
+	ENDIF
+	this.cSourceTable=lcSourceFile
+	lcAlias=LOWER(SYS(2015))
+	SELECT 0
+	USE (lcSourceFile) AGAIN SHARED ALIAS (lcAlias)
+	IF NOT USED(lcAlias)
+		SELECT (lnLastSelect)
+		IF USED() AND lnLastRecNo>0
+			GO lnLastRecNo
+		ENDIF
+		RETURN .F.
+	ENDIF
+	SET FILTER TO NOT DELETED()
+	lnRecNo=0
+ELSE
+	lcAlias=lcSourceFile
+	IF NOT USED(lcAlias)
+		this.MsgBox(M_ALIAS_LOC+[ "]+lcAlias+[" ]+M_NOT_FOUND_LOC+[.])
+		RETURN .F.
+	ENDIF
+	this.cSourceTable=LOWER(DBF(lcAlias))
+	SELECT (lcAlias)
+	lnRecNo=IIF(EOF() OR RECNO()>RECCOUNT(),0,RECNO())
+ENDIF
+this.RefreshFieldList
+IF this.nFieldCount=0
+	llSuccessful=.F.
+ELSE
+	IF this.lMessageBar
+		SET MESSAGE TO M_GENERATING_HTML_LOC+":  ("+this.cSourceTable+") ..."
+	ENDIF
+	this.PreGenerateTable
+	llSuccessful=this.GenerateTable()
+	IF llSuccessful
+		this.PostGenerateTable
+		this.GenScript
+	ENDIF
+ENDIF
+IF USED(lcAlias)
+	IF this.lOpenTable
+		USE IN (lcAlias)
+	ELSE
+		IF USED() AND lnRecNo>0
+			GO lnRecNo
+		ENDIF
+	ENDIF
+ENDIF
+SELECT (lnLastSelect)
+IF USED() AND lnLastRecNo>0
+	GO lnLastRecNo
+ENDIF
+IF this.lMessageBar
+	SET MESSAGE TO
+ENDIF
+RETURN llSuccessful
+
+ENDPROC
+PROCEDURE generatedetailtable
+LOCAL lcHTML,lcScope,lnCount
+LOCAL lcField,lcFieldValue,lnRecCount,lnRecIndex
+LOCAL lcTRTag,lcTDTag,lcCaption
+
+lcTRTag="<tr"+IIF(EMPTY(this.cTRAttributes),">"," "+this.cTRAttributes+">")
+lcTDTag="<td"+IIF(EMPTY(this.cTDAttributes),">"," "+this.cTDAttributes+">")
+this.oGenTag=this.Body.AddTag("table")
+this.oGenTag.Border=0
+lcHTML=""
+lnRecCount=RECCOUNT()
+lnRecIndex=0
+lcScope=this.cScope
+SCAN &lcScope
+	lnRecIndex=lnRecIndex+1
+	IF MOD(lnRecIndex,10)=0
+		IF this.lMessageBar
+			SET MESSAGE TO M_GENERATING_HTML_LOC+":  ("+this.cSourceTable+") "+ ;
+					ALLTRIM(STR(100*lnRecIndex/lnRecCount))+"% ..."
+		ENDIF
+	ENDIF
+	FOR lnCount = 1 TO this.nFieldCount
+		lcField=this.aFieldList[lnCount,1]
+		lcCaption=this.aFieldList[lnCount,5]
+		lcFieldValue=this.GetFieldValue(lcField,this.aFieldList[lnCount,2], ;
+				this.aFieldList[lnCount,3],this.aFieldList[lnCount,4])
+		IF ISNULL(lcFieldValue)
+			LOOP
+		ENDIF
+		lcFieldValue=STRTRAN(STRTRAN(STRTRAN(this.ValidText(this.TranslateItem(lcFieldValue)), ;
+				CR_LF,CR),LF,CR),CR,"<br>")
+		IF EMPTY(lcFieldValue)
+			lcFieldValue=this.ValidText(" ")
+		ENDIF
+		lcHTML=lcHTML+this.EvalText(lcTRTag)+CR_LF+ ;
+				this.EvalText(lcTDTag)+ ;
+				this.ValidText(this.TranslateItem(lcCaption)+": ")+ ;
+				lcFieldValue+"</td>"+CR_LF+ ;
+				"</tr>"+CR_LF
+	ENDFOR
+	lcHTML=lcHTML+this.EvalText(lcTRTag)+CR_LF+ ;
+			this.EvalText(lcTDTag)+CR_LF+ ;
+			"<hr>"+CR_LF+ ;
+			"</td>"+CR_LF+ ;
+			"</tr>"+CR_LF
+ENDSCAN
+this.oGenTag.AddItem(lcHTML)
+
+ENDPROC
+PROCEDURE generatelisttable
+LOCAL lcHTML,lcScope,lnCount
+LOCAL lcField,lcFieldValue,lcFieldType,lnRecCount,lnRecIndex
+LOCAL lcTHTag,lcTRTag,lcTDTag,lcCaption
+
+lcTHTag="<th"+IIF(EMPTY(this.cTHAttributes),">"," "+this.cTHAttributes+">")
+lcTRTag="<tr"+IIF(EMPTY(this.cTRAttributes),">"," "+this.cTRAttributes+">")
+lcTDTag="<td"+IIF(EMPTY(this.cTDAttributes),">"," "+this.cTDAttributes+">")
+this.oGenTag=this.Body.AddTag("table")
+this.oGenTag.ID="GenTable"
+this.oGenTag.Border=1
+lcHTML=this.EvalText(lcTRTag)+CR_LF
+FOR lnCount = 1 TO this.nFieldCount
+	lcCaption=this.aFieldList[lnCount,5]
+	lcFieldType=this.aFieldList[lnCount,2]
+	IF NOT INLIST(lcFieldType,"C","M","N","L","D","T","Y","F","B","I","V","Q","W")
+		LOOP
+	ENDIF
+	lcHTML=lcHTML+this.EvalText(lcTHTag)+lcCaption+"</th>"+CR_LF
+ENDFOR
+lcHTML=lcHTML+"</tr>"+CR_LF
+lnRecCount=RECCOUNT()
+lnRecIndex=0
+lcScope=this.cScope
+SCAN &lcScope
+	lnRecIndex=lnRecIndex+1
+	IF MOD(lnRecIndex,10)=0
+		IF this.lMessageBar
+			SET MESSAGE TO M_GENERATING_HTML_LOC+":  ("+this.cSourceTable+") "+ ;
+					ALLTRIM(STR(100*lnRecIndex/lnRecCount))+"% ..."
+		ENDIF
+	ENDIF
+	lcHTML=lcHTML+this.EvalText(lcTRTag)+CR_LF
+	FOR lnCount = 1 TO this.nFieldCount
+		lcField=this.aFieldList[lnCount,1]
+		lcFieldValue=this.GetFieldValue(lcField,this.aFieldList[lnCount,2], ;
+				this.aFieldList[lnCount,3],this.aFieldList[lnCount,4])
+		IF ISNULL(lcFieldValue)
+			LOOP
+		ENDIF
+		lcFieldValue=STRTRAN(STRTRAN(STRTRAN(this.ValidText(this.TranslateItem(lcFieldValue)), ;
+				CR_LF,CR),LF,CR),CR,"<br>")
+		IF EMPTY(lcFieldValue)
+			lcFieldValue=this.ValidText(" ")
+		ENDIF
+		lcHTML=lcHTML+this.EvalText(lcTDTag)+lcFieldValue+"</td>"+CR_LF
+	ENDFOR
+	lcHTML=lcHTML+"</tr>"+CR_LF
+ENDSCAN
+this.oGenTag.AddItem(lcHTML)
+
+ENDPROC
+PROCEDURE generatetable
+DO CASE
+	CASE this.nTableStyle=0
+		RETURN this.GenerateListTable()
+	CASE this.nTableStyle=1
+		RETURN this.GenerateDetailTable()
+	OTHERWISE
+		RETURN .F.
+ENDCASE
+
+ENDPROC
+PROCEDURE getfieldvalue
+LPARAMETERS tcField,tcFieldType,tnFieldSize,tnDecimals
+
+DO CASE
+	CASE tcFieldType=="C"
+		RETURN TRIM(EVALUATE(tcField))
+	CASE tcFieldType=="M"
+		RETURN TRIM(EVALUATE(tcField))
+	CASE INLIST(tcFieldType,"L","D","T")
+		RETURN TRANSFORM(EVALUATE(tcField))
+	CASE INLIST(tcFieldType,"N","Y","F","B")
+		IF EMPTY(tnFieldSize)
+			RETURN TRANSFORM(EVALUATE(tcField))
+		ENDIF
+		RETURN ALLTRIM(STR(EVALUATE(tcField),tnFieldSize+tnDecimals,tnDecimals))
+	CASE tcFieldType=="I"
+		RETURN TRANSFORM(EVALUATE(tcField))
+	CASE tcFieldType=="V"
+		RETURN EVALUATE(tcField)
+	CASE INLIST(tcFieldType,"W","Q")
+		RETURN STRCONV(EVALUATE(tcField),13)
+ENDCASE
+RETURN .NULL.
+
+ENDPROC
+PROCEDURE postgeneratetable
+IF EMPTY(this.cPostGenerateTableScript)
+	RETURN
+ENDIF
+this.RunCode(this.cPostGenerateTableScript)
+
+ENDPROC
+PROCEDURE pregeneratetable
+IF EMPTY(this.cPreGenerateTableScript)
+	RETURN
+ENDIF
+this.RunCode(this.cPreGenerateTableScript)
+
+ENDPROC
+PROCEDURE refreshfieldlist
+LOCAL lcExpression,lcFieldType,lcCaption,lcDBName,lcCursorName,lcLastSetDatabase,lnCount
+
+IF this.nSourceListCount=0
+	this.nFieldCount=AFIELDS(laFields)
+	DIMENSION this.aFieldList[this.nFieldCount,5]
+	lcDBName=CURSORGETPROP("database")
+	lcLastSetDatabase=SET("DATABASE")
+	IF NOT EMPTY(lcDBName)
+		SET DATABASE TO (lcDBName)
+	ENDIF
+	lcCursorName=CURSORGETPROP("sourcename")
+	FOR lnCount = 1 TO this.nFieldCount
+		lcExpression=laFields[lnCount,1]
+		lcCaption=""
+		IF DBUSED(lcDBName)
+			lcCaption=DBGETPROP(lcCursorName+"."+laFields[lnCount,1],"field","caption")
+		ENDIF
+		IF EMPTY(lcCaption)
+			lcCaption=PROPER(lcExpression)
+		ENDIF
+		this.aFieldList[lnCount,1]=lcExpression
+		this.aFieldList[lnCount,2]=laFields[lnCount,2]
+		this.aFieldList[lnCount,3]=laFields[lnCount,3]
+		this.aFieldList[lnCount,4]=laFields[lnCount,4]
+		this.aFieldList[lnCount,5]=lcCaption
+	ENDFOR
+	IF DBUSED(lcDBName)
+		IF EMPTY(lcLastSetDatabase)
+			SET DATABASE TO
+		ELSE
+			SET DATABASE TO (lcLastSetDatabase)
+		ENDIF
+	ENDIF
+ELSE
+	this.nFieldCount=this.nSourceListCount
+	DIMENSION this.aFieldList[this.nFieldCount,5]
+	FOR lnCount = 1 TO this.nFieldCount
+		lcExpression=this.aSourceList[lnCount,1]
+		lcFieldType=TYPE(lcExpression)
+		lcCaption=this.aSourceList[lnCount,2]
+		IF EMPTY(lcCaption)
+			lcCaption=PROPER(lcExpression)
+		ENDIF
+		this.aFieldList[lnCount,1]=lcExpression
+		this.aFieldList[lnCount,2]=lcFieldType
+		this.aFieldList[lnCount,3]=0
+		this.aFieldList[lnCount,4]=0
+		this.aFieldList[lnCount,5]=lcCaption
+	ENDFOR
+ENDIF
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+nfieldcount
+lopentable
+csourcetable
+ntablestyle
+cthattributes
+ctrattributes
+ctdattributes
+cpregeneratetablescript
+cpostgeneratetablescript
+*generatetable 
+*generatelisttable 
+*generatedetailtable 
+*refreshfieldlist 
+*getfieldvalue 
+^afieldlist[1,0] 
+*pregeneratetable 
+*postgeneratetable 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+_html.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _htmltable
+[START RESERVED1]
+  _html.hf!…0[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RRL0U7609
+[CLASS] _htmldocument
+[CLASSLOC] _html.vcx
+[BASECLASS] custom
+[OBJNAME] _htmlreport
+[START PROPERTIES]
+creportfile = 
+creportfileext = frx
+creportfileext2 = frt
+cdesignerwindow = Report Designer
+Name = "_htmlreport"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE generate
+LOCAL lcSourceFile,llSuccessful,lnLastSelect,lcAlias
+
+IF NOT DODEFAULT() OR EMPTY(this.cSourceFile)
+	RETURN .F.
+ENDIF
+lcSourceFile=ALLTRIM(this.cSourceFile)
+IF NOT FILE(lcSourceFile)
+	this.MsgBox(M_FILE_LOC+[ "]+lcSourceFile+[" ]+M_NOT_FOUND_LOC+[.])
+	RETURN .F.
+ENDIF
+this.cReportFile = lcSourceFile
+*!*	this.cReportFile=FORCEPATH(LOWER(SYS(2015))+"."+this.cReportFileExt, ;
+*!*			JUSTPATH(lcSourceFile))
+lnLastSelect=SELECT()
+*!*	lcAlias=LOWER(SYS(2015))
+*!*	SELECT 0
+*!*	USE (lcSourceFile) AGAIN SHARED ALIAS (lcAlias)
+*!*	IF NOT USED(lcAlias)
+*!*		SELECT (lnLastSelect)
+*!*		RETURN .F.
+*!*	ENDIF
+IF this.lMessageBar
+	SET MESSAGE TO M_GENERATING_HTML_LOC+":  ("+lcSourceFile+") ..."
+ENDIF
+*!*	COPY TO (this.cReportFile) FOR NOT DELETED()
+*!*	IF USED(lcAlias)
+*!*		USE IN (lcAlias)
+*!*	ENDIF
+*!*	IF NOT FILE(this.cReportFile)
+*!*		SELECT (lnLastSelect)
+*!*		IF this.lMessageBar
+*!*			SET MESSAGE TO
+*!*		ENDIF
+*!*		RETURN .F.
+*!*	ENDIF
+*!*	SELECT (this.nWorkArea)
+llSuccessful=this.GenerateReport()
+SELECT (lnLastSelect)
+IF this.lMessageBar
+	SET MESSAGE TO
+ENDIF
+RETURN llSuccessful
+
+ENDPROC
+PROCEDURE generatereport
+LOCAL lcDesignerWindow,llDesignerWindow
+
+lcDesignerWindow=this.cDesignerWindow+" - "+LOWER(JUSTFNAME(this.cSourceFile))
+llDesignerWindow=WEXIST(lcDesignerWindow)
+IF llDesignerWindow
+	RELEASE WINDOW (llDesignerWindow)
+ENDIF
+this.RunReport
+*!*	IF FILE(this.cOutFile)
+*!*		this.Body.bgcolor="white"
+*!*		this.oGenTag=this.Body.AddTag("font")
+*!*		this.oGenTag.Face="Courier New"
+*!*		this.oGenTag.PreTag=this.oGenTag.AddTag("pre")
+*!*		this.oGenTag.PreTag.AddText(FILETOSTR(this.cOutFile))
+*!*	ENDIF
+*!*	ERASE (this.cReportFile)
+*!*	ERASE (FORCEEXT(this.cReportFile,this.cReportFileExt2))
+IF llDesignerWindow
+	MODIFY REPORT (this.cSourceFile) NOWAIT
+ENDIF
+
+ENDPROC
+PROCEDURE runreport
+*!*	LOCAL lcScope
+
+*!*	lcScope=this.cScope
+*!*	REPORT FORM (this.cReportFile) &lcScope NOCONSOLE TO FILE (this.cOutFile) ASCII
+LOCAL lcScope, llQuietMode, ox
+
+IF FILE(_REPORTOUTPUT)
+   ox = null
+   DO (_reportoutput) WITH  LISTENER_TYPE_HTML , ox, OUTPUTAPP_LOADTYPE_RELOAD
+   IF ISNULL(ox)
+      RETURN .F.
+   ELSE
+      llQuietMode = ox.QuietMode
+      ox.QuietMode = .T.
+      ox.targetfilename = FORCEEXT(this.coutfile, this.cfileext)
+      lcScope=this.cScope
+      REPORT FORM (this.cReportFile) &lcScope  OBJECT ox
+      ox.QuietMode = llQuietMode
+   ENDIF
+ELSE
+   RETURN .F.
+ENDIF
+		
+		
+
+ENDPROC
+PROCEDURE savefile
+LPARAMETERS tcOutFile
+* do nothing (NODEFAULT, override)
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+creportfile
+creportfileext
+creportfileext2
+cdesignerwindow
+*generatereport 
+*runreport 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+_html.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _htmlreport
+[START RESERVED1]
+  _html.hž°C”ƒ0[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RRL0UBXR1
+[CLASS] _htmlreport
+[CLASSLOC] _html.vcx
+[BASECLASS] custom
+[OBJNAME] _htmllabel
+[START PROPERTIES]
+cdesignerwindow = Label Designer
+creportfileext = lbx
+creportfileext2 = lbt
+Name = "_htmllabel"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE runreport
+*!*	LOCAL lcScope
+
+*!*	lcScope=this.cScope
+*!*	LABEL FORM (this.cReportFile) &lcScope NOCONSOLE TO FILE (this.cOutFile) ASCII
+LOCAL lcScope, llQuietMode, ox
+
+IF FILE(_REPORTOUTPUT)
+   ox = null
+   DO (_reportoutput) WITH  LISTENER_TYPE_HTML , ox, OUTPUTAPP_LOADTYPE_RELOAD
+   IF ISNULL(ox)
+      RETURN .F.
+   ELSE
+      llQuietMode = ox.QuietMode
+      ox.QuietMode = .T.
+      ox.targetfilename = FORCEEXT(this.coutfile, this.cfileext)
+      lcScope=this.cScope
+      LABEL FORM (this.cReportFile) &lcScope  OBJECT ox
+      ox.QuietMode = llQuietMode
+   ENDIF
+ELSE
+   RETURN .F.
+ENDIF
+		
+		
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+_html.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _htmllabel
+[START RESERVED1]
+  _html.hV_C”ƒ0[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RRL0UE27R
+[CLASS] _htmldocument
+[CLASSLOC] _html.vcx
+[BASECLASS] custom
+[OBJNAME] _htmlmenu
+[START PROPERTIES]
+Name = "_htmlmenu"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE generate
+LOCAL lcSourceFile,llSuccessful,lnLastSelect,lcAlias
+
+IF NOT DODEFAULT() OR EMPTY(this.cSourceFile)
+	RETURN .F.
+ENDIF
+lcSourceFile=ALLTRIM(this.cSourceFile)
+IF NOT FILE(lcSourceFile)
+	this.MsgBox(M_FILE_LOC+[ "]+lcSourceFile+[" ]+M_NOT_FOUND_LOC+[.])
+	RETURN .F.
+ENDIF
+lnLastSelect=SELECT()
+SELECT 0
+lcAlias=LOWER(SYS(2015))
+USE (this.cSourceFile) ALIAS (lcAlias)
+IF NOT USED(lcAlias)
+	SELECT (lnLastSelect)
+	IF this.lMessageBar
+		SET MESSAGE TO
+	ENDIF
+	RETURN .F.
+ENDIF
+SET FILTER TO NOT DELETED()
+LOCATE
+llSuccessful=this.GenerateMenu()
+IF USED(lcAlias)
+	USE IN (lcAlias)
+ENDIF
+SELECT (lnLastSelect)
+IF this.lMessageBar
+	SET MESSAGE TO
+ENDIF
+RETURN llSuccessful
+
+ENDPROC
+PROCEDURE generatemenu
+IF this.lMessageBar
+	SET MESSAGE TO M_GENERATING_HTML_LOC+":  ("+this.cSourceFile+") ..."
+ENDIF
+SCAN ALL FOR NOT EMPTY(Prompt)
+	IF NOT INLIST(ObjCode,77,78) OR EMPTY(Prompt)
+		LOOP
+	ENDIF
+	this.Body.AddItem(ALLTRIM(STRTRAN(Prompt,"\<","")))
+	IF NOT EMPTY(Message)
+		this.Body.AddTagItem("br")
+		this.Body.AddItem(ALLTRIM(Message))
+	ENDIF
+	this.Body.AddTagItem("hr")
+ENDSCAN
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+*generatemenu 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+_html.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _htmlmenu
+[START RESERVED1]
+  _html.hV_C”ƒ0[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RRL0UF6UC
+[CLASS] _htmldocument
+[CLASSLOC] _html.vcx
+[BASECLASS] custom
+[OBJNAME] _htmlobject
+[START PROPERTIES]
+Name = "_htmlobject"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE generate
+LOCAL llSuccessful
+
+IF NOT DODEFAULT() OR VARTYPE(this.oSource)#"O"
+	RETURN .F.
+ENDIF
+llSuccessful=this.GenerateObject(this.oSource)
+IF this.lMessageBar
+	SET MESSAGE TO
+ENDIF
+RETURN llSuccessful
+
+ENDPROC
+PROCEDURE generateobject
+LPARAMETERS toObject,toParent
+LOCAL oParent,oDivTag,oTag,oTag2,lcBaseClass,lcObjName,llParent,lnCount
+LOCAL llPixels,llPixelsChanged,lcMember,lvValue
+LOCAL laObjects[1],laMembers[1]
+
+IF VARTYPE(toObject)#"O" OR (EMPTY(this.cSourceFile) AND ;
+		PEMSTATUS(toObject,"Visible",5) AND ;
+		VARTYPE(toObject.Visible)=="L" AND NOT toObject.Visible)
+	RETURN .F.
+ENDIF
+lcBaseClass=LOWER(toObject.BaseClass)
+lcObjName=toObject.Name
+IF VARTYPE(toParent)=="O"
+	llPixels=.T.
+	oParent=toParent
+	lcObjName=oParent.ID+"_"+lcObjName
+ELSE
+	llParent=.T.
+	oParent=this.Body
+ENDIF
+llPixels=(NOT lcBaseClass=="form" OR toObject.ScaleMode=3)
+IF NOT llPixels
+	toObject.ScaleMode=3
+	llPixelsChanged=PEMSTATUS(toObject,"ScaleMode",0)
+ENDIF
+IF this.lMessageBar
+	SET MESSAGE TO M_GENERATING_HTML_LOC+":  ("+lcObjName+") ..."
+ENDIF
+oDivTag=oParent.NewTag("div")
+oDivTag.ID="div_"+lcObjName
+oTag=.NULL.
+DO CASE
+	CASE lcBaseClass=="checkbox"
+		oTag=oDivTag.NewTagNoEnd("input")
+		oTag.ID=lcObjName
+		oTag.Name=lcObjName
+		oTag.Type="checkbox"
+		oTag.Checked=(NOT EMPTY(toObject.Value))
+		oTag.AddItem(toObject.Caption)
+		this.GenerateStyle(oTag,toObject)
+	CASE lcBaseClass=="combobox" OR lcBaseClass=="listbox"
+		oTag=oDivTag.NewTag("select")
+		oTag.ID=lcObjName
+		oTag.Name=lcObjName
+		oTag.Size=IIF(lcBaseClass=="listbox",toObject.ListCount,1)
+		this.GenerateStyle(oTag,toObject)
+		FOR lnCount = 1 TO toObject.ListCount
+			oTag2=oTag.AddTagNoEnd("option")
+			oTag2.Value=lnCount
+			oTag2.AddItem(toObject.List[lnCount])
+			this.GenerateStyle(oTag2,toObject)
+		ENDFOR
+	CASE lcBaseClass=="commandbutton"
+		oTag=oDivTag.NewTagNoEnd("input")
+		oTag.ID=lcObjName
+		oTag.Name=lcObjName
+		IF EMPTY(toObject.Picture)
+			oTag.Type="button"
+		ELSE
+			oTag.Type="image"
+			oTag.Src=toObject.Picture
+		ENDIF
+		oTag.Value=toObject.Caption
+		this.GenerateStyle(oTag,toObject)
+	CASE lcBaseClass=="commandgroup"
+		oTag=oDivTag.NewTag("div")
+		oTag.ID=lcObjName
+		oTag.Name=lcObjName
+		this.GenerateStyle(oTag,toObject)
+		FOR lnCount = 1 TO toObject.ButtonCount
+			this.GenerateObject(toObject.Buttons[lnCount],oTag)
+		ENDFOR
+	CASE lcBaseClass=="editbox"
+		oTag=oDivTag.NewTag("textarea")
+		oTag.ID=lcObjName
+		oTag.Name=lcObjName
+		oTag.AddItem(toObject.Value)
+		this.GenerateStyle(oTag,toObject)
+	CASE INLIST(lcBaseClass+" ","form ","toolbar ")
+		oTag=oDivTag.NewTag("form")
+		oTag.ID=lcObjName
+		oTag.Name=lcObjName
+		this.GenerateStyle(oTag,toObject)
+		this.Body.bgColor=this.HexColor(toObject.BackColor)
+	CASE lcBaseClass=="label"
+		oTag=oDivTag.NewTag("span")
+		oTag.ID=lcObjName
+		oTag.Name=lcObjName
+		oTag.AddItem(toObject.Caption)
+		this.GenerateStyle(oTag,toObject)
+	CASE lcBaseClass=="olecontrol"
+		oTag=oDivTag.NewTag("object")
+		oTag.ID=lcObjName
+		oTag.Name=lcObjName
+		IF PEMSTATUS(toObject,"Height",5)
+			oTag.Height=toObject.Height
+			oTag.Width=toObject.Width
+		ENDIF
+		oTag.ClassID="CLSid:"+CHRTRAN(COMCLASSINFO(toObject,4),"{}","")
+		IF TYPE("toObject.object")=="O"
+			FOR lnCount = 1 TO AMEMBERS(laMembers,toObject.object)
+				lcMember=LOWER(laMembers[lnCount])
+				IF NOT PEMSTATUS(toObject.object,lcMember,0)
+					LOOP
+				ENDIF
+				lvValue=toObject.object.&lcMember
+				IF VARTYPE(lvValue)=="O"
+					LOOP
+				ENDIF
+				IF VARTYPE(lvValue)=="L"
+					lvValue=IIF(lvValue,"True","False")
+				ENDIF
+				oTag2=oTag.AddTagNoEnd("param")
+				oTag2.Name=lcMember
+				oTag2.Value=TRANSFORM(lvValue)
+			ENDFOR
+		ENDIF
+	CASE lcBaseClass=="optiongroup"
+		oTag=oDivTag.NewTag("div")
+		oTag.ID=lcObjName
+		oTag.Name=lcObjName
+		this.GenerateStyle(oTag,toObject)
+		FOR lnCount = 1 TO toObject.ButtonCount
+			oTag2=oTag.AddTagNoEnd("input")
+			oTag2.Type="radio"
+			oTag2.Value=lnCount
+			oTag2.Checked=(toObject.Value=lnCount)
+			oTag2.ID=lcObjName
+			oTag2.Name=lcObjName
+			oTag2.AddItem(toObject.Buttons[lnCount].Caption)
+			this.GenerateStyle(oTag2,toObject)
+		ENDFOR
+	CASE lcBaseClass=="textbox"
+		oTag=oDivTag.NewTagNoEnd("input")
+		oTag.ID=lcObjName
+		oTag.Name=lcObjName
+		oTag.Type=IIF(EMPTY(toObject.PasswordChar),"TEXT","PASSWORD")
+		oTag.Value=toObject.Value
+		IF NOT EMPTY(+toObject.MaxLength)
+			oTag.MaxLength=toObject.MaxLength
+		ENDIF
+		this.GenerateStyle(oTag,toObject)
+ENDCASE
+IF ISNULL(oTag)
+	oDivTag.Release
+	oParent.AddComment(M_OBJECT_LOC+[ "]+lcObjName+[" (]+lcBaseClass+ ;
+			[) ]+M_NOT_SUPPORTED_LOC+[.])
+	RETURN .F.
+ENDIF
+IF NOT llParent
+	this.GenerateStyle(oDivTag,toObject,.T.)
+ENDIF
+oParent.AddTag(oDivTag)
+oDivTag.AddItem(oTag)
+IF INLIST(lcBaseClass+" ","custom ","container ","formset ","form ","toolbar ")
+	FOR lnCount = 1 TO AMEMBERS(laObjects,toObject,2)
+		this.GenerateObject(toObject.&laObjects[lnCount],oTag)
+	ENDFOR
+ENDIF
+IF NOT llPixels
+	IF llPixelsChanged
+		toObject.ScaleMode=0
+	ELSE
+		toObject.ResetToDefault("ScaleMode")
+	ENDIF
+ENDIF
+
+ENDPROC
+PROCEDURE generatestyle
+LPARAMETERS toTag,toObject,tlContainer
+LOCAL oStyleTag,lcStyle
+
+oStyleTag=toTag.NewStyleTag()
+IF PEMSTATUS(toObject,"Left",5) AND tlContainer
+	oStyleTag.position=IIF(tlContainer,"absolute","relative")+ ;
+			"; left:"+TRANSFORM(toObject.Left)+"; "+ ;
+			"Top:"+TRANSFORM(toObject.Top)
+ENDIF
+IF NOT tlContainer
+	IF PEMSTATUS(toObject,"FontName",5)
+		oStyleTag.font_family=toObject.FontName
+	ENDIF
+	IF PEMSTATUS(toObject,"FontSize",5)
+		oStyleTag.font_size=TRANSFORM(toObject.FontSize)+"pt"
+	ENDIF
+	IF PEMSTATUS(toObject,"ForeColor",5)
+		oStyleTag.color=this.HexColor(toObject.ForeColor)
+	ENDIF
+	IF PEMSTATUS(toObject,"FontBold",5) AND toObject.FontBold
+		oStyleTag.Font_weight="bold"
+	ENDIF
+	IF PEMSTATUS(toObject,"FontItalic",5) AND toObject.FontItalic
+		oStyleTag.font_style="italic"
+	ENDIF
+	IF PEMSTATUS(toObject,"FontUnderline",5) AND toObject.FontUnderline
+		oStyleTag.text_decoration="underline"
+	ENDIF
+	IF PEMSTATUS(toObject,"BackColor",5)
+		oStyleTag.background=this.HexColor(toObject.BackColor)
+	ENDIF
+ENDIF
+lcStyle=oStyleTag.StyleText
+oStyleTag.Release
+IF EMPTY(lcStyle)
+	RETURN .F.
+ENDIF
+toTag.Style=ALLTRIM(lcStyle)
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+*generateobject 
+*generatestyle 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+_html.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _htmlobject
+[START RESERVED1]
+  _html.hV_C”ƒ0[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RS31083ZC
+[CLASS] _htmltag
+[CLASSLOC] _html.vcx
+[BASECLASS] custom
+[OBJNAME] _styletag
+[START PROPERTIES]
+styletext = 
+classname = 
+cgetfileext = css;htm;html;asp
+ltagdeclaration = .T.
+lendtag = .F.
+litemcrlf = .F.
+ltranslatespecialchars = .F.
+cfileext = css
+Name = "_styletag"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE classname_access
+RETURN this.TagName
+
+ENDPROC
+PROCEDURE classname_assign
+LPARAMETERS vNewVal
+
+this.TagName=m.vNewVal
+
+ENDPROC
+PROCEDURE styletext_access
+RETURN this.HTMLText
+
+ENDPROC
+PROCEDURE styletext_assign
+LPARAMETERS m.vNewVal
+
+ERROR 1743
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+styletext
+classname
+*styletext_access 
+*styletext_assign 
+*classname_access 
+*classname_assign 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _styletag
+[EOF]
