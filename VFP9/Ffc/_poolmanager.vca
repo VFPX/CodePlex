@@ -1,0 +1,170 @@
+SCCTEXT Version 4.0.0.2
+PLATFORM C(8,0),UNIQUEID C(10,0),TIMESTAMP N(10,0),CLASS M(4,0),CLASSLOC M(4,0),BASECLASS M(4,0),OBJNAME M(4,0),PARENT M(4,0),PROPERTIES M(4,0),PROTECTED M(4,0),METHODS M(4,0),OBJCODE M(4,0),OLE M(4,0),OLE2 M(4,0),RESERVED1 M(4,0),RESERVED2 M(4,0),RESERVED3 M(4,0),RESERVED4 M(4,0),RESERVED5 M(4,0),RESERVED6 M(4,0),RESERVED7 M(4,0),RESERVED8 M(4,0),USER M(4,0)
+1252
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] Class     
+[START RESERVED1]
+VERSION =   3.00[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0QV17HBO5
+[CLASS] custom
+[BASECLASS] custom
+[OBJNAME] _poolmanager
+[START PROPERTIES]
+cclass = 
+cclasslibrary = 
+ocollection = .NULL.
+lraiseevent = .T.
+nobjectscreated = 0
+Name = "_poolmanager"
+[END PROPERTIES]
+[START PROTECTED]
+ocollection
+[END PROTECTED]
+[START METHODS]
+PROCEDURE Init
+*========================================================================================
+* When used with CREATEOBJECT(), you can pass the class and library of the pooled object
+* as parameters.
+*========================================================================================
+LParameter tcClass, tcClassLibrary
+
+	Assert InList(Vartype(m.tcClass),"L","C")
+	Assert Iif( Vartype(m.tcClass)=="C", not Empty(m.tcClass), .T. )
+	Assert InList(Vartype(m.tcClassLibrary),"L","C")
+	
+	If Vartype(m.tcClass) == "C"
+		This.cClass = m.tcClass
+	EndIf
+	If Vartype(m.tcClassLibrary) == "C"
+		This.cClassLibrary = m.tcClassLibrary
+	EndIf
+	
+	This.oCollection = CreateObject("Collection")
+	Assert Vartype(This.oCollection) == "O"
+	If not Vartype(This.oCollection) == "O"
+		Error 1736
+	EndIf
+	
+ENDPROC
+PROCEDURE free
+*========================================================================================
+* Returns an object back to the pool. Sets the reference to NULL if successful.
+*========================================================================================
+LParameter roObject
+
+	Assert Vartype(m.roObject) == "O"
+	If not Vartype(m.roObject) == "O"
+		Error 11
+	EndIf
+
+	This.oCollection.Add(m.roObject)
+
+	Assert Vartype(This.lRaiseEvent) == "L"
+	If This.lRaiseEvent
+		RaiseEvent( This, "ObjectReturned", m.roObject)
+	EndIf
+
+	roObject = NULL
+	
+ENDPROC
+PROCEDURE get
+*========================================================================================
+* Returns an object for exclusive use of the caller. If the object doesn't exist, a new
+* one is created.
+*========================================================================================
+LParameter tu01, tu02, tu03, tu04, tu05, tu06, tu07, tu08, tu09, tu10, tu11, tu12, ;
+	tu13, tu14, tu15, tu16, tu17, tu18, tu19, tu20, tu21, tu22
+
+	*--------------------------------------------------------------------------------------
+	* Parameter string
+	*--------------------------------------------------------------------------------------
+	Local lcParam
+	lcParam = Left( ;
+		",tu01,tu02,tu03,tu04,tu05,tu06,tu07,tu08,tu09,tu10,tu11,tu12,"+;
+		"tu13,tu14,tu15,tu16,tu17,tu18,tu19,tu20,tu21,tu22", ;
+		Pcount()*5 ;
+	)
+
+	*--------------------------------------------------------------------------------------
+	* obtain an object or create a new one
+	*--------------------------------------------------------------------------------------
+	Local loObject
+	If This.oCollection.Count == 0
+		Assert Vartype(This.cClass) == "C"
+		Assert not Empty(This.cClass)
+		Assert Vartype(This.cClassLibrary) == "C"
+		Private THISPOOLMANAGER
+		THISPOOLMANAGER = This
+		This.nObjectsCreated = This.nObjectsCreated + 1
+		If Pcount() == 0
+			loObject = NewObject( This.cClass, This.cClassLibrary )
+		Else
+			loObject = NewObject( This.cClass, This.cClassLibrary, "" &lcParam )
+		EndIf
+		Release THISPOOLMANAGER
+		Assert Vartype(m.loObject) == "O"
+		If not Vartype(m.loObject) == "O"
+			Error 1736
+		EndIf
+	Else
+		loObject = This.oCollection.Item(1)
+		This.oCollection.Remove(1)
+	EndIf
+	
+	*--------------------------------------------------------------------------------------
+	* Raise the ObjectRequested event
+	*--------------------------------------------------------------------------------------
+	Assert Vartype(This.lRaiseEvent) == "L"
+	If This.lRaiseEvent
+		If Pcount() == 0
+			RaiseEvent( This, "ObjectRequested", m.loObject )
+		Else
+			RaiseEvent( This, "ObjectRequested", m.loObject &lcParam )
+		EndIf
+	EndIf
+
+Return m.loObject
+ENDPROC
+PROCEDURE objectrequested
+*========================================================================================
+* Event fires when an object has been requested
+*========================================================================================
+LParameter toObject, tu01, tu02, tu03, tu04, tu05, tu06, tu07, tu08, tu09, tu10, ;
+	tu11, tu12, tu13, tu14, tu15, tu16, tu17, tu18, tu19, tu20, tu21, tu22
+ENDPROC
+PROCEDURE objectreturned
+*========================================================================================
+* Event fires when an object has been returned
+*========================================================================================
+LParameter toObject
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+cclass Name of the class to be pooled.
+cclasslibrary Name of the class library that contains the class to be pooled.
+ocollection Collection of pooled objects
+lraiseevent .T. = Raise events when objects are requested or returned
+nobjectscreated Is incremented every time a new object is created. Can be used to assign a unique ID to each object.
+*get parm1, parm2, ... returns a reference to a pooled object
+*objectrequested oObject, parm1, ... This event fires when an object has been requested. Use it to initialize the object if necessary.
+*free oObject. Checks an object back into the pool making it available for the next requester.
+*objectreturned oObject. This event is triggered when an object has been returned to the pool and becomes available for new requests. Use it to cleanup the object.
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _poolmanager
+[EOF]
