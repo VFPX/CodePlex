@@ -1,0 +1,597 @@
+SCCTEXT Version 4.0.0.2
+PLATFORM C(8,0),UNIQUEID C(10,0),TIMESTAMP N(10,0),CLASS M(4,0),CLASSLOC M(4,0),BASECLASS M(4,0),OBJNAME M(4,0),PARENT M(4,0),PROPERTIES M(4,0),PROTECTED M(4,0),METHODS M(4,0),OBJCODE M(4,0),OLE M(4,0),OLE2 M(4,0),RESERVED1 M(4,0),RESERVED2 M(4,0),RESERVED3 M(4,0),RESERVED4 M(4,0),RESERVED5 M(4,0),RESERVED6 M(4,0),RESERVED7 M(4,0),RESERVED8 M(4,0),USER M(4,0)
+1252
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] Class     
+[START RESERVED1]
+VERSION =   3.00[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RMI14YXAF
+[CLASS] _custom
+[CLASSLOC] _base.vcx
+[BASECLASS] custom
+[OBJNAME] _mouseoverfx
+[START PROPERTIES]
+lmouseoverhost = .T.
+ocurrentcoolcontrol = (NULL)
+nmargin = 2
+nhighlightwidth = 2
+ihighlightcolor = 0
+ishadowcolor = 0
+Name = "_mouseoverfx"
+[END PROPERTIES]
+[START PROTECTED]
+ocurrentcoolcontrol
+ohost
+[END PROTECTED]
+[START METHODS]
+PROCEDURE Destroy
+DODEFAULT()
+STORE .NULL. TO THIS.oCurrentCoolControl, THIS.oHost
+ENDPROC
+PROCEDURE Init
+IF NOT DODEFAULT()
+   RETURN .F.
+ENDIF
+
+IF TYPE("THISFORM") = "O"
+   THIS.oHost = THISFORM
+ELSE
+   THIS.oHost = _SCREEN
+ENDIF
+
+* get appropriate color information
+DECLARE INTEGER GetSysColor in win32api integer
+THIS.iHighlightColor = GetSysColor(20) && button highlight
+THIS.iShadowColor = GetSysColor(16) && button shadow
+
+
+
+ENDPROC
+PROCEDURE cancelhighlight
+IF NOT THIS.lMouseOverHost
+   THIS.lMouseOverHost = .T.
+   THIS.oCurrentCoolControl = .NULL.
+   IF TYPE("THIS.oHost.Name") = "C"
+      * the form could be in the process of releasing...
+      THIS.oHost.Cls
+   ENDIF
+   RETURN .T.
+ELSE
+   RETURN .F.
+ENDIF
+
+ENDPROC
+PROCEDURE highlightme
+LPARAMETERS toObject
+
+ASSERT VARTYPE(toObject) = "O" AND UPPER(toObject.BaseClass) # "FORM"
+* it won't actually hurt anything if it's called from the form,
+* I guess
+* but it doesn't make any sense either
+
+IF TYPE("toObject.Name") # "C"
+  RETURN .F.
+ENDIF
+
+LOCAL llNewObject
+
+THIS.lMouseOverHost = .F.
+
+llNewObject = ISNULL(THIS.oCurrentCoolControl) OR ;
+              ((NOT(ISNULL(THIS.oCurrentCoolControl))) AND ;
+               THIS.oCurrentCoolControl # toObject )
+              * we'd have to do this comparison differently in VFP5...
+
+IF NOT llNewObject
+   RETURN .F.
+ENDIF
+
+LOCAL liDrawWidth, liDrawStyle, liDrawMode, liForeColor, liScaleMode, ;
+      lnOTCTop, lnOTCLeft, lnOTCWidth, lnOTCHeight
+
+IF NOT ISNULL(THIS.oCurrentCoolControl)
+   THIS.oHost.Cls && get rid of old highlight
+ENDIF
+THIS.oCurrentCoolControl = toObject
+
+WITH THIS.oHost
+
+   * save host properties:
+   liDrawWidth = .DrawWidth
+   liDrawStyle = .DrawStyle
+   liDrawMode  = .DrawMode
+   liForeColor = .ForeColor
+   liScaleMode = .ScaleMode
+
+   * set host properties:
+   .DrawWidth = THIS.nHighlightWidth
+   .DrawStyle = 0 && solid
+   .DrawMode = 13 && copy
+   .ScaleMode = 3 && pixels
+
+   * get object positioning relative to host and
+   * leave some room for the highlight:
+   lnOTCTop = OBJTOCLIENT(toObject,1) - THIS.nMargin
+   lnOTCLeft = OBJTOCLIENT(toObject,2) - THIS.nMargin
+   lnOTCWidth = OBJTOCLIENT(toObject,3) + THIS.nMargin * 2
+   lnOTCHeight = OBJTOCLIENT(toObject,4) + THIS.nMargin * 2
+
+   * border the current control with four lines
+   * in the appropriate colors
+   .ForeColor = THIS.iHighlightColor
+   * left control border
+   .Line(lnOTCLeft,lnOTCTop,lnOTCLeft,lnOTCTop+lnOTCHeight)
+   * top control border
+   .Line(lnOTCLeft,lnOTCTop,lnOTCLeft+lnOTCWidth,lnOTCTop)
+
+   .ForeColor = THIS.iShadowColor
+   * bottom control border
+   .Line(lnOTCLeft,lnOTCTop+lnOTCHeight,lnOTCLeft+lnOTCWidth,lnOTCTop+lnOTCHeight)
+   * right control border
+   .Line(lnOTCLeft+lnOTCWidth,lnOTCTop,lnOTCLeft+lnOTCWidth,lnOTCTop+lnOTCHeight)
+
+   * restore host properties:
+   .DrawWidth = liDrawWidth
+   .DrawStyle = liDrawStyle
+   .DrawMode  = liDrawMode
+   .ForeColor = liForeColor
+   .ScaleMode = liScaleMode
+
+ENDWITH
+
+
+
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+lmouseoverhost Whether mouse is over mousefx host.
+ocurrentcoolcontrol
+nmargin Extra border between control and highlight.
+nhighlightwidth Width of highlight.
+ihighlightcolor Color code for highlight.
+ishadowcolor Color code for shadow.
+*cancelhighlight Cancels highlighting of object.
+*highlightme Called in mousemove event of object desiring coolbar highlighting.
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _mouseoverfx
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RMK0XTRHE
+[CLASS] _custom
+[CLASSLOC] _base.vcx
+[BASECLASS] custom
+[OBJNAME] _windowhandler
+[START PROPERTIES]
+imdiworkspacecolor = 0
+Name = "_windowhandler"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE cascadeforminstances
+* to stagger existing forms with current frame.
+* Returns number of forms arranged.
+
+LPARAMETERS tcFormName,tlOmitAutoCenteredForms,tnStartTop, tnStartLeft, tnStartColumn
+
+#DEFINE WINDOW_STAGGER_FACTOR   SYSMETRIC(9)
+*  window title height
+
+ASSERT EMPTY(tcFormName) OR (VARTYPE(tcFormName) = "C" AND WEXIST(tcFormName))
+
+LOCAL lnArranged, lnColumn, lnTop, lnLeft, loFormRef, ;
+      lnParentHeight, lnScaleMode, lnIndex, llAllForms, loFrame, llInScreen, ;
+      llRightFrame
+
+loFrame = THIS.GetCurrentTopFormRef()
+llInScreen = (loFrame.ShowWindow = 0)
+
+lnScaleMode = loFrame.ScaleMode
+loFrame.ScaleMode = 3
+
+lnArranged = 0
+
+lnTop =    IIF(VARTYPE(tnStartTop)  = "N", tnStartTop, 0)
+lnLeft =   IIF(VARTYPE(tnStartLeft) = "N", tnStartLeft,0)
+lnColumn = IIF(VARTYPE(tnStartColumn) = "N" AND tnStartColumn > 0, ;
+               tnStartColumn, 1)
+lnParentHeight = loFrame.Height
+llAllForms = EMPTY(tcFormName)
+
+FOR lnIndex = _SCREEN.FormCount TO 1 STEP -1
+    loFormRef = _SCREEN.Forms(lnIndex)
+    IF UPPER(loFormRef.BaseClass) == "TOOLBAR"
+       LOOP
+    ENDIF
+    DO CASE
+    CASE llInScreen AND ;
+       lnIndex = _SCREEN.FormCount AND ;
+       INLIST(loFormRef.ShowWindow,0,1)
+       llRightFrame = .T.
+       * go right ahead and process these windows
+    CASE llInScreen AND ;
+       loFormRef.ShowWindow = 0
+       llRightFrame = .T.
+    CASE llInScreen AND ;
+       loFormRef.ShowWindow = 2
+       LOOP
+       * the real problem is ShowWindow = 1
+       * where you are mixing them some in Screen
+       * and some in top forms.  This has to be
+       * taken care of separately in 5, but in 6
+       * apparently these windows show up with ShowWindow = 0!!
+    CASE INLIST(loFormRef.ShowWindow,0,1) AND ;
+       NOT llRightFrame
+       * we haven't gotten to the right group of windows yet
+       LOOP
+    CASE llRightFrame AND loFormRef.ShowWindow = 2
+        * we've reached another frame
+       EXIT
+    CASE loFormRef.ShowWindow = 2 AND loFormRef # loFrame
+       * still wrong group
+       LOOP
+    CASE loFormRef.ShowWindow = 2
+       llRightFrame = .T.
+       LOOP
+       * now we can work on the window group
+       * we'll see next in the stack...
+    OTHERWISE
+        * we're in an appropriate window, cascade it
+    ENDCASE
+
+    IF (llAllForms OR UPPER(loFormRef.Name) == UPPER(tcFormName)) AND ;
+       loFormRef.WindowState = 0 AND loFormRef.Visible AND ;
+       (NOT (tlOmitAutoCenteredForms AND loFormRef.AutoCenter))
+
+       lnArranged = lnArranged + 1
+       loFormRef.Top =  lnTop
+       loFormRef.Left = (lnLeft * lnColumn)
+       loFormRef.AutoCenter = .F.
+       IF lnTop > lnParentHeight - WINDOW_STAGGER_FACTOR
+          STORE WINDOW_STAGGER_FACTOR TO lnTop, lnLeft
+          lnColumn = lnColumn + 1
+       ENDIF
+       lnTop = lnTop + WINDOW_STAGGER_FACTOR
+       lnLeft = lnLeft + WINDOW_STAGGER_FACTOR
+    ELSE
+       * do nothing
+    ENDIF
+ENDFOR
+loFrame.ScaleMode = lnScaleMode
+
+RETURN lnArranged
+
+
+ENDPROC
+PROCEDURE getcurrenttopformref
+LOCAL loForm, loTopForm
+
+* first top form in the list
+* will be the current top form.
+* DON"T USE THIS METHOD in VFP 5 IF YOU MIX
+* _SCREEN-owned forms with topform-Owned
+* forms unless you use ShowWindow = 0 for
+* all _screen-owned forms! In 6 it appears okay
+
+ASSERT TYPE("_SCREEN.ActiveForm") # "O"  OR ;
+       INLIST(_SCREEN.ActiveForm.ShowWindow, 0,1,2)
+
+DO CASE
+CASE _SCREEN.FormCount = 0 OR ;
+     (TYPE("_SCREEN.ActiveForm") = "O" AND ;
+     _SCREEN.ActiveForm.ShowWindow = 0 )     && ShowWindow In Screen
+		
+     loTopForm = _SCREEN
+
+CASE (TYPE("_SCREEN.ActiveForm") = "O" AND ;
+      _SCREEN.ActiveForm.ShowWindow = 2 )    && ShowWindow As Top Form
+
+     loTopForm = _SCREEN.ActiveForm
+		
+OTHERWISE
+		
+     FOR EACH loForm IN _SCREEN.Forms  && note: these may be toolbars
+                                       && if undocked, but that's okay --
+                                       && they are only ShowWIndow 0 or 1.
+
+        IF loForm.ShowWindow = 2 && the first one in the collection will
+                                && be "active top form"
+           loTopForm = loForm
+           EXIT
+        ENDIF
+     ENDFOR
+		
+     IF VARTYPE(loTopForm) # "O"
+        loTopForm = _SCREEN
+     ENDIF
+		
+ENDCASE
+
+RETURN loTopForm
+
+ENDPROC
+PROCEDURE imdiworkspacecolor_access
+DECLARE INTEGER GetSysColor IN Win32API INTEGER nColorAspect
+
+RETURN  GetSysColor(12)
+
+ENDPROC
+PROCEDURE invokemenuiteminframe
+LPARAMETERS tcAction
+ASSERT VARTYPE(tcAction) = "C" AND (NOT EMPTY(tcAction))
+
+* this method allows us to properly call the items whether the system menu
+* exists or not, and whether we're calling from a top form or not, including
+* from a context menu.
+
+
+#DEFINE KNOWN_ACTIONS "UNDO","REDO","CUT","COPY", "PASTE", ;
+                      "CLEAR","SELECTALL", "FIND","FINDAGAIN","REPLACE", ;
+                      "GOTOLINE","INSERTOBJECT","OBJECT","LINKS"
+
+#DEFINE ACTIONS_NEEDING_WINDOW "FIND","REPLACE", ;
+                               "GOTOLINE", "PASTESPECIAL", ;
+                               "INSERTOBJECT","OBJECT","LINKS" && , ;
+                               && "PROPERTIES"
+
+LOCAL loTopWindow, lcWindowName, ;
+      lcAction, lnBarno, lcBarNo, lcPrompt, lcKey
+
+* remove spaces and dots, in case somebody is passing
+* the actual prompts as tokens...
+lcAction = STRTRAN(UPPER(tcAction)," ","")
+lcAction = STRTRAN(lcAction,".","")
+
+STORE "" TO lcBarNo, lcPrompt, lcWindowName, lcKey
+STORE 0 TO lnBarno
+STORE NULL TO loTopWindow
+
+ASSERT INLIST(lcAction,KNOWN_ACTIONS )
+
+IF INLIST(lcAction,ACTIONS_NEEDING_WINDOW )
+
+   loTopWindow = THIS.GetCurrentTopFormRef()
+   lcWindowName = WONTOP()
+
+ENDIF
+
+
+IF CNTBAR("_MEDIT") = 0
+   DEFINE POPUP _MEDIT
+ENDIF
+
+DO CASE
+
+CASE lcAction == "UNDO"
+   lcBarno  = ["_med_undo"]
+   lcPrompt = MENUPROMPT_MED_UNDO
+   lcKey = MENUKEY_MED_UNDO
+
+CASE lcAction == "REDO"
+   lcBarno = ["_med_redo"]
+   lcPrompt =  MENUPROMPT_MED_REDO
+   lcKey = MENUKEY_MED_REDO
+
+CASE lcAction == "CUT"
+   lcBarno = ["_med_cut"]
+   lcPrompt = MENUPROMPT_MED_CUT
+   lcKey = MENUKEY_MED_CUT
+
+CASE lcAction == "COPY"
+   lcBarno = ["_med_copy"]
+   lcPrompt = MENUPROMPT_MED_COPY
+   lcKey = MENUKEY_MED_COPY
+
+CASE lcAction == "PASTE"
+   lcBarno =  ["_med_paste"]
+   lcPrompt = MENUPROMPT_MED_PASTE
+   lcKey = MENUKEY_MED_PASTE
+
+CASE lcAction == "CLEAR"
+   lcBarno = ["_med_clear"]
+   lcPrompt = MENUPROMPT_MED_CLEAR
+   lcKey = MENUKEY_MED_CLEAR
+
+CASE lcAction == "SELECTALL"
+   lcBarno = ["_med_slcta"]
+   lcPrompt = MENUPROMPT_MED_SLCTA
+   lcKey = MENUKEY_MED_SLCTA
+
+CASE lcAction == "FIND"
+   lcBarno = ["_med_find"]
+   lcPrompt = MENUPROMPT_MED_FIND
+   lcKey = MENUKEY_MED_FIND
+
+CASE lcAction == "FINDAGAIN"
+   lcBarno = ["_med_finda"]
+   lcPrompt = MENUPROMPT_MED_FINDA
+   lcKey = MENUKEY_MED_FINDA
+
+CASE lcAction == "REPLACE"
+   lcBarno = ["_med_repl"]
+   lcPrompt = MENUPROMPT_MED_REPL
+   lcKey = MENUKEY_MED_REPL
+
+CASE lcAction == "PASTESPECIAL"
+   lcBarno = ["_med_pstlk"]
+   lcPrompt = MENUPROMPT_MED_PSTLK
+   lcKey = MENUKEY_MED_PSTLK
+
+CASE lcAction = "GOTOLINE"
+   lcBarno = ["_med_goto"]
+   lcPrompt = MENUPROMPT_MED_GOTO
+   lcKey = MENUKEY_MED_GOTO
+
+CASE lcAction == "INSERTOBJECT"
+   lcBarno = ["_med_insob"]
+   lcPrompt = MENUPROMPT_MED_INSOB
+   lcKey = MENUKEY_MED_INSOB
+
+CASE lcAction == "OBJECT"
+   lcBarno = ["_med_obj"]
+   lcPrompt =  MENUPROMPT_MED_OBJ
+   lcKey = MENUKEY_MED_OBJ
+
+CASE lcAction == "LINKS"
+   lcBarno = ["_med_link"]
+   lcPrompt = MENUPROMPT_MED_LINK
+   lcKey = MENUKEY_MED_LINK
+
+*&*	CASE lcAction ==
+*&*	   lcBarno = [""]
+*&*	   lcPrompt =
+*&*	   lcKey = []
+
+OTHERWISE
+  * we shouldn't have gotten through ASSERT!
+  RETURN .F.
+
+ENDCASE
+
+lnBarNo = STRTRAN(lcBarNo,["],[])
+lnBarNo = INT(&lnBarNo)
+
+IF TYPE("BARPROMPT(lnBarNo,[_MEDIT])") # "C"
+
+   DEFINE BAR lnBarNo OF _MEDIT PROMPT lcPrompt &lcKey
+
+ENDIF
+
+IF NOT ISNULL(loTopWindow)
+   ACTI WINDOW (loTopWindow.Name) SAME
+   IF NOT EMPTY(lcWindowName)
+     ACTI WINDOW (lcWindowName)
+   ENDIF
+ENDIF
+
+=SYS(1500,&lcBarNo,"_medit")
+
+IF NOT EMPTY(lcWindowName)
+   * there's a faint possibility
+   * of problems if we have invoked
+   * a system dialog, otherwise --
+   * especially if the system dialog
+   * was modal or the previous window was modal
+   ACTI WINDOW (lcWindowName) && again
+ENDIF
+
+RETURN
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+imdiworkspacecolor Returns appropriate Windows color for top-level frame window background.
+*cascadeforminstances Cascades current set of active forms.
+*getcurrenttopformref Returns current frame window -- primarily for top-level form applications, but will work in other cases, returning a reference to _SCREEN if appropriate.
+*showcurrenttopform not currently implemented
+*invokemenuiteminframe Use to invoke menu item in top-level form applications.
+*showwindowinframe not currently implemented
+*imdiworkspacecolor_access 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED7]
+Grab bag of window-handling features.[END RESERVED7]
+[START RESERVED8]
+_ui.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _windowhandler
+[START RESERVED1]
+  _ui.h”ÁMÍ([END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RNL12KRPU
+[CLASS] _toolbar
+[CLASSLOC] _base.vcx
+[BASECLASS] toolbar
+[OBJNAME] _modalawaretoolbar
+[START PROPERTIES]
+Height = 22
+Left = 0
+Top = 0
+Width = 33
+ShowWindow = 1
+Name = "_modalawaretoolbar"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Refresh
+THIS.CheckForModalWindow()
+ENDPROC
+PROCEDURE checkformodalwindow
+RETURN THIS.lDisabledForModal
+ENDPROC
+PROCEDURE ldisabledformodal_access
+LOCAL llDisableAll
+
+DO CASE
+
+CASE WONTOP() # WOUTPUT()
+  * browse or something...
+  llDisableAll = .F.
+
+CASE TYPE("_SCREEN.ActiveForm") = "U"
+  llDisableAll = .F.
+
+OTHERWISE
+
+  IF TYPE("_SCREEN.ActiveForm.Parent") = "O"
+     * formset
+      llDisableAll = (_SCREEN.ActiveForm.Parent.WindowType = WINDOWTYPE_MODAL)
+  ELSE
+      llDisableAll = (_SCREEN.ActiveForm.WindowType = WINDOWTYPE_MODAL)
+  ENDIF
+
+ENDCASE
+
+THIS.SetAll("Enabled", ;
+            NOT llDisableAll)
+
+THIS.lDisabledForModal = llDisableAll
+
+RETURN llDisableAll
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+ldisabledformodal Whether to disable toolbar if modal window is present. Has corresponding access method.
+*checkformodalwindow Checks for modal window and disables toolbar.
+*ldisabledformodal_access 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+_ui.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _modalawaretoolbar
+[START RESERVED1]
+  _ui.hÊö‚Š#[END RESERVED1]
+[EOF]
