@@ -1,0 +1,1372 @@
+SCCTEXT Version 4.0.0.2
+PLATFORM C(8,0),UNIQUEID C(10,0),TIMESTAMP N(10,0),CLASS M(4,0),CLASSLOC M(4,0),BASECLASS M(4,0),OBJNAME M(4,0),PARENT M(4,0),PROPERTIES M(4,0),PROTECTED M(4,0),METHODS M(4,0),OBJCODE M(4,0),OLE M(4,0),OLE2 M(4,0),RESERVED1 M(4,0),RESERVED2 M(4,0),RESERVED3 M(4,0),RESERVED4 M(4,0),RESERVED5 M(4,0),RESERVED6 M(4,0),RESERVED7 M(4,0),RESERVED8 M(4,0),USER M(4,0)
+1252
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] Class     
+[START RESERVED1]
+VERSION =   3.00[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _R3V0Y9ZIR
+[CLASS] form
+[BASECLASS] form
+[OBJNAME] graphpreview
+[START PROPERTIES]
+Height = 315
+Width = 450
+DoCreate = .T.
+AutoCenter = .T.
+Caption = "Graph Preview"
+Closable = .F.
+WindowType = 1
+AlwaysOnTop = .T.
+DefOleLCID = 0
+Name = "graphpreview"
+[END PROPERTIES]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+3[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _R3V0Y9ZIR
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] command1
+[PARENT] graphpreview
+[START PROPERTIES]
+Top = 265
+Left = 156
+Height = 39
+Width = 127
+Caption = "Return To Wizard"
+TabIndex = 1
+Name = "command1"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+THISFORM.HIDE()
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _R3V0Y9ZGT
+[CLASS] oleboundcontrol
+[BASECLASS] oleboundcontrol
+[OBJNAME] oleboundcontrol1
+[PARENT] graphpreview
+[START PROPERTIES]
+Top = 0
+Left = 0
+Height = 250
+Width = 450
+Sizable = .F.
+AutoActivate = 2
+Name = "oleboundcontrol1"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE GotFocus
+* nodefault
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] graphpreview
+[START PROPERTIES]
+Arial, 0, 9, 5, 15, 12, 13, 3, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RJ212FCOQ
+[CLASS] automation
+[CLASSLOC] automate.vcx
+[BASECLASS] custom
+[OBJNAME] autograph
+[START PROPERTIES]
+naction = 1
+coutfile = 
+ccategoryfield = 
+ncharttype = 1
+nchartsubtype = 1
+ngraphversion = 5
+ctitle = 
+laddtitle = .T.
+lshownulls = .T.
+lseriesbyrow = .T.
+cgraphfldrow = 
+cgraphfldcol = 
+cgraphfield = 
+clastdatarow = 
+clastdatacol = 
+laddlegend = .T.
+copenalias = 
+coutgenfield = 
+cdefnewfield = 
+cgraphdbf = 
+cgraphprevclass = 
+coleserver = 
+lreplacedbf = .T.
+nchartautoformat = 1
+nchartautogallery = 1
+ndataseries = 0
+ndatacount = 0
+nlastaction = 99
+lshowwhendone = .T.
+nsavelocaleid = 1033
+builder = 
+builderx = (HOME()+"Wizards\BuilderD,BuilderDForm")
+Name = "autograph"
+[END PROPERTIES]
+[START PROTECTED]
+ntotaldataflds
+icurrrec
+[END PROTECTED]
+[START METHODS]
+PROCEDURE Destroy
+THIS.oGraphRef = ""
+THIS.graphpreview = ""
+IF USED('vfpgtemp')
+	USE IN vfpgtemp
+ENDIF
+DODEFAULT()
+
+ENDPROC
+PROCEDURE Error
+LPARAMETERS nError, cMethod, nLine
+
+* Check for OLE error, otherwise pass it on
+LOCAL nTotErrors,aErrs
+IF THIS.SetErrorOff
+	THIS.HadError = .T.
+	RETURN
+ENDIF
+DIMENSION aErrs[1]
+m.nTotErrors=AERROR(aErrs)
+IF m.nTotErrors>0 AND BETWEEN(aErrs[1],1420,1460)
+	THIS.ALERT(C_OLEERROR_LOC + " (Error: " + ALLTRIM(STR(aErrs[1])) + ")")
+	THIS.HadError = .T.
+	RETURN
+ENDIF
+* Make sure we reset the Localization ID
+=SYS(3006,THIS.nSaveLocaleId)
+Automation::ERROR(m.nError,m.cMethod,m.nLine)
+
+ENDPROC
+PROCEDURE Init
+THIS.nSaveLocaleId = VAL(SYS(3004))
+
+IF !DODEFAULT()
+	RETURN .F.
+ENDIF
+
+RETURN THIS.MSGraphCheck()
+ENDPROC
+PROCEDURE addgraphdata
+LOCAL cDataContents, aGraphFlds, cTmpCurs, cOldClipText
+DIMENSION aGraphFlds[1]
+
+IF !THIS.CheckData()
+	RETURN .F.
+ENDIF	
+
+THIS.ntotaldataflds = ALEN(THIS.aDataFields,1)
+
+IF THIS.lAddedData AND USED('vfpgtemp')
+	SELECT vfpgtemp
+ENDIF
+
+IF !THIS.lAddedData
+
+	IF THIS.nAction = 2 OR (THIS.ngraphVersion < 8)
+		*- save to a table
+		m.cDataContents = THIS.GetOleData()
+		IF EMPTY(m.cDataContents)
+			THIS.lAddedData = .F.
+			RETURN .F.
+		ENDIF
+
+		m.cTmpCurs = "_"+SYS(3)
+		SELECT 0
+		* Open DBF containing General field with source MS Graph
+		USE (THIS.cGraphDBF) AGAIN ALIAS(m.cTmpCurs)
+		
+		* Check to make sure we have valid Graph DBF
+		DO CASE
+			CASE TYPE(THIS.cGraphFldRow)#"G" AND TYPE(THIS.cGraphFldCol)#"G"
+				=MESSAGEBOX(C_BADFIELDS_LOC)
+				RETURN .F.
+			CASE TYPE(THIS.cGraphFldRow)="G" AND TYPE(THIS.cGraphFldCol)="G"
+				* do nothing
+			CASE TYPE(THIS.cGraphFldRow)#"G" AND THIS.lSeriesByRow
+				THIS.lSeriesByRow = .F.
+			CASE !THIS.lSeriesByRow 		&& cGraphFldCol # "G"
+				THIS.lSeriesByRow = .T.
+		ENDCASE
+
+		=AFIELDS(aGraphFlds)
+
+		IF USED('vfpgtemp')
+			USE IN vfpgtemp
+		ENDIF
+
+		CREATE CURSOR vfpgtemp FROM ARRAY aGraphFlds
+		SELECT vfpgtemp
+
+		APPEND FROM (THIS.cGraphDBF)
+		USE IN (m.cTmpCurs)
+		
+		THIS.cLastDataRow = ""	&& reset
+		THIS.cLastDataCol = ""	&& reset
+
+		* Select graph based on Series By Row/Col
+		IF THIS.lSeriesByRow
+			THIS.cGraphField = THIS.cGraphFldRow
+			IF THIS.cLastDataRow = m.cDataContents
+				RETURN
+			ENDIF
+		ELSE
+			THIS.cGraphField = THIS.cGraphFldCol
+			IF THIS.cLastDataCol = m.cDataContents
+				RETURN
+			ENDIF
+		ENDIF
+
+		WAIT WINDOW NOWAIT C_WAITDATA_LOC
+
+		*- Add data to General field
+		APPEND GENERAL (THIS.cGraphField) DATA m.cDataContents
+
+		WAIT CLEAR
+
+		IF THIS.Haderror
+			RETURN .F.
+		ENDIF
+
+		*- Set so we don't have to read data later
+		IF THIS.lSeriesByRow
+			THIS.cLastDataRow = m.cDataContents
+		ELSE
+			THIS.cLastDataCol = m.cDataContents
+		ENDIF
+
+		THIS.lAddedData = .T.
+		
+	ELSE
+		*- save to a form
+
+		IF !THIS.GetOleServer()
+			RETURN .F.
+		ENDIF
+
+		*- Set value of cells in graph's DataSheet
+		PRIVATE i,fld,cols,fieldname,nNullCount
+		PRIVATE nfieldvalue,cLinedata
+
+		m.cLineData = ""
+
+		WAIT WINDOW NOWAIT C_WAITDATA_LOC
+
+		*- delete contents
+		THIS.oGraphRef.application.datasheet.range("00:Z99").delete
+
+		m.cDataContents = THIS.GetOleData()
+		IF EMPTY(m.cDataContents)
+			THIS.lAddedData = .F.
+			RETURN .F.
+		ENDIF
+		cOldClipText = _cliptext
+		_cliptext = m.cDataContents
+		THIS.oGraphRef.Application.Datasheet.Range("00").Paste
+		THIS.oGraphRef.Application.Update
+		
+		*- restore _cliptext
+		_cliptext = m.cOldClipText
+
+		THIS.lAddedData = !THIS.HadError
+		
+	ENDIF		&& THIS.nAction = 2 (output to table)
+	
+ENDIF && THIS.lAddedData
+
+RETURN .t.
+
+ENDPROC
+PROCEDURE addgraphfx
+LOCAL iSeriesCount, iLegendCount, i
+
+WAIT WINDOW NOWAIT C_WAITFORMAT_LOC
+
+IF THIS.nAction=2 OR THIS.ngraphVersion<8
+	*- save to table
+	IF !THIS.GetOleServer()
+		RETURN .F.
+	ENDIF
+	
+	IF TYPE("THIS.oGraphRef.controlsource")#"U"
+		IF THIS.oGraphRef.controlsource#THIS.cGraphField
+			THIS.oGraphRef.controlsource = THIS.cGraphField
+			IF THIS.Haderror
+				RETURN .F.
+			ENDIF
+		ENDIF
+	ENDIF
+
+	* Add legend
+	THIS.oGraphRef.HasLegend = THIS.lAddLegend
+	
+	* Check for automation error here
+	IF THIS.HadError
+		RETURN .F.
+	ENDIF
+
+	* Add title
+	THIS.oGraphRef.HasTitle = THIS.lAddTitle
+	IF THIS.lAddTitle
+		THIS.oGraphRef.ChartTitle.caption = THIS.cTitle
+	ENDIF		
+
+	* Set Chart type
+	IF !THIS.lHadPreview  &&if user previewed, they may have entered MS Graph and manually changed chart type
+		IF THIS.lUseAutoFormat
+			THIS.oGraphRef.autoformat(THIS.nChartAutoGallery,THIS.nChartAutoFormat)
+		ELSE
+			THIS.oGraphRef.type = THIS.nChartType
+			THIS.oGraphRef.subtype = THIS.nChartSubType
+		ENDIF
+	ENDIF
+
+	WAIT CLEAR
+	RETURN !THIS.Haderror
+
+ELSE
+	*- save to form (or preview)
+	
+	*- Set Chart type
+	IF !THIS.lHadPreview  && if user previewed, they may have entered MS Graph and manually changed chart type
+		DO CASE
+			CASE THIS.lUseAutoFormat
+				THIS.oGraphRef.autoformat(THIS.nChartAutoGallery,THIS.nChartAutoFormat)
+			CASE THIS.lUse8Type
+				THIS.oGraphRef.charttype = THIS.nChartType
+			OTHERWISE
+				THIS.oGraphRef.type = THIS.nChartType
+				THIS.oGraphRef.subtype = THIS.nChartSubType
+		ENDCASE
+	ENDIF
+	
+	THIS.oGraphRef.HasLegend = .F.	&& to force MSGraph recreate legend for graph, to restore count and default objects
+
+	*- Add title
+	THIS.oGraphRef.HasTitle = THIS.lAddTitle
+	IF THIS.lAddTitle
+		WITH THIS.oGraphRef.ChartTitle
+			.Text = THIS.cTitle
+		ENDWITH
+	ENDIF
+	
+	* Check for automation error here
+	IF THIS.HadError
+		RETURN .F.
+	ENDIF
+
+	*- we move the orientation around to remove extra series automatically
+	*- added by MS Graph
+	IF THIS.lSeriesByRow
+		THIS.oGraphRef.Application.PlotBy = 2
+		THIS.ndataseries = THIS.ntotaldataflds
+	ELSE
+		*- THIS.oGraphRef.Application.PlotBy = 1
+		THIS.ndataseries = THIS.ndatacount
+	ENDIF
+
+	* Check for automation error here
+	IF THIS.HadError
+		RETURN .F.
+	ENDIF
+
+	m.iSeriesCount = THIS.oGraphRef.SeriesCollection.Count
+	*- remove unneeded series
+	THIS.SetErrorOff=.T.
+	IF m.iSeriesCount > THIS.ndataseries
+		FOR i = 0 TO m.iSeriesCount - THIS.ndataseries - 1
+			THIS.oGraphRef.SeriesCollection(m.iSeriesCount - i).Delete
+			IF THIS.HadError
+				THIS.SetErrorOff=.F.
+				RETURN .F.
+			ENDIF
+		NEXT
+	ENDIF
+	THIS.SetErrorOff=.F.
+
+	*- reset chart orientation to what we really want
+	IF THIS.lSeriesByRow
+		THIS.oGraphRef.Application.PlotBy = 1
+		THIS.ndataseries = THIS.ndatacount
+	ELSE
+		THIS.oGraphRef.Application.PlotBy = 2
+		
+		FOR i = THIS.ntotaldataflds + 1 TO 4
+			*- delete columns -- this will remove unneeded legends, and shift everything to the left
+			THIS.oGraphRef.Application.DataSheet.Range(CHR(65 + THIS.ntotaldataflds)).Delete
+		NEXT
+
+		IF THIS.lUse8Type AND THIS.lStripExcessLegend
+			THIS.ndataseries = THIS.ntotaldataflds
+			
+			IF THIS.lUseAutoFormat
+			ELSE
+				m.iSeriesCount = THIS.oGraphRef.SeriesCollection.Count
+				*- remove unneeded series
+				IF m.iSeriesCount > THIS.ndataseries
+					FOR i = 0 TO m.iSeriesCount - THIS.ndataseries - 1
+						IF TYPE("THIS.oGraphRef.SeriesCollection(m.iSeriesCount - i)") == 'O'
+							THIS.oGraphRef.SeriesCollection(m.iSeriesCount - i).Delete
+						ENDIF
+					NEXT
+				ENDIF
+			ENDIF
+		ENDIF
+	ENDIF
+	*- remove datalabels that may be left from a previous graph
+	m.iSeriesCount = THIS.oGraphRef.SeriesCollection.Count
+	FOR i = 1 TO m.iSeriesCount
+		IF TYPE("THIS.oGraphRef.SeriesCollection(i).HasDataLabels") == 'L'
+			THIS.oGraphRef.SeriesCollection(i).HasDataLabels = .F.
+		ENDIF
+	NEXT
+
+	*- Set Chart type
+	IF !THIS.lHadPreview  && if user previewed, they may have entered MS Graph and manually changed chart type
+		DO CASE
+			CASE THIS.lUseAutoFormat
+				THIS.oGraphRef.autoformat(THIS.nChartAutoGallery,THIS.nChartAutoFormat)
+			CASE THIS.lUse8Type
+				THIS.oGraphRef.charttype = THIS.nChartType
+			OTHERWISE
+				THIS.oGraphRef.type = THIS.nChartType
+				THIS.oGraphRef.subtype = THIS.nChartSubType
+		ENDCASE
+	ENDIF
+
+	*- Add legend
+	THIS.oGraphRef.HasLegend = THIS.lAddLegend
+	IF THIS.lAddLegend
+		WITH THIS.oGraphRef.Legend
+			IF THIS.lUse8Type
+				m.iLegendCount = .LegendEntries.Count
+				IF !THIS.lDontStripLegend
+					IF m.iLegendCount > THIS.ndataseries
+						FOR i = 0 TO m.iLegendCount - THIS.ndataseries - 1
+							IF TYPE(".LegendEntries(m.iLegendCount - i)") == 'O'
+								.LegendEntries(m.iLegendCount - i).Delete
+							ENDIF
+						NEXT
+					ENDIF
+				ENDIF
+			ENDIF
+		ENDWITH
+	ENDIF
+
+	WAIT CLEAR
+	RETURN !THIS.Haderror
+
+ENDIF		&& nAction = 2 (save to table)
+ENDPROC
+PROCEDURE checkdata
+LOCAL lRetVal,cOldExact
+*- Check for valid data
+m.cOldExact = SET("EXACT")
+SET EXACT ON  && for ASCANs
+m.lRetVal = THIS.ValidDataTable()
+SET EXACT &cOldExact
+IF !m.lRetVal
+	THIS.lAddedData = .F.
+	RETURN	.F.
+ENDIF
+
+ENDPROC
+PROCEDURE checktable
+LOCAL i,nSaveArea,cTmpFile
+LOCAL cExt,cPrompt,cSaveFile,cOpenAlias,cOldSafe
+
+cExt = "DBF"
+cSaveFile = C_GRAPHDBF
+cPrompt = C_SAVEPROMPT1_LOC
+nSaveArea = SELECT()
+cOldSafe = SET('SAFETY')
+cTmpFile = ""
+
+DO WHILE .T.
+	THIS.cOutGenField = ""	&&reset field
+	cOpenAlias = ""
+	
+	* Check if THIS.cOutFile passed failed
+	IF !EMPTY(cTmpFile)
+		THIS.cOutFile = ""
+	ENDIF
+	
+	IF EMPTY(THIS.cOutFile)
+		SET SAFETY OFF
+		cTmpFile = PUTFILE(m.cPrompt,m.cSaveFile,m.cExt)
+		SET SAFETY &cOldSafe
+	
+		* User hit canceled
+		IF EMPTY(m.cTmpFile)
+			EXIT
+		ENDIF
+		
+		* File does not exist so, lets skip check
+		cTmpFile = THIS.ForceExt(m.cTmpFile,"DBF")
+		IF !FILE(m.cTmpFile)
+			EXIT
+		ENDIF
+	ELSE
+		cTmpFile = THIS.cOutFile
+		IF !FILE(m.cTmpFile)
+			EXIT
+		ENDIF
+	ENDIF
+	
+	* See if we already have file open and use it.
+	cOpenAlias = THIS.JUSTSTEM(m.cTmpFile)
+	IF USED(m.cOpenAlias) AND UPPER(DBF(m.cOpenAlias)) = UPPER(m.cTmpFile)
+		SELECT (m.cOpenAlias)
+	ELSE
+		cOpenAlias = ""
+	ENDIF
+	
+	* Test file for already in-use
+	IF EMPTY(m.cOpenAlias)
+		SELECT 0
+		THIS.SetErrorOff = .T.
+		USE (m.cTmpFile) AGAIN SHARED
+		THIS.SetErrorOff = .F.
+		
+		* Failed to open file shared -- file in use
+		IF EMPTY(ALIAS())
+			THIS.ALERT(C_FILEINUSE_LOC)
+			LOOP
+		ENDIF
+	ENDIF
+	
+	* Test for General fields in table
+	FOR i = 1 TO FCOUNT()
+		IF TYPE(FIELD(m.i)) = "G"
+			THIS.cOutGenField = FIELD(m.i)
+			EXIT			
+		ENDIF
+	ENDFOR
+	
+	* Table selected has no General field
+	* so let's not allow them to append.
+	IF EMPTY(THIS.cOutGenField)
+		* By default, use replace option here.
+		THIS.lReplaceDBF = .T.
+	ELSE
+		THIS.lReplaceDBF = .F.
+	ENDIF
+	
+	IF THIS.lReplaceDBF
+		* Table already opened
+		IF !EMPTY(m.cOpenAlias) AND ISEXCLUSIVE()
+			* All is well, so let's just exit
+			EXIT
+		ENDIF
+		
+		* Let's test to make sure that we can entire overwrite table
+		THIS.SetErrorOff = .T.
+		USE (m.cTmpFile) AGAIN EXCLUSIVE
+		THIS.SetErrorOff = .F.
+		* Failed to open file exclusive -- file in use
+		IF EMPTY(ALIAS())
+			THIS.ALERT(C_FILEINUSE_LOC)
+			LOOP
+		ENDIF
+	ENDIF
+	
+	* Test for read-only
+	IF ISREADONLY()
+		THIS.ALERT(C_READONLY_LOC)
+		IF EMPTY(m.cOpenAlias)
+			USE
+		ENDIF
+		LOOP
+	ENDIF
+
+	IF EMPTY(m.cOpenAlias)
+		USE
+	ENDIF
+	EXIT
+ENDDO
+THIS.cOutFile = m.cTmpFile
+THIS.cOpenAlias = m.cOpenAlias
+SELECT (m.nSaveArea)
+RETURN !EMPTY(m.cTmpFile)
+
+ENDPROC
+PROCEDURE getoledata
+*- Assemble Graph Titles and Headers.  Put numeric data to be
+*- graphed into a CF_Text format rectangle.
+
+LOCAL cScope
+
+PRIVATE i,cOleData,fld,cols,fieldname,nNullCount
+PRIVATE nfieldvalue,cLinedata
+
+m.cOleData = ""
+m.cLineData = ""
+
+THIS.SetCapitals()
+
+* Count the numeric fields and fill in the top row of the data rectangle
+* Can we also use dates?
+m.cols = 1
+FOR m.fld = 1 TO THIS.ntotaldataflds
+   m.fieldname = THIS.aDataFields(m.fld)
+   IF !EMPTY(m.fieldname) AND TYPE(m.fieldname) $ 'NFYB'
+      * _GENXTAB will prepend N_ to a numeric field name "across the top" to form a
+      * valid field name from a number (since xbase fields cannot begin with a number)
+      m.fieldname = IIF(LEFT(m.fieldname,2) = 'N_', SUBSTR(m.fieldname, 3), m.fieldname)
+      m.cOleData = m.cOleData + TAB + m.fieldname
+      m.cols = m.cols + 1
+   ENDIF
+ENDFOR
+m.cOleData = m.cOleData + CRLF
+
+IF m.cols = 1
+   =MESSAGEBOX(C_NODATAFLDS_LOC)
+   RETURN ""
+ENDIF
+
+THIS.nDataCount = 0
+
+* Output one line of data for each record
+IF THIS.lGraphRecord
+	cScope = "NEXT 1"
+	GOTO THIS.iCurrRec
+ELSE
+	cScope = "ALL"
+ENDIF
+SCAN &cScope
+   * Fill in the leftmost column
+   * Have option to skip empty values !!!
+   m.cLinedata = IIF(EMPTY(THIS.cCategoryField),"",THIS.maptochar(EVAL(THIS.cCategoryField)))
+   nNullCount = 0
+   * Fill in the data columns
+   FOR m.i = 1 TO THIS.ntotaldataflds            && Format numeric fields
+      IF !EMPTY(THIS.aDataFields[m.i]) AND TYPE(THIS.aDataFields[m.i]) $ 'NFYB'
+        fieldname = THIS.aDataFields[m.i]
+		nfieldvalue = EVAL(m.fieldname)		
+		DO CASE
+			CASE ISNULL(m.nfieldvalue)
+	        	 cLinedata = m.cLinedata + TAB + ""
+				 nNullCount = m.nNullCount + 1
+			CASE INT(m.nfieldvalue) = m.nfieldvalue	&& no decimals
+		         cLinedata = m.cLinedata + TAB + ALLTRIM(STR(m.nfieldvalue))
+			CASE TYPE(THIS.aDataFields[m.i])='Y'
+		         cLinedata = m.cLinedata + TAB + ALLTRIM(STR(m.nfieldvalue,16,4))
+			OTHERWISE
+		         cLinedata = m.cLinedata + TAB + ALLTRIM(STR(m.nfieldvalue,16,8))
+		ENDCASE
+      ENDIF
+   ENDFOR
+
+   * Check for all Mulls
+   IF !THIS.lShowNulls AND THIS.ntotaldataflds = m.nNullCount
+   		LOOP
+   ENDIF
+   m.cOleData = m.cOleData + m.cLineData + CRLF
+   THIS.nDataCount = THIS.nDataCount + 1
+
+ENDSCAN
+
+IF THIS.lGraphRecord
+	*- reposition record pointer
+	IF BETWEEN(THIS.iCurrRec,1,RECC())
+		GO THIS.iCurrRec
+	ENDIF
+ENDIF
+
+RETURN m.cOleData
+
+ENDPROC
+PROCEDURE getoleserver
+LOCAL iHeight, iWidth, lSetPreviewProps
+LOCAL lCreateForm, lAddGraphObject, cAppName, cAppVersion
+
+lCreateForm = .T.
+lAddGraphObject = .T.
+
+*- see if user passed in valid objects
+IF TYPE("THIS.GraphPreview") == 'O' AND !ISNULL(THIS.GraphPreview)
+	IF LOWER(ALLTRIM(THIS.GraphPreview.BaseClass)) == "form"
+		lCreateForm = .F.
+	ENDIF
+ENDIF
+
+THIS.HadError = .F.
+IF TYPE("THIS.oGraphRef") == 'O' AND !ISNULL(THIS.oGraphRef)
+	cAppName = THIS.oGraphRef.application.name
+	IF !THIS.HadError
+		IF m.cAppName = MSGRAPH_APPNAME
+			cAppVersion = VAL(THIS.oGraphRef.application.version)
+			IF !THIS.HadError
+				IF m.cAppVersion >= MSGRAPH_VERSION
+					lAddGraphObject = .F.
+				ENDIF
+			ENDIF
+		ENDIF
+	ENDIF
+ENDIF
+THIS.HadError = .F.
+
+*- Need to activate server
+DO CASE
+	CASE THIS.lAutoGraph AND ATC(JUSTEXT(THIS.cOutFile),"DBF")#0
+ 		THIS.graphpreview = CREATE(THIS.cGraphPrevClass)
+		THIS.oGraphRef = THIS.graphpreview.oleboundcontrol1
+		m.lSetPreviewProps = .F.
+	CASE THIS.lAutoGraph
+		IF m.lCreateForm
+			THIS.graphpreview = CREATEOBJ("form")
+			THIS.graphpreview.DefOleLCID = 0
+		ENDIF
+		IF m.lAddGraphObject
+			THIS.graphpreview.AddObject("oChart","oleControl",MSGRAPH_8_CLASS)
+			THIS.graphpreview.oChart.Visible = .T.
+			THIS.oGraphRef = THIS.graphpreview.oChart.Object
+			iheight = 200
+			iwidth = 300
+			m.lSetPreviewProps = .T.
+		ENDIF
+					
+	CASE (THIS.nAction == 2 OR  THIS.ngraphVersion < 8) AND ;
+		((TYPE('THIS.graphpreview')#'O' AND;
+		 TYPE('THIS.oGraphRef')#'O') OR;
+		 ISNULL(THIS.GraphPreview))
+		
+ 		THIS.graphpreview = CREATE(THIS.cGraphPrevClass)
+		THIS.oGraphRef = THIS.graphpreview.oleboundcontrol1
+		m.lSetPreviewProps = .F.
+
+	CASE (TYPE('THIS.graphpreview')#'O' AND;
+		 TYPE('THIS.oGraphRef')#'O') OR;
+		 ISNULL(THIS.GraphPreview)
+
+		IF m.lCreateForm
+			THIS.graphpreview = CREATE("form")
+		ENDIF
+		IF m.lAddGraphObject
+			THIS.graphpreview.AddObject("oChart","oleControl",MSGRAPH_8_CLASS)
+			THIS.oGraphRef = THIS.graphpreview.oChart.Object
+			iheight = 250
+			iwidth = 450
+			m.lSetPreviewProps = .T.
+		ENDIF
+
+		IF m.lCreateForm
+			WITH THIS.graphPreview
+				.Height = 315
+				.Width = 450
+				.Caption = C_PRVWCAPTION_LOC
+				.AlwaysOnTop = .T.
+				.AutoCenter = .T.
+				.Closable = .F.
+				.WindowType = 1
+
+				.NewObject("cmdReturn","cmdReturn",THIS.classlibrary)
+				.cmdReturn.Visible = .T.
+				.cmdReturn.Left = 156
+				.cmdReturn.Top = 265
+			ENDWITH
+		ENDIF
+ENDCASE
+
+IF TYPE('THIS.oGraphRef') # 'O' OR THIS.Haderror
+	RETURN .F.
+ENDIF
+
+IF m.lSetPreviewProps AND TYPE("THIS.graphpreview.oChart") == 'O' AND !ISNULL(THIS.graphpreview.oChart)
+	WITH THIS.graphpreview.oChart
+		.height = m.iHeight
+		.width = m.iWidth
+		.autosize = .t.
+		.stretch = 1
+		.visible = .t.
+	ENDWITH
+ENDIF
+ENDPROC
+PROCEDURE getsavefile
+LPARAMETERS cCurAlias
+LOCAL cExt,cPrompt,cSaveFile, cOldSafe
+DO CASE
+	CASE THIS.nAction = 0
+		RETURN .T.
+		
+	CASE THIS.nAction = 1	&& save to form
+		cExt = "SCX"
+		cSaveFile = FORCEEXT(IIF(EMPTY(CURSORGETPROP("DATABASE", m.cCurAlias)), m.cCurAlias, CURSORGETPROP("SourceName", m.cCurAlias)),m.cExt)
+		cPrompt = C_SAVEPROMPT3_LOC
+		cOldSafe = SET('SAFETY')
+		SET SAFETY OFF
+		THIS.cOutFile = PUTFILE(m.cPrompt,m.cSaveFile,m.cExt)
+		SET SAFETY &cOldSafe
+		RETURN (!EMPTY(THIS.cOutFile))
+		
+	CASE THIS.nAction = 2	&& save to table
+		RETURN THIS.CheckTable()
+		
+	CASE THIS.nAction = 3	&& save to query
+		DO CASE
+			CASE THIS.nCurrentOS = OS_W32S AND ;
+			  CURSORGETPROP("sourcetype",m.cCurAlias) = 3	
+				* use short DOS name for Win32S
+				cSaveFile = THIS.ForceExt(DBF(m.cCurAlias),"QPR")
+			CASE THIS.nCurrentOS = OS_W32S
+				cSaveFile = LEFT(m.cCurAlias,8) + ".QPR"
+			OTHERWISE
+				cSaveFile = THIS.ForceExt(cursorgetprop("sourcename",m.cCurAlias),"QPR")
+		ENDCASE
+		cExt = "QPR"
+		cPrompt = C_SAVEPROMPT2_LOC
+		RETURN THIS.SaveOutFile(m.cPrompt,m.cSaveFile,m.cExt)  &&use canceled
+ENDCASE	
+
+ENDPROC
+PROCEDURE makeoutput
+LOCAL cTmpFld,cQPRFile,cOldSafe,cGraphField
+
+THIS.HadError = .F.
+
+*- Quick check for source table.
+DO CASE
+	CASE EMPTY(THIS.cAlias) AND EMPTY(ALIAS())
+		=MESSAGEBOX(C_NOSOURCE_LOC)
+		RETURN .F.
+	CASE EMPTY(THIS.cAlias)
+		THIS.cAlias = ALIAS()
+	OTHERWISE
+		SELECT (THIS.cAlias)
+ENDCASE
+
+IF EMPTY(THIS.cOutFile) AND THIS.nAction # 0
+	THIS.GetSaveFile(ALIAS())
+	IF EMPTY(THIS.cOutFile)
+		RETURN
+	ENDIF
+	IF THIS.lAutoGraph AND ATC(JUSTEXT(THIS.cOutFile),"DBF")#0
+		THIS.nAction = 2
+	ENDIF
+ENDIF
+
+IF THIS.lGraphRecord
+	IF BETWEEN(RECNO(),1,RECC())
+		THIS.iCurrRec = RECNO()
+	ELSE
+		*- EOF or BOF
+		RETURN
+	ENDIF
+ENDIF
+
+IF THIS.nAction = 3			&& Save and open query
+	IF !THIS.CheckData()
+		RETURN .F.
+	ENDIF	
+	THIS.MakeQPR()
+	m.cQPRFile = "'" + THIS.cOutFile + "'"
+	_SHELL = [MODIFY QUERY &cQPRFile NOWAIT]
+	RETURN
+ENDIF
+
+*** Start Using OLE Automation ***
+* We need to make sure that we are using English
+* version so that server understands commands.
+=SYS(3006,1033)
+
+IF THIS.nAction # THIS.nLastAction AND !THIS.lKeepForm
+	THIS.oGraphRef = ""
+	THIS.graphpreview = ""
+	THIS.nLastAction = THIS.nAction
+	THIS.lAddedData = .F.
+ENDIF
+
+IF !THIS.AddGraphData()
+	RETURN .F.
+ENDIF
+
+IF !THIS.AddGraphFx()
+	RETURN .F.
+ENDIF
+
+DO CASE
+	CASE THIS.nAction = 0	&& Preview graph
+		IF TYPE("THIS.graphpreview") == "O" AND THIS.lShowWhenDone
+			THIS.graphpreview.show
+		ENDIF
+		
+	CASE THIS.nAction = 1	&& Save graph to a form
+		m.cOldSafe = SET("SAFETY")
+		SET SAFETY OFF
+		
+		WITH THIS.graphpreview
+			IF TYPE("THIS.graphpreview.cmdReturn") == 'O' AND !ISNULL(.cmdReturn)
+				.RemoveObject("cmdReturn")
+			ENDIF
+			.WindowType = 0
+			.AlwaysOnTop = .F.
+			.Closable = .T.
+			.Caption = IIF(EMPTY(CURSORGETPROP("DATABASE", THIS.cAlias)), THIS.cAlias, CURSORGETPROP("SourceName", THIS.cAlias))
+			.SaveAs(THIS.cOutFile)
+		ENDWITH
+		
+		SET SAFETY &cOldSafe
+		IF THIS.Haderror
+			THIS.ALERT(C_HADERROR_LOC)
+			RETURN .F.
+		ENDIF
+		IF INLIST(PROGRAM(1),"GRSTART","WIZARD") OR THIS.lAutoGraph
+			_SHELL = [MODIFY FORM "] + THIS.cOutFile + ["]
+		ENDIF
+
+	CASE THIS.nAction = 2	&& Save graph to table
+
+		THIS.oGraphRef = ""
+		THIS.graphpreview = ""
+				
+		* Save to new table
+		m.cOldSafe = SET("SAFETY")
+		SET SAFETY OFF
+		m.cGraphField = THIS.cGraphField
+		THIS.Haderror = .F.
+		
+		* Overwrite table / Append existing table
+		THIS.SetErrorOff = .T.
+		IF !FILE(THIS.cOutFile) OR THIS.lReplaceDBF OR EMPTY(THIS.cOutGenField)
+			CREATE TABLE (THIS.cOutFile) FREE ((THIS.cDefNewField) g)
+			INSERT INTO (DBF()) VALUE(vfpgtemp.&cGraphField.)
+		ELSE
+			IF EMPTY(THIS.cOpenAlias)
+				SELECT 0
+				USE (THIS.cOutFile) AGAIN SHARED
+			ELSE
+				SELECT (THIS.cOpenAlias)
+			ENDIF
+			INSERT INTO (DBF()) ((THIS.cOutGenField)) VALUE(vfpgtemp.&cGraphField.)
+			THIS.cDefNewField = THIS.cOutGenField
+		ENDIF
+
+		THIS.SetErrorOff = .F.
+		
+		SET SAFETY &cOldSafe
+		IF THIS.Haderror
+			THIS.ALERT(C_HADERROR_LOC)
+			RETURN .F.
+		ENDIF
+
+		m.cTmpFld = ALIAS() + "." + THIS.cDefNewField
+		
+		* Check to see where Graph Wizard was called from
+		* Avoid using if it was called programmatically
+		IF INLIST(PROGRAM(1),"GRSTART","WIZARD") OR THIS.lAutoGraph
+		DO CASE
+		CASE TYPE("oEngine") == 'O'
+			oEngine.AddAliasToPreservedList(ALIAS())
+		CASE TYPE("oWizard") == 'O'
+			oWizard.AddAliasToPreservedList(ALIAS())
+		ENDCASE
+		_SHELL = [MODIFY GENERAL &cTmpFld NOWAIT]
+		ELSE
+		
+		ENDIF
+
+ENDCASE
+
+ENDPROC
+PROCEDURE makeqpr
+*- Makes a temporary cursor with memo to create QPR files
+LOCAL cTmpCursor,nWkArea,cSQLAlias,fldExpr,cTmpType,cTmpSub,cDBCPath,i,;
+	cSQLSource
+	
+m.nWkArea = SELECT()
+m.cTmpCursor = SYS(2015)
+
+IF !EMPTY(CURSORGETPROP("database"))				&& DBC stuff
+	cSQLSource= PROPER(CURSORGETPROP("SourceName"))
+ELSE											&& table
+	cSQLSource = SYS(2014,DBF(),THIS.cOutFile)
+ENDIF
+cSQLAlias = ALIAS()
+
+* Get SQL Select statement pieces
+IF !EMPTY(THIS.cCategoryField)
+	m.fldExpr = m.cSQLAlias + "." + THIS.cCategoryField
+ENDIF
+
+FOR i = 1 TO ALEN(THIS.aDataFields)
+	IF EMPTY(THIS.aDataFields[m.i])
+		LOOP
+	ENDIF
+	m.fldExpr=m.fldExpr + ", "+m.cSQLAlias + "." + THIS.aDataFields[m.i]
+ENDFOR
+
+IF !EMPTY(CURSORGETPROP('database'))  &&lets put the DBC alias before table
+	cDBCPath = THIS.JustStem(SYS(2014,CURSORGETPROP('database'),THIS.cOutFile))
+	cSQLSource = m.cDBCPath + "!" + m.cSQLSource
+ENDIF
+cSQLSource = "'" + m.cSQLSource + "' " + m.cSQLAlias
+
+IF THIS.lUseAutoFormat
+	m.cTmpType = THIS.nChartAutoGallery
+	m.cTmpSub = THIS.nChartAutoFormat
+ELSE
+	m.cTmpType = THIS.nChartType
+	m.cTmpSub = THIS.nChartSubType
+ENDIF
+
+CREATE CURSOR (m.cTmpCursor) (sqlstring m)
+APPEND BLANK
+REPLACE sqlstring WITH ;
+	"SELECT "+m.fldExpr + ";" + CRLF +;
+	"    FROM " + m.cSQLSource + ";" + CRLF +;
+	"    INTO CURSOR SYS(2015)" + CRLF +;
+	"DO (_GENGRAPH) WITH "+;
+	"'AUTOGRAPH',"+;
+	ALLTRIM(STR(m.cTmpType))+","+;
+	ALLTRIM(STR(m.cTmpSub))+","+;
+	"'"+THIS.cTitle+"',"+;
+	IIF(THIS.lSeriesByRow ,".T.",".F.")+","+;
+	IIF(THIS.lAddLegend,".T.",".F.")+","+;
+	IIF(THIS.lUseAutoFormat,".T.",".F.")+;
+	",,.F." + ;
+	IIF(THIS.lShowNulls,",.T.","") ADDITIVE
+COPY MEMO sqlstring TO (THIS.cOutFile)
+USE
+SELECT (m.nWkArea)
+
+ENDPROC
+PROCEDURE maptochar
+* Converts a variable of any type to a character
+LPARAMETER m.value
+LOCAL cDataType
+m.cDataType = TYPE("m.value")
+DO CASE
+	CASE ISNULL(m.value)
+		RETURN "Null"
+	CASE INLIST(m.cDataType,'C','M')
+	   RETURN m.value
+	CASE INLIST(m.cDataType,'N','F','B','Y')
+	   RETURN ALLTRIM(STR(m.value,15))
+	CASE m.cDataType = 'D'
+	   RETURN DTOC(m.value)
+	CASE m.cDataType = 'T'
+	   RETURN TTOC(m.value)
+	CASE m.cDataType = 'L'
+	   RETURN IIF(m.value, 'YES', 'NO')
+	CASE m.cDataType = 'G'
+	   RETURN "Ole"
+	OTHERWISE
+		RETURN ""
+ENDCASE
+
+ENDPROC
+PROCEDURE msgraphcheck
+	LOCAL cAppKey,cAppName,nErrNum,cClass,i, oReg
+
+	*- REGISTRY.VCX is added to the CLASSLIB list in the INIT of the
+	*- AUTOMATION class
+	
+	oReg = create('FileReg')
+
+	cClass = MSGRAPH_CLASS
+	cAppKey = ""
+	cAppName = ""
+
+	* Get MS Graph Registry entry
+	nErrNum = oReg.GetLatestVersion(m.cClass,@cAppKey,@cAppName,.T.)
+	IF m.nErrNum # ERROR_SUCCESS
+		=MESSAGEBOX(C_BADMSGRAPH_LOC)
+		RETURN .F.
+	ENDIF
+	
+	* Does file exist?
+	IF !FILE(m.cAppName)
+		* If fail, try different Registy key
+		cAppName = ""
+		cAppKey = ""
+		nErrNum = oReg.GetLatestVersion(m.cClass,@cAppKey,@cAppName)
+		IF m.nErrNum # ERROR_SUCCESS
+			=MESSAGEBOX(C_BADMSGRAPH_LOC)
+			RETURN .F.
+		ENDIF
+		
+		IF !FILE(m.cAppName)
+			=MESSAGEBOX(C_NOMSGRAPH_LOC)
+			RETURN .F.
+		ENDIF
+	ENDIF
+
+	* Is this a valid version of MS Graph (>3.0)?
+	THIS.nGraphVersion = VAL(RIGHT(m.cAppKey,1))
+	IF THIS.nGraphVersion < MSGRAPH_VERSION
+		=MESSAGEBOX(C_MSGRAPHVER_LOC)
+		RETURN .F.
+	ENDIF
+	
+	* Let's check for newer version of Graph which may be higher than
+	* registered current version, but somehow got messed up in Registry.
+	FOR i = THIS.nGraphVersion+1 TO 15
+		IF oReg.OpenKey(MSGRAPH_CLASS+"."+ALLTRIM(STR(m.i)),HKEY_CLASSES_ROOT) = 0
+			oReg.CloseKey()
+			THIS.nGraphVersion = m.i
+			EXIT
+		ENDIF
+	ENDFOR
+	RETURN .T. 	&&OK
+
+ENDPROC
+PROCEDURE setcapitals
+* Set capitalization of fields for series
+IF TYPE("THIS.nCatCapital") # "N" OR !INLIST(THIS.nCatCapital,1,2,3)
+	RETURN
+ENDIF
+LOCAL i
+FOR i = 1 TO ALEN(THIS.aDataFields)
+	DO CASE
+	CASE THIS.nCatCapital = 1
+		THIS.aDataFields[m.i] = LOWER(THIS.aDataFields[m.i])
+	CASE THIS.nCatCapital = 2
+		THIS.aDataFields[m.i] = UPPER(THIS.aDataFields[m.i])
+	CASE THIS.nCatCapital = 3
+		THIS.aDataFields[m.i] = PROPER(THIS.aDataFields[m.i])
+	ENDCASE
+ENDFOR
+
+ENDPROC
+PROCEDURE validdatatable
+* Note: if no aDataFields or cCategoryField, try to find some
+
+LOCAL nTotRecs,i,aTmpData,aFldData
+DIMENSION aTmpData[1]
+
+* Check for too many records in datasource
+COUNT TO m.nTotRecs
+DO CASE
+CASE m.nTotRecs = 0
+	=MESSAGEBOX(C_NODATAPOINTS_LOC)
+	RETURN .F.
+CASE m.nTotRecs > MAX_MSGRAPH
+	=MESSAGEBOX(C_MAXGRAPH_LOC)
+	RETURN .F.
+CASE m.nTotRecs > MAX_DATAPOINTS AND ;
+	MESSAGEBOX(C_TOOMANYPOINTS_LOC, YESNO_DIALOG + NO_BTN) # IS_YES
+	RETURN .F.
+ENDCASE
+
+* Check for faulty data fields array
+IF EMPTY(THIS.aDataFields[1]) AND ALEN(THIS.aDataFields)>1
+	* reset data fields array
+	DIMENSION THIS.aDataFields[1]
+	THIS.aDataFields = ""
+ENDIF
+
+* Check to make sure fields are in data source
+IF !EMPTY(THIS.cCategoryField) OR !EMPTY(THIS.aDataFields[1])
+	DIMENSION aFldData[FCOUNT()]
+	FOR i = 1 TO FCOUNT()
+		aFldData[m.i] = FIELD[m.i]
+	ENDFOR
+
+	IF !EMPTY(THIS.cCategoryField) AND ;
+		(TYPE("THIS.cCategoryField")#"C" OR;
+		 ASCAN(aFldData,UPPER(THIS.cCategoryField))=0)
+		=MESSAGEBOX(C_BADCATEGORY_LOC)
+		RETURN .F.
+	ENDIF
+	IF !EMPTY(THIS.aDataFields)
+		FOR i = 1 TO ALEN(THIS.aDataFields)
+			IF TYPE("THIS.aDataFields[m.i]")#"C" OR ASCAN(aFldData,UPPER(THIS.aDataFields[m.i]))=0
+				=MESSAGEBOX(C_BADDATAFIELD_LOC)
+				RETURN .F.
+			ENDIF
+		ENDFOR
+	ENDIF
+ENDIF
+
+
+* Check for valid field types
+DO CASE
+	CASE EMPTY(THIS.cCategoryField) AND EMPTY(THIS.aDataFields)
+		* assume that user wants to use first field as category source
+		THIS.cCategoryField = FIELD[1]
+	CASE EMPTY(THIS.cCategoryField)
+		=ACOPY(THIS.aDataFields,aTmpData)
+		FOR i = 1 TO ALEN(aTmpData)
+			aTmpData[m.i] = UPPER(aTmpData[m.i])
+		ENDFOR
+		FOR m.i = 1 TO FCOUNT()
+			IF ASCAN(aTmpData,FIELD[m.i])=0
+				THIS.cCategoryField = FIELD[m.i]
+				EXIT
+			ENDIF
+		ENDFOR
+ENDCASE
+
+* Populate data fields array
+IF EMPTY(THIS.aDataFields)
+	FOR m.i = 1 TO FCOUNT()
+		IF FIELD[m.i] == UPPER(THIS.cCategoryField)
+			LOOP
+		ENDIF
+		IF !INLIST(TYPE(FIELD[m.i]),'N','F','Y','B')
+			LOOP
+		ENDIF
+		
+		IF !EMPTY(THIS.aDataFields)
+			DIMENSION THIS.aDataFields[ALEN(THIS.aDataFields)+1]
+		ENDIF
+		THIS.aDataFields[ALEN(THIS.aDataFields)] = FIELD[m.i]
+	ENDFOR
+ENDIF
+
+* Check for valid data fields in array
+FOR m.i = 1 TO ALEN(THIS.aDataFields)
+	IF !(TYPE(THIS.aDataFields[m.i])$ 'NFYB')
+		* Ask if they want to continue
+		IF MESSAGEBOX(C_NOTNUMERIC_LOC, YESNO_DIALOG) # IS_YES
+			RETURN .F.
+		ENDIF
+	ENDIF
+ENDFOR
+
+* Make sure we have right settings
+THIS.cTitle = ALLTRIM(THIS.cTitle)
+IF EMPTY(THIS.cTitle)
+	THIS.lAddTitle = .F.
+ENDIF
+
+IF THIS.nGraphVersion = 5 AND THIS.nChartAutoGallery = 16
+	* Special case here else Graph5 will crash!
+	THIS.nChartAutoGallery = 1
+ENDIF
+
+RETURN .T.
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+naction Output action (0-preview, 1-save to form, 2- save to table, 3- save to query).
+coutfile Name of outfile if any.
+ccategoryfield
+ncharttype Numeric code for chart type
+nchartsubtype Sub type of chart.
+luseautoformat Use MS Graph autocharting gallery.
+ngraphversion Version of Graph being used.
+ctitle Title caption of chart.
+laddtitle Add title to chart.
+laddeddata Flag if data already added for performance.
+lshownulls Display nulls in chart.
+lseriesbyrow Plot series by row or column.
+cgraphfldrow
+cgraphfldcol
+cgraphfield
+clastdatarow
+clastdatacol
+ographref
+graphpreview
+lautograph
+laddlegend Add legend to chart.
+lhadpreview
+copenalias
+coutgenfield
+cdefnewfield
+cgraphdbf
+cgraphprevclass
+coleserver
+lreplacedbf
+nchartautoformat Gallery chart format for autoformat (setting 2).
+nchartautogallery Gallery chart format for autoformat (setting 1).
+ntotaldataflds
+ndataseries
+ndatacount
+lstripexcesslegend
+nlastaction
+ldontstriplegend
+lshowwhendone If .T., do SHOW of preview form when done
+luse8type Use the charttype property for setting chart type.
+lgraphrecord Whether to graph current record or entire cursor.
+icurrrec Hold the current record number, if only graphing one record.
+lkeepform Use user supplied form and olecontrol?
+*msgraphcheck 
+*getsavefile 
+*checktable 
+*makeqpr 
+^adatafields[1,1] Array of data fields.
+*addgraphdata Adds data to chart.
+*validdatatable 
+*getoledata 
+*setcapitals 
+*maptochar 
+*addgraphfx Adds chart formatting.
+*getoleserver 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+autgraph.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] autograph
+[START RESERVED1]
+ 
+ autgraph.h®ïýU‚*[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RKO0XAZ7S
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] cmdreturn
+[START PROPERTIES]
+Height = 39
+Width = 127
+Caption = "Return To Wizard"
+Default = .T.
+Name = "cmdreturn"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+THISFORM.Hide()
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] cmdreturn
+[START PROPERTIES]
+Arial, 0, 9, 5, 15, 12, 13, 3, 0
+[END PROPERTIES]
+[EOF]
