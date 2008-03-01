@@ -1,0 +1,93 @@
+SCCTEXT Version 4.0.0.2
+PLATFORM C(8,0),UNIQUEID C(10,0),TIMESTAMP N(10,0),CLASS M(4,0),CLASSLOC M(4,0),BASECLASS M(4,0),OBJNAME M(4,0),PARENT M(4,0),PROPERTIES M(4,0),PROTECTED M(4,0),METHODS M(4,0),OBJCODE M(4,0),OLE M(4,0),OLE2 M(4,0),RESERVED1 M(4,0),RESERVED2 M(4,0),RESERVED3 M(4,0),RESERVED4 M(4,0),RESERVED5 M(4,0),RESERVED6 M(4,0),RESERVED7 M(4,0),RESERVED8 M(4,0),USER M(4,0)
+1252
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] Class     
+[START RESERVED1]
+VERSION =   3.00[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _S821FAG7L
+[CLASS] custom
+[BASECLASS] custom
+[OBJNAME] _regexp
+[START PROPERTIES]
+Height = 25
+Width = 28
+pattern = *
+Name = "_regexp"
+[END PROPERTIES]
+[START PROTECTED]
+ClassLibrary^
+AddObject^
+CloneObject^
+Comment^
+ControlCount^
+Controls^
+Destroy^
+NewObject^
+Objects^
+ParentClass^
+Picture^
+ReadExpression^
+ReadMethod^
+RemoveObject^
+ResetToDefault^
+SaveAsClass^
+ShowWhatsThis^
+WriteExpression^
+WriteMethod^
+[END PROTECTED]
+[START METHODS]
+PROCEDURE clear
+this.pattern = "*"
+this.matches = .f.
+ENDPROC
+PROCEDURE execute
+LParameters tcStr, tlCaseMatters
+
+Local loRegEx, loMatch, loMatches, i
+
+loRegEx = CreateObject("VBScript.RegExp")
+loRegEx.pattern = this.pattern
+loRegEx.ignoreCase = !tlCaseMatters
+loRegEx.global = .T.
+
+loMatches = loRegEx.execute(tcStr)
+Dimension this.matches[Max(loMatches.count,1),2]
+taMatchInfo = .F.
+
+i = 1
+For Each loMatch In loMatches
+	this.matches[i, 1] = loMatch.firstIndex + 1   && fox strings are not zero-based
+	this.matches[i, 2] = loMatch.value
+	i = i + 1
+EndFor
+
+loMatches = .F.
+loRegEx = .F.
+
+Return i -1
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+pattern Contains the pattern (regular expression)
+^matches[1,0] Array containing the results of the string test
+*clear Clears all values
+*execute Tests the pattern against the string
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _regexp
+[EOF]
