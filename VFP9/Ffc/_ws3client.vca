@@ -1,0 +1,2559 @@
+SCCTEXT Version 4.0.0.2
+PLATFORM C(8,0),UNIQUEID C(10,0),TIMESTAMP N(10,0),CLASS M(4,0),CLASSLOC M(4,0),BASECLASS M(4,0),OBJNAME M(4,0),PARENT M(4,0),PROPERTIES M(4,0),PROTECTED M(4,0),METHODS M(4,0),OBJCODE M(4,0),OLE M(4,0),OLE2 M(4,0),RESERVED1 M(4,0),RESERVED2 M(4,0),RESERVED3 M(4,0),RESERVED4 M(4,0),RESERVED5 M(4,0),RESERVED6 M(4,0),RESERVED7 M(4,0),RESERVED8 M(4,0),USER M(4,0)
+1252
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] Class     
+[START RESERVED1]
+VERSION =   3.00[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0MD01SD44
+[CLASS] _custom
+[CLASSLOC] _base.vcx
+[BASECLASS] custom
+[OBJNAME] wshandler
+[START PROPERTIES]
+Height = 25
+Width = 53
+wsdl = 
+wsml = 
+service = 
+port = 
+returnvalue = 
+webserviceid = 
+wsmethod = 
+soaperrorcode = 
+soaperrordetail = 
+wsname = 
+wssyntax = 
+ldisplayerrors = .T.
+nconnecttries = 2
+wsobject = 
+soaperrorstring = 
+lautoconvert = .T.
+offlinedbf = 
+cofflinealias = 
+lautoclosecursors = .T.
+xmladapterclass = 
+xmladapterclasslib = 
+clastevent = 
+displaymode = 0
+ccontainer = 
+lautobindcontrols = .T.
+luseraiseevents = .T.
+builderx = (HOME()+"ffc\_ws3utils,wsbuilder")
+lautobuilder = .T.
+lautosetobjectrefs = .T.
+Name = "wshandler"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Destroy
+LOCAL i
+IF THIS.lAutoCloseCursors
+	FOR i = 1 TO ALEN(THIS.aCursors)
+		IF VARTYPE(THIS.aCursors[m.i])="C" AND ;
+		  !EMPTY(THIS.aCursors[m.i]) AND USED(THIS.aCursors[m.i])
+			SELECT (THIS.aCursors[m.i])
+			USE
+		ENDIF
+	ENDFOR
+ENDIF
+
+ENDPROC
+PROCEDURE Error
+LPARAMETERS nError, cMethod, nLine
+
+#DEFINE DEBUGMODE	.F.
+
+LOCAL lcErrorMsg
+
+THIS.lhaderror=.T.
+IF THIS.lSkiperror OR _VFP.StartMode>0
+	RETURN
+ENDIF
+
+THIS.ErrorNumber = nError
+THIS.ErrorMessage = MESSAGE()
+TEXT TO lcErrorMsg NOSHOW TEXTMERGE
+<<MESSAGE()>>
+
+ERR_LOCATION_LOC <<THIS.Name>>
+ERR_NUMBER_LOC <<TRANSFORM(nError)>>
+ERR_METHOD_LOC <<cMethod>>
+ERR_MESSAGE_LOC <<MESSAGE(1)>>
+ERR_LINE_LOC <<TRANSFORM(nline)>>
+<<REPLICATE("_",30)>>
+ERR_MSG1_LOC
+ERR_MSG2_LOC
+
+ENDTEXT
+THIS.ErrorDetail = lcErrorMsg
+
+IF THIS.lDisplayErrors
+	IF MESSAGEBOX(lcErrorMsg, 17, MB_ERRTITLE_LOC) # 1
+		DO CASE
+		CASE DEBUGMODE
+			SET STEP ON
+			RETRY
+		CASE TYPE("THISFORM")="O"
+			RELEASE THISFORM
+		OTHERWISE
+			CANCEL
+		ENDCASE
+	ENDIF
+ENDIF
+
+RETURN .F.
+
+ENDPROC
+PROCEDURE Init
+IF THIS.SetupOperations() AND THIS.lHasClients
+	IF TYPE("THISFORM")="O"
+		BINDEVENT(THISFORM, "Activate", THIS, "StartupInvoke")
+	ELSE
+		THIS.StartupInvoke()
+	ENDIF
+ENDIF
+ENDPROC
+PROCEDURE afteropencursor
+LPARAMETERS toTable
+* Virtual method that gets called after cursor opened from XMLAdapter.
+* This routine gets called when Web service returns an ADO .Net Dataset.
+ENDPROC
+PROCEDURE beforeopencursor
+LPARAMETERS toTable
+* Virtual method that gets called before cursor opened from XMLAdapter.
+* This routine gets called when Web service returns an ADO .Net Dataset.
+ENDPROC
+PROCEDURE callclients
+LPARAMETERS tcOperation
+
+LOCAL loOperation, loClient, loObject, lcProp, loItem
+
+THIS.lSkiperror = .T.
+TRY
+	* Check if key passed in first
+	loOperation = THIS.colOperations(tcOperation)
+CATCH
+	* If user passes in just name, look for it.
+	FOR EACH loItem IN THIS.colOperations
+		IF UPPER(loItem.wsOperation) == UPPER(tcOperation)
+			loOperation = loItem
+			THIS.lhaderror=.F.
+			EXIT
+		ENDIF
+	ENDFOR
+ENDTRY
+THIS.lSkiperror = .F.
+
+IF VARTYPE(loOperation)#"O"
+	RETURN .F.
+ENDIF
+
+FOR EACH loClient IN loOperation.colClients
+	* Get object reference based on Builder setting
+	lcProp = loClient.BindProp
+	loObject = THIS.GetObjectRef(loClient.ObjectRef)
+	IF VARTYPE(loObject)#"O" OR !PEMSTATUS(loObject, lcProp,5)
+		LOOP
+	ENDIF
+
+	THIS.cLastEvent = lcProp
+	
+	DO CASE
+	CASE ATC("Property", PEMSTATUS(loObject, lcProp,3))#0
+		loObject.&lcProp. = .T.
+	CASE ATC("CursorFill", lcProp)#0 AND ATC("CursorAdapter",loObject.BaseClass)#0
+		* Need to explicitly call the method. RaiseEvent will not cause table to fill.
+		loObject.CursorFill()
+	OTHERWISE
+		IF PEMSTATUS(loObject, lcProp, 4) OR ;
+			(VARTYPE(THIS.lUseRaiseEvents)="L" AND THIS.lUseRaiseEvents)
+			RAISEEVENT(loObject, lcProp)
+		ELSE
+			loObject.&lcProp
+		ENDIF
+	ENDCASE
+	
+	loOperation.lSkipWebServiceCall=.T.
+ENDFOR
+loOperation.lSkipWebServiceCall=.F.
+
+ENDPROC
+PROCEDURE calloperation
+LPARAMETERS tcOperation
+
+LOCAL loOperation, lSuccess, lcErrString, loItem, loParmForm
+
+THIS.lSkiperror = .T.
+TRY
+	* Check if key passed in first
+	loOperation = THIS.colOperations(tcOperation)
+CATCH
+	* If user passes in just name, look for it.
+	FOR EACH loItem IN THIS.colOperations
+		IF UPPER(loItem.wsOperation) == UPPER(tcOperation)
+			loOperation = loItem	
+			THIS.lhaderror=.F.
+			EXIT
+		ENDIF
+	ENDFOR
+ENDTRY
+THIS.lSkiperror = .F.
+
+IF VARTYPE(loOperation)#"O"
+	RETURN .F.
+ENDIF
+
+* Skip if already called
+IF loOperation.lSkipWebServiceCall
+	RETURN !loOperation.lHadError
+ENDIF
+
+* Handle parameters
+*   nParmPrompt=1 -- user already input them via builder
+*   nParmPrompt=2 -- user already input them via their own handling
+* 	 set by loOperation.colParms(m.i).InputValue
+*   nParmPrompt=3 -- prompt now (at runtime)
+
+IF loOperation.colParms.Count>0 AND loOperation.nParmPrompt=3
+	loParmForm = NEWOBJECT("wsParms",THIS.ClassLibrary)
+	loParmForm.oColParms = loOperation.colParms
+	loParmForm.SetupWS()
+	loParmForm.Show(1)
+ENDIF
+
+lSuccess = THIS.Invoke(loOperation)
+
+loOperation.ReturnValue = THIS.ReturnValue
+loOperation.lHadError = THIS.lHadError
+
+IF !lSuccess
+	loOperation.SoapErrorCode = THIS.SoapErrorCode
+	loOperation.SoapErrorString = THIS.SoapErrorString
+	loOperation.SoapErrorDetail = THIS.SoapErrorDetail
+	loOperation.ErrorNumber = THIS.ErrorNumber
+	loOperation.ErrorMessage = THIS.ErrorMessage
+	loOperation.ErrorDetail = THIS.ErrorDetail
+	
+	lcErrString = INVOKE_ERROR_LOC+CRLF+CRLF
+	
+	DO CASE
+	CASE !EMPTY(THIS.SoapErrorString) AND THIS.lVerboseError
+		lcErrString = lcErrString+THIS.SoapErrorDetail
+	CASE !EMPTY(THIS.SoapErrorString)
+		lcErrString = lcErrString+THIS.SoapErrorString
+	CASE !EMPTY(THIS.ErrorDetail) AND THIS.lVerboseError
+		lcErrString = lcErrString+THIS.ErrorDetail
+	CASE !EMPTY(THIS.ErrorMessage)
+		lcErrString = lcErrString+THIS.ErrorMessage
+	OTHERWISE
+		lcErrString = ALLTRIM(lcErrString)
+	ENDCASE
+	
+	THIS.DisplayError(lcErrString)
+ENDIF
+
+RETURN lSuccess
+ENDPROC
+PROCEDURE checknumber
+LPARAMETERS teValue
+* This routine handles floats and fixes up unneeded extra decimals
+LOCAL i, lnLastValue
+IF VARTYPE(teValue)#"N" OR teValue=0
+	RETURN teValue
+ENDIF
+
+* Quick check for integer first
+IF MOD(INT(teValue), teValue)=0
+	RETURN INT(teValue)
+ENDIF
+
+* Reduce out extra decimals
+lnLastValue = teValue
+FOR i = 18 TO 1 STEP -1
+	IF ROUND(teValue, m.i)-teValue=0
+		lnLastValue = ROUND(teValue, m.i)
+		LOOP
+	ENDIF
+	teValue = lnLastValue
+	EXIT
+ENDFOR
+
+RETURN teValue
+ENDPROC
+PROCEDURE connectws
+LOCAL loSoapClient, i
+
+* Check core parameters
+IF VARTYPE(THIS.WSDL)#"C" OR EMPTY(THIS.WSDL)
+	RETURN .F.
+ENDIF
+IF VARTYPE(THIS.Service)#"C"
+	THIS.Service = ""
+ENDIF
+IF VARTYPE(THIS.Port)#"C"
+	THIS.Port = ""
+ENDIF
+IF VARTYPE(THIS.WSML)#"C" OR ATC(".asmx?wsdl",THIS.WSDL)#0
+	* Only include WSML file if SOAP Toolkit XML Web service using custom type mapper.
+	* Skip for all VS XML Web services.
+	THIS.WSML = ""
+ENDIF
+
+* Create instance of SOAP object (default for nConnectTries = 2)
+FOR i = 1 TO THIS.nConnectTries
+
+	THIS.lHadError = .F.
+	
+	THIS.ErrorDetail = ""
+	THIS.ErrorMessage = ""
+	THIS.ErrorNumber = 0
+
+	THIS.SoapErrorCode = ""
+	THIS.SoapErrorString = ""
+	THIS.SoapErrorDetail = ""
+
+	THIS.DisplayStatus(WAIT_QUERYWS_LOC)
+	
+	TRY
+		* SOAPCLIENT_CLASS => "MSSOAP.SoapClient30"
+		THIS.wsObject = CREATEOBJECT(SOAPCLIENT_CLASS)
+		THIS.SetClientProperties()
+		THIS.wsObject.SOAPCLIENT_INIT(THIS.WSDL, THIS.Service, THIS.Port, THIS.WSML)
+		THIS.SetConnectorProperties()
+
+	CATCH TO loException
+		THIS.lHadError = .T.
+		THIS.ErrorNumber = loException.ErrorNo
+		THIS.ErrorMessage = loException.Message
+
+		DO CASE
+		CASE VARTYPE(THIS.wsObject)#"O"
+			THIS.ErrorDetail = ERR_BADSOAPCLASS_LOC
+		CASE !EMPTY(THIS.wsObject.FaultCode)
+			THIS.SoapErrorCode = THIS.wsObject.FaultCode
+			THIS.SoapErrorString = THIS.wsObject.FaultString
+			THIS.SoapErrorDetail = THIS.wsObject.Detail	
+		OTHERWISE
+			THIS.ErrorDetail = ERR_OTHERSOAPERR_LOC
+		ENDCASE
+
+	ENDTRY
+	
+	THIS.Displaystatus()
+	
+	IF !THIS.lHadError OR m.i=THIS.nConnectTries
+		EXIT
+	ENDIF
+
+ENDFOR
+
+IF THIS.lHadError
+	THIS.wsObject = ""
+ENDIF
+
+RETURN !THIS.lHadError
+ENDPROC
+PROCEDURE converttype
+LPARAMETERS teInputValue, tcInputtype, tcOutputtype
+
+LOCAL leRetVal
+
+DO CASE
+CASE !THIS.lAutoConvert
+	RETURN teInputValue
+CASE PCOUNT()#3 OR VARTYPE(tcInputtype)#"C" OR VARTYPE(tcOutputtype)#"C"
+	RETURN teInputValue
+CASE tcInputtype=tcOutputtype
+	RETURN teInputValue
+ENDCASE
+
+leRetVal = teInputValue
+			
+* Handle type conversion here
+DO CASE	
+CASE tcInputtype=tcOutputtype OR !THIS.lAutoConvert
+	* Do nothing -- if lAutoConvert=.F., then invalid type gets caught by error handler.
+CASE tcOutputtype = "C"	&& String
+	IF tcInPutType="L"
+		leRetVal = IIF(leRetVal, TRUE_LOC, FALSE_LOC)
+	ELSE
+		leRetVal = TRANSFORM(leRetVal)
+	ENDIF
+CASE tcOutputtype = "N"	&& Numeric
+	DO CASE
+	CASE tcInPutType="C"
+		leRetVal = VAL(leRetVal)
+	CASE tcInPutType="L"
+		leRetVal = IIF(leRetVal, 1, 0)
+	CASE INLIST(tcInPutType, "D", "T")
+		* Return Julian value
+		leRetVal = ROUND(VAL(SYS(11, leRetVal)),0)
+	OTHERWISE
+		leRetVal = .F.
+	ENDCASE				
+CASE tcOutputtype = "L"	&& Logical
+	DO CASE
+	CASE tcInPutType="N"
+		leRetVal = IIF(leRetVal=0, .F., .T.)
+	CASE tcInPutType="C"
+		DO CASE
+		CASE ATC(TRUE_LOC, leRetVal)#0 OR ATC(YES_LOC, leRetVal)#0
+			leRetVal= .T.
+		CASE ATC(FALSE_LOC, leRetVal)#0 OR ATC(NO_LOC, leRetVal)#0 OR EMPTY(leRetVal)
+			leRetVal= .F.
+		CASE ISDIGIT(leRetVal)
+			leRetVal=IIF(VAL(leRetVal)=0,.F.,.T.)		
+		OTHERWISE
+			leRetVal=IIF(ISALPHA(leRetVal),.F.,EVALUATE(leRetVal))
+		ENDCASE
+	OTHERWISE
+		leRetVal = .F.
+	ENDCASE
+CASE tcOutputtype = "D"	&& Date
+	DO CASE
+	CASE tcInPutType = "N" AND BETWEEN(leRetVal , 1721119, 5373484)
+		* Handle Julian types
+		leRetVal = SYS(10, leRetVal)
+	CASE tcInPutType = "T"
+		leRetVal = TTOD(leRetVal)
+	CASE tcInPutType = "C"
+		leRetVal = CTOD(leRetVal)
+	OTHERWISE
+		leRetVal = DATE()
+	ENDCASE
+CASE tcOutputtype = "T"	&& Time
+	DO CASE
+	CASE tcInPutType = "N" AND BETWEEN(leRetVal , 1721119, 5373484)
+		* Handle Julian types
+		leRetVal = SYS(10, leRetVal)
+	CASE tcInPutType = "D"
+		leRetVal = DTOT(leRetVal)
+	CASE tcInPutType = "C"
+		leRetVal = CTOT(leRetVal)
+	OTHERWISE
+		leRetVal = DATETIME()
+	ENDCASE
+OTHERWISE
+	* Not supported
+ENDCASE
+
+RETURN leRetVal
+ENDPROC
+PROCEDURE displayerror
+LPARAMETERS tcErrMessage
+IF THIS.lDisplayErrors
+	MESSAGEBOX(tcErrMessage, 0, MB_SOAPERRTITLE_LOC)
+ENDIF
+
+ENDPROC
+PROCEDURE displaystatus
+LPARAMETERS lcMsg
+IF VARTYPE(THIS.Displaymode)#"N"
+	THIS.Displaymode=0
+ENDIF
+IF VARTYPE(lcMsg)#"C" OR EMPTY(lcMsg)
+	DO CASE
+	CASE THIS.Displaymode=0
+		SET MESSAGE TO
+	CASE THIS.Displaymode=1
+		WAIT CLEAR
+	OTHERWISE		
+	ENDCASE
+	RETURN
+ENDIF
+
+DO CASE
+CASE THIS.Displaymode=0
+	SET MESSAGE TO lcMsg
+CASE THIS.Displaymode=1
+	WAIT WINDOW lcMsg NOWAIT
+OTHERWISE
+ENDCASE
+ENDPROC
+PROCEDURE gendataset
+LPARAMETERS tcXMLSource, toSource
+
+* tcXMLSource - reference to XMLDOMNodeList object
+* toSource - object which has oAdapter property to create XMLAdapter object
+
+LOCAL lHadError, lcClass, lcClassLib
+
+IF VARTYPE(tcXMLSource)#"O"
+	* Check if return already value has it in case the tcXMLSource doesn't.
+	IF TYPE("toSource.ReturnValue.Length")#"N"
+		RETURN .F.
+	ENDIF
+	tcXMLSource=toSource.ReturnValue
+ENDIF
+
+TRY
+	lcClass=IIF(VARTYPE(THIS.XMLAdapterClass)#"C" OR EMPTY(THIS.XMLAdapterClass), ;
+		"xmlAdapter", THIS.XMLAdapterClass)
+	lcClassLib=IIF(VARTYPE(THIS.XMLAdapterClassLib)#"C" OR EMPTY(THIS.XMLAdapterClassLib), ;
+		"", THIS.XMLAdapterClassLib)
+	
+	toSource.oAdapter = NEWOBJECT(lcClass,lcClassLib)
+
+	IF tcXMLSource.Length=1
+		toSource.oAdapter.Attach(tcXMLSource.Item(0))
+	ELSE
+		toSource.oAdapter.Attach(tcXMLSource.Item(1), tcXMLSource.Item(0))
+	ENDIF
+	lHadError = toSource.oAdapter.Tables.Count=0
+CATCH
+	lHadError=.T.
+ENDTRY
+
+RETURN !lHadError
+
+ENDPROC
+PROCEDURE getcomplex
+LPARAMETERS toVFPObject, toXMLDomNodeList
+
+* Converts a complex type (XMLDomNodeList) returned by SOAP Web service to a VFP object.
+
+LOCAL i, loVFPObject, lHadError
+
+IF !THIS.IsComplex(toXMLDomNodeList)
+	RETURN .F.
+ENDIF
+
+DO CASE
+CASE TYPE("toVFPObject.oComplex")#"U"	&& if Operation object passed
+	toVFPObject.oComplex = CREATEOBJECT("EMPTY")
+	loVFPObject=toVFPObject.oComplex
+CASE VARTYPE(toVFPObject)#"O"			&& user passed in ref for object
+	toVFPObject=CREATEOBJECT("EMPTY")
+	loVFPObject=toVFPObject
+OTHERWISE
+	* assume user wants to add PEMs to existing object
+	loVFPObject=toVFPObject
+ENDCASE
+
+IF VARTYPE(loVFPObject)#"O"
+	RETURN .F.
+ENDIF
+
+* Create object PEMs here and set their values.
+TRY
+	FOR i = 1 TO toXMLDomNodeList.Length
+		IF toXMLDomNodeList.Item(m.i-1).nodeType = 1
+			ADDPROPERTY(loVFPObject,  toXMLDomNodeList.item(m.i-1).nodeName, ;
+			     toXMLDomNodeList.item(m.i-1).nodeTypedValue)				
+		ENDIF
+	ENDFOR
+CATCH
+	lHadError=.T.
+ENDTRY
+
+RETURN !lHadError
+ENDPROC
+PROCEDURE getobjectref
+LPARAMETERS tcObjectRef
+
+* Returns valid object reference based on the path passed in.
+* 	ex.   Form1.PageFrame1.Page1.Text1
+
+LOCAL lcObject, loControl
+
+DO CASE
+CASE TYPE("THISFORM")#"O"
+	loControl =THIS
+	DO WHILE .T.
+		IF TYPE("loControl.Parent")#"O"
+			EXIT
+		ENDIF
+		loControl = loControl.Parent
+	ENDDO
+
+CASE TYPE("THISFORMSET.DataEnvironment")="O" AND ;
+	UPPER(THISFORMSET.DataEnvironment.Name) == UPPER(GETWORDNUM(tcObjectRef,1,"."))
+	loControl = THISFORMSET.DataEnvironment
+
+CASE TYPE("THISFORM.DataEnvironment")="O" AND ;
+	UPPER(THISFORM.DataEnvironment.Name) == UPPER(GETWORDNUM(tcObjectRef,1,"."))
+	loControl = THISFORM.DataEnvironment
+
+CASE !EMPTY(THISFORM.DEClass) AND ;
+	  UPPER(THISFORM.DEClass) == UPPER(GETWORDNUM(tcObjectRef,1,"."))
+	loControl = THISFORM.DEClass
+	loControl = THISFORM.&loControl.
+	
+OTHERWISE
+	* For runtime, we require active form/toolbox
+	loControl = THISFORM	
+	* Fix up if we have a container
+	IF !EMPTY(THIS.cContainer)
+		tcObjectRef=THIS.cContainer+IIF( ATC(".",tcObjectRef)=0,"", SUBSTRC(tcObjectRef, ATC(".", tcObjectRef)) )
+	ENDIF
+
+ENDCASE
+
+IF ATC(".",tcObjectRef)#0
+	lcObject = SUBSTRC(tcObjectRef, ATC(".", tcObjectRef)+1)
+	IF TYPE("loControl.&lcObject.")="O"
+		RETURN loControl.&lcObject.
+	ENDIF
+	* Could not find the object reference - one of the
+	* names along path was changed or an item removed.
+	RETURN
+ENDIF
+
+* Otherwise, let's assume that we are just referring to the form or DE,
+* but don't check for name since subclass of form could change.
+RETURN loControl
+
+ENDPROC
+PROCEDURE gettableid
+LPARAMETERS toClient, toOperation, tcControlClass
+
+* This routine returns the Table id (index) in XMLTables collection based on the DSTable property.
+* It also checks if there is already an alias with same name in use and validates its structure. If
+* the structure is bad or user always wants to open up new cursor, then we rename alias.
+
+LOCAL lnAliasID, i, lnCount, lBadStuct, loTable, aflds, loField, lcAlias
+DIMENSION aflds[1]
+IF TYPE("toOperation.oAdapter")#"O"
+	RETURN 0
+ENDIF
+
+lnAliasID=0
+IF !EMPTY(toClient.DSTable)
+	FOR i = 1 TO toOperation.oAdapter.Tables.Count
+		IF UPPER(toClient.DSTable) == UPPER(toOperation.oAdapter.Tables.Item(m.i).Alias)
+			lnAliasID = m.i
+		ENDIF
+	ENDFOR
+ENDIF
+lnAliasID=IIF(lnAliasID=0, 1, lnAliasID)
+loTable = toOperation.oAdapter.Tables.Item(lnAliasID)
+lcAlias = loTable.Alias
+
+* If alias is already used, then we need to validate it
+IF USED(lcAlias)
+	SELECT (lcAlias)
+	AFIELDS(aflds)
+	FOR EACH loField IN loTable.Fields
+		IF ASCAN(aFlds, loField.Alias, -1, -1, 1, 7)=0
+			* Stucture is different, so need to open as new alias
+			lBadStuct=.T.
+			EXIT
+		ENDIF
+	ENDFOR
+ENDIF
+
+* If invalid structure, get new alias name - same as always open new
+* If we have a CursorAdapter, let it handle the alias conflict itself
+IF (lBadStuct OR !toClient.DSUseExistingCursor) AND ATC("CursorAdapter", tcControlClass)=0
+	lnCount=1
+	DO WHILE USED(lcAlias)
+		lnCount=lnCount+1
+		lcAlias = loTable.Alias+TRANSFORM(lnCount)					
+	ENDDO
+	loTable.Alias = lcAlias
+ENDIF
+
+RETURN lnAliasID
+ENDPROC
+PROCEDURE invoke
+LPARAMETERS toOperation
+
+LOCAL lcMethod, leRetval, lcParms, lcByRefChar, loException, loParms, lHadError, laParms, i
+
+IF VARTYPE(toOperation)#"O"
+	RETURN .F.
+ENDIF
+
+IF VARTYPE(THIS.lForceOffline)#"L"
+	THIS.lForceOffline=.F.
+ENDIF
+
+lcMethod = toOperation.wsMethod
+loParms = toOperation.colParms
+
+* Get Parameters from parm collection object
+* and create parameter string for method call.
+lcParms = ""
+IF loParms.Count>0
+	* Need to create string here...
+	DIMENSION laParms[loParms.Count]
+	FOR i = 1 TO loParms.Count
+		laParms[m.i] = ""
+		lcByRefChar=""
+		TRY	
+			* We pass form object here since parm source could be based on
+			* a control property and we need to get its value and type.
+			laParms[m.i] = loParms.GetParm(m.i, THIS)
+			lcByRefChar=IIF(loParms.Item[m.i].IsByRef,"@","")
+		CATCH
+		ENDTRY
+		lcParms = lcParms + lcByRefChar + "laParms[" + TRANSFORM(m.i) + "]"
+		IF m.i < loParms.Count
+			lcParms = lcParms + ","
+		ENDIF
+	ENDFOR
+ENDIF
+lcMethod = m.lcMethod+"("+ lcParms +")"
+
+* Call Service here
+THIS.lHadError = .F.
+leRetVal = ""
+
+TRY
+	IF !THIS.lForceOffline AND THIS.ConnectWS()
+		THIS.DisplayStatus(WAIT_QUERYWS_LOC)
+		leRetVal = THIS.wsObject.&lcMethod.
+	ENDIF
+CATCH TO loException
+	THIS.lHadError = .T.
+	THIS.ErrorNumber = loException.ErrorNo
+	THIS.ErrorMessage = loException.Message
+	IF !EMPTY(THIS.wsObject.FaultCode)
+		THIS.SoapErrorCode = THIS.wsObject.FaultCode
+		THIS.SoapErrorString = THIS.wsObject.FaultString
+		THIS.SoapErrorDetail = THIS.wsObject.Detail
+	ENDIF
+FINALLY
+	THIS.DisplayStatus()
+ENDTRY
+
+lHadError = THIS.lHadError OR THIS.lForceOffline
+IF !lHadError
+	* Populate return values in colParms collection (byref ones will be different than InputValue)
+	FOR i = 1 TO loParms.Count
+		TRY
+			loParms.Item[m.i].AddProperty("ReturnValue", THIS.Checknumber(laParms[m.i]))
+		CATCH
+		ENDTRY
+	ENDFOR
+
+	* Update ReturnValues
+	toOperation.lUsedOffline = .F.
+	leRetVal=THIS.Checknumber(leRetVal)
+	toOperation.ReturnValue = leRetVal
+	THIS.ReturnValue = leRetVal
+
+	* Record results if user wants offline
+	IF toOperation.lOffline
+		* Record the settings here
+		THIS.RecordWS(toOperation)
+	ENDIF
+ELSE
+	IF THIS.lForceOffline OR toOperation.lOffline
+		* Try to playback the settings here
+		IF THIS.PlaybackWS(toOperation)
+			toOperation.lUsedOffline = .T.
+			lHadError=.F.
+		ENDIF
+	ENDIF
+ENDIF
+
+RETURN !lHadError
+ENDPROC
+PROCEDURE invokeclient
+LPARAMETERS p1,p2,p3,p4,p5,p6,p7,p8,p9,p10,p11,p12,p13,p14,p15,p16
+
+* Had an event here. Note: since this gets invoked via BINDEVENT(), we do not
+* worry about return value of this method.
+LOCAL laEventInfo, laEventsAll, i, loClient, loOperation, lcKey, lcCursor
+LOCAL leRetVal, loParm, lcBindSource, loErr, lcErrMsg, loControl, loField
+LOCAL leRetType, lePropType, lcNode, lcTmpErrMsg, lcTarget, lcProp
+LOCAL lnAliasID, lnSaveArea, lcField, loTable, lHadError, lcNodeName
+DIMENSION laEventInfo[1]
+DIMENSION laEventsAll[1]
+
+lcTarget=""
+lcBindSource = ""
+lcTmpErrMsg=""
+
+* Need to find out which delegate got called and event (method) name.
+AEVENTS(laEventInfo, 0)
+loControl = laEventInfo[1]
+lcProp = laEventInfo[2]
+
+* Get client and Operation objects here
+lcKey = lcProp + PROPKEY_SUFFIX
+lcKey = loControl.&lcKey.
+THIS.cLastEvent = ""
+
+* Get client
+FOR EACH loOperation in THIS.colOperations
+	FOR i = 1 TO loOperation.colClients.Count
+		IF loOperation.colClients.GetKey(m.i)==lcKey
+			loClient = loOperation.colClients.Item(m.i)
+			EXIT
+		ENDIF
+	ENDFOR
+ENDFOR
+
+* Get operation and binding properties
+loOperation = THIS.colOperations(loClient.OperationID)
+lcTarget = loClient.BindTarget
+lcBindSource = loClient.BindSource
+
+IF loClient.lAlwaysCallWebService
+	loOperation.lSkipWebServiceCall = .F.
+ENDIF
+
+* Invoke actual Web Service here -- THIS.ReturnValue has raw results
+IF !THIS.CallOperation(loClient.OperationID)
+	RETURN
+ENDIF
+
+* Need to get binding source (ReturnValue or one of the parms -- typically passed byref)
+leRetVal=loOperation.ReturnValue
+IF ATC("ReturnValue", lcBindSource )=0
+	* Need to get the parameter value.
+	FOR EACH loParm IN loOperation.colParms
+		IF UPPER(loParm.ParmName)==UPPER(lcBindSource)
+			leRetVal = loParm.ReturnValue
+			EXIT
+		ENDIF
+	ENDFOR
+ENDIF
+leRetType = VARTYPE(leRetVal)
+lnSaveArea=SELECT()
+
+* Handle preprocessing for certain complex types here
+TRY
+	DO CASE
+	CASE THIS.IsDataset(leRetVal)
+	
+		* Handle Dataset here and populate XMLAdapter
+		IF !THIS.GenDataSet(leRetVal, THIS)
+			lcTmpErrMsg=ERROR_GENDATASET_LOC
+			ERROR 0
+		ENDIF
+		
+		* Set adapter here
+		loOperation.oAdapter = THIS.oAdapter
+			
+		* Get Table ID and reference
+		lnAliasID = THIS.GetTableID(loClient, loOperation, loControl.Baseclass)
+		loTable = loOperation.oAdapter.Tables.Item(lnAliasID)
+
+		* Populate cursor from adapter
+		IF !THIS.OpenDSTable(loTable, loControl)
+			lcTmpErrMsg=ERROR_OPENCURSOR_LOC
+			ERROR 0
+		ENDIF
+		
+		* Validate and get field name
+		lcField = ""
+		IF !EMPTY(loClient.DSField)
+			FOR EACH loField IN loTable.Fields
+				IF UPPER(loClient.DSField) == UPPER(loField.Alias)
+					lcField = loClient.DSField
+					EXIT
+				ENDIF
+			ENDFOR
+		ENDIF
+		lcField = IIF(!EMPTY(lcField), lcField, loTable.Fields.Item(1).Alias)
+
+	CASE THIS.IsComplex(leRetVal)
+
+		* Create Fox object from XMLDOMNodeList object
+		* Sets it to loOperation.oComplex
+		THIS.GetComplex(loOperation, leRetVal)
+
+	ENDCASE
+CATCH
+	lHadError=.T.
+		
+ENDTRY
+
+
+* Main segment to handle binding (both simple and complex types)
+TRY
+
+	DO CASE
+	CASE lHadError
+		 * Skip if we had an error earlier and don't bind
+
+	CASE THIS.IsDataset(leRetVal) AND ATC("CursorAdapter", loControl.BaseClass)#0
+		* Special handling for CursorAdapter since we won't be binding specifically to controls	
+		SET MULTILOCKS ON
+		loControl.DataSourceType = "XML"
+		loControl.AddProperty("oAdapter_WS", loTable)
+		loControl.SelectCMD = [THIS.oAdapter_WS]
+
+	CASE EMPTY(ALLTRIM(lcTarget)) OR ATC(WSNONE_LOC, lcTarget)#0
+		* Skip rest if not Target property specified
+
+	CASE leRetType # "O"	
+		* Handle simple primitive data binding here -- most cases
+		IF !PEMSTATUS(loControl, lcTarget, 4)
+			* Handle type conversion here. Check only for native properties
+			* since we may need to convert type. Skip for custom properties.
+			lePropType = VARTYPE(loControl.&lcTarget)
+			leRetVal = THIS.ConvertType(leRetVal, leRetType, lePropType)
+		ENDIF
+
+		* Let's do some special handling for Web Services which return large XML string that can be converted to a Table.
+		IF (ATC("RecordSource", lcTarget)#0 OR ATC("ControlSource", lcTarget)#0 OR UPPER(lcTarget)=="VALUE") AND ;
+			VARTYPE(leRetVal)="C" AND LOWER(LEFT(ALLTRIM(leRetVal),5))="<?xml"
+			TRY	
+				lcCursor = IIF(!EMPTY(loClient.DSTable), loClient.DSTable, "XMLResult")
+				IF !USED(lcCursor) OR (!loClient.DSUseExistingCursor AND !loOperation.lSkipWebServiceCall)
+					XMLTOCURSOR(leRetVal, lcCursor)	
+				ELSE
+					SELECT (lcCursor)
+				ENDIF
+				DO CASE
+				CASE ATC("RecordSource", lcTarget)#0
+					loControl.&lcTarget. = ALIAS()
+				CASE ATC("ControlSource", lcTarget)#0
+					loControl.&lcTarget. = IIF(!EMPTY(loClient.DSField), loClient.DSField, FIELD(1))
+				CASE UPPER(lcTarget)=="VALUE"
+					loControl.&lcTarget. = IIF(!EMPTY(loClient.DSField), EVALUATE(loClient.DSField), leRetVal)
+				ENDCASE
+			CATCH
+				loControl.&lcTarget. = leRetVal
+			ENDTRY
+		ELSE
+			* Bind value to property here		
+			loControl.&lcTarget. = leRetVal
+		ENDIF
+
+	CASE THIS.IsDataset(leRetVal)
+		* Special case dataset binding depending on which property selected
+		DO CASE
+		CASE ATC("Recordsource", lcTarget)#0
+			loControl.&lcTarget. = ALIAS()
+		CASE ATC("Controlsource", lcTarget)#0
+			loControl.&lcTarget. = lcField
+		CASE ATC("Rowsource", lcTarget)#0 AND loControl.RowSourceType=2
+			loControl.&lcTarget. = ALIAS()
+		CASE ATC("Rowsource", lcTarget)#0
+			loControl.&lcTarget. = lcField
+		OTHERWISE
+			loControl.&lcTarget. = EVALUATE(lcField)
+		ENDCASE
+
+	CASE THIS.IsComplex(leRetVal)	
+		* Handle XMLDOMNode Object - convert to a VFP object
+		IF VARTYPE(loOperation.oComplex)="O"
+			* Bind to a specific property if one is specified
+			IF VARTYPE(loClient.NodeName)="C" AND !EMPTY(loClient.NodeName) AND;
+			  PEMSTATUS(loOperation.oComplex, loClient.NodeName, 5)
+				lcNodeName = loClient.NodeName
+				leRetVal = loOperation.oComplex.&lcNodeName.
+				IF !PEMSTATUS(loControl, lcTarget, 4)
+					* Convert to proper type if native property
+					lePropType = VARTYPE(loControl.&lcTarget)
+					leRetType = VARTYPE(leRetVal)
+					leRetVal = THIS.ConvertType(leRetVal, leRetType, lePropType)
+				ENDIF
+				loControl.&lcTarget. = leRetVal
+			ELSE
+				* User did not specify a specific node so just bind entire object
+				loControl.&lcTarget. = loOperation.oComplex						
+			ENDIF
+		ELSE
+			loControl.&lcTarget. = leRetVal
+		ENDIF
+		
+	OTHERWISE
+	
+		* COM object handled by STK3
+		IF VARTYPE(loClient.NodeName)="C" AND !EMPTY(loClient.NodeName)
+			lcNode = loClient.NodeName
+			leRetVal = leRetVal.&lcNode.
+			loControl.&lcTarget. = leRetVal
+		ELSE
+			lHadError=.T.
+		ENDIF
+
+	ENDCASE
+
+CATCH TO loErr
+	lHadError=.T.
+
+FINALLY
+	SELECT (lnSaveArea)
+
+ENDTRY
+
+
+IF lHadError
+	IF VARTYPE(loErr)="O" AND EMPTY(lcTmpErrMsg)
+		lcTmpErrMsg=loErr.Message
+	ENDIF
+	TEXT TO lcErrMsg NOSHOW TEXTMERGE PRETEXT 3
+		BIND_ERROR_LOC
+
+		Object: <<loControl.Name>>
+		Property: <<lcTarget>>
+		
+		<<lcTmpErrMsg>>
+	ENDTEXT
+	THIS.Displayerror(lcErrMsg)
+ENDIF
+ENDPROC
+PROCEDURE iscomplex
+LPARAMETERS teObject
+
+RETURN TYPE("teObject.Length")="N" AND TYPE("teObject.item(0)")="O"
+ENDPROC
+PROCEDURE isdataset
+LPARAMETERS teObject
+
+RETURN TYPE("teObject.Length")="N" AND TYPE("teObject.item(0)")="O" AND ;
+			ATC("IsDataSet", STRCONV(teObject.item(0).xml,9))#0
+
+ENDPROC
+PROCEDURE opendstable
+LPARAMETERS toTable, toControl
+
+* Do not open table for CursorAdapter -- let adapter do it (CursorFill)
+IF ATC("CursorAdapter", toControl.BaseClass)#0
+	RETURN
+ENDIF
+
+* Populate cursor from adapter
+IF !USED(toTable.Alias)
+	SELECT 0
+	THIS.BeforeOpenCursor(toTable)
+	toTable.ToCursor()
+	IF EMPTY(ALIAS())
+		RETURN .F.
+	ELSE
+		THIS.AfterOpenCursor(toTable)
+		IF !EMPTY(THIS.aCursors[ALEN(THIS.aCursors)])
+			DIMENSION THIS.aCursors[ALEN(THIS.aCursors)+1]
+		ENDIF
+		THIS.aCursors[ALEN(THIS.aCursors)] = ALIAS()
+		GO TOP
+	ENDIF
+ENDIF
+ENDPROC
+PROCEDURE openoffline
+LPARAMETERS tcMethodName, tcParms
+
+LOCAL lnSaveArea, lcOfflineDBF, lHadError, lSaveSafety
+
+* Check if Offline already opened
+IF !EMPTY(THIS.cOfflineAlias) AND SELECT(THIS.cOfflineAlias)#0
+	SELECT (THIS.cOfflineAlias)
+	RETURN
+ENDIF
+
+lnSaveArea = SELECT()
+
+* Get offline file name
+IF VARTYPE(THIS.OfflineDBF)="C" AND !EMPTY(THIS.OfflineDBF)
+	lcOfflineDBF=THIS.OfflineDBF
+	IF EMPTY(JUSTEXT(lcOfflineDBF))
+		lcOfflineDBF=FORCEEXT(lcOfflineDBF,"DBF")
+	ENDIF
+ELSE
+	lcOfflineDBF=FOXWS_OFFLINE_DBF
+ENDIF
+
+* Get offline file path
+IF JUSTFNAME(lcOfflineDBF)==lcOfflineDBF
+	DO CASE
+	CASE FILE(_FOXCODE)
+		lcOfflineDBF=ADDBS(JUSTPATH(_FOXCODE)) + lcOfflineDBF
+	CASE DIRECTORY(HOME(7)) AND FILE(HOME(7) + lcOfflineDBF)
+		lcOfflineDBF=HOME(7) + lcOfflineDBF
+	CASE FILE(HOME() + lcOfflineDBF)
+		lcOfflineDBF=HOME() +  lcOfflineDBF
+	CASE DIRECTORY(HOME(7))
+		lcOfflineDBF=HOME(7) + lcOfflineDBF
+	OTHERWISE
+		lcOfflineDBF=HOME() + lcOfflineDBF
+	ENDCASE
+ENDIF
+
+* Try to open file here
+SELECT 0
+IF FILE(lcOfflineDBF)
+	TRY
+		USE (lcOfflineDBF) SHARED AGAIN
+		IF ATC("Type", FIELD(1))=0 OR ATC("URI", FIELD(2))=0
+			USE
+			lHadError = .T.
+		ENDIF
+	CATCH
+		lHadError = .T.
+	ENDTRY
+ELSE
+	lSaveSafety= SET("Safety")
+	SET SAFETY OFF
+	TRY
+		CREATE TABLE (lcOfflineDBF) (;
+		    TYPE c(1),;
+		    URI m,;
+		    Service m,;
+		    Port m,;
+		    Operation m,;
+		    InParms m,;
+		    OutParms m,;
+		    RetValue m,;
+		    LastUpdate t,;
+		    UniqueID c(10),;
+		    User m)
+		USE (lcOfflineDBF) SHARED AGAIN
+	CATCH
+		lHadError=.T.
+	FINALLY
+		SET SAFETY &lSaveSafety
+	ENDTRY
+ ENDIF	
+
+IF !lHadError
+	THIS.cOfflinealias = ALIAS()
+ELSE
+	THIS.ErrorMessage=ERROR_FAILOFFLINE_LOC
+	THIS.cOfflinealias = ""
+	SELECT (lnSaveArea)
+ENDIF
+RETURN !lHadError
+
+ENDPROC
+PROCEDURE playbackws
+LPARAMETERS toOperation
+
+LOCAL lnSaveArea, lcInParms, lcStr
+LOCAL loParm, lcParmName, lcParmType, lcParmStyle, loDOM2
+LOCAL lcInputValue, lcOutputValue, leValue, loDOM, loParmNode, loParmNodes
+
+STORE "" TO lcInParms
+lnSaveArea = SELECT()
+
+IF !THIS.OpenOffline()
+	RETURN .F.
+ENDIF
+
+IF toOperation.colParms.Count>0
+	SET TEXTMERGE ON TO MEMVAR lcStr NOSHOW
+	FOR EACH loParm IN toOperation.colParms
+		\<<loParm.Parmname>> = <<loParm.InputValue>>
+	ENDFOR
+	SET TEXTMERGE OFF
+	SET TEXTMERGE TO
+	lcInParms=lcStr
+ENDIF
+
+LOCATE FOR ALLTRIM(UPPER(URI)) == UPPER(THIS.WSDL) AND ;
+	ALLTRIM(UPPER(Service)) == UPPER(THIS.Service) AND ;
+	ALLTRIM(UPPER(Port)) == UPPER(THIS.Port) AND ;
+	ALLTRIM(UPPER(Operation)) == UPPER(toOperation.wsMethod) AND ;		
+	ALLTRIM(UPPER(InParms)) == UPPER(lcInParms) AND ;
+	UPPER(type)="O" AND !DELETE()
+
+IF !FOUND()
+	USE
+	SELECT (lnSaveArea)
+	THIS.ErrorMessage=ERROR_FAILOFFLINE2_LOC
+	RETURN .F.
+ENDIF
+
+loDOM = CREATEOBJECT(MSXML4_CLASS)
+IF !loDOM.LoadXML(OutParms)
+	USE
+	SELECT (lnSaveArea)
+	THIS.ErrorMessage=ERROR_FAILOFFLINE2_LOC
+	RETURN .F.
+ENDIF
+
+loParmNodes = loDOM.selectSingleNode("parameters")
+FOR EACH loParmNode IN loParmNodes.ChildNodes
+	lcParmName = loParmNode.attributes.getNamedItem("name").text
+	lcParmStyle = loParmNode.attributes.getNamedItem("type").text
+	FOR EACH loPart IN loParmNode.ChildNodes
+		DO CASE
+		CASE ATC("inputValue", loPart.nodeName)#0
+			lcParmType = loPart.attributes.getNamedItem("type").text
+			lcInputValue = loPart.text
+		CASE ATC("outputValue", loPart.nodeName)#0
+			lcOutputValue = loPart.text
+		ENDCASE
+	ENDFOR
+
+	DO CASE
+	CASE VAL(lcParmStyle)=3  && return value
+		* Check if we have an object
+		leValue = THIS.ConvertType(lcOutputValue,"C", lcParmType)
+		DO CASE
+		CASE ATC("<?xml", Retvalue)#0 AND ATC("IsDataSet",Retvalue)#0
+			* Handle Datasets here
+			loDom2 = CREATEOBJECT(MSXML4_CLASS)
+			IF loDom2.loadXML(Retvalue)
+				IF loDom2.childNodes.Length>1
+					leValue = loDom2.childNodes.Item(1).childNodes
+				ENDIF
+			ENDIF
+		CASE ATC("<?xml", Retvalue)#0
+			* Handle Complex objects
+			loDom2=CREATEOBJECT(SOAPREADER_CLASS)
+			loDom2.LoadXML(Retvalue)
+			IF VARTYPE(loDOM2.RpcResult)="O"
+				IF loDOM2.RpcResult.childNodes.Length>0
+					leValue = loDOM2.RpcResult.childNodes
+				ELSE
+					IF TYPE("loDOM2.RpcStruct.nextSibling.childNodes")="O" AND;
+					 loDOM2.RpcStruct.nextSibling.childNodes.Length>0
+						leValue = loDOM2.RpcStruct.nextSibling.childNodes
+					ENDIF
+				ENDIF
+			ENDIF
+		ENDCASE
+
+		toOperation.ReturnValue = leValue
+		THIS.ReturnValue = leValue
+	OTHERWISE	&& parms
+		IF LEFT(lcOutputValue, 1) = "="
+			lcOutputValue = EVALUATE(SUBSTR(lcOutputValue,2))
+			lcOutputValue=TRANSFORM(lcOutputValue)
+		ENDIF
+		leValue = THIS.ConvertType(lcOutputValue,"C", lcParmType)
+		FOR EACH loParm IN toOperation.colParms
+			IF loParm.ParmName==lcParmName
+				loParm.AddProperty("ReturnValue", leValue)
+				EXIT
+			ENDIF
+		ENDFOR		
+	ENDCASE
+ENDFOR
+
+USE
+SELECT (lnSaveArea)
+ENDPROC
+PROCEDURE recordws
+LPARAMETERS toOperation
+
+LOCAL lnSaveArea, lcInParms, lcOutParms, lcStr, loParm, lcRetVal, lcRetVal2, leOutValue, leRetVal
+STORE "" TO lcInParms, lcOutParms, lcRetVal
+lnSaveArea = SELECT()
+lcRetVal2=""
+
+IF !THIS.OpenOffline()
+	RETURN .F.
+ENDIF
+
+* Get Return Value
+DO CASE
+CASE VARTYPE(toOperation.ReturnValue)="U"
+	lcRetVal=""
+CASE VARTYPE(toOperation.ReturnValue)#"O"
+	lcRetVal=TRANSFORM(toOperation.ReturnValue)
+OTHERWISE
+	lcRetVal=OFFLINE_OBJREF_LOC
+	leRetVal=toOperation.ReturnValue
+
+	DO CASE
+	CASE THIS.IsDataset(leRetVal)
+		* Handle dataset
+		TEXT TO lcStr TEXTMERGE NOSHOW PRETEXT 2
+		<?xml version="1.0" encoding="utf-8"?>
+		<DataSet xmlns="http://tempuri.org/">
+		<<ALLTRIM(STRCONV(leRetVal.item(0).xml,9))>>
+		<<ALLTRIM(STRCONV(leRetVal.item(1).xml,9))>>
+		</DataSet>
+		ENDTEXT
+		lcRetVal2=STRCONV(lcStr,11)
+
+	CASE THIS.IsComplex(leRetVal)
+		* Handle complex object
+		lcRetVal2 = leRetVal.item(0).ownerDocument.xml
+
+	OTHERWISE
+		* COM Objects are not supported.
+		lcRetVal=OFFLINE_OBJREF_LOC
+	ENDCASE
+
+ENDCASE
+
+lcRetVal2=IIF(EMPTY(lcRetVal2), lcRetVal ,lcRetVal2)
+
+* Get Parameters and return value
+* Get content for InParms field
+SET TEXTMERGE ON TO MEMVAR lcStr NOSHOW
+FOR EACH loParm IN toOperation.colParms
+	\<<loParm.Parmname>> = <<loParm.InputValue>>
+ENDFOR
+SET TEXTMERGE OFF
+SET TEXTMERGE TO
+lcInParms=lcStr
+
+* Get content for OutParms fields
+SET TEXTMERGE ON TO MEMVAR lcStr NOSHOW
+\<?xml version="1.0" encoding="UTF-8" ?>
+\<parameters>
+FOR EACH loParm IN toOperation.colParms
+	leOutValue = IIF(loParm.IsByRef, loParm.ReturnValue, loParm.InputValue)
+	\	<parameter name="<<loParm.Parmname>>" type="<<IIF(loParm.IsByRef,1,2)>>">
+	\		<inputValue type="<<VARTYPE(loParm.ReturnValue)>>" parmtype="<<loParm.ParmType>>"><![CDATA[<<TRANSFORM(loParm.InputValue)>>]]></inputValue>
+	\		<outputValue><![CDATA[<<TRANSFORM(leOutValue)>>]]></outputValue>
+	\	</parameter>
+ENDFOR
+\	<parameter name="ReturnValue" type="3">
+\		<inputValue type="<<VARTYPE(toOperation.ReturnValue)>>"></inputValue>
+\		<outputValue><![CDATA[<<lcRetVal>>]]></outputValue>
+\	</parameter>
+\</parameters>
+SET TEXTMERGE OFF
+SET TEXTMERGE TO
+lcOutParms=lcStr
+
+LOCATE FOR ALLTRIM(UPPER(URI)) == UPPER(THIS.WSDL) AND ;
+	ALLTRIM(UPPER(Service)) == UPPER(THIS.Service) AND ;
+	ALLTRIM(UPPER(Port)) == UPPER(THIS.Port) AND ;
+	ALLTRIM(UPPER(Operation)) == UPPER(toOperation.wsMethod) AND ;		
+	ALLTRIM(UPPER(InParms)) == UPPER(lcInParms) AND ;
+	UPPER(type)="O" AND !DELETE()
+
+IF FOUND()
+	REPLACE OutParms WITH lcOutParms,;
+		RetValue WITH lcRetVal2,;
+		LastUpdate WITH DATETIME()	
+ELSE
+	INSERT INTO (DBF()) (Type, Uri, Service, Port, Operation, InParms, OutParms, RetValue, UniqueID, LastUpdate) ;
+	  VALUES( ;
+		"O", ;
+		THIS.WSDL,;
+		THIS.Service,;
+		THIS.Port,;
+		toOperation.wsMethod,;
+		lcInParms,;
+		lcOutParms,;
+		lcRetVal2,;
+		SYS(2015),;
+		DATETIME() )
+ENDIF
+
+USE
+SELECT (lnSaveArea)
+ENDPROC
+PROCEDURE setclientproperties
+* This is a virtual method called before MSSoapInit routine of SoapClient
+* It is typically used to set ClientProperty settings. You can access the
+* SOAP object using THIS.wsObject as your object reference.
+*
+* ex. THIS.wsObject.ClientProperty("ServerHTTPRequest") = .T.
+*
+* See SOAP Toolkit 3.0 help for more details on ClientProperty property.
+ENDPROC
+PROCEDURE setconnectorproperties
+* This is a virtual method after before MSSoapInit routine of SoapClient
+* It is typically used to set ConnectorProperty settings. You can access the
+* SOAP object using THIS.wsObject as your object reference.
+*
+* ex. THIS.wsObject.ConnectorProperty("Timeout") = 10000
+* ex. THIS.wsObject.ConnectorProperty("ProxyUser") = myUser
+* ex. THIS.wsObject.ConnectorProperty("ProxyPassword") = myPassword
+* ex. THIS.wsObject.ConnectorProperty("EnableAutoProxy") = .T.
+*
+* See SOAP Toolkit 3.0 help for more details on ConnectorProperty property.
+ENDPROC
+PROCEDURE setupclient
+LPARAMETERS lcURI, lcService, lcPort, lcWSML
+THIS.WSDL = lcUri
+THIS.Service = lcService
+THIS.Port = lcPort
+THIS.WSML = lcWSML
+RETURN THIS.wsObject
+
+ENDPROC
+PROCEDURE setupclients
+LOCAL loOperation, loClient, lcKey, lnCount, loObject, lnCount2, lcKey2, lnFlags, lcProp
+LOCAL i, lnObjects, lcName
+
+IF TYPE("THIS.colOperations")#"O"
+	RETURN
+ENDIF
+
+* Need to resolve container reference if WSHandler is from a non-form container class.
+IF !EMPTY(THIS.cContainer)
+	lnObjects=GETWORDCOUNT(THIS.cContainer,".")
+	loObject = THIS
+	FOR i = lnObjects TO 1 STEP -1
+		lcName = GETWORDNUM(THIS.cContainer, m.i, ".")
+		IF UPPER(lcName)==UPPER(loObject.Name) AND TYPE("loObject.Parent")="O" AND m.i#1
+			loObject = loObject.Parent
+			LOOP
+		ENDIF
+		lcName = IIF(m.i#1, "", loObject.Name)
+	ENDFOR
+	DO WHILE !EMPTY(lcName)
+		IF TYPE("loObject.Parent")#"O" OR UPPER(loObject.Parent.BaseClass)=="FORMSET"						
+			EXIT
+		ENDIF
+		loObject = loObject.Parent
+		lcName = loObject.Name+"."+lcName
+	ENDDO
+	THIS.cContainer=lcName
+	loObject=""
+ENDIF
+
+* Setup client bindings
+lnCount=1
+FOR EACH loOperation IN THIS.colOperations
+	lcKey=THIS.colOperations.GetKey(lnCount)
+	lnCount2=1
+	FOR EACH loClient IN loOperation.colClients
+
+		* Get object reference based on Builder setting
+		lcKey2=loOperation.colClients.GetKey(lnCount2)
+		loClient.ADDPROPERTY("OperationID", lcKey)
+		loObject = THIS.GetObjectRef(loClient.ObjectRef)
+		IF VARTYPE(loObject) # "O"
+			LOOP
+		ENDIF
+
+		lcProp = loClient.BindProp
+		IF PEMSTATUS(loObject, lcProp+PROPKEY_SUFFIX, 5) AND !PEMSTATUS(loObject, lcProp,4)
+			THIS.DisplayError(MB_UNIQUEPEM2_LOC+CRLF+CRLF+ ;
+				loObject.Name+"."+lcProp+CRLF+CRLF+MB_UNIQUEPEM_LOC)
+			LOOP
+		ENDIF
+
+		DO CASE
+		CASE !PEMSTATUS(loObject, lcProp, 5)
+			ADDPROPERTY(loObject, lcProp , .F.)
+		CASE ATC("Property", PEMSTATUS(loObject, lcProp,3))#0
+			ADDPROPERTY(loObject, lcProp , .F.)
+		ENDCASE
+
+		DO CASE
+		CASE VARTYPE(loClient.BindFlags)#"N" OR loClient.BindFlags<0
+			IF ATC("CursorAdapter", loObject.BaseClass)#0
+				lnFlags=1
+			ELSE
+				lnFlags=IIF(ATC("Property", PEMSTATUS(loObject, lcProp,3))#0, 1, 0)
+			ENDIF
+		OTHERWISE
+			lnFlags = loClient.BindFlags
+		ENDCASE
+		
+		BINDEVENT(loObject, lcProp, THIS, "InvokeClient", lnFlags)
+
+		ADDPROPERTY(loObject, lcProp + PROPKEY_SUFFIX , lcKey2)
+		
+		IF loClient.lInvokeAtStart
+			THIS.cLastEvent = lcProp
+			DO CASE
+			CASE ATC("Property", PEMSTATUS(loObject, lcProp,3))#0
+				loObject.&lcProp. = .T.
+			CASE ATC("CursorFill", lcProp)#0 AND ATC("CursorAdapter",loObject.BaseClass)#0
+				* Need to explicitly call the method. RaiseEvent will not cause table to fill.
+				loObject.CursorFill()
+				IF !EMPTY(ALIAS())
+					GO TOP
+					IF !THISFORM.BindControls AND THIS.lAutoBindControls
+						THISFORM.BindControls=.T.
+					ENDIF
+				ENDIF
+			OTHERWISE
+				IF PEMSTATUS(loObject, lcProp, 4) OR ;
+					(VARTYPE(THIS.lUseRaiseEvents)="L" AND THIS.lUseRaiseEvents)
+					RAISEEVENT(loObject, lcProp)
+				ELSE
+					loObject.&lcProp
+				ENDIF
+			ENDCASE
+			loOperation.lSkipWebServiceCall=.T.
+		ENDIF
+		lnCount2=lnCount2+1
+
+	ENDFOR
+	lnCount=lnCount+1
+ENDFOR
+
+* Reset the skip setting from startups
+FOR EACH loOperation IN THIS.colOperations
+	loOperation.lSkipWebServiceCall=.F.
+ENDFOR
+ENDPROC
+PROCEDURE startupinvoke
+IF TYPE("THISFORM")="O"
+	UNBINDEVENT(THISFORM, "Activate", THIS, "StartupInvoke")
+ENDIF
+THIS.SetupClients()
+ENDPROC
+PROCEDURE wsobject_access
+IF TYPE("THIS.wsobject")#"O"
+	THIS.Connectws()
+ENDIF
+RETURN THIS.wsobject
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+wsdl URI reference to Web service WSDL.
+wsml URI reference to Web service WSML -- for special SOAP Toolkit servers only.
+service Name of Web service.
+port Name of Web service port to use.
+returnvalue Value returned from the Web service call.
+webserviceid Web service ID.
+wsmethod Name of Web Service operation to call. Note: preference is to use the Operations collection instead.
+lhaderror Whether an error occurred.
+soaperrorcode Specific SOAP error code.
+soaperrordetail Specific SOAP error detail.
+wsname Name of Web service.
+wssyntax Syntax for Web service operation.
+lskiperror Whether to skip over an error.
+ldisplayerrors Whether to display errors.
+nconnecttries Number of time to attempt connecting to the Web service.
+wsobject Reference to SOAP object that is wrapped by this class.
+lforceoffline Always use offline cache data if it is available (usually for  Testing purposes).
+errornumber Error number.
+soaperrorstring Specific SOAP error message.
+errordetail Detail of error.
+errormessage Message for error.
+lhasclients If there are clients that need to be bound to.
+lautoconvert Whether to automatically convert values returned by the Web service to a value handled by the client.
+oadapter Reference to XMLAdapter if using ADO .Net Dataset.
+lhadstartup Reserved.
+lverboseerror Whether to show detailed error messages.
+offlinedbf Name of offline cache table.
+cofflinealias Name of offline alias.
+lautoclosecursors Whether to close cursors opened from ADO .Net Datasets automatically.
+xmladapterclass Name of XMLAdapter class to use for ADO .Net Datasets.
+xmladapterclasslib Name of XMLAdapter class library to use for ADO .Net Datasets.
+clastevent Reserved.
+displaymode Controls how messages are displayed. 0 - use Status Bar. 1 - use WAIT WINDOW.
+ccontainer Path reference to container for VCX classes.
+lautobindcontrols Automatically set BindControls to .T. after calling CursorFill at startup.
+luseraiseevents Use RaiseEvents when making  method call binding.
+*invoke Main routine to call Web service.
+*startupinvoke Routine to do event binding initially so that we can setup event bindings to clients.
+*connectws Call to connect to Web service via SOAP.
+*setupoperations This virutal method is filled in by the Web Service builders and contains details on the Operation and Client objects bound to the Web service.
+*calloperation Call a partcular operation.
+*wsobject_access Access method for SOAP object.
+*setupclients Routine that iterates through all the registered operations and clients and does event bindings.
+*invokeclient Main routine used by client to call Web service and bind to the client control.
+*setupclient Routine to setup parameters needed by SOAP handler. This is used mainly for calls made through code.
+*getobjectref Returns reference to control specified by client.
+*converttype Converts data to value needed by client.
+*displayerror Controls display of errors.
+*gendataset Method to generate ADO .Net Dataset from XMLDOMNode object returned by SOAP.
+*displaystatus Displays status such as when connecting to Web service.
+*setconnectorproperties Virtual method to setup SOAP connector setting.
+*setclientproperties Virtual method to setup SOAP client setting.
+*callclients Calls all clients of an operation.
+*recordws Routine to record input parameters, output parameters and return value for offline cache.
+*playbackws Routine to return offline cache data if Web service is not available.
+*openoffline Routine to open offline data cache.
+*beforeopencursor Called before opening ADO .Net Dataset.
+*afteropencursor Called after opening ADO .Net Dataset.
+^acursors[1,0] Array of ADO .Net Dataset cursors opened by class.
+*checknumber Fixes up extraneous decimals returned by Web service float types.
+*isdataset Whether the Web service returned a complex type which is an ADO .Net Dataset.
+*iscomplex Whether the Web service returned a complex type.
+*getcomplex Creates object from complex type returned by Web service.
+*gettableid Returns ID of ADO .Net Dataset.
+*opendstable Routine to open ADO .Net Dataset table.
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+_ws3.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] wshandler
+[START RESERVED1]
+  _ws3.h&™«¾„-[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0MH0Y0L6I
+[CLASS] form
+[BASECLASS] form
+[OBJNAME] wsparms
+[START PROPERTIES]
+DataSession = 2
+Height = 244
+Width = 500
+Desktop = .T.
+DoCreate = .T.
+AutoCenter = .T.
+BorderStyle = 2
+Caption = "Parameters"
+MaxButton = .F.
+MinButton = .F.
+WindowState = 0
+AlwaysOnTop = .T.
+Name = "wsparms"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE setupws
+* Requires a colParm Collection object
+*
+* Example code calling this form -- assumes oColParms is object that:
+*	loParmForm = NEWOBJECT("wsparms", 	IIF(VERSION(2)=0,"",HOME()+"FFC\")+"_ws3client.vcx")
+*	loParmForm.oColParms = THISFORM.colParms
+*	loParmForm.SetupWS()
+*	loParmForm.Show(1)
+
+LOCAL loParm, leValue
+
+IF TYPE("THIS.oColParms.Count")="U"
+	RETURN
+ENDIF
+
+IF THIS.oColParms.Count=0
+	RETURN
+ENDIF
+
+* Open cursor to fill parmaters.
+IF USED(TMPWSCURSOR)
+	SELECT TMPWSCURSOR
+	ZAP
+ELSE
+	SELECT 0
+	CREATE CURSOR TMPWSCURSOR(Parameter c(20), Type c(20), Value c(127))	&& account for DBCS
+ENDIF
+
+THIS.lblsyntax.Caption = THIS.oColParms.wsSyntax
+
+
+* Fill cursor with collection values
+FOR EACH loParm IN THIS.oColParms
+	APPEND BLANK
+	REPLACE Parameter WITH loParm.Parmname
+	REPLACE Type WITH loParm.ParmType
+	IF TYPE("loParm.InputValue") # "U"
+		leValue = loParm.InputValue
+		IF VARTYPE(leValue)="C"
+			IF LEFT(leValue,1)="[" AND RIGHT(leValue,1)="]"
+				REPLACE Value WITH SUBSTR(leValue,2,LEN(leValue)-2)
+			ELSE
+				REPLACE Value WITH leValue
+			ENDIF
+		ELSE
+			REPLACE Value WITH TRANSFORM(leValue)
+		ENDIF
+	ENDIF	
+ENDFOR
+
+THISFORM.Grid1.ScrollBars=IIF(THIS.oColParms.Count>3,2,0)
+GO TOP
+THIS.Grid1.RecordSource=TMPWSCURSOR
+ENDPROC
+PROCEDURE updateparms
+SCAN
+	THIS.oColParms.Item(RECNO()).AddProperty( "InputValue", ALLTRIM(value))
+ENDSCAN
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+13[END RESERVED2]
+[START RESERVED3]
+ocolparms Reference to parameters collection passed in to the form.
+*setupws Initial routine to setup parameters.
+*updateparms Routine to set parameters specified by the user back to the parameter collection.
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+_ws3.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0RN12BQTA
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] cmdOK
+[PARENT] wsparms
+[START PROPERTIES]
+Top = 216
+Left = 432
+Height = 22
+Width = 60
+FontName = "Tahoma"
+FontSize = 8
+Cancel = .T.
+Caption = "OK"
+Default = .T.
+TabIndex = 6
+Name = "cmdOK"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+THISFORM.UpdateParms()
+THISFORM.Release()
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0MH0Z11GP
+[CLASS] grid
+[BASECLASS] grid
+[OBJNAME] Grid1
+[PARENT] wsparms
+[START PROPERTIES]
+ColumnCount = 3
+FontName = "Tahoma"
+FontSize = 8
+AllowHeaderSizing = .F.
+AllowRowSizing = .F.
+DeleteMark = .F.
+GridLines = 0
+Height = 108
+HighlightRow = .F.
+Left = 12
+Panel = 1
+PanelLink = .T.
+RecordMark = .F.
+RowHeight = 16
+ScrollBars = 2
+SplitBar = .F.
+TabIndex = 4
+Top = 96
+Width = 480
+Themes = .T.
+Name = "Grid1"
+Column1.FontName = "Tahoma"
+Column1.FontSize = 8
+Column1.Enabled = .T.
+Column1.Width = 122
+Column1.ReadOnly = .T.
+Column1.Name = "Column1"
+Column2.FontName = "Tahoma"
+Column2.FontSize = 8
+Column2.Enabled = .T.
+Column2.Width = 100
+Column2.ReadOnly = .T.
+Column2.Name = "Column2"
+Column3.FontName = "Tahoma"
+Column3.FontSize = 8
+Column3.Enabled = .T.
+Column3.Width = 236
+Column3.Name = "Column3"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0MH0Z11GQ
+[CLASS] header
+[BASECLASS] header
+[OBJNAME] Header1
+[PARENT] wsparms.Grid1.Column1
+[START PROPERTIES]
+FontBold = .T.
+FontName = "Tahoma"
+FontSize = 8
+Caption = "Parameter"
+Name = "Header1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0MH0Z11H4
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] Text1
+[PARENT] wsparms.Grid1.Column1
+[START PROPERTIES]
+FontName = "Tahoma"
+FontSize = 8
+BorderStyle = 0
+Enabled = .T.
+Margin = 0
+ReadOnly = .T.
+ForeColor = 0,0,0
+BackColor = 255,255,255
+Name = "Text1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0MH0Z11H5
+[CLASS] header
+[BASECLASS] header
+[OBJNAME] Header1
+[PARENT] wsparms.Grid1.Column2
+[START PROPERTIES]
+FontBold = .T.
+FontName = "Tahoma"
+FontSize = 8
+Caption = "Type"
+ForeColor = 0,0,255
+Name = "Header1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0MH0Z11H6
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] Text1
+[PARENT] wsparms.Grid1.Column2
+[START PROPERTIES]
+FontName = "Tahoma"
+FontSize = 8
+BorderStyle = 0
+Enabled = .T.
+Margin = 0
+ReadOnly = .T.
+ForeColor = 0,0,0
+BackColor = 255,255,255
+Name = "Text1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0MH0Z11H7
+[CLASS] header
+[BASECLASS] header
+[OBJNAME] Header1
+[PARENT] wsparms.Grid1.Column3
+[START PROPERTIES]
+FontBold = .T.
+FontName = "Tahoma"
+FontSize = 8
+Caption = "Value"
+Name = "Header1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0MH0Z11H8
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] Text1
+[PARENT] wsparms.Grid1.Column3
+[START PROPERTIES]
+FontName = "Tahoma"
+FontSize = 8
+BorderStyle = 0
+Enabled = .T.
+Margin = 0
+ForeColor = 0,0,0
+BackColor = 255,255,255
+Name = "Text1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0MH0Z11H9
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] lbldesc
+[PARENT] wsparms
+[START PROPERTIES]
+AutoSize = .T.
+FontName = "Tahoma"
+FontSize = 8
+FontUnderline = .F.
+WordWrap = .T.
+BackStyle = 0
+Caption = 'Please enter parameter values for the following XML Web service. To specify an expression, preface the value with an "=" character. Only simple data types are supported unless you specify as an expression.'
+Height = 41
+Left = 12
+Top = 12
+Width = 444
+TabIndex = 1
+Name = "lbldesc"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0DV0M32F9
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] lblSyntax
+[PARENT] wsparms
+[START PROPERTIES]
+FontName = "Tahoma"
+FontSize = 8
+FontUnderline = .F.
+WordWrap = .T.
+BackStyle = 0
+Caption = ""
+Height = 26
+Left = 60
+Top = 60
+Width = 420
+TabIndex = 3
+Name = "lblSyntax"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0C60NBP1Y
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label3
+[PARENT] wsparms
+[START PROPERTIES]
+AutoSize = .T.
+FontName = "Tahoma"
+FontSize = 8
+FontUnderline = .F.
+BackStyle = 0
+Caption = "Syntax:"
+Height = 15
+Left = 12
+Top = 60
+Width = 40
+TabIndex = 2
+Name = "Label3"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0SO0SC375
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] cmdZoom
+[PARENT] wsparms
+[START PROPERTIES]
+Top = 216
+Left = 12
+Height = 22
+Width = 60
+FontName = "Tahoma"
+FontSize = 8
+Caption = "\<Zoom..."
+TabIndex = 5
+Name = "cmdZoom"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+LOCAL loZoomForm
+loZoomForm=NEWOBJECT("wsparmzoom", THISFORM.ClassLibrary)
+loZoomForm.Show()
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] wsparms
+[START PROPERTIES]
+Arial, 0, 9, 5, 15, 12, 32, 3, 0
+Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+Tahoma, 1, 8, 6, 13, 11, 26, 2, 0
+[END PROPERTIES]
+[START RESERVED1]
+  _ws3.h&™«¾„-[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0QS0T4J4U
+[CLASS] container
+[BASECLASS] container
+[OBJNAME] coloperation
+[START PROPERTIES]
+Width = 82
+Height = 36
+wsmethod = 
+wsparmnum = 0
+wsoperation = 
+wsdesc = 
+nparmprompt = 1
+errornumber = 0
+errormessage = 
+errordetail = 
+soaperrorcode = 
+soaperrorstring = 
+soaperrordetail = 
+Name = "coloperation"
+[END PROPERTIES]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+3[END RESERVED2]
+[START RESERVED3]
+wsmethod Actual name of Web service operation (method) to invoke.
+wsparmnum Number of parameters for the Web service operation.
+loffline Whether to cache Web service parameters and results offline for use later if cannot connect online.
+linvokeatstart Whether to invoke at startup.
+wsoperation Friendly name of Web service operation.
+wsdesc Friendly description of the operation.
+nparmprompt Numeric code whether to prompt for parameters or use pre-populated ones.
+returnvalue Reference to return value of Web service call.
+lhaderror Whether an error occurred.
+errornumber Error number of an error that occurred.
+errormessage Normal message of an error that occurred.
+errordetail Detailed message of an error that occurred.
+soaperrorcode SOAP specific error code.
+soaperrorstring SOAP specific error string.
+soaperrordetail SOAP specific error detail.
+lusedoffline Whether the last Web service call was made to cached offline data.
+lskipwebservicecall Whether to skip making a  new Web service call if one already made by another client.
+oadapter Object reference to XMLAdapter if ADO .Net Dataset was returned by the Web service call.
+ocomplex Object reference to object created if complex type (XMLDOMNodeList) was returned by the Web service call.
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0RG172LEY
+[CLASS] colparms
+[CLASSLOC] _ws3client.vcx
+[BASECLASS] collection
+[OBJNAME] colParms
+[PARENT] coloperation
+[START PROPERTIES]
+Top = 5
+Left = 10
+Name = "colParms"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0RU1D49YU
+[CLASS] colclients
+[CLASSLOC] _ws3client.vcx
+[BASECLASS] collection
+[OBJNAME] colClients
+[PARENT] coloperation
+[START PROPERTIES]
+Top = 5
+Left = 48
+Name = "colClients"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] coloperation
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0RG15O7HR
+[CLASS] colbase
+[CLASSLOC] _ws3client.vcx
+[BASECLASS] collection
+[OBJNAME] colparms
+[START PROPERTIES]
+Height = 23
+Width = 23
+wssyntax = 
+itemclass = colParm
+Name = "colparms"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE genparms
+* This routine takes method syntax and generates a Parameter collection object
+LOCAL lcParms, lnParms, lcMethod, i, lcParm
+
+THIS.Remove(-1)
+
+* Syntax statement
+lcMethod=THIS.wsSyntax
+IF EMPTY(lcMethod)
+	RETURN .F.
+ENDIF
+
+lcParms = STREXTRACT(lcMethod,"(",")")
+lnParms = GETWORDCOUNT(lcParms,",")
+
+FOR i = 1 TO lnParms
+	THIS.Add(NEWOBJECT("colParm",THIS.ClassLibrary))
+	lcParm = GETWORDNUM(lcParms, m.i, ",")
+	THIS.Item(m.i).ParmName = ALLTRIM(GETWORDNUM(lcParm, 1))
+	THIS.Item(m.i).ParmType = ALLTRIM(GETWORDNUM(lcParm, 3))
+	THIS.Item(m.i).IsByRef = ATC("@",lcParm)#0
+ENDFOR
+
+ENDPROC
+PROCEDURE getdatatype
+LPARAMETERS tcType
+tcType=UPPER(ALLTRIM(tcType))
+
+DO CASE
+CASE tcType="STRING"
+	RETURN "C"
+CASE tcType="BOOLEAN"
+	RETURN "L"
+CASE tcType="DATETIME"
+	RETURN "T"
+CASE tcType="DATE"
+	RETURN "D"
+CASE tcType="INT"
+	RETURN "N"
+CASE tcType="INTEGER"
+	RETURN "N"
+CASE tcType="DOUBLE"
+	RETURN "N"
+CASE tcType="DECIMAL"
+	RETURN "N"
+CASE tcType="LONG"
+	RETURN "N"
+CASE tcType="SHORT"
+	RETURN "N"
+CASE tcType="FLOAT"
+	RETURN "N"
+CASE tcType="BYTE"
+	RETURN "N"
+CASE tcType="ANY"
+	RETURN "C"
+OTHERWISE
+	RETURN "C"
+ENDCASE
+
+ENDPROC
+PROCEDURE getparm
+LPARAMETERS nParm, oWSHandler
+
+* Parameter values are initially set to the InputValue property. This is always set as a string since it is stored
+* inside of the SetupClients snippet or input from the Parms dialog. The TypedValue contains the actual typed
+* based on the Parmtype property.
+
+LOCAL lcType, loObject, lcProp, dt, lnLastValue, i, leValue
+lcType = THIS.GetDataType(THIS.Item(nParm).ParmType)
+leValue = THIS.Item(nParm).InputValue  && this is initially set to character type since it is stored in memo
+* Get stored value or evaluate from control or expresison.
+DO CASE
+CASE !EMPTY(THIS.Item(nParm).InputControl)
+	* If user wants to specify a control as the parameter source, get it here. Requires WSHandler object
+	lcProp = THIS.Item(nParm).InputProperty  && get name of property
+	IF VARTYPE(oWSHandler)="O"
+		loObject = oWSHandler.GetObjectRef(THIS.Item(nParm).InputControl)
+	ENDIF
+	IF VARTYPE(loObject)="O" AND VARTYPE(lcProp)="C" AND !EMPTY(lcProp) AND 	PEMSTATUS(loObject, lcProp, 5)
+		leValue = loObject.&lcProp.
+	ELSE
+		leValue = THIS.Item(nParm).InputValue
+	ENDIF
+CASE VARTYPE(THIS.Item(nParm).InputValue) # "C"
+	leValue = ""
+CASE LEFT(THIS.Item(nParm).InputValue, 1) = "="
+	leValue = EVALUATE(SUBSTR(leValue,2))
+OTHERWISE
+	leValue = THIS.Item(nParm).InputValue
+ENDCASE
+
+* Check if we already have correct type here and just return it.
+IF VARTYPE(leValue)=lcType
+	THIS.Item(nParm).TypedValue=leValue
+	RETURN leValue
+ENDIF
+
+* If we have an expression or type from control that is not
+* same type as ParmType, we need to first transform it to
+* a character string.
+IF VARTYPE(leValue)#"C"
+	leValue=TRANSFORM(leValue)
+ENDIF
+
+* Handle type conversion here
+DO CASE
+CASE lcType="C"
+	* No need to do anything
+CASE lcType="N"
+	leValue = VAL(leValue)
+	DO CASE
+	CASE leValue = 0
+		* Do nothing
+	CASE MOD(INT(leValue), leValue)=0
+		* Quick check for integer first
+		leValue = INT(leValue)
+	OTHERWISE
+		* Reduce out extra decimals
+		lnLastValue = leValue
+		FOR i = 18 TO 1 STEP -1
+			IF ROUND(leValue, m.i) - leValue = 0
+				lnLastValue = ROUND(leValue, m.i)
+				LOOP
+			ENDIF
+			leValue = lnLastValue
+			EXIT
+		ENDFOR
+	ENDCASE
+CASE lcType="L"
+	DO CASE
+	CASE ATC(TRUE_LOC, leValue)#0 OR ATC(YES_LOC, leValue)#0
+		leValue = .T.
+	CASE ATC(FALSE_LOC, leValue)#0 OR ATC(NO_LOC, leValue)#0 OR EMPTY(leValue)
+		leValue = .F.
+	CASE ISDIGIT(leValue)
+		leValue=IIF(VAL(leValue)=0,.F.,.T.)		
+	OTHERWISE
+		leValue=IIF(ISALPHA(leValue),.F.,EVALUATE(leValue))
+	ENDCASE
+CASE lcType="D"
+	dt = CTOD(leValue)
+	leValue = IIF(EMPTY(leValue) OR EMPTY(dt), DATE(), DATE(YEAR(dt), MONTH(dt), DAY(dt)) )
+CASE lcType="T"
+	dt = CTOT(leValue)
+	leValue = IIF(EMPTY(leValue) OR EMPTY(dt), DATETIME(), DATETIME(YEAR(dt), MONTH(dt), DAY(dt)) )
+ENDCASE
+
+THIS.Item(nParm).TypedValue=leValue
+RETURN leValue
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+wssyntax Actual Web service method syntax, which includes inline parameters.
+*getdatatype Returns the data type of a parameter.
+*getparm Returns parameter value based on type.
+*genparms Routine to generate parameter collection items based on the wsSyntax property.
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+_ws3.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] colparms
+[START RESERVED1]
+  _ws3.h&™«¾„-[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0RN12BQTA
+[CLASS] custom
+[BASECLASS] custom
+[OBJNAME] colparm
+[START PROPERTIES]
+parmname = 
+parmtype = 
+inputvalue = 
+returnvalue = 
+inputcontrol = 
+inputproperty = 
+typedvalue = 
+Name = "colparm"
+[END PROPERTIES]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+parmname Name of the parameter.
+parmtype The parameter data type.
+inputvalue The initial value to set to the parameter. Can be an expression if preceded by "=" character.
+returnvalue The output value returned by the parameter (used if passed in by reference).
+isbyref Whether parameter is passed in by reference.
+inputcontrol Reference to control that provides initial value for parameter. Requires the InputProperty property.
+inputproperty Reference to control property that provides initial value for parameter. Requires the InputControl property.
+typedvalue Contains the actual typed output value based on the Parmtype property.
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] colparm
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0RU1CRBXE
+[CLASS] colbase
+[CLASSLOC] _ws3client.vcx
+[BASECLASS] collection
+[OBJNAME] colclients
+[START PROPERTIES]
+Height = 23
+Width = 23
+itemclass = colClient
+Name = "colclients"
+[END PROPERTIES]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] colclients
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0RU1CY4LW
+[CLASS] custom
+[BASECLASS] custom
+[OBJNAME] colclient
+[START PROPERTIES]
+clientname = 
+objectref = 
+bindsource = 
+bindtarget = 
+bindprop = 
+dstable = 
+dsfield = 
+nodename = 
+dsuseexistingcursor = .T.
+bindflags = -1
+Name = "colclient"
+[END PROPERTIES]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+clientname Friendly name of the client used in the builder.
+objectref Full path to the control binding to the Web service.
+bindsource Name of the parameter or returnvalue populated by the Web service used to bind to the client control.
+bindtarget Name of the property on the client control to bind Web service parameter or returnvalue.
+bindprop Name or custom property or method used to trigger event to call Web service.
+linvokeatstart Whether to call Web service and bind to client control at startup.
+dstable Table name if Web service returns an ADO .NET Dataset.
+dsfield Field name if Web service returns an ADO .NET Dataset.
+nodename Name of node (value) to use if Web service returns a complex object (XMLDOMNodeList).
+lalwayscallwebservice Whether to always call the Web service even if previous call was just made.
+dsuseexistingcursor Whether the ADO .Net Dataset should use an existing cursor if already open or always create new one.
+bindflags Flags passed to the BINDEVENTS() call. Advanced feature.
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] colclient
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0SO0RYUTU
+[CLASS] form
+[BASECLASS] form
+[OBJNAME] wsparmzoom
+[START PROPERTIES]
+Height = 167
+Width = 419
+Desktop = .T.
+DoCreate = .T.
+AutoCenter = .T.
+BorderStyle = 2
+Caption = "Zoom"
+MaxButton = .F.
+MinButton = .F.
+WindowType = 1
+AlwaysOnTop = .T.
+Name = "wsparmzoom"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+IF EMPTY(ALIAS())
+	MESSAGEBOX(BADCALL_LOC)
+	RETURN .F.
+ENDIF
+THIS.Caption = CAPTION_LOC+ALLTRIM(Parameter)
+THIS.edtValue.Value = ALLTRIM(Value)
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+5[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+_ws3.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0SO0S2D9H
+[CLASS] editbox
+[BASECLASS] editbox
+[OBJNAME] edtValue
+[PARENT] wsparmzoom
+[START PROPERTIES]
+FontName = "Tahoma"
+FontSize = 8
+Height = 108
+Left = 12
+TabIndex = 2
+Top = 48
+Width = 324
+ControlSource = ""
+Name = "edtValue"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0RN12BQTA
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] cmdOK
+[PARENT] wsparmzoom
+[START PROPERTIES]
+Top = 48
+Left = 348
+Height = 22
+Width = 60
+FontName = "Tahoma"
+FontSize = 8
+Caption = "OK"
+Default = .T.
+TabIndex = 3
+Name = "cmdOK"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+REPLACE Value WITH ALLTRIM(THISFORM.edtValue.Value)
+THISFORM.Release()
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0SO0S2D9I
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] cmdCancel
+[PARENT] wsparmzoom
+[START PROPERTIES]
+Top = 72
+Left = 348
+Height = 22
+Width = 60
+FontName = "Tahoma"
+FontSize = 8
+Cancel = .T.
+Caption = "Cancel"
+TabIndex = 4
+Name = "cmdCancel"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+THISFORM.Release()
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0SO0SHVZN
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label3
+[PARENT] wsparmzoom
+[START PROPERTIES]
+AutoSize = .T.
+FontName = "Tahoma"
+FontSize = 8
+FontUnderline = .F.
+WordWrap = .T.
+BackStyle = 0
+Caption = 'Enter value for your parameter. Precede the value with an "=" character if it is an expression.'
+Height = 28
+Left = 12
+Top = 12
+Width = 303
+TabIndex = 1
+Name = "Label3"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] wsparmzoom
+[START PROPERTIES]
+Arial, 0, 9, 5, 15, 12, 32, 3, 0
+Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+[END PROPERTIES]
+[START RESERVED1]
+  _ws3.h&™«¾„-[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0ST17MHO7
+[CLASS] colbase
+[CLASSLOC] _ws3client.vcx
+[BASECLASS] collection
+[OBJNAME] coloperations
+[START PROPERTIES]
+Height = 23
+Width = 23
+itemclass = colOperation
+Name = "coloperations"
+[END PROPERTIES]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] coloperations
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0ST1AVQPK
+[CLASS] collection
+[BASECLASS] collection
+[OBJNAME] colbase
+[START PROPERTIES]
+Height = 23
+Width = 23
+itemclass = 
+itemclasslib = 
+Name = "colbase"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE newitem
+LPARAMETERS tcKey
+LOCAL lcClasslib, lHadError, loItem
+
+IF VARTYPE(THIS.ItemClasslib)#"C" OR EMPTY(THIS.ItemClasslib)
+	lcClasslib = THIS.ClassLibrary
+ELSE
+	lcClasslib = THIS.ItemClasslib
+ENDIF
+IF !FILE(lcClasslib) OR EMPTY(THIS.ItemClass)
+	RETURN ""
+ENDIF
+
+TRY
+	loItem=NEWOBJECT(THIS.ItemClass, lcClasslib)
+	IF VARTYPE(tcKey)="C" AND !EMPTY(tcKey)
+		THIS.Add(loItem, tcKey)
+	ELSE
+		THIS.Add(loItem)
+	ENDIF
+CATCH
+	lHadError=.T.
+ENDTRY
+
+RETURN IIF(lHadError, "", loItem)
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+itemclass Name of class used for new objects added to collection.
+itemclasslib Name of class library used for new objects added to collection.
+*newitem Method to add new items to the collection based on ItemClass properties.
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] colbase
+[EOF]
