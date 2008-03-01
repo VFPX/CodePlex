@@ -1,0 +1,1385 @@
+SCCTEXT Version 4.0.0.2
+PLATFORM C(8,0),UNIQUEID C(10,0),TIMESTAMP N(10,0),CLASS M(4,0),CLASSLOC M(4,0),BASECLASS M(4,0),OBJNAME M(4,0),PARENT M(4,0),PROPERTIES M(4,0),PROTECTED M(4,0),METHODS M(4,0),OBJCODE M(4,0),OLE M(4,0),OLE2 M(4,0),RESERVED1 M(4,0),RESERVED2 M(4,0),RESERVED3 M(4,0),RESERVED4 M(4,0),RESERVED5 M(4,0),RESERVED6 M(4,0),RESERVED7 M(4,0),RESERVED8 M(4,0),USER M(4,0)
+1252
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] Class     
+[START RESERVED1]
+VERSION =   3.00[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RN411QJH1
+[CLASS] _nav2buttons
+[CLASSLOC] _table.vcx
+[BASECLASS] container
+[OBJNAME] _nav2picbuttons
+[START PROPERTIES]
+Width = 71
+Height = 36
+Name = "_nav2picbuttons"
+cmgNav.Command1.AutoSize = .F.
+cmgNav.Command1.Top = 5
+cmgNav.Command1.Left = 5
+cmgNav.Command1.Height = 24
+cmgNav.Command1.Width = 24
+cmgNav.Command1.Picture = graphics\previous.bmp
+cmgNav.Command1.Caption = ""
+cmgNav.Command1.ToolTipText = "Previous Record"
+cmgNav.Command1.Name = "Command1"
+cmgNav.Command2.AutoSize = .F.
+cmgNav.Command2.Top = 5
+cmgNav.Command2.Left = 29
+cmgNav.Command2.Height = 24
+cmgNav.Command2.Width = 24
+cmgNav.Command2.Picture = graphics\next.bmp
+cmgNav.Command2.Caption = ""
+cmgNav.Command2.ToolTipText = "Next Record"
+cmgNav.Command2.Name = "Command2"
+cmgNav.Height = 34
+cmgNav.Left = 8
+cmgNav.Top = 0
+cmgNav.Width = 57
+cmgNav.Name = "cmgNav"
+cusTableNav.Name = "cusTableNav"
+[END PROPERTIES]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _nav2picbuttons
+[START PROPERTIES]
+MS Sans Serif, 1, 9, 6, 13, 11, 12, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RN411YBFO
+[CLASS] _nav4buttons
+[CLASSLOC] _table.vcx
+[BASECLASS] container
+[OBJNAME] _nav4picbuttons
+[START PROPERTIES]
+Width = 118
+Height = 38
+Name = "_nav4picbuttons"
+cmgNav.Command1.AutoSize = .F.
+cmgNav.Command1.Top = 5
+cmgNav.Command1.Left = 29
+cmgNav.Command1.Height = 24
+cmgNav.Command1.Width = 24
+cmgNav.Command1.Picture = graphics\previous.bmp
+cmgNav.Command1.Caption = ""
+cmgNav.Command1.ToolTipText = "Previous Record"
+cmgNav.Command1.Name = "Command1"
+cmgNav.Command2.AutoSize = .F.
+cmgNav.Command2.Top = 5
+cmgNav.Command2.Left = 53
+cmgNav.Command2.Height = 24
+cmgNav.Command2.Width = 24
+cmgNav.Command2.Picture = graphics\next.bmp
+cmgNav.Command2.Caption = ""
+cmgNav.Command2.ToolTipText = "Next Record"
+cmgNav.Command2.Name = "Command2"
+cmgNav.Height = 33
+cmgNav.Left = 8
+cmgNav.Top = 0
+cmgNav.Width = 106
+cmgNav.TabIndex = 2
+cmgNav.Name = "cmgNav"
+cusTableNav.Name = "cusTableNav"
+cmdTop.AutoSize = .F.
+cmdTop.Top = 5
+cmdTop.Left = 13
+cmdTop.Height = 24
+cmdTop.Width = 24
+cmdTop.Picture = graphics\top.bmp
+cmdTop.Caption = ""
+cmdTop.TabIndex = 1
+cmdTop.ToolTipText = "First Record"
+cmdTop.Name = "cmdTop"
+cmdBottom.AutoSize = .F.
+cmdBottom.Top = 5
+cmdBottom.Left = 85
+cmdBottom.Height = 24
+cmdBottom.Width = 24
+cmdBottom.Picture = graphics\bottom.bmp
+cmdBottom.Caption = ""
+cmdBottom.TabIndex = 3
+cmdBottom.ToolTipText = "Last Record"
+cmdBottom.Name = "cmdBottom"
+[END PROPERTIES]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _nav4picbuttons
+[START PROPERTIES]
+MS Sans Serif, 1, 9, 6, 13, 11, 12, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RN412ABLM
+[CLASS] _toolbar
+[CLASSLOC] _base.vcx
+[BASECLASS] toolbar
+[OBJNAME] _tbrnavigation
+[START PROPERTIES]
+Caption = "Navigation"
+Height = 28
+Left = 0
+Top = 0
+Width = 291
+calias = 
+Name = "_tbrnavigation"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Refresh
+LOCAL lcDataSession
+IF NOT THIS.lDisabledForModal
+  lcDataSession=SET("DataSession")
+  IF TYPE("_screen.activeform.name")="C"
+	  SET DataSession TO _screen.activeform.DataSessionID
+  ENDIF
+  THIS.cAlias = ALIAS()
+  STORE THIS.cAlias TO ;
+        THIS._GoTo.cusTableNav.cAlias, ;
+        THIS._Nav4picbuttons.cusTableNav.cAlias, ;
+        THIS._SortSelect.cusTableSort.cAlias
+  THIS.Setall("Enabled",NOT EMPTY(THIS.cAlias))
+  THIS._GoTo.InitData()
+  DODEFAULT()
+  SET DataSession TO lcDataSession
+ENDIF
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+8[END RESERVED2]
+[START RESERVED3]
+ldisabledformodal
+calias Current alias.
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RN412HMZ0
+[CLASS] _nav4picbuttons
+[CLASSLOC] _table2.vcx
+[BASECLASS] container
+[OBJNAME] _nav4picbuttons
+[PARENT] _tbrnavigation
+[START PROPERTIES]
+Top = 3
+Left = 5
+Width = 93
+Height = 22
+Name = "_nav4picbuttons"
+cmgNav.Command1.Top = 0
+cmgNav.Command1.Left = 16
+cmgNav.Command1.Height = 22
+cmgNav.Command1.Width = 23
+cmgNav.Command1.Name = "Command1"
+cmgNav.Command2.Top = 0
+cmgNav.Command2.Left = 39
+cmgNav.Command2.Height = 22
+cmgNav.Command2.Width = 23
+cmgNav.Command2.Name = "Command2"
+cmgNav.BorderStyle = 0
+cmgNav.Name = "cmgNav"
+cusTableNav.Top = 5
+cusTableNav.Left = 68
+cusTableNav.Height = 13
+cusTableNav.Width = 17
+cusTableNav.Name = "cusTableNav"
+cmdTop.Top = 0
+cmdTop.Left = 1
+cmdTop.Height = 22
+cmdTop.Width = 23
+cmdTop.Name = "cmdTop"
+cmdBottom.Top = 0
+cmdBottom.Left = 70
+cmdBottom.Height = 22
+cmdBottom.Width = 23
+cmdBottom.Name = "cmdBottom"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE tablenav
+LPARAMETERS tcAction
+IF EMPTY(tcAction) OR VARTYPE(tcAction)#"C"
+  RETURN
+ENDIF
+DODEFAULT(tcAction)
+THISFORM.REFRESH()
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RNM0T5C9K
+[CLASS] separator
+[BASECLASS] separator
+[OBJNAME] Separator2
+[PARENT] _tbrnavigation
+[START PROPERTIES]
+Top = 3
+Left = 105
+Height = 30742164
+Width = 30742164
+Name = "Separator2"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RN50VNAZO
+[CLASS] _goto
+[CLASSLOC] _table2.vcx
+[BASECLASS] container
+[OBJNAME] _goto
+[PARENT] _tbrnavigation
+[START PROPERTIES]
+Top = 3
+Left = 105
+Name = "_goto"
+cusTableNav.Name = "cusTableNav"
+spnGoTo.Name = "spnGoTo"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RNM0T5CAE
+[CLASS] separator
+[BASECLASS] separator
+[OBJNAME] Separator1
+[PARENT] _tbrnavigation
+[START PROPERTIES]
+Top = 3
+Left = 196
+Height = 55249180
+Width = 55249180
+Name = "Separator1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RN41564AS
+[CLASS] _sortselect
+[CLASSLOC] _table2.vcx
+[BASECLASS] container
+[OBJNAME] _sortselect
+[PARENT] _tbrnavigation
+[START PROPERTIES]
+Top = 3
+Left = 196
+Width = 46
+Height = 22
+Name = "_sortselect"
+cusTableSort.Name = "cusTableSort"
+cmdSortUp.Name = "cmdSortUp"
+cmdSortDown.Name = "cmdSortDown"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RN415R2EF
+[CLASS] _filterbutton
+[CLASSLOC] _table2.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdFilter
+[PARENT] _tbrnavigation
+[START PROPERTIES]
+Top = 3
+Left = 241
+Height = 22
+Width = 23
+Picture = graphics\filter.bmp
+Caption = ""
+ToolTipText = "Set Filter..."
+Name = "cmdFilter"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RNM0SY8UO
+[CLASS] _locatebutton
+[CLASSLOC] _table2.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdLocate
+[PARENT] _tbrnavigation
+[START PROPERTIES]
+Top = 3
+Left = 263
+Height = 22
+Width = 23
+Picture = graphics\find.bmp
+Caption = ""
+ToolTipText = "Locate..."
+Name = "cmdLocate"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _tbrnavigation
+[START PROPERTIES]
+Arial, 1, 9, 6, 15, 12, 32, 3, 0
+MS Sans Serif, 0, 8, 5, 13, 11, 11, 2, 0
+Arial, 0, 9, 5, 15, 12, 32, 3, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RN412K6AT
+[CLASS] form
+[BASECLASS] form
+[OBJNAME] _sortdialog
+[START PROPERTIES]
+Height = 107
+Width = 324
+DoCreate = .T.
+AutoCenter = .T.
+Caption = "Sort"
+Name = "_sortdialog"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+IF EMPTY(ALIAS())
+	RETURN .F.
+ENDIF
+IF TYPE("THIS._cboTags.Baseclass")#"C"
+	RETURN .F.
+ENDIF
+ENDPROC
+PROCEDURE dosort
+IF ALLTRIM(THIS._cboTags.Value) = C_NONE_LOC
+	SET ORDER TO
+ELSE
+	THIS.cusTableSort.DoSort(,,ALLTRIM(THIS._cboTags.Value),THIS.opgDirection.Value#1)
+ENDIF
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+9[END RESERVED2]
+[START RESERVED3]
+*dosort Runs sort routine.
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+_table2.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RN413ILOK
+[CLASS] _shape
+[CLASSLOC] _base.vcx
+[BASECLASS] shape
+[OBJNAME] _shape1
+[PARENT] _sortdialog
+[START PROPERTIES]
+Top = 19
+Left = 10
+Height = 50
+Width = 212
+SpecialEffect = 0
+Name = "_shape1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RN411QJH1
+[CLASS] _optiongroup
+[CLASSLOC] _base.vcx
+[BASECLASS] optiongroup
+[OBJNAME] opgDirection
+[PARENT] _sortdialog
+[START PROPERTIES]
+Height = 51
+Left = 232
+Top = 19
+Width = 84
+TabIndex = 2
+Name = "opgDirection"
+Option1.Picture = graphics\sortup.bmp
+Option1.Caption = ""
+Option1.Height = 32
+Option1.Left = 11
+Option1.Style = 1
+Option1.Top = 10
+Option1.Width = 32
+Option1.AutoSize = .F.
+Option1.Name = "Option1"
+Option2.Picture = graphics\sortdown.bmp
+Option2.Caption = ""
+Option2.Height = 32
+Option2.Left = 43
+Option2.Style = 1
+Option2.Top = 10
+Option2.Width = 32
+Option2.AutoSize = .F.
+Option2.Name = "Option2"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+IF ATC(" DESCENDING",SET("ORDER"))#0
+	THIS.Value = 2
+ENDIF
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RN413ILP4
+[CLASS] _combobox
+[CLASSLOC] _base.vcx
+[BASECLASS] combobox
+[OBJNAME] _cboTags
+[PARENT] _sortdialog
+[START PROPERTIES]
+FontName = "MS Sans Serif"
+FontSize = 8
+Height = 24
+Left = 20
+Style = 2
+TabIndex = 1
+Top = 32
+Width = 192
+Name = "_cboTags"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+LOCAL nTotalTags,i
+nTotalTags = TAGCOUNT('')
+
+IF nTotalTags = 0
+	WAIT WINDOW ERR_NOTAGS_LOC
+	RETURN .F.
+ENDIF
+
+THIS.AddItem(C_NONE_LOC)
+FOR i = 1 TO m.nTotalTags
+	THIS.AddItem(TAG(m.i))
+ENDFOR
+
+THIS.Value = IIF(EMPTY(TAG()),C_NONE_LOC,TAG())
+IF THIS.Value = C_NONE_LOC
+	THIS.Parent.opgDirection.Option1.Enabled = .F.
+	THIS.Parent.opgDirection.Option2.Enabled = .F.
+ENDIF
+
+ENDPROC
+PROCEDURE InteractiveChange
+THIS.Parent.opgDirection.Option1.Enabled = (THIS.Value # C_NONE_LOC)
+THIS.Parent.opgDirection.Option2.Enabled = (THIS.Value # C_NONE_LOC)
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RN411QJH1
+[CLASS] _commandbutton
+[CLASSLOC] _base.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdSort
+[PARENT] _sortdialog
+[START PROPERTIES]
+Top = 78
+Left = 169
+Height = 23
+Width = 72
+FontName = "MS Sans Serif"
+FontSize = 8
+Caption = "\<Sort"
+Default = .T.
+TabIndex = 3
+Name = "cmdSort"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+THISFORM.DoSort
+THISFORM.Release
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RN413ILPN
+[CLASS] _commandbutton
+[CLASSLOC] _base.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdCancel
+[PARENT] _sortdialog
+[START PROPERTIES]
+Top = 78
+Left = 244
+Height = 23
+Width = 72
+FontName = "MS Sans Serif"
+FontSize = 8
+Cancel = .T.
+Caption = "Cancel"
+TabIndex = 4
+Name = "cmdCancel"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+THISFORM.Release
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RN411QJH1
+[CLASS] _label
+[CLASSLOC] _base.vcx
+[BASECLASS] label
+[OBJNAME] _label1
+[PARENT] _sortdialog
+[START PROPERTIES]
+AutoSize = .T.
+FontName = "MS Sans Serif"
+FontSize = 8
+Caption = "Sort direction:"
+Left = 236
+Top = 12
+TabIndex = 5
+Name = "_label1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RN413ILQ8
+[CLASS] _label
+[CLASSLOC] _base.vcx
+[BASECLASS] label
+[OBJNAME] _label2
+[PARENT] _sortdialog
+[START PROPERTIES]
+AutoSize = .T.
+FontName = "MS Sans Serif"
+FontSize = 8
+Caption = "Select field:"
+Left = 16
+Top = 12
+TabIndex = 6
+Name = "_label2"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RN413JUWH
+[CLASS] _tablesort
+[CLASSLOC] _table.vcx
+[BASECLASS] custom
+[OBJNAME] cusTableSort
+[PARENT] _sortdialog
+[START PROPERTIES]
+Top = 72
+Left = 48
+Name = "cusTableSort"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _sortdialog
+[START PROPERTIES]
+Arial, 0, 9, 5, 15, 12, 21, 3, 0
+MS Sans Serif, 0, 8, 5, 13, 11, 11, 2, 0
+[END PROPERTIES]
+[START RESERVED1]
+ 	 _table2.hº2  “#[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RN413KZHQ
+[CLASS] _commandbutton
+[CLASSLOC] _base.vcx
+[BASECLASS] commandbutton
+[OBJNAME] _dialogbutton
+[START PROPERTIES]
+Caption = "\<Run..."
+cclass = 
+cclasslib = 
+lmodal = .T.
+odialog = .NULL.
+cparms = 
+Name = "_dialogbutton"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+THIS.DoDialog()
+ENDPROC
+PROCEDURE Destroy
+THIS.oDialog=null
+ENDPROC
+PROCEDURE dodialog
+LOCAL lcfile, lcclass, lnModal
+IF !EMPTY(THIS.cClasslib)
+	lcfile = FULLPATH(THIS.cClasslib)
+ELSE
+	lcfile = FULLPATH(THIS.ClassLibrary)
+ENDIF
+IF NOT FILE(lcfile)
+   WAIT WINDOW ERR_NOVCXLIB_LOC
+   RETURN .F.
+ENDIF
+lcclass = THIS.cClass
+IF EMPTY(lcclass)
+   WAIT WINDOW ERR_NOCLASS_LOC
+   RETURN .F.
+ENDIF
+IF EMPTY(THIS.cParms) AND VARTYPE(THIS.cParms)="C"
+	THIS.oDialog = NEWOBJECT(lcclass,lcfile)
+ELSE
+	THIS.oDialog = NEWOBJECT(lcclass,lcfile,"",THIS.cParms)
+ENDIF
+IF VARTYPE(THIS.oDialog)="O"
+	lnModal = IIF(THIS.lModal,1,0)
+	THIS.SetDialogPEMs()	&&abstract method
+	THIS.oDialog.Show(lnModal)
+ENDIF
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+cclass Name of class to create.
+cclasslib Name of classlibrary.
+lmodal
+odialog
+cparms
+*dodialog Creates dialog for data operation such as find, goto, sort, etc.
+*setdialogpems 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+_table2.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _dialogbutton
+[START PROPERTIES]
+Arial, 0, 9, 5, 15, 12, 21, 3, 0
+[END PROPERTIES]
+[START RESERVED1]
+ 	 _table2.h>Ÿ  ‚$[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RN413NMAZ
+[CLASS] _dialogbutton
+[CLASSLOC] _table2.vcx
+[BASECLASS] commandbutton
+[OBJNAME] _filterbutton
+[START PROPERTIES]
+Caption = "\<Filter..."
+cexprclass = _filterexpr
+cfilterclass = _filterdialog
+cclass = _filterdialog
+cclasslib = (IIF(VERSION(2)=0,"",HOME()+"FFC\")+"_table.vcx")
+Name = "_filterbutton"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE dodialog
+THIS.cClass = IIF(THIS.lExprDialog,THIS.cExprClass,THIS.cFilterClass)
+DODEFAULT()
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+lexprdialog
+cexprclass
+cfilterclass
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _filterbutton
+[START PROPERTIES]
+Arial, 0, 9, 5, 15, 12, 21, 3, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RN413QWF7
+[CLASS] _dialogbutton
+[CLASSLOC] _table2.vcx
+[BASECLASS] commandbutton
+[OBJNAME] _gotobutton
+[START PROPERTIES]
+Caption = "\<Go To..."
+cclass = _gotodialog
+cclasslib = (IIF(VERSION(2)=0,"",HOME()+"FFC\")+"_table.vcx")
+Name = "_gotobutton"
+[END PROPERTIES]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _gotobutton
+[START PROPERTIES]
+Arial, 0, 9, 5, 15, 12, 21, 3, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RN414XRJK
+[CLASS] _container
+[CLASSLOC] _base.vcx
+[BASECLASS] container
+[OBJNAME] _sortselect
+[START PROPERTIES]
+Width = 47
+Height = 22
+Name = "_sortselect"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE dosort
+LPARAMETER lDescending
+THIS.cusTableSort.lDescending = m.lDescending
+THIS.cusTableSort.DoSort()
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+4[END RESERVED2]
+[START RESERVED3]
+*dosort Runs sort routine.
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RN4151REF
+[CLASS] _tablesort
+[CLASSLOC] _table.vcx
+[BASECLASS] custom
+[OBJNAME] cusTableSort
+[PARENT] _sortselect
+[START PROPERTIES]
+Top = 0
+Left = 12
+Name = "cusTableSort"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RN411QJH1
+[CLASS] _commandbutton
+[CLASSLOC] _base.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdSortUp
+[PARENT] _sortselect
+[START PROPERTIES]
+AutoSize = .F.
+Top = 0
+Left = 0
+Height = 22
+Width = 23
+Picture = graphics\sortup.bmp
+Caption = ""
+ToolTipText = "Sort Ascending"
+ZOrderSet = 1
+Name = "cmdSortUp"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+THIS.Parent.DoSort()
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RN4151REE
+[CLASS] _commandbutton
+[CLASSLOC] _base.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdSortDown
+[PARENT] _sortselect
+[START PROPERTIES]
+AutoSize = .F.
+Top = 0
+Left = 23
+Height = 22
+Width = 23
+Picture = graphics\sortdown.bmp
+Caption = ""
+ToolTipText = "Sort Descending"
+ZOrderSet = 2
+Name = "cmdSortDown"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+THIS.Parent.DoSort(.T.)
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _sortselect
+[START PROPERTIES]
+Arial, 0, 9, 5, 15, 12, 21, 3, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RN50TCZ5S
+[CLASS] _container
+[CLASSLOC] _base.vcx
+[BASECLASS] container
+[OBJNAME] _goto
+[START PROPERTIES]
+Width = 84
+Height = 22
+BorderWidth = 0
+Name = "_goto"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+THIS.InitData()
+ENDPROC
+PROCEDURE gorecord
+THIS.cusTableNav.GoToRecord(THIS.spnGoTo.Value)
+* we may not have moved but we may have reverted data
+* so we have to refresh whether the pointer has moved or not
+
+THIS.cusTableNav.RefreshLastWindowAfterChange()
+
+ENDPROC
+PROCEDURE initdata
+LOCAL llReturn
+IF EMPTY(THIS.cusTableNav.cAlias) OR ;
+    NOT USED(THIS.cusTableNav.cAlias) OR ;
+    RECCOUNT(THIS.cusTableNav.cAlias) < 2
+     llReturn = .F.
+ELSE
+     WITH THIS.spnGoTo
+     	STORE 1 TO .SpinnerLowValue, .KeyBoardLowValue
+     	 STORE RECCOUNT(THIS.cusTableNav.cAlias) TO ;
+                  .SpinnerHighValue, .KeyBoardHighValue
+       .Value = RECNO(THIS.cusTableNav.cAlias)
+       .Value = MIN(.Value,.SpinnerHighValue) && EOF()
+      ENDWITH
+ENDIF
+RETURN llReturn
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+3[END RESERVED2]
+[START RESERVED3]
+*gorecord Goes to specified record in spinner.
+*initdata Initializes data source.
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RN50VHHDJ
+[CLASS] _tablenav
+[CLASSLOC] _table.vcx
+[BASECLASS] custom
+[OBJNAME] cusTableNav
+[PARENT] _goto
+[START PROPERTIES]
+Top = 24
+Left = 48
+Name = "cusTableNav"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+LOCAL llReturn
+llReturn = DODEFAULT()
+IF llReturn
+   THIS.cAlias = THIS.GetCurrentAlias()
+ENDIF
+RETURN llReturn
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RN50VHHDT
+[CLASS] _spinner
+[CLASSLOC] _base.vcx
+[BASECLASS] spinner
+[OBJNAME] spnGoTo
+[PARENT] _goto
+[START PROPERTIES]
+FontName = "MS Sans Serif"
+FontSize = 8
+Height = 22
+Increment =   1.00
+InputMask = "9999999999"
+Left = 0
+Top = 0
+Width = 84
+Format = ""
+Name = "spnGoTo"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE InteractiveChange
+THIS.Parent.GoRecord()
+ENDPROC
+PROCEDURE Refresh
+DO CASE
+CASE EMPTY(THIS.Parent.cusTableNav.cAlias) AND EMPTY(ALIAS())
+	RETURN
+CASE EMPTY(THIS.Parent.cusTableNav.cAlias)
+	THIS.Value = RECNO()
+CASE SELECT(THIS.Parent.cusTableNav.cAlias)=0
+	RETURN
+OTHERWISE
+	THIS.Value = RECNO(THIS.Parent.cusTableNav.cAlias)
+ENDCASE
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _goto
+[START PROPERTIES]
+MS Sans Serif, 0, 8, 5, 13, 11, 11, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RNB1959GJ
+[CLASS] _dialogbutton
+[CLASSLOC] _table2.vcx
+[BASECLASS] commandbutton
+[OBJNAME] _sortbutton
+[START PROPERTIES]
+Caption = "\<Sort..."
+cclass = _sortdialog
+Name = "_sortbutton"
+[END PROPERTIES]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _sortbutton
+[START PROPERTIES]
+Arial, 0, 9, 5, 15, 12, 21, 3, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RNG0YDEHU
+[CLASS] _container
+[CLASSLOC] _base.vcx
+[BASECLASS] container
+[OBJNAME] _navtoolbarclass
+[START PROPERTIES]
+Width = 21
+Height = 24
+BackStyle = 0
+BorderWidth = 0
+otoolbar = 
+cclasslib = 
+cclass = _tbrnavigation
+Name = "_navtoolbarclass"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Destroy
+IF VARTYPE(THIS.oToolbar)="O"
+	THIS.oToolbar.Name = SYS(2015)
+	INKEY(.1)
+	THIS.oToolbar.Release
+	THIS.oToolbar = null
+ENDIF
+
+ENDPROC
+PROCEDURE Init
+LOCAL lcfile, lcclass, lhastoolbar,i
+lhastoolbar = .F.
+
+* Check if toolbar already exists...
+FOR i = 1 TO _VFP.FORMS.COUNT
+	IF UPPER(_VFP.FORMS[m.i].NAME)==UPPER(THIS.cClass)
+		lhastoolbar = .T.
+		EXIT
+	ENDIF
+ENDFOR
+
+IF !EMPTY(THIS.cClasslib)
+	lcfile = FULLPATH(THIS.cClasslib)
+ELSE
+	lcfile = FULLPATH(THIS.ClassLibrary)
+ENDIF
+IF NOT FILE(lcfile)
+   WAIT WINDOW ERR_NOVCXLIB_LOC
+   RETURN .F.
+ENDIF
+lcclass = THIS.cClass
+IF EMPTY(lcclass)
+   WAIT WINDOW ERR_NOCLASS_LOC
+   RETURN .F.
+ENDIF
+THIS.oToolbar = NEWOBJECT(lcclass,lcfile)
+
+IF !m.lhastoolbar
+	THIS.oToolbar.Show()
+ELSE
+	THIS.oToolbar.Visible = .F.
+	THIS.tmrCheckToolbar.Interval = 500
+ENDIF
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+2[END RESERVED2]
+[START RESERVED3]
+otoolbar
+cclasslib
+cclass
+nlasttop
+nlastleft
+ldocked
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+_table2.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RNI13DH5T
+[CLASS] _timer
+[CLASSLOC] _base.vcx
+[BASECLASS] timer
+[OBJNAME] tmrCheckToolbar
+[PARENT] _navtoolbarclass
+[START PROPERTIES]
+Top = 0
+Left = 0
+Height = 23
+Width = 23
+Name = "tmrCheckToolbar"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Timer
+* Check if toolbar still exists...
+LOCAL oForm,i
+FOR i = 1 TO _VFP.FORMS.COUNT
+	oForm = _VFP.FORMS[m.i]
+	IF TYPE("oForm ")#"U" AND;
+	  UPPER(oForm.NAME)==UPPER(THIS.Parent.cClass);
+	  AND oForm.Visible
+	  	WITH THIS.Parent
+			.nLastTop = oForm.Top
+			.nLastLeft = oForm.Left
+			.lDocked = oForm.Docked
+		ENDWITH
+		RETURN
+	ENDIF
+ENDFOR
+
+THIS.Interval = 0
+THIS.Parent.oToolbar.Top = THIS.Parent.nLastTop
+THIS.Parent.oToolbar.Left = THIS.Parent.nLastLeft
+IF THIS.Parent.lDocked
+	THIS.Parent.oToolbar.Dock(0)
+ENDIF
+THIS.Parent.oToolbar.Show()
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _navtoolbarclass
+[START RESERVED1]
+ 	 _table2.hfý  ‚$[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RNG10SV2O
+[CLASS] _container
+[CLASSLOC] _base.vcx
+[BASECLASS] container
+[OBJNAME] _navmenu
+[START PROPERTIES]
+Width = 74
+Height = 27
+BackStyle = 0
+BorderWidth = 0
+Visible = .F.
+BackColor = 0,0,255
+cclass = 
+cclasslib = 
+Name = "_navmenu"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Error
+LPARAMETERS nerror,cmethod,nline
+DO CASE
+CASE nError = 5  &&record out of range
+	IF EOF()
+		GO BOTTOM
+	ELSE
+		GO TOP
+	ENDIF
+CASE nError = 1884 AND 	CURSORGETPROP("buffering")=1
+	* Uniqueness ID error
+	MESSAGEBOX(ERR_UNIQUEKEY_LOC)
+CASE nError = 1884	
+	IF MESSAGEBOX(ERR_UNIQUEKEY_LOC+" "+ERR_UNIQUEKEY2_LOC,36)=6
+		TABLEREVERT(.T.)
+	ENDIF
+ENDCASE
+ENDPROC
+PROCEDURE Init
+THIS.SetMenu()
+
+ENDPROC
+PROCEDURE addrecord
+APPEND BLANK
+THIS.RefreshForm()
+
+ENDPROC
+PROCEDURE deleterecord
+IF MESSAGEBOX(C_DELREC_LOC,MB_QUESTIONYESNO) = MB_ISYES
+	DELETE
+	SKIP
+	IF EOF()
+		GO BOTTOM
+	ENDIF
+	THIS.RefreshForm()
+ENDIF
+
+ENDPROC
+PROCEDURE dodialog
+LOCAL lcfile, loDialog, lcclass
+
+IF !EMPTY(THIS.cClasslib)
+	lcfile = FULLPATH(THIS.cClasslib)
+ELSE
+	lcfile = FULLPATH(THIS.ClassLibrary)
+ENDIF
+IF NOT FILE(lcfile)
+   WAIT WINDOW ERR_NOVCXLIB_LOC
+   RETURN .F.
+ENDIF
+lcclass = THIS.cClass
+IF EMPTY(lcclass)
+   WAIT WINDOW ERR_NOCLASS_LOC
+   RETURN .F.
+ENDIF
+loDialog = NEWOBJECT(lcclass,lcfile)
+loDialog.Show(1)
+
+ENDPROC
+PROCEDURE dofilter
+THIS.cClass = "_filterdialog"
+THIS.cClassLib =IIF(VERSION(2)=0,"",HOME()+"FFC\")+"_table.vcx"
+THIS.DoDialog()
+
+ENDPROC
+PROCEDURE dofilter2
+THIS.cClass = "_filterexpr"
+THIS.cClassLib =IIF(VERSION(2)=0,"",HOME()+"FFC\")+"_table.vcx"
+THIS.DoDialog()
+
+ENDPROC
+PROCEDURE dogoto
+THIS.cClass = "_gotodialog"
+THIS.cClassLib =IIF(VERSION(2)=0,"",HOME()+"FFC\")+"_table.vcx"
+THIS.DoDialog()
+
+ENDPROC
+PROCEDURE domenu
+IF EMPTY(ALIAS())
+	RETURN
+ENDIF
+
+PRIVATE oTHIS
+oTHIS = THIS
+THIS.oMenu.showmenu()
+THIS.RefreshForm()
+
+ENDPROC
+PROCEDURE dosort
+THIS.cClass = "_sortdialog"
+THIS.cClassLib = THIS.ClassLibrary
+THIS.DoDialog()
+
+ENDPROC
+PROCEDURE refreshform
+IF VARTYPE(_SCREEN.ActiveForm)="O"
+	_SCREEN.ActiveForm.Refresh
+ENDIF
+
+ENDPROC
+PROCEDURE setmenu
+LOCAL oGoMenu
+oGoMenu = THIS.oMenu.NewMenu()
+WITH oGoMenu
+	.AddMenuBar(MENU_TOP_LOC,"oTHIS.oNav.GoTop()")
+	.AddMenuBar(MENU_BOTTOM_LOC,"oTHIS.oNav.GoBottom()")
+	.AddMenuBar(MENU_NEXT_LOC,"oTHIS.oNav.GoNext()")
+	.AddMenuBar(MENU_PREV_LOC,"oTHIS.oNav.GoPrevious()")
+	.AddMenuBar(MENU_RECORD_LOC,"oTHIS.DoGoto")
+ENDWITH
+
+WITH THIS.oMenu
+	.AddMenuBar(MENU_GOTO_LOC,oGoMenu)
+	.AddMenuSeparator
+	.AddMenuBar(MENU_ADD_LOC,"oTHIS.AddRecord")
+	.AddMenuBar(MENU_DELETE_LOC,"oTHIS.DeleteRecord")
+	.AddMenuSeparator
+	.AddMenuBar(MENU_SORT_LOC,"oTHIS.DoSort")
+	.AddMenuBar(MENU_FILTER_LOC,"oTHIS.DoFilter")
+	.AddMenuBar(MENU_FILTER2_LOC,"oTHIS.DoFilter2")
+ENDWITH
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+3[END RESERVED2]
+[START RESERVED3]
+cclass Class for specific dialog.
+cclasslib Class library for specific dialog.
+*domenu Runs menu routine.
+*setmenu Sets up menu.
+*dodialog Brings up a specific dialog.
+*dosort Brings up sort dialog.
+*dogoto Brings up Goto dialog.
+*dofilter Brings up filter dialog.
+*dofilter2 Brings up advanced filter dialog.
+*addrecord Adds a new record.
+*deleterecord Deletes current record.
+*refreshform Refreshes the active form when data updated.
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+_table2.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RNG10T8O9
+[CLASS] _shortcutmenu
+[CLASSLOC] _menu.vcx
+[BASECLASS] custom
+[OBJNAME] oMenu
+[PARENT] _navmenu
+[START PROPERTIES]
+Top = 5
+Left = 12
+Height = 15
+Width = 18
+Name = "oMenu"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RNG11J2M4
+[CLASS] _tablenav
+[CLASSLOC] _table.vcx
+[BASECLASS] custom
+[OBJNAME] oNav
+[PARENT] _navmenu
+[START PROPERTIES]
+Top = 6
+Left = 48
+Height = 16
+Width = 24
+Name = "oNav"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _navmenu
+[START RESERVED1]
+ 	 _table2.hêô&†#[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RNM0SEORE
+[CLASS] _dialogbutton
+[CLASSLOC] _table2.vcx
+[BASECLASS] commandbutton
+[OBJNAME] _locatebutton
+[START PROPERTIES]
+Caption = "\<Locate..."
+cclasslib = (IIF(VERSION(2)=0,"",HOME()+"FFC\")+"_table.vcx")
+cclass = _finddialog
+Name = "_locatebutton"
+[END PROPERTIES]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _locatebutton
+[START PROPERTIES]
+Arial, 0, 9, 5, 15, 12, 21, 3, 0
+[END PROPERTIES]
+[EOF]
