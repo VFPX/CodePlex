@@ -1,0 +1,671 @@
+SCCTEXT Version 4.0.0.2
+PLATFORM C(8,0),UNIQUEID C(10,0),TIMESTAMP N(10,0),CLASS M(4,0),CLASSLOC M(4,0),BASECLASS M(4,0),OBJNAME M(4,0),PARENT M(4,0),PROPERTIES M(4,0),PROTECTED M(4,0),METHODS M(4,0),OBJCODE M(4,0),OLE M(4,0),OLE2 M(4,0),RESERVED1 M(4,0),RESERVED2 M(4,0),RESERVED3 M(4,0),RESERVED4 M(4,0),RESERVED5 M(4,0),RESERVED6 M(4,0),RESERVED7 M(4,0),RESERVED8 M(4,0),USER M(4,0)
+1252
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] Class     
+[START RESERVED1]
+VERSION =   3.00[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RIO0J0A1Z
+[CLASS] automation
+[CLASSLOC] automate.vcx
+[BASECLASS] custom
+[OBJNAME] pivottable
+[START PROPERTIES]
+cpivfldrow = 
+cpivfldcol = 
+cpivfldpage = 
+naction = 1
+cformscx = 
+cformname = 
+cpivflddata = 
+coutfile = 
+nversion = 0
+nsavelocaleid = 1033
+Name = "pivottable"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Error
+PARAMETERS p1,p2,p3
+LOCAL aErrors
+DIMENSION aErrors[1]
+THIS.haderror = .T.
+
+=SYS(3006,THIS.nSaveLocaleId)
+
+IF AERROR(aErrors) > 0
+	DO CASE
+	CASE THIS.checkstate AND aErrors[1] = 1426 AND ATC("CALL_REJECTED",aErrors[2])#0
+		THIS.ALERT(E_XLBADSTATE_LOC)
+	CASE aErrors[1,1] = 1429 AND aErrors[1,7] = 1005
+		* Skip reporting OLE error
+		* this case occurs when too much data causes Excel to
+		* handle and presents dialog.
+	CASE BETWEEN(aErrors[1],1420,1460)
+		THIS.ALERT(E_OLEERROR_LOC)
+	ENDCASE
+	* Return if an OLE error occured
+	IF BETWEEN(aErrors[1],1420,1460)
+		RETURN TO MakeOutput
+	ENDIF
+ENDIF
+
+Automation::ERROR(p1,p2,p3)
+
+ENDPROC
+PROCEDURE Init
+IF !Automation::Init()
+	RETURN .F.
+ENDIF
+
+*- Check to see if Excel is installed
+IF EMPTY(THIS.GetXlPath())
+	RETURN .F.
+ENDIF
+
+*- Check to see if MS Query
+IF !THIS.MSQueryCheck()
+	RETURN .F.
+ENDIF
+
+IF THIS.nVersion < 10
+	*- Check for proper ODBC drivers
+	IF !THIS.ODBCCheck()
+		RETURN .F.
+	ENDIF
+ELSE
+	*- Check for proper OLE DB Provider
+	IF !THIS.checkoledb()
+		RETURN .F.
+	ENDIF
+ENDIF
+ENDPROC
+PROCEDURE checkfldlen
+LPARAMETER cFldName
+DO CASE
+	CASE EMPTY(m.cFldName) OR LEN(cFldName) < 11
+		RETURN m.cFldName
+	OTHERWISE
+		RETURN LEFT(m.cFldName,10)
+ENDCASE
+
+ENDPROC
+PROCEDURE getdosname
+LPARAMETER cDosFileName,lpathcheck
+
+LOCAL goodchars,badchars,pathchars,i
+
+cDosFileName = STRTRAN(m.cDosFileName," ","_")
+
+* Let's set the true bad characters which aren't allowed in fields
+* Note: this will differ based on code page
+badchars  = 'ÅÇÉÑÖÜáàâäãåéèêëíìîïñóòôö†°¢£§•/,-=;{}[]!@#$%^&*<>()?'+;
+   '+|Äõúùûü¶ß®©™´¨≠ÆØ∞±≤≥¥µ∂∑∏π∫ªºΩæø¿¡¬√ƒ≈∆«»… ÀÃÕŒœ'+;
+	'–—“”‘’÷◊ÿŸ⁄€‹›ﬁﬂ‡·‚„‰ÂÊÁËÈÍÎÏÌÓÔÒÚÛÙıˆ˜¯˘˙˚¸˝˛'+CHR(39)+" "
+	
+goodchars=""
+pathchars = ":\."
+
+IF PARAMETERS()=1 OR (TYPE("m.lpathcheck")="L" AND !m.lpathcheck)
+	badchars = m.badchars + m.pathchars
+ENDIF
+
+FOR i = 1 TO LEN(m.badchars)
+	IF ISALPHA(SUBSTR(m.badchars,m.i,1))
+		goodchars = m.goodchars + SUBSTR(m.badchars,m.i,1)
+	ENDIF
+ENDFOR
+
+badchars = CHRTRAN(m.badchars,m.goodchars,'')
+cDosFileName= SUBSTR(CHRTRAN(m.cDosFileName,m.badchars,REPLICATE("_",LEN(m.badchars)-1)),1,LEN(m.cDosFileName))
+
+RETURN m.cDosFileName
+
+ENDPROC
+PROCEDURE getxlpath
+* Locates Excel and checks version
+
+LOCAL cAppKey,cAppName,nErrNum,oReg,cAppKey2
+cAppKey = ""
+cAppName = ""
+cAppKey2 = ""
+cAppName2 = ""
+
+oReg = create('FileReg')	&& in registry.vcx
+
+* Get Application
+
+oReg.GetLatestVersion(OLE_XLAPP,@cAppKey2,@cAppName)
+THIS.nVersion = VAL(GETWORDNUM(cAppKey2,3,"."))
+
+cAppName = ""
+nErrNum = oReg.GetLatestVersion(XL_CLASS,@cAppKey,@cAppName)
+IF m.nErrNum # ERROR_SUCCESS
+	THIS.ALERT(E_NOREG_LOC)
+	RETURN ""
+ENDIF
+
+* Error checking
+IF VAL(RIGHT(m.cAppKey,1)) < 5		&& old Excel version?
+	THIS.ALERT(E_OLDXLVER_LOC)
+	RETURN ""
+ENDIF
+
+RETURN m.cAppName
+
+ENDPROC
+PROCEDURE makeoutput
+THIS.PivotOutput
+
+ENDPROC
+PROCEDURE msquerycheck
+LOCAL lHasMSQuery,aMSAPPs,nPos,cValue,oReg,cPathValue,cHkey
+
+* Test if user has MS Query correctly registered in Registry (i.e. v2.0)
+cHkey = IIF(THIS.nCurrentOS=OS_W32S,HKEY_CLASSES_ROOT,HKEY_LOCAL_MACHINE)
+IF !("REGISTRY" $ SET("CLASS"))
+	SET CLASS TO registry ADDITIVE
+ENDIF
+
+oReg = create('OldINIReg')
+cPathValue = ""
+
+IF oReg.GetRegKey(C_PATH,@cPathValue,QUERY_ROOT,m.cHkey) = ERROR_SUCCESS AND ;
+	FILE(m.cPathValue)
+	lHasMSQuery = .T.
+	THIS.lHasMSQRY32 = ATC(C_MSQRY32,m.cPathValue)#0
+ENDIF
+		
+DO CASE
+	CASE m.lHasMSQuery
+	
+	CASE FILE(GETENV("windir")+"\MSAPPS\MSQUERY\MSQUERY.EXE")
+		lHasMSQuery = .T.
+	OTHERWISE
+		* Check WIN.INI file
+		DIMENSION aMSAPPs[1]
+		IF oreg.GetINISection(@aMSAPPs,"MSAPPS") = ERROR_SUCCESS
+			nPos = ASCAN(aMSAPPs,"MSQUERY")
+			IF m.nPos # 0
+				cValue = ""
+				IF oreg.GetINIEntry(@cValue,"MSAPPS","MSQUERY") = ERROR_SUCCESS
+					IF FILE(m.cValue+"\MSQUERY.EXE")
+						lHasMSQuery = .T.
+					ENDIF
+				ENDIF
+			ENDIF
+		ENDIF
+		
+		* Check Registry
+		IF !lHasMSQuery AND oReg.IsKey(".qry")
+			lHasMSQuery = .T.				
+		ENDIF
+		
+ENDCASE
+
+IF !m.lHasMSQuery
+	THIS.ALERT(E_BADMSQUERY_LOC)
+ENDIF
+
+RETURN m.lHasMSQuery
+
+ENDPROC
+PROCEDURE pivotoutput
+LOCAL cDBQPath,cFieldString,aODBCSource,i,xl
+LOCAL xlapp,xlactivesheet,xlform,cThisDBF,cViewName,lCopyFile,lOldSetOpt
+LOCAL cTmpName,sysch,cPivotName,cNewFile
+
+m.lcopyfile = .F.
+m.cFieldString = ""
+
+IF !THIS.CheckData()
+	RETURN
+ENDIF
+
+SELECT (THIS.cAlias)
+
+IF EMPTY(THIS.aFldList[1])
+	DIMENSION THIS.aFldList[1]
+	AFIELDS(THIS.aFldList)
+ENDIF
+
+IF RECCOUNT() = 0
+	THIS.ALERT(C_NORECORDS_LOC)
+	RETURN
+ENDIF
+		
+IF THIS.nAction == 2 AND (EMPTY(THIS.cFormSCX) OR ;
+	!FILE(THIS.ForceExt(THIS.cFormSCX,"SCX")) OR ;
+	!FILE(THIS.ForceExt(THIS.cFormSCX,"SCT")))
+	*- no SCX form name specified, and wants to put pivot table in a form, so fail
+	THIS.ALERT(E_NOFORM_LOC)
+	RETURN
+ENDIF
+
+* Check for potentially large PivotTable and warn user
+IF RECCOUNT() > MAX_RECORDS
+
+	LOCAL aTmpArr,nPageCnt,nColCnt,nRowCnt,nSaveArea
+	DIMENSION aTmpArr[1]
+	STORE 1 TO nPageCnt,nColCnt,nRowCnt
+	nSaveArea = SELECT()	
+	IF !EMPTY(THIS.cPivFldRow)
+		SELECT DISTINCT EVAL(THIS.cPivFldRow) FROM (ALIAS()) INTO ARRAY aTmpArr
+		m.nRowCnt = _TALLY
+	ENDIF
+
+	IF m.nRowCnt < MAX_PIVROWS
+		IF !EMPTY(THIS.cPivFldCol)
+			SELECT DISTINCT EVAL(THIS.cPivFldCol) FROM (ALIAS()) INTO ARRAY aTmpArr
+			m.nColCnt = _TALLY
+		ENDIF
+		IF m.nColCnt < MAX_PIVCOLS
+			IF !EMPTY(THIS.cPivFldPage)
+				SELECT DISTINCT EVAL(THIS.cPivFldPage) FROM (ALIAS()) INTO ARRAY aTmpArr
+				m.nPageCnt = _TALLY
+			ENDIF
+		ENDIF
+	ENDIF
+	
+	IF SELECT() # m.nSaveArea
+		SELECT (m.nSaveArea)
+	ENDIF
+
+	IF	m.nRowCnt >= MAX_PIVROWS	OR;
+		m.nColCnt >= MAX_PIVCOLS	OR;
+		m.nPageCnt >= MAX_PIVPAGES	OR;
+		m.nRowCnt*m.nColCnt*m.nPageCnt > MAX_PIVCELLS
+		IF THIS.ALERT(C_LARGEPIVOT_LOC,36) # "YES"
+			RETURN
+		ENDIF
+	ENDIF	
+ENDIF
+
+* Check for Long File Names (older versions of Excel
+IF CURSORGETPROP('sourcetype')=3 AND THIS.nVersion < 8
+	cTmpName = THIS.GetDOSName(DBF(),.T.)
+	IF m.cTmpName # DBF() OR;
+		 LEN(THIS.JustFname(DBF()))>12 OR;
+		 LEN(THIS.JustStem(DBF()))>8
+		* MS QUERY 32 supports long files
+		IF !THIS.lHasMSQRY32
+			IF THIS.ALERT(C_LONGFNAME_LOC,36)="YES"
+				lcopyfile = .T.
+			ELSE
+				RETURN
+			ENDIF	
+		ENDIF
+	ENDIF
+ENDIF
+
+THIS.cDBCAlias = THIS.GetDBCAlias(THIS.cDBCName)
+
+*- Check if DBC is opened exclusively
+IF THIS.lHas30Drivers AND !EMPTY(THIS.cDBCAlias) AND ISEXCL(THIS.cDBCAlias,2)
+	IF MESSAGEBOX(C_EXCLDBC1_LOC+THIS.cDBCAlias+C_EXCLDBC2_LOC,36) == 6
+		cTmpDbcAlias = THIS.cDBCAlias
+		SET DATABASE TO (m.cTmpDbcAlias)
+		CLOSE DATABASE
+		OPEN DATABASE (THIS.cDBCName) SHARED
+		USE (THIS.cDBCTable) ALIAS (THIS.cAlias) SHARED
+	ELSE
+		RETURN
+	ENDIF
+ENDIF
+
+* Check for 3.0 Table type OR View
+IF THIS.nVersion < 10 AND !m.lcopyfile AND !THIS.lHas30Drivers AND;
+	(VAL(SYS(2029))=DBFTYPE_30 OR CURSORGETPROP('sourcetype')#3)
+	IF THIS.ALERT(C_COPYFOX2_LOC,36)="YES"
+		lcopyfile = .T.
+	ELSE
+		RETURN
+	ENDIF
+ENDIF
+
+*- Copy file
+IF m.lcopyfile		
+	* Until 3.0 drivers come out, ask if they want to copy file
+	LOCAL m.cSaveFile
+		
+	IF CURSORGETPROP('sourcetype')#3 && OR ATC(".TMP",DBF())#0
+		cSaveFile = CursorGetprop("sourcename")
+	ELSE
+		cSaveFile = THIS.JustStem(DBF())
+	ENDIF
+
+	*- MS Query 1.0 does not support long file names.
+	DO CASE
+		CASE LEN(m.cSaveFile) < 8
+			cSaveFile = m.cSaveFile + "2"
+		CASE LEN(m.cSaveFile) = 8 AND RIGHT(m.cSaveFile,1) = "2"
+			cSaveFile = LEFT(m.cSaveFile,7) + "_"
+		OTHERWISE
+			cSaveFile = LEFT(m.cSaveFile,7) + "2"
+	ENDCASE
+		
+	*- Since MS Query does not support non DOS filenames, we need to check here.
+	cSaveFile = THIS.GetDOSName(m.cSaveFile)
+	DO WHILE .T.
+		cSaveFile = PUTFILE(C_COPYPROMPT_LOC,m.cSaveFile+".dbf","DBF")
+		IF EMPTY(m.cSaveFile)
+			RETURN
+		ENDIF
+		
+		* Recheck to make sure invalid character was not entered
+		cSaveFile = THIS.ForceExt(m.cSaveFile,"DBF")
+		cTmpName = THIS.GetDOSName(m.cSaveFile,.T.)
+		IF m.cTmpName # m.cSaveFile OR;
+			 LEN(THIS.JustFname(m.cSaveFile))>12 OR;
+			 LEN(THIS.JustStem(m.cSaveFile))>8
+			IF THIS.ALERT(C_LONGFNAME_LOC,36)#"YES"
+				RETURN
+			ENDIF
+			cSaveFile = THIS.JustStem(m.cSaveFile)
+		ELSE
+			EXIT	
+		ENDIF
+	ENDDO
+
+	COPY TO (m.cSaveFile) TYPE FOX2
+	
+	* Need to check if copied OK
+	IF !FILE(m.cSaveFile)
+		RETURN
+	ENDIF
+	SELECT 0
+	USE (m.cSaveFile) SHARED
+	
+	* Failed somewhere
+	IF EMPTY(ALIAS()) OR VAL(SYS(2029))=DBFTYPE_30
+		RETURN
+	ENDIF
+	THIS.cAlias = ALIAS()
+	
+	* Need to reset field names to <= 10 chars since
+	* FOX2 tables only support field names of this length.
+		
+	THIS.cPivFldData = THIS.CheckFldLen(THIS.cPivFldData)	&& Pivot data field
+	THIS.cPivFldPage = THIS.CheckFldLen(THIS.cPivFldPage)	&& Pivot page field
+	THIS.cPivFldRow = THIS.CheckFldLen(THIS.cPivFldRow)		&& Pivot row field
+	THIS.cPivFldCol = THIS.CheckFldLen(THIS.cPivFldCol)		&& Pivot column field
+	
+ENDIF
+
+
+*- Check to make sure we have shared use of file
+IF ISEXCLUSIVE() AND CURSORGETPROP('sourcetype') == 3
+	m.cThisDBF = DBF()
+	USE (m.cThisDBF) SHARED
+	IF EMPTY(ALIAS()) OR THIS.HadError
+		RETURN
+	ENDIF
+	THIS.cAlias = ALIAS()
+ENDIF
+
+*- See if Excel is already open otherwise we need to start it.
+m.lOldSetOpt = DDESetOption("SAFETY")
+=DDESetOption("SAFETY",.F.)
+m.sysch=DDEInitiate("Excel","System")
+IF m.sysch = -1	&&failed	
+	THIS.DisplayStatus(C_STARTXL_LOC)
+	xlapp = CreateObject(OLE_XLAPP)
+ELSE
+	=DDETerminate(m.sysch)
+	xlapp = GetObject(,OLE_XLAPP)
+ENDIF
+
+*- Reset original state
+=DDESetOption("SAFETY",m.lOldSetOpt)
+
+*- We need to set the Localization ID to english (1033)
+*- so that OLE Automation will be understood by OLE server.
+SYS(3006,1033)
+
+* Check if problem creating Excel object
+IF TYPE('xlapp') # 'O' OR THIS.Haderror
+	MESSAGEBOX(E_FAILXL_LOC)
+	RETURN
+ELSE
+	* Check for good state (i.e., no modal dialogs open in Excel)
+	THIS.CheckState = .T.
+	=xlapp.caption
+	IF THIS.haderror
+		RETURN
+	ENDIF
+	THIS.CheckState = .F.
+ENDIF
+
+*- check on version of Excel
+*- if Excel < 10, we can't handle DBC Events
+IF !THIS.Checkdbcevents(THIS.cdbcname, xlapp.Version, .T.)
+	RETURN
+ENDIF
+
+DO CASE
+	CASE THIS.nAction = 1	&&Excel PivotTable
+		*- Create new workbook
+		xlapp.workbooks.add()
+		xlactivesheet = xlapp.activesheet
+
+		*- Make Excel visible if not already
+		xlapp.visible = .T.
+		
+	CASE THIS.nAction = 2	&& FoxPro form with PivotTable
+		LOCAL cFormSCX, cFormName
+		
+		cFormSCX = THIS.cFormSCX
+
+		IF m.sysch # -1 AND TYPE("xlapp") = "O" AND xlapp.workbooks.count = 0
+			xlapp.workbooks.add
+		ENDIF
+		DO FORM "&cFormSCX" NAME xlpivotform LINKED
+		xlapp = xlpivotform.olecontrol1.object.application
+		
+		IF m.sysch # -1	&& Excel already running
+			xlactivesheet = xlpivotform.olecontrol1.object.parent.worksheets(1)
+		ELSE
+			xlapp.windows(1).activate
+			xlactivesheet = xlapp.activesheet
+		ENDIF
+ENDCASE
+
+IF THIS.haderror
+	RETURN
+ENDIF
+
+THIS.DisplayStatus(C_WAITMESS_LOC)
+
+*- Get data -- should use same directory as foxpro table
+SELECT (THIS.cAlias)
+m.cDBQPath = FULL(SET("DEFAULT"))
+IF RIGHT(m.cDBQPath,1) = "\"
+	m.cDBQPath = LEFT(m.cDBQPath,LEN(m.cDBQPath)-1)
+ENDIF
+
+cViewName = "`" + LOWER(CURSORGETPROP("sourcename")) + "`"
+m.cFieldString = ""
+
+* Get the fields string
+DO CASE
+	CASE CURSORGETPROP('sourcetype') # 3  &&views
+		FOR i = 1 TO ALEN(THIS.aAutoFields)
+			m.cFieldString = m.cFieldString + m.cViewName +"."+ LOWER(THIS.aAutoFields[m.i])
+			IF m.i = ALEN(THIS.aAutoFields)
+				EXIT
+			ENDIF
+			m.cFieldString = m.cFieldString + ", "
+		ENDFOR
+		m.cFieldString = "SELECT " + m.cFieldString + " FROM "
+		IF LEN(m.cFieldString) > 230
+			m.cFieldString = "SELECT * FROM "
+		ENDIF
+	CASE .F. && ALEN(THIS.aAutoFields) = FCOUNT() OR EMPTY(THIS.aAutoFields[1])
+		m.cFieldString = "SELECT * FROM "
+	OTHERWISE
+		FOR i = 1 TO ALEN(THIS.aAutoFields)
+			m.cFieldString = m.cFieldString + THIS.aAutoFields[m.i]
+			IF m.i = ALEN(THIS.aAutoFields)
+				EXIT
+			ENDIF
+			m.cFieldString = m.cFieldString + ","
+		ENDFOR
+		m.cFieldString = "SELECT " + m.cFieldString + " FROM "
+		IF LEN(m.cFieldString) > 230
+			m.cFieldString = "SELECT * FROM "
+		ENDIF
+ENDCASE
+
+IF THIS.nVersion > 9
+	LOCAL oPivot,aOLEDB,lcDataSource,lcTable
+	lcDataSource = IIF(EMPTY(THIS.cDBCName),JUSTPATH(DBF()),THIS.cDBCName)
+	lcTable = IIF(EMPTY(THIS.cDBCName),JUSTSTEM(DBF()),THIS.cDBCTable)	
+	DIMENSION aOLEDB[1]
+	oPivot = xlapp.ActiveWorkbook.PivotCaches.Add(2)
+	aOLEDB[1] = "OLEDB;Provider=VFPOLEDB.1;Data Source="+lcDataSource
+	oPivot.Connection = aOLEDB
+	oPivot.CommandType = 3  && xlCmdTable
+	aOLEDB[1] = lcTable
+	oPivot.CommandText = aOLEDB
+	oPivot.MaintainConnection = .T.
+	oPivot.CreatePivotTable("R3C1","PivotTable1","",1)
+ELSE
+	** Code for creating PivotTable an external datasource directly
+	DIMENSION aODBCSource[2]
+	*  DSN = Data Source Name, FIL = File Type,DBQ = Data Directory
+	* "SourceType=DBC;Exclusive=No;BackgroundFetch=No;Collate=Machine;"
+	* "DSN=Visual FoxPro Tables;SourceDB=c:\vfp;SourceType=DBF;Exclusive=No;BackgroundFetch=No;Collate=GENERAL;"
+	aODBCSource[1] = "DSN=" + THIS.cODBC_DSN + ;
+		 ";SourceDB="+IIF(EMPTY(THIS.cDBCName),m.cDBQPath,THIS.cDBCName)+;
+		 ";SourceType="+IIF(EMPTY(THIS.cDBCName),"DBF","DBC")+;
+		 ";Exclusive=No"+;
+		 ";BackgroundFetch=Yes;"
+
+	DO CASE
+		CASE CURSORGETPROP("sourcetype")=3
+			aODBCSource[2] = m.cFieldString + "`" + DBF() + "`" + " " + ALIAS()
+		OTHERWISE
+			aODBCSource[2] = m.cFieldString + m.cViewName + " " + m.cViewName			
+	ENDCASE
+	xlactivesheet.pivotTableWizard(2,@aODBCSource)
+
+	* Check for problem with activecell not part of PivotTable
+	IF THIS.haderror OR (TYPE("xlapp.activecell.pivottable")# "O" AND;
+		TYPE("xlactivesheet.cells(1,1).pivottable")#"O")
+		MESSAGEBOX(E_NOPIVTABLE_LOC)
+		RETURN
+	ENDIF
+ENDIF
+
+cPivotName = xlactivesheet.pivotTables(1).name
+
+*- Set pivot fields
+*- Add row field
+IF !EMPTY(THIS.cPivFldRow)
+	xlactivesheet.pivotTables(m.cPivotName).AddFields(THIS.cPivFldRow)
+ENDIF
+
+*- Add column field
+IF !EMPTY(THIS.cPivFldCol)
+	xlactivesheet.pivotTables(m.cPivotName).PivotFields(THIS.cPivFldCol).orientation = 2
+ENDIF
+
+*- Add page field
+IF !EMPTY(THIS.cPivFldPage)
+	xlactivesheet.pivotTables(m.cPivotName).PivotFields(THIS.cPivFldPage).orientation = 3
+ENDIF
+
+*- Add data field
+IF !EMPTY(THIS.cPivFldData)
+	xlactivesheet.pivotTables(m.cPivotName).PivotFields(THIS.cPivFldData).orientation = 4
+	xlDatafld = xlactivesheet.pivotTables(m.cPivotName).datafields()
+	IF xlDatafld.item(1).function = XLCOUNT
+		*- Test if item is numeric
+		FOR i = 1 TO ALEN(THIS.aFldList,1)
+			IF THIS.aFldList[m.i,1] == UPPER(THIS.cPivFldData)
+				IF AT(THIS.aFldList[m.i,2],"NFYB") # 0
+					THIS.lIsNumeric = .T.
+				ENDIF
+				EXIT
+			ENDIF
+		ENDFOR
+		IF THIS.lIsNumeric
+			xlactivesheet.pivotTables(m.cPivotName).PivotFields(xlDatafld.item(1).value).function = 0
+		ENDIF
+	ENDIF
+
+	IF !THIS.lHasColumnTotals		&& Column totals
+		xlactivesheet.pivotTables(m.cPivotName).ColumnGrand = .F.
+	ENDIF
+
+	IF !THIS.lHasRowTotals			&& Row totals
+		xlactivesheet.pivotTables(m.cPivotName).RowGrand = .F.
+	ENDIF
+ENDIF
+
+THIS.DisplayStatus()
+
+* Handle Output action here
+DO CASE
+	CASE THIS.nAction = 1	&&Excel PivotTable
+	CASE THIS.nAction = 2	&&FoxPro form with PivotTable
+		xlpivotform.saveas(THIS.cOutFile)
+		m.cNewFile = "'"+THIS.cOutFile+"'"
+		IF !THIS.lHasNoTask
+			_SHELL = [MODIFY FORM &cNewFile NOWAIT]
+		ENDIF
+		* See if excel was already visible
+		RELEASE xlactivesheet
+		IF m.sysch = -1
+			xlapp.quit
+		ENDIF
+		RELEASE xlapp,xlpivotform
+ENDCASE
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+skiperror
+checkstate flag to test state of Excel via Error routine
+cpivfldrow Name of field for pivot table row.
+cpivfldcol Name of field for pivot table column.
+cpivfldpage Name of field for pivot table page.
+naction Output action (1-Excel sheet, 2-VFP form).
+cformscx
+cformname
+cpivflddata Name of field for pivot table data.
+lhascolumntotals Whether to total columns.
+lhasrowtotals Whether to total rows.
+lisnumeric
+lhasmsqry32
+coutfile Name of output file.
+lhasnotask
+nversion
+*pivotoutput Create Excel pivot table output.
+*getdosname 
+*msquerycheck Query for MS Query.
+*getxlpath Check for Excel.
+*checkfldlen 
+^afldlist[1,1] 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+pivtable.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] pivottable
+[START RESERVED1]
+ 
+ pivtable.h¶E[í,[END RESERVED1]
+[EOF]
