@@ -1,0 +1,1974 @@
+SCCTEXT Version 4.0.0.2
+PLATFORM C(8,0),UNIQUEID C(10,0),TIMESTAMP N(10,0),CLASS M(4,0),CLASSLOC M(4,0),BASECLASS M(4,0),OBJNAME M(4,0),PARENT M(4,0),PROPERTIES M(4,0),PROTECTED M(4,0),METHODS M(4,0),OBJCODE M(4,0),OLE M(4,0),OLE2 M(4,0),RESERVED1 M(4,0),RESERVED2 M(4,0),RESERVED3 M(4,0),RESERVED4 M(4,0),RESERVED5 M(4,0),RESERVED6 M(4,0),RESERVED7 M(4,0),RESERVED8 M(4,0),USER M(4,0)
+1252
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] Class     
+[START RESERVED1]
+VERSION =   3.00[END RESERVED1]
+[START RESERVED7]
+Application Wizard framework class library.[END RESERVED7]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RMC1EW9HO
+[CLASS] _custom
+[CLASSLOC] _base.vcx
+[BASECLASS] custom
+[OBJNAME] _error
+[START PROPERTIES]
+ccurrentmessage = ("")
+ccurrentmethod = ("")
+icurrenterror = 0
+icurrentline = 0
+ccurrentclass = ("")
+lserver = (INLIST(_VFP.StartMode,1,2,3,5))
+clogalias = ("")
+clogdbf = ("")
+ccurrenterrorparam = ("")
+Name = "_error"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Destroy
+LOCAL liSession
+liSession = SET("DATASESSION")
+SET DATASESSION TO 1
+IF USED(THIS.cLogAlias)
+   USE IN (THIS.cLogAlias)
+   * this is actually only going to happen
+   * in the "default" datasession
+   * because any other USEs should have
+   * been closed when their forms and formsets
+   * died by this point.
+   * note that the errorlog may be opened
+   * many times in different sessions, and
+   * this session information will be reflected in the log
+ENDIF
+SET DATASESSION TO liSession
+DODEFAULT()
+ENDPROC
+PROCEDURE Error
+LPARAMETERS nError, cMethod, nLine
+* special case, must override
+* any use of ON ERROR which
+* might call this object recursively
+IF "setlog" $ LOWER(cMethod)
+   THIS.cLogDBF = ""
+ELSE
+   ERROR ERROR_IN_ERROR_METHOD_LOC+":"+CHR(13)+ ;
+      "#"+TRANSFORM(nError)+CHR(13)+ ;
+      THIS.Name+" "+cMethod+", "+TRANSFORM(nLine)+CHR(13)+ ;
+      THIS.cCurrentMessage
+ENDIF
+
+ENDPROC
+PROCEDURE displayerrorlog
+LOCAL liSelect
+liSelect = SELECT()
+THIS.SetLog()
+
+DO CASE
+
+CASE (EMPTY(THIS.cLogAlias) OR NOT USED(THIS.cLogAlias))
+
+   IF NOT THIS.lServer
+
+     MESSAGEBOX(ERROR_LOG_UNAVAILABLE_LOC,;
+                MB_ICONEXCLAMATION,;
+                THIS.GetMessageBoxTitle())
+   ENDIF
+
+CASE RECCOUNT(THIS.cLogAlias) = 0
+
+   IF NOT THIS.lServer
+
+      MESSAGEBOX(ERROR_LOG_EMPTY_LOC,;
+                 MB_ICONEXCLAMATION,;
+                 THIS.GetMessageBoxTitle())
+   ENDIF
+
+OTHERWISE
+
+   SELECT (THIS.cLogAlias)
+   THIS.DoErrorLogUI(THIS.cLogAlias)
+   SELECT (liSelect)
+
+ENDCASE
+
+
+ENDPROC
+PROCEDURE doerrorlogui
+LPARAMETERS tcAlias
+
+* this code is really expecting to be overridden
+IF NOT THIS.lServer
+   BROWSE NORMAL NOWAIT
+ENDIF
+ENDPROC
+PROCEDURE fillarrays
+IF VARTYPE(THIS.aErrorClass[1]) ="L"
+   * first time through
+   THIS.aErrorClass[1,2] = "memory"
+   THIS.aErrorClass[1,1] = "/21/22/43/1012/1149/1150/1151/1201/1202/1507/1600/1809/1986/2000/"
+ENDIF
+
+LOCAL lcErrString, llBail
+
+lcErrString = "/"+TRANSFORM(THIS.iCurrentError)+"/"
+
+IF lcErrString $ THIS.aErrorClass[1,1]
+   llBail = .T.
+ELSE
+   =AERROR(THIS.aErrors)
+ENDIF
+
+IF (NOT llBail) AND (TYPE("THIS.aErrorClass[2,1]") # "C")
+
+   DIME THIS.aErrorClass[16,2]
+   * note: you can add more columns for more error attributes,
+   * for example a severity gauge for different classes
+   * or other error class groupings
+
+   THIS.aErrorClass[2,2] = "index"
+   THIS.aErrorClass[2,1] = "/5/19/20/114/1103/1141/1707/"
+   THIS.aErrorClass[3,2] = "disk"
+   THIS.aErrorClass[3,1] = "/56/1410/1157/"
+   THIS.aErrorClass[4,2] = "file"
+   THIS.aErrorClass[4,1] = "/1/6/7/15/41/50/54/55/102/110/111/115/116/117/119/120"+;
+                           "/121/127/202/255/266/297/356/392/1102/1104/1105/1108"+;
+                           "/1111/1112/1113/1115/1126/1166/1131/1167/1168/1169"+;
+                           "/1243/1245/1246/1294/1298/1509/1510/1637/1643"+;
+                           "/1644/1705/1708/"
+   THIS.aErrorClass[5,2] = "command"
+   THIS.aErrorClass[5,1] = "/1405/1411/1412/"
+   THIS.aErrorClass[6,2] = "lock"
+   THIS.aErrorClass[6,1] = "/3/108/109/130/1502/1503/1106/1585/"
+   THIS.aErrorClass[7,2] = "output"
+   THIS.aErrorClass[7,1] = "/216/221/222/223/227/228/332/1002/1153/"
+   THIS.aErrorClass[8,2] = "program or resource file"
+   THIS.aErrorClass[8,1] = "/67/91/1161/1178/1193/1194/1195/1196/1296/1309/1338/"
+   THIS.aErrorClass[9,2] = "print"
+   THIS.aErrorClass[9,1] = "/124/125/1910/1524/1643/1644/1717/"
+   THIS.aErrorClass[10,2] = "activex"
+   THIS.aErrorClass[10,1] = "/1420/1421/1422/1423/1424/1426/1427/1428/1429/1431/1434/1436/1508"+;
+                            "/1440/2003/1782/2021/"
+   THIS.aErrorClass[11,2] = "sql"
+   THIS.aErrorClass[11,1] = "/1465/1466/1471/1472/1474/1475/1476/1477/1864/1865/1802/1890/1845/"
+   THIS.aErrorClass[12,2] = "cursor"
+   THIS.aErrorClass[12,1] = "/1467/1468/1473/1478/1479/1489/1491/1492/1493/1494/1495/1498/1499/1542/1546/1547/1548/1568/"
+   THIS.aErrorClass[13,2] = "odbc"
+   THIS.aErrorClass[13,1] = "/1480/1481/1482/1483/1484/1485/1486/1487/1496/1497/1522/1523/1525/1526/1527/1528/1530/"
+   THIS.aErrorClass[14,2] = "relational integrity"
+   THIS.aErrorClass[14,1] = "/1539/1555/1567/1879/1881/1882/1883/1884/1886/1887/"
+   THIS.aErrorClass[15,2] = "datasession"
+   THIS.aErrorClass[15,1] = "/1540/1545/1549/"
+   THIS.aErrorClass[16,2] = "offline views"
+   THIS.aErrorClass[16,1] = "/2007/2008/2010/2011/2015/2018/"
+*   THIS.aErrorClass[17,2] = "database"
+*   THIS.aErrorClass[17,1] = "/1529/1531/1534/1535/1536/1537/1538/1541/1542/1550/1551/1552/1553/1557/1558/1561/1562/1563/1564/1565/1566/1569/1570/"
+
+ENDIF
+
+RETURN (NOT llBail)
+ENDPROC
+PROCEDURE filllogrecord
+INSERT INTO (THIS.cLogAlias) ("Errstamp") VALUES (DATETIME())
+
+LOCAL lcErrData, liErrLevel, liSelect, liSession, liFormSession
+
+liSelect = SELECT()
+liSession = SET("DATASESSION")
+
+SELECT (THIS.cLogAlias)
+
+* create listing memo field from chunks of data --
+* do a couple of REPLACEs so that less memory is
+* used for each step of this process
+
+lcErrData = "Error # "+TRANSFORM(THIS.iCurrentError)
+IF NOT EMPTY(THIS.cCurrentClass)
+   lcErrData = lcErrData+ " class: "+THIS.cCurrentClass
+ENDIF
+lcErrData = lcErrData+CHR(13)+"Program "+ THIS.cCurrentMethod
+lcErrData = lcErrData+CHR(13)+"Message "+ THIS.cCurrentMessage
+IF NOT EMPTY(THIS.cCurrentErrorParam)
+   lcErrData = lcErrData+ " (" +THIS.cCurrentErrorParam+")"
+ENDIF
+lcErrData = lcErrData+CHR(13)+"Line #  "+TRANSFORM(THIS.iCurrentLine)
+
+liFormSession = liSession
+
+IF TYPE("_SCREEN.ActiveForm") = "O"
+   lcErrData = lcErrData+CHR(13)+"Active: "+_SCREEN.ActiveForm.Name
+   IF TYPE("_SCREEN.ActiveForm.ActiveControl") = "O"
+      lcErrData = lcErrData+ " ("+_SCREEN.ActiveForm.ActiveControl.Name+")"
+   ENDIF
+   DO CASE
+   CASE TYPE("_SCREEN.ActiveForm.DataSessionID") = "N"
+      liFormSession = _SCREEN.ActiveForm.DataSessionID
+   CASE TYPE("_SCREEN.ActiveForm.Parent.DataSessionID") = "N"
+      * formset
+      liFormSession = _SCREEN.ActiveForm.Parent.DataSessionID
+   OTHERWISE
+      * can be a defined window or modi memo or whatever
+   ENDCASE
+ENDIF
+
+lcErrData = lcErrData+CHR(13)+"Session "+TRANSFORM(liFormSession)
+REPLACE listing WITH lcErrData ADDITIVE
+
+lcErrData =           CHR(13)+"DiskSpc "+TRANSFORM(DISKSPACE())
+lcErrData = lcErrData+CHR(13)+"Screen  "+TRANSFORM(SYSMETRIC(2))+" by "+TRANSFORM(SYSMETRIC(1))
+lcErrData = lcErrData+CHR(13)+"OS      "+OS()
+lcErrData = lcErrData+CHR(13)+"Vers(1) "+VERSION(1)
+lcErrData = lcErrData+CHR(13)+"Vers(2) "+TRANSFORM(VERSION(2))
+lcErrData = lcErrData+CHR(13)+"Vers(3) "+VERSION(3)
+lcErrData = lcErrData+CHR(13)+"SMode   "+TRANSFORM(_VFP.StartMode)
+lcErrData = lcErrData+CHR(13)+"(1016)  "+TRANSFORM(VAL(SYS(1016))/1024)+" user object memory used"
+lcErrData = lcErrData+CHR(13)+"(1001)  "+TRANSFORM(VAL(SYS(1001))/1024)+" pool available memory"
+lcErrData = lcErrData+CHR(13)+"CPU     "+ SYS(17)
+lcErrData = lcErrData+CHR(13)+"Video   "+SYS(2006)
+lcErrData = lcErrData+CHR(13)+CHR(13)+REPLICATE("=",50)
+lcErrData = lcErrData+CHR(13)+"            Calling Chain:"
+
+REPLACE listing WITH lcErrData ADDITIVE
+
+liErrLevel = 1
+lcErrData = CHR(13)
+DO WHILE NOT EMPTY(SYS(16,liErrLevel)) AND NOT SYS(16,liErrLevel) == PROGRAM()
+   lcErrData = lcErrData + CHR(13)+SYS(16,liErrLevel)
+   liErrLevel= liErrLevel+1
+ENDDO
+
+lcErrData = lcErrData+CHR(13)+REPLICATE("=",50)
+lcErrData = lcErrData+CHR(13)+CHR(13)+REPLICATE("=",50)
+lcErrData = lcErrData+CHR(13)+"            CONFIG file: "+SYS(2019)
+IF FILE(SYS(2019))
+   lcErrData = lcErrData + CHR(13)+REPLICATE("=",50)+CHR(13)
+   REPLACE listing WITH lcErrData ADDITIVE
+   APPEND MEMO listing FROM (SYS(2019)) && ADDITIVE by default
+ELSE
+   lcErrData = lcErrData + " NOT AVAILABLE"+CHR(13)+REPLICATE("=",50)+CHR(13)
+   REPLACE listing WITH lcErrData ADDITIVE
+ENDIF
+
+lcErrData = CHR(13)+CHR(13)+REPLICATE("=",50)
+lcErrData = lcErrData+CHR(13)+"          Status listing of Current Data Session "
+lcErrData = lcErrData+CHR(13)+REPLICATE("=",50)+CHR(13)
+REPLACE listing WITH lcErrData ADDITIVE
+
+lcErrData = SYS(2023)+"\"+SYS(3)+".tmp"
+
+DO WHILE FILE(lcErrData)
+   lcErrData = SYS(2023)+"\"+SYS(3)+".tmp"
+ENDDO
+
+IF liSession = liFormSession
+   SELECT (liSelect)
+ELSE
+   SET DATASESSION TO (liFormSession)
+ENDIF
+LIST STATUS TO (lcErrData) NOCONSOLE
+
+IF liSession = liFormSession
+   SELECT (THIS.cLogAlias)
+ELSE
+   SET DATASESSION TO (liSession)
+ENDIF
+
+APPEND MEMO listing FROM (lcErrData)
+
+ERASE (lcErrData)
+REPLACE listing WITH CHR(13)+REPLICATE("=",50)+CHR(13)+;
+                "            Memory listing"+CHR(13)+;
+                REPLICATE("=",50)+CHR(13) ;
+                ADDITIVE
+
+LIST MEMORY TO (lcErrData) NOCONSOLE
+APPEND MEMO listing FROM (lcErrData)
+
+ERASE (lcErrData)
+SELECT (liSelect)
+
+
+
+ENDPROC
+PROCEDURE geterrorattribute
+LPARAMETER tiColumn, tvErrNo
+
+ASSERT EMPTY(tiColumn) OR ;
+       (VARTYPE(tiColumn) = "N" AND ;
+        BETWEEN(tiColumn,1,ALEN(THIS.aErrorClass,2)))
+
+ASSERT EMPTY(tvErrNo) OR INLIST(VARTYPE(tvErrNo),"N","C")
+
+LOCAL lcErrString, liColumn, liIndex, lvReturn, lcType
+
+DO CASE
+CASE EMPTY(tvErrNo)
+   lcErrString = "/"+TRANSFORM(THIS.iCurrentError)+"/"
+CASE VARTYPE(tvErrNo) = "N"
+   lcErrString = "/"+TRANSFORM(tvErrNo)+"/"
+OTHERWISE
+   lcErrString = "/"+ALLTR(tvErrNo)+"/"
+ENDCASE
+
+IF EMPTY(tiColumn)
+   * return the first column, error number string
+   liColumn = 1
+ELSE
+   liColumn = tiColumn
+ENDIF
+
+lcType = VARTYPE(THIS.aErrorClass[1,liColumn])
+DO CASE
+CASE lcType = "C"
+   lvReturn = ""
+CASE INLIST(lcType,"N","I","Y")
+   lvReturn = NTOM(0)
+CASE INLIST(lcType,"D","T")
+   lvReturn = {}
+CASE lcType = "O"
+   lvReturn = .NULL.
+OTHERWISE
+   * lvReturn = .F.
+ENDCASE
+
+FOR liIndex = 1 TO ALEN(THIS.aErrorClass,1)
+   IF lcErrString $ THIS.aErrorClass[liIndex,1]
+      lvReturn = THIS.aErrorClass[liIndex,liColumn]
+      EXIT
+   ENDIF
+ENDFOR
+
+RETURN lvReturn
+
+
+
+ENDPROC
+PROCEDURE getmessageboxtitle
+RETURN ERROR_MESSAGEBOX_TITLE_LOC
+ENDPROC
+PROCEDURE handle
+LPARAMETERS tiError, tcMethod, tiLine
+
+THIS.cCurrentMessage = MESSAGE()
+THIS.cCurrentErrorParam = SYS(2018)
+THIS.iCurrentError = IIF(VARTYPE(tiError) # "N",0,tiError)
+THIS.cCurrentMethod = TRANSFORM(tcMethod)
+THIS.iCurrentLine = IIF(VARTYPE(tiLine) # "N",0,tiLine)
+THIS.cCurrentClass = ""
+THIS.lUserCancelled = .F. && it's possible
+                          && for an outside program to ignore a previous CANCEL instruction
+
+THIS.FillArrays()
+
+* note: FillArrays() does an early bail for memory
+* errors,which will be messaged by THIS.IsFatal() below
+
+* see FillArrays() for structure
+* of aErrorClass array --
+* GetErrorAttribute
+* gets a particular element by looking
+* up error numbers in the first array column and specifying
+* what column of the array is needed. This column
+* is passed as GetErrorAttribute's first parameter
+* (you can also pass a second parameter containing
+* a particular error number to look up -- this defaults
+* to the iCurrentError contents)
+THIS.cCurrentClass = THIS.GetErrorAttribute(2)
+* for example,
+* THIS.cCurrentLevel = THIS.GetErrorAttribute(3)
+* for a property that used a third column of
+* the array to store some error severity classification system
+
+IF NOT (THIS.IsDisallowedServerAction(.T.) OR ;
+        THIS.IsFatal(.T.) OR ;
+        THIS.IsTrivial(.T.))
+
+   IF THIS.OKToReport()
+
+      THIS.LogErrorReport()
+
+   ENDIF
+
+   IF THIS.OKToContinue()
+
+      THIS.UserHandlesError()
+
+   ENDIF
+
+
+ENDIF
+
+
+
+ENDPROC
+PROCEDURE isdisallowedserveraction
+LPARAMETERS tlWantRecord
+LOCAL llDisallowedServerAction
+IF THIS.lServer AND ;
+   (THIS.iCurrentError = 2031 OR ;
+    (THIS.iCurrentError = 1001 AND ;
+     _VFP.Startmode = 5) )
+   llDisallowedServerAction = .T.
+   IF tlWantRecord
+      THIS.RecordServerError(;
+         THIS.cCurrentMessage+CHR(13)+;
+         THIS.cCurrentErrorParam+CHR(13)+;
+         TRANS(THIS.iCurrentError)+CHR(13)+;
+         THIS.cCurrentMethod+CHR(13)+;
+         TRANS(THIS.iCurrentLine))
+   ENDIF
+ENDIF
+RETURN llDisallowedServerAction
+ENDPROC
+PROCEDURE isfatal
+LPARAMETERS tlWantDialog
+
+LOCAL llIsFatal, lcMessage
+lcMessage = ""
+
+llIsFatal = INLIST("/"+THIS.cCurrentClass+"/", ;
+                   "/memory/", ;
+                   "/disk/", ;
+                   "/program or resource file/" )
+
+
+IF llIsFatal AND tlWantDialog
+   lcMessage =    ERROR_SERIOUS_CLASS_LOC + ":  " + UPPER(THIS.cCurrentClass) + CHR(13) +;
+                  ERROR_CANNOT_BE_LOGGED_LOC + CHR(13)+ ;
+                  CHR(13)+CHR(13)+;
+                  SYS(16,0)+ ;
+                  CHR(13)+ CHR(13)+ ;
+                  "#"+TRANSFORM(THIS.iCurrentError)+" "+ ;
+                  THIS.cCurrentMethod+", "+TRANSFORM(THIS.iCurrentLine) + ;
+                  CHR(13)+CHR(13)+ ;
+                  ["]+THIS.cCurrentMessage+["]
+
+   IF THIS.lServer
+
+      THIS.RecordServerError(lcMessage)
+
+   ELSE
+      =MESSAGEBOX(lcMessage+CHR(13)+CHR(13)+ ;
+                   ERROR_USER_NOTE_LOC, ;
+                   MB_ICONSTOP, ;
+                   THIS.GetMessageBoxTitle())
+   ENDIF
+
+
+ENDIF
+
+RETURN llIsFatal
+ENDPROC
+PROCEDURE isgooderrorlog
+LPARAMETERS tcAlias
+ASSERT USED(tcAlias)
+
+LOCAL ARRAY aTemp[1]
+
+=AFIELDS(aTemp,tcAlias)
+
+RETURN UPPER(aTemp(1,1))== "ERRSTAMP"  AND ;
+       UPPER(aTemp(2,1))== "LISTING"   AND ;
+       UPPER(aTemp(3,1))== "USERNOTES" AND ;
+       aTemp(1,2)+aTemp(2,2)+aTemp(3,2)=="TMM"
+
+ENDPROC
+PROCEDURE istrivial
+LPARAMETERS tlWantDialog
+
+LOCAL llIsTrivial, lcMessage
+lcMessage = ""
+llIsTrivial = INLIST("/"+THIS.cCurrentClass+"/", ;
+                     "/print/", ;
+                     "/lock/")
+
+IF llIsTrivial AND tlWantDialog
+   * messageboxes
+
+   DO CASE
+   CASE THIS.cCurrentClass == "print"
+
+      lcMessage = ERROR_PRINT_LOC + ":"+ ;
+                  CHR(13)+CHR(13)+;
+                  ["]+THIS.cCurrentMessage+["]
+
+
+   CASE THIS.cCurrentClass == "lock"
+     * should not happen unless SET REPROCESS
+     * is not properly set
+      lcMessage = ERROR_LOCK_LOC + ":"+ ;
+                  CHR(13)+CHR(13)+;
+                  THIS.cCurrentMessage
+
+   ENDCASE
+
+   IF NOT THIS.lServer
+
+      =MESSAGEBOX(lcMessage+CHR(13)+CHR(13)+ ;
+                   ERROR_USER_FIX_LOC,;
+                   MB_ICONEXCLAMATION, ;
+                   THIS.GetMessageBoxTitle())
+   ENDIF
+
+ENDIF
+
+RETURN llIsTrivial
+ENDPROC
+PROCEDURE logerrorreport
+LOCAL lcMessage
+
+lcMessage = ["]+THIS.cCurrentMessage +["] + CHR(13)+CHR(13)+ ;
+            "("+TRANSFORM(THIS.iCurrentError)+")"+ ;
+            IIF(EMPTY(THIS.cCurrentErrorParam),"",;
+                " ("+THIS.cCurrentErrorParam+")" )+CHR(13)+ ;
+            THIS.cCurrentMethod+", "+TRANSFORM(THIS.iCurrentLine)+ CHR(13)+;
+            SYS(16,0)
+
+IF THIS.lServer OR ;
+   MESSAGEBOX(ERROR_OCCURRED_LOC+":"+CHR(13)+CHR(13)+;
+              lcMessage+ CHR(13)+CHR(13)+ ;
+              ERROR_LOG_LOC, ;
+              MB_ICONSTOP+MB_YESNO, ;
+              THIS.GetMessageBoxTitle()) ;
+              = IDYES
+
+  IF NOT THIS.lServer
+     WAIT WINDOW NOWAIT LEFTC(lcMessage,254)
+  ENDIF
+  THIS.SetLog()
+  THIS.FillLogRecord()
+  WAIT CLEAR
+
+ENDIF
+
+ENDPROC
+PROCEDURE oktocontinue
+* abstract in the base
+ENDPROC
+PROCEDURE oktoreport
+* abstract in the base
+ENDPROC
+PROCEDURE recordservererror
+LPARAMETERS tcMessage
+LOCAL lcMessage
+lcMessage = TRANSFORM(tcMessage)
+THIS.SetLog()
+INSERT INTO (THIS.cLogAlias) ("Errstamp") VALUES (DATETIME())
+REPLACE Listing WITH lcMessage IN (THIS.cLogAlias)
+
+ENDPROC
+PROCEDURE setlog
+LPARAMETERS tcTableName, tcAlias
+
+IF (NOT EMPTY(THIS.cLogAlias)) AND ;
+   USED(THIS.cLogAlias) AND ;
+   THIS.IsGoodErrorLog(THIS.cLogAlias)
+   RETURN .T.
+ENDIF
+
+LOCAL lcAlias, lcTableName, liSelect
+
+
+IF VARTYPE(tcAlias) = "C" AND NOT EMPTY(tcAlias)
+   lcAlias = ALLTR(tcAlias)
+   IF USED(lcAlias) AND THIS.IsGoodErrorLog(lcAlias)
+      THIS.cLogAlias = lcAlias
+   ENDIF
+ENDIF
+
+IF EMPTY(THIS.cLogAlias)
+   lcAlias = "E"+SYS(2015)
+   DO WHILE USED(lcAlias)
+      lcAlias = "E"+SYS(2015)
+   ENDDO
+   THIS.cLogAlias = lcAlias
+ENDIF
+
+* now for the table name:
+IF USED(THIS.cLogAlias)
+
+   lcTableName = DBF(lcAlias)
+
+ELSE
+
+   DO CASE
+   CASE VARTYPE(tcTableName) = "C" AND NOT EMPTY(tcTableName)
+      lcTableName  = ALLTR(tcTableName)
+   CASE NOT EMPTY(THIS.cLogDBF)
+      lcTableName =  ALLTR(THIS.cLogDBF)
+   OTHERWISE
+      lcTableName = "errorlog.dbf"
+   ENDCASE
+   IF AT(".",lcTableName) = 0
+      lcTableName = lcTableName+".dbf"
+   ENDIF
+
+ENDIF
+
+THIS.cLogDBF = LOWER(FULLPATH(lcTableName))
+
+IF NOT USED(THIS.cLogAlias)
+
+   IF NOT EMPTY(SYS(2000,THIS.cLogDBF))
+       USE (THIS.cLogDBF) AGAIN SHARED ALIAS (THIS.cLogAlias) IN 0
+       IF EMPTY(THIS.cLogDBF) ;
+          OR NOT THIS.IsGoodErrorLog(THIS.cLogAlias)
+          IF USED(THIS.cLogAlias)
+             USE IN (THIS.cLogAlias)
+          ENDIF
+          * recursive call with new, temporary filename:
+          THIS.SetLog(FULLPATH(THIS.cLogAlias), THIS.cLogAlias)
+       ENDIF
+   ELSE
+      liSelect = SELECT()
+      SELE 0
+* v-darylm
+      CREATE TABLE (THIS.cLogDBF) FREE ;
+                   (errstamp    t, ;
+                    listing    m,;
+                    usernotes m)
+*!*	      CREATE TABLE (THIS.cLogDBF) ;
+*!*	                   (errstamp    t, ;
+*!*	                    listing    m,;
+*!*	                    usernotes m)
+      USE (THIS.cLogDBF) AGAIN SHARED ALIAS (THIS.cLogAlias)
+      SELECT (liSelect)
+   ENDIF
+ENDIF
+
+RETURN
+ENDPROC
+PROCEDURE usercancelled
+RETURN THIS.lUserCancelled
+ENDPROC
+PROCEDURE userhandleserror
+LOCAL liContinue
+
+DO CASE
+
+CASE THIS.lServer
+   liContinue = IDYES
+CASE VERSION(2) = 0
+   liContinue = MESSAGEBOX( ERROR_USEREND_LOC,;
+                            MB_ICONEXCLAMATION+MB_OKCANCEL, ;
+                            THIS.GetMessageBoxTitle())
+
+OTHERWISE
+   liContinue = MESSAGEBOX(ERROR_DEVEND_LOC, ;
+                          MB_ICONEXCLAMATION+MB_YESNOCANCEL, ;
+                          THIS.GetMessageBoxTitle())
+ENDCASE
+
+
+DO CASE
+
+CASE INLIST(liContinue,IDYES, IDOK)
+   RETURN
+
+CASE liContinue = IDNO
+   DEBUG
+   SUSPEND
+
+
+OTHERWISE
+
+  THIS.lUserCancelled = .T.
+  * at this point in an object method, a CANCEL may be
+  * the same as a RETURN. The owning object
+  * has to decide what to do. If you do a CANCEL
+  * here it will have the effect of making it
+  * difficult for the container to RELEASE properly.
+  * This is especially a problem if the error
+  * has been invoked by the ON ERROR handler, because
+  * the ON... interrupt can take you back to anywhere.
+
+ENDCASE
+
+
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+ccurrentmessage MESSAGE() of current error
+ccurrentmethod Method  or procedure where error occurred, as passed to Handle().
+icurrenterror Error number for current error.
+icurrentline Line where current error occurred.
+ccurrentclass The error classification that the error object gives this particular error number.
+lserver Checks _VFP.StartMode to see whether any sort of modal feedback should be avoided.
+clogalias Alias under which the error log is opened.  See SetLog().
+clogdbf Fully qualified name of current error table on disk.  See SetLog().
+ccurrenterrorparam SYS(2018) of current error
+lusercancelled Allows the outside program to cleanup and do whatever is necessary before release.
+*handle Main routine to handle error.
+^aerrorclass[1,3] Error numbers by classification for evaluation of type and severity.
+^aerrors[1,6] 
+*oktoreport Abstract method to evaluate error whether to report error.
+*fillarrays Fills error classification array (aErrorClass) first time, and current error array (aErrors) for each error that occurs.  Bails if conditions are so severe (memory errors) that further processing is undesirable.
+*istrivial Whether error is a trivial type error.
+*isfatal Whether error is a fatal type error.
+*oktocontinue Abstract  method to evaluate error whether to continue program execution.
+*logerrorreport If lServer is .T. or user indicates logging is desired, opens error log and logs the error.
+*displayerrorlog Displays error log.
+*geterrorattribute Returns appropriate information from aErrorClass array for a given error number.
+*getmessageboxtitle This is really meant for your subclass or instance to fill out with app-specific information, so that all user feedback (WAIT WINDOW NOWAITs and MESSAGEBOX()) by the error object matches your app properly.
+*setlog Evaluates log table name and alias, attempts to open and validate the table, creates new alias and log table name on the fly if anything goes wrong.
+*isgooderrorlog Validates error log
+*userhandleserror Gives user choices about whether to go on with the app after an error.
+*usercancelled Returns whether user opted to cancel after the current error.
+*filllogrecord Writes error information to the log.
+*doerrorlogui Called by DisplayErrorLog for actual UI display after setup.  The simple default behavior here (BROWSE NOWAIT) is meant to be overridden by application-specific behavior.
+*recordservererror Establishes a consistent method for logging feedback which would ordinarily go to UI, for use in servers
+*isdisallowedserveraction Tells whether the error is caused by an attempt to execute UI or other disallowed action from a server 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED7]
+Error handler[END RESERVED7]
+[START RESERVED8]
+_app.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _error
+[START RESERVED1]
+  _app.hÎß½MÍ([END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RME0OJ8IQ
+[CLASS] _custom
+[CLASSLOC] _base.vcx
+[BASECLASS] custom
+[OBJNAME] _datasession
+[START PROPERTIES]
+Width = 24
+lsuccess = .T.
+idatachangedmode = 0
+lusetransactions = .T.
+isavedsessionid = 1
+Name = "_datasession"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Error
+LPARAMETERS nError, cMethod, nLine
+
+LOCAL laErrors[1]
+=AERROR(laErrors)
+
+THIS.lSuccess = .F.
+
+IF  UPPER(cMethod)=="UPDATE"
+
+   IF (INLIST(nError,1580,1581,1582,1583,1531,1539,1590,;
+              1546, 1547,111,1157,1579,1598, 1647, 1504, 1887) ;
+              OR ;
+       INLIST(nError, 2007, 2008, 2010,2011,2015,1491, 1996, 1589, ;
+              1864,1865,1879,1884,1886, 1712,2014,1594, 1588 )  ;
+              OR ;
+       INLIST(nError,1548,1777,1495)) ; && leaving room for more...
+       AND NOT ISNULL(laErrors[1,4])
+
+   * rule failure,trigger, transaction failure,
+   * and some additional problems
+   * that the programmer
+   * should see and handle in the rule code or other
+   * work in the form itself, it is not something that
+   * should be resolved by the user at runtime!
+
+      DODEFAULT(nError,cMethod,nLine)
+   ELSE
+      * otherwise we want to treat this as an error
+      * that Update handles internally.
+      * this may not be important
+
+   ENDIF
+
+
+ELSE
+
+   DODEFAULT(nError, cMethod, nLine)
+
+ENDIF
+
+ENDPROC
+PROCEDURE Init
+IF NOT DODEFAULT()
+   RETURN .F.
+ENDIF
+THIS.iSavedSessionID = SET("DATASESSION")
+
+ENDPROC
+PROCEDURE datachanged
+LPARAMETERS  toSession, tiChangeMode
+
+ASSERT TYPE("toSession.DataSessionID") = "N" OR ;
+       EMPTY(toSession)
+
+LOCAL liAction, liIndex, laTables[1], liBufferMode, liChangeMode,  ;
+      liField, liCurrentRecord, ;
+      lcFieldStates, lcFieldList, lcAlias
+
+IF TYPE("toSession.DataSessionID") = "N"
+   THIS.SetSessionID(toSession.DataSessionID)
+ENDIF
+
+STORE 0 TO liAction, liBufferMode, liField, ;
+           liCurrentRecord
+
+IF VARTYPE(tiChangeMode) # "N"
+
+   liChangeMode = THIS.iDataChangedMode
+
+ELSE
+
+   liChangeMode = tiChangeMode
+
+ENDIF
+
+ASSERT VARTYPE(liChangeMode) = "N"
+
+* take care of current control if necessary:
+IF NOT THIS.DataFlush()     && will only happen in a pessimistic
+                            && buffering mode where we shouldn't
+                            && actually be editing this table!
+
+  RETURN .F.
+
+ENDIF
+
+
+
+FOR liIndex = 1 TO AUSED(laTables)
+
+   lcAlias = laTables[liIndex,1]
+   liAction = 0
+   liBuffermode = CURSORGETPROP("Buffering", lcAlias)
+
+   ASSERT INLIST(liBufferMode,DB_BUFOFF,DB_BUFLOCKRECORD,DB_BUFLOCKTABLE,DB_BUFOPTRECORD,DB_BUFOPTTABLE)
+
+
+   DO CASE
+
+   CASE ISREADONLY(lcAlias)
+      * don't bother...
+
+   CASE INLIST(liBufferMode, DB_BUFLOCKRECORD, DB_BUFOPTRECORD)
+      * row buffering
+
+      IF NOT EOF(lcAlias)
+         * problem with GETFLDSTATE returning .NULL. at EOF()!!
+
+         DO CASE
+
+         CASE liChangeMode = 1
+            * This is one of two "nondefault cases" currently known;
+            * It indicates "ignore columns in views that
+            * are not in the UpdateFields list for that view
+            * when assessing data changes"
+
+            lcFieldStates = GETFLDSTATE(-1,lcAlias)
+
+            IF lcFieldStates = REPL("1",FCOUNT(lcAlias)+1)
+               liAction = 0
+            ELSE
+               liAction = 1
+               * now exempt the alias in specific circumstances
+               IF LEFT(lcFieldStates,1) = "1" AND ;
+                  CURSORGETPROP("SourceType", lcAlias) # 3
+                  * we're in a local or remote view, not a table,
+                  * and no deletion was carried out
+                  liAction = 0
+                  lcFieldList =","+UPPER(CURSORGETPROP("UpdatableFieldList",lcAlias))+","
+                  lcFieldList = STRTRAN(lcFieldList,", ", ",")
+                  FOR liField = 1 TO FCOUNT(lcAlias)
+                     IF SUBSTR(lcFieldStates,liField+1,1) # "1" AND ;
+                        (","+UPPER(FIELD(liField,lcAlias))+"," $  ;
+                         lcFieldList)
+
+                        liAction = 1
+                        EXIT
+
+                      ENDIF
+                  ENDFOR
+               ENDIF
+            ENDIF
+
+         CASE liChangeMode = 2
+            * the second currently-possible "nondefault" case;
+            * it indicates "ignore views that are not set
+            * to send updates back to their tables for the
+            * purposes of assessing data as changed"
+
+            IF CURSORGETPROP("SourceType", lcAlias) = 3 OR ;
+               CURSORGETPROP("SendUpdates", lcAlias)
+               liAction = IIF(GETFLDSTATE(-1,lcAlias) = ;
+                          REPL("1",FCOUNT(lcAlias)+1), ;
+                               0,1)
+            ENDIF
+
+         OTHERWISE
+
+            * original code applies
+            liAction = IIF(GETFLDSTATE(-1,lcAlias) = ;
+                           REPL("1",FCOUNT(lcAlias)+1), ;
+                           0,1)
+
+         ENDCASE
+
+      ENDIF
+
+   CASE INLIST(liBufferMode, DB_BUFLOCKTABLE, DB_BUFOPTTABLE)
+      * table buffering
+
+      DO CASE
+
+      CASE liChangeMode = 1
+         * see notes above
+
+         IF CURSORGETPROP("SourceType", lcAlias) = 3
+
+            liAction = GETNEXTMODIFIED(0,lcAlias)
+
+         ELSE
+
+            liCurrentRecord = IIF(EOF(lcAlias),0, ;
+                                  RECNO(lcAlias))
+            liRecord = GETNEXTMODIFIED(0,lcAlias)
+            liAction = 0
+            lcFieldList =","+UPPER(CURSORGETPROP("UpdatableFieldList",lcAlias))+","
+            lcFieldList = STRTRAN(lcFieldList,", ", ",")
+
+            DO WHILE liRecord # 0 AND liAction = 0
+               GO liRecord IN (lcAlias)
+               lcFieldStates = GETFLDSTATE(-1,lcAlias)
+               IF lcFieldStates = REPL("1",FCOUNT(lcAlias)+1)
+                  liAction = 0
+               ELSE
+                  liAction = 1
+                  IF LEFT(lcFieldStates,1) = "1" AND ;
+                     CURSORGETPROP("SourceType", lcAlias) # 3
+                     liAction = 0
+                     FOR liField = 1 TO FCOUNT(lcAlias)
+                        IF SUBSTR(lcFieldStates,liField+1,1) # "1" AND ;
+                           (","+UPPER(FIELD(liField,lcAlias))+"," $  ;
+                            lcFieldList)
+
+                           liAction = 1
+                           EXIT
+                        ENDIF
+                     ENDFOR
+                  ENDIF
+               ENDIF
+               liRecord = GETNEXTMODIFIED(liRecord,lcAlias)
+            ENDDO
+            IF liCurrentRecord # RECNO(lcAlias)
+               IF liCurrentRecord = 0
+                  GO BOTTOM IN (lcAlias)
+                  IF RECCOUNT(lcAlias) > 0
+                     SKIP IN (lcAlias)
+                  ENDIF
+               ELSE
+                  GO liCurrentRecord IN (lcAlias)
+               ENDIF
+            ENDIF
+         ENDIF
+
+      CASE liChangeMode = 2
+         * see notes above
+         IF CURSORGETPROP("SourceType", lcAlias) = 3 OR ;
+            CURSORGETPROP("SendUpdates", lcAlias)
+            liAction = GETNEXTMODIFIED(0,lcAlias)
+         ENDIF
+
+      OTHERWISE
+
+         * original code applies:
+         liAction = GETNEXTMODIFIED(0,lcAlias)
+
+      ENDCASE
+
+
+   OTHERWISE
+
+       * no buffering -- or (god forbid)
+       * an unknown return that hasn't been
+       * caught by assertion during testing
+       * do nothing
+
+   ENDCASE
+
+   IF liAction # 0
+      * changes have occurred in at least one table in the system
+      EXIT
+   ENDIF
+
+ENDFOR
+
+IF TYPE("toSession.DataSessionID") = "N"
+   THIS.RestoreSessionID()
+ENDIF
+
+
+RETURN liAction # 0
+
+ENDPROC
+PROCEDURE dataflush
+LOCAL loActiveControl, lcAlias
+
+IF TYPE("_SCREEN.ActiveForm.ActiveControl") # "O"
+   RETURN
+ENDIF
+
+loActiveControl = THIS.GetActiveControlRef(_SCREEN.ActiveForm.ActiveControl)
+
+
+IF TYPE("loActiveControl.Value") # "U"          AND ;
+   TYPE("loActiveControl.ControlSource") # "U"  AND ;
+   TYPE(loActiveControl.ControlSource) # "U"    AND ;
+   (TYPE("loActiveControl.ReadOnly") = "U" OR ;
+    NOT loActiveControl.ReadOnly)               AND ;
+   (NOT EVAL(loActiveControl.Controlsource) == loActiveControl.Value)
+
+   IF "." $ loActiveControl.ControlSource
+      lcAlias = LEFT(loActiveControl.ControlSource,AT(".",loActiveControl.ControlSource) - 1)
+   ELSE
+      lcAlias = ALIAS()
+   ENDIF
+   IF INLIST(CURSORGETPROP("BUFFERING",lcAlias),DB_BUFLOCKRECORD,DB_BUFLOCKTABLE) ;
+      AND NOT ISRLOCKED(RECNO(lcAlias),lcAlias)
+      IF NOT RLOCK(RECNO(lcAlias),lcAlias)
+        * help ! pessimistic locking in effect
+        * and somebody else actually has this record
+        * locked! we shouldn't be editing this record...
+        * actually this should never happen!
+         = MESSAGEBOX(DATA_UPDATE_CONFLICT_LOC, ;
+                      MB_OK+MB_ICONSTOP,;
+                      THIS.GetMessageBoxTitle()+":  "+PROPER(lcAlias))
+
+         RETURN .F.
+      ELSE
+         * this was a speculative lock only
+         * if it was a view it really isn't
+         * a problem to have taken this lock
+         * briefly, although it didn't help either
+         UNLOCK RECORD RECNO(lcAlias) IN (lcAlias)
+      ENDIF
+
+   ENDIF
+
+   loActiveControl.Value = loActiveControl.Value
+
+
+ELSE
+
+   * no flush required
+
+ENDIF
+
+
+
+ENDPROC
+PROCEDURE getactivecontrolref
+LPARAMETERS toActiveControl
+
+LOCAL loRealActiveControl, liThisColumn, loColumn
+
+IF TYPE("toActiveControl.BaseClass")# "C"
+   * redundant in DataFlush() call, but could be called from elsewhere
+   RETURN .F.
+ENDIF
+
+IF UPPER(toActiveControl.BaseClass) == "GRID"
+
+   liThisColumn = toActivecontrol.ActiveColumn
+   FOR EACH loColumn IN toActiveControl.Columns
+      IF loColumn.ColumnOrder # liThisColumn
+         LOOP
+      ENDIF
+      IF NOT (loColumn.ReadOnly and loColumn.Bound)
+         loRealActiveControl = EVAL("loColumn."+loColumn.CurrentControl)
+      ENDIF
+      EXIT
+   ENDFOR
+
+ELSE
+
+  loRealActiveControl = toActiveControl
+
+ENDIF
+
+RETURN loRealActiveControl
+ENDPROC
+PROCEDURE getmessageboxtitle
+RETURN DATA_MESSAGEBOX_TITLE_LOC
+ENDPROC
+PROCEDURE queryunload
+LPARAMETERS tlDataChangeAlreadyConfirmed, toSession, tlNoShow
+
+ASSERT VARTYPE(tlDataChangeAlreadyConfirmed) = "L"
+ASSERT TYPE("toSession.DataSessionID") = "N" OR ;
+       TYPE("_SCREEN.ActiveForm") = "O"
+ASSERT VARTYPE(tlNoShow) = "L"
+
+LOCAL liResult, llChange, loSession
+
+IF TYPE("toSession.DataSessionID") = "N"
+   loSession = toSession
+ELSE
+   loSession = _SCREEN.ActiveForm
+ENDIF
+
+THIS.SetSessionID(loSession.DataSessionID)
+
+llChange = tlDataChangeAlreadyConfirmed OR THIS.DataChanged(loSession)
+
+IF llChange
+
+   * changes have been detected somewhere...
+
+   IF PEMSTATUS(loSession,"Show",5) AND NOT tlNoShow
+      loSession.Show()
+   ENDIF
+
+   liResult = ;
+        MESSAGEBOX( DATA_SAVE_BEFORE_CLOSE_LOC ,;
+                   MB_ICONEXCLAMATION + MB_YESNOCANCEL, ;
+                   THIS.GetMessageBoxTitle())
+
+ELSE
+
+   liResult = IDNO
+
+ENDIF
+
+DO CASE
+CASE liResult = IDYES
+   THIS.Update(.T.,.T.,loSession)
+CASE liResult = IDNO AND llChange
+   THIS.Revert(.T.,.T.,loSession)
+OTHERWISE
+   * there were data changes and they chose to cancel
+ENDCASE
+
+THIS.RestoreSessionID()
+
+RETURN (liResult # IDCANCEL)
+
+ENDPROC
+PROCEDURE restoresessionid
+IF SET("DATASESSION") # THIS.iSavedSessionID
+
+   SET DATASESSION TO THIS.iSavedSessionID
+
+ENDIF
+
+ENDPROC
+PROCEDURE revert
+LPARAMETERS tlUserChoiceAlreadyConfirmed, tlDataChangeAlreadyConfirmed, toSession, tlNoShow
+
+ASSERT VARTYPE(tlUserChoiceAlreadyConfirmed) = "L"
+ASSERT VARTYPE(tlDataChangeAlreadyConfirmed) = "L"
+ASSERT TYPE("toSession.DataSessionID") = "N" OR ;
+       TYPE("_SCREEN.ActiveForm") = "O"
+ASSERT VARTYPE(tlNoShow) = "L"
+ASSERT SET("MULTILOCKS") = "ON"
+
+LOCAL liConfirmed, liIndex, laTables[1], llChange, loSession
+
+IF TYPE("toSession.DataSessionID") = "N"
+   loSession = toSession
+ELSE
+   loSession = _SCREEN.ActiveForm
+ENDIF
+
+THIS.SetSessionID(loSession.DataSessionID)
+
+IF tlUserChoiceAlreadyConfirmed
+
+   liConfirmed = IDOK
+
+ELSE
+
+   llChange = tlDataChangeAlreadyConfirmed OR THIS.DataChanged()
+
+   IF llChange
+
+      IF PEMSTATUS(loSession,"Show",5) AND NOT tlNoShow
+         loSession.Show()
+      ENDIF
+
+      liConfirmed =MESSAGEBOX(DATA_OK_TO_REVERT_LOC,;
+                              MB_ICONQUESTION+MB_OKCANCEL,THIS.GetMessageBoxTitle())
+   ELSE
+
+      liConfirmed = IDCANCEL
+
+   ENDIF
+ENDIF
+
+IF liConfirmed = IDOK
+
+   FOR liIndex = 1 TO AUSED(laTables)
+
+      IF CURSORGETPROP("Buffering",laTables[liIndex,1]) # DB_BUFOFF
+          =TABLEREVERT(.T.,laTables[liIndex,1])
+      ENDIF
+
+   ENDFOR
+
+ENDIF
+
+IF PEMSTATUS(loSession,"Refresh",5) AND NOT tlNoShow
+    loSession.Refresh()
+ENDIF
+
+THIS.RestoreSessionID()
+
+RETURN (liConfirmed = IDOK)
+ENDPROC
+PROCEDURE setsessionid
+LPARAMETERS tiSession
+
+IF VARTYPE(tiSession) = "N" AND SET("DATASESSION") # tiSession
+
+   THIS.iSavedSessionID = SET("DATASESSION")
+   SET DATASESSION TO tiSession
+
+ENDIF
+ENDPROC
+PROCEDURE update
+LPARAMETERS tlUserChoiceAlreadyConfirmed, tlDataChangeAlreadyConfirmed, toSession, tlNoShow
+
+ASSERT VARTYPE(tlUserChoiceAlreadyConfirmed) = "L"
+ASSERT VARTYPE(tlDataChangeAlreadyConfirmed) = "L"
+ASSERT TYPE("toSession.DataSessionID") = "N" OR ;
+       TYPE("_SCREEN.ActiveForm") = "O"
+ASSERT VARTYPE(tlNoShow) = "L"
+ASSERT SET("MULTILOCKS") = "ON"
+
+LOCAL llChange, liConfirmed, liIndexTables, loSession, lcRecs, ;
+      laTables[1], liBuffermode, liSelect, laErrors[1], liRecModified, ;
+      llUseTransactions, llView
+
+IF TYPE("toSession.DataSessionID") = "N"
+   loSession = toSession
+ELSE
+   loSession = _SCREEN.ActiveForm
+ENDIF
+
+THIS.SetSessionID(loSession.DataSessionID)
+
+THIS.lSuccess = .T.
+
+IF tlUserChoiceAlreadyConfirmed
+
+   liConfirmed = IDOK
+   llChange = .T.
+
+ELSE
+
+   llChange = tlDataChangeAlreadyConfirmed OR THIS.DataChanged()
+
+   IF llChange
+
+      IF PEMSTATUS(loSession,"Show",5) AND NOT tlNoShow
+         loSession.Show()
+         * otherwise it could be a session object
+      ENDIF
+
+      liConfirmed =MESSAGEBOX(DATA_OK_TO_SAVE_LOC, ;
+                              MB_ICONQUESTION+MB_OKCANCEL, ;
+                              THIS.GetMessageBoxTitle())
+   ENDIF
+
+ENDIF
+
+IF llChange AND liConfirmed = IDOK
+
+   *&* transaction aspect of this system,
+   *&* suggested here, are really only
+   *&* going to work for tables in a DBC
+   *&* which is why we take the record locks as well..
+   IF THIS.lUseTransactions AND TXNLEVEL() < 5
+      llUseTransactions = .T.
+      BEGIN TRANSACTION
+   ENDIF
+
+   liSelect = SELECT()
+
+   FOR liIndexTables = 1 TO AUSED(laTables)
+
+      SELECT (laTables[liIndexTables,1])
+      liBuffermode = CURSORGETPROP("Buffering")
+      llView = (CURSORGETPROP("SourceType")# DB_SRCTABLE)
+
+      ASSERT INLIST(liBuffermode,DB_BUFOFF,DB_BUFLOCKRECORD,DB_BUFLOCKTABLE,DB_BUFOPTRECORD,DB_BUFOPTTABLE)
+
+      DO CASE
+
+
+      CASE liBufferMode = DB_BUFOFF
+         * do nothing for this table
+         LOOP
+
+      CASE INLIST(liBufferMode,DB_BUFLOCKRECORD,DB_BUFLOCKTABLE)
+
+         * no need to check whether any editing was actually done;
+         * if it wasn't, nothing will happen with the TABLEUPDATE()...
+
+         IF TABLEUPDATE(.T.)
+
+            * success
+
+         ELSE
+
+
+            THIS.lSuccess = .F.
+
+            * we already have the lock and control of the record(s),
+            * this is a real error
+
+            =AERROR(laErrors)
+            * let the standard error handler deal with it, for now
+            * -- whether it's the ON ERROR routine or the Error
+            * method for this object is immaterial
+
+            ERROR laErrors[1,1]
+
+         ENDIF
+
+      CASE liBuffermode = DB_BUFOPTTABLE
+
+         liRecModified = GETNEXTMODIFIED(0)
+         lcRecs = ""
+         IF liRecModified = 0
+            * no changes to this file
+            LOOP
+         ENDIF
+
+         DO WHILE liRecModified # 0
+            IF liRecModified > 0
+               lcRecs = lcRecs+","+ALLTR(STR(liRecModified))
+            ENDIF
+            liRecModified =  GETNEXTMODIFIED(liRecModified)
+         ENDDO
+
+         *&* We are only worrying about one table at a time;
+         *&* presumably there is additional data-specific code in the
+         *&* form itself that
+         *&* preserves referential integrity
+         *&* if the tables are *not* in a DBC and protected by the transaction.
+
+         IF NOT EMPTY(lcRecs)
+            lcRecs = SUBSTR(lcRecs,2)
+         ELSE
+            *&* all changed records are newly added
+         ENDIF
+
+         IF EMPTY(lcRecs) OR llView OR RLOCK(lcRecs,ALIAS())
+
+            DO CASE
+            CASE NOT THIS.lSuccess
+                * this may only be a problem with VFP3.
+                * it's possible for the RLOCK() to cause
+                * an error rather than a failed update
+                = MESSAGEBOX(DATA_UPDATE_CONFLICT_LOC, ;
+                             MB_OK+MB_ICONSTOP,;
+                            THIS.GetMessageBoxTitle()+":  "+ALIAS())
+
+            CASE TABLEUPDATE(.T.,.F.)
+               * success
+               IF llView
+                  SELECT (laTables[liIndexTables,1])
+               ENDIF
+            OTHERWISE
+
+               IF llView
+                  SELECT (laTables[liIndexTables,1])
+               ENDIF
+
+
+               * could go through the delimited string here
+               * and ask record by record...
+
+               IF MESSAGEBOX(DATA_HAS_BEEN_EDITED_LOC, ;
+                             MB_OKCANCEL+MB_ICONEXCLAMATION,;
+                             THIS.GetMessageBoxTitle()+":  "+ALIAS()) = IDOK
+
+                  IF TABLEUPDATE(.T.,.T.)
+                     * success
+                     IF llView
+                        SELECT (laTables[liIndexTables,1])
+                     ENDIF
+
+                  ELSE
+
+                     * real error -- *UNLESS* it's a view, in which
+                     * case taking the lock wouldn't help, could
+                     * actually prevent SET REPROCESS from working
+                     * normally!
+
+                      THIS.lSuccess = .F.
+
+                      IF llView
+
+                          SELECT (laTables[liIndexTables,1])
+
+                         = MESSAGEBOX(DATA_UPDATE_CONFLICT_LOC, ;
+                             MB_OK+MB_ICONSTOP,;
+                            THIS.GetMessageBoxTitle()+":  "+ALIAS())
+                      ELSE
+                          =AERROR(laErrors)
+                          ERROR laErrors[1,1]
+                      ENDIF
+
+                  ENDIF
+
+               ELSE
+                  THIS.lSuccess = .F.
+               ENDIF
+            ENDCASE
+         ELSE
+            THIS.lSuccess = .F.
+
+            = MESSAGEBOX(DATA_UPDATE_CONFLICT_LOC, ;
+                         MB_OK+MB_ICONSTOP,;
+                         THIS.GetMessageBoxTitle()+":  "+ALIAS())
+
+         ENDIF
+
+      CASE (EOF()) AND liBuffermode = DB_BUFOPTRECORD
+         * do nothing if we're at EOF() and optimistic record locking ...
+         * this is permissible if a relation is 1 to 0..n
+         * and may happen if you have chosen to use
+         * optimistic record buffering on child tables.
+         LOOP
+
+      CASE liBuffermode = DB_BUFOPTRECORD
+
+         IF llView OR RLOCK()
+
+            DO CASE
+            CASE NOT THIS.lSuccess
+               * see comment above; this really shouldn't happen
+               = MESSAGEBOX(DATA_UPDATE_CONFLICT_LOC, ;
+                            MB_OK+MB_ICONSTOP,;
+                            THIS.GetMessageBoxTitle()+":  "+ALIAS())
+            CASE TABLEUPDATE(.F.,.F.)
+               * success
+               IF llView
+                  SELECT (laTables[liIndexTables,1])
+               ENDIF
+
+            OTHERWISE
+
+               * were other people working on the record?
+               * you could do a more elaborate dialog here,
+               * using OLDVAL() and CURVAL() to show what has occurred
+               IF llView
+                  SELECT (laTables[liIndexTables,1])
+               ENDIF
+
+
+               IF MESSAGEBOX(DATA_HAS_BEEN_EDITED_LOC, ;
+                             MB_OKCANCEL+MB_ICONEXCLAMATION,;
+                             THIS.GetMessageBoxTitle()+":  "+ALIAS()) = IDOK
+
+                  IF TABLEUPDATE(.F.,.T.)
+                     * success
+                     IF llView
+                        SELECT (laTables[liIndexTables,1])
+                     ENDIF
+                  ELSE
+
+                     * real error -- *UNLESS* it's a view, in which
+                     * case taking the lock wouldn't help, could
+                     * actually prevent SET REPROCESS from working
+                     * normally!
+                     THIS.lSuccess = .F.
+                     IF llView
+                        SELECT (laTables[liIndexTables,1])
+                        = MESSAGEBOX(DATA_UPDATE_CONFLICT_LOC, ;
+                            MB_OK+MB_ICONSTOP,;
+                            THIS.GetMessageBoxTitle()+":  "+ALIAS())
+                     ELSE
+
+                        = AERROR(laErrors)
+                        ERROR laErrors[1,1]
+                     ENDIF
+                  ENDIF
+               ELSE
+                  THIS.lSuccess = .F.
+               ENDIF
+            ENDCASE
+
+         ELSE
+
+            THIS.lSuccess = .F.
+            = MESSAGEBOX(DATA_UPDATE_CONFLICT_LOC, ;
+                         MB_OK+MB_ICONSTOP,;
+                         THIS.GetMessageBoxTitle()+":  "+ALIAS())
+
+         ENDIF
+
+      OTHERWISE
+         * we're either at EOF() and
+         * opt record locking or
+         * in trouble <g> -- the assertion uptop
+         * should be taking care of this!
+         THIS.lSuccess = .F.
+
+      ENDCASE
+
+      IF llView
+         *&* JIC!
+         SELECT (laTables[liIndexTables,1])
+      ELSE
+         UNLOCK  && this file
+      ENDIF
+
+      IF NOT THIS.lSuccess
+         EXIT
+      ENDIF
+
+   ENDFOR
+
+   *&* outer transaction covering all tables
+   *&* Tablereverts of what is left un-Updated
+   *&* may still help if there are free tables.
+   *&* Again, this will not cover the
+   *&* problem of a partial update already
+   *&* having been committed if there are
+   *&* free tables, but RI code should have
+   *&* been in place to prevent something
+   *&* "really bad" happening in this case.
+
+   IF llUseTransactions AND TXNLEVEL() > 0
+
+      IF THIS.lSuccess
+         END TRANSACTION
+      ELSE
+         ROLLBACK
+      ENDIF
+
+   ENDIF
+
+   IF NOT THIS.lSuccess
+      FOR liIndexTables = 1 TO ALEN(laTables,1)
+         =TABLEREVERT(.T.,laTables[liIndexTables,1])
+      ENDFOR
+   ENDIF
+   *&*
+
+
+   SELECT (liSelect)
+
+   IF llChange AND PEMSTATUS(loSession,"Refresh",5)
+      loSession.Refresh()
+   ENDIF
+
+
+ENDIF
+
+THIS.RestoreSessionID()
+
+RETURN (NOT llChange) OR  (liConfirmed = IDOK AND THIS.lSuccess)
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+lsuccess Whether data operation (update) was successful.
+idatachangedmode Detemines what constitutes data change. 0 - anything changed. 1 - ignore view fields not in Updatefields list. 2- ignore views not set to send updates.  Subclasses can add more categories and augment DataChanged() method.
+lusetransactions Whether to wrap updating routine in transaction. Note: tables not in a DBC are unaffected in transaction.
+isavedsessionid Data session ID.
+*update Updates data.
+*revert Reverts data.
+*datachanged Checks if data has changed, according to the current system as specified in iDataChangedMode.
+*dataflush Ensures that the activecontrol will have its current contents "recognized" even if you choose to update from a toolbar button while a grid has focus.
+*getactivecontrolref Returns the real active control such as cases where the current active control is a Grid.
+*getmessageboxtitle 
+*restoresessionid Restores the data session.
+*setsessionid Sets the data session.
+*queryunload Occurs before a Form is unloaded.
+*datavalid 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+_app.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _datasession
+[START RESERVED1]
+  _app.hžÿ½MÍ([END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RMH0UG8JM
+[CLASS] _custom
+[CLASSLOC] _base.vcx
+[BASECLASS] custom
+[OBJNAME] _systoolbars
+[START PROPERTIES]
+Name = "_systoolbars"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Destroy
+DODEFAULT()
+IF THIS.lAutomatic
+   THIS.ShowSystemToolbars()
+ENDIF
+ENDPROC
+PROCEDURE Init
+LPARAMETERS tlAuto
+
+IF NOT DODEFAULT()
+   RETURN .F.
+ENDIF
+THIS.InitializeToolbarArray()
+
+IF THIS.lAutomatic OR tlAuto
+   THIS.lAutomatic = .T.
+   THIS.HideSystemToolbars()
+ENDIF
+ENDPROC
+PROCEDURE hidesystemtoolbars
+LOCAL iIndex
+
+FOR iIndex = 1 TO ALEN(THIS.aSystemToolbars,1)
+   * note: it is possible for them to have been RELEASEd
+   * and not exist at all
+   IF WEXIST(THIS.aSystemToolbars[iIndex,1]) AND ;
+      WVISIBLE(THIS.aSystemToolbars[iIndex,1])
+      THIS.aSystemToolbars[iIndex,2] = .T.
+      HIDE WINDOW (THIS.aSystemToolbars[iIndex,1])
+   ENDIF
+ENDFOR
+
+ENDPROC
+PROCEDURE initializetoolbararray
+DIME THIS.aSystemToolbars[11,2]
+
+THIS.aSystemToolbars[1,1]=  TB_STANDARD_LOC
+THIS.aSystemToolbars[2,1]=  TB_LAYOUT_LOC
+THIS.aSystemToolbars[3,1]=  TB_QUERY_LOC
+THIS.aSystemToolbars[4,1]=  TB_VIEWDESIGNER_LOC
+THIS.aSystemToolbars[5,1]=  TB_COLORPALETTE_LOC
+THIS.aSystemToolbars[6,1]=  TB_FORMCONTROLS_LOC
+THIS.aSystemToolbars[7,1]=  TB_DATADESIGNER_LOC
+THIS.aSystemToolbars[8,1]=  TB_REPODESIGNER_LOC
+THIS.aSystemToolbars[9,1]=  TB_REPOCONTROLS_LOC
+THIS.aSystemToolbars[10,1]= TB_PRINTPREVIEW_LOC
+THIS.aSystemToolbars[11,1]= TB_FORMDESIGNER_LOC
+
+ENDPROC
+PROCEDURE showsystemtoolbars
+LOCAL iIndex
+
+FOR iIndex = 1 TO ALEN(THIS.aSystemToolbars,1)
+   IF WEXIST(THIS.aSystemToolbars[iIndex,1]) AND ;
+      THIS.aSystemToolbars[iIndex,2]
+      SHOW WINDOW (THIS.aSystemToolbars[iIndex,1])
+   ENDIF
+ENDFOR
+
+
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+lautomatic Automatically hides and restores system toolbars for application.
+*hidesystemtoolbars Manually hides system toolbars for your application.
+*showsystemtoolbars Manually shows system toolbars for your application.
+*initializetoolbararray 
+^asystemtoolbars[1,0] Array of system toolbars.
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED7]
+Hides and shows system toolbars, either automatically (at Init and Destroy of this object) or on demand.[END RESERVED7]
+[START RESERVED8]
+_app.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _systoolbars
+[START RESERVED1]
+  _app.hNÖ½MÍ([END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RN60PZNYX
+[CLASS] _timer
+[CLASSLOC] _base.vcx
+[BASECLASS] timer
+[OBJNAME] _traceawaretimer
+[START PROPERTIES]
+iregularinterval = 0
+itraceinterval = 10000
+Name = "_traceawaretimer"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+IF NOT DODEFAULT()
+   RETURN .F.
+ENDIF
+THIS.iRegularInterval = THIS.Interval
+ENDPROC
+PROCEDURE Timer
+IF WVISIBLE("trace") OR  ;
+   WVISIBLE("debugger") OR ;
+   WVISIBLE("call") OR ;
+   WVISIBLE("watch") OR ;
+   WVISIBLE("locals")
+
+   IF THIS.Interval # THIS.iTraceInterval
+      THIS.iRegularInterval = THIS.Interval
+      THIS.Interval = THIS.iTraceInterval
+   ENDIF
+
+ELSE
+
+   IF THIS.Interval = THIS.iTraceInterval
+      THIS.Interval = THIS.iRegularInterval
+   ENDIF
+   THIS.iRegularInterval = THIS.Interval
+
+ENDIF
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+iregularinterval Standard interval period.
+itraceinterval Slower interval period you wish to use while debugging.
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED7]
+Timer with a special (slower) interval for  debugging, so that timer events still occur but don't interrupt other tracing.[END RESERVED7]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _traceawaretimer
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RNH0TS55K
+[CLASS] _custom
+[CLASSLOC] _base.vcx
+[BASECLASS] custom
+[OBJNAME] _objectstate
+[START PROPERTIES]
+oobject = .NULL.
+Name = "_objectstate"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Destroy
+DODEFAULT()
+
+IF THIS.lAutomatic
+    THIS.Restore()
+ENDIF
+THIS.oObject = .NULL.
+ENDPROC
+PROCEDURE Init
+LPARAMETERS toObject
+IF NOT DODEFAULT()
+   RETURN .F.
+ENDIF
+
+IF TYPE("toObject.BaseClass") = "C"
+
+   THIS.lAutomatic = .T.
+
+   THIS.oObject = toObject
+
+ENDIF
+
+ENDPROC
+PROCEDURE restore
+LPARAMETERS tcWhichProperty
+
+IF ISNULL(THIS.oObject)
+   RETURN .F.
+ENDIF
+
+LOCAL lcProperty, liPos, liRow, lvCurrentValue, lcCurrentProperty
+
+ASSERT EMPTY(tcWhichProperty) OR VARTYPE(tcWhichProperty) = "C"
+
+IF EMPTY(tcWhichProperty)
+
+   * restore all
+
+   FOR liRow = 1 TO ALEN(THIS.aProperties,1)
+
+      IF EMPTY(THIS.aProperties[liRow,1])
+         LOOP
+      ENDIF
+
+      lcCurrentProperty = STRTRAN(THIS.aProperties[liRow,1],"#","")
+
+      lvCurrentValue = EVAL("THIS.oObject."+lcCurrentProperty)
+
+      * avoid re-setting properties to their current
+      * value because this may cause a "flash"
+      IF THIS.aProperties[liRow,2] = "C"
+
+         IF lvCurrentValue == THIS.aProperties[liRow,3]
+            LOOP
+         ENDIF
+
+      ELSE
+
+         IF lvCurrentValue = THIS.aProperties[liRow,3]
+            LOOP
+         ENDIF
+
+      ENDIF
+
+      STORE THIS.aProperties[liRow,3] TO ;
+           ("THIS.oObject."+lcCurrentProperty)
+
+   ENDFOR
+
+ELSE
+
+   lcProperty = LOWER(tcWhichProperty)
+
+   liPos = ASCAN(THIS.aProperties,"#"+lcProperty+"#")
+
+   IF liPos = 0
+
+      RETURN .F.
+
+   ELSE
+
+      liRow = ASUBSCRIPT(THIS.aProperties, liPos, 1)
+      STORE THIS.aProperties[liRow,3] TO ("THIS.oObject."+lcProperty)
+
+   ENDIF
+
+ENDIF
+
+
+ENDPROC
+PROCEDURE save
+LPARAMETERS tcProperty, tcTypeValue
+
+ASSERT VARTYPE(tcProperty) = "C" AND NOT EMPTY(tcProperty)
+ASSERT PCOUNT() < 2 OR VARTYPE(tcTypeValue) = "C"
+
+IF ISNULL(THIS.oObject)
+   RETURN .F.
+ENDIF
+
+LOCAL lcProperty, liPos, liRow, lcTypeValue
+
+lcProperty = LOWER(tcProperty)
+
+liPos = ASCAN(THIS.aProperties,"#"+lcProperty+"#")
+
+IF liPos = 0
+
+   IF PCOUNT() = 2
+      lcTypeValue = tcTypeValue
+   ELSE
+      lcTypeValue = TYPE("THIS.oObject."+tcProperty)
+   ENDIF
+
+   liRow = ALEN(THIS.aProperties,1)
+   IF TYPE("THIS.aProperties[liRow,1]") = "C"
+      liRow = liRow + 1
+      DIME THIS.aProperties[liRow,3]
+   ENDIF
+
+   THIS.aProperties[liRow,1] = "#"+lcProperty+"#"
+   THIS.aProperties[liRow,2] = lcTypeValue
+
+ELSE
+
+   liRow = ASUBSCRIPT(THIS.aProperties, liPos, 1)
+
+ENDIF
+
+THIS.aProperties[liRow,3] = EVAL("THIS.oObject."+lcProperty)
+
+ENDPROC
+PROCEDURE set
+LPARAMETERS tcProperty, tvValue, tlSave
+
+IF ISNULL(THIS.oObject)
+   RETURN .F.
+ENDIF
+
+ASSERT TYPE("THIS.oObject."+tcProperty) # "U"
+
+LOCAL lcTypeValue
+
+lcTypeValue = VARTYPE(tvValue)
+
+IF lcTypeValue # TYPE("THIS.oObject."+tcProperty)
+   RETURN .F.
+ENDIF
+
+IF tlSave
+   THIS.Save(tcProperty, lcTypeValue)
+ENDIF
+
+STORE tvValue TO ;
+           ("THIS.oObject."+tcProperty)
+
+
+
+
+
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+lautomatic Automatically saves/restores properties for oObject.
+oobject Reference to target object whose state is being saved.
+*set Sets a property to a new value for oObject.
+*restore Restores value of a property for oObject.
+^aproperties[1,3] Array for saving/restoring properties of oObject.
+*save Saves current value of a property for oObject.
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED7]
+Saves and restores state for any object either automatically (on Init and Destroy of this object) or on demand.[END RESERVED7]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _objectstate
+[EOF]
