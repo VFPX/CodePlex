@@ -1,0 +1,5798 @@
+SCCTEXT Version 4.0.0.2
+PLATFORM C(8,0),UNIQUEID C(10,0),TIMESTAMP N(10,0),CLASS M(4,0),CLASSLOC M(4,0),BASECLASS M(4,0),OBJNAME M(4,0),PARENT M(4,0),PROPERTIES M(4,0),PROTECTED M(4,0),METHODS M(4,0),OBJCODE M(4,0),OLE M(4,0),OLE2 M(4,0),RESERVED1 M(4,0),RESERVED2 M(4,0),RESERVED3 M(4,0),RESERVED4 M(4,0),RESERVED5 M(4,0),RESERVED6 M(4,0),RESERVED7 M(4,0),RESERVED8 M(4,0),USER M(4,0)
+1252
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] Class     
+[START RESERVED1]
+VERSION =   3.00[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PL19RD6Y
+[CLASS] frxpanel
+[CLASSLOC] frxpanels.vcx
+[BASECLASS] container
+[OBJNAME] paneladvancedprops
+[START PROPERTIES]
+Width = 535
+Height = 171
+props = .NULL.
+values = .NULL.
+tmpalias = 
+Name = "paneladvancedprops"
+[END PROPERTIES]
+[START PROTECTED]
+propertytype
+[END PROTECTED]
+[START METHODS]
+PROCEDURE Destroy
+if used(THIS.tmpAlias)
+	use in (THIS.tmpAlias)
+endif
+ENDPROC
+PROCEDURE addadvprop
+local oForm
+oForm = newobject("frxAddAdvProp","frxBuilder2.vcx")
+if not isnull( m.oForm )
+	select (this.tmpAlias)
+	oForm.Execute( THIS.lstProperties, THIS.event )
+endif
+return
+ENDPROC
+PROCEDURE deleteadvprop
+local i, cPropName, cursel
+cPropName = THIS.lstProperties.Value
+cursel = select(0)
+
+if messagebox( strtran(ADVPROP_DELETE_ARE_YOU_SURE_LOC,'{0}', m.cPropName ), 4+32+256, UI_ADVPROP_DEL_DLG_CAPTION_LOC ) ;
+      = 6
+
+	select (THIS.tmpAlias)
+	locate for PROPERTY_NAME = m.cPropName and not deleted()
+	if CUSTOM
+
+		delete
+
+		*------------------------------------	
+		* delete from the list:
+		*------------------------------------	
+		with THIS.lstProperties
+			if .ListCount = 1
+				.Clear()
+			else		
+				for i = 1 to .ListCount
+					if .ListItem(m.i) == m.cPropName
+						.RemoveItem(m.i)
+						exit
+					endif
+				endfor
+			endif
+		endwith
+	else
+		
+		replace PROPERTY_VALUE with DEFAULT_VALUE
+		*------------------------------------	
+		* update the list:
+		*------------------------------------	
+		with THIS.lstProperties
+			for i = 1 to .ListCount
+				if .ListItem(m.i) == m.cPropName
+					do case
+					case DATA_TYPE = ADVPROP_EDITMODE_BOOLEAN
+						.AddListItem( iif(trim(DEFAULT_VALUE)='1',  ADVPROP_BOOLEAN_YES_LOC,  ADVPROP_BOOLEAN_NO_LOC ),  m.i, 2 )
+										
+					otherwise
+						.AddListItem( alltrim(DEFAULT_VALUE), m.i, 2 )
+	
+					endcase
+					exit
+				endif
+			endfor
+
+		endwith
+		
+	endif
+	select (m.cursel)
+	
+	THIS.RefreshEnabledState()	
+
+endif
+
+
+ENDPROC
+PROCEDURE editadvprop
+local i, oForm, cText, cursel, cPropName
+cursel = select(0)
+cPropName = THIS.lstProperties.Value
+
+select (this.tmpAlias)
+locate  for PROPERTY_NAME = m.cPropName ;
+		and not deleted()
+if found()		
+
+	local cExpression, cCurrentExpr, iEditMode
+	cExpression  = ""
+	cCurrentExpr = trim(PROPERTY_VALUE)
+	iEditMode    = DATA_TYPE
+
+	do case
+	case m.iEditMode = ADVPROP_EDITMODE_GETFILE
+		cExpression = getfile()
+		if empty( m.cExpression )
+			cExpression = m.cCurrentExpr
+		endif
+		
+	case m.iEditMode = ADVPROP_EDITMODE_BOOLEAN
+		* Use a simple messagebox:
+		* Toggle?
+		if m.cCurrentExpr = '1'
+			m.cExpression = '0'
+		else
+			m.cExpression = '1'
+		endif
+*		if messagebox(trim(m.cPropName) + " = ", 4, UI_ADVPROP_EDT_DLG_CAPTION_LOC ) = 6
+*			cExpression = "Yes"
+*		else
+*			cExpression = "No"
+*		endif
+
+	case m.iEditMode = ADVPROP_EDITMODE_STRING	
+		cExpression = inputbox(trim(m.cPropName) + " = ", UI_ADVPROP_EDT_DLG_CAPTION_LOC, m.cCurrentExpr  )
+
+	case m.iEditMode = ADVPROP_EDITMODE_TEXT
+		local oEditor
+		* TODO: make this a replaceable UI?
+		oEditor = newobject("frxMemoEditForm", "frxbuilder.vcx")
+		if not isnull( m.oEditor )
+			oEditor.Text    = m.cCurrentExpr
+			oEditor.Caption = UI_ADVPROP_EDT_DLG_CAPTION_LOC
+			oEditor.SetHelperText(ADVPROP_EDIT_HELPER_TXT_LOC)
+			oEditor.Execute()
+			cExpression = oEditor.Text
+		endif
+		
+	otherwise
+	*case m.iEditMode = ADVPROP_EDITMODE_GETEXPR
+		cExpression = THIS.event.GetExpression( m.cCurrentExpr , '', m.cPropName + ":")
+
+	endcase
+
+	replace PROPERTY_VALUE with m.cExpression in (this.tmpAlias)
+		
+	* update the List:
+	with THIS.lstProperties
+		for i = 1 to .ListCount
+			if .ListItem(m.i) == m.cPropName
+				do case
+				case m.iEditMode = ADVPROP_EDITMODE_TEXT
+					if len(alltrim(m.cExpression))>0
+						.AddListItem( left(trim(m.cExpression),25)+"...",  m.i, 2 )
+					else
+						.AddListItem( "",  m.i, 2 )
+					endif				
+
+				case m.iEditMode = ADVPROP_EDITMODE_GETFILE
+					.AddListItem( displaypath(trim(m.cExpression),25),  m.i, 2 )
+
+				case m.iEditMode = ADVPROP_EDITMODE_BOOLEAN
+					.AddListItem( iif(m.cExpression='1', ADVPROP_BOOLEAN_YES_LOC,  ADVPROP_BOOLEAN_NO_LOC ),  m.i, 2 )
+
+				otherwise
+					.AddListItem( trim(m.cExpression),  m.i, 2 )
+
+				endcase
+				exit
+			endif
+		endfor
+
+	endwith
+
+	select (m.cursel)
+endif
+THIS.RefreshEnabledState()
+ENDPROC
+PROCEDURE loadfromfrx
+*---------------------------------------------------------
+* OK, this is weird. This is required to ensure that
+* the listbox paints correctly:
+*---------------------------------------------------------
+wait "" timeout 0.1
+
+if not used(THIS.Tag)
+	return .f.
+endif
+
+select (THIS.Tag)
+
+local i
+
+if empty( THIS.tmpAlias )
+	THIS.tmpAlias = "T" + sys(2015)
+else
+	if used(THIS.tmpAlias)
+		use in (this.tmpAlias)
+	endif
+endif
+
+*-------------------------------------------------
+* Kind of kludgey way to do a look-up
+* from DataType (int) to DataType (localised text label)
+* See below...
+*-------------------------------------------------
+THIS.PropertyType[ADVPROP_EDITMODE_GETEXPR] = ADVPROP_EDITMODE_GETEXPR_LOC
+THIS.PropertyType[ADVPROP_EDITMODE_TEXT]    = ADVPROP_EDITMODE_TEXT_LOC
+THIS.PropertyType[ADVPROP_EDITMODE_STRING]  = ADVPROP_EDITMODE_STRING_LOC
+THIS.PropertyType[ADVPROP_EDITMODE_GETFILE] = ADVPROP_EDITMODE_GETFILE_LOC
+THIS.PropertyType[ADVPROP_EDITMODE_BOOLEAN] = ADVPROP_EDITMODE_BOOLEAN_LOC
+
+*--------------------------------------------------
+* Initial list:
+*--------------------------------------------------
+if this.FrxCursor.IsLayoutControl( this.Event.OBJTYPE )
+	select  HNDL_CLASS as PROPERTY_NAME, ;
+			HNDL_LIB   as DEFAULT_VALUE, ;
+			cast(HNDL_LIB as m) as PROPERTY_VALUE, ;
+			EVENTTYPE  as DATA_TYPE, ;
+			.F.        as CUSTOM, ;
+			NATIVE	   as HIDDEN ;
+		order by FLTR_ORDR, HNDL_CLASS ;
+		from frxregistry ;
+		where REC_TYPE = HANDLREG_PROPERTY ;
+		  and OBJTYPE in (this.Event.OBJTYPE, -1, 55 ) ;
+		  and OBJCODE in (this.Event.OBJCODE, -1 ) ;
+		  into cursor (this.tmpAlias) readwrite
+else
+	select  HNDL_CLASS as PROPERTY_NAME, ;
+			HNDL_LIB   as DEFAULT_VALUE, ;
+			cast(HNDL_LIB as m) as PROPERTY_VALUE, ;
+			EVENTTYPE  as DATA_TYPE, ;
+			.F.        as CUSTOM, ;
+			NATIVE	   as HIDDEN ;
+		order by FLTR_ORDR, HNDL_CLASS ;
+		from frxregistry ;
+		where REC_TYPE = HANDLREG_PROPERTY ;
+		  and OBJTYPE in (this.Event.OBJTYPE, -1 ) ;
+		  and OBJCODE in (this.Event.OBJCODE, -1 ) ;
+		  into cursor (this.tmpAlias) readwrite
+endif
+
+*--------------------------------------------------
+* Assign current values from memberdata:
+*--------------------------------------------------
+select memberdata
+scan for TYPE = FRX_BLDR_MEMBERDATATYPE ;
+     and NAME = FRX_BLDR_NAMESPACE_ADVANCEDPROPS ;
+     and not deleted('memberdata')
+
+	select (THIS.tmpAlias)
+	locate for PROPERTY_NAME = trim(memberdata.EXECWHEN)
+	if found()
+		replace ;
+			PROPERTY_VALUE with trim(memberdata.EXECUTE) ;
+			in (this.tmpAlias)
+	else
+		insert into (this.tmpAlias) ( ;
+			PROPERTY_NAME, ;
+			DEFAULT_VALUE, ;
+			PROPERTY_VALUE, ;
+			DATA_TYPE, ;
+			CUSTOM ) ;
+	  	values ( ;
+			trim(memberdata.EXECWHEN), ;
+			'', ;
+			trim(memberdata.EXECUTE), ;
+			val(memberdata.DECLASS), ;
+			.T. )
+	endif	
+	
+	select memberdata     	
+endscan
+
+*--------------------------------------------------
+* Load List with values:
+*--------------------------------------------------
+with THIS.lstProperties
+
+	.Clear()
+	.ColumnCount = 3
+	.ColumnWidths = "220,130,100"
+	.ColumnLines = .F.
+	
+	select (THIS.tmpAlias)
+	i = 0
+	scan for not deleted() ;
+		 and not HIDDEN
+
+		i = m.i+1
+		
+		.AddListItem( trim(PROPERTY_NAME), m.i, 1 )
+		
+		do case
+		case DATA_TYPE = ADVPROP_EDITMODE_GETFILE
+			.AddListItem( displaypath(trim(PROPERTY_VALUE),25),  m.i, 2 )
+			
+		case DATA_TYPE = ADVPROP_EDITMODE_TEXT
+			if len(alltrim(PROPERTY_VALUE))>0
+				.AddListItem( left(trim(PROPERTY_VALUE),25)+"...",  m.i, 2 )
+			else
+				.AddListItem( "",  m.i, 2 )
+			endif				
+					
+		case DATA_TYPE = ADVPROP_EDITMODE_BOOLEAN
+			.AddListItem( iif(trim(PROPERTY_VALUE)='1',  ADVPROP_BOOLEAN_YES_LOC,  ADVPROP_BOOLEAN_NO_LOC ),  m.i, 2 )
+
+		otherwise
+			.AddListItem( trim(PROPERTY_VALUE),  m.i, 2 )
+			
+		endcase
+		if DATA_TYPE > 0
+			.AddListItem( THIS.PropertyType[DATA_TYPE],    m.i, 3 )
+		endif
+
+	endscan
+
+	select (THIS.Tag)	
+	
+endwith
+*THIS.lstProperties.Refresh()
+return
+ENDPROC
+PROCEDURE refreshenabledstate
+if THIS.lstProperties.ListCount = 0
+	store .F. to ;
+		THIS.cmdDelete.Enabled, ;
+		THIS.cmdEdit.Enabled
+	return
+endif		
+
+if empty( THIS.lstProperties.Value )
+	store .F. to ;
+		THIS.cmdDelete.Enabled, ;
+		THIS.cmdEdit.Enabled
+	return
+endif
+	
+*--------------------------------------
+* Delete button is enabled for custom
+* Edit button is enabled so long as there's
+* something to edit:
+*--------------------------------------
+select (this.tmpAlias)
+locate for PROPERTY_NAME = THIS.lstProperties.Value
+if found()
+	if CUSTOM
+		*-----------------------------------------------
+		* Custom properties can be removed from the list:
+		*-----------------------------------------------
+*		THIS.cmdDelete.Enabled = not empty(alltrim(PROPERTY_VALUE))
+		THIS.cmdDelete.Enabled = .T.
+	else
+		*-----------------------------------------------
+		* Default properties can be reset to default,
+		* if they have been set to another value:
+		*-----------------------------------------------
+		THIS.cmdDelete.Enabled = !(alltrim(PROPERTY_VALUE) == alltrim(DEFAULT_VALUE))
+	endif			
+	THIS.cmdEdit.Enabled   = .T.
+else
+	store .F. to ;
+		THIS.cmdDelete.Enabled, ;
+		THIS.cmdEdit.Enabled
+endif	
+return		
+
+
+ENDPROC
+PROCEDURE savetofrx
+*--------------------------------------------------
+* Save values in tmpAlias to memberdata
+*--------------------------------------------------
+local cValue, cProp, cDefValue, iType, lCustom
+if not used(THIS.tmpAlias)
+	return
+endif
+select (THIS.tmpAlias)
+scan
+	
+	cProp   = trim(PROPERTY_NAME)
+	cValue  = trim(PROPERTY_VALUE)
+	cDefVal = trim(DEFAULT_VALUE)
+	iType   = DATA_TYPE
+	lCustom = CUSTOM
+	
+	if deleted(this.tmpAlias) or ;
+	   (not CUSTOM and empty(cValue)) or ;
+	   (not CUSTOM and m.cValue == m.cDefVal)
+	
+		*----------------------------------------
+		* Remove from memberdata:
+		*----------------------------------------
+		select memberdata
+		locate for TYPE = FRX_BLDR_MEMBERDATATYPE ;
+			   and NAME = FRX_BLDR_NAMESPACE_ADVANCEDPROPS ;
+			   and EXECWHEN = m.cProp ;
+		       and not deleted("memberdata")
+		if found()
+			delete
+		endif
+		
+	else
+		*----------------------------------------
+		* update in memberdata
+		*----------------------------------------
+		select memberdata
+		locate for TYPE = FRX_BLDR_MEMBERDATATYPE ;
+			   and NAME = FRX_BLDR_NAMESPACE_ADVANCEDPROPS ;
+			   and EXECWHEN = m.cProp ;
+		       and not deleted("memberdata")
+		if found()
+			*-----------------------------------
+			* update the value
+			*-----------------------------------
+			replace EXECUTE with m.cValue
+		else
+			*-----------------------------------
+			* insert the value
+			*-----------------------------------
+			insert into memberdata ;
+				( TYPE, NAME, EXECWHEN, EXECUTE, DECLASS ) ;
+				values ;
+				( FRX_BLDR_MEMBERDATATYPE, FRX_BLDR_NAMESPACE_ADVANCEDPROPS, ;
+				  m.cProp, m.cValue, trans(m.iType) )
+		endif
+
+	endif
+	select (this.tmpAlias)
+endscan
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+8[END RESERVED2]
+[START RESERVED3]
+props
+values
+tmpalias
+*addadvprop 
+*editadvprop 
+*deleteadvprop 
+^propertytype[5,0] 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+frxbuilder.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PL1A7AUV
+[CLASS] lst
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] listbox
+[OBJNAME] lstProperties
+[PARENT] paneladvancedprops
+[START PROPERTIES]
+Height = 144
+Left = 0
+TabIndex = 1
+Top = 21
+Width = 428
+ZOrderSet = 1
+Name = "lstProperties"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+THIS.Parent.RefreshEnabledState()
+ENDPROC
+PROCEDURE DblClick
+THIS.Parent.EditAdvProp()
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1270UJ47A
+[CLASS] lbl
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] label
+[OBJNAME] lblName
+[PARENT] paneladvancedprops
+[START PROPERTIES]
+BackStyle = 0
+Caption = "Property Name"
+Left = 2
+Top = 4
+TabIndex = 5
+ZOrderSet = 2
+Name = "lblName"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_ADVPROP_NAME_LOC
+#ENDIF
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PL19RD6Y
+[CLASS] lbl
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] label
+[OBJNAME] lblValue
+[PARENT] paneladvancedprops
+[START PROPERTIES]
+BackStyle = 0
+Caption = "Value"
+Left = 202
+Top = 4
+TabIndex = 7
+ZOrderSet = 3
+Name = "lblValue"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_ADVPROP_VALUE_LOC
+#ENDIF
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PQ0ME7HX
+[CLASS] lbl
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] label
+[OBJNAME] lblType
+[PARENT] paneladvancedprops
+[START PROPERTIES]
+BackStyle = 0
+Caption = "Type"
+Left = 354
+Top = 4
+TabIndex = 6
+ZOrderSet = 3
+Name = "lblType"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_ADVPROP_TYPE_LOC
+#ENDIF
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PL1A7AUX
+[CLASS] cmd
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdAdd
+[PARENT] paneladvancedprops
+[START PROPERTIES]
+Top = 57
+Left = 436
+Width = 90
+Caption = "Add..."
+TabIndex = 3
+ZOrderSet = 4
+Name = "cmdAdd"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+THIS.Parent.AddAdvProp()
+ENDPROC
+PROCEDURE Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_CMD_ADD_LOC + "..."
+#ENDIF
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1270UJ47A
+[CLASS] cmd
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdDelete
+[PARENT] paneladvancedprops
+[START PROPERTIES]
+Top = 85
+Left = 436
+Width = 90
+Caption = "Delete"
+Enabled = .F.
+TabIndex = 4
+ZOrderSet = 5
+Name = "cmdDelete"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+THIS.Parent.DeleteAdvProp()
+ENDPROC
+PROCEDURE Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_CMD_CLEAR_LOC
+#ENDIF
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PM0NKO6H
+[CLASS] cmd
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdEdit
+[PARENT] paneladvancedprops
+[START PROPERTIES]
+Top = 21
+Left = 436
+Width = 90
+Caption = "Edit..."
+Enabled = .F.
+TabIndex = 2
+ZOrderSet = 6
+Name = "cmdEdit"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+THIS.Parent.EditAdvProp()
+ENDPROC
+PROCEDURE Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_CMD_EDIT_LOC + "..."
+#ENDIF
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] paneladvancedprops
+[START PROPERTIES]
+Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+[END PROPERTIES]
+[START RESERVED1]
+  frxbuilder.hfzGO7 foxpro_reporting.hnzGO7 frxbuilder_loc.hvzGO7 _frxcursor.h~zGO7 foxpro_reporting.h†zGO7[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PM0NWKJ2
+[CLASS] frxbaseform
+[CLASSLOC] frxbuilder.vcx
+[BASECLASS] form
+[OBJNAME] frxaddadvprop
+[START PROPERTIES]
+Height = 182
+Width = 314
+Desktop = .T.
+DoCreate = .T.
+BorderStyle = 3
+Caption = "Add Property"
+Closable = .F.
+MaxButton = .F.
+MinButton = .F.
+AlwaysOnTop = .T.
+propertyname = 
+propertyvalue = 
+savechanges = .F.
+event = .NULL.
+Name = "frxaddadvprop"
+grabber.Height = 12
+grabber.Left = 284
+grabber.Top = 136
+grabber.Width = 11
+grabber.ZOrderSet = 1
+grabber.Name = "grabber"
+frxcursor.Top = 120
+frxcursor.Left = 268
+frxcursor.Name = "frxcursor"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_ADVPROP_ADD_DLG_CAPTION_LOC
+#ENDIF
+
+THIS.BorderStyle = 2
+
+dodefault()
+
+THIS.Resize()
+
+ENDPROC
+PROCEDURE execute
+lparameter toList, toEvent
+
+local i, tmpAlias, cNewProp
+tmpAlias = alias()
+
+THIS.event = m.toEvent
+
+*-------------------------------------------------
+* Kind of kludgey way to do a look-up
+* from DataType (int) to DataType (localised text label)
+* See below...
+*-------------------------------------------------
+THIS.PropertyType[ADVPROP_EDITMODE_GETEXPR] = ADVPROP_EDITMODE_GETEXPR_LOC
+THIS.PropertyType[ADVPROP_EDITMODE_TEXT]    = ADVPROP_EDITMODE_TEXT_LOC
+THIS.PropertyType[ADVPROP_EDITMODE_STRING]  = ADVPROP_EDITMODE_STRING_LOC
+THIS.PropertyType[ADVPROP_EDITMODE_GETFILE] = ADVPROP_EDITMODE_GETFILE_LOC
+THIS.PropertyType[ADVPROP_EDITMODE_BOOLEAN] = ADVPROP_EDITMODE_BOOLEAN_LOC
+
+*-------------------------------------------------
+* Populate the DataType dropdown:
+* TODO: read custom data types?
+*-------------------------------------------------
+this.cboType.AddItem(ADVPROP_EDITMODE_GETEXPR_LOC)
+this.cboType.AddItem(ADVPROP_EDITMODE_TEXT_LOC)
+this.cboType.AddItem(ADVPROP_EDITMODE_STRING_LOC)
+this.cboType.AddItem(ADVPROP_EDITMODE_GETFILE_LOC)
+this.cboType.AddItem(ADVPROP_EDITMODE_BOOLEAN_LOC)
+this.cboType.Value = 1
+
+THIS.PropertyName = space(fsize("PROPERTY_NAME"))
+THIS.txtName.ControlSource = "THISFORM.PropertyName"
+
+THIS.RefreshControlState()	
+	
+do while .T.
+	THIS.Show(1)
+
+	if THIS.SaveChanges
+		cNewProp = trim(THIS.txtName.Value)
+		*-------------------------------------------------
+		* Check to see if already defined
+		*-------------------------------------------------
+		select (m.tmpAlias)
+		locate for upper(PROPERTY_NAME) = upper(m.cNewProp) and not deleted()
+		if found()
+			=messagebox(strtran(ADVPROP_ALREADY_DEFINED_LOC,'{0}', m.cNewProp ), 64, DEFAULT_MBOX_TITLE_LOC)
+			THIS.SaveChanges = .F.
+			loop
+		endif				
+	endif
+	exit
+enddo
+
+if THIS.SaveChanges
+
+	if THIS.cboType.Value = ADVPROP_EDITMODE_BOOLEAN
+		THIS.ctlValue.Value = iif(THIS.opgBoolean.Value=1,'1','0')
+	endif		
+
+	*-------------------------------------------------
+	* Update temp cursor:
+	*-------------------------------------------------
+	insert into (m.tmpAlias) ;
+		( PROPERTY_NAME, ;
+		  DEFAULT_VALUE, ;
+		  PROPERTY_VALUE, ;
+		  DATA_TYPE, ;
+		  CUSTOM ) ;
+	values	;
+		( trim(THIS.txtName.Value), ;
+		  '' , ;
+		  trim(THIS.ctlValue.Value), ;
+		  THIS.cboType.Value, ;
+		  .T. )
+		
+	*-------------------------------------------------
+	* update list:
+	*-------------------------------------------------
+	i = toList.ListCount+1
+	toList.AddListItem( trim(THIS.txtName.Value),  m.i, 1 )	
+	
+	do case
+	case THIS.cboType.Value = ADVPROP_EDITMODE_GETFILE
+		toList.AddListItem( displaypath(trim(THIS.ctlValue.Value),25),  m.i, 2 )
+
+	case THIS.cboType.Value = ADVPROP_EDITMODE_TEXT
+		if len(alltrim(THIS.ctlValue.Value))>0
+			toList.AddListItem( left(trim(THIS.ctlValue.Value),25)+"...",  m.i, 2 )
+		else			
+			toList.AddListItem( "",  m.i, 2 )
+		endif
+
+	case THIS.cboType.Value = ADVPROP_EDITMODE_BOOLEAN
+		toList.AddListItem( iif(THIS.ctlValue.Value='1',  ADVPROP_BOOLEAN_YES_LOC,  ADVPROP_BOOLEAN_NO_LOC ),  m.i, 2 )
+
+	otherwise
+		toList.AddListItem( trim(THIS.ctlValue.Value), m.i, 2 )
+
+	endcase
+	if THIS.cboType.Value > 0
+		toList.AddListItem( THIS.PropertyType[THIS.cboType.Value],  m.i, 3 )
+	endif
+
+endif
+
+THIS.event = .NULL.
+return
+ENDPROC
+PROCEDURE refreshcontrolstate
+if THIS.cboType.Value = 5
+
+	THIS.ctlValue.Visible = .F.
+	THIS.opgBoolean.Visible = .T.
+
+	* Default a value if it hasn't been set yet:
+	if THIS.opgBoolean.Value = 0
+		THIS.opgBoolean.Value = 1
+	endif
+
+else
+
+	THIS.ctlValue.Visible = .T.
+	THIS.opgBoolean.Visible = .F.
+
+	THIS.ctlValue.SetTextBoxReadOnly( ;
+		inlist( THIS.cboType.Value, ;
+			ADVPROP_EDITMODE_BOOLEAN, ADVPROP_EDITMODE_TEXT ))
+
+endif
+
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+11[END RESERVED2]
+[START RESERVED3]
+propertyname
+propertyvalue
+savechanges
+event
+*execute 
+*refreshcontrolstate 
+^propertytype[5,0] 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+frxbuilder.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1Q60RV0ZE
+[CLASS] shp
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] shape
+[OBJNAME] Shp1
+[PARENT] frxaddadvprop
+[START PROPERTIES]
+Top = 8
+Left = 12
+Height = 160
+Width = 200
+ZOrderSet = 0
+Style = 3
+Name = "Shp1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PM0O58LG
+[CLASS] cmd
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdAdd
+[PARENT] frxaddadvprop
+[START PROPERTIES]
+Top = 8
+Left = 220
+Width = 85
+Caption = "Add"
+Default = .T.
+TabIndex = 4
+ZOrderSet = 3
+Name = "cmdAdd"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+THISFORM.SaveChanges = .T.
+THISFORM.Hide()
+ENDPROC
+PROCEDURE Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_CMD_ADD_LOC
+#ENDIF
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PM0O58LH
+[CLASS] cmd
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdCancel
+[PARENT] frxaddadvprop
+[START PROPERTIES]
+Top = 36
+Left = 220
+Width = 85
+Cancel = .T.
+Caption = "Cancel"
+TabIndex = 5
+ZOrderSet = 4
+Name = "cmdCancel"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+THISFORM.SaveChanges = .F.
+THISFORM.Hide()
+ENDPROC
+PROCEDURE Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_CMD_CANCEL_LOC
+#ENDIF
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PM0O58LI
+[CLASS] txt
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] textbox
+[OBJNAME] txtName
+[PARENT] frxaddadvprop
+[START PROPERTIES]
+Left = 24
+TabIndex = 2
+Top = 79
+Width = 180
+ZOrderSet = 5
+Name = "txtName"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PM0O58LJ
+[CLASS] frxexpressioncontrol
+[CLASSLOC] frxpanels.vcx
+[BASECLASS] container
+[OBJNAME] ctlValue
+[PARENT] frxaddadvprop
+[START PROPERTIES]
+Top = 124
+Left = 23
+Width = 188
+Height = 28
+TabIndex = 3
+ZOrderSet = 6
+calledfrom = AdvancedPropertyValue
+Name = "ctlValue"
+txtExpression.Height = 22
+txtExpression.Left = 1
+txtExpression.SelectOnEntry = .T.
+txtExpression.Top = 1
+txtExpression.Width = 155
+txtExpression.Name = "txtExpression"
+cmdExprBuilder.Top = 1
+cmdExprBuilder.Left = 160
+cmdExprBuilder.Name = "cmdExprBuilder"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE getexpression
+*-------------------------------------------------------
+* Method overridden on purpose:
+*-------------------------------------------------------
+local cExpression, cDefaultExpr, cEditMode
+cExpression  = ""
+cDefaultExpr = THIS.Value
+cEditMode    = THIS.Parent.cboType.Value
+
+do case
+case m.cEditMode = ADVPROP_EDITMODE_GETEXPR
+	cExpression = THIS.Parent.event.GetExpression( m.cDefaultExpr, '', THIS.CalledFrom )
+
+case m.cEditMode = ADVPROP_EDITMODE_GETFILE
+	cExpression = getfile()
+
+case m.cEditMode = ADVPROP_EDITMODE_STRING	
+	cExpression = inputbox(trim(THIS.Parent.txtName.Value) + " = ", UI_ADVPROP_EDT_DLG_CAPTION_LOC, m.cDefaultExpr )
+
+case m.cEditMode = ADVPROP_EDITMODE_BOOLEAN
+	* Use a simple messagebox:
+	if messagebox(trim(THIS.Parent.txtName.Value) + " = ", 4, UI_ADVPROP_EDT_DLG_CAPTION_LOC ) = 6
+		cExpression = "Yes"
+	else
+		cExpression = "No"
+	endif
+
+otherwise	&& ADVPROP_EDITMODE_TEXT
+	local oEditor
+	oEditor = newobject("frxMemoEditForm", "frxbuilder.vcx")
+	if not isnull( m.oEditor )
+		oEditor.Text    = m.cDefaultExpr
+		oEditor.Caption = UI_ADVPROP_EDT_DLG_CAPTION_LOC
+		oEditor.SetHelperText(ADVPROP_EDIT_HELPER_TXT_LOC)
+		oEditor.Execute()
+		cExpression = oEditor.Text
+	endif
+	
+endcase
+if not empty( m.cExpression )
+	THIS.Value = m.cExpression
+endif
+
+return
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PM0O58LK
+[CLASS] lbl
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] label
+[OBJNAME] Lbl1
+[PARENT] frxaddadvprop
+[START PROPERTIES]
+Caption = "Name:"
+Height = 15
+Left = 24
+Top = 63
+Width = 33
+TabIndex = 6
+ZOrderSet = 7
+Name = "Lbl1"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_ADVPROP_NAME_LOC
+#ENDIF
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PM0O58LV
+[CLASS] lbl
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] label
+[OBJNAME] LBL2
+[PARENT] frxaddadvprop
+[START PROPERTIES]
+Caption = "Value:"
+Left = 24
+Top = 108
+TabIndex = 7
+ZOrderSet = 8
+Name = "LBL2"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_ADVPROP_VALUE_LOC
+#ENDIF
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PQ0LTB34
+[CLASS] cbo
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] combobox
+[OBJNAME] cboType
+[PARENT] frxaddadvprop
+[START PROPERTIES]
+Comment = "N"
+Left = 24
+Style = 2
+TabIndex = 1
+Top = 33
+Width = 180
+ZOrderSet = 9
+Name = "cboType"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE InteractiveChange
+THIS.Parent.RefreshControlState()
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PQ0LTB35
+[CLASS] lbl
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] label
+[OBJNAME] Lbl3
+[PARENT] frxaddadvprop
+[START PROPERTIES]
+Caption = "Type:"
+Left = 24
+Top = 17
+TabIndex = 8
+ZOrderSet = 10
+Name = "Lbl3"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_ADVPROP_TYPE_LOC
+#ENDIF
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1QF0VP2S9
+[CLASS] opg
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] optiongroup
+[OBJNAME] opgBoolean
+[PARENT] frxaddadvprop
+[START PROPERTIES]
+ButtonCount = 2
+BorderStyle = 0
+Height = 24
+Left = 24
+Top = 124
+Width = 180
+Name = "opgBoolean"
+Opt1.Caption = "Yes"
+Opt1.Left = 4
+Opt1.Top = 4
+Opt1.Name = "Opt1"
+Opt2.Caption = "No"
+Opt2.Left = 88
+Opt2.Top = 4
+Opt2.Name = "Opt2"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Opt1.Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_PRINTWHEN_OPT_YES_LOC
+#ENDIF
+ENDPROC
+PROCEDURE Opt2.Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_PRINTWHEN_OPT_NO_LOC
+#ENDIF
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] frxaddadvprop
+[START PROPERTIES]
+Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+[END PROPERTIES]
+[START RESERVED1]
+  frxbuilder.hfzGO7 foxpro_reporting.hnzGO7 frxbuilder_loc.hvzGO7 _frxcursor.h~zGO7 foxpro_reporting.h†zGO7[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PO0O159U
+[CLASS] pge
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] page
+[OBJNAME] tabdocprops
+[START PROPERTIES]
+Caption = "Document Properties"
+Height = 224
+Width = 491
+Name = "tabdocprops"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_TAB_DOCUMENT_PROPERTIES_LOC
+#ENDIF
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+2[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+frxbuilder.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PO0O1WWD
+[CLASS] paneladvancedprops
+[CLASSLOC] frxbuilder2.vcx
+[BASECLASS] container
+[OBJNAME] Paneldocumentprops1
+[PARENT] tabdocprops
+[START PROPERTIES]
+Top = 3
+Left = 4
+Width = 468
+Height = 205
+Name = "Paneldocumentprops1"
+lstProperties.Height = 144
+lstProperties.Left = 0
+lstProperties.Top = 21
+lstProperties.Width = 452
+lstProperties.Name = "lstProperties"
+lblName.Name = "lblName"
+lblValue.Left = 214
+lblValue.Top = 4
+lblValue.Name = "lblValue"
+lblType.Name = "lblType"
+cmdAdd.Top = 169
+cmdAdd.Left = 96
+cmdAdd.Name = "cmdAdd"
+cmdDelete.Top = 169
+cmdDelete.Left = 192
+cmdDelete.Name = "cmdDelete"
+cmdEdit.Top = 169
+cmdEdit.Left = 0
+cmdEdit.Name = "cmdEdit"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] tabdocprops
+[START PROPERTIES]
+Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+[END PROPERTIES]
+[START RESERVED1]
+  frxbuilder.hfzGO7 foxpro_reporting.hnzGO7 frxbuilder_loc.hvzGO7 _frxcursor.h~zGO7 foxpro_reporting.h†zGO7[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PP0KQVWU
+[CLASS] pge
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] page
+[OBJNAME] tabheaderother
+[START PROPERTIES]
+Caption = "Other"
+Height = 286
+Width = 438
+Name = "tabheaderother"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_TAB_HDR_OTHER_LOC
+#ENDIF
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+3[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+frxbuilder.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PP0KRQAL
+[CLASS] panelcommentuser
+[CLASSLOC] frxpanels.vcx
+[BASECLASS] container
+[OBJNAME] Panelcommentuser1
+[PARENT] tabheaderother
+[START PROPERTIES]
+Top = 0
+Left = 4
+Width = 428
+Height = 191
+Name = "Panelcommentuser1"
+shpUser.Top = 105
+shpUser.Left = 5
+shpUser.Height = 2
+shpUser.Width = 410
+shpUser.Name = "shpUser"
+lblCommentText.Height = 58
+lblCommentText.Left = 56
+lblCommentText.Top = 17
+lblCommentText.Width = 356
+lblCommentText.Name = "lblCommentText"
+cmdComment.Top = 72
+cmdComment.Left = 291
+cmdComment.Name = "cmdComment"
+lblUserCaption.Left = 2
+lblUserCaption.Top = 97
+lblUserCaption.Name = "lblUserCaption"
+lblUserText.Height = 51
+lblUserText.Left = 57
+lblUserText.Top = 114
+lblUserText.Width = 356
+lblUserText.Name = "lblUserText"
+imgComment.Height = 32
+imgComment.Width = 32
+imgComment.Name = "imgComment"
+cmdUser.Top = 163
+cmdUser.Left = 291
+cmdUser.Name = "cmdUser"
+Shape1.Top = 9
+Shape1.Left = 5
+Shape1.Height = 2
+Shape1.Width = 410
+Shape1.Name = "Shape1"
+lblCommentCaption.Name = "lblCommentCaption"
+imgUser.Height = 32
+imgUser.Left = 8
+imgUser.Top = 117
+imgUser.Width = 32
+imgUser.Name = "imgUser"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE loadfromfrx
+*---------------------------------------------------------------
+* Ensure we are on the report header record:
+*---------------------------------------------------------------
+select (THIS.Tag)
+locate for OBJTYPE = FRX_OBJTYP_REPORTHEADER
+return dodefault()
+ENDPROC
+PROCEDURE savetofrx
+*---------------------------------------------------------------
+* Ensure we are on the report header record:
+*---------------------------------------------------------------
+select (THIS.Tag)
+locate for OBJTYPE = FRX_OBJTYP_REPORTHEADER
+return dodefault()
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PR0QIXQL
+[CLASS] panelmemberdata
+[CLASSLOC] frxpanels.vcx
+[BASECLASS] container
+[OBJNAME] Panelmemberdata1
+[PARENT] tabheaderother
+[START PROPERTIES]
+Top = 187
+Left = 4
+Width = 432
+Height = 97
+Name = "Panelmemberdata1"
+LBLSCRIPTTEXT.Height = 54
+LBLSCRIPTTEXT.Left = 56
+LBLSCRIPTTEXT.Top = 18
+LBLSCRIPTTEXT.Width = 360
+LBLSCRIPTTEXT.Name = "LBLSCRIPTTEXT"
+SHAPE4.Top = 9
+SHAPE4.Left = 5
+SHAPE4.Height = 2
+SHAPE4.Width = 410
+SHAPE4.Name = "SHAPE4"
+CMDSCRIPT.Top = 70
+CMDSCRIPT.Left = 291
+CMDSCRIPT.Name = "CMDSCRIPT"
+IMGSCRIPT.Height = 32
+IMGSCRIPT.Width = 32
+IMGSCRIPT.Name = "IMGSCRIPT"
+LBLSCRIPTCAPTION.Name = "LBLSCRIPTCAPTION"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE loadfromfrx
+*---------------------------------------------------------------
+* Ensure we are on the report header record:
+*---------------------------------------------------------------
+select (THIS.Tag)
+locate for OBJTYPE = FRX_OBJTYP_REPORTHEADER
+return dodefault()
+ENDPROC
+PROCEDURE savetofrx
+*---------------------------------------------------------------
+* Ensure we are on the report header record:
+*---------------------------------------------------------------
+select (THIS.Tag)
+locate for OBJTYPE = FRX_OBJTYP_REPORTHEADER
+return dodefault()
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] tabheaderother
+[START PROPERTIES]
+Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+[END PROPERTIES]
+[START RESERVED1]
+  frxbuilder.hfzGO7 foxpro_reporting.hnzGO7 frxbuilder_loc.hvzGO7 _frxcursor.h~zGO7 foxpro_reporting.h†zGO7[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PW0LRQ2S
+[CLASS] frxpanel
+[CLASSLOC] frxpanels.vcx
+[BASECLASS] container
+[OBJNAME] paneladjustobjectsize
+[START PROPERTIES]
+Width = 415
+Height = 248
+checkedmemberdatacursor = .F.
+Name = "paneladjustobjectsize"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE deletecondition
+local i, cConditionName, cursel
+cConditionName = THIS.lstConditions.Value
+cursel = select(0)
+
+if messagebox( strtran(DYNAMICS_DELETE_ARE_YOU_SURE_LOC,'{0}', m.cConditionName ), 4+32+256, DEFAULT_MBOX_TITLE_LOC ) ;
+      = 6
+
+	select memberdata
+	delete for TYPE = FRX_BLDR_MEMBERDATATYPE ;
+		   and NAME = FRX_BLDR_NAMESPACE_ADJUSTOBJECTSIZE ;
+		   and EXECUTE = m.cConditionName
+		
+	* remove from list:
+	with THIS.lstConditions
+		if .ListCount = 1
+			.Clear()
+		else
+			for i = 1 to .ListCount
+*				if .ListItem(m.i) == m.cConditionName
+				if .List(m.i) == m.cConditionName
+					.RemoveItem(m.i)
+					exit
+				endif
+			endfor
+		endif
+	endwith
+			   	
+	select (m.cursel)			   	
+	THIS.RefreshEnabledState()
+	THIS.UpdatePreview()
+endif
+ENDPROC
+PROCEDURE editcondition
+lparameter tlAdding
+
+if m.tlAdding
+	local cConditionName
+	cConditionName = ""
+	cConditionName = inputbox( DYNAMICS_NEW_COND_PROMPT_LOC, DYNAMICS_NEW_COND_TITLE_LOC)
+	if empty( m.cConditionName )
+		return
+	endif
+	
+	*------------------------
+	* Does it already exist?
+	*------------------------
+	select memberdata
+	locate for TYPE = FRX_BLDR_MEMBERDATATYPE ;
+		   and NAME = FRX_BLDR_NAMESPACE_ADJUSTOBJECTSIZE ;
+		   and upper(EXECUTE) = upper(m.cConditionName) ;
+		   and not deleted()		
+	if found()
+		=messagebox(DYNAMICS_COND_EXISTS_LOC, 64, DEFAULT_MBOX_TITLE_LOC)
+		return
+	endif
+
+	*-------------------------
+	* add to the list
+	*-------------------------
+	select memberdata
+	insert into memberdata ;
+		( TYPE, ;
+		  NAME, ;
+		  EXECUTE, ;
+		  EXECWHEN, ;
+		  WIDTH, ;
+		  HEIGHT) ;
+	values ;
+		( FRX_BLDR_MEMBERDATATYPE, ;
+		  FRX_BLDR_NAMESPACE_ADJUSTOBJECTSIZE, ;
+		  m.cConditionName, ;
+		  ".F.", ;
+		  "-1", ;
+		  "-1" )
+
+	with THIS.lstConditions
+		i = .ListCount + 1
+		.AddItem( m.cConditionName, m.i )
+		.Value = m.cConditionName
+	endwith
+endif
+*----------------------------------
+* Now edit the new condition
+*----------------------------------
+local oForm
+oForm = newobject("frxDynamicEditor2",this.ClassLibrary )
+if not isnull( oForm )
+	oForm.Execute( THIS.lstConditions, THIS.Event )
+endif
+
+THIS.Refreshenabledstate()
+THIS.UpdatePreview()
+
+SELECT FRX
+
+return
+ENDPROC
+PROCEDURE ensurememberdatastructure
+*---------------------------------------------------------
+* Ensure memberdata has the required additional columns
+*---------------------------------------------------------
+if not this.checkedMemberdataCursor
+	local cAddColumns, iAddCount
+	cAddColumns = ""
+	iAddCount = 0
+	if type("memberdata.WIDTH")="U"
+		m.cAddColumns = m.cAddColumns + " ADD COLUMN WIDTH M"
+		iAddCount = m.iAddCount+1
+	endif	
+	if type("memberdata.HEIGHT")="U"
+		m.cAddColumns = m.cAddColumns + " ADD COLUMN HEIGHT M"
+		iAddCount = m.iAddCount+1
+	endif	
+	if m.iAddCount > 0
+		*----------------------------------------------
+		* Check in case too many columns:
+		*----------------------------------------------
+		if fcount("memberdata") > (254 - m.iAddCount)
+			* There is no room in the structure:
+			return .F.
+		else
+			*----------------------------------------------
+			* Update metadata structure:
+			*----------------------------------------------
+			alter table memberdata &cAddColumns
+		endif
+	endif
+
+	this.checkedMemberdataCursor = .T.
+
+endif
+return .T.
+
+
+ENDPROC
+PROCEDURE loadfromfrx
+*---------------------------------------------------------
+* OK, this is weird. This is required to ensure that
+* the listbox paints correctly:
+*---------------------------------------------------------
+wait "" timeout 0.1
+
+if not used(THIS.Tag)
+	return .F.
+endif
+
+select (THIS.Tag)
+
+if THIS.event.Protected
+	THIS.cmdScript.Visible = .F.
+	THIS.edtHelperText.Value = DYNAMICS_HELPER_TEXT_LOC
+else
+	THIS.edtHelperText.Value = DYNAMICS_HELPER_TEXT_LOC  + " " ;
+							 + DYNAMICS_HELPER_TEXT2_LOC ;
+							 + DYNAMICS_HELPER_TEXT3_LOC
+endif
+
+if not THIS.EnsureMemberDataStructure()
+	*---------------------------------------------------------
+	* We can't make room for our data in the memberdata:
+	*---------------------------------------------------------
+	=messagebox( DYNAMICS_STORAGE_ERROR_LOC, 16, DEFAULT_MBOX_TITLE_LOC ) ;
+	return .F.
+endif
+
+local i, cInitialValue
+
+with THIS.lstConditions
+	.Clear
+	.ColumnCount = 1
+	i = 1
+	.AddItem(UI_DYNAMICS_DEFAULT_LOC)
+	
+	select memberdata
+
+	scan for TYPE = FRX_BLDR_MEMBERDATATYPE ;
+	     and NAME = FRX_BLDR_NAMESPACE_ADJUSTOBJECTSIZE ;
+	     and not deleted("memberdata")
+
+		i = m.i+1
+		.AddItem( trim(EXECUTE), m.i )
+
+	endscan
+endwith
+
+THIS.lstConditions.Value = UI_DYNAMICS_DEFAULT_LOC
+THIS.RefreshEnabledState()
+THIS.UpdatePreview()
+
+SELECT FRX
+
+return
+ENDPROC
+PROCEDURE previewscript
+local lcText
+lcText = THIS.FrxCursor.GenerateAdjustObjectSizeScript()
+if not empty( m.lcText )
+
+	local oForm
+	oForm = newobject("frxMemoEditForm","frxBuilder.vcx")
+	oForm.Caption = UI_SCRIPTPREVIEW_TITLE_LOC
+	oForm.setHelperText(SCRIPTPREVIEW_HELPERTEXT_LOC)
+	oForm.FixedWidthFont = .T.
+	oForm.Text = m.lcText
+	oForm.cmdOK.Enabled = .F.
+	oForm.cmdCancel.Caption = UI_CMD_CLOSE_LOC
+	oForm.WindowState = 2
+	oForm.cmdModiComm.Visible = .T.
+	oForm.Execute()
+
+endif
+ENDPROC
+PROCEDURE refreshenabledstate
+local i, llEnable
+do case
+case empty( THIS.lstConditions.Value ) or ;
+	 THIS.lstConditions.ListCount = 0
+	
+	store .F. to ;
+		THIS.cmdEdit.Enabled, ;
+		THIS.cmdDelete.Enabled
+	
+case THIS.lstConditions.Value = UI_DYNAMICS_DEFAULT_LOC
+	store .F. to ;
+		THIS.cmdEdit.Enabled, ;
+		THIS.cmdDelete.Enabled
+
+otherwise
+	store .T. to ;
+		THIS.cmdEdit.Enabled, ;
+		THIS.cmdDelete.Enabled
+
+endcase
+*------------------------------------
+* Only generate script if there is
+* at least one custom condition:
+*------------------------------------
+THIS.cmdScript.Enabled = (THIS.lstConditions.ListCount > 1)
+
+ENDPROC
+PROCEDURE savetofrx
+*-----------------------------------------------------------------
+* Write out advanced properties in new order:
+*
+* .ListItem(1-n) will read the condition names in original order
+* .List(1-n)     will read the condition names in their new order
+*
+* the default formatting will not be used.
+*-----------------------------------------------------------------
+local i, cConditionName, oRec
+
+select memberdata
+
+for i = 1 to THIS.lstConditions.ListCount
+	cConditionName = THIS.lstConditions.List(m.i)
+	
+	locate for TYPE = FRX_BLDR_MEMBERDATATYPE ;
+	       and NAME = FRX_BLDR_NAMESPACE_ADJUSTOBJECTSIZE ;
+	       and not deleted("memberdata") ;
+	       and upper(alltrim(EXECUTE)) = upper(m.cConditionName)
+	
+	if found()
+		scatter memo name oRec
+		delete in memberdata
+		insert into memberdata from name oRec
+	endif
+	
+endfor
+ENDPROC
+PROCEDURE updatepreview
+local cConditionName
+cConditionName = trim(this.lstConditions.Value)
+
+
+if m.cConditionName = UI_DYNAMICS_DEFAULT_LOC	
+	*-------------------------------------------------
+	* Use default:
+	*-------------------------------------------------
+	
+	set datasession to (THIS.event.defaultSessionId)
+	if .F. AND type( m.cExpr ) = "U"
+	    *&* TBD
+	ELSE
+	    *&* TBD
+	endif
+	set datasession to (THIS.event.frxSessionId)
+
+	
+else
+	*-------------------------------------------------
+	* Synchronise the memberdata cursor with the list
+	*-------------------------------------------------
+	select memberdata
+	locate for TYPE = FRX_BLDR_MEMBERDATATYPE ;
+		   and NAME = FRX_BLDR_NAMESPACE_ADJUSTOBJECTSIZE ;
+		   and upper(EXECUTE) = upper(m.cConditionName)
+
+	if found()
+
+		
+		set datasession to (THIS.event.defaultSessionId)
+
+  		if .F. AND type( m.cExpr ) = "U"
+			*&* TBD
+		else
+			*&* TBD
+		endif
+
+		set datasession to (THIS.event.frxSessionId)
+
+	endif
+endif
+
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+10[END RESERVED2]
+[START RESERVED3]
+checkedmemberdatacursor
+*editcondition 
+*deletecondition 
+*scriptcondition 
+*updatepreview 
+*previewscript 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+frxbuilder.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1Q20TPET2
+[CLASS] shp
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] shape
+[OBJNAME] Shp1
+[PARENT] paneladjustobjectsize
+[START PROPERTIES]
+Top = 8
+Left = 4
+Height = 236
+Width = 406
+ZOrderSet = 0
+Style = 3
+Name = "Shp1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PX0KCA62
+[CLASS] lst
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] listbox
+[OBJNAME] lstConditions
+[PARENT] paneladjustobjectsize
+[START PROPERTIES]
+Height = 120
+Left = 12
+MoverBars = .T.
+TabIndex = 1
+Top = 24
+Width = 288
+ZOrderSet = 1
+Name = "lstConditions"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+THIS.Parent.RefreshEnabledState()
+ENDPROC
+PROCEDURE DblClick
+THIS.Parent.EditCondition(.F.)
+ENDPROC
+PROCEDURE InteractiveChange
+THIS.Parent.UpdatePreview()
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PX0KCA63
+[CLASS] cmd
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdAdd
+[PARENT] paneladjustobjectsize
+[START PROPERTIES]
+Top = 24
+Left = 312
+Width = 88
+Caption = "Add..."
+TabIndex = 3
+ZOrderSet = 3
+Name = "cmdAdd"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+THIS.Parent.EditCondition(.T.)
+
+ENDPROC
+PROCEDURE Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_CMD_ADD_LOC
+#ENDIF
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PX0KCA64
+[CLASS] cmd
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdEdit
+[PARENT] paneladjustobjectsize
+[START PROPERTIES]
+Top = 52
+Left = 312
+Width = 88
+Caption = "Edit..."
+Enabled = .F.
+TabIndex = 4
+ZOrderSet = 4
+Name = "cmdEdit"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+THIS.Parent.EditCondition(.F.)
+ENDPROC
+PROCEDURE Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_CMD_EDIT_LOC + "..."
+#ENDIF
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PO0O159U
+[CLASS] cmd
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdDelete
+[PARENT] paneladjustobjectsize
+[START PROPERTIES]
+Top = 80
+Left = 312
+Width = 88
+Caption = "Delete"
+Enabled = .F.
+TabIndex = 5
+ZOrderSet = 5
+Name = "cmdDelete"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+THIS.Parent.DeleteCondition()
+ENDPROC
+PROCEDURE Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_CMD_REMOVE_LOC
+#ENDIF
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PX0KCA6Y
+[CLASS] cmd
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdScript
+[PARENT] paneladjustobjectsize
+[START PROPERTIES]
+Top = 108
+Left = 312
+Width = 88
+Caption = "Script..."
+Enabled = .F.
+TabIndex = 6
+ZOrderSet = 6
+Name = "cmdScript"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+THIS.Parent.PreviewScript()
+ENDPROC
+PROCEDURE Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_CMD_SCRIPT_LOC + "..."
+#ENDIF
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1Q20TPEUC
+[CLASS] lbl
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] label
+[OBJNAME] Lbl2
+[PARENT] paneladjustobjectsize
+[START PROPERTIES]
+BackStyle = 1
+Caption = " Conditions "
+Left = 12
+Top = 1
+TabIndex = 2
+ZOrderSet = 6
+Style = 3
+Name = "Lbl2"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_DYNAMICS_CONDITIONS_LOC	
+#ENDIF
+
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1Q20TPEUS
+[CLASS] shp
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] shape
+[OBJNAME] Shp2
+[PARENT] paneladjustobjectsize
+[START PROPERTIES]
+Top = 153
+Left = 13
+Height = 81
+Width = 387
+Anchor = 14
+Curvature = 2
+BackColor = 255,255,255
+BorderColor = 192,192,192
+Style = 0
+Name = "Shp2"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PX12Z2NG
+[CLASS] edt
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] editbox
+[OBJNAME] edtHelperText
+[PARENT] paneladjustobjectsize
+[START PROPERTIES]
+Anchor = 14
+BackStyle = 0
+BorderStyle = 0
+Height = 68
+Left = 20
+ReadOnly = .T.
+TabStop = .F.
+Top = 160
+Width = 372
+ForeColor = 128,128,128
+DisabledBackColor = 255,255,255
+Name = "edtHelperText"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+THIS.Value = DYNAMICS_HELPER_TEXT_LOC
+* But see the LoadFromFrx() method also
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] paneladjustobjectsize
+[START PROPERTIES]
+Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+[END PROPERTIES]
+[START RESERVED1]
+  frxbuilder.hfzGO7 foxpro_reporting.hnzGO7 frxbuilder_loc.hvzGO7 _frxcursor.h~zGO7 foxpro_reporting.h†zGO7[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PW0LRQ2S
+[CLASS] frxpanel
+[CLASSLOC] frxpanels.vcx
+[BASECLASS] container
+[OBJNAME] panelevaluatecontents
+[START PROPERTIES]
+Width = 413
+Height = 315
+checkedmemberdatacursor = .F.
+Name = "panelevaluatecontents"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE deletecondition
+local i, cConditionName, cursel
+cConditionName = THIS.lstConditions.Value
+cursel = select(0)
+
+if messagebox( strtran(DYNAMICS_DELETE_ARE_YOU_SURE_LOC,'{0}', m.cConditionName ), 4+32+256, DEFAULT_MBOX_TITLE_LOC ) ;
+      = 6
+
+	select memberdata
+	delete for TYPE = FRX_BLDR_MEMBERDATATYPE ;
+		   and NAME = FRX_BLDR_NAMESPACE_EVALUATECONTENTS ;
+		   and EXECUTE = m.cConditionName
+		
+	* remove from list:
+	with THIS.lstConditions
+		if .ListCount = 1
+			.Clear()
+		else
+			for i = 1 to .ListCount
+*				if .ListItem(m.i) == m.cConditionName
+				if .List(m.i) == m.cConditionName
+					.RemoveItem(m.i)
+					exit
+				endif
+			endfor
+		endif
+	endwith
+			   	
+	select (m.cursel)			   	
+	THIS.RefreshEnabledState()
+	THIS.UpdatePreview()
+endif
+ENDPROC
+PROCEDURE editcondition
+lparameter tlAdding
+
+if m.tlAdding
+	local cConditionName
+	cConditionName = ""
+	cConditionName = inputbox( DYNAMICS_NEW_COND_PROMPT_LOC, DYNAMICS_NEW_COND_TITLE_LOC)
+	if empty( m.cConditionName )
+		return
+	endif
+	
+	*------------------------
+	* Does it already exist?
+	*------------------------
+	select memberdata
+	locate for TYPE = FRX_BLDR_MEMBERDATATYPE ;
+		   and NAME = FRX_BLDR_NAMESPACE_EVALUATECONTENTS ;
+		   and upper(EXECUTE) = upper(m.cConditionName) ;
+		   and not deleted()
+	if found()
+		=messagebox(DYNAMICS_COND_EXISTS_LOC, 64, DEFAULT_MBOX_TITLE_LOC)
+		return
+	endif
+
+	*-------------------------
+	* add to the list
+	*-------------------------
+	select memberdata
+	insert into memberdata ;
+		( TYPE, ;
+		  NAME, ;
+		  EXECUTE, ;
+		  EXECWHEN, ;
+		  PENRGB, ;
+		  FILLRGB, ;
+		  PENA, ;
+		  FILLA, ;
+		  FNAME, ;
+		  FSIZE, ;
+		  FSTYLE ) ;
+	values ;
+		( FRX_BLDR_MEMBERDATATYPE, ;
+		  FRX_BLDR_NAMESPACE_EVALUATECONTENTS, ;
+		  m.cConditionName, ;
+		  ".F.", ;
+		  iif( frx.PENRED=-1, "-1", trans(RGB(frx.PENRED,frx.PENGREEN,frx.PENBLUE))), ;
+		  iif( frx.FILLRED=-1,"-1", trans(RGB(frx.FILLRED,frx.FILLGREEN,frx.FILLBLUE))), ;
+		  "-1", ;
+		  "-1", ;
+		  frx.FONTFACE, ;
+		  trans(frx.FONTSIZE), ;
+		  trans(frx.FONTSTYLE) )
+
+	with THIS.lstConditions
+		i = .ListCount + 1
+		.AddItem( m.cConditionName, m.i )
+		.Value = m.cConditionName
+	endwith
+endif
+*----------------------------------
+* Now edit the new condition
+*----------------------------------
+local oForm
+oForm = newobject("frxDynamicEditor","frxBuilder2.vcx")
+if not isnull( oForm )
+	oForm.Execute( THIS.lstConditions, THIS.Event )
+endif
+
+THIS.Refreshenabledstate()
+THIS.UpdatePreview()
+
+return
+ENDPROC
+PROCEDURE ensurememberdatastructure
+*---------------------------------------------------------
+* Ensure memberdata has the required additional columns
+*---------------------------------------------------------
+if not this.checkedMemberdataCursor
+	local cAddColumns, iAddCount
+	cAddColumns = ""
+	iAddCount = 0
+
+	if type("memberdata.PENRGB")="U"
+		m.cAddColumns = m.cAddColumns + " ADD COLUMN PENRGB M"
+		iAddCount = m.iAddCount+1
+	endif	
+	if type("memberdata.FILLRGB")="U"
+		m.cAddColumns = m.cAddColumns + " ADD COLUMN FILLRGB M"
+		iAddCount = m.iAddCount+1
+	endif	
+	if type("memberdata.PENA")="U"
+		m.cAddColumns = m.cAddColumns + " ADD COLUMN PENA M"
+		iAddCount = m.iAddCount+1
+	endif	
+	if type("memberdata.FILLA")="U"
+		m.cAddColumns = m.cAddColumns + " ADD COLUMN FILLA M"
+		iAddCount = m.iAddCount+1
+	endif	
+	if type("memberdata.FNAME")="U"
+		m.cAddColumns = m.cAddColumns + " ADD COLUMN FNAME M"
+		iAddCount = m.iAddCount+1
+	endif	
+	if type("memberdata.FSIZE")="U"
+		m.cAddColumns = m.cAddColumns + " ADD COLUMN FSIZE M"
+		iAddCount = m.iAddCount+1
+	endif	
+	if type("memberdata.FSTYLE")="U"
+		m.cAddColumns = m.cAddColumns + " ADD COLUMN FSTYLE M"
+		iAddCount = m.iAddCount+1
+	endif	
+	if m.iAddCount > 0
+		*----------------------------------------------
+		* Check in case too many columns:
+		*----------------------------------------------
+		if fcount("memberdata") > (254 - m.iAddCount)
+			* There is no room in the structure:
+			return .F.
+		else
+			*----------------------------------------------
+			* Update metadata structure:
+			*----------------------------------------------
+			alter table memberdata &cAddColumns
+		endif
+	endif
+
+	this.checkedMemberdataCursor = .T.
+
+endif
+return .T.
+
+
+ENDPROC
+PROCEDURE loadfromfrx
+*---------------------------------------------------------
+* OK, this is weird. This is required to ensure that
+* the listbox paints correctly:
+*---------------------------------------------------------
+wait "" timeout 0.1
+
+if not used(THIS.Tag)
+	return .F.
+endif
+
+select (THIS.Tag)
+
+if THIS.event.Protected
+	THIS.cmdScript.Visible = .F.
+	THIS.edtHelperText.Value = DYNAMICS_HELPER_TEXT_LOC
+else
+	THIS.edtHelperText.Value = DYNAMICS_HELPER_TEXT_LOC + " " ;
+							 + DYNAMICS_HELPER_TEXT2_LOC ;
+							 + DYNAMICS_HELPER_TEXT3_LOC
+endif
+
+if not THIS.EnsureMemberDataStructure()
+	*---------------------------------------------------------
+	* We can't make room for our data in the memberdata:
+	*---------------------------------------------------------
+	=messagebox( DYNAMICS_STORAGE_ERROR_LOC, 16, DEFAULT_MBOX_TITLE_LOC ) ;
+	return .F.
+endif
+
+local i, cInitialValue
+
+with THIS.lstConditions
+	.Clear
+	.ColumnCount = 1
+	i = 1
+	.AddItem(UI_DYNAMICS_DEFAULT_LOC)
+	
+	select memberdata
+
+	scan for TYPE = FRX_BLDR_MEMBERDATATYPE ;
+	     and NAME = FRX_BLDR_NAMESPACE_EVALUATECONTENTS ;
+	     and not deleted("memberdata")
+
+		i = m.i+1
+		.AddItem( trim(EXECUTE), m.i )
+
+	endscan
+endwith
+
+THIS.lstConditions.Value = UI_DYNAMICS_DEFAULT_LOC
+THIS.RefreshEnabledState()
+THIS.UpdatePreview()
+
+return
+ENDPROC
+PROCEDURE previewscript
+local lcText
+lcText = THIS.FrxCursor.GenerateEvaluateContentsScript()
+if not empty( m.lcText )
+
+	local oForm
+	oForm = newobject("frxMemoEditForm","frxBuilder.vcx")
+	oForm.Caption = UI_SCRIPTPREVIEW_TITLE_LOC
+	oForm.setHelperText(SCRIPTPREVIEW_HELPERTEXT_LOC)
+	oForm.FixedWidthFont = .T.
+	oForm.Text = m.lcText
+	oForm.cmdOK.Enabled = .F.
+	oForm.cmdCancel.Caption = UI_CMD_CLOSE_LOC
+	oForm.cmdModiComm.Visible = .T.
+	oForm.Execute()
+
+endif
+ENDPROC
+PROCEDURE refreshenabledstate
+local i, llEnable
+do case
+case empty( THIS.lstConditions.Value ) or ;
+	 THIS.lstConditions.ListCount = 0
+	
+	store .F. to ;
+		THIS.cmdEdit.Enabled, ;
+		THIS.cmdDelete.Enabled
+	
+case THIS.lstConditions.Value = UI_DYNAMICS_DEFAULT_LOC
+	store .F. to ;
+		THIS.cmdEdit.Enabled, ;
+		THIS.cmdDelete.Enabled
+
+otherwise
+	store .T. to ;
+		THIS.cmdEdit.Enabled, ;
+		THIS.cmdDelete.Enabled
+
+endcase
+*------------------------------------
+* Only generate script if there is
+* at least one custom condition:
+*------------------------------------
+THIS.cmdScript.Enabled = (THIS.lstConditions.ListCount > 1)
+
+ENDPROC
+PROCEDURE savetofrx
+*-----------------------------------------------------------------
+* Write out advanced properties in new order:
+*
+* .ListItem(1-n) will read the condition names in original order
+* .List(1-n)     will read the condition names in their new order
+*
+* the default formatting will not be used.
+*-----------------------------------------------------------------
+local i, cConditionName, oRec
+
+select memberdata
+
+for i = 1 to THIS.lstConditions.ListCount
+	cConditionName = THIS.lstConditions.List(m.i)
+	
+	locate for TYPE = FRX_BLDR_MEMBERDATATYPE ;
+	       and NAME = FRX_BLDR_NAMESPACE_EVALUATECONTENTS ;
+	       and not deleted("memberdata") ;
+	       and upper(alltrim(EXECUTE)) = upper(m.cConditionName)
+	
+	if found()
+		scatter memo name oRec
+		delete in memberdata
+		insert into memberdata from name oRec
+	endif
+	
+endfor
+ENDPROC
+PROCEDURE updatepreview
+local cConditionName, cPreviewText
+cConditionName = trim(this.lstConditions.Value)
+cPreviewText = ""
+
+if m.cConditionName = UI_DYNAMICS_DEFAULT_LOC	
+	*-------------------------------------------------
+	* Use default:
+	*-------------------------------------------------
+	THIS.oFormatter.SetFont( frx.FONTFACE, frx.FONTSIZE, frx.FONTSTYLE, frx.DOUBLE, frx.RESOID )
+	THIS.oFormatter.SetForeColor( frx.PENRED, frx.PENGREEN, frx.PENBLUE )
+	THIS.oFormatter.SetBackColor( frx.FILLRED, frx.FILLGREEN, frx.FILLBLUE )
+	THIS.oFormatter.Transparency = iif(bittest(frx.MODE,0), 2, 1 )
+
+	*-----------------------------------------------------------------
+	* Update the preview text caption:
+	*-----------------------------------------------------------------
+	local cPreviewText, cExpr
+	cPreviewText = ""
+	cExpr        = frx.EXPR
+	
+	set datasession to (THIS.event.defaultSessionId)
+	if type( m.cExpr ) = "U"
+		cPreviewText = TEXTFORMAT_PREVIEW_DEFAULT_TEXT_LOC
+	else
+		try
+			cPreviewText = left(transform( eval( m.cExpr ) ),254)
+		catch
+			cPreviewText = left( m.cExpr,254)
+		endtry			
+	endif
+	set datasession to (THIS.event.frxSessionId)
+
+	
+else
+	*-------------------------------------------------
+	* Synchronise the memberdata cursor with the list
+	*-------------------------------------------------
+	select memberdata
+	locate for TYPE = FRX_BLDR_MEMBERDATATYPE ;
+		   and NAME = FRX_BLDR_NAMESPACE_EVALUATECONTENTS ;
+		   and upper(EXECUTE) = upper(m.cConditionName) ;
+		   and not deleted()
+
+	if found()
+
+		THIS.oFormatter.SetFont( FNAME, val(FSIZE), val(FSTYLE), frx.DOUBLE, frx.RESOID )
+		THIS.oFormatter.setForeColor( val(PENRGB) )
+		THIS.oFormatter.setBackColor( val(FILLRGB) )
+		do case
+		case inlist(val(PENA), -1, 255 ) and val(FILLA) = 255
+			THIS.oFormatter.Transparency = 1
+			
+		case inlist(val(PENA), -1, 255 ) and val(FILLA) = 0
+			THIS.oFormatter.Transparency = 2
+				
+		otherwise
+			THIS.oFormatter.Transparency = 2
+			THIS.oFormatter.AlphaPen  = val(PENA)
+			THIS.oFormatter.AlphaFill = val(FILLA)
+			
+		endcase
+
+		*-----------------------------------------------------------------
+		* Update the preview text caption:
+		*-----------------------------------------------------------------
+		local cPreviewText, cExpr, cOverride
+		cPreviewText = ""
+		cExpr        = frx.EXPR
+		cOverride    = trim(memberdata.SCRIPT)
+		
+		set datasession to (THIS.event.defaultSessionId)
+
+		if not empty( m.cOverride )
+			if type( m.cOverride ) = "U"
+				cPreviewText = m.cOverride  && use the literal?
+			else
+				cPreviewText = left(transform( eval( m.cOverride ) ),254)
+			endif
+		else
+			if type( m.cExpr ) = "U"
+				cPreviewText = TEXTFORMAT_PREVIEW_DEFAULT_TEXT_LOC
+			else
+				cPreviewText = left(transform( eval( m.cExpr ) ),254)
+			endif
+		endif		
+		set datasession to (THIS.event.frxSessionId)
+
+	endif
+endif
+
+THIS.cntPreview.Caption = evl(m.cPreviewText,TEXTFORMAT_PREVIEW_DEFAULT_TEXT_LOC)
+THIS.cntPreview.Refresh( THIS.oFormatter )
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+12[END RESERVED2]
+[START RESERVED3]
+checkedmemberdatacursor
+*editcondition 
+*deletecondition 
+*scriptcondition 
+*updatepreview 
+*previewscript 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+frxbuilder.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1Q20TPET2
+[CLASS] shp
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] shape
+[OBJNAME] Shp1
+[PARENT] panelevaluatecontents
+[START PROPERTIES]
+Top = 8
+Left = 4
+Height = 300
+Width = 404
+ZOrderSet = 0
+Style = 3
+Name = "Shp1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PX0KCA62
+[CLASS] lst
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] listbox
+[OBJNAME] lstConditions
+[PARENT] panelevaluatecontents
+[START PROPERTIES]
+Height = 109
+Left = 12
+MoverBars = .T.
+TabIndex = 1
+Top = 24
+Width = 288
+ZOrderSet = 1
+Name = "lstConditions"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+THIS.Parent.RefreshEnabledState()
+ENDPROC
+PROCEDURE DblClick
+THIS.Parent.EditCondition(.F.)
+ENDPROC
+PROCEDURE InteractiveChange
+THIS.Parent.UpdatePreview()
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PX0KCA63
+[CLASS] cmd
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdAdd
+[PARENT] panelevaluatecontents
+[START PROPERTIES]
+Top = 24
+Left = 312
+Width = 88
+Caption = "Add..."
+TabIndex = 3
+ZOrderSet = 3
+Name = "cmdAdd"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+THIS.Parent.EditCondition(.T.)
+
+ENDPROC
+PROCEDURE Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_CMD_ADD_LOC
+#ENDIF
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PX0KCA64
+[CLASS] cmd
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdEdit
+[PARENT] panelevaluatecontents
+[START PROPERTIES]
+Top = 52
+Left = 312
+Width = 88
+Caption = "Edit..."
+Enabled = .F.
+TabIndex = 4
+ZOrderSet = 4
+Name = "cmdEdit"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+THIS.Parent.EditCondition(.F.)
+ENDPROC
+PROCEDURE Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_CMD_EDIT_LOC + "..."
+#ENDIF
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PO0O159U
+[CLASS] cmd
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdDelete
+[PARENT] panelevaluatecontents
+[START PROPERTIES]
+Top = 80
+Left = 312
+Width = 88
+Caption = "Delete"
+Enabled = .F.
+TabIndex = 5
+ZOrderSet = 5
+Name = "cmdDelete"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+THIS.Parent.DeleteCondition()
+ENDPROC
+PROCEDURE Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_CMD_REMOVE_LOC
+#ENDIF
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PX0KCA6Y
+[CLASS] cmd
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdScript
+[PARENT] panelevaluatecontents
+[START PROPERTIES]
+Top = 108
+Left = 312
+Width = 88
+Caption = "Script..."
+Enabled = .F.
+TabIndex = 6
+ZOrderSet = 6
+Name = "cmdScript"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+THIS.Parent.PreviewScript()
+ENDPROC
+PROCEDURE Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_CMD_SCRIPT_LOC + "..."
+#ENDIF
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1Q20TPEUC
+[CLASS] lbl
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] label
+[OBJNAME] Lbl2
+[PARENT] panelevaluatecontents
+[START PROPERTIES]
+BackStyle = 1
+Caption = " Conditions "
+Left = 12
+Top = 1
+TabIndex = 2
+ZOrderSet = 6
+Style = 3
+Name = "Lbl2"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_DYNAMICS_CONDITIONS_LOC	
+#ENDIF
+
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PY0WJ5HU
+[CLASS] frxformatutil
+[CLASSLOC] frxbuilder.vcx
+[BASECLASS] custom
+[OBJNAME] oFormatter
+[PARENT] panelevaluatecontents
+[START PROPERTIES]
+Top = 8
+Left = 296
+Height = 16
+Width = 20
+Name = "oFormatter"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1Q01BPOWA
+[CLASS] cnttextpreview
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] container
+[OBJNAME] cntPreview
+[PARENT] panelevaluatecontents
+[START PROPERTIES]
+Top = 137
+Left = 13
+Width = 387
+Height = 78
+ZOrderSet = 8
+Name = "cntPreview"
+shpBorder.Top = 6
+shpBorder.Left = 0
+shpBorder.Width = 386
+shpBorder.Name = "shpBorder"
+canvas.vertLine.Name = "vertLine"
+canvas.hozLine.Name = "hozLine"
+canvas.Text.Name = "Text"
+canvas.Width = 372
+canvas.Name = "canvas"
+lblSample.Name = "lblSample"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1Q20TPEUS
+[CLASS] shp
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] shape
+[OBJNAME] Shp2
+[PARENT] panelevaluatecontents
+[START PROPERTIES]
+Top = 217
+Left = 13
+Height = 81
+Width = 387
+Anchor = 14
+Curvature = 2
+BackColor = 255,255,255
+BorderColor = 192,192,192
+Style = 0
+Name = "Shp2"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PX12Z2NG
+[CLASS] edt
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] editbox
+[OBJNAME] edtHelperText
+[PARENT] panelevaluatecontents
+[START PROPERTIES]
+Anchor = 14
+BackStyle = 0
+BorderStyle = 0
+Height = 68
+Left = 20
+ReadOnly = .T.
+TabStop = .F.
+Top = 224
+Width = 372
+ForeColor = 128,128,128
+DisabledBackColor = 255,255,255
+Name = "edtHelperText"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+THIS.Value = DYNAMICS_HELPER_TEXT_LOC
+* But see the LoadFromFrx() method also
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] panelevaluatecontents
+[START PROPERTIES]
+Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+[END PROPERTIES]
+[START RESERVED1]
+  frxbuilder.hfzGO7 foxpro_reporting.hnzGO7 frxbuilder_loc.hvzGO7 _frxcursor.h~zGO7 foxpro_reporting.h†zGO7[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PX0LMC6Y
+[CLASS] frxbaseform
+[CLASSLOC] frxbuilder.vcx
+[BASECLASS] form
+[OBJNAME] frxdynamiceditor2
+[START PROPERTIES]
+Height = 320
+Width = 447
+Desktop = .T.
+DoCreate = .T.
+BorderStyle = 3
+Closable = .F.
+MaxButton = .F.
+MinButton = .F.
+AlwaysOnTop = .T.
+savechanges = .T.
+event = .NULL.
+Name = "frxdynamiceditor2"
+grabber.Height = 11
+grabber.Left = 416
+grabber.Top = 144
+grabber.Width = 11
+grabber.ZOrderSet = 3
+grabber.Name = "grabber"
+frxcursor.Top = 84
+frxcursor.Left = 416
+frxcursor.Name = "frxcursor"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_DYNAMICS_DLG_CAPTION_LOC
+#ENDIF
+
+dodefault()
+
+THIS.BorderStyle = 2
+ENDPROC
+PROCEDURE execute
+lparameter toList, toEvent
+
+THIS.event = m.toEvent
+
+local cCurrentName
+cCurrentName = toList.Value
+
+*-----------------------------------------------
+* Synchronise the metadata cursor:
+*-----------------------------------------------
+select memberdata
+locate for TYPE = FRX_BLDR_MEMBERDATATYPE and ;
+		   NAME = FRX_BLDR_NAMESPACE_ADJUSTOBJECTSIZE and ;
+		   not deleted("memberdata") and ;
+		   upper(EXECUTE) == upper(m.cCurrentName)
+
+if found()
+	*-----------------------------------------------
+	* update our controls:
+	*-----------------------------------------------
+	THIS.txtConditionName.Value = trim(memberdata.EXECUTE)
+	THIS.expCondition.Value     = trim(memberdata.EXECWHEN)
+	THIS.expWidth.Value      = trim(memberdata.WIDTH)
+	THIS.expHeight.Value      = trim(memberdata.HEIGHT)
+
+	THIS.Show(1)
+
+	if THIS.SaveChanges
+		*-----------------------------------------------
+		* update the member data:
+		*-----------------------------------------------
+		local cName, cCondition, cWidth, cHeight, i
+		cName      = THIS.txtConditionName.Value
+		cCondition = THIS.expCondition.Value
+		cWidth = THIS.expWidth.Value
+		cHeight = THIS.expHeight.Value
+		select memberdata
+		replace ;
+			EXECWHEN	with m.cCondition, ;
+			EXECUTE		with m.cName, ;
+			WIDTH		with m.cWidth, ;
+			HEIGHT		with m.cHeight
+
+		*-----------------------------------------------
+		* update the list (only necessary if we're allowing
+		* the Condition Name to be edited in this dialog:
+		*-----------------------------------------------
+		for i = 1 to toList.ListCount
+			if toList.ListItem( m.i ) == m.cName
+				toList.AddListItem( m.cName, m.i )
+			endif
+			exit
+		endfor
+
+	endif
+
+	THIS.event = .NULL.
+	return .T.
+else
+	THIS.event = .NULL.
+	return .F.
+endif	
+
+ENDPROC
+PROCEDURE updatepreviewtext
+*------------------------------------------------
+* see notes in calling form label about preview
+*------------------------------------------------
+local cExpr
+
+set datasession to (THIS.event.defaultSessionId)
+
+if type( m.cExpr ) = "U"
+ *&* TBD
+else
+ *&* TBD
+endif		
+
+set datasession to (THIS.event.frxSessionId)
+
+
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+15[END RESERVED2]
+[START RESERVED3]
+savechanges
+event
+*execute 
+*updatepreviewtext 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+frxbuilder.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PX12Z2NG
+[CLASS] shp
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] shape
+[OBJNAME] Shp1
+[PARENT] frxdynamiceditor2
+[START PROPERTIES]
+Top = 8
+Left = 7
+Height = 304
+Width = 341
+ZOrderSet = 0
+Style = 3
+Name = "Shp1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1QJ0QOTFU
+[CLASS] shp
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] shape
+[OBJNAME] Shp2
+[PARENT] frxdynamiceditor2
+[START PROPERTIES]
+Top = 106
+Left = 17
+Height = 196
+Width = 319
+ZOrderSet = 1
+Style = 3
+Name = "Shp2"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PX0XAAVH
+[CLASS] txt
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] textbox
+[OBJNAME] txtConditionName
+[PARENT] frxdynamiceditor2
+[START PROPERTIES]
+Left = 17
+ReadOnly = .T.
+TabIndex = 1
+TabStop = .F.
+Top = 30
+Width = 319
+ZOrderSet = 4
+Name = "txtConditionName"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PO0O159U
+[CLASS] lbl
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] label
+[OBJNAME] lblName
+[PARENT] frxdynamiceditor2
+[START PROPERTIES]
+BackStyle = 0
+Caption = "Name:"
+Left = 18
+Top = 14
+TabIndex = 2
+ZOrderSet = 5
+Name = "lblName"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_DYNAMICS_NAME_LOC
+#ENDIF
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PX12Z2NG
+[CLASS] frxexpressioncontrol
+[CLASSLOC] frxpanels.vcx
+[BASECLASS] container
+[OBJNAME] expCondition
+[PARENT] frxdynamiceditor2
+[START PROPERTIES]
+Top = 74
+Left = 16
+Width = 328
+Height = 28
+TabIndex = 3
+ZOrderSet = 6
+calledfrom = AdjustObjectSizeCondition
+Name = "expCondition"
+txtExpression.Left = 1
+txtExpression.Top = 1
+txtExpression.Width = 295
+txtExpression.Name = "txtExpression"
+cmdExprBuilder.Top = 1
+cmdExprBuilder.Left = 298
+cmdExprBuilder.Name = "cmdExprBuilder"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1QJ0BQOF9
+[CLASS] frxexpressioncontrol
+[CLASSLOC] frxpanels.vcx
+[BASECLASS] container
+[OBJNAME] expWidth
+[PARENT] frxdynamiceditor2
+[START PROPERTIES]
+Top = 128
+Left = 24
+Width = 308
+Height = 28
+TabIndex = 4
+ZOrderSet = 7
+calledfrom = AdjustObjectSizeWidth
+Name = "expWidth"
+txtExpression.Left = 1
+txtExpression.Top = 1
+txtExpression.Width = 275
+txtExpression.Name = "txtExpression"
+cmdExprBuilder.Top = 1
+cmdExprBuilder.Left = 280
+cmdExprBuilder.Name = "cmdExprBuilder"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1QJ0BQOFD
+[CLASS] frxexpressioncontrol
+[CLASSLOC] frxpanels.vcx
+[BASECLASS] container
+[OBJNAME] expHeight
+[PARENT] frxdynamiceditor2
+[START PROPERTIES]
+Top = 176
+Left = 24
+Width = 308
+Height = 28
+TabIndex = 5
+ZOrderSet = 8
+calledfrom = AdjustObjectSizeHeight
+Name = "expHeight"
+txtExpression.Left = 1
+txtExpression.Top = 1
+txtExpression.Width = 275
+txtExpression.Name = "txtExpression"
+cmdExprBuilder.Top = 1
+cmdExprBuilder.Left = 280
+cmdExprBuilder.Name = "cmdExprBuilder"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1QJ0AY651
+[CLASS] lbl
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] label
+[OBJNAME] lblExpression
+[PARENT] frxdynamiceditor2
+[START PROPERTIES]
+BackStyle = 0
+Caption = "Apply when this condition is true:"
+Left = 18
+Top = 58
+TabIndex = 6
+ZOrderSet = 9
+Name = "lblExpression"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_DYNAMICS_EXPR_LOC
+#ENDIF
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1QJ0BQOFB
+[CLASS] lbl
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] label
+[OBJNAME] LblWidth
+[PARENT] frxdynamiceditor2
+[START PROPERTIES]
+BackStyle = 0
+Caption = "Expression representing width in [... metric]:"
+Left = 26
+Top = 112
+TabIndex = 7
+ZOrderSet = 10
+Name = "LblWidth"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_DYNAMICS_WIDTH_LOC
+#ENDIF
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1QJ0BQOFG
+[CLASS] lbl
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] label
+[OBJNAME] LblHeight
+[PARENT] frxdynamiceditor2
+[START PROPERTIES]
+BackStyle = 0
+Caption = "Expression representing height in [... metric]:"
+Left = 26
+Top = 160
+TabIndex = 8
+ZOrderSet = 11
+Name = "LblHeight"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_DYNAMICS_HEIGHT_LOC
+#ENDIF
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PX0XAAVK
+[CLASS] cmd
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdOK
+[PARENT] frxdynamiceditor2
+[START PROPERTIES]
+Top = 8
+Left = 356
+Width = 85
+Caption = "OK"
+Default = .T.
+TabIndex = 9
+ZOrderSet = 12
+Name = "cmdOK"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+THISFORM.Hide()
+ENDPROC
+PROCEDURE Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_CMD_OK_LOC
+#ENDIF
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PX0XAAVL
+[CLASS] cmd
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdCancel
+[PARENT] frxdynamiceditor2
+[START PROPERTIES]
+Top = 40
+Left = 356
+Width = 85
+Cancel = .T.
+Caption = "Cancel"
+TabIndex = 10
+ZOrderSet = 13
+Name = "cmdCancel"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+THISFORM.SaveChanges = .F.
+THISFORM.Hide()
+ENDPROC
+PROCEDURE Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_CMD_CANCEL_LOC
+#ENDIF
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1QJ0QOTH5
+[CLASS] shp
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] shape
+[OBJNAME] Shp3
+[PARENT] frxdynamiceditor2
+[START PROPERTIES]
+Top = 209
+Left = 25
+Height = 81
+Width = 303
+Anchor = 14
+Curvature = 2
+BackColor = 255,255,255
+BorderColor = 192,192,192
+ZOrderSet = 14
+Style = 0
+Name = "Shp3"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1QJ0QOTH6
+[CLASS] edt
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] editbox
+[OBJNAME] edtHelperText
+[PARENT] frxdynamiceditor2
+[START PROPERTIES]
+Anchor = 14
+BackStyle = 0
+BorderStyle = 0
+Height = 68
+Left = 32
+ReadOnly = .T.
+TabIndex = 11
+TabStop = .F.
+Top = 216
+Width = 288
+ForeColor = 128,128,128
+DisabledBackColor = 255,255,255
+ZOrderSet = 15
+Name = "edtHelperText"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+THIS.Value = DYNAMICS_HELPER_TEXT4_LOC + DYNAMICS_HELPER_TEXT5_LOC
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] frxdynamiceditor2
+[START PROPERTIES]
+Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+[END PROPERTIES]
+[START RESERVED1]
+  frxbuilder.hfzGO7 foxpro_reporting.hnzGO7 frxbuilder_loc.hvzGO7 _frxcursor.h~zGO7 foxpro_reporting.h†zGO7[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PX0LMC6Y
+[CLASS] frxbaseform
+[CLASSLOC] frxbuilder.vcx
+[BASECLASS] form
+[OBJNAME] frxdynamiceditor
+[START PROPERTIES]
+Height = 497
+Width = 421
+Desktop = .T.
+DoCreate = .T.
+BorderStyle = 3
+Closable = .F.
+MaxButton = .F.
+MinButton = .F.
+AlwaysOnTop = .T.
+savechanges = .T.
+event = .NULL.
+Name = "frxdynamiceditor"
+grabber.Height = 11
+grabber.Left = 380
+grabber.Top = 372
+grabber.Width = 11
+grabber.ZOrderSet = 4
+grabber.Name = "grabber"
+frxcursor.Top = 336
+frxcursor.Left = 380
+frxcursor.Name = "frxcursor"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_DYNAMICS_DLG_CAPTION_LOC
+#ENDIF
+
+dodefault()
+
+THIS.BorderStyle = 2
+ENDPROC
+PROCEDURE execute
+lparameter toList, toEvent
+
+THIS.event = m.toEvent
+
+local cCurrentName
+cCurrentName = toList.Value
+
+*-----------------------------------------------
+* Synchronise the metadata cursor:
+*-----------------------------------------------
+select memberdata
+locate for TYPE = FRX_BLDR_MEMBERDATATYPE and ;
+		   NAME = FRX_BLDR_NAMESPACE_EVALUATECONTENTS and ;
+		   not deleted("memberdata") and ;
+		   upper(EXECUTE) == upper(m.cCurrentName)
+
+if found()
+	*-----------------------------------------------
+	* update our controls:
+	*-----------------------------------------------
+	THIS.txtConditionName.Value = trim(memberdata.EXECUTE)
+	THIS.expCondition.Value     = trim(memberdata.EXECWHEN)
+	THIS.expOverride.Value      = trim(memberdata.SCRIPT)
+
+	*----------------------------------
+	* Fake out the panel:
+	*----------------------------------
+	with THIS.panelTextFormat
+		.Tag       = "memberdata"
+		.event     = m.toEvent
+		.frxCursor = m.toEvent.frxCursor
+		.LoadFromFrx()
+	endwith		
+
+	THIS.Show(1)
+
+	if THIS.SaveChanges
+		*-----------------------------------------------
+		* update the member data:
+		*-----------------------------------------------
+		local cName, cCondition, cOverride, i
+		cName      = THIS.txtConditionName.Value
+		cCondition = THIS.expCondition.Value
+		cOverride  = THIS.expOverride.Value
+
+		select memberdata
+		replace ;
+			EXECWHEN	with m.cCondition, ;
+			EXECUTE		with m.cName, ;
+			SCRIPT		with m.cOverride
+
+		THIS.panelTextFormat.SaveToFrx()
+
+		*-----------------------------------------------
+		* update the list (only necessary if we're allowing
+		* the Condition Name to be edited in this dialog:
+		*-----------------------------------------------
+		for i = 1 to toList.ListCount
+			if toList.ListItem( m.i ) == m.cName
+				toList.AddListItem( m.cName, m.i )
+			endif
+			exit
+		endfor
+
+	endif
+
+	THIS.event = .NULL.
+	return .T.
+else
+	THIS.event = .NULL.
+	return .F.
+endif	
+
+ENDPROC
+PROCEDURE updatepreviewtext
+*------------------------------------------------
+* Set the value of the preview text
+*------------------------------------------------
+local cPreviewText, cOverride, cExpr
+cOverride  = THIS.expOverride.Value
+cExpr      = frx.EXPR
+
+set datasession to (THIS.event.defaultSessionId)
+
+if not empty( m.cOverride )
+	if type( m.cOverride ) = "U"
+		cPreviewText = m.cOverride  && use the literal?
+	else
+		cPreviewText = left(transform( eval( m.cOverride ) ),254)
+	endif
+else
+	if type( m.cExpr ) = "U"
+		cPreviewText = TEXTFORMAT_PREVIEW_DEFAULT_TEXT_LOC
+	else
+		cPreviewText = left(transform( eval( m.cExpr ) ),254)
+	endif
+endif		
+
+set datasession to (THIS.event.frxSessionId)
+
+THIS.panelTextFormat.cntPreview.Caption = m.cPreviewText
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+13[END RESERVED2]
+[START RESERVED3]
+savechanges
+event
+*execute 
+*updatepreviewtext 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+frxbuilder.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PO0O159U
+[CLASS] shp
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] shape
+[OBJNAME] Shp1
+[PARENT] frxdynamiceditor
+[START PROPERTIES]
+Top = 8
+Left = 7
+Height = 480
+Width = 309
+ZOrderSet = 1
+Style = 3
+Name = "Shp1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PY1C43JC
+[CLASS] shp
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] shape
+[OBJNAME] Shp2
+[PARENT] frxdynamiceditor
+[START PROPERTIES]
+Top = 108
+Left = 17
+Height = 56
+Width = 287
+ZOrderSet = 2
+Style = 3
+Name = "Shp2"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PX0XAAVH
+[CLASS] txt
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] textbox
+[OBJNAME] txtConditionName
+[PARENT] frxdynamiceditor
+[START PROPERTIES]
+Left = 17
+ReadOnly = .T.
+TabIndex = 1
+TabStop = .F.
+Top = 30
+Width = 278
+ZOrderSet = 5
+Name = "txtConditionName"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PY1C43L4
+[CLASS] lbl
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] label
+[OBJNAME] Lbl1
+[PARENT] frxdynamiceditor
+[START PROPERTIES]
+BackStyle = 1
+Caption = " Text "
+Left = 28
+Top = 102
+TabIndex = 2
+ZOrderSet = 6
+Style = 3
+Name = "Lbl1"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_DYNAMICS_TEXT_LOC
+#ENDIF
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PO0O159U
+[CLASS] lbl
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] label
+[OBJNAME] lblName
+[PARENT] frxdynamiceditor
+[START PROPERTIES]
+BackStyle = 0
+Caption = "Name:"
+Left = 18
+Top = 14
+TabIndex = 3
+ZOrderSet = 7
+Name = "lblName"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_DYNAMICS_NAME_LOC
+#ENDIF
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PX0XAAVI
+[CLASS] frxexpressioncontrol
+[CLASSLOC] frxpanels.vcx
+[BASECLASS] container
+[OBJNAME] expCondition
+[PARENT] frxdynamiceditor
+[START PROPERTIES]
+Top = 74
+Left = 16
+Width = 289
+Height = 28
+TabIndex = 4
+ZOrderSet = 8
+calledfrom = EvaluateContentsCondition
+Name = "expCondition"
+txtExpression.Left = 1
+txtExpression.Top = 1
+txtExpression.Width = 253
+txtExpression.Name = "txtExpression"
+cmdExprBuilder.Top = 1
+cmdExprBuilder.Left = 258
+cmdExprBuilder.Name = "cmdExprBuilder"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PO0O159U
+[CLASS] lbl
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] label
+[OBJNAME] lblExpression
+[PARENT] frxdynamiceditor
+[START PROPERTIES]
+BackStyle = 0
+Caption = "Apply when this condition is true:"
+Left = 18
+Top = 58
+TabIndex = 5
+ZOrderSet = 9
+Name = "lblExpression"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_DYNAMICS_EXPR_LOC
+#ENDIF
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PX0XAAVK
+[CLASS] cmd
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdOK
+[PARENT] frxdynamiceditor
+[START PROPERTIES]
+Top = 8
+Left = 328
+Width = 85
+Caption = "OK"
+Default = .T.
+TabIndex = 9
+ZOrderSet = 10
+Name = "cmdOK"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+THISFORM.Hide()
+ENDPROC
+PROCEDURE Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_CMD_OK_LOC
+#ENDIF
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PX0XAAVL
+[CLASS] cmd
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdCancel
+[PARENT] frxdynamiceditor
+[START PROPERTIES]
+Top = 40
+Left = 328
+Width = 85
+Cancel = .T.
+Caption = "Cancel"
+TabIndex = 10
+ZOrderSet = 11
+Name = "cmdCancel"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+THISFORM.SaveChanges = .F.
+THISFORM.Hide()
+ENDPROC
+PROCEDURE Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_CMD_CANCEL_LOC
+#ENDIF
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PY1C43L3
+[CLASS] lbl
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] label
+[OBJNAME] lblOverride
+[PARENT] frxdynamiceditor
+[START PROPERTIES]
+BackStyle = 0
+Caption = "Replace expression result with:"
+Left = 33
+Top = 117
+TabIndex = 6
+ZOrderSet = 12
+Name = "lblOverride"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_DYNAMICS_OVERRIDE_LOC
+#ENDIF
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1Q01BON7Y
+[CLASS] paneltextformat
+[CLASSLOC] frxpanels.vcx
+[BASECLASS] container
+[OBJNAME] Paneltextformat
+[PARENT] frxdynamiceditor
+[START PROPERTIES]
+Tag = "memberdata"
+Top = 164
+Left = 17
+Width = 308
+Height = 320
+TabIndex = 8
+ZOrderSet = 14
+Name = "Paneltextformat"
+opgMode.Opt1.Left = 15
+opgMode.Opt1.Top = 10
+opgMode.Opt1.Name = "Opt1"
+opgMode.Opt2.Left = 15
+opgMode.Opt2.Top = 30
+opgMode.Opt2.Name = "Opt2"
+opgMode.Name = "opgMode"
+shpFontBorder.Name = "shpFontBorder"
+shpColorBorder.Name = "shpColorBorder"
+shpAlphaBorder.Visible = .T.
+shpAlphaBorder.Name = "shpAlphaBorder"
+lblFont.Name = "lblFont"
+txtFont.Name = "txtFont"
+cmdFont.Name = "cmdFont"
+chkOverrideCharset.Alignment = 0
+chkOverrideCharset.Enabled = .F.
+chkOverrideCharset.Name = "chkOverrideCharset"
+lblColor.Name = "lblColor"
+chkForeDefault.Alignment = 0
+chkForeDefault.Name = "chkForeDefault"
+cmdForeColor.Name = "cmdForeColor"
+chkBackDefault.Alignment = 0
+chkBackDefault.Name = "chkBackDefault"
+cmdBackcolor.Name = "cmdBackcolor"
+oFormatter.Name = "oFormatter"
+lblBackstyle.Name = "lblBackstyle"
+chkStrikethru.Alignment = 0
+chkStrikethru.Name = "chkStrikethru"
+chkUnderline.Alignment = 0
+chkUnderline.Name = "chkUnderline"
+cntPreview.shpBorder.Name = "shpBorder"
+cntPreview.canvas.vertLine.Name = "vertLine"
+cntPreview.canvas.hozLine.Name = "hozLine"
+cntPreview.canvas.Text.Name = "Text"
+cntPreview.canvas.Name = "canvas"
+cntPreview.lblSample.Name = "lblSample"
+cntPreview.Name = "cntPreview"
+lblAlpha.Visible = .T.
+lblAlpha.Name = "lblAlpha"
+spnAlphaPen.Enabled = .T.
+spnAlphaPen.Visible = .T.
+spnAlphaPen.Name = "spnAlphaPen"
+cntBackColor.Name = "cntBackColor"
+cntForeColor.Name = "cntForeColor"
+spnAlphaFill.Enabled = .T.
+spnAlphaFill.Visible = .T.
+spnAlphaFill.Name = "spnAlphaFill"
+lblPen.Visible = .T.
+lblPen.Name = "lblPen"
+lblFill.Visible = .T.
+lblFill.Name = "lblFill"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE loadfromfrx
+*================================================
+* THIS METHOD HAS BEEN INTENTIONALLY OVERRIDDEN
+* to use the "memberdata" cursor as a data source
+* instead of the "frx" one.
+*================================================
+if used( THIS.Tag )
+	*----------------------------------------------
+	* Actually pretty much has to be "memberdata":
+	*----------------------------------------------
+	select (THIS.Tag)
+
+	*-----------------------------------------------------------------
+	* Ensure the formatter has reference to our utility object:
+	*-----------------------------------------------------------------
+	THIS.oFormatter.frxCursor = THIS.frxCursor
+
+	*-----------------------------------------------------------------
+	*
+	* Load the formatter from the source cursor:
+	*
+	*-----------------------------------------------------------------
+	THIS.oFormatter.SetFont( FNAME, val(FSIZE), val(FSTYLE), frx.DOUBLE, frx.RESOID )
+	THIS.oFormatter.setForeColor( val(PENRGB) )
+	THIS.oFormatter.setBackColor( val(FILLRGB) )
+
+	*--------------------------------------------
+	* PENA,FILLA = ? Try:
+	*   -1,0          = transparent
+	*   -1,255        = opaque
+	*   anything else = custom alpha
+	*--------------------------------------------
+	do case
+	case PENA="-1" and FILLA="-1"
+		if bittest( frx.MODE, 0 )
+			THIS.oFormatter.Transparency = 2
+		else
+			THIS.oFormatter.Transparency = 1
+		endif
+	
+	case inlist( PENA, "-1", "255" ) and FILLA = "255"
+		THIS.oFormatter.Transparency = 1
+		
+	case inlist( PENA, "-1", "255" ) and FILLA = "0"
+		THIS.oFormatter.Transparency = 2
+			
+	otherwise
+		THIS.oFormatter.Transparency = 2
+		THIS.oFormatter.AlphaPen  = val(PENA)
+		THIS.oFormatter.AlphaFill = val(FILLA)
+		
+	endcase
+
+	*-----------------------------------------------------------------
+	* Initialise the controls from the oFormatter:
+	*
+	* NB: Automatic databinding does not work, because the InteractiveChange()
+	*     is called *before* the binding takes place. This screws up everything.
+	*     So: Manual databinding. Darn it.
+	*-----------------------------------------------------------------
+	THIS.chkOverrideCharset.Value = THIS.oFormatter.UseExplicitFontCharset
+	THIS.chkBackDefault.Value     = THIS.oFormatter.DefaultBackColor
+	THIS.chkForeDefault.Value     = THIS.oFormatter.DefaultForeColor
+	THIS.chkStrikethru.Value      = THIS.oFormatter.FontStrikeThru
+	THIS.chkUnderLine.Value       = THIS.oFormatter.FontUnderline
+	THIS.opgMode.Value            = THIS.oFormatter.Transparency
+	THIS.txtFont.Value            = THIS.oFormatter.getFontString()
+	
+	*-----------------------------------------------------------------
+	* Update the preview text caption:
+	*-----------------------------------------------------------------
+*!*		local cPreviewText, cExpr
+*!*		cPreviewText = ""
+*!*		cExpr        = EXPR
+*!*		
+*!*		set datasession to (THIS.event.defaultSessionId)
+*!*		if type( m.cExpr ) = "U"
+*!*			cPreviewText = TEXTFORMAT_PREVIEW_DEFAULT_TEXT_LOC
+*!*		else
+*!*			cPreviewText = left(transform( eval( m.cExpr ) ),254)
+*!*		endif
+*!*		set datasession to (THIS.event.frxSessionId)
+
+*!*		THIS.cntPreview.Caption = m.cPreviewText
+
+	*-----------------------------------------------------------------
+	* Ensure the controls are in sync:
+	*-----------------------------------------------------------------
+	THIS.RefreshControlValues("All")
+
+	*-----------------------------------------------------------------
+	* Show any hidden or disabled controls:
+	*-----------------------------------------------------------------
+	store .T. to ;
+		THIS.lblFill.Enabled, ;
+		THIS.lblPen.Enabled 	
+	
+	*-----------------------------------------------------------------
+	* Go to protected mode, if necessary:
+	*-----------------------------------------------------------------
+	THIS.setProtection()
+	
+endif
+	
+ENDPROC
+PROCEDURE savetofrx
+*================================================
+* THIS METHOD HAS BEEN INTENTIONALLY OVERRIDDEN
+* to use the "memberdata" cursor as a data source
+* instead of the "frx" one.
+*================================================
+if used( THIS.Tag )
+
+	*-----------------------------------------------------------------
+	* Pretty much has to be "memberdata"
+	*-----------------------------------------------------------------
+	select (THIS.Tag)
+	
+	*-----------------------------------------------------------------
+	* Font:
+	*-----------------------------------------------------------------
+	replace FNAME		with THIS.oFormatter.FontFace, ;
+			FSIZE		with tran(THIS.oFormatter.FontSize), ;
+			FSTYLE		with trans(THIS.oFormatter.FontStyle), ;
+			PENA		with trans(THIS.oFormatter.AlphaPen), ;
+			FILLA		with trans(THIS.oFormatter.AlphaFill), ;
+			PENRGB		with trans(THIS.oFormatter.GetForeColor()), ;
+			FILLRGB		with trans(THIS.oFormatter.GetBackColor())
+	
+	*-----------------------------------------------------------------
+	* Ensure the formatter clears its reference to our utility object:
+	*-----------------------------------------------------------------
+	THIS.oFormatter.frxCursor = null
+		
+endif
+return .T.
+ENDPROC
+PROCEDURE setprotection
+*=======================================================================
+* SetProtection()
+*
+* This container will check to see if the current record in the FRX is
+* marked with "Edit" protection, and if so, configure its controls to be
+* read-only.
+*
+* INTENTIONALLY OVERRIDDEN BECAUSE FRX IS NOT THE DEFAULT ALIAS
+*=======================================================================
+lparameter loContainer
+
+if type("loContainer") <> "O" or isnull(loContainer)
+	loContainer = THIS
+endif
+	
+if THIS.event.protected
+
+	*-----------------------------------------------------------------
+	* Check for OBJECT_NO_EDIT protection:
+	*-----------------------------------------------------------------
+	if THIS.frxCursor.hasProtectionFlag( frx.ORDER, FRX_PROTECT_OBJECT_NO_EDIT) ;
+	or THIS.frxCursor.hasProtectionFlag( frx.ORDER, FRX_PROTECT_BAND_NO_EDIT)
+
+		local oControl
+		for each oControl in loContainer.Controls
+
+			*-----------------------------------------------------------------
+			* Do whatever it takes to make each control type appropriately
+			* read-only. Unfortunately not all control types have a .ReadOnly
+			* property.
+			*-----------------------------------------------------------------
+			do case
+			case inlist( oControl.BaseClass, "Combobox" )
+				if type("oControl.TabStop") = "L"
+					oControl.TabStop = .F.
+				endif
+				if type( "oControl.Enabled" ) = "L"
+					oControl.Enabled = .F.
+				endif
+							
+			case inlist( oControl.BaseClass, "Pageframe" )
+				* recurse into the container
+				local loPage
+				for each loPage in oControl.Pages
+					THIS.setProtection( loPage )
+				endfor
+				
+			case not inlist( oControl.BaseClass, "Label", "Shape", "Page" )
+
+				if type("oControl.TabStop") = "L"
+					oControl.TabStop = .F.
+				endif
+				do case
+				case type( "oControl.ReadOnly" ) = "L"
+					oControl.ReadOnly = .T.
+
+				case type( "oControl.Enabled" ) = "L"
+					oControl.Enabled = .F.
+					
+				endcase	
+			endcase
+		
+			if type("oControl.SelectOnEntry")="L"
+				oControl.SelectOnEntry = .F.
+			endif
+		endfor
+	endif
+endif
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PZ0P7N21
+[CLASS] frxexpressioncontrol
+[CLASSLOC] frxpanels.vcx
+[BASECLASS] container
+[OBJNAME] expOverride
+[PARENT] frxdynamiceditor
+[START PROPERTIES]
+Top = 133
+Left = 31
+Width = 270
+Height = 28
+TabIndex = 7
+ZOrderSet = 13
+calledfrom = EvaluateContentsAlternate
+Name = "expOverride"
+txtExpression.Left = 1
+txtExpression.Top = 1
+txtExpression.Width = 238
+txtExpression.Name = "txtExpression"
+cmdExprBuilder.Top = 1
+cmdExprBuilder.Left = 243
+cmdExprBuilder.Name = "cmdExprBuilder"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] frxdynamiceditor
+[START PROPERTIES]
+Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+[END PROPERTIES]
+[START RESERVED1]
+  frxbuilder.hfzGO7 foxpro_reporting.hnzGO7 frxbuilder_loc.hvzGO7 _frxcursor.h~zGO7 foxpro_reporting.h†zGO7[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PX12Z2NG
+[CLASS] pge
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] page
+[OBJNAME] tabadjustobjectsize
+[START PROPERTIES]
+Height = 310
+Width = 475
+Name = "tabadjustobjectsize"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_TAB_EVALUATECONTENTS_LOC
+#ENDIF
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+2[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+frxbuilder.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1QJ0QQYJW
+[CLASS] paneladjustobjectsize
+[CLASSLOC] frxbuilder2.vcx
+[BASECLASS] container
+[OBJNAME] Paneladjustobjectsize1
+[PARENT] tabadjustobjectsize
+[START PROPERTIES]
+Top = 4
+Left = 4
+Name = "Paneladjustobjectsize1"
+Shp1.Name = "Shp1"
+lstConditions.Name = "lstConditions"
+cmdAdd.Name = "cmdAdd"
+cmdEdit.Name = "cmdEdit"
+cmdDelete.Name = "cmdDelete"
+cmdScript.Name = "cmdScript"
+Lbl2.Name = "Lbl2"
+Shp2.Name = "Shp2"
+edtHelperText.Name = "edtHelperText"
+LABEL1.Name = "LABEL1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] tabadjustobjectsize
+[START PROPERTIES]
+Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+[END PROPERTIES]
+[START RESERVED1]
+  frxbuilder.hNzGO7 foxpro_reporting.hVzGO7 frxbuilder_loc.h^zGO7 _frxcursor.hfzGO7 foxpro_reporting.hnzGO7[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PX12Z2NG
+[CLASS] pge
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] page
+[OBJNAME] tabevaluatecontents
+[START PROPERTIES]
+Height = 311
+Width = 463
+Name = "tabevaluatecontents"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_TAB_EVALUATECONTENTS_LOC
+#ENDIF
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+2[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+frxbuilder.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PX13066M
+[CLASS] panelevaluatecontents
+[CLASSLOC] frxbuilder2.vcx
+[BASECLASS] container
+[OBJNAME] Paneldynamicformat1
+[PARENT] tabevaluatecontents
+[START PROPERTIES]
+Top = 4
+Left = 4
+Name = "Paneldynamicformat1"
+Shp1.Name = "Shp1"
+lstConditions.Name = "lstConditions"
+cmdAdd.Name = "cmdAdd"
+cmdEdit.Name = "cmdEdit"
+cmdDelete.Name = "cmdDelete"
+cmdScript.Name = "cmdScript"
+Lbl2.Name = "Lbl2"
+oFormatter.Name = "oFormatter"
+cntPreview.shpBorder.Name = "shpBorder"
+cntPreview.canvas.vertLine.Name = "vertLine"
+cntPreview.canvas.hozLine.Name = "hozLine"
+cntPreview.canvas.Text.Name = "Text"
+cntPreview.canvas.Name = "canvas"
+cntPreview.lblSample.Name = "lblSample"
+cntPreview.Name = "cntPreview"
+Shp2.Name = "Shp2"
+edtHelperText.Name = "edtHelperText"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] tabevaluatecontents
+[START PROPERTIES]
+Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+[END PROPERTIES]
+[START RESERVED1]
+  frxbuilder.hNzGO7 foxpro_reporting.hVzGO7 frxbuilder_loc.h^zGO7 _frxcursor.hfzGO7 foxpro_reporting.hnzGO7[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1Q30WWUAT
+[CLASS] pge
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] page
+[OBJNAME] tabbandadvanced
+[START PROPERTIES]
+Caption = "Advanced"
+Height = 353
+Width = 400
+Name = "tabbandadvanced"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_TAB_ADVANCED_LOC	
+#ENDIF
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+2[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+frxbuilder.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1Q412T2RD
+[CLASS] paneladvancedprops
+[CLASSLOC] frxbuilder2.vcx
+[BASECLASS] container
+[OBJNAME] Paneladvancedprops1
+[PARENT] tabbandadvanced
+[START PROPERTIES]
+Top = 8
+Left = 4
+Width = 388
+Height = 148
+Name = "Paneladvancedprops1"
+LSTPROPERTIES.Height = 88
+LSTPROPERTIES.Left = 0
+LSTPROPERTIES.Top = 20
+LSTPROPERTIES.Width = 380
+LSTPROPERTIES.Name = "LSTPROPERTIES"
+LBLNAME.Left = 2
+LBLNAME.Name = "LBLNAME"
+LBLVALUE.Left = 217
+LBLVALUE.Top = 4
+LBLVALUE.Name = "LBLVALUE"
+LBLTYPE.Visible = .F.
+LBLTYPE.Name = "LBLTYPE"
+cmdAdd.Top = 116
+cmdAdd.Left = 0
+cmdAdd.Name = "cmdAdd"
+CMDDELETE.Top = 116
+CMDDELETE.Left = 192
+CMDDELETE.Name = "CMDDELETE"
+CMDEDIT.Top = 116
+CMDEDIT.Left = 96
+CMDEDIT.Name = "CMDEDIT"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] tabbandadvanced
+[START PROPERTIES]
+Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+[END PROPERTIES]
+[START RESERVED1]
+  frxbuilder.hfzGO7 foxpro_reporting.hnzGO7 frxbuilder_loc.hvzGO7 _frxcursor.h~zGO7 foxpro_reporting.h†zGO7[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1Q30WWUAT
+[CLASS] pge
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] page
+[OBJNAME] tabobjadvanced
+[START PROPERTIES]
+Caption = "Advanced"
+Height = 354
+Width = 384
+Name = "tabobjadvanced"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_TAB_ADVANCED_LOC	
+#ENDIF
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+3[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+frxbuilder.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1Q412T2RD
+[CLASS] paneladvancedprops
+[CLASSLOC] frxbuilder2.vcx
+[BASECLASS] container
+[OBJNAME] Paneladvancedprops1
+[PARENT] tabobjadvanced
+[START PROPERTIES]
+Top = 8
+Left = 4
+Width = 368
+Height = 168
+Name = "Paneladvancedprops1"
+LSTPROPERTIES.Height = 116
+LSTPROPERTIES.Left = 0
+LSTPROPERTIES.Top = 20
+LSTPROPERTIES.Width = 364
+LSTPROPERTIES.Name = "LSTPROPERTIES"
+LBLNAME.Name = "LBLNAME"
+LBLVALUE.Left = 220
+LBLVALUE.Top = 4
+LBLVALUE.Name = "LBLVALUE"
+LBLTYPE.Visible = .F.
+LBLTYPE.Name = "LBLTYPE"
+cmdAdd.Top = 141
+cmdAdd.Left = 95
+cmdAdd.Name = "cmdAdd"
+CMDDELETE.Top = 141
+CMDDELETE.Left = 189
+CMDDELETE.Name = "CMDDELETE"
+CMDEDIT.Top = 141
+CMDEDIT.Left = 0
+CMDEDIT.Name = "CMDEDIT"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1Q5127J18
+[CLASS] panelrotate
+[CLASSLOC] frxbuilder2.vcx
+[BASECLASS] container
+[OBJNAME] Panelrotate1
+[PARENT] tabobjadvanced
+[START PROPERTIES]
+Top = 181
+Left = 8
+Name = "Panelrotate1"
+SHP1.Name = "SHP1"
+lblObjectRotation.Name = "lblObjectRotation"
+ROTATEPREVIEW.verticalGuide.Name = "verticalGuide"
+ROTATEPREVIEW.horizontalGuide.Name = "horizontalGuide"
+ROTATEPREVIEW.ShadowLabel.Name = "ShadowLabel"
+ROTATEPREVIEW.Label.Name = "Label"
+ROTATEPREVIEW.touchPad.Name = "touchPad"
+ROTATEPREVIEW.Name = "ROTATEPREVIEW"
+spnAngle.Name = "spnAngle"
+lblAngle.Name = "lblAngle"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] tabobjadvanced
+[START PROPERTIES]
+Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+[END PROPERTIES]
+[START RESERVED1]
+  frxbuilder.hfzGO7 foxpro_reporting.hnzGO7 frxbuilder_loc.hvzGO7 _frxcursor.h~zGO7 foxpro_reporting.h†zGO7[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1Q50LTC0J
+[CLASS] frxpanel
+[CLASSLOC] frxpanels.vcx
+[BASECLASS] container
+[OBJNAME] panelrotate
+[START PROPERTIES]
+Width = 213
+Height = 166
+Name = "panelrotate"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE enabled_assign
+lparameter lEnabled
+THIS.Enabled = m.lEnabled
+store m.lEnabled to ;
+	THIS.lblAngle.Enabled, ;
+	THIS.spnAngle.Enabled, ;
+	THIS.lblObjectRotation.Enabled, ;
+	THIS.RotatePreview.Enabled
+
+ENDPROC
+PROCEDURE loadfromfrx
+local cursel
+cursel = select(0)
+if not used("memberdata")
+	return
+endif
+select memberdata
+locate for TYPE = FRX_BLDR_MEMBERDATATYPE ;
+	   and NAME = FRX_BLDR_NAMESPACE_ROTATE
+if found() and not empty(EXECUTE)
+	THIS.spnAngle.Value = int(val(alltrim(EXECUTE)))
+else
+	THIS.spnAngle.Value = 0
+endif	
+THIS.RotatePreview.SetAngle( THIS.spnAngle.Value )
+select (m.cursel)
+
+ENDPROC
+PROCEDURE savetofrx
+local cursel
+cursel = select(0)
+if not used("memberdata")
+	return
+endif
+select memberdata
+locate for TYPE = FRX_BLDR_MEMBERDATATYPE ;
+	   and NAME = FRX_BLDR_NAMESPACE_ROTATE
+
+if inlist( THIS.spnAngle.Value, 0, 360 )
+	if found()
+		*-----------------------------------------------
+		* Remove the default value
+		*-----------------------------------------------
+		delete in memberdata
+	else
+		*-----------------------------------------------
+		* It's not there, so do nothing
+		*-----------------------------------------------
+	endif
+else
+	if found()
+		replace EXECUTE with alltrim(str(int(THIS.spnAngle.Value)))
+	else
+		insert into memberdata ;
+			( TYPE, NAME, EXECUTE ) ;
+		values ;
+			( FRX_BLDR_MEMBERDATATYPE, ;
+			  FRX_BLDR_NAMESPACE_ROTATE, ;
+			  alltrim(str(int(THIS.spnAngle.Value))) )
+	endif
+endif	
+select (m.cursel)
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+6[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+frxbuilder.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1Q50XOFN0
+[CLASS] shp
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] shape
+[OBJNAME] Shp1
+[PARENT] panelrotate
+[START PROPERTIES]
+Top = 8
+Left = 5
+Height = 152
+Width = 139
+ZOrderSet = 0
+Style = 3
+Name = "Shp1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1Q50XOFN1
+[CLASS] lbl
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] label
+[OBJNAME] lblObjectRotation
+[PARENT] panelrotate
+[START PROPERTIES]
+BackStyle = 1
+Caption = " Object Rotation "
+Left = 13
+Top = 1
+TabIndex = 2
+ZOrderSet = 2
+Style = 3
+Name = "lblObjectRotation"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_OBJECT_ROTATION_LOC	
+#ENDIF
+
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1Q50XOFNH
+[CLASS] spn
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] spinner
+[OBJNAME] spnAngle
+[PARENT] panelrotate
+[START PROPERTIES]
+Height = 21
+Increment =   1.00
+InputMask = "9999"
+KeyboardHighValue = 360
+KeyboardLowValue = 0
+Left = 68
+SpinnerHighValue = 361.00
+SpinnerLowValue =  -1.00
+Top = 128
+Width = 65
+ZOrderSet = 3
+Name = "spnAngle"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE InteractiveChange
+if THIS.Value=361
+	THIS.Value=1
+endif
+if THIS.Value=-1
+	THIS.Value = 359
+endif
+ENDPROC
+PROCEDURE action
+THIS.Parent.RotatePreview.SetAngle(int(THIS.Value))
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1Q51265XV
+[CLASS] cntrotatepreview
+[CLASSLOC] frxbuilder2.vcx
+[BASECLASS] container
+[OBJNAME] RotatePreview
+[PARENT] panelrotate
+[START PROPERTIES]
+Top = 20
+Left = 16
+Width = 117
+Height = 105
+Enabled = .T.
+Name = "RotatePreview"
+verticalGuide.Name = "verticalGuide"
+horizontalGuide.Name = "horizontalGuide"
+ShadowLabel.Name = "ShadowLabel"
+Label.Name = "Label"
+touchPad.Name = "touchPad"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE setangle
+lparameter tiAngle
+dodefault(m.tiAngle)
+try
+	THIS.Parent.spnAngle.Value = m.tiAngle
+catch
+endtry
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1Q50XOFNV
+[CLASS] lbl
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] label
+[OBJNAME] lblAngle
+[PARENT] panelrotate
+[START PROPERTIES]
+BackStyle = 0
+Caption = "Angle:"
+Left = 16
+Top = 130
+ZOrderSet = 4
+Name = "lblAngle"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] panelrotate
+[START PROPERTIES]
+Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+[END PROPERTIES]
+[START RESERVED1]
+  frxbuilder.hfzGO7 foxpro_reporting.hnzGO7 frxbuilder_loc.hvzGO7 _frxcursor.h~zGO7 foxpro_reporting.h†zGO7[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1Q50WYDYH
+[CLASS] cnt
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] container
+[OBJNAME] cntrotatepreview
+[START PROPERTIES]
+Width = 113
+Height = 105
+BackStyle = 1
+SpecialEffect = 1
+BackColor = 255,255,255
+originx = 0
+originy = 0
+Name = "cntrotatepreview"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+*---------------------------------
+* Center the origin:
+*---------------------------------
+THIS.originX = int(THIS.Width/2)
+THIS.originY = int(THIS.Height/2)
+
+*----------------------------------------
+* Position the guidelines on the origin:
+*----------------------------------------
+with THIS.VerticalGuide
+	.Height = THIS.Height-2
+	.Top    = 1
+	.Left   = THIS.originX
+endwith	
+with THIS.HorizontalGuide
+	.Width = THIS.Width-2
+	.Left  = 1
+	.Top   = THIS.originY
+endwith	
+
+*----------------------------------------
+* Size the Label control:
+*----------------------------------------
+local iLength
+with THIS.Label
+	.AutoSize = .T.
+	.Caption = .Caption
+	.AutoSize = .F.
+	store .Width+3 to ;
+		.Width, ;
+		.Height
+endwith
+
+THIS.SetAngle(360)
+	
+*----------------------------------------
+* Position the shadow label to mimic
+* the designer:
+*----------------------------------------
+with THIS.ShadowLabel
+	.Caption    = THIS.Label.Caption
+	.FontName   = THIS.Label.FontName
+	.FontSize   = THIS.Label.FontSize
+	.FontBold   = THIS.Label.FontBold
+	.FontItalic = THIS.Label.FontItalic
+	.AutoSize = .F.
+	.Width  = THIS.Label.Width
+	.Height = THIS.Label.Height
+	.Top    = THIS.Label.Top
+	.Left   = THIS.Label.Left
+	.Rotation = 360
+endwith
+
+*----------------------------------------
+* Position the touch pad:
+*----------------------------------------
+THIS.TouchPad.Top = 0
+THIS.TouchPad.Left = 0
+THIS.TouchPad.Width = THIS.Width-1
+THIS.TouchPad.Height = THIS.Height-1
+ENDPROC
+PROCEDURE enabled_assign
+lparameter lEnabled
+
+if m.lEnabled
+	THIS.Enabled = .T.
+	THIS.Label.Enabled = .T.
+*	THIS.BackColor = rgb(255,255,255)
+else
+	THIS.Enabled = .F.
+	THIS.Label.Enabled = .F.
+*	THIS.BackColor = THISFORM.BackColor
+endif
+ENDPROC
+PROCEDURE setangle
+lparameter tiAngle
+
+local ;
+	iOriginOffset, ;
+	iFontSizeOffset, ;
+	iLabelBoxDimension, ;
+	iRotation, nRadians, ;
+	iTop, iLeft
+
+*------------------------------------------------
+* Get the angle MOD 360:
+*------------------------------------------------
+tiAngle = m.tiAngle % 360
+
+*------------------------------------------------
+* Set the size of the label box:
+*------------------------------------------------
+iLabelBoxDimension = THIS.Label.Width
+
+*------------------------------------------------
+* Calculate the text size offset (half the character height)
+*------------------------------------------------
+iFontSizeOffset = fontmetric( ;
+					1, ;
+					THIS.Label.FontName, ;
+					THIS.Label.FontSize, ;
+					iif(THIS.Label.FontBold,'B','')+iif(THIS.Label.FontItalic,'I','') ;
+					)
+iFontSizeOffset = int( m.iFontSizeOffset/2 )
+
+*------------------------------------------------
+* Convert angle parameter into label rotation:
+*------------------------------------------------
+*   0 -> 360
+*  90 -> 270
+* 180 -> 180
+* 270 ->  90
+* 360 -> 360
+
+iRotation = (360 - m.tiAngle)
+if m.iRotation = 0
+	m.iRotation = 360
+endif
+
+THIS.Label.Rotation = m.iRotation
+
+*------------------------------------------------
+* Convert angle parameter to radians:
+*------------------------------------------------
+nRadians = dtor(m.tiAngle)
+
+*------------------------------------------------
+* Calculate the .Top of the label box
+* Top =
+*------------------------------------------------
+iTop = m.iLabelBoxDimension * (sin(m.nRadians) - 1)/2  ;
+     + m.iFontSizeOffset * cos(m.nRadians) ;
+     + THIS.originY
+
+THIS.Label.Top = int(m.iTop)
+
+*------------------------------------------------
+* Calculate the .Left of the label box
+*------------------------------------------------
+iLeft = m.iLabelBoxDimension * (cos(m.nRadians) -1)/2 ;
+      - m.iFontSizeOffset * sin(m.nRadians) ;
+	  + THIS.originX
+
+THIS.Label.Left = int(m.iLeft)
+
+return				
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+6[END RESERVED2]
+[START RESERVED3]
+originx
+originy
+*setangle Parameters: iAngle (0-360)
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1Q50XO76B
+[CLASS] line
+[BASECLASS] line
+[OBJNAME] verticalGuide
+[PARENT] cntrotatepreview
+[START PROPERTIES]
+Height = 100
+Left = 50
+Top = 0
+Width = 0
+BorderColor = 131,210,241
+ZOrderSet = 0
+Name = "verticalGuide"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1Q50XO76C
+[CLASS] line
+[BASECLASS] line
+[OBJNAME] horizontalGuide
+[PARENT] cntrotatepreview
+[START PROPERTIES]
+Height = 0
+Left = 0
+Top = 50
+Width = 100
+BorderColor = 131,210,241
+ZOrderSet = 1
+Name = "horizontalGuide"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1QW0K2VRH
+[CLASS] fixedlabel
+[CLASSLOC] frxbuilder2.vcx
+[BASECLASS] label
+[OBJNAME] ShadowLabel
+[PARENT] cntrotatepreview
+[START PROPERTIES]
+FontName = "Times New Roman"
+FontSize = 12
+BackStyle = 0
+Left = 56
+Top = 20
+ForeColor = 131,210,241
+ZOrderSet = 2
+Name = "ShadowLabel"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1QW0JYFBF
+[CLASS] fixedlabel
+[CLASSLOC] frxbuilder2.vcx
+[BASECLASS] label
+[OBJNAME] Label
+[PARENT] cntrotatepreview
+[START PROPERTIES]
+AutoSize = .F.
+FontName = "Times New Roman"
+FontSize = 12
+BackStyle = 0
+Caption = "Rotation"
+Height = 48
+Left = 20
+Top = 56
+Width = 48
+ZOrderSet = 3
+Rotation = 360
+Name = "Label"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1Q513QLRA
+[CLASS] shape
+[BASECLASS] shape
+[OBJNAME] touchPad
+[PARENT] cntrotatepreview
+[START PROPERTIES]
+Top = 12
+Left = 76
+Height = 21
+Width = 21
+BackStyle = 0
+BorderStyle = 0
+ZOrderSet = 4
+Name = "touchPad"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE MouseDown
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+if nButton=1 and THIS.Parent.Enabled
+	local Xo,Yo, Xp, Yp, angle
+	
+	Xo = THIS.Parent.OriginX
+	Yo = THIS.Parent.OriginY
+	Xp = m.nxCoord - objtoclient(THIS.Parent,2)
+	Yp = m.nyCoord - objtoclient(THIS.Parent,1)
+
+	angle = rtod(atn2(Yp-Yo, Xp-Xo))
+	if m.angle < 0
+		angle = 360+m.angle
+	endif
+
+	THIS.Parent.SetAngle( m.angle )
+endif
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] cntrotatepreview
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1QA0ZQ8AA
+[CLASS] frxpanel
+[CLASSLOC] frxpanels.vcx
+[BASECLASS] container
+[OBJNAME] panelmultirotate
+[START PROPERTIES]
+Width = 287
+Height = 208
+Name = "panelmultirotate"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE loadfromfrx
+THIS.chkApplyRotate.Value = .F.
+THIS.panelRotate.Enabled = .F.
+ENDPROC
+PROCEDURE savetofrx
+if THIS.chkApplyRotate.Value = .T.
+	*-----------------------------------------
+	* Must apply this to all selected records
+	*-----------------------------------------
+	select frx
+	curRec = recno()
+	scan for CURPOS and recno()>1
+		if OBJTYPE = FRX_OBJTYP_GROUP
+			*----------------------------------
+			* Ignore aggregated element groups:
+			*----------------------------------
+			loop
+		endif
+		THIS.FrxCursor.UnpackMemberData()
+		THIS.panelRotate.SaveToFrx()
+		if THIS.FrxCursor.PackupMemberData()
+			if used("memberdata")
+				use in memberdata
+			endif
+		endif
+		
+	endscan
+	THIS.Event.frxCursor.goRec(m.curRec,"frx")
+endif	
+
+
+	
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+3[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+frxbuilder.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1QA0ZTCEF
+[CLASS] chk
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] checkbox
+[OBJNAME] chkApplyRotate
+[PARENT] panelmultirotate
+[START PROPERTIES]
+Top = 8
+Left = 4
+Alignment = 0
+Caption = "Apply rotation to the selected objects upon saving:"
+Name = "chkApplyRotate"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+THIS.Parent.PanelRotate.Enabled = THIS.Value
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1QA0ZTCEG
+[CLASS] panelrotate
+[CLASSLOC] frxbuilder2.vcx
+[BASECLASS] container
+[OBJNAME] Panelrotate
+[PARENT] panelmultirotate
+[START PROPERTIES]
+Top = 32
+Left = 24
+Width = 176
+Height = 166
+Name = "Panelrotate"
+Shp1.Name = "Shp1"
+lblObjectRotation.Name = "lblObjectRotation"
+RotatePreview.verticalGuide.Name = "verticalGuide"
+RotatePreview.horizontalGuide.Name = "horizontalGuide"
+RotatePreview.ShadowLabel.Name = "ShadowLabel"
+RotatePreview.Label.Name = "Label"
+RotatePreview.touchPad.Name = "touchPad"
+RotatePreview.Name = "RotatePreview"
+spnAngle.Name = "spnAngle"
+lblAngle.Name = "lblAngle"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] panelmultirotate
+[START PROPERTIES]
+Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+[END PROPERTIES]
+[START RESERVED1]
+  frxbuilder.hö“zGO7 foxpro_reporting.hþ”zGO7 frxbuilder_loc.h–zGO7 _frxcursor.h—zGO7 foxpro_reporting.h˜zGO7[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1QA10E7DT
+[CLASS] pge
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] page
+[OBJNAME] tabmultirotate
+[START PROPERTIES]
+Caption = "Rotation"
+Height = 261
+Width = 444
+Name = "tabmultirotate"
+[END PROPERTIES]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+2[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1QA10ESYE
+[CLASS] panelmultirotate
+[CLASSLOC] frxbuilder2.vcx
+[BASECLASS] container
+[OBJNAME] Panelmultirotate1
+[PARENT] tabmultirotate
+[START PROPERTIES]
+Top = 4
+Left = 6
+Width = 402
+Height = 208
+Name = "Panelmultirotate1"
+chkApplyRotate.Alignment = 0
+chkApplyRotate.Name = "chkApplyRotate"
+panelrotate.Shp1.Name = "Shp1"
+panelrotate.lblObjectRotation.Name = "lblObjectRotation"
+panelrotate.RotatePreview.verticalGuide.Name = "verticalGuide"
+panelrotate.RotatePreview.horizontalGuide.Name = "horizontalGuide"
+panelrotate.RotatePreview.ShadowLabel.Name = "ShadowLabel"
+panelrotate.RotatePreview.Label.Name = "Label"
+panelrotate.RotatePreview.touchPad.Name = "touchPad"
+panelrotate.RotatePreview.Name = "RotatePreview"
+panelrotate.spnAngle.Name = "spnAngle"
+panelrotate.lblAngle.Name = "lblAngle"
+panelrotate.Name = "panelrotate"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] tabmultirotate
+[START PROPERTIES]
+Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1QW0JTUHU
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] fixedlabel
+[START PROPERTIES]
+Caption = "Label1"
+Height = 17
+Width = 40
+Name = "fixedlabel"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE fontname_assign
+LPARAMETERS vNewVal
+* Do not allow font name changes
+*THIS.FontName = m.vNewVal
+
+ENDPROC
+PROCEDURE fontsize_assign
+LPARAMETERS vNewVal
+* Do not allow font size changes
+*THIS.FontSize = m.vNewVal
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+*fontname_assign 
+*fontsize_assign 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] fixedlabel
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1X40ZLPAW
+[CLASS] frxpanel
+[CLASSLOC] frxpanels.vcx
+[BASECLASS] container
+[OBJNAME] panelmultiprotection
+[START PROPERTIES]
+Width = 379
+Height = 256
+Name = "panelmultiprotection"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE loadfromfrx
+*--------------------------------------------------------
+* Because we are re-using some panels from other dialogs,
+* we need to fool them into thinking that they have their
+* own frx cursor. Currently, the cursor is called "multibuff"
+* which isn't very immune from possible interference.
+*--------------------------------------------------------
+
+select * from frx where .F. into cursor multibuff readwrite
+select multibuff
+append blank
+
+THIS.panelProtection.Tag       = "multibuff"
+THIS.panelProtection.FrxCursor = THIS.frxCursor
+THIS.panelProtection.event     = THIS.event
+THIS.panelProtection.Enabled   = .F.
+
+*-------------------------------------------------------------
+* Fix for SP1: The protection flags are not available in protected mode:
+*-------------------------------------------------------------
+THIS.chkApplyProtection.Enabled = not THIS.event.protected
+
+ENDPROC
+PROCEDURE savetofrx
+if this.chkApplyProtection.Value
+	*-----------------------------------------------------
+	* This will save to the multibuff cursor:
+	*-----------------------------------------------------
+	if not THIS.panelProtection.SaveToFrx()
+		wait clear
+		return .F.
+	endif
+
+	*-----------------------------------------------------
+	* Now apply the protection flags to all selected objects:
+	*-----------------------------------------------------
+	select frx
+	local curRec
+	curRec = recno()
+	scan for CURPOS and recno() > 1
+		if OBJTYPE <> FRX_OBJTYP_GROUP
+			replace ORDER with multibuff.ORDER
+		endif
+	endscan	
+	THIS.frxCursor.goRec(m.curRec,"frx")
+endif
+
+*-------------------------------------------------------------
+* Clean up and exit:
+*-------------------------------------------------------------
+use in multibuff
+
+return .T.
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+3[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+frxbuilder.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1X410J9GD
+[CLASS] chk
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] checkbox
+[OBJNAME] chkApplyProtection
+[PARENT] panelmultiprotection
+[START PROPERTIES]
+Top = 19
+Left = 12
+Height = 15
+Width = 285
+Alignment = 0
+Caption = "Apply these protection settings to the selected objects:"
+TabIndex = 1
+ZOrderSet = 1
+Name = "chkApplyProtection"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_MULTISEL_APPLY_PROTECTION_LOC
+#ENDIF
+
+ENDPROC
+PROCEDURE InteractiveChange
+THIS.Parent.PanelProtection.Enabled = THIS.Value
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1X410J9H4
+[CLASS] panelobjectprotection
+[CLASSLOC] frxpanels.vcx
+[BASECLASS] container
+[OBJNAME] panelProtection
+[PARENT] panelmultiprotection
+[START PROPERTIES]
+Top = 39
+Left = 34
+Width = 324
+TabIndex = 2
+ZOrderSet = 3
+Name = "panelProtection"
+Shp1.Top = 7
+Shp1.Left = 0
+Shp1.Width = 320
+Shp1.Name = "Shp1"
+CHKOBJECTLOCK.Alignment = 0
+CHKOBJECTLOCK.Name = "CHKOBJECTLOCK"
+CHKOBJECTNOSELECT.Alignment = 0
+CHKOBJECTNOSELECT.Name = "CHKOBJECTNOSELECT"
+CHKOBJECTNODELETE.Alignment = 0
+CHKOBJECTNODELETE.Name = "CHKOBJECTNODELETE"
+CHKOBJECTHIDDEN.Alignment = 0
+CHKOBJECTHIDDEN.Name = "CHKOBJECTHIDDEN"
+CHKOBJECTNOEDIT.Alignment = 0
+CHKOBJECTNOEDIT.Name = "CHKOBJECTNOEDIT"
+LBL1.Name = "LBL1"
+LBL2.Name = "LBL2"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] panelmultiprotection
+[START PROPERTIES]
+Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+[END PROPERTIES]
+[START RESERVED1]
+  frxbuilder.hfzGO7 foxpro_reporting.hnzGO7 frxbuilder_loc.hvzGO7 _frxcursor.h~zGO7 foxpro_reporting.h†zGO7[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1X410R40Q
+[CLASS] pge
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] page
+[OBJNAME] tabmultiprotection
+[START PROPERTIES]
+Caption = "Protection"
+Height = 348
+Width = 374
+Name = "tabmultiprotection"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_TAB_PROTECTION_LOC
+#ENDIF
+THIS.HelpContextID = UI_MULTI_PROPS_PROPERTIES_HELP_ID
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+2[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+frxbuilder.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1X410SMI3
+[CLASS] panelmultiprotection
+[CLASSLOC] frxbuilder2.vcx
+[BASECLASS] container
+[OBJNAME] Panelmultiprotection
+[PARENT] tabmultiprotection
+[START PROPERTIES]
+Top = 2
+Left = 2
+Name = "Panelmultiprotection"
+chkApplyProtection.Alignment = 0
+chkApplyProtection.Name = "chkApplyProtection"
+panelProtection.Shp1.Name = "Shp1"
+panelProtection.CHKOBJECTLOCK.Alignment = 0
+panelProtection.CHKOBJECTLOCK.Name = "CHKOBJECTLOCK"
+panelProtection.CHKOBJECTNOSELECT.Alignment = 0
+panelProtection.CHKOBJECTNOSELECT.Name = "CHKOBJECTNOSELECT"
+panelProtection.CHKOBJECTNODELETE.Alignment = 0
+panelProtection.CHKOBJECTNODELETE.Name = "CHKOBJECTNODELETE"
+panelProtection.CHKOBJECTHIDDEN.Alignment = 0
+panelProtection.CHKOBJECTHIDDEN.Name = "CHKOBJECTHIDDEN"
+panelProtection.CHKOBJECTNOEDIT.Alignment = 0
+panelProtection.CHKOBJECTNOEDIT.Name = "CHKOBJECTNOEDIT"
+panelProtection.LBL1.Name = "LBL1"
+panelProtection.LBL2.Name = "LBL2"
+panelProtection.Name = "panelProtection"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] tabmultiprotection
+[START PROPERTIES]
+Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+[END PROPERTIES]
+[START RESERVED1]
+  frxbuilder.hfzGO7 foxpro_reporting.hnzGO7 frxbuilder_loc.hvzGO7 _frxcursor.h~zGO7 foxpro_reporting.h†zGO7[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _20E0QXVUS
+[CLASS] container
+[BASECLASS] container
+[OBJNAME] panelmultiprop
+[START PROPERTIES]
+Tag = "frx"
+Width = 444
+Height = 308
+BackStyle = 0
+BorderWidth = 0
+oprops = .NULL.
+event = .NULL.
+frxcursor = .NULL.
+propertycursor = 
+Name = "panelmultiprop"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE loadfromfrx
+*-----------------------------------
+* Create a cursor to drive the property list:
+*-----------------------------------
+local cAlias
+cAlias = "PD"+sys(2015)
+
+create cursor (m.cAlias) ( ;
+	PROP_ENABLE  l, ;
+	PROP_NAME	 c(50), ;
+	PROP_VALUE   c(50), ;
+	PROP_TYPE	 i, ;
+	PROP_ID      i )
+
+*-----------------------------------
+* Pull out the registered properties:
+*-----------------------------------
+select * ;
+	from frxregistry ;
+	into cursor props ;
+	where REC_TYPE = HANDLREG_MULTIPROP and not deleted() ;
+	order by FLTR_ORDR
+
+if _tally > 0
+	*-----------------------------------
+	* instantiate each class:
+	*-----------------------------------
+	THIS.oProps = newobject("Collection")
+	local i, oProp
+	i = 0
+	scan
+		oProp = THIS.Event.NewRegisteredObject( HNDL_CLASS, HNDL_LIB )
+		if not isnull( m.oProp )
+		
+			if THIS.event.Protected and not oProp.VisibleWhenProtected
+				*--------------------------------------
+				* We are PROTECTED and this property is
+				* not visible when PROTECTED
+				*--------------------------------------
+			else
+				oProp.PropertyCursor = m.cAlias
+				THIS.oProps.Add( m.oProp )
+				i = m.i+1
+				insert into (m.cAlias) values ( ;
+					.F., ;
+					THIS.oProps.Item(m.i).PropertyName, ;
+					THIS.oProps.Item(m.i).GetDefaultCaption(), ;
+					THIS.oProps.Item(m.i).ValueType, ;
+					m.i )
+			endif
+			oProp = .NULL.
+		endif
+	endscan
+	use in props
+endif
+
+*-----------------------------------
+* decorate the grid:
+*-----------------------------------
+with THIS.Grid
+	.BackColor = THISFORM.BackColor
+	.recordSource = m.cAlias
+	.HeaderHeight = 22
+	.RowHeight    = 22
+
+	.colEnable.Header1.Caption = ""
+	.colEnable.BackColor       = THISFORM.BackColor
+	.colEnable.ControlSource   = m.cAlias + ".PROP_ENABLE"
+
+	.colProperty.ControlSource = m.cAlias + ".PROP_NAME"
+	.colProperty.BackColor     = THISFORM.BackColor
+
+*	.colValue.ControlSource         = m.cAlias+".PROP_VALUE"
+	.colValue.DynamicCurrentControl = "iif("+m.cAlias+".PROP_TYPE=6,'cbo','txt')"
+	.colValue.BackColor 			= rgb(255,255,255)
+*	.colValue.DynamicBackColor      = "iif("+m.cAlias+".PROP_ENABLE,rgb(255,255,255),THISFORM.BackColor)"
+	.colValue.DynamicFontBold       = m.cAlias+".PROP_ENABLE"
+endwith
+
+THIS.PropertyCursor = m.cAlias
+go top in (m.cAlias)
+THIS.LoadRow()
+
+ENDPROC
+PROCEDURE loadrow
+select (THIS.PropertyCursor)
+do case
+case PROP_TYPE = ADVPROP_EDITMODE_TEXT
+	*-----------------------------------------
+	* Put the table value in the txt box
+	*-----------------------------------------
+	THIS.Grid.colValue.txt.Value = PROP_VALUE
+
+case PROP_TYPE = ADVPROP_EDITMODE_COMBOLIST
+	local i, oCombo, oProp
+	oProp  = THIS.oProps.Item(PROP_ID)
+	oCombo = THIS.Grid.colValue.cbo
+
+	*--------------------------
+	* Configure the control:
+	*--------------------------
+	for i = 1 to oProp.ValueCount
+		oCombo.Additem( oProp.GetDisplayValue(m.i) )
+	endfor
+	*--------------------------
+	* Load the value:
+	*--------------------------
+	oCombo.Value = PROP_VALUE
+
+endcase
+
+ENDPROC
+PROCEDURE savetofrx
+local oProp, curRec, cNewValue
+
+*-----------------------------------------------------
+* Create the objects cursor - may be needed
+*-----------------------------------------------------
+THIS.frxCursor.CreateObjectCursor()
+
+*-----------------------------------------
+* Process only the enabled properties:
+*-----------------------------------------
+select (THIS.PropertyCursor)
+scan for PROP_ENABLE
+	oProp = THIS.oProps.Item( PROP_ID )
+	cNewValue = PROP_VALUE
+
+	select (this.tag)
+	local curRec
+	curRec = recno()
+	*-------------------------------------------
+	* Update values in selected layout elements
+	*-------------------------------------------
+	scan for CURPOS and recno() > 1
+		*-------------------------------------------
+		* If this property is appropriate for the element:
+		*-------------------------------------------
+		if oProp.AppliesTo( OBJTYPE, OBJCODE )
+			oProp.SaveToFrx( m.cNewValue )
+		endif
+
+		select (this.Tag)
+	endscan
+
+	select (THIS.PropertyCursor)
+endscan
+
+return .T.
+
+ENDPROC
+PROCEDURE unloadrow
+select (THIS.PropertyCursor)
+do case
+case PROP_TYPE = ADVPROP_EDITMODE_TEXT
+	*-----------------------------------------
+	* Save the Textbox value in the table:
+	*-----------------------------------------
+	replace PROP_VALUE with THIS.Grid.colValue.txt.Value
+
+case PROP_TYPE = ADVPROP_EDITMODE_COMBOLIST
+	*--------------------------
+	* Save the value:
+	*--------------------------
+	replace PROP_VALUE with THIS.Grid.colValue.cbo.Value
+
+	*--------------------------
+	* De-initialise the control:
+	*--------------------------
+	THIS.Grid.colValue.cbo.Clear()
+
+endcase
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+10[END RESERVED2]
+[START RESERVED3]
+oprops
+event
+frxcursor
+propertycursor
+*loadrow 
+*unloadrow 
+*loadfromfrx 
+*savetofrx 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+frxbuilder.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _20E0RFPQ9
+[CLASS] grid
+[BASECLASS] grid
+[OBJNAME] Grid
+[PARENT] panelmultiprop
+[START PROPERTIES]
+ColumnCount = 3
+Anchor = 15
+DeleteMark = .F.
+GridLines = 0
+HeaderHeight = 24
+Height = 264
+HighlightRow = .F.
+HighlightRowLineWidth = 0
+Left = 4
+Panel = 1
+RecordMark = .F.
+RowHeight = 24
+ScrollBars = 2
+SplitBar = .F.
+Top = 28
+Width = 432
+Name = "Grid"
+Column1.FontName = "Tahoma"
+Column1.FontSize = 8
+Column1.Alignment = 2
+Column1.Width = 25
+Column1.Sparse = .F.
+Column1.SelectOnEntry = .F.
+Column1.BackColor = 235,235,235
+Column1.Name = "colEnable"
+Column2.FontName = "Tahoma"
+Column2.FontSize = 8
+Column2.Width = 237
+Column2.ReadOnly = .T.
+Column2.SelectOnEntry = .F.
+Column2.BackColor = 235,235,235
+Column2.Name = "colProperty"
+Column3.FontName = "Tahoma"
+Column3.FontSize = 8
+Column3.Width = 144
+Column3.BackColor = 235,235,235
+Column3.Name = "colValue"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE AfterRowColChange
+LPARAMETERS nColIndex
+if inlist(THIS.RowColChange,1,3)
+	THIS.Parent.LoadRow()
+endif
+
+ENDPROC
+PROCEDURE BeforeRowColChange
+LPARAMETERS nColIndex
+if inlist(THIS.RowColChange,1,3)
+	THIS.Parent.UnLoadRow()
+endif
+
+ENDPROC
+PROCEDURE colProperty.Resize
+THIS.Parent.colValue.Width = THIS.Parent.Width - THIS.Width - THIS.Parent.colEnable.Width - sysmetric(5) - 8
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _20E0RFPQE
+[CLASS] header
+[BASECLASS] header
+[OBJNAME] Header1
+[PARENT] panelmultiprop.Grid.colEnable
+[START PROPERTIES]
+FontName = "Tahoma"
+FontSize = 8
+Caption = ""
+Name = "Header1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _20E0RFPQF
+[CLASS] checkbox
+[BASECLASS] checkbox
+[OBJNAME] Check1
+[PARENT] panelmultiprop.Grid.colEnable
+[START PROPERTIES]
+Top = 35
+Left = 3
+Height = 17
+Width = 60
+Alignment = 0
+Centered = .T.
+Caption = ""
+SpecialEffect = 1
+BackColor = 235,235,235
+Themes = .F.
+Name = "Check1"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+THIS.Parent.Parent.colValue.Refresh()
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _20E0RFPQH
+[CLASS] header
+[BASECLASS] header
+[OBJNAME] Header1
+[PARENT] panelmultiprop.Grid.colProperty
+[START PROPERTIES]
+FontName = "Tahoma"
+FontSize = 8
+Caption = " Property"
+Name = "Header1"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_MULTIPROPS_PROPERTY_HEADER_LOC	
+#ENDIF
+
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _20E0RFPQJ
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] Text1
+[PARENT] panelmultiprop.Grid.colProperty
+[START PROPERTIES]
+FontName = "Tahoma"
+FontSize = 8
+BorderStyle = 0
+Margin = 1
+ReadOnly = .T.
+ForeColor = 0,0,0
+BackColor = 235,235,235
+Name = "Text1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _20E0RFPQL
+[CLASS] header
+[BASECLASS] header
+[OBJNAME] Header1
+[PARENT] panelmultiprop.Grid.colValue
+[START PROPERTIES]
+FontName = "Tahoma"
+FontSize = 8
+Caption = " Value"
+Name = "Header1"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_MULTIPROPS_VALUE_HEADER_LOC	
+#ENDIF
+
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _20E0RFPQN
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] txt
+[PARENT] panelmultiprop.Grid.colValue
+[START PROPERTIES]
+FontName = "Tahoma"
+FontSize = 8
+BorderStyle = 0
+Margin = 1
+ForeColor = 0,0,0
+BackColor = 235,235,235
+Name = "txt"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE InteractiveChange
+THIS.Parent.Parent.colEnable.check1.Value = .T.
+THIS.Parent.Parent.colEnable.Refresh()
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _20E0RFPQP
+[CLASS] combobox
+[BASECLASS] combobox
+[OBJNAME] cbo
+[PARENT] panelmultiprop.Grid.colValue
+[START PROPERTIES]
+FontName = "Tahoma"
+FontSize = 8
+Height = 24
+Left = 27
+Margin = 1
+SpecialEffect = 1
+Style = 2
+Top = 39
+Width = 100
+BackColor = 235,235,235
+BorderStyle = 0
+Name = "cbo"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE InteractiveChange
+THIS.Parent.Parent.colEnable.check1.Value = .T.
+THIS.Parent.Parent.colEnable.Refresh()
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _20E0RFPQQ
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] lbl1
+[PARENT] panelmultiprop
+[START PROPERTIES]
+AutoSize = .T.
+BackStyle = 0
+Caption = "Check which properties should be applied to the selected elements:"
+Height = 17
+Left = 7
+Top = 5
+Width = 374
+Name = "lbl1"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_MULTIPROPS_TITLE_LOC	
+#ENDIF
+
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] panelmultiprop
+[START PROPERTIES]
+Arial, 0, 9, 5, 15, 12, 32, 3, 0
+Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+[END PROPERTIES]
+[START RESERVED1]
+  frxbuilder.házGO7 foxpro_reporting.hâzGO7 frxbuilder_loc.h&ãzGO7 _frxcursor.h.äzGO7 foxpro_reporting.h6åzGO7[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _20E0RISUT
+[CLASS] page
+[BASECLASS] page
+[OBJNAME] tabmultiprop
+[START PROPERTIES]
+Caption = "Properties"
+Height = 300
+Width = 482
+Name = "tabmultiprop"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Activate
+if type( "THIS.Controls[1]" ) = "O"
+	try
+		THIS.Controls[1].SetFocus()
+	catch
+	endtry
+endif
+ENDPROC
+PROCEDURE Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_TAB_PROPERTIES_LOC
+#ENDIF
+THIS.HelpContextID = UI_MULTI_PROPS_PROPERTIES_HELP_ID
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+2[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+frxbuilder.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _20E0RJ7BU
+[CLASS] panelmultiprop
+[CLASSLOC] frxbuilder2.vcx
+[BASECLASS] container
+[OBJNAME] Panelmultiprop1
+[PARENT] tabmultiprop
+[START PROPERTIES]
+Top = 8
+Left = 4
+Height = 308
+Name = "Panelmultiprop1"
+Grid.colEnable.Header1.Name = "Header1"
+Grid.colEnable.Check1.Alignment = 0
+Grid.colEnable.Check1.Name = "Check1"
+Grid.colEnable.Name = "colEnable"
+Grid.colProperty.Header1.Name = "Header1"
+Grid.colProperty.Text1.Name = "Text1"
+Grid.colProperty.Name = "colProperty"
+Grid.colValue.Header1.Name = "Header1"
+Grid.colValue.txt.Name = "txt"
+Grid.colValue.cbo.Name = "cbo"
+Grid.colValue.Name = "colValue"
+Grid.Name = "Grid"
+Lbl1.Name = "Lbl1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] tabmultiprop
+[START PROPERTIES]
+Arial, 0, 9, 5, 15, 12, 32, 3, 0
+Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+[END PROPERTIES]
+[START RESERVED1]
+  frxbuilder.hnÚzGO7 foxpro_reporting.hvÛzGO7 frxbuilder_loc.h~ÜzGO7 _frxcursor.h†ÝzGO7 foxpro_reporting.hŽÞzGO7[END RESERVED1]
+[EOF]
