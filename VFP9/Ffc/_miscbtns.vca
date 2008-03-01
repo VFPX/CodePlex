@@ -1,0 +1,647 @@
+SCCTEXT Version 4.0.0.2
+PLATFORM C(8,0),UNIQUEID C(10,0),TIMESTAMP N(10,0),CLASS M(4,0),CLASSLOC M(4,0),BASECLASS M(4,0),OBJNAME M(4,0),PARENT M(4,0),PROPERTIES M(4,0),PROTECTED M(4,0),METHODS M(4,0),OBJCODE M(4,0),OLE M(4,0),OLE2 M(4,0),RESERVED1 M(4,0),RESERVED2 M(4,0),RESERVED3 M(4,0),RESERVED4 M(4,0),RESERVED5 M(4,0),RESERVED6 M(4,0),RESERVED7 M(4,0),RESERVED8 M(4,0),USER M(4,0)
+1252
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] Class     
+[START RESERVED1]
+VERSION =   3.00[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _QWQ0X13MQ
+[CLASS] _cmdok
+[CLASSLOC] _miscbtns.vcx
+[BASECLASS] commandbutton
+[OBJNAME] _cmdcancel
+[START PROPERTIES]
+Caption = "Cancel"
+Name = "_cmdcancel"
+[END PROPERTIES]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED4]
+graphics\cancel.bmp[END RESERVED4]
+[START RESERVED5]
+graphics\cancel.bmp[END RESERVED5]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED7]
+Releases form or form set[END RESERVED7]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _cmdcancel
+[START PROPERTIES]
+Arial, 0, 9, 5, 15, 12, 21, 3, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _QWQ0X3W5T
+[CLASS] _commandbutton
+[CLASSLOC] _base.vcx
+[BASECLASS] commandbutton
+[OBJNAME] _cmdhelp
+[START PROPERTIES]
+Height = 30
+Width = 94
+Caption = "\<Help"
+HelpContextID = 0
+Name = "_cmdhelp"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+HELP ID This.HelpContextID
+
+
+ENDPROC
+PROCEDURE Error
+LPARAMETERS nerror,cmethod,nline
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED4]
+graphics\help.bmp[END RESERVED4]
+[START RESERVED5]
+graphics\help.bmp[END RESERVED5]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED7]
+Brings up the help file, searching for the HelpContextID of the control[END RESERVED7]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _cmdhelp
+[START PROPERTIES]
+Arial, 0, 9, 5, 15, 12, 21, 3, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _QZC0S5K34
+[CLASS] _container
+[CLASSLOC] _base.vcx
+[BASECLASS] container
+[OBJNAME] _mailbtn
+[START PROPERTIES]
+Width = 25
+Height = 25
+BorderWidth = 0
+TabIndex = 1
+BackColor = 192,192,192
+Name = "_mailbtn"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Error
+LPARAMETERS nError, cMethod, nLine
+LOCAL aErrs
+DIMENSION aErrs[1]
+AERROR(aErrs)
+IF BETWEEN(aErrs[1,1],1420,1450)
+	MESSAGEBOX(aErrs[1,3],48)
+ELSE
+	MESSAGEBOX(message(),48)
+ENDIF
+this.logsession = .F.
+ENDPROC
+PROCEDURE Init
+this.logsession = .F.
+ENDPROC
+PROCEDURE addtabs
+parameters tcString, tnMaxLength
+#DEFINE TABSPACES	8 	&& Number of characters that will equal 1 TAB
+local i, lnAdd, lnMaxTabs
+lnMaxTabs=int(tnMaxLength/TABSPACES)+1
+lnAdd = lnMaxTabs - INT(len(tcString)/TABSPACES)
+for i = 1 to lnAdd
+	tcString = tcString + chr(9)
+endfor
+return tcString
+ENDPROC
+PROCEDURE signon
+#DEFINE ERR_NOMAPI_LOC	"It does not appear that you have MAPI installed. Mail could not be run."
+
+this.logsession = .T.
+
+IF !FILE(GETENV("WINDIR")+"\SYSTEM32\MAPI32.DLL");
+	AND !FILE(GETENV("WINDIR")+"\SYSTEM\MAPI32.DLL")
+	MESSAGEBOX(ERR_NOMAPI_LOC)
+	RETURN .F.
+ENDIF
+
+this.OLEMSess.signon
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+4[END RESERVED2]
+[START RESERVED3]
+logsession Whether successful login to mail.
+*addtabs Adds tabs to the strings.
+*signon Signs onto mail.
+[END RESERVED3]
+[START RESERVED4]
+graphics\smmail.bmp[END RESERVED4]
+[START RESERVED5]
+graphics\smmail.bmp[END RESERVED5]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED7]
+MAPI button to send the current record.[END RESERVED7]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _QZC0S5JXK
+[CLASS] _commandbutton
+[CLASSLOC] _base.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdMail
+[PARENT] _mailbtn
+[START PROPERTIES]
+Top = 0
+Left = 0
+Height = 25
+Width = 25
+Picture = graphics\smmail.bmp
+Caption = ""
+TabIndex = 1
+Name = "cmdMail"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+*:*********************************************************************
+*:
+*: 	   Class file: \samples\ole\mapibtn.vcx
+*:
+*:         System: OLE
+*:         Author: Microsoft Corporation
+*:		  Created: 01/04/95
+*:	Last modified: 04/13/95
+*:
+*:
+*:*********************************************************************
+* This is sample class which demonstrates how to use the MAPI controls.
+*
+* It starts a new Mail session, collects data from the current record,
+* and brings up the Send Mail dialog with the data inserted as the
+* message text.
+*
+* To use this example, add this class to a form. You will need to open a
+* table before pressing the Send Mail button. This will work with any
+* Visual FoxPro table.
+*
+* This class includes a custom method addtabs for formatting the
+* information gathered from the table and inserted in the mail message.
+*
+* This class also takes advantage of another custom method called "signon"
+* as well as a custom property called logsession. This method and property
+* are necessary for proper error handling of the MAPI server (i.e. MSMail,
+* Exchange, etc.)
+*
+* This class also uses the smmail.bmp and next.bmp as the icons of the button
+* controls.
+*
+* In order for this button to function properly MSMAPI32.OCX must be
+* correctly registered in the registration database and a mail
+* application supported by the MAPI controls must be installed. The
+* MAPI controls do not work with Windows for Workgroups or Windows 3.1.
+*
+***********************************************************************
+
+local j, lnMaxLength, i, lcMessageText, lvFieldValue
+** j & i are counters
+
+private array paDBFields
+
+*** Localizable Strings
+#DEFINE DBF_NOT_FOUND_LOC	"No table is open in the current work area."
+#DEFINE GEN_UNSUPPORT_LOC	"General fields are not supported in this example and will be skipped."
+#DEFINE _FALSE_LOC			"FALSE"
+#DEFINE _TRUE_LOC			"TRUE"
+#DEFINE _NULL_LOC			"NULL"
+#DEFINE _DOLLARSIGN_LOC		"$"
+#DEFINE FLD_NO_PRINT_LOC	"Field could not be printed."
+#DEFINE RECORDNUM_LOC		"Record #"
+
+* Verify that a table is open in the current work area
+if empty(dbf())
+	=messagebox(DBF_NOT_FOUND_LOC,48)
+	return
+else
+	IF !this.parent.signon()			&& Use the custom method
+		RETURN
+	ENDIF
+	IF this.parent.LogSession	&& Check if the user was able to login
+		this.parent.OleMMess.sessionid=this.parent.OleMSess.sessionid
+	
+		* Get the number of fields in the current table
+		=afields(paDBFields)
+
+		**** find the longest field string for approximate formatting purposes
+		lnMaxLength = 0
+		for j = 1 to alen(paDBFields,1)
+			if len(paDBFields(j,1))+2 > lnMaxLength
+				lnMaxLength = len(paDBFields(j,1))+2
+			endif
+		endfor
+	
+		* Start a new mail message and build the text
+		this.parent.OleMMess.compose
+		lcMessageText=""
+		for i = 1 to alen(paDBFields,1)
+			lvFieldValue=alltrim(upper(paDBFields(i,1)))
+			lcMessageText=lcMessageText+this.parent.addtabs((lvFieldValue+": "),lnMaxLength)
+			if !isnull(&lvFieldValue)
+				do case
+					case paDBFields(i,2)= "N" or paDBFields(i,2)= "B" or paDBFields(i,2)= "F"
+						lcMessageText = lcMessageText + alltrim(str(&lvFieldValue))+chr(13)
+					case paDBFields(i,2) = "Y"
+						lcMessageText = lcMessageText+_DOLLARSIGN_LOC+alltrim(str(&lvFieldValue,10,2))+chr(13)
+					case paDBFields(i,2)= "C" or paDBFields(i,2) = "M"
+						lcMessageText=lcMessageText + alltrim(&lvFieldValue)+chr(13)
+					case paDBFields(i,2)= "G"
+						lcMessageText=lcMessageText+GEN_UNSUPPORT_LOC+chr(13)
+					case paDBFields(i,2) = "D"
+						lcMessageText=lcMessageText + alltrim(DTOC(&lvFieldValue))+chr(13)	
+					case paDBFields(i,2) = "T"
+						lcMessageText = lcMessageText + alltrim(TTOC(&lvFieldValue))+chr(13)
+					case paDBFields(i,2) = "L"
+						if &lvFieldValue
+							lcMessageText = lcMessageText+_TRUE_LOC+chr(13)
+						else
+							lcMessageText = lcMessageText+_FALSE_LOC+chr(13)
+						endif
+					otherwise
+						lcMessageText = lcMessageText+FLD_NO_PRINT_LOC+chr(13)				
+				endcase
+			else
+				lcMessageText=lcMessageText+_NULL_LOC
+			endif
+		endfor
+		this.parent.OleMMess.msgnotetext=lcMessageText
+		this.parent.OleMMess.msgsubject=justfname(dbf())+": "+RECORDNUM_LOC+alltrim(str(recno()))
+		this.parent.OleMMess.send(1)
+		IF this.parent.logsession
+			this.parent.OleMSess.signoff
+		ENDIF	&& Session Handle test
+	ENDIF 		&& Login Test
+endif			&& DBF Test
+	
+ENDPROC
+PROCEDURE Error
+LPARAMETERS nError, cMethod, nLine
+=messageb(message(),48)
+IF this.parent.logsession
+	this.parent.OLEMSess.signoff
+ENDIF
+this.parent.logsession = .F.
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RAE153HU3
+[CLASS] olecontrol
+[BASECLASS] olecontrol
+[OBJNAME] oleMmess
+[PARENT] _mailbtn
+[START PROPERTIES]
+Top = -1000
+Left = -1000
+Height = 100
+Width = 100
+Name = "oleMmess"
+[END PROPERTIES]
+[BINSTART OLE]
+CHECKSUM=47706
+[BINEND OLE]
+[BINSTART OLE2]
+CHECKSUM=45648
+[BINEND OLE2]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RAE153HYF
+[CLASS] olecontrol
+[BASECLASS] olecontrol
+[OBJNAME] olemSess
+[PARENT] _mailbtn
+[START PROPERTIES]
+Top = -1000
+Left = -1000
+Height = 100
+Width = 100
+Name = "olemSess"
+[END PROPERTIES]
+[BINSTART OLE]
+CHECKSUM=49110
+[BINEND OLE]
+[BINSTART OLE2]
+CHECKSUM=45648
+[BINEND OLE2]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _mailbtn
+[START PROPERTIES]
+Arial, 0, 9, 5, 15, 12, 16, 3, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _R220LYTEH
+[CLASS] _commandbutton
+[CLASSLOC] _base.vcx
+[BASECLASS] commandbutton
+[OBJNAME] _cmdok
+[START PROPERTIES]
+Height = 30
+Width = 94
+Caption = "OK"
+Default = .F.
+Name = "_cmdok"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+IF TYPE("THISFORM.PARENT") = 'O'
+	THISFORMSET.Release
+ELSE
+	THISFORM.Release
+ENDIF
+
+ENDPROC
+PROCEDURE Error
+LPARAMETERS nError, cMethod, nLine
+
+#DEFINE MSG_DATAIN_LOC		"Data in "
+#DEFINE MSG_CHANGED_LOC		" was changed by another user."
+#DEFINE MSG_SAVE_LOC		"Do you want to save your changes anyway?"
+#DEFINE MSG_CONFLICT_LOC	"Data Conflict"
+#DEFINE CR_LOC 				CHR(13)
+
+LOCAL nField,cField,nChoice,nRec
+
+DO CASE
+	CASE nError = 1585 && Update conflict
+	  DO CASE
+	    CASE INLIST(CURSORGETPROP('Buffering'), 2,3) && Row Buffering
+			FOR nField = 1 to FCOUNT(ALIAS())
+			cField = FIELD(m.nField)
+			  IF OLDVAL(m.cField) != CURVAL(m.cField)
+				nChoice = MESSAGEBOX(MSG_DATAIN_LOC + cField + MSG_CHANGED_LOC + ;
+					CR_LOC + MSG_SAVE_LOC, 4+48, MSG_CONFLICT_LOC)
+				IF m.nChoice = 6 && yes
+					=TABLEUPDATE(.F., .T.)
+				ELSE
+					=TABLEREVERT(.F.)
+				ENDIF
+			  ENDIF
+			ENDFOR
+		CASE INLIST(CURSORGETPROP('Buffering'), 4,5)
+		nRec = GETNEXTMODIFIED(0)
+		DO WHILE m.nRec > 0
+			FOR nField = 1 to FCOUNT(ALIAS())
+				cField = FIELD(m.nField)
+				IF OLDVAL(cField) != CURVAL(m.cField)
+					nChoice = MESSAGEBOX(MSG_DATAIN_LOC + cField + MSG_CHANGED_LOC + ;
+					CR_LOC + MSG_SAVE_LOC, 4+48, MSG_CONFLICT_LOC)
+					IF m.nChoice = 6 && yes
+						=TABLEUPDATE(.F., .T.)
+					ELSE
+						=TABLEREVERT(.F.)
+					ENDIF
+				ENDIF
+			ENDFOR
+			nRec = GETNEXTMODIFIED(m.nRec)	
+		ENDDO
+		ENDCASE
+ENDCASE		
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED4]
+graphics\ok.bmp[END RESERVED4]
+[START RESERVED5]
+graphics\ok.bmp[END RESERVED5]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED7]
+Releases form or formset, default button[END RESERVED7]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _cmdok
+[START PROPERTIES]
+Arial, 0, 9, 5, 15, 12, 32, 3, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RLO11KEFR
+[CLASS] _commandbutton
+[CLASSLOC] _base.vcx
+[BASECLASS] commandbutton
+[OBJNAME] _cmdlaunch
+[START PROPERTIES]
+Height = 32
+Width = 63
+Caption = "\<Launch"
+cfilename = 
+Name = "_cmdlaunch"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+LOCAL cAPP
+IF EMPTY(this.cFileName) OR !FILE(this.cFileName)
+	RETURN .F.
+ENDIF
+
+IF UPPER(JUSTEXT(THIS.cFileName)) = "APP"
+	DO (THIS.cFileName)
+ELSE
+	cApp = this.cFileName
+	RUN /N &cApp
+ENDIF
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+cfilename Name of file to launch.
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _cmdlaunch
+[START PROPERTIES]
+Arial, 0, 9, 5, 15, 12, 21, 3, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RLO11OBNR
+[CLASS] _commandbutton
+[CLASSLOC] _base.vcx
+[BASECLASS] commandbutton
+[OBJNAME] _cmdrunform
+[START PROPERTIES]
+Caption = "\<Display"
+cfilename = 
+lsetcaption = .T.
+Name = "_cmdrunform"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+IF FILE(THIS.cFileName)
+	DO FORM (THIS.cFileName)
+ENDIF
+
+ENDPROC
+PROCEDURE Init
+#DEFINE CAPTION_LOC	"\<Display"
+
+IF THIS.lSetCaption AND UPPER(THIS.Caption)=UPPER(CAPTION_LOC) AND !EMPTY(THIS.cFileName)
+	THIS.Caption = PROPER(JUSTSTEM(THIS.cFileName))
+	THIS.AutoSize = .T.
+	THIS.AutoSize = .F.
+ENDIF
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+cfilename Name of form to run.
+lsetcaption Automatically set caption based on cfilename.
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _cmdrunform
+[START PROPERTIES]
+Arial, 0, 9, 5, 15, 12, 21, 3, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RLO11QIB1
+[CLASS] _commandbutton
+[CLASSLOC] _base.vcx
+[BASECLASS] commandbutton
+[OBJNAME] _cmdrunreport
+[START PROPERTIES]
+Caption = "\<Preview"
+TabIndex = 1
+lsetcaption = .T.
+cfilename = 
+luseoutputdialog = .T.
+coutputdialogalias = 
+lpromptforreport = .T.
+cdialogclass = _outputdialog
+cdialogclasslib = (IIF(VERSION(2)=0,"",HOME()+"FFC\")+"_REPORTS.VCX")
+Name = "_cmdrunreport"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+#DEFINE C_SELECTFRX_LOC		"Select Report to Run"
+
+IF THIS.lPromptForReport AND EMPTY(THIS.cFileName)
+	THIS.cFileName = GETFILE("FRX",'','',0,C_SELECTFRX_LOC)
+ENDIF
+
+IF THIS.lUseOutputDialog
+	THIS.ShowOutputDialog()
+ELSE
+	IF FILE(THIS.cFileName)
+		REPORT FORM (THIS.cFileName) PREVIEW
+	ENDIF
+ENDIF
+
+ENDPROC
+PROCEDURE Init
+#DEFINE CAPTION_LOC	"\<Preview"
+
+IF THIS.lSetCaption AND UPPER(THIS.Caption) = UPPER(CAPTION_LOC) AND !EMPTY(THIS.cFileName)
+	THIS.Caption = PROPER(JUSTSTEM(THIS.cFileName))
+	THIS.AutoSize = .T.
+	THIS.AutoSize = .F.
+ENDIF
+
+ENDPROC
+PROCEDURE showoutputdialog
+LOCAL loForm
+loForm = NewObject(THIS.cDialogClass,THIS.cDialogClassLib)
+
+IF VARTYPE(loForm) # "O"
+	RETURN
+ENDIF
+
+WITH loForm
+	.cReport=THIS.cFileName
+	.cAlias=THIS.cOutputDialogAlias
+	.lPreventScopeChanges=THIS.lOutputDialogPreventScope
+	.lPreventSourceChanges=THIS.lOutputDialogPreventSource
+	.cusOutput.cboDestinations.Value = .cusOutput.aDestinations[2,2]
+ENDWITH
+
+loForm.Show(1)
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+lsetcaption Automatically set caption based on cfilename.
+cfilename Name of report to run.
+luseoutputdialog Whether to displays FFC output dialog.
+coutputdialogalias Name of output dialog alias.
+loutputdialogpreventscope Whether to prevent user from changing scope in dialog.
+loutputdialogpreventsource Whether to prevent user from changing alias/report in dialog.
+lpromptforreport Whether to ask for report name.
+cdialogclass Output dialog class.
+cdialogclasslib Output dialog class library.
+*showoutputdialog Displays FFC output dialog.
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _cmdrunreport
+[START PROPERTIES]
+Arial, 0, 9, 5, 15, 12, 21, 3, 0
+[END PROPERTIES]
+[EOF]
