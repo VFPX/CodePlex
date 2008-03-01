@@ -1,0 +1,675 @@
+SCCTEXT Version 4.0.0.2
+PLATFORM C(8,0),UNIQUEID C(10,0),TIMESTAMP N(10,0),CLASS M(4,0),CLASSLOC M(4,0),BASECLASS M(4,0),OBJNAME M(4,0),PARENT M(4,0),PROPERTIES M(4,0),PROTECTED M(4,0),METHODS M(4,0),OBJCODE M(4,0),OLE M(4,0),OLE2 M(4,0),RESERVED1 M(4,0),RESERVED2 M(4,0),RESERVED3 M(4,0),RESERVED4 M(4,0),RESERVED5 M(4,0),RESERVED6 M(4,0),RESERVED7 M(4,0),RESERVED8 M(4,0),USER M(4,0)
+1252
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] Class     
+[START RESERVED1]
+VERSION =   3.00[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _04913Z5E3
+[CLASS] _custom
+[CLASSLOC] _base.vcx
+[BASECLASS] custom
+[OBJNAME] _sysmetrics
+[START PROPERTIES]
+nmonitors = 0
+nmousebuttons = 0
+Name = "_sysmetrics"
+[END PROPERTIES]
+[START PROTECTED]
+nmonitors_access
+lmousewheelpresent_access
+nmousebuttons_access
+callsysmetrics
+[END PROTECTED]
+[START METHODS]
+PROCEDURE callsysmetrics
+LPARAMETERS eValue
+
+LOCAL lcAlias, lnGetValue
+lcAlias = SYS(2015)
+DECLARE INTEGER GetSystemMetrics IN win32api AS _FFC_GetSystemMetrics INTEGER
+
+lnGetValue = _FFC_GetSystemMetrics(eValue)
+
+CLEAR DLLS _FFC_GetSystemMetrics
+
+RETURN lnGetValue
+
+ENDPROC
+PROCEDURE lmousewheelpresent_access
+#DEFINE SM_MOUSEWHEELPRESENT	75
+THIS.lmousewheelpresent=IIF(THIS.callsysmetrics(SM_MOUSEWHEELPRESENT)=1,.T.,.F.)
+RETURN THIS.lmousewheelpresent
+
+ENDPROC
+PROCEDURE nmonitors_access
+#DEFINE SM_CMONITORS	80
+THIS.nmonitors=THIS.callsysmetrics(SM_CMONITORS)
+RETURN THIS.nmonitors
+
+ENDPROC
+PROCEDURE nmousebuttons_access
+#DEFINE SM_CMOUSEBUTTONS	43
+THIS.nmousebuttons = THIS.callsysmetrics(SM_CMOUSEBUTTONS)
+RETURN THIS.nmousebuttons
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+lmousewheelpresent Returns .T. if MouseWheel present on mouse.
+nmonitors Returns number of monitors attached to system.
+nmousebuttons Returns number of mouse buttons on the mouse.
+*nmonitors_access 
+*lmousewheelpresent_access 
+*nmousebuttons_access 
+*callsysmetrics 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED7]
+Provides additional system metric infromation such as number of monitors, mousewheel present, and number of mouse buttons.[END RESERVED7]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _sysmetrics
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _04A116IKP
+[CLASS] _custom
+[CLASSLOC] _base.vcx
+[BASECLASS] custom
+[OBJNAME] _userpriv
+[START PROPERTIES]
+Name = "_userpriv"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE getuserpriv
+LPARAMETERS cUser
+LOCAL lcUser, nPrivlevel, nDword, nRetVal
+
+* Function returns one of following priviledge levels
+#DEFINE USER_PRIV_GUEST		0
+#DEFINE USER_PRIV_USER		1
+#DEFINE USER_PRIV_ADMIN		2
+
+* Check for NT
+IF VAL(OS(3)) < 4 OR VARTYPE(cUser)#"C" OR EMPTY(cUser)
+	RETURN -1
+ENDIF
+lcUser = cUser
+
+DECLARE integer NetUserGetInfo in netapi32 AS _FFC_NetUserGetInfo integer,string,integer, integer @
+DECLARE integer NetApiBufferFree in netapi32 AS _FFC_NetApiBufferFree integer
+
+* ex. cUser="guest"
+
+lcUser = THIS.MakeUnicode(lcUser)
+
+
+nDword = 0
+nRetVal = _FFC_NetUserGetInfo(0, lcUser, 1, @nDword)
+IF nRetVal # 0
+	RETURN nRetVal
+ENDIF
+
+nPrivlevel = ASC(SUBSTR(SYS(2600, nDword, 100),13,1))
+_FFC_NetApiBufferFree(nDword)
+
+CLEAR DLLS _FFC_NetUserGetInfo
+CLEAR DLLS _FFC_NetApiBufferFree
+
+RETURN nPrivlevel
+ENDPROC
+PROCEDURE makeunicode
+LPARAMETERS cString
+LOCAL i, lcResult
+lcResult = ""
+FOR i = 1 TO LEN(cString)
+	lcResult = lcResult + SUBSTR(cString,m.i,1) + CHR(0)
+ENDFOR
+RETURN lcResult + chr(0) + chr(0)
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+*getuserpriv Returns user access rights (guest, power user, administrator).
+*makeunicode For internal use only.
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _userpriv
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _04A12DDSV
+[CLASS] _custom
+[CLASSLOC] _base.vcx
+[BASECLASS] custom
+[OBJNAME] _commonfolder
+[START PROPERTIES]
+Name = "_commonfolder"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE getfolder
+LPARAMETERS nFolderID, lCreateNew
+
+* Some common folder ids (refer to SHGetFolderPath in MSDN)
+#DEFINE CSIDL_PERSONAL                  0x0005        && My Documents
+#DEFINE CSIDL_APPDATA                   0x001a        && <user name>\Application Data
+#DEFINE CSIDL_PROGRAM_FILES_COMMON      0x002b        && C:\Program Files\Common
+#DEFINE CSIDL_COMMON_APPDATA            0x0023        && All Users\Application Data
+#DEFINE CSIDL_WINDOWS                   0x0024        && GetWindowsDirectory()
+#DEFINE CSIDL_SYSTEM                    0x0025        && GetSystemDirectory()
+#DEFINE CSIDL_PROGRAM_FILES             0x0026        && C:\Program Files
+#DEFINE CSIDL_LOCAL_APPDATA             0x001c        && <user name>\Local Settings\Applicaiton Data (non roaming)
+#DEFINE CSIDL_FLAG_CREATE       		0x8000		  && create folder if not there
+
+* Misc Flags
+#DEFINE SHGFP_TYPE_CURRENT	0		&& Return the folder's current path.
+#DEFINE SHGFP_TYPE_DEFAULT	1		&& Return the folder's default path.
+#DEFINE CSIDL_FLAG_CREATE       		0x8000		  && create folder if not there
+
+
+* Notes for using for Windows 2000 Logo:
+*  Specific user data should be stored in a folder below CSIDL_PERSONAL
+*  User application meta data (e.g., FOXUSER) should be stored in either
+*  CSIDL_APPDATA or CSIDL_LOCAL_APPDATA. CSIDL_APPDATA allows you to roam on W2K.
+
+LOCAL lcFolder,nRetVal
+
+IF VARTYPE(nFolderID)#"N"
+	RETURN ""
+ENDIF
+
+lnFolder = nFolderID
+IF VARTYPE(lCreateNew)="L" AND lCreateNew
+	* If the folder does not exist, then the function creates it for you,
+	* fills the string buffer with the path, and returns S_OK. If you do not use the
+	* CSIDL_FLAG_CREATE flag, and the folder does not exist, then the function
+	* returns S_FALSE and nothing is placed in your string buffer.
+	lnFolder = lnFolder + CSIDL_FLAG_CREATE
+ENDIF
+
+lcFolder = SPACE(260)
+
+DECLARE INTEGER SHGetFolderPath IN "shfolder.dll" AS _FFC_SHGetFolderPath ;
+    INTEGER hwndOwner, INTEGER nFolder, INTEGER hToken, INTEGER dwFlags, STRING pszPath
+
+nRetVal = _FFC_SHGetFolderPath(0, lnFolder, 0, SHGFP_TYPE_CURRENT, @lcFolder)
+CLEAR DLLS _FFC_SHGetFolderPath
+
+IF nRetVal # 0
+	RETURN ""
+ENDIF
+
+RETURN ALLTRIM(CHRTRAN(lcFolder ,CHR(0),""))
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+*getfolder Returns path of a particular system folder such as My Documents.
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _commonfolder
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _04E1ABJXS
+[CLASS] _custom
+[CLASSLOC] _base.vcx
+[BASECLASS] custom
+[OBJNAME] _comdlg
+[START PROPERTIES]
+cfilename = 
+cinitialdirectory = 
+cdefaultextension = 
+nfilterindex = 0
+nfilecount = 0
+cfilepath = 
+ccustomfilter = 
+cfiletitle = 
+ctitlebartext = 
+lnewexplorer = .T.
+lhidereadonly = .T.
+nhwndowner = 0
+ninstance = 0
+Name = "_comdlg"
+[END PROPERTIES]
+[START PROTECTED]
+stringtointeger
+integertostring
+loaddlls
+cleardlls
+dialoghandler
+[END PROTECTED]
+[START METHODS]
+PROCEDURE Init
+THIS.aFilterList[1,1] = "All Files (*.*)"
+THIS.aFilterList[1,2] = "*.*"
+
+ENDPROC
+PROCEDURE addfilter
+LPARAMETERS cDescription, cSkeleton
+LOCAL nNewRow
+nNewRow = ALEN(THIS.aFilterList,1) + 1
+DIMENSION THIS.aFilterList[nNewRow,2]
+THIS.aFilterList[nNewRow,1] = cDescription
+IF VARTYPE(cSkeleton)#"C" OR EMPTY(cSkeleton)
+	THIS.aFilterList[nNewRow,2] = "*.*"
+ELSE
+	THIS.aFilterList[nNewRow,2] = cSkeleton
+ENDIF
+THIS.nFilterIndex = nNewRow
+
+ENDPROC
+PROCEDURE cleardlls
+CLEAR DLLS _FFC_SAVEFILENAME
+CLEAR DLLS _FFC_GETFILENAME
+CLEAR DLLS _FFC_MEMCPY
+CLEAR DLLS _FFC_MEMCPY2
+CLEAR DLLS _FFC_MALLOC
+CLEAR DLLS _FFC_FREEMEM
+
+ENDPROC
+PROCEDURE clearfilters
+LPARAMETERS lComplete
+DIMENSION THIS.aFilterList[1,2]
+IF lComplete
+	THIS.aFilterList= ""
+ELSE
+	THIS.aFilterList[1,1] = "All files (*.*)"
+	THIS.aFilterList[1,2] = "*.*"
+ENDIF
+
+ENDPROC
+PROCEDURE dialoghandler
+
+#DEFINE OFN_READONLY                 0x00000001
+#DEFINE OFN_OVERWRITEPROMPT          0x00000002
+#DEFINE OFN_HIDEREADONLY             0x00000004
+#DEFINE OFN_NOCHANGEDIR              0x00000008
+#DEFINE OFN_SHOWHELP                 0x00000010
+#DEFINE OFN_ENABLEHOOK               0x00000020
+#DEFINE OFN_ENABLETEMPLATE           0x00000040
+#DEFINE OFN_ENABLETEMPLATEHANDLE     0x00000080
+#DEFINE OFN_NOVALIDATE               0x00000100
+#DEFINE OFN_ALLOWMULTISELECT         0x00000200
+#DEFINE OFN_EXTENSIONDIFFERENT       0x00000400
+#DEFINE OFN_PATHMUSTEXIST            0x00000800
+#DEFINE OFN_FILEMUSTEXIST            0x00001000
+#DEFINE OFN_CREATEPROMPT             0x00002000
+#DEFINE OFN_SHAREAWARE               0x00004000
+#DEFINE OFN_NOREADONLYRETURN         0x00008000
+#DEFINE OFN_NOTESTFILECREATE         0x00010000
+#DEFINE OFN_NONETWORKBUTTON          0x00020000		&& for old style dialog
+#DEFINE OFN_NOLONGNAMES              0x00040000     && force no long names for 4.x modules
+#DEFINE OFN_EXPLORER                 0x00080000     && new look commdlg
+#DEFINE OFN_NODEREFERENCELINKS       0x00100000
+#DEFINE OFN_LONGNAMES                0x00200000     && force long names for 3.x modules
+#DEFINE OFN_ENABLEINCLUDENOTIFY      0x00400000     && send include message to callback
+#DEFINE OFN_ENABLESIZING             0x00800000
+#DEFINE OFN_EX_NOPLACESBAR         	 0x00000001		&& used for newer OS only (uses FlagsEx)
+
+
+LOCAL lStructSize, hwndOwner, hInstance,;
+cMyFilter, i, lpMyFilter,;
+nMaxCustomFilter, cUserCustomFilter, lpUserCustomFilter,;
+nMaxFileName, cFileName, lpFileName,;
+nMaxFileTitle, cFileTitle, lpFileTitle
+LOCAL lpInitialDirectory, lpTitlebarText, nFlags, nFlagsEx, ;
+nFileOffset, nFileExtension, cDefExt,;
+lpDefExt, lCustomData, lpHook, lpTemplateName,;
+cMyStruct, nReturnVal, nFileNameOffset
+LOCAL lcFileName, lcUserCustomFilter, lcFileTitle,;
+nCurrentFilePos, nArraySize, nNextFilePos
+
+hwndOwner = THIS.nHwndOwner
+hInstance = THIS.nInstance
+nFlags = 0
+nFlags = OFN_ENABLEHOOK
+nFlagsEx = 0
+
+*  Build the filter string.
+cMyFilter = ""
+FOR i = 1 TO ALEN(THIS.aFilterList, 1)
+	cMyFilter = cMyFilter + THIS.aFilterList[m.i,1] + CHR(0) + THIS.aFilterList[m.i,2] + CHR(0)
+ENDFOR
+cMyFilter = cMyFilter + + REPL(CHR(0),2)
+lpMyFilter = _FFC_MALLOC(LEN(cMyFilter))
+IF lpMyFilter = 0
+	* Couldn't allocate memory
+	RETURN ""
+ENDIF
+
+*  Setup Flags
+IF THIS.lNewExplorer
+	nFlags = nFlags + OFN_EXPLORER
+ENDIF
+IF THIS.lHideReadOnly
+	nFlags = nFlags + OFN_HIDEREADONLY
+ENDIF
+IF THIS.lFileMustExist
+	nFlags = nFlags + OFN_FILEMUSTEXIST
+ENDIF
+IF THIS.lNoNetworkButton
+	* Old style dialogs only
+	nFlags = nFlags + OFN_NONETWORKBUTTON
+ENDIF
+IF THIS.lNoChangeDir
+	nFlags = nFlags + OFN_NOCHANGEDIR
+ENDIF
+IF THIS.lNoValidate
+	nFlags = nFlags + OFN_NOVALIDATE
+ENDIF
+IF THIS.lAllowMultiSelect AND !THIS.lSaveDialog
+	nFlags = nFlags + OFN_ALLOWMULTISELECT
+ENDIF
+
+*  Setup FlagsEx
+IF THIS.lnoplacesbar
+	nFlagsEx = nFlagsEx + OFN_EX_NOPLACESBAR
+ENDIF
+
+DECLARE INTEGER memcpy IN msvcrt.dll AS _FFC_MEMCPY  INTEGER , STRING @, INTEGER
+
+_FFC_MEMCPY(lpMyFilter, @cMyFilter, len(cMyFilter))
+
+*  Prepare the custom filter string
+nMaxCustomFilter = 1024
+cUserCustomFilter = REPL(CHR(0), nMaxCustomFilter)
+lpUserCustomFilter = _FFC_MALLOC(nMaxCustomFilter)
+IF lpUserCustomFilter = 0
+	* Couldn't allocate memory
+	_FFC_FREEMEM(lpMyFilter)
+	RETURN ""
+ENDIF
+_FFC_MEMCPY(lpUserCustomFilter, @cUserCustomFilter, nMaxCustomFilter)
+
+* Prepare the string for the selected filename(s)
+nMaxFileName = 1024
+cFileName = LEFT(THIS.cFileName, 1023) + REPL(CHR(0), nMaxFileName - MIN(LEN(THIS.cFileName),1023))
+lpFileName = _FFC_MALLOC(nMaxFileName)
+IF lpFileName = 0
+	_FFC_FREEMEM(lpMyFilter)
+	_FFC_FREEMEM(lpUserCustomFilter)
+ENDIF
+_FFC_MEMCPY(lpFileName, @cFileName, nMaxFileName)
+
+*  File Title
+nMaxFileTitle = 300
+cFileTitle  = REPL(CHR(0), nMaxFileTitle)
+lpFileTitle = _FFC_MALLOC(nMaxFileTitle)
+IF lpFileTitle = 0
+	_FFC_FREEMEM(lpMyFilter)
+	_FFC_FREEMEM(lpUserCustomFilter)
+	_FFC_FREEMEM(lpFileName)
+ENDIF
+_FFC_MEMCPY(lpFileTitle, @cFileTitle, nMaxFileTitle)
+
+*  Initial Directory
+lpInitialDirectory = _FFC_MALLOC(266)
+IF lpInitialDirectory = 0
+	_FFC_FREEMEM(lpMyFilter)
+	_FFC_FREEMEM(lpUserCustomFilter)
+	_FFC_FREEMEM(lpFileName)
+	_FFC_FREEMEM(lpFileTitle)
+ENDIF		
+_FFC_MEMCPY(lpInitialDirectory, THIS.cInitialDirectory + CHR(0), MIN(LEN(THIS.cInitialDirectory) + 1, 260))
+
+* Title bar text
+lpTitlebarText = _FFC_MALLOC(Len(THIS.cTitlebartext) + 2)
+_FFC_MEMCPY(lpTitlebarText, THIS.cTitlebartext + CHR(0) + CHR(0), LEN(THIS.cTitlebarText) + 2)
+
+nFileOffset = 0
+nFileExtension = 0
+
+* Default Extension
+cDefExt = "TXT" + CHR(0) + CHR(0)
+lpDefExt = _FFC_MALLOC(LEN(THIS.cDefaultExtension) + 1)
+_FFC_MEMCPY(lpDefExt, THIS.cDefaultExtension + CHR(0), LEN(THIS.cDefaultExtension) + 1)
+
+lCustomData = 0	&& not used without a hook
+lpHook = 0
+lpTemplateName = 0
+
+lStructSize = IIF(VAL(OS(3)) > 4, 22, 19) * 4
+
+cMyStruct = THIS.IntegerToString(lStructSize,4) + ;
+	THIS.IntegerToString(hwndOwner,4) + ;
+	THIS.IntegerToString(hInstance,4) + ;
+	THIS.IntegerToString(lpMyFilter,4) + ;
+	THIS.IntegerToString(lpUserCustomFilter,4) + ;
+	THIS.IntegerToString(nMaxCustomFilter,4) + ;
+	THIS.IntegerToString(THIS.nFilterIndex,4) + ;
+	THIS.IntegerToString(lpFileName,4) + ;
+	THIS.IntegerToString(nMaxFileName,4) + ;
+	THIS.IntegerToString(lpFileTitle,4) + ;
+	THIS.IntegerToString(nMaxFileTitle,4) + ;
+	THIS.IntegerToString(lpInitialDirectory,4) + ;
+	THIS.IntegerToString(lpTitleBarText,4) + ;
+	THIS.IntegerToString(nFlags,4) + ;
+	THIS.IntegerToString(nFileOffset,2) + ;
+	THIS.IntegerToString(nFileExtension,2) + ;
+	THIS.IntegerToString(lpDefExt,4) + ;
+	THIS.IntegerToString(lCustomData,4) + ;
+	THIS.IntegerToString(lpHook,4) + ;
+	THIS.IntegerToString(lpTemplateName,4)
+
+IF VAL(OS(3)) > 4
+	cMyStruct = cMyStruct + ;
+	THIS.IntegerToString(0,4) + ;
+	THIS.IntegerToString(0,4) + ;
+	THIS.IntegerToString(nFlagsEx,4)
+ENDIF
+
+* Call the dialog now
+IF THIS.lsavedialog
+	nReturnVal = _FFC_SAVEFILENAME(@cMyStruct)
+ELSE
+	nReturnVal = _FFC_GETFILENAME(@cMyStruct)
+ENDIF
+
+IF nReturnVal = 1
+	*  Now retrieve info from allocated strings		
+	*  Retrieve Filename string
+	DECLARE INTEGER memcpy in msvcrt.dll AS	_FFC_MEMCPY2 STRING @, INTEGER , INTEGER
+	lcFileName = REPL(CHR(0),nMaxFileName)
+	_FFC_MEMCPY2(@lcFileName, lpFileName, nMaxFileName)
+	nFileNameOffset = THIS.StringToInteger(SUBSTR(cMyStruct, 14*4+1, 2), 2)
+
+	*  Check if user selected multiple files.
+	IF THIS.lAllowMultiSelect AND nFileNameOffset > 1 AND SUBSTR(lcFileName, nFileNameOffset, 1) = CHR(0)
+		*Now parse out to get multiple file names
+		nCurrentFilePos = AT(CHR(0), lcFileName) + 1
+		THIS.cFilePath = LEFT(lcFileName, nCurrentFilePos - 2)
+		nArraySize = 1
+		DO WHILE .T.
+			IF SUBSTR(lcFileName, nCurrentFilePos, 1) = CHR(0)
+				* end of list.
+				EXIT
+			ENDIF
+			DIMENSION THIS.aFileNames[nArraySize]
+			nNextFilePos = AT(CHR(0), lcFileName, nArraySize + 1) + 1
+			THIS.aFileNames[nArraySize] = SUBSTR(lcFileName, nCurrentFilePos, nNextFilePos - nCurrentFilePos - 1)
+			nArraySize = nArraySize + 1
+			nCurrentFilePos = nNextFilePos
+		ENDDO
+		THIS.nFileCount = nArraySize - 1
+	ELSE
+		*  Didn't multiselect, so there's just one filename.
+		lcFileName = LEFT(lcFileName, AT(CHR(0), lcFileName) - 1)
+		THIS.cFilePath = JUSTPATH(lcFileName)
+		DIMENSION THIS.aFileNames[1]
+		THIS.aFileNames[1] = JUSTFNAME(lcFileName)
+		THIS.nFileCount = 1
+	ENDIF
+			
+	THIS.cFileName = LEFT(lcFileName, AT(CHR(0), lcFileName) - 1)
+
+	lcUserCustomFilter= repl(chr(0), nMaxCustomFilter)
+	_FFC_MEMCPY2(@lcUserCustomFilter, lpUserCustomFilter, nMaxCustomFilter)
+	THIS.cCustomFilter= LEFT(lcUserCustomFilter, AT(CHR(0), lcUserCustomFilter) - 1)
+
+	lcFileTitle = repl(chr(0), nMaxFileTitle)
+	_FFC_MEMCPY2(@lcFileTitle, lpFileTitle, nMaxFileTitle)
+	THIS.cFileTitle = LEFT(lcFileTitle , AT(CHR(0), lcFileTitle ) - 1)
+			
+	THIS.nFilterIndex = THIS.StringToInteger(SUBSTR(cMyStruct, 6*4+1, 4), 4)
+ENDIF
+
+_FFC_FREEMEM(lpMyFilter)
+_FFC_FREEMEM(lpUserCustomFilter)
+_FFC_FREEMEM(lpFileName)
+_FFC_FREEMEM(lpFileTitle)
+_FFC_FREEMEM(lpInitialDirectory)
+_FFC_FREEMEM(lpTitleBarText)
+_FFC_FREEMEM(lpDefExt)
+		
+RETURN nReturnVal
+ENDPROC
+PROCEDURE integertostring
+LPARAMETERS nInteger, nBytes
+LOCAL cRetVal
+IF pCount() < 2
+	nBytes = 4
+ENDIF
+cRetVal = ""
+FOR nCurByte = 1 to nBytes
+	cRetVal = cRetVal + CHR(BITAND(BITRSHIFT(nInteger, 8 * (nCurByte -1) ), 255))
+ENDFOR
+RETURN cRetVal
+
+ENDPROC
+PROCEDURE loaddlls
+DECLARE INTEGER GetSaveFileNameA IN comdlg32.dll AS _FFC_SAVEFILENAME STRING @
+DECLARE INTEGER GetOpenFileNameA IN comdlg32.dll AS _FFC_GETFILENAME STRING @
+DECLARE INTEGER malloc IN msvcrt.dll AS _FFC_MALLOC INTEGER
+DECLARE free in msvcrt.dll AS _FFC_FREEMEM INTEGER
+
+ENDPROC
+PROCEDURE showdialog
+THIS.LoadDLLs()
+THIS.DialogHandler()
+THIS.ClearDLLs()
+
+ENDPROC
+PROCEDURE stringtointeger
+LPARAMETERS cPDWORD, nBytes
+LOCAL nCurByte, nRetVal
+IF PCOUNT() < 2
+	nBytes = LEN(cPDWord)
+ENDIF
+nRetVal = 0
+FOR nCurByte = 1 to nBytes
+	nRetVal = nRetVal + ASC(SUBSTR(cPDWord, nCurByte, 1))*(256^(nCurByte-1))
+ENDFOR
+RETURN nRetVal
+
+ENDPROC
+PROCEDURE testdialog
+
+LOCAL i
+* This is a sample program to test dialog
+
+THIS.AddFilter("My VFP files (*.prg, etc.)", "*.PRG;*.SCX;*.VCX;*.PJX")
+THIS.AddFilter("My text files (*.txt, etc.)", "*.TXT; *.H")
+
+*  Dialog properties.
+THIS.cTitlebarText = "This is a test dialog"
+THIS.lAllowMultiselect = .T.
+
+*  Initial defaults.
+THIS.cFileName = "test.prg"
+THIS.cInitialDirectory = "c:\temp"
+THIS.cDefaultExtension = "TXT"
+
+*  Display the dialog and get results.
+THIS.showdialog()
+
+*  Display the name(s) of the file(s) selected.
+FOR i = 1 to x.nFileCount
+	? "File name: " + TRANS(m.i) + ":", THIS.aFileNames[m.i]
+ENDFOR
+
+? "Files were chosen from:", THIS.cFilePath
+? "FileName property:", THIS.cFileName
+? "FileTitle property:", THIS.cFileTitle
+? "Custom filter that the user created:" , THIS.cCustomFilter
+? "Filter index (which of our filters the user selected):", THIS.nFilterIndex
+
+THIS.clearfilters()
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+lallowmultiselect Whether to allow selection of multiple files.
+cfilename Name of file selected or initially set as default.
+cinitialdirectory Initial directory to show files from.
+cdefaultextension Default file extension to display.
+lsavedialog Use Save dialog instead of Open one.
+nfilterindex Specifies which of the filters the user selected from the dialog.
+nfilecount Number of files selected from dialog.
+cfilepath Path that files were selected from.
+ccustomfilter Custom filter the user created while using dialog.
+cfiletitle File title property of the selected file(s).
+ctitlebartext Caption for dialog title bar.
+lnewexplorer Use new explorer user interface and features such as Places bar.
+lhidereadonly Hides read-only files from list.
+lfilemustexist Allows only valid existing files to be entered.
+lnonetworkbutton Do not include a network button in dialog.
+lnochangedir Don't allow initially displayed directory to be changed.
+lnovalidate
+lnoplacesbar Do not include Places bar in dialog.
+nhwndowner For internal use only.
+ninstance For internal use only.
+*stringtointeger 
+*integertostring 
+*showdialog Displays dialog with various options such as filters.
+*addfilter Sets file extension filters for use when displaying dialog.
+^afilterlist[1,2] Array of file extension filters passed to dialog.
+^afilenames[1,0] Array of filenames returned from dialog.
+*loaddlls 
+*cleardlls 
+*clearfilters Clears all file extension filters.
+*testdialog Test script for displaying a dialog.
+*dialoghandler 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _comdlg
+[EOF]
