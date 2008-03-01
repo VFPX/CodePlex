@@ -1,0 +1,2723 @@
+SCCTEXT Version 4.0.0.2
+PLATFORM C(8,0),UNIQUEID C(10,0),TIMESTAMP N(10,0),CLASS M(4,0),CLASSLOC M(4,0),BASECLASS M(4,0),OBJNAME M(4,0),PARENT M(4,0),PROPERTIES M(4,0),PROTECTED M(4,0),METHODS M(4,0),OBJCODE M(4,0),OLE M(4,0),OLE2 M(4,0),RESERVED1 M(4,0),RESERVED2 M(4,0),RESERVED3 M(4,0),RESERVED4 M(4,0),RESERVED5 M(4,0),RESERVED6 M(4,0),RESERVED7 M(4,0),RESERVED8 M(4,0),USER M(4,0)
+1252
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] Class     
+[START RESERVED1]
+VERSION =   3.00[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RNH11SBU4
+[CLASS] _container
+[CLASSLOC] _base.vcx
+[BASECLASS] container
+[OBJNAME] _output
+[START PROPERTIES]
+Width = 33
+Height = 27
+BackStyle = 0
+BorderWidth = 0
+cvfpprintername = ("")
+coption = ("WINDEFAULT")
+creport = ("")
+calias = ("")
+cfieldlist = ("")
+cdestination = ("PRINTREPORT")
+ctextfile = ("")
+cdisplayfontname = ("Courier New")
+laddsourcenametodropdown = .T.
+chtmlclass = 
+chtmlstyleid = ("")
+cscope = ("")
+Name = "_output"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+IF NOT DODEFAULT()
+   RETURN .F.
+ENDIF
+
+THIS.SetDestinations()
+IF EMPTY(THIS.cAlias)
+   THIS.cAlias = ALIAS()
+ENDIF
+
+
+
+ENDPROC
+PROCEDURE calias_assign
+LPARAMETERS tcNewVal
+LOCAL lcNewVal, llSame
+
+IF VARTYPE(tcNewVal) # "C" OR EMPTY(tcNewVal) OR NOT USED(tcNewVal)
+   lcNewVal = ""
+ELSE
+   lcNewVal = ALLTR(PROPER(tcNewVal))
+ENDIF
+
+llSame = (THIS.cAlias == lcNewVal)
+THIS.cAlias = lcNewVal
+
+IF NOT llSame
+   THIS.SetDestinations()
+ENDIF
+
+
+
+ENDPROC
+PROCEDURE cdestination_assign
+LPARAMETERS tcNewVal
+IF VARTYPE(tcNewVal) # "C"
+   THIS.cDestination = THIS.aDestinations[1,2]
+ELSE
+   THIS.cDestination = UPPER(ALLTRIM(tcNewVal))
+ENDIF
+
+THIS.SetDestinations()
+
+ENDPROC
+PROCEDURE cdisplayfontname_assign
+LPARAMETERS tcNewVal
+IF VARTYPE(tcNewVal) # "C" OR EMPTY(tcNewVal)
+   RETURN
+ENDIF
+
+LOCAL laTemp[1], lcVal, lcFont
+lcVal = ALLTR(tcNewVal)
+
+IF NOT EMPTY(AFONT(laTemp))
+
+   FOR EACH  lcFont IN laTemp
+      IF UPPER(lcVal) == UPPER(lcFont)
+         THIS.cDisplayFontName = lcVal
+         EXIT
+      ENDIF
+   ENDFOR
+
+ENDIF
+
+ENDPROC
+PROCEDURE coption_assign
+LPARAMETERS tcNewVal
+IF VARTYPE(tcNewVal) # "C"
+   THIS.cOption = THIS.aOptions[1,2]
+ELSE
+   THIS.cOption = UPPER(ALLTRIM(tcNewVal))
+ENDIF
+
+
+ENDPROC
+PROCEDURE copytable
+LOCAL lcClauses, lcFile
+
+IF .F. && NOT EMPTY(THIS.cFieldList)
+   * the fields list cannot be trusted for COPY TO,
+   * because expressions in the fields list are
+   * not likely to work.
+   * We could make it the developer's responsibility to
+   * set the FIELDS list properly before
+   * calling this option/"EXPORT" as destination,
+   * but it is just as easy for the developer
+   * to use an alias with the fields already formatted
+   * and chosen, either with a SELECT or a SET FIELDS <expr list>
+   * so it's better not to leave this in place.
+
+   lcClauses = STRTRAN(THIS.cFieldList,CHR(13),",")
+   lcClauses = " FIELDS "+lcClauses
+
+ELSE
+
+   lcClauses = ""
+
+ENDIF
+
+IF NOT EMPTY(THIS.cScope)
+   lcClauses = lcClauses + " " + THIS.cScope
+ENDIF
+
+lcClauses = lcClauses + " TYPE "+THIS.cOption
+
+lcFile = ALLTRIM(THIS.cTextFile)
+
+DO CASE
+CASE EMPTY(lcFile)
+   lcFile = "R"+SYS(2015)
+CASE RIGHT(lcFile,1) = "\"
+   lcFile = lcFile + "R"+SYS(2015)
+OTHERWISE
+   * we're okay
+ENDCASE
+
+IF AT(".",lcFile) = 0
+
+   *&* change in VFP 7 -- extension for delimited files
+   *&* explicitly set
+
+   DO CASE
+   CASE THIS.cOption = "DELIMITED"
+      lcFile = lcFile + ".ASC"
+   CASE LEN(THIS.cOption) > 3
+      lcFile = lcFile + ".DBF"
+   OTHERWISE
+      lcFile = lcFile + "."+THIS.cOption
+   ENDCASE
+
+ENDIF
+
+lcFile = FULLPATH(lcFile)
+THIS.cTextFile = lcFile
+
+COPY TO (lcFile) &lcClauses
+
+ENDPROC
+PROCEDURE creport_assign
+LPARAMETERS tcNewVal
+LOCAL lcNewVal, llSame
+
+IF VARTYPE(tcNewVal) # "C" OR EMPTY(tcNewVal)
+   lcNewVal = ""
+ELSE
+   lcNewVal = ALLTR(tcNewVal)
+   IF AT(".",lcNewVal) = 0
+      lcNewVal = lcNewVal + ".FRX"
+   ENDIF
+   IF NOT FILE(lcNewVal)
+      lcNewVal = FULLPATH(lcNewVal)
+      IF NOT FILE(lcNewVal)
+         IF INLIST(_VFP.Startmode,0,4)
+            ?? CHR(7)
+            WAIT WINDOW NOWAIT LEFTC(OUTPUT_REPORT_NOT_FOUND_LOC,254)
+         ENDIF
+         lcNewVal = ""
+      ENDIF
+   ENDIF
+ENDIF
+
+llSame = (THIS.cReport == lcNewVal)
+THIS.cReport = lcNewVal
+
+IF NOT llSame
+   THIS.SetDestinations()
+ENDIF
+
+ENDPROC
+PROCEDURE cscope_assign
+LPARAMETERS tvNewVal
+IF VARTYPE(tvNewVal) = "C"
+   THIS.cScope = tvNewVal
+ENDIF
+
+ENDPROC
+PROCEDURE ctextfile_assign
+LPARAMETERS tvNewVal
+IF VARTYPE(tvNewVal) = "C"
+   LOCAL liPos, lcVal
+   liPos = RAT("\",tvNewVal)
+   IF liPos > 0
+      IF NOT DIRECTORY(LEFT(tvNewVal,liPos))
+         lcVal = SUBSTR(tvNewVal,liPos+1)
+      ELSE
+         lcVal = tvNewVal
+      ENDIF
+   ELSE
+      liPos = AT(":",tvNewVal)
+      IF liPos > 0 AND ;
+        (liPos = LEN(tvNewVal) OR ;
+         SUBSTR(tvNewVal,liPos+1,1) # "\" )
+        lcVal = STUFF(tvNewVal,liPos+1,0,"\")
+      ELSE
+        lcVal = tvNewVal
+      ENDIF
+      liPos = RAT("\",lcVal)
+      IF NOT DIRECTORY(LEFT(lcVal,liPos))
+         lcVal = SUBSTR(lcVal, liPos+1)
+      ENDIF
+   ENDIF
+
+   THIS.cTextfile = lcVal
+
+ENDIF
+
+ENDPROC
+PROCEDURE cvfpprintername_access
+*!*	   this is the VF 5 code replaced by the new RETURN line!
+*!*	IF EMPTY(THIS.cVFPPrinterName)
+*!*	   LOCAL lcAlias, liSelect, liLine, lcLine, liMemoWidth, lcContents, lcFieldsList
+*!*	
+*!*	   IF SET("FIELDS") = "ON"
+*!*	      lcFieldsList = SET("FIELDS",1)
+*!*	      SET FIELDS OFF
+*!*	   ENDIF
+*!*	
+*!*	   liMemoWidth = SET("MEMOWIDTH")
+*!*	   liSelect = SELECT()
+*!*	   lcAlias = "C"+SYS(2015)
+*!*	   SELECT 0
+*!*	   SET MEMOWIDTH TO 1024
+*!*	   CREATE CURSOR (lcAlias) (onefield l)
+*!*	   CREATE REPORT (lcAlias) FROM (lcAlias)
+*!*	   USE IN (lcAlias)
+*!*	   USE (lcAlias+".FRX") ALIAS (lcAlias)
+*!*	   lcContents = Expr
+*!*	   USE IN (lcAlias)
+*!*	   ERASE (lcAlias+".FRX") NORECYCLE
+*!*	   ERASE (lcAlias+".FRT") NORECYCLE
+*!*	   liLine = ATCLINE("DEVICE=",lcContents)
+*!*	   IF EMPTY(liLine)
+*!*	     liLine = ATCLINE("DEVICE =",lcContents)
+*!*	   ENDIF
+*!*	   lcLine = MLINE(lcContents,liLine)
+*!*	   SELECT (liSelect)
+*!*	   SET MEMOWIDTH TO liMemoWidth
+*!*	   THIS.cVFPPrinterName = ALLTR(SUBSTRC(lcLine,AT("=",lcLine)+1))
+*!*	
+*!*	   IF NOT EMPTY(lcFieldsList)
+*!*	      SET FIELDS ON
+*!*	      SET FIELDS TO
+*!*	      SET FIELDS TO &lcFieldsList
+*!*	   ENDIF
+
+*!*	ENDIF
+
+*!*	RETURN THIS.cVFPPrinterName
+RETURN SET("PRINTER",3)
+ENDPROC
+PROCEDURE genhtml
+ASSERT (NOT EMPTY(THIS.cReport+THIS.cAlias))
+ASSERT IIF(NOT EMPTY(THIS.cReport), FILE(THIS.cReport), .T.)
+ASSERT IIF(NOT EMPTY(THIS.cAlias), USED(THIS.cAlias), .T.)
+
+LOCAL lcFile, lvClass,liShow, lvDummy, lcScope, lvStyle, lcSource
+
+IF (EMPTY(_GENHTML) OR ;
+   (NOT (FILE(_GENHTML) OR FILE(_GENHTML+".FXP"))) )
+   _GENHTML = ""
+   RETURN
+ENDIF
+
+IF VARTYPE(THIS.cHTMLClass) = "C" AND (NOT EMPTY(THIS.cHTMLClass))
+   lvClass = THIS.cHTMLClass
+ENDIF
+
+IF VARTYPE(THIS.cHTMLStyleID) = "C" AND (NOT EMPTY(THIS.cHTMLStyleID))
+   lvStyle = THIS.cHTMLStyleID
+ENDIF
+
+IF VARTYPE(THIS.cScope) = "C" AND (NOT EMPTY(THIS.cScope))
+   lcScope = THIS.cScope
+ELSE
+   lcScope = "ALL"
+ENDIF
+
+DO CASE
+CASE THIS.cOption = "VIEWSOURCE"
+   liShow = 1
+CASE THIS.cOption = "WEBVIEW"
+   liShow = 2
+OTHERWISE
+   liShow = 0
+ENDCASE
+
+
+lcFile = ALLTRIM(THIS.cTextFile)
+
+DO CASE
+CASE EMPTY(lcFile)
+   lcFile = "R"+SYS(2015)
+CASE RIGHT(lcFile,1) = "\"
+   lcFile = lcFile + "R"+SYS(2015)
+OTHERWISE
+   * we're okay
+ENDCASE
+
+IF AT(".",lcFile) = 0
+   lcFile = lcFile + ".HTM"
+   lcFile = FULLPATH(lcFile)
+ENDIF
+
+THIS.cTextFile = lcFile
+
+IF EMPTY(THIS.cReport)
+   DO CASE
+   CASE EMPTY(THIS.cFieldList)
+      lcSource = THIS.cAlias
+   CASE CHR(13) $ THIS.cFieldList
+      lcSource = THIS.cAlias+CHR(13)+THIS.cFieldList
+   OTHERWISE
+      lcSource = THIS.cAlias+","+THIS.cFieldList
+   ENDCASE
+   DO (_GENHTML) WITH lcFile, lcSource, liShow, lvDummy, lvStyle, lcScope, lvClass
+ELSE
+   DO (_GENHTML) WITH lcFile, THIS.cReport, liShow, lvDummy, lvStyle, lcScope, lvClass
+ENDIF
+
+* GENHTML Parameter list:
+* tcOutFile:		Output file name (defaults to .HTM extension).
+* tvSource:			Source file name, alias, or object.
+*                   tvSource can contain alias delimited by either CR's or commas
+*                   from a delimited list of fields to be generated (field list
+*                   using same delimiter as separator from alias)
+* tnShow: 			0/Empty = Generate output file only.
+*					1 = Create output file and view generated source file.
+*					2 = Create output file and show generated file in internet browser.
+*					3 = Create _oHTML object.
+*					4 = Create _oHTML object only, no prompt for output file, no prompt for
+*						source file.
+* tvIELink:			Create link to InternetExplorer.Application using automation.
+* tcHTMLStyleID     Style from style table
+* tcHTMLScope       scope clause
+* tcHTMLClass:		delimited string holding Class, Classlib, IN EXE/APP for instantiated for HTML object.
+
+
+
+ENDPROC
+PROCEDURE lpreventsourcechanges_assign
+LPARAMETERS m.vNewVal
+THIS.lpreventsourcechanges = m.vNewVal
+THIS.SetDestinations()
+
+ENDPROC
+PROCEDURE output
+LOCAL liSelect
+
+IF NOT EMPTY(THIS.cAlias)
+   liSelect = SELECT()
+   SELECT (THIS.cAlias)
+ENDIF
+
+DO CASE
+CASE INLIST("#"+THIS.cDestination+"#","#PRINTREPORT#","#PRINTFILE#","#TEXTFILE#")
+   THIS.PrintReport()
+CASE THIS.cDestination = "HTMLFILE"
+   THIS.GenHTML()
+CASE THIS.cDestination = "PRINTLIST"
+   THIS.PrintList()
+CASE THIS.cDestination = "SCREEN"
+   THIS.OutputToScreen()
+CASE THIS.cDestination = "EXPORT"
+   THIS.CopyTable()
+ENDCASE
+
+IF NOT EMPTY(liSelect)
+   SELECT (liSelect)
+ENDIF
+
+ENDPROC
+PROCEDURE outputtoscreen
+ASSERT EMPTY(THIS.cReport) OR ;
+       (VARTYPE(THIS.cReport) = "C" AND ;
+        (FILE(THIS.cReport) OR FILE(THIS.cReport+".FRX")))
+
+ASSERT EMPTY(THIS.cAlias) OR ;
+       (VARTYPE(THIS.cAlias) = "C" AND ;
+        USED(THIS.cAlias))
+
+ASSERT EMPTY(THIS.cFieldList) OR ;
+       VARTYPE(THIS.cFieldList) = "C"
+
+IF EMPTY(THIS.cReport) AND ;
+   INLIST("#"+THIS.cOption+"#","#ASCII#","#GRAPHICAL#")
+   RETURN .F.
+ENDIF
+
+IF EMPTY(THIS.cAlias) AND ;
+   INLIST("#"+THIS.cOption+"#","#BROWSE#","#LIST#") AND ;
+   EMPTY(ALIAS())
+   RETURN .F.
+ENDIF
+
+LOCAL lcWindow, lcName, loWindow, lcClauses, ;
+      lcFileName, loTopForm, llInFoxFrame, ;
+      liPos, lcChar, liFieldNo, lcExpr
+
+
+* the saving and restoring of calling windows
+* is important to deal with modal calling windows:
+lcWindow = WONTOP()
+
+loTopForm = THIS.cusWindows.GetCurrentTopFormRef()
+
+llInFoxFrame = (UPPER(loTopForm.Name) == "SCREEN")
+
+IF INLIST("#"+THIS.cOption+"#","#BROWSE#","#GRAPHICAL#")
+
+   lcName = "W"+SYS(2015)
+
+*!*	   DEFINE WINDOW (lcName) ;
+*!*	      FROM  0,0 TO SROWS(), SCOLS() ;
+*!*	      SYSTEM FLOAT GROW ZOOM CLOSE FONT (THIS.cDisplayFontName) ;
+*!*	      TITLE OUTPUT_SCREEN_PREVIEW_LOC ;
+*!*	      NAME (lcName)
+
+   DEFINE WINDOW (lcName) ;
+      AT 0,0 SIZE 20,20 ;
+      SYSTEM FLOAT GROW ZOOM CLOSE FONT (THIS.cDisplayFontName) ;
+      TITLE OUTPUT_SCREEN_PREVIEW_LOC ;
+      NAME (lcName) IN WINDOW (loTopForm.Name)
+
+   loWindow = EVAL(lcName)
+   loWindow.FontName = THIS.cDisplayFontName
+   loWindow.Height = (loTopForm.Height * 2)/3
+   loWindow.Width =  (loTopForm.Width * 2)/3
+
+ELSE
+
+   LOCAL lcFile
+   lcFile = FULLPATH(THIS.ClassLibrary)
+   loWindow = NEWOBJECT("_ShowText", lcFile)
+
+   IF TYPE("loWindow.Name") = "C"
+      lcName = loWindow.Name
+      loWindow.lSuppressCaptionChange = .T.
+      loWindow.cFixedFontName = THIS.cDisplayFontName
+      loWindow.SetFonts()
+
+   ELSE
+      RETURN .F.
+   ENDIF
+
+ENDIF
+
+loWindow.Icon = loTopForm.Icon
+
+IF INLIST("#"+THIS.cOption+"#","#BROWSE#","#LIST#") AND ;
+   NOT EMPTY(THIS.cFieldList)
+
+
+   IF THIS.cOption == "BROWSE"
+      * take care of the fact that calculated fields
+      * will need fieldaliases in a browse:
+         liFieldNo = 1
+         lcExpr = ""
+
+      IF CHR(13) $ THIS.cFieldList
+
+         LOCAL ARRAY laFields[1]
+
+         lcClauses = ""
+
+         FOR liFieldNo = 2 TO ALINES(laFields,THIS.cFieldList, .T.)
+            lcClauses = lcClauses + ;
+                        ",Field"+ALLTR(STR(liFieldNo))+"=" + ;
+                        laFields[liFieldNo]
+         ENDFOR
+
+         lcClauses = "Field1="+laFields[1]+lcClauses
+
+      ELSE
+
+         lcClauses = "Field1="
+
+         FOR liPos = 1 TO LEN(THIS.cFieldList)
+            lcChar = SUBSTR(THIS.cFieldList,liPos,1)
+            IF lcChar = ","
+               IF TYPE(lcExpr) # "U"
+                  lcExpr = ""
+                  liFieldNo = liFieldNo + 1
+                  lcClauses = lcClauses + ",Field"+ALLTR(STR(liFieldNo))+"="
+               ELSE
+                  lcExpr = lcExpr + ","
+                  lcClauses = lcClauses + ","
+               ENDIF
+            ELSE
+               lcExpr = lcExpr + lcChar
+               lcClauses = lcClauses + lcChar
+            ENDIF
+         ENDFOR
+      ENDIF
+
+   ELSE
+
+       lcClauses = STRTRAN(THIS.cFieldList,CHR(13),",")
+
+   ENDIF
+
+   lcClauses = " FIELDS "+lcClauses
+
+ELSE
+
+   lcClauses = ""
+
+ENDIF
+
+IF INLIST("#"+THIS.cOption+"#","#LIST#","#ASCII#")
+
+
+   lcFileName = "R"+SYS(2015)+".TXT"
+
+
+ENDIF
+
+IF THIS.cOption == "BROWSE"
+
+   lcClauses = lcClauses + " NOEDIT NODELETE NOAPPEND NOMENU "
+ENDIF
+
+IF THIS.cOption == "BROWSE" OR ;
+   THIS.cOption  == "GRAPHICAL"
+
+  lcClauses = lcClauses+ " WINDOW (lcName) IN WINDOW (loTopForm.Name)"
+
+ENDIF
+
+IF NOT EMPTY(THIS.cScope)
+   lcClauses = lcClauses + " " + THIS.cScope
+ENDIF
+
+
+DO CASE
+
+CASE THIS.cOption == "ASCII"
+
+   _ASCIICOLS = 80
+   _ASCIIROWS = 63
+
+   REPORT FORM (THIS.cReport) ASCII ;
+      TO FILE (lcFileName) NOCONSOLE &lcClauses
+
+   loWindow.cSourceFile = lcFileName
+   loWindow.Show(1)
+   ERASE (lcFileName) NORECYCLE
+
+
+CASE THIS.cOption == "GRAPHICAL"
+
+   ZOOM WINDOW (lcName) MAX
+
+   IF SET("REPORTB") = 90 AND ATC("NOWAIT",lcClauses) = 0
+      lcClauses = lcClauses + " NOWAIT "
+   ENDIF
+
+   REPORT FORM (THIS.cReport) PREVIEW &lcClauses
+
+   IF ATC(" NOWAIT ",lcClauses) > 0 AND ;
+      TYPE("THISFORM") = "O" AND ;
+      THISFORM.WindowType = 1 && modal
+      RELEASE THISFORM
+   ENDIF
+
+CASE THIS.cOption == "LIST"
+
+   LIST OFF TO FILE (lcFileName) &lcClauses NOCONSOLE
+   loWindow.cSourceFile = lcFileName
+   loWindow.Show(1)
+   ERASE (lcFileName) NORECYCLE
+
+
+CASE THIS.cOption == "BROWSE"
+
+   BROWSE &lcClauses
+
+OTHERWISE
+
+   * ?
+
+ENDCASE
+
+
+*!*	IF THIS.cOption # "GRAPHICAL"
+*!*	   * report graphical preview takes special
+*!*	   * sequence of window handling, in the CASE above
+   IF NOT EMPTY(lcWindow)
+      ACTIVATE WINDOW (lcWindow) SAME
+   ENDIF
+*!*	ENDIF
+
+RELEASE WINDOW (lcName)
+
+RETURN
+
+ENDPROC
+PROCEDURE printlist
+LOCAL lcClauses
+
+THIS.SetOutputPrinter()
+
+IF NOT EMPTY(THIS.cFieldList)
+
+   lcClauses = STRTRAN(THIS.cFieldList,CHR(13),",")
+   lcClauses = " FIELDS "+lcClauses
+
+ELSE
+
+   lcClauses = ""
+
+ENDIF
+
+IF NOT EMPTY(THIS.cScope)
+   lcClauses = lcClauses + " " + THIS.cScope
+ENDIF
+
+LIST OFF &lcClauses TO PRINT NOCONSOLE
+
+
+
+
+
+
+ENDPROC
+PROCEDURE printreport
+ASSERT (NOT EMPTY(THIS.cReport)) AND FILE(THIS.cReport)
+
+* note: the HTML portion of this method is not currently
+* in use, we're going through _GENHTML on HTML output
+* for either alias or report.  However, REPORT FORM ... TO HTML
+* might be added to the language at some point
+
+LOCAL lcClauses, lcDestination,lcFile
+
+IF NOT INLIST(THIS.cDestination,"TEXTFILE","HTMLFILE")
+   THIS.SetOutputPrinter()
+ENDIF
+
+IF NOT EMPTY(THIS.cScope)
+   lcClauses = THIS.cScope
+ELSE
+   lcClauses = ""
+ENDIF
+
+IF THIS.cDestination # "PRINTREPORT"
+
+   lcFile = ALLTRIM(THIS.cTextFile)
+   DO CASE
+   CASE EMPTY(lcFile)
+      lcFile = "R"+SYS(2015)
+   CASE RIGHT(lcFile,1) = "\"
+      lcFile = lcFile+ "R"+SYS(2015)
+   OTHERWISE
+      * we're okay
+   ENDCASE
+   IF AT(".",lcFile) = 0
+      DO CASE
+      CASE THIS.cDestination = "PRINTFILE"
+         lcFile = lcFile + ".PRN"
+      CASE THIS.cDestination = "HTMLFILE"
+         lcFile = lcFile + ".HTM"
+      OTHERWISE
+         lcFile = lcFile + ".TXT"
+      ENDCASE
+   ENDIF
+   lcFile = FULLPATH(lcFile)
+
+ENDIF
+
+DO CASE
+
+CASE THIS.cDestination = "TEXTFILE"
+
+   lcDestination = " TO FILE '"+ lcFile +"' ASCII "
+
+CASE THIS.cDestination = "PRINTFILE"
+
+   lcDestination = " TO FILE "+ lcFile +" "
+
+CASE THIS.cDestination = "HTMLFILE"
+
+   lcDestination = " TO FILE '"+ lcFile +"' HTML "
+
+OTHERWISE
+
+   lcDestination = " TO PRINT "
+
+ENDCASE
+
+THIS.cTextFile = lcFile
+
+IF ".LBX" $ UPPER(THIS.cReport)
+   * not that I think it makes any difference!!
+   LABEL FORM (THIS.cReport) &lcClauses &lcDestination NOCONSOLE
+ELSE
+   REPORT FORM (THIS.cReport) &lcClauses &lcDestination NOCONSOLE
+ENDIF
+
+
+ENDPROC
+PROCEDURE setdestinations
+LOCAL liPrintReport, liPrintList, liScreen, liTextFile, ;
+      liHTMLFile, liPrintFile, liExport, ;
+      lcSourceReport, lcSourceAlias, lcSourceBoth
+STORE 0 TO liPrintReport, liPrintList, liScreen, liTextFile, ;
+      liHTMLFile, liPrintFile, liExport
+
+IF (EMPTY(_GENHTML) OR ;
+   (NOT (FILE(_GENHTML) OR FILE(FORCEEXT(_GENHTML,".FXP")))) )
+   _GENHTML = ""
+ENDIF
+
+IF THIS.lAddSourceNameToDropDown
+   lcSourceReport = " ("+PROPER(JUSTFNAME(THIS.cReport))+")"
+   lcSourceAlias =  " ("+THIS.cAlias+")"
+   lcSourceBoth =   " ("+PROPER(JUSTFNAME(THIS.cReport))+","+THIS.cAlias+")"
+ELSE
+   STORE "" TO lcSourceReport, lcSourceAlias, lcSourceBoth
+ENDIF
+
+DO CASE
+CASE (NOT THIS.lPreventSourceChanges) OR ;
+   (NOT EMPTY(THIS.cAlias)) AND (NOT EMPTY(THIS.cReport))
+   IF EMPTY(_GENHTML)
+      DIME THIS.aDestinations[6,2]
+   ELSE
+      DIME THIS.aDestinations[7,2]
+      THIS.aDestinations[7,2] = "HTMLFILE"
+      liHTMLFile = 7
+   ENDIF
+   THIS.aDestinations[1,2] = "PRINTREPORT"
+   liPrintReport = 1
+   THIS.aDestinations[2,2] = "PRINTLIST"
+   liPrintList = 2
+   THIS.aDestinations[3,2] = "SCREEN"
+   liScreen = 3
+   THIS.aDestinations[4,2] = "TEXTFILE"
+   liTextFile = 4
+   THIS.aDestinations[5,2] = "PRINTFILE"
+   liPrintFile = 5
+   THIS.aDestinations[6,2] = "EXPORT"
+   liExport = 6
+
+CASE (NOT EMPTY(THIS.cAlias))
+   IF EMPTY(_GENHTML)
+      DIME THIS.aDestinations[3,2]
+   ELSE
+      DIME THIS.aDestinations[4,2]
+      THIS.aDestinations[4,2] = "HTMLFILE"
+      liHTMLFile = 4
+   ENDIF
+   THIS.aDestinations[1,2] = "PRINTLIST"
+   liPrintList = 1
+   THIS.aDestinations[2,2] = "SCREEN"
+   liScreen = 2
+   THIS.aDestinations[3,2] = "EXPORT"
+   liExport = 3
+
+CASE (NOT EMPTY(THIS.cReport))
+   IF EMPTY(_GENHTML)
+      DIME THIS.aDestinations[4,2]
+   ELSE
+      DIME THIS.aDestinations[5,2]
+      THIS.aDestinations[5,2] = "HTMLFILE"
+      liHTMLFile = 5
+   ENDIF
+   THIS.aDestinations[1,2] = "PRINTREPORT"
+   liPrintReport = 1
+   THIS.aDestinations[2,2] = "SCREEN"
+   liScreen = 2
+   THIS.aDestinations[3,2] = "TEXTFILE"
+   liTextFile = 3
+   THIS.aDestinations[4,2] = "PRINTFILE"
+   liPrintFile = 4
+
+OTHERWISE
+  * preventing source changes and both are empty --
+  * don't bother, but have to show something in the dialog!
+  liScreen = 1
+  IF NOT EMPTY(_GENHTML)
+     liHTMLFile = 2
+  ENDIF
+
+ENDCASE
+
+IF EMPTY(THIS.cReport)
+   IF liPrintReport > 0
+      THIS.aDestinations[liPrintReport,1] = "\"+OUTPUT_PRINT_REPORT_LOC
+      THIS.aDestinations[liTextFile,1] = "\"+OUTPUT_TEXTFILE_LOC
+      THIS.aDestinations[liPrintFile,1] = "\"+OUTPUT_PRINTFILE_LOC
+   ENDIF
+ELSE
+   THIS.aDestinations[liPrintReport,1] = OUTPUT_PRINT_REPORT_LOC + lcSourceReport
+   THIS.aDestinations[liTextFile,1] = OUTPUT_TEXTFILE_LOC + lcSourceReport
+   THIS.aDestinations[liPrintFile,1] = OUTPUT_PRINTFILE_LOC + lcSourceReport
+ENDIF
+
+IF EMPTY(THIS.cAlias)
+   IF liPrintList > 0
+      THIS.aDestinations[liPrintList,1] = "\"+OUTPUT_PRINT_LIST_LOC
+      THIS.aDestinations[liExport,1] = "\"+OUTPUT_EXPORT_LOC
+   ENDIF
+ELSE
+   THIS.aDestinations[liPrintList,1] = OUTPUT_PRINT_LIST_LOC + lcSourceAlias
+   THIS.aDestinations[liExport,1] = OUTPUT_EXPORT_LOC + lcSourceAlias
+ENDIF
+
+DO CASE
+CASE EMPTY(THIS.cAlias) AND EMPTY(THIS.cReport)
+   THIS.aDestinations[liScreen,1] = "\"+OUTPUT_SCREEN_LOC
+   IF NOT EMPTY(_GENHTML)
+      THIS.aDestinations[liHTMLFile,1] = "\"+OUTPUT_HTMLFILE_LOC
+   ENDIF
+CASE EMPTY(THIS.cAlias)
+   THIS.aDestinations[liScreen,1] = OUTPUT_SCREEN_LOC +  lcSourceReport
+   IF NOT EMPTY(_GENHTML)
+      THIS.aDestinations[liHTMLFile,1] = OUTPUT_HTMLFILE_LOC + lcSourceReport
+   ENDIF
+CASE EMPTY(THIS.cReport)
+   THIS.aDestinations[liScreen,1] = OUTPUT_SCREEN_LOC +  lcSourceAlias
+   IF NOT EMPTY(_GENHTML)
+      THIS.aDestinations[liHTMLFile,1] = OUTPUT_HTMLFILE_LOC + lcSourceAlias
+   ENDIF
+OTHERWISE
+   THIS.aDestinations[liScreen,1] = OUTPUT_SCREEN_LOC +  lcSourceBoth
+   IF NOT EMPTY(_GENHTML)
+      THIS.aDestinations[liHTMLFile,1] = OUTPUT_HTMLFILE_LOC + lcSourceBoth
+   ENDIF
+ENDCASE
+
+
+ENDPROC
+PROCEDURE setoptions
+DO CASE
+
+CASE INLIST("#"+THIS.cDestination+"#","#PRINTREPORT#", "#PRINTLIST#", "#PRINTFILE#")
+
+   DIME THIS.aOptions[3,2]
+
+   THIS.aOptions[1,1] = OUTPUT_PRINT_OPTIONS_WINDEFAULT_LOC + ;
+                        " ("+PROPER(SET("PRINT",2))+")"
+   THIS.aOptions[2,1] = OUTPUT_PRINT_OPTIONS_VFPDEFAULT_LOC + ;
+                        " ("+THIS.cVFPPrinterName+")"
+   THIS.aOptions[3,1] = OUTPUT_PRINT_OPTIONS_SETVFPDEFAULT_LOC
+
+   THIS.aOptions[1,2] = "WINDEFAULT"
+   THIS.aOptions[2,2] = "VFPDEFAULT"
+   THIS.aOptions[3,2] = "SETVFPDEFAULT"
+
+CASE THIS.cDestination == "SCREEN"
+
+   LOCAL liGraphical, liAscii, liBrowse, liList
+   STORE 0 TO liGraphical, liAscii, liBrowse, liList
+
+   IF (NOT THIS.lPreventSourceChanges) OR ;
+      (NOT EMPTY(THIS.cAlias)) AND (NOT EMPTY(THIS.cReport))
+       DIME THIS.aOptions[4,2]
+       THIS.aOptions[1,2] = "GRAPHICAL"
+       liGraphical = 1
+       THIS.aOptions[2,2] = "ASCII"
+       liAscii = 2
+       THIS.aOptions[3,2] = "BROWSE"
+       liBrowse = 3
+       THIS.aOptions[4,2] = "LIST"
+       liList = 4
+   ELSE
+       DIME THIS.aOptions[2,2]
+       IF EMPTY(THIS.cAlias)
+          THIS.aOptions[1,2] = "GRAPHICAL"
+          liGraphical = 1
+          THIS.aOptions[2,2] = "ASCII"
+          liAscii = 2
+       ELSE
+          THIS.aOptions[1,2] = "BROWSE"
+          liBrowse = 1
+          THIS.aOptions[2,2] = "LIST"
+          liList = 2
+       ENDIF
+   ENDIF
+
+   IF EMPTY(THIS.cReport)
+      IF NOT THIS.lPreventSourceChanges
+         THIS.aOptions[liGraphical,1] = "\"+OUTPUT_SCREEN_GRAPHICAL_LOC
+         THIS.aOptions[liAscii,1] = "\"+OUTPUT_SCREEN_ASCII_LOC
+      ENDIF
+   ELSE
+      THIS.aOptions[liGraphical,1] = OUTPUT_SCREEN_GRAPHICAL_LOC
+      THIS.aOptions[liAscii,1] = OUTPUT_SCREEN_ASCII_LOC
+   ENDIF
+
+   IF EMPTY(THIS.cAlias)
+      IF NOT THIS.lPreventSourceChanges
+         THIS.aOptions[liBrowse,1] = "\"+ OUTPUT_SCREEN_BROWSE_LOC
+         THIS.aOptions[liList,1] = "\"+OUTPUT_SCREEN_LIST_LOC
+      ENDIF
+   ELSE
+      THIS.aOptions[liBrowse,1] = OUTPUT_SCREEN_BROWSE_LOC
+      THIS.aOptions[liList,1] = OUTPUT_SCREEN_LIST_LOC
+   ENDIF
+
+
+CASE THIS.cDestination == "TEXTFILE"
+
+   * we don't use any items from the options array
+
+CASE THIS.cDestination == "HTMLFILE"
+
+    DIME THIS.aOptions[3,2]
+
+    IF EMPTY(THIS.cAlias) AND EMPTY(THIS.cReport)
+       THIS.aOptions[1,1] = "\"+OUTPUT_HTML_FILEONLY_LOC
+       THIS.aOptions[2,1] = "\"+OUTPUT_HTML_VIEWSOURCE_LOC
+       THIS.aOptions[3,1] = "\"+OUTPUT_HTML_WEBVIEW_LOC
+    ELSE
+       THIS.aOptions[1,1] = OUTPUT_HTML_FILEONLY_LOC
+       THIS.aOptions[2,1] = OUTPUT_HTML_VIEWSOURCE_LOC
+       THIS.aOptions[3,1] = OUTPUT_HTML_WEBVIEW_LOC
+    ENDIF
+
+    THIS.aOptions[1,2] = "FILEONLY"
+    THIS.aOptions[2,2] = "VIEWSOURCE"
+    THIS.aOptions[3,2] = "WEBVIEW"
+
+CASE THIS.cDestination == "EXPORT"
+
+   DIME THIS.aOptions[10,2]
+
+   * THIS.aOptions[1,1] = OUTPUT_EXPORT_EXCEL97
+   * THIS.aOptions[1,2] = "XL8"
+   THIS.aOptions[1,1] = OUTPUT_EXPORT_EXCEL5
+   THIS.aOptions[1,2] = "XL5"
+   THIS.aOptions[2,1] = OUTPUT_EXPORT_EXCEL2
+   THIS.aOptions[2,2] = "XLS"
+   THIS.aOptions[3,1] = OUTPUT_EXPORT_FOX2X
+   THIS.aOptions[3,2] = "FOX2X"
+   THIS.aOptions[4,1] = OUTPUT_EXPORT_FOXPLUS
+   THIS.aOptions[4,2] = "FOXPLUS"
+   THIS.aOptions[5,1] = OUTPUT_EXPORT_FIXEDLEN
+   THIS.aOptions[5,2] = "SDF"
+   THIS.aOptions[6,1] = OUTPUT_EXPORT_DELIMITED
+   THIS.aOptions[6,2] = "DELIMITED"
+   THIS.aOptions[7,1] = OUTPUT_EXPORT_LOTUS2
+   THIS.aOptions[7,2] = "WK1"
+   THIS.aOptions[8,1] = OUTPUT_EXPORT_DIF
+   THIS.aOptions[8,2] = "DIF"
+   THIS.aOptions[9,1] = OUTPUT_EXPORT_SYMPHONY
+   THIS.aOptions[9,2] = "WRK"
+   THIS.aOptions[10,1] = OUTPUT_EXPORT_CSV
+   THIS.aOptions[10,2] = "CSV"
+
+ENDCASE
+
+
+ENDPROC
+PROCEDURE setoutputprinter
+
+DO CASE
+CASE THIS.cOption = "WINDEFAULT"
+    SET PRINTER TO DEFAULT
+    * could also be: SET PRINTER TO NAME (SET(PRINTER,2))
+CASE THIS.cOption = "VFPDEFAULT"
+    SET PRINTER TO NAME (THIS.cVFPPrinterName)
+OTHERWISE
+    THIS.SetVFPPrinter()
+ENDCASE
+
+ENDPROC
+PROCEDURE setvfpprinter
+LOCAL lcName
+lcName = GETPRINTER()
+SET PRINTER TO NAME (lcName)
+IF INLIST("#"+THIS.cDestination+"#","#PRINTFILE#","#PRINTREPORT#","#PRINTLIST#")
+   THIS.aOptions[2,1] = OUTPUT_PRINT_OPTIONS_VFPDEFAULT_LOC + ;
+                        " ("+THIS.cVFPPrinterName+")"
+ENDIF
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+2[END RESERVED2]
+[START RESERVED3]
+cvfpprintername This is the name of the current VFP default printer as distinct from the Windows default printer.
+coption The list of available options which changes dynamically to fit the current cDestination.
+creport This is a label or report form suitable for VFP-formatted output.
+calias This is the data source that will be used for non-report/label output formats. This property will default to the current alias, if any.
+cfieldlist A comma-delimited list of fields or expressions. It affects only direct data sources (BROWSEs and LISTs).
+cdestination This is list of available destinations which changes dynamically depending on whether cReport, cAlias, or both, are filled out. The list of available destinations is stored in aDestinations[] array.
+lpreventsourcechanges Prevents source changes for cAlias or cReport.
+ctextfile This is the file name for all output destinations that go to disk, which include text files, printer-image files, and export formats.
+cdisplayfontname This is used for on-screen display of output, for example in a BROWSE or when the _Showtext class is instantiated for text display.
+laddsourcenametodropdown Affects how some destinations show in the aDestinations array.
+chtmlclass Optional HTML class and classlib passed to _GENHTML.
+chtmlstyleid Optional HTML style passed to _GENHTML.
+cscope This can be used to specify a macro-expanded string to be added to the command that executes the actual output.  It must be a legal scope such as "FOR <expr>".
+*setvfpprinter 
+*cvfpprintername_access 
+*coption_assign 
+*outputtoscreen Outputs to screen.
+^adestinations[1,2] Array of destinations.
+*cdestination_assign 
+*setoptions Drives options for output destinations.
+^aoptions[1,2] Array of destination output options.
+*setdestinations Controls available output destinations.
+*calias_assign 
+*creport_assign 
+*output This is main method that is called to generate output based on settings.
+*setoutputprinter 
+*printlist 
+*printreport 
+*copytable Exports a table.
+*lpreventsourcechanges_assign 
+*cdisplayfontname_assign 
+*genhtml Generates HTML output.
+*cscope_assign 
+*ctextfile_assign 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+_reports.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RNJ1B32J6
+[CLASS] _windowhandler
+[CLASSLOC] _ui.vcx
+[BASECLASS] custom
+[OBJNAME] cusWindows
+[PARENT] _output
+[START PROPERTIES]
+Top = 0
+Left = 0
+Name = "cusWindows"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _output
+[START RESERVED1]
+ 
+ _reports.hvI¸\1[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RNI07K21A
+[CLASS] _form
+[CLASSLOC] _base.vcx
+[BASECLASS] form
+[OBJNAME] _showtext
+[START PROPERTIES]
+Top = 0
+Left = 0
+Height = 237
+Width = 419
+ShowWindow = 1
+DoCreate = .T.
+Caption = "Text Editor"
+cfixedfontname = ("Courier New")
+ifixedfontsize = 9
+csourcefile = ("")
+ctargetfile = ("")
+Name = "_showtext"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+LPARAMETERS tcSourceFile
+
+LOCAL loControl
+
+IF NOT DODEFAULT()
+   RETURN .F.
+ENDIF
+
+IF SYSTEM_LARGEFONTS
+   LOCAL lcStandardFont
+   lcStandardFont = UPPER(DIALOG_SMALLFONT_NAME)
+
+   FOR EACH loControl IN THIS.Controls
+       IF PEMSTATUS(loControl,"FontName",5) AND ;
+          UPPER(loControl.FontName) == lcStandardFont
+
+          loControl.FontName = DIALOG_LARGEFONT_NAME
+       ENDIF
+   ENDFOR
+   * Note: no recursion here.
+
+ENDIF
+
+THIS.cSourceFile = tcSourceFile
+THIS.Caption = SHOWTEXT_TEXT_EDITOR_LOC
+THIS.MinHeight = THIS.Height
+THIS.MinWidth = THIS.Width
+THIS.SetFonts()
+THIS.Resize()
+ENDPROC
+PROCEDURE Resize
+LOCAL lnMargin
+
+lnMargin = SYSMETRIC(VERTICAL_SCROLLBAR_WIDTH)
+
+WITH THIS.edtText
+
+   .Width = THIS.Width - (THIS.cmdClose.Width + ;
+                            (lnMargin * 2) + ;
+                             .Left)
+
+   STORE (.Width + .Left + lnMargin) TO ;
+          THIS.cmdSave.Left, ;
+          THIS.cmdClose.Left, ;
+          THIS.chkReadonly.Left, ;
+          THIS.cmdFonts.Left
+
+   lnMargin = .Top
+
+   .Height = THIS.Height - lnMargin * 2
+
+ENDWITH
+
+
+ENDPROC
+PROCEDURE csourcefile_assign
+LPARAMETERS tvNewVal
+
+LOCAL lcVal
+
+IF VARTYPE(tvNewVal) # "C"
+   THIS.cSourceFile = ""
+ELSE
+   lcVal = ALLTR(tvNewVal)
+   DO CASE
+   CASE FILE(lcVal) OR (NOT EMPTY(SYS(2000,lcVal)))
+      THIS.cSourceFile = lcVal
+   CASE FILE(lcVal+".txt") OR (NOT EMPTY(SYS(2000,lcVal+".txt")))
+      THIS.cSourceFile = lcVal+".txt"
+   OTHERWISE
+      THIS.cSourceFile = ""
+   ENDCASE
+ENDIF
+
+IF EMPTY(THIS.cSourceFile)
+   THIS.edtText.Value = ""
+ELSE
+   THIS.edtText.Value = FileToStr(THIS.cSourceFile)
+   IF NOT THIS.lSuppressCaptionChange
+      THIS.Caption = THIS.cSourceFile
+   ENDIF
+ENDIF
+
+
+ENDPROC
+PROCEDURE ctargetfile_access
+IF EMPTY(THIS.cTargetFile)
+
+   WITH THIS.oleCommonDialog
+
+      .Flags =   cdlOFNPathMustExist  + ;
+                 cdlOFNNoChangeDir    + ;
+                 cdlOFNHideReadOnly   + ;
+                 cdlOFNExplorer       + ;
+                 cdlOFNOverwritePrompt+ ;
+                 cdlOFNNoReadOnlyReturn
+      .ShowSave()
+      THIS.cTargetFile = .FileName
+
+   ENDWITH
+
+ENDIF
+
+RETURN THIS.cTargetFile
+
+ENDPROC
+PROCEDURE getfixedfont
+LOCAL lcName, liSize
+
+lcName = THIS.cFixedFontName
+liSize = THIS.iFixedFontSize
+
+WITH THIS.oleCommonDialog
+
+   .Flags =  cdlCFScreenFonts + ;
+             cdlCFForceFontExist + ;
+             cdlCFFixedPitchOnly
+
+   .FontName = THIS.cFixedFontName
+   .FontSize = THIS.iFixedFontSize
+   .FontItalic = IIF(THIS.lFixedFontItalic,1,0)
+   .FontBold = IIF(THIS.lFixedFontBold,1,0)
+   .ShowFont()
+
+   IF NOT EMPTY(.FontName)
+      THIS.cFixedFontName = .FontName
+      THIS.lFixedFontBold = NOT EMPTY(.FontBold)
+      THIS.lFixedFontItalic = NOT EMPTY(.FontItalic)
+   ELSE
+      THIS.cFixedFontName = lcName
+   ENDIF
+
+   IF NOT EMPTY(.FontSize)
+      THIS.iFixedFontSize = .FontSize
+   ELSE
+      THIS.iFixedFontSize = liSize
+   ENDIF
+
+ENDWITH
+
+ENDPROC
+PROCEDURE setfonts
+THIS.edtText.FontName = THIS.cFixedFontName
+THIS.edtText.FontSize = THIS.iFixedFontSize
+THIS.edtText.FontItalic = THIS.lFixedFontItalic
+THIS.edtText.FontBold = THIS.lFixedFontBold
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+7[END RESERVED2]
+[START RESERVED3]
+cfixedfontname Font name for display editbox.
+ifixedfontsize Font size for display editbox.
+csourcefile Name of source file to view/edit.
+ctargetfile Name of file to which you would like to save the (possibly edited) contents of the editbox.
+lfixedfontbold Font bold for display editbox.
+lfixedfontitalic Font italic for display editbox.
+lsuppresscaptionchange Suppresses the dialog caption from changing as the source file changes.  This is useful for displaying the contents of a temporary file.
+*ctargetfile_access 
+*csourcefile_assign 
+*setfonts Applies the current font property characteristics to the editbox displaying the file.
+*getfixedfont Uses common dialog to display font dialog, restricted to fixed font items.
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+_reports.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RNI08EZB6
+[CLASS] _editbox
+[CLASSLOC] _base.vcx
+[BASECLASS] editbox
+[OBJNAME] edtText
+[PARENT] _showtext
+[START PROPERTIES]
+FontName = "Courier New"
+FontSize = 8
+Height = 229
+Left = 0
+ReadOnly = .T.
+ScrollBars = 2
+Top = 3
+Width = 324
+ColorSource = 3
+Name = "edtText"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RNI08EZBX
+[CLASS] olecontrol
+[BASECLASS] olecontrol
+[OBJNAME] OleCommonDialog
+[PARENT] _showtext
+[START PROPERTIES]
+Top = 72
+Left = 336
+Height = 100
+Width = 100
+ZOrderSet = 1
+Name = "OleCommonDialog"
+[END PROPERTIES]
+[BINSTART OLE]
+CHECKSUM=39810
+[BINEND OLE]
+[BINSTART OLE2]
+CHECKSUM=36926
+[BINEND OLE2]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RNI07K21A
+[CLASS] _commandbutton
+[CLASSLOC] _base.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdSave
+[PARENT] _showtext
+[START PROPERTIES]
+Top = 36
+Left = 337
+Height = 25
+Width = 74
+FontName = "MS Sans Serif"
+FontSize = 8
+Caption = "\<Save to File"
+Name = "cmdSave"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+
+LOCAL lcFile
+lcFile = THISFORM.cTargetFile
+
+IF AT(".",lcFile) = 0
+   lcFile = lcFile + ".TXT"
+ENDIF
+
+StrToFile(THISFORM.edtText.Value,lcFile)
+
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RNI08EZEL
+[CLASS] _commandbutton
+[CLASSLOC] _base.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdClose
+[PARENT] _showtext
+[START PROPERTIES]
+Top = 5
+Left = 337
+Height = 25
+Width = 74
+FontName = "MS Sans Serif"
+FontSize = 8
+Cancel = .T.
+Caption = "\<Close"
+Default = .T.
+Name = "cmdClose"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+THISFORM.Release()
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RNI07K21A
+[CLASS] _commandbutton
+[CLASSLOC] _base.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdFonts
+[PARENT] _showtext
+[START PROPERTIES]
+Top = 134
+Left = 337
+Height = 25
+Width = 74
+FontName = "MS Sans Serif"
+FontSize = 8
+Caption = "Fonts..."
+Name = "cmdFonts"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+THISFORM.GetFixedFont()
+THISFORM.SetFonts()
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RNJ1360O6
+[CLASS] _checkbox
+[CLASSLOC] _base.vcx
+[BASECLASS] checkbox
+[OBJNAME] chkReadOnly
+[PARENT] _showtext
+[START PROPERTIES]
+Top = 112
+Left = 336
+FontName = "MS Sans Serif"
+FontSize = 8
+AutoSize = .T.
+BackStyle = 0
+Caption = "Read only"
+ControlSource = "THISFORM.edtText.Readonly"
+Name = "chkReadOnly"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _showtext
+[START PROPERTIES]
+Arial, 0, 9, 5, 15, 12, 32, 3, 0
+Courier New, 0, 8, 7, 14, 11, 7, 3, 0
+MS Sans Serif, 0, 8, 5, 13, 11, 11, 2, 0
+[END PROPERTIES]
+[START RESERVED1]
+ 
+ _reports.h6Ý¸\1[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RNI0TX81M
+[CLASS] _form
+[CLASSLOC] _base.vcx
+[BASECLASS] form
+[OBJNAME] _outputdialog
+[START PROPERTIES]
+Height = 274
+Width = 385
+ShowWindow = 1
+DoCreate = .T.
+AutoCenter = .T.
+BorderStyle = 2
+Caption = "Output"
+MaxButton = .F.
+MinButton = .F.
+cdestination = ("")
+calias = ("")
+creport = ("")
+cfieldlist = ("")
+cdisplayfontname = ("")
+chtmlclass = 
+chtmlstyleid = ("")
+cscope = ("")
+Name = "_outputdialog"
+[END PROPERTIES]
+[START PROTECTED]
+setkeys
+[END PROTECTED]
+[START METHODS]
+PROCEDURE Activate
+IF NOT THIS.lPreventSourceChanges
+   WITH THIS.cboTables
+      LOCAL ARRAY laTables[1,2]
+      LOCAL liCount, liIndex, lcRowSource, lcAlias
+      liCount = AUSED(laTables)
+      lcRowSource = ""
+      FOR liIndex = 1 TO liCount
+        lcAlias = PROPER(laTables[liIndex,1])
+        lcRowSource = lcRowSource + lcAlias + ","
+      ENDFOR
+      IF RIGHTC(lcRowSource,1) = ","
+         lcRowSource = LEFTC(lcRowSource, LEN(lcRowSource) - 1)
+      ENDIF
+      .RowSource = lcRowSource
+     .Requery()
+     .ControlSource = "THISFORM.cusOutput.cAlias"
+   ENDWITH
+   THIS.txtReportFile.ControlSource = "THISFORM.cusOutput.cReport"
+   THISFORM.Refresh()
+ENDIF
+THIS.CheckOKButton()
+THIS.SetKeys(.T.)
+ENDPROC
+PROCEDURE Deactivate
+THIS.SetKeys()
+ENDPROC
+PROCEDURE Init
+LPARAMETERS tcReport, tcAlias, tlPreventSourceChanges, tlPreventScopeChanges
+
+LOCAL loControl
+
+IF NOT DODEFAULT()
+   RETURN .F.
+ENDIF
+
+THIS.MaxHeight = THIS.Height
+
+THIS.cReport = tcReport
+THIS.cAlias  = tcAlias
+
+IF PCOUNT() >= 3 AND VARTYPE(tlPreventSourceChanges) = "L"
+  THIS.lPreventSourceChanges = tlPreventSourceChanges
+ENDIF
+
+IF PCOUNT() = 4 AND VARTYPE(tlPreventScopeChanges) = "L"
+  THIS.lPreventScopeChanges = tlPreventScopeChanges
+ENDIF
+
+IF SYSTEM_LARGEFONTS
+   LOCAL lcStandardFont
+   lcStandardFont = UPPER(DIALOG_SMALLFONT_NAME)
+
+   FOR EACH loControl IN THIS.Controls
+       DO CASE
+       CASE PEMSTATUS(loControl,"FontName",5) AND ;
+          UPPER(loControl.FontName) == lcStandardFont
+
+          loControl.FontName = DIALOG_LARGEFONT_NAME
+       CASE TYPE("loControl.Buttons(1)") = "O"
+          loControl.SetAll("FontName",DIALOG_LARGEFONT_NAME)
+       OTHERWISE
+          * Note: no recursion here.
+       ENDCASE
+   ENDFOR
+
+ENDIF
+
+
+
+
+ENDPROC
+PROCEDURE Show
+LPARAMETERS nStyle
+
+IF NOT EMPTY(THIS.cScope)
+   THIS.lPreventScopeChanges = .T.
+ENDIF
+
+THIS.cScope = THIS.cScope && fix opgScope value
+
+THIS.RespondToPermissionForSourceChanges()
+
+ENDPROC
+PROCEDURE calias_access
+
+RETURN THIS.cusOutput.cAlias
+
+ENDPROC
+PROCEDURE calias_assign
+LPARAMETERS m.vNewVal
+IF VARTYPE(m.vNewVal) = "C"
+   STORE m.vNewVal TO THIS.cusOutput.cAlias, THIS.cAlias
+   IF NOT THIS.lPreventSourceChanges
+      THIS.cboTables.Refresh()
+   ENDIF
+   THIS.CheckOKButton()
+ENDIF
+
+
+ENDPROC
+PROCEDURE cdestination_access
+RETURN THIS.cusOutput.cDestination
+
+ENDPROC
+PROCEDURE cdestination_assign
+LPARAMETERS m.vNewVal
+STORE m.vNewVal TO THIS.cDestination, THIS.cusOutput.cDestination
+
+
+ENDPROC
+PROCEDURE cdisplayfontname_access
+RETURN THIS.cusOutput.cDisplayFontName
+
+ENDPROC
+PROCEDURE cdisplayfontname_assign
+LPARAMETERS m.vNewVal
+THIS.cusOutput.cDisplayFontName = m.vNewVal
+
+ENDPROC
+PROCEDURE cfieldlist_access
+RETURN THIS.cusOutput.cFieldList
+
+ENDPROC
+PROCEDURE cfieldlist_assign
+LPARAMETERS m.vNewVal
+STORE m.vNewVal TO THIS.cFieldList, THIS.cusOutput.cFieldList
+
+ENDPROC
+PROCEDURE checkokbutton
+IF NOT THIS.Visible
+   RETURN
+ENDIF
+THIS.cmdOK.Enabled = (NOT EMPTY(THIS.cAlias+THIS.cReport))
+
+IF THIS.cmdOK.Enabled
+   IF INLIST("#"+THIS.cusOutput.cDestination+"#","#PRINTFILE#","#TEXTFILE#","#EXPORT#", "#HTMLFILE#") AND ;
+      EMPTY(THIS.cusOutput.txtFileName.Value)
+      THIS.cmdOK.Enabled = .F.
+   ENDIF
+ENDIF
+
+IF THIS.cmdOK.Enabled
+   IF INLIST("#"+THIS.cusOutput.cDestination+"#","#PRINTREPORT#","#TEXTFILE#","#PRINTFILE#") AND ;
+      EMPTY(THIS.cReport)
+      THIS.cmdOK.Enabled = .F.
+   ENDIF
+ENDIF
+
+IF THIS.cmdOK.Enabled
+   IF INLIST("#"+THIS.cusOutput.cDestination+"#","#EXPORT#","#PRINTLIST#") AND ;
+      EMPTY(THIS.cAlias)
+      THIS.cmdOK.Enabled = .F.
+   ENDIF
+ENDIF
+
+
+
+
+ENDPROC
+PROCEDURE chtmlclass_access
+RETURN THIS.cusOutput.cHTMLClass
+
+
+ENDPROC
+PROCEDURE chtmlclass_assign
+LPARAMETERS tvNewVal
+IF VARTYPE(tvNewVal) = "C"
+   STORE tvNewVal TO THIS.cHTMLClass, THIS.cusOutput.cHTMLClass
+ENDIF
+
+
+
+ENDPROC
+PROCEDURE chtmlstyleid_access
+RETURN THIS.cusOutput.cHTMLStyleID
+
+ENDPROC
+PROCEDURE chtmlstyleid_assign
+LPARAMETERS tvNewVal
+IF VARTYPE(tvNewVal) = "C"
+   STORE tvNewVal TO THIS.cHTMLStyleID, THIS.cusOutput.cHTMLStyleID
+ENDIF
+
+
+ENDPROC
+PROCEDURE creport_access
+RETURN THIS.cusOutput.cReport
+
+ENDPROC
+PROCEDURE creport_assign
+LPARAMETERS m.vNewVal
+IF VARTYPE(m.vNewVal) = "C"
+   STORE m.vNewVal TO THIS.cReport, THIS.cusOutput.cReport
+   IF NOT THIS.lPreventSourceChanges
+      THIS.txtReportFile.Refresh()
+   ENDIF
+   THIS.CheckOKButton()
+ENDIF
+
+ENDPROC
+PROCEDURE cscope_access
+RETURN UPPER(ALLTRIM(THIS.cusOutput.cScope))
+
+ENDPROC
+PROCEDURE cscope_assign
+LPARAMETERS tvNewVal
+
+LOCAL lcNewVal
+
+IF VARTYPE(tvNewVal) = "C"
+   lcNewVal = ALLTRIM(UPPER(tvNewVal))
+   STORE lcNewVal TO THIS.cScope, THIS.cusOutput.cScope
+ELSE
+   lcNewVal = ALLTRIM(UPPER(THIS.cScope))
+ENDIF
+
+DO CASE
+CASE lcNewVal == "ALL" OR EMPTY(lcNewVal)
+   THIS.opgScope.Value = 1
+CASE lcNewVal == "NEXT 1"
+   THIS.opgScope.Value = 2
+CASE lcNewVal == "REST"
+   THIS.opgScope.Value = 3
+OTHERWISE
+   THIS.opgScope.Value = 0
+ENDCASE
+
+
+
+ENDPROC
+PROCEDURE laddsourcenametodropdown_access
+RETURN THIS.cusOutput.lAddSourceNameToDropDown
+
+ENDPROC
+PROCEDURE laddsourcenametodropdown_assign
+LPARAMETERS tlNewVal
+IF VARTYPE(tlNewVal) = "L"
+  STORE tlNewVal TO ;
+        THIS.cusOutPut.lAddSourceNameToDropDown, ;
+        THIS.lAddSourceNameToDropDown
+ENDIF
+
+ENDPROC
+PROCEDURE lpreventscopechanges_assign
+LPARAMETERS tlNewVal
+IF VARTYPE(tlNewVal) = "L"
+   STORE tlNewVal TO THIS.lPreventScopeChanges
+ENDIF
+THIS.RespondToPermissionForScopeChanges()
+
+
+
+ENDPROC
+PROCEDURE lpreventsourcechanges_access
+
+RETURN THIS.cusOutput.lPreventSourceChanges
+
+ENDPROC
+PROCEDURE lpreventsourcechanges_assign
+LPARAMETERS tlNewVal
+
+LOCAL llChange
+
+IF VARTYPE(tlNewVal) = "L" AND tlNewVal # THIS.lPreventSourceChanges
+   STORE tlNewVal TO THIS.lPreventSourceChanges, THIS.cusOutput.lPreventSourceChanges
+   llChange = .T.
+ENDIF
+
+THIS.RespondToPermissionForSourceChanges(llChange)
+ENDPROC
+PROCEDURE output
+THIS.cusOutput.Output()
+ENDPROC
+PROCEDURE respondtopermissionforscopechanges
+LOCAL llScopeEnabled
+
+llScopeEnabled = (NOT THIS.lPreventScopeChanges)
+
+STORE llScopeEnabled TO ;
+      THIS.opgScope.Enabled, THIS.lblScope.Enabled
+THIS.opgScope.Setall("Enabled", llScopeEnabled)
+
+
+
+
+
+ENDPROC
+PROCEDURE respondtopermissionforsourcechanges
+LPARAMETERS tlExplicitChange
+
+LOCAL lnBottomMargin
+
+lnBottomMargin = INT(THIS.lblDestinations.Top * .66)
+
+IF  (THIS.lPreventSourceChanges)
+
+   IF  EMPTY(THIS.cusOutput.cReport+THIS.cusOutput.cAlias) AND tlExplicitChange
+
+       MESSAGEBOX(OUTPUT_REPORT_OR_DATASOURCE_REQUIRED_LOC, MB_ICONEXCLAMATION)
+
+   ENDIF
+
+   THIS.Height = lnBottomMargin + ;
+                 THIS.opgScope.Height + ;
+                 THIS.opgScope.Top
+
+ELSE
+   THIS.Height = THIS.MaxHeight
+ENDIF
+
+STORE (NOT THIS.lPreventSourceChanges) TO ;
+                    THIS.lblSources.Visible, THIS.lblSources.Enabled, ;
+                    THIS.shpFrameSources.Visible, THIS.shpFrameSources.Enabled, ;
+                    THIS.lblReports.Visible, THIS.lblReports.Enabled, ;
+                    THIS.lblData.Visible, THIS.lblData.Enabled, ;
+                    THIS.txtReportFile.Visible, THIS.txtReportFile.Enabled, ;
+                    THIS.cmdGetReport.Visible, THIS.cmdGetReport.Enabled, ;
+                    THIS.cboTables.Visible, THIS.cboTables.Enabled
+
+
+ENDPROC
+PROCEDURE setkeys
+LPARAMETERS tlOn
+IF tlOn
+  PUSH KEY
+  ON KEY LABEL Alt-Y IIF(TYPE("_SCREEN.ActiveForm.cusOutput.cboDestinations") = "O" AND ;
+                         _SCREEN.ActiveForm.cusOutput.cboDestinations.Enabled, ;
+                         _SCREEN.ActiveForm.cusOutput.cboDestinations.SetFocus(),;
+                         .T.)
+  ON KEY LABEL Alt-P IIF(TYPE("_SCREEN.ActiveForm.cusOutput.cboOptions") = "O" AND ;
+                         _SCREEN.ActiveForm.cusOutput.cboOptions.Enabled, ;
+                         _SCREEN.ActiveForm.cusOutput.cboOptions.SetFocus(),;
+                         .T.)
+  ON KEY LABEL Alt-F IIF(TYPE("_SCREEN.ActiveForm.cusOutput.txtFileName") = "O" AND ;
+                         _SCREEN.ActiveForm.cusOutput.txtFileName.Enabled, ;
+                         _SCREEN.ActiveForm.cusOutput.txtFileName.SetFocus(),;
+                         .T.)
+ELSE
+  POP KEY
+ENDIF
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+18[END RESERVED2]
+[START RESERVED3]
+lpreventsourcechanges Prevents source changes for cAlias or cReport.
+cdestination This is list of available destinations which changes dynamically depending on whether cReport, cAlias, or both, are filled out.
+calias Name of data source to output.
+creport Name of report or label to output.
+cfieldlist A comma-delimited list of fields or expressions. It affects only direct data sources (BROWSEs and LISTs).
+cdisplayfontname This is used for on-screen display of output, for example in a BROWSE or when the _Showtext class is instantiated for text display.
+laddsourcenametodropdown Affects how some destinations show in the aDestinations array.
+chtmlclass Optional HTML class and classlib passed to _GENHTML.
+chtmlstyleid Optional HTML style passed to _GENHTML.
+cscope Legal scope expression for output.
+lpreventscopechanges Disables ability to change output scope.
+*checkokbutton 
+*calias_access 
+*calias_assign 
+*cdestination_access 
+*cdestination_assign 
+*creport_access 
+*creport_assign 
+*lpreventsourcechanges_access 
+*lpreventsourcechanges_assign 
+*respondtopermissionforsourcechanges 
+*cfieldlist_access 
+*cfieldlist_assign 
+*cdisplayfontname_access 
+*cdisplayfontname_assign 
+*laddsourcenametodropdown_access 
+*laddsourcenametodropdown_assign 
+*chtmlclass_access 
+*chtmlclass_assign 
+*chtmlstyleid_access 
+*chtmlstyleid_assign 
+*cscope_access 
+*cscope_assign 
+*respondtopermissionforscopechanges 
+*lpreventscopechanges_assign 
+*setkeys 
+*output Wrap the cusOutput.Output method for external use
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+_reports.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RPP1FA7GK
+[CLASS] _optiongroup
+[CLASSLOC] _base.vcx
+[BASECLASS] optiongroup
+[OBJNAME] opgScope
+[PARENT] _outputdialog
+[START PROPERTIES]
+ButtonCount = 3
+BackStyle = 0
+BorderStyle = 1
+Height = 35
+Left = 8
+Top = 140
+Width = 290
+TabIndex = 7
+ZOrderSet = 0
+Name = "opgScope"
+Option1.FontName = "MS Sans Serif"
+Option1.FontSize = 8
+Option1.BackStyle = 0
+Option1.Caption = "\<All"
+Option1.Height = 15
+Option1.Left = 8
+Option1.TabIndex = 1
+Option1.Top = 11
+Option1.Width = 29
+Option1.AutoSize = .T.
+Option1.Name = "Option1"
+Option2.FontName = "MS Sans Serif"
+Option2.FontSize = 8
+Option2.BackStyle = 0
+Option2.Caption = "C\<urrent"
+Option2.Height = 15
+Option2.Left = 115
+Option2.TabIndex = 2
+Option2.Top = 11
+Option2.Width = 52
+Option2.AutoSize = .T.
+Option2.Name = "Option2"
+Option3.FontName = "MS Sans Serif"
+Option3.FontSize = 8
+Option3.BackStyle = 0
+Option3.Caption = "R\<est"
+Option3.Height = 15
+Option3.Left = 240
+Option3.TabIndex = 3
+Option3.Top = 11
+Option3.Width = 40
+Option3.AutoSize = .T.
+Option3.Name = "Option3"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE InteractiveChange
+DO CASE
+CASE THIS.Value = 2
+   THISFORM.cScope = "NEXT 1"
+CASE THIS.Value = 3
+   THISFORM.cScope = "REST"
+OTHERWISE
+   THISFORM.cScope = ""
+ENDCASE
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RNI0W3KWZ
+[CLASS] _shape
+[CLASSLOC] _base.vcx
+[BASECLASS] shape
+[OBJNAME] shpFrameDestinations
+[PARENT] _outputdialog
+[START PROPERTIES]
+Top = 18
+Left = 8
+Height = 109
+Width = 290
+BackStyle = 0
+SpecialEffect = 0
+ZOrderSet = 1
+Name = "shpFrameDestinations"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RNI07K21A
+[CLASS] _outputchoices
+[CLASSLOC] _reports.vcx
+[BASECLASS] container
+[OBJNAME] cusOutput
+[PARENT] _outputdialog
+[START PROPERTIES]
+Top = 18
+Left = 8
+Width = 290
+Height = 109
+BorderWidth = 0
+TabIndex = 3
+ZOrderSet = 2
+Name = "cusOutput"
+txtFileName.Height = 23
+txtFileName.Left = 92
+txtFileName.TabIndex = 3
+txtFileName.Top = 78
+txtFileName.Width = 161
+txtFileName.Name = "txtFileName"
+cboDestinations.Height = 24
+cboDestinations.Left = 92
+cboDestinations.TabIndex = 1
+cboDestinations.Top = 14
+cboDestinations.Width = 190
+cboDestinations.Name = "cboDestinations"
+cboOptions.Height = 24
+cboOptions.Left = 92
+cboOptions.TabIndex = 2
+cboOptions.Top = 46
+cboOptions.Width = 190
+cboOptions.Name = "cboOptions"
+cmdPutFile.Top = 78
+cmdPutFile.Left = 259
+cmdPutFile.TabIndex = 4
+cmdPutFile.Name = "cmdPutFile"
+cusWindows.Name = "cusWindows"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE calias_assign
+LPARAMETERS tcVal
+DODEFAULT(tcVal)
+THISFORM.CheckOKButton()
+
+ENDPROC
+PROCEDURE cboDestinations.InteractiveChange
+THISFORM.CheckOKButton()
+ENDPROC
+PROCEDURE cboDestinations.ProgrammaticChange
+THISFORM.CheckOKButton()
+
+ENDPROC
+PROCEDURE cboOptions.InteractiveChange
+THISFORM.CheckOKButton()
+
+ENDPROC
+PROCEDURE cboOptions.ProgrammaticChange
+THISFORM.CheckOKButton()
+
+ENDPROC
+PROCEDURE cmdPutFile.Click
+DODEFAULT()
+THISFORM.CheckOKButton()
+
+ENDPROC
+PROCEDURE creport_assign
+LPARAMETERS tcVal
+DODEFAULT(tcVal)
+THISFORM.CheckOKButton()
+
+ENDPROC
+PROCEDURE txtFileName.InteractiveChange
+THISFORM.CheckOKButton()
+
+ENDPROC
+PROCEDURE txtFileName.ProgrammaticChange
+THISFORM.CheckOKButton()
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RNI0W3KXP
+[CLASS] _commandbutton
+[CLASSLOC] _base.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdOK
+[PARENT] _outputdialog
+[START PROPERTIES]
+Top = 18
+Left = 306
+Height = 23
+Width = 72
+FontName = "MS Sans Serif"
+FontSize = 8
+Caption = "OK"
+TabIndex = 14
+ZOrderSet = 3
+Name = "cmdOK"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+THISFORM.Output()
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RNI0W3KZ4
+[CLASS] _commandbutton
+[CLASSLOC] _base.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdCancel
+[PARENT] _outputdialog
+[START PROPERTIES]
+Top = 49
+Left = 306
+Height = 23
+Width = 72
+FontBold = .F.
+FontName = "MS Sans Serif"
+FontSize = 8
+Cancel = .T.
+Caption = "Cancel"
+TabIndex = 15
+ZOrderSet = 4
+Name = "cmdCancel"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+THISFORM.Release()
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RNI0W3L0D
+[CLASS] _shape
+[CLASSLOC] _base.vcx
+[BASECLASS] shape
+[OBJNAME] shpFrameSources
+[PARENT] _outputdialog
+[START PROPERTIES]
+Top = 188
+Left = 8
+Height = 78
+Width = 290
+BackStyle = 0
+SpecialEffect = 0
+ZOrderSet = 5
+Name = "shpFrameSources"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RNI07K21A
+[CLASS] _label
+[CLASSLOC] _base.vcx
+[BASECLASS] label
+[OBJNAME] lblDestinations
+[PARENT] _outputdialog
+[START PROPERTIES]
+AutoSize = .T.
+FontName = "MS Sans Serif"
+FontSize = 8
+BackStyle = 1
+BorderStyle = 0
+Caption = "\<Destinations"
+Height = 15
+Left = 16
+Top = 12
+Width = 60
+TabIndex = 1
+ZOrderSet = 6
+Name = "lblDestinations"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RNI07K21A
+[CLASS] _label
+[CLASSLOC] _base.vcx
+[BASECLASS] label
+[OBJNAME] lblSources
+[PARENT] _outputdialog
+[START PROPERTIES]
+AutoSize = .T.
+FontName = "MS Sans Serif"
+FontSize = 8
+BackStyle = 1
+BorderStyle = 0
+Caption = "\<Sources"
+Height = 15
+Left = 16
+Top = 182
+Width = 41
+TabIndex = 8
+ZOrderSet = 7
+Name = "lblSources"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RNI0W3L1V
+[CLASS] _combobox
+[CLASSLOC] _base.vcx
+[BASECLASS] combobox
+[OBJNAME] cboTables
+[PARENT] _outputdialog
+[START PROPERTIES]
+FontName = "MS Sans Serif"
+FontSize = 8
+RowSourceType = 1
+Height = 24
+Left = 100
+TabIndex = 13
+Top = 234
+Width = 190
+ZOrderSet = 8
+Name = "cboTables"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RNI0W3L2O
+[CLASS] _textbox
+[CLASSLOC] _base.vcx
+[BASECLASS] textbox
+[OBJNAME] txtReportFile
+[PARENT] _outputdialog
+[START PROPERTIES]
+FontName = "MS Sans Serif"
+FontSize = 8
+Height = 24
+Left = 100
+TabIndex = 10
+Top = 202
+Width = 161
+ZOrderSet = 9
+Name = "txtReportFile"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE InteractiveChange
+THISFORM.CheckOKButton()
+
+ENDPROC
+PROCEDURE ProgrammaticChange
+THISFORM.CheckOKButton()
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RNI0W3L3G
+[CLASS] _commandbutton
+[CLASSLOC] _base.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdGetReport
+[PARENT] _outputdialog
+[START PROPERTIES]
+Top = 202
+Left = 267
+Height = 24
+Width = 23
+FontSize = 8
+Caption = "..."
+TabIndex = 11
+TabStop = .F.
+ZOrderSet = 10
+Name = "cmdGetReport"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+WAIT WINDOW NOWAIT LEFTC(OUTPUT_SOURCE_REPORT_LOC,254)
+
+LOCAL lcName
+
+lcName = UPPER(GETFILE("FRX,LBX","","Open"))
+IF LASTKEY() = 13
+   CLEAR TYPEAHEAD
+ENDIF
+
+
+IF NOT EMPTY(lcName)
+
+   THISFORM.txtReportFile.Value = lcName
+
+ENDIF
+
+
+WAIT CLEAR
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RNI0W3L47
+[CLASS] _label
+[CLASSLOC] _base.vcx
+[BASECLASS] label
+[OBJNAME] lblReports
+[PARENT] _outputdialog
+[START PROPERTIES]
+AutoSize = .T.
+FontName = "MS Sans Serif"
+FontSize = 8
+BackStyle = 0
+BorderStyle = 0
+Caption = "\<Reports:"
+Left = 16
+Top = 207
+TabIndex = 9
+ZOrderSet = 11
+Name = "lblReports"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RNI07K21A
+[CLASS] _label
+[CLASSLOC] _base.vcx
+[BASECLASS] label
+[OBJNAME] lblData
+[PARENT] _outputdialog
+[START PROPERTIES]
+AutoSize = .T.
+FontName = "MS Sans Serif"
+FontSize = 8
+BackStyle = 0
+BorderStyle = 0
+Caption = "Da\<ta:"
+Height = 15
+Left = 16
+Top = 239
+Width = 28
+TabIndex = 12
+ZOrderSet = 12
+Name = "lblData"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RPP1FA7FT
+[CLASS] _label
+[CLASSLOC] _base.vcx
+[BASECLASS] label
+[OBJNAME] lblScope
+[PARENT] _outputdialog
+[START PROPERTIES]
+AutoSize = .T.
+FontName = "MS Sans Serif"
+FontSize = 8
+Caption = "\<Choose records"
+Height = 15
+Left = 16
+Top = 134
+Width = 76
+TabIndex = 6
+ZOrderSet = 13
+Name = "lblScope"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RNI07K21A
+[CLASS] _label
+[CLASSLOC] _base.vcx
+[BASECLASS] label
+[OBJNAME] lblOptions
+[PARENT] _outputdialog
+[START PROPERTIES]
+AutoSize = .T.
+FontName = "MS Sans Serif"
+FontSize = 8
+BackStyle = 0
+BorderStyle = 0
+Caption = "O\<ptions:"
+Left = 16
+Top = 68
+TabIndex = 4
+ZOrderSet = 14
+Name = "lblOptions"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RNI0XRL60
+[CLASS] _label
+[CLASSLOC] _base.vcx
+[BASECLASS] label
+[OBJNAME] lblOutputFilename
+[PARENT] _outputdialog
+[START PROPERTIES]
+AutoSize = .T.
+FontName = "MS Sans Serif"
+FontSize = 8
+BackStyle = 0
+BorderStyle = 0
+Caption = "\<Filename:"
+Height = 15
+Left = 16
+Top = 99
+Width = 47
+TabIndex = 5
+ZOrderSet = 15
+Name = "lblOutputFilename"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RR90NV1ID
+[CLASS] _label
+[CLASSLOC] _base.vcx
+[BASECLASS] label
+[OBJNAME] lblOutputType
+[PARENT] _outputdialog
+[START PROPERTIES]
+AutoSize = .T.
+FontName = "MS Sans Serif"
+FontSize = 8
+BackStyle = 0
+Caption = "Output t\<ype:"
+Left = 16
+Top = 36
+TabIndex = 2
+ZOrderSet = 16
+Name = "lblOutputType"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _outputdialog
+[START PROPERTIES]
+Arial, 0, 9, 5, 15, 12, 32, 3, 0
+MS Sans Serif, 0, 8, 5, 13, 11, 11, 2, 0
+Arial, 0, 8, 5, 14, 11, 30, 3, 0
+[END PROPERTIES]
+[START RESERVED1]
+ 
+ _reports.hvI¸\1[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RNL0HI514
+[CLASS] _output
+[CLASSLOC] _reports.vcx
+[BASECLASS] container
+[OBJNAME] _outputchoices
+[START PROPERTIES]
+Width = 338
+Height = 49
+Name = "_outputchoices"
+cusWindows.Name = "cusWindows"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+LOCAL loControl
+
+THIS.cboDestinations.RowSource = "THIS.Parent.aDestinations"
+THIS.cboDestinations.ControlSource = "THIS.Parent.cDestination"
+THIS.cboOptions.RowSource = "THIS.Parent.aOptions"
+THIS.cboOptions.ControlSource = "THIS.Parent.cOption"
+THIS.txtFileName.ControlSource = "THIS.Parent.cTextFile"
+
+IF NOT DODEFAULT()
+   RETURN .F.
+ENDIF
+
+IF SYSTEM_LARGEFONTS
+   LOCAL lcStandardFont
+   lcStandardFont = UPPER(DIALOG_SMALLFONT_NAME)
+
+   FOR EACH loControl IN THIS.Controls
+       IF PEMSTATUS(loControl,"FontName",5) AND ;
+          UPPER(loControl.FontName) == lcStandardFont
+
+          loControl.FontName = DIALOG_LARGEFONT_NAME
+       ENDIF
+       * Note: no recursion here.
+   ENDFOR
+
+ENDIF
+
+
+
+
+
+ENDPROC
+PROCEDURE output
+DODEFAULT()
+THIS.txtFileName.Refresh()
+ENDPROC
+PROCEDURE setdestinations
+LOCAL liDestination, llFoundGoodRow
+
+DODEFAULT()
+
+THIS.cboDestinations.Requery()
+
+IF EMPTY(THIS.cAlias+THIS.cReport)
+   THIS.Setall("Enabled",.F.)
+ELSE
+   THIS.cboDestinations.Enabled = .T.
+   THIS.SetOptions()
+ENDIF
+
+liDestination = ASCAN(THIS.aDestinations,THIS.cDestination)
+IF liDestination = 0 && can happen if we've just changed
+   THIS.cboDestinations.Value = THIS.aDestinations[1,2]
+   liDestination = 1
+ELSE
+   liDestination = ASUBSCRIPT(THIS.aDestinations,liDestination,1)
+   * THIS.cboDestinations.Value = THIS.aDestinations[liDestination,2]
+   * not needed, since this control is bound to THIS.cDestination
+ENDIF
+
+* is this row disabled? look for a good one:
+IF LEFT(THIS.aDestinations[liDestination,1],1) = "\"
+   FOR liDestination = 1 TO ALEN(THIS.aDestinations,1)
+       IF LEFT(THIS.aDestinations[liDestination,1],1) # "\"
+          THIS.cboDestinations.Value = THIS.aDestinations[liDestination,2]
+          llFoundGoodRow = .T.
+          EXIT
+       ENDIF
+   ENDFOR
+   IF NOT llFoundGoodRow
+      THIS.cboDestinations.Value = THIS.aDestinations[1,2]
+      * best we can do
+   ENDIF
+ENDIF
+
+
+
+ENDPROC
+PROCEDURE setoptions
+DODEFAULT()
+
+DO CASE
+
+CASE INLIST("#"+THIS.cDestination+"#","#PRINTREPORT#", "#PRINTLIST#", "#PRINTFILE#")
+
+   THIS.cboOptions.Requery()
+   THIS.cboOptions.Value = "WINDEFAULT"
+
+   IF INLIST("#"+THIS.cDestination+"#","#PRINTFILE#","#PRINTREPORT#")
+      STORE (NOT EMPTY(THIS.cReport)) TO ;
+            THIS.cboOptions.Enabled
+   ELSE
+
+      STORE (NOT EMPTY(THIS.cAlias)) TO ;
+            THIS.cboOptions.Enabled
+
+   ENDIF
+
+
+   THIS.cboOptions.Value = "WINDEFAULT"
+
+CASE THIS.cDestination == "SCREEN"
+
+   THIS.cboOptions.Requery()
+
+   THIS.cboOptions.Value = IIF(EMPTY(THIS.cReport) AND ;
+                               (NOT EMPTY(THIS.cAlias)), ;
+                               "BROWSE", ;
+                               "GRAPHICAL")
+
+   STORE .T. TO THIS.cboOptions.Enabled
+
+CASE THIS.cDestination == "TEXTFILE"
+
+   THIS.cboOptions.Enabled = .F.
+   THIS.cboOptions.Value = THIS.aOptions[1,2]
+
+CASE THIS.cDestination == "HTMLFILE"
+
+   STORE (NOT EMPTY(THIS.cAlias+THIS.cReport)) TO ;
+          THIS.cboOptions.Enabled, ;
+          THIS.txtFileName.Enabled, ;
+          THIS.cmdPutFile.Enabled
+   THIS.cboOptions.Requery()
+   THIS.cboOptions.Value = THIS.aOptions[1,2]
+
+CASE THIS.cDestination == "EXPORT"
+
+   STORE (NOT EMPTY(THIS.cAlias)) TO ;
+          THIS.cboOptions.Enabled, ;
+          THIS.txtFileName.Enabled, ;
+          THIS.cmdPutFile.Enabled
+
+   THIS.cboOptions.Requery()
+   THIS.cboOptions.Value = THIS.aOptions[1,2]
+
+ENDCASE
+
+IF INLIST("#"+THIS.cDestination+"#","#PRINTFILE#","#TEXTFILE#","#EXPORT#","#HTMLFILE#")
+
+   STORE .T. TO ;
+         THIS.txtFileName.Enabled, ;
+         THIS.cmdPutFile.Enabled
+    IF EMPTY(THIS.cTextFile)
+      THIS.txtFileName.SetFocus()
+   ENDIF
+
+ELSE
+
+  STORE .F. TO ;
+         THIS.txtFileName.Enabled, ;
+         THIS.cmdPutFile.Enabled
+ENDIF
+
+IF ASCAN(THIS.aOptions,THIS.cOption) = 0
+   THIS.cboOptions.Value = THIS.aOptions[1,2]
+ENDIF
+
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+5[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+_reports.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RNL0HOWI3
+[CLASS] _textbox
+[CLASSLOC] _base.vcx
+[BASECLASS] textbox
+[OBJNAME] txtFileName
+[PARENT] _outputchoices
+[START PROPERTIES]
+FontName = "MS Sans Serif"
+FontSize = 8
+Value = (SPACE(200))
+Height = 23
+Left = 0
+TabIndex = 3
+Top = 24
+Width = 315
+ZOrderSet = 0
+Name = "txtFileName"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RNL0HOWJM
+[CLASS] _combobox
+[CLASSLOC] _base.vcx
+[BASECLASS] combobox
+[OBJNAME] cboDestinations
+[PARENT] _outputchoices
+[START PROPERTIES]
+FontName = "MS Sans Serif"
+FontSize = 8
+BoundColumn = 2
+RowSourceType = 5
+Value = ("")
+Height = 24
+Left = 0
+Style = 2
+TabIndex = 1
+Top = 0
+Width = 130
+ZOrderSet = 1
+ItemTips = .T.
+BoundTo = .T.
+Name = "cboDestinations"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RNL0HOWKK
+[CLASS] _combobox
+[CLASSLOC] _base.vcx
+[BASECLASS] combobox
+[OBJNAME] cboOptions
+[PARENT] _outputchoices
+[START PROPERTIES]
+FontName = "MS Sans Serif"
+FontSize = 8
+BoundColumn = 2
+RowSourceType = 5
+Height = 24
+Left = 129
+Style = 2
+TabIndex = 2
+Top = 0
+Width = 212
+ZOrderSet = 2
+ItemTips = .T.
+BoundTo = .T.
+Name = "cboOptions"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RNL0HOWMP
+[CLASS] _commandbutton
+[CLASSLOC] _base.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdPutFile
+[PARENT] _outputchoices
+[START PROPERTIES]
+Top = 25
+Left = 315
+Height = 23
+Width = 23
+FontName = "MS Sans Serif"
+FontSize = 8
+Caption = "..."
+TabIndex = 4
+TabStop = .F.
+ZOrderSet = 3
+Name = "cmdPutFile"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+WAIT WINDOW NOWAIT LEFTC(OUTPUT_DESTINATION_TEXTFILE_LOC,254)
+
+LOCAL lcExt
+
+WITH THIS.Parent
+   DO CASE
+   CASE .cDestination == "EXPORT"
+      *&* change for VFP 7 -
+      *&* extension for Delimited
+      *&* files explicitly set
+      DO CASE
+      CASE .cboOptions.Value == "DELIMITED"
+         lcExt = "ASC"
+      CASE LEN(.cboOptions.Value) > 3
+         lcExt =  "DBF"
+      OTHERWISE
+         lcExt = .cboOptions.Value
+      ENDCASE
+   CASE .cDestination == "PRINTFILE"
+      lcExt = "PRN"
+   CASE .cDestination == "HTMLFILE"
+      lcExt = "HTM"
+   OTHERWISE
+      lcExt = "TXT"
+   ENDCASE
+   .cTextFile = PUTFILE("",ALLTR(.cTextFile),lcExt)
+   IF EMPTY(.cTextFile)
+      .ResetToDefault("cTextFile") && otherwise it's a null string and the cursor won't stay
+   ENDIF
+
+ENDWITH
+
+THIS.Parent.txtFileName.Refresh()
+
+WAIT CLEAR
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _outputchoices
+[START PROPERTIES]
+MS Sans Serif, 0, 8, 5, 13, 11, 11, 2, 0
+[END PROPERTIES]
+[START RESERVED1]
+ 
+ _reports.h6Ý¸\1[END RESERVED1]
+[EOF]
