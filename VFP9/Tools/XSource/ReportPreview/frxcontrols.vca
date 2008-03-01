@@ -1,0 +1,817 @@
+SCCTEXT Version 4.0.0.2
+PLATFORM C(8,0),UNIQUEID C(10,0),TIMESTAMP N(10,0),CLASS M(4,0),CLASSLOC M(4,0),BASECLASS M(4,0),OBJNAME M(4,0),PARENT M(4,0),PROPERTIES M(4,0),PROTECTED M(4,0),METHODS M(4,0),OBJCODE M(4,0),OLE M(4,0),OLE2 M(4,0),RESERVED1 M(4,0),RESERVED2 M(4,0),RESERVED3 M(4,0),RESERVED4 M(4,0),RESERVED5 M(4,0),RESERVED6 M(4,0),RESERVED7 M(4,0),RESERVED8 M(4,0),USER M(4,0)
+1252
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] Class     
+[START RESERVED1]
+VERSION =   3.00[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _11R0NJMU6
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] cmd
+[START PROPERTIES]
+Height = 25
+Width = 75
+FontName = "Tahoma"
+FontSize = 8
+Caption = "Caption"
+Name = "cmd"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Error
+LPARAMETERS nError, cMethod, nLine
+THIS.Parent.Error( nError, cMethod, nLine )
+ENDPROC
+PROCEDURE enabled_assign
+lparameters lEnabled
+THIS.Enabled = m.lEnabled
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+*enabled_assign 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] cmd
+[START PROPERTIES]
+Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _11R0NL795
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] txt
+[START PROPERTIES]
+FontName = "Tahoma"
+FontSize = 8
+Height = 22
+Margin = 1
+SelectOnEntry = .T.
+Width = 100
+Name = "txt"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Error
+LPARAMETERS nError, cMethod, nLine
+THIS.Parent.Error( nError, cMethod, nLine )
+ENDPROC
+PROCEDURE KeyPress
+lparameters iKey, iModifier
+
+*----------------------------------
+* Do not allow nulls to be entered
+* with Ctrl-0 :
+*----------------------------------
+if m.iKey = 48 and 0 < bitand( m.iModifier, 2 )
+	nodefault
+endif
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] txt
+[START PROPERTIES]
+Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _11R0O2LAK
+[CLASS] checkbox
+[BASECLASS] checkbox
+[OBJNAME] chk
+[START PROPERTIES]
+Width = 53
+FontName = "Tahoma"
+FontSize = 8
+AutoSize = .T.
+Alignment = 0
+BackStyle = 0
+Caption = "Check1"
+Value = .F.
+Name = "chk"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Error
+LPARAMETERS nError, cMethod, nLine
+THIS.Parent.Error( nError, cMethod, nLine )
+ENDPROC
+PROCEDURE KeyPress
+lparameters iKey, iModifier
+
+*----------------------------------
+* Do not allow nulls to be entered
+* with Ctrl-0 :
+*----------------------------------
+if m.iKey = 48 and 0 < bitand( m.iModifier, 2 )
+	nodefault
+endif
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] chk
+[START PROPERTIES]
+Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _11R0O3J0I
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] lbl
+[START PROPERTIES]
+AutoSize = .T.
+FontName = "Tahoma"
+FontSize = 8
+Caption = "label"
+Height = 15
+Width = 24
+Name = "lbl"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Error
+LPARAMETERS nError, cMethod, nLine
+THIS.Parent.Error( nError, cMethod, nLine )
+ENDPROC
+PROCEDURE RightClick
+THIS.Parent.RightClick()
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] lbl
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _11R0O4T3U
+[CLASS] editbox
+[BASECLASS] editbox
+[OBJNAME] edt
+[START PROPERTIES]
+FontName = "Tahoma"
+FontSize = 8
+Height = 53
+Margin = 1
+Width = 100
+Name = "edt"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Error
+LPARAMETERS nError, cMethod, nLine
+THIS.Parent.Error( nError, cMethod, nLine )
+ENDPROC
+PROCEDURE KeyPress
+lparameters iKey, iModifier
+
+*----------------------------------
+* Do not allow nulls to be entered
+* with Ctrl-0 :
+*----------------------------------
+if m.iKey = 48 and 0 < bitand( m.iModifier, 2 )
+	nodefault
+endif
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] edt
+[START PROPERTIES]
+Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _11R0OANEG
+[CLASS] optionbutton
+[BASECLASS] optionbutton
+[OBJNAME] opt
+[START PROPERTIES]
+FontName = "Tahoma"
+FontSize = 8
+BackStyle = 0
+Caption = "prompt"
+Height = 15
+Width = 52
+AutoSize = .T.
+Name = "opt"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Error
+LPARAMETERS nError, cMethod, nLine
+THIS.Parent.Error( nError, cMethod, nLine )
+ENDPROC
+PROCEDURE KeyPress
+lparameters iKey, iModifier
+
+*----------------------------------
+* Do not allow nulls to be entered
+* with Ctrl-0 :
+*----------------------------------
+if m.iKey = 48 and 0 < bitand( m.iModifier, 2 )
+	nodefault
+endif
+ENDPROC
+PROCEDURE When
+if THIS.Parent.ReadOnly
+	return .F.
+else
+	return .T.
+endif
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] opt
+[START PROPERTIES]
+Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _11R0OBRPZ
+[CLASS] optiongroup
+[BASECLASS] optiongroup
+[OBJNAME] opg
+[START PROPERTIES]
+MemberClassLibrary = frxcontrols.vcx
+MemberClass = "opt"
+ButtonCount = 0
+BackStyle = 0
+BorderStyle = 1
+Value = 0
+Height = 66
+Width = 117
+Name = "opg"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Error
+LPARAMETERS nError, cMethod, nLine
+THIS.Parent.Error( nError, cMethod, nLine )
+ENDPROC
+PROCEDURE RightClick
+THIS.Parent.RightClick()
+ENDPROC
+PROCEDURE enabled_assign
+lparameter lEnabled
+
+for each optbut in THIS.Buttons
+	optbut.Enabled = m.lEnabled
+endfor
+
+ENDPROC
+PROCEDURE readonly_assign
+lparameter lReadOnly
+*
+* Returning .F. in each button's .When() produces
+* a more visually acceptable effect:
+*
+*for each optbut in this.Buttons
+*	optbut.Enabled = not m.lReadOnly
+*endfor
+
+THIS.ReadOnly = m.lReadOnly
+ENDPROC
+PROCEDURE setfocus
+*----------------------------------------------------
+* SetFocus() in containers doesn't work so well. This
+* compensates for that bug by doing it manually:
+*----------------------------------------------------
+local oControl
+for each oControl in this.Buttons
+	if oControl.TabIndex = 1
+		oControl.SetFocus()
+		nodefault
+		exit
+	endif
+endfor
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+readonly Specifies if the user can edit a control, or specifies if a table or view associated with a Cursor object allows updates.
+*enabled_assign 
+*readonly_assign 
+*setfocus Sets the focus to a control.
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] opg
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _11R0OJHC3
+[CLASS] page
+[BASECLASS] page
+[OBJNAME] pge
+[START PROPERTIES]
+FontName = "Tahoma"
+FontSize = 8
+Caption = "Caption"
+Height = 187
+Width = 187
+Name = "pge"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Activate
+if type( "THIS.Controls[1]" ) = "O"
+	try
+		THIS.Controls[1].SetFocus()
+	catch
+	endtry
+endif
+ENDPROC
+PROCEDURE Error
+LPARAMETERS nError, cMethod, nLine
+THIS.Parent.Error( nError, cMethod, nLine )
+ENDPROC
+PROCEDURE RightClick
+THIS.Parent.RightClick()
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] pge
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _11R0OKCMZ
+[CLASS] pageframe
+[BASECLASS] pageframe
+[OBJNAME] pgf
+[START PROPERTIES]
+ErasePage = .T.
+MemberClassLibrary = frxcontrols.vcx
+MemberClass = "pge"
+PageCount = 0
+TabStyle = 1
+ActivePage = 0
+Width = 241
+Height = 169
+currentpage = 0
+errored = .F.
+Name = "pgf"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Error
+LPARAMETERS nError, cMethod, nLine
+THIS.Parent.Error( nError, cMethod, nLine )
+
+ENDPROC
+PROCEDURE RightClick
+THIS.Parent.RightClick()
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+currentpage
+errored
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] pgf
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _11R0OM4OS
+[CLASS] spinner
+[BASECLASS] spinner
+[OBJNAME] spn
+[START PROPERTIES]
+FontName = "Tahoma"
+FontSize = 8
+Height = 22
+KeyboardLowValue = 0
+Margin = 1
+SelectOnEntry = .T.
+SpinnerLowValue =   0.00
+Width = 121
+incomingvalue = 0
+Name = "spn"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE DownClick
+if THIS.incomingValue <> THIS.Value
+	this.action()
+	this.resetIncoming()
+endif
+ENDPROC
+PROCEDURE Error
+LPARAMETERS nError, cMethod, nLine
+THIS.Parent.Error( nError, cMethod, nLine )
+ENDPROC
+PROCEDURE GotFocus
+THIS.resetIncoming()
+ENDPROC
+PROCEDURE KeyPress
+lparameters iKey, iModifier
+
+*----------------------------------
+* Do not allow nulls to be entered
+* with Ctrl-0 :
+*----------------------------------
+if m.iKey = 48 and 0 < bitand( m.iModifier, 2 )
+	nodefault
+endif
+ENDPROC
+PROCEDURE LostFocus
+if THIS.incomingValue <> THIS.Value
+	this.action()
+endif
+ENDPROC
+PROCEDURE UpClick
+if THIS.incomingValue <> THIS.Value
+	this.action()
+	this.resetIncoming()
+endif
+ENDPROC
+PROCEDURE resetincoming
+THIS.incomingValue = THIS.Value
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+incomingvalue
+*action 
+*resetincoming 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] spn
+[START PROPERTIES]
+Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _11R0OMVRT
+[CLASS] combobox
+[BASECLASS] combobox
+[OBJNAME] cbo
+[START PROPERTIES]
+FontName = "Tahoma"
+FontSize = 8
+Height = 22
+Margin = 1
+Width = 100
+Name = "cbo"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Error
+LPARAMETERS nError, cMethod, nLine
+THIS.Parent.Error( nError, cMethod, nLine )
+ENDPROC
+PROCEDURE KeyPress
+lparameters iKey, iModifier
+
+*----------------------------------
+* Do not allow nulls to be entered
+* with Ctrl-0 :
+*----------------------------------
+if m.iKey = 48 and 0 < bitand( m.iModifier, 2 )
+	nodefault
+endif
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] cbo
+[START PROPERTIES]
+Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _11W0RVA8Y
+[CLASS] shape
+[BASECLASS] shape
+[OBJNAME] shp
+[START PROPERTIES]
+Height = 46
+Width = 162
+SpecialEffect = 0
+Name = "shp"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Error
+LPARAMETERS nError, cMethod, nLine
+THIS.Parent.Error( nError, cMethod, nLine )
+ENDPROC
+PROCEDURE RightClick
+THIS.Parent.RightClick()
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] shp
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1220YMYY4
+[CLASS] container
+[BASECLASS] container
+[OBJNAME] cnt
+[START PROPERTIES]
+Width = 200
+Height = 112
+BackStyle = 0
+Name = "cnt"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Error
+LPARAMETERS nError, cMethod, nLine
+THIS.Parent.Error( nError, cMethod, nLine )
+ENDPROC
+PROCEDURE RightClick
+THIS.Parent.RightClick()
+ENDPROC
+PROCEDURE SetFocus
+local oControl
+for each oControl in this.Controls
+	if type("oControl.TabIndex") = "N"
+		if oControl.TabIndex = 1
+			if pemstatus( m.oControl,"setFocus",5)
+				oControl.SetFocus()
+				nodefault
+			endif
+			exit
+		endif
+	endif
+endfor
+
+ENDPROC
+PROCEDURE enabled_assign
+lparameter lEnabled
+THIS.Enabled = m.lEnabled
+
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+*enabled_assign 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] cnt
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _12G0NNCGK
+[CLASS] listbox
+[BASECLASS] listbox
+[OBJNAME] lst
+[START PROPERTIES]
+FontName = "Tahoma"
+FontSize = 8
+Height = 78
+Width = 174
+Name = "lst"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Error
+LPARAMETERS nError, cMethod, nLine
+THIS.Parent.Error( nError, cMethod, nLine )
+ENDPROC
+PROCEDURE KeyPress
+lparameters iKey, iModifier
+
+*----------------------------------
+* Do not allow nulls to be entered
+* with Ctrl-0 :
+*----------------------------------
+if m.iKey = 48 and 0 < bitand( m.iModifier, 2 )
+	nodefault
+endif
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] lst
+[START PROPERTIES]
+Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1360UZUFV
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] resizegrabber
+[START PROPERTIES]
+Picture = images\grabber.gif
+Height = 12
+Width = 12
+Name = "resizegrabber"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+if _screen.Themes
+	THIS.Picture = "grabber.gif"
+else
+	THIS.Picture = "grabber2k.gif"
+endif
+ENDPROC
+PROCEDURE resize
+*=======================================================================
+* Resize()
+*
+* Useage:
+* In the form's resize event, call THIS.grabber.Resize() and the grabber
+* image will relocate itself to the bottom right corner of the window
+*=======================================================================
+THIS.Top  = THISFORM.Height - THIS.Height
+THIS.Left = THISFORM.Width  - THIS.Width
+if THISFORM.BorderStyle<>3
+	THIS.Visible = .F.
+endif
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+*resize Occurs when an object is resized.
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] resizegrabber
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1Q30Y83RB
+[CLASS] lbl
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] label
+[OBJNAME] hyperlabel
+[START PROPERTIES]
+AutoSize = .T.
+FontUnderline = .T.
+BackStyle = 0
+Caption = "enter url here"
+MousePointer = 15
+ForeColor = 0,0,255
+Name = "hyperlabel"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+local lcUrl
+if left( lower(THIS.Caption), 7 ) = [http://]
+	lcUrl = THIS.Caption
+else
+	lcUrl = [http://] + THIS.Caption
+endif
+
+THIS.ForeColor = RGB(128,0,128)
+
+DECLARE INTEGER ShellExecute ;
+    IN SHELL32.dll ;
+    INTEGER nWinHandle,;
+    STRING cOperation,;
+    STRING cFileName,;
+    STRING cParameters,;
+    STRING cDirectory,;
+    INTEGER nShowWindow
+
+DECLARE INTEGER FindWindow ;
+   IN WIN32API STRING cNull,STRING cWinName
+
+=ShellExecute( FindWindow(0,_screen.Caption), "OPEN", m.lcUrl,"",sys(2023),1)
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] hyperlabel
+[EOF]
