@@ -1,14 +1,14 @@
 Version=  1.20
-Author=Lisa Slater Nicholls
-Company=Spacefold
+Author=
+Company=
 Address=
 City=
 State=
 Zip=
 Country=
 SaveCode=.T.
-Debug=.F.
-Encrypt=.T.
+Debug=.T.
+Encrypt=.F.
 NoLogo=.F.
 CommentStyle=1
 Comments=
@@ -24,24 +24,4 @@ AutoIncrement=.F.
 [OLEServers]
 [OLEServersEnd]
 [ProjectFiles]
- 822452235,P,frxoutput.prg,.F.,.T.,1252,,,
- 822452235,D,_reportoutputconfig.dbf,.F.,.F.,0,,,
- 822454442,V,listener.vcx,.F.,.F.,0,,,
- 822454442,V,_frxcursor.vcx,.F.,.F.,0,,,
- 874932984,V,_gdiplus.vcx,.F.,.F.,0,,,
- 876837296,T,gdiplus_locs.h,.T.,.F.,1252,,,
- 876837296,T,reportlisteners.h,.T.,.F.,1252,,,
- 876837296,T,_frxcursor.h,.T.,.F.,1252,,,
- 876837296,T,reportlisteners_locs.h,.T.,.F.,1252,,,
- 876837296,T,foxpro_reporting.h,.T.,.F.,1252,,,
- 876837296,T,reportoutput.h,.T.,.F.,1252,,,
- 876837296,T,reportoutput_locs.h,.T.,.F.,1252,,,
- 876837296,T,gdiplus.h,.T.,.F.,1252,,,
- 876837328,T,vfpdesignmetadata.xsd,.T.,.F.,1252,,,
- 876837328,T,xmloutput-includes.xsd,.T.,.F.,1252,,,
- 876837328,T,xmloutput-sp2-alt.xsd,.T.,.F.,1252,,,
- 876837328,T,xmloutput-rtm.xsd,.T.,.F.,1252,,,
- 876837328,T,xmloutput-sp2.xsd,.T.,.F.,1252,,,
- 876837476,T,xsltprocessoruser-sp2.xslt,.T.,.F.,1252,,,
- 876837476,T,xsltprocessoruser-rtm.xslt,.T.,.F.,1252,,,
 [EOF]
