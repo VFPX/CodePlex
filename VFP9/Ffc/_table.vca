@@ -1,0 +1,4171 @@
+SCCTEXT Version 4.0.0.2
+PLATFORM C(8,0),UNIQUEID C(10,0),TIMESTAMP N(10,0),CLASS M(4,0),CLASSLOC M(4,0),BASECLASS M(4,0),OBJNAME M(4,0),PARENT M(4,0),PROPERTIES M(4,0),PROTECTED M(4,0),METHODS M(4,0),OBJCODE M(4,0),OLE M(4,0),OLE2 M(4,0),RESERVED1 M(4,0),RESERVED2 M(4,0),RESERVED3 M(4,0),RESERVED4 M(4,0),RESERVED5 M(4,0),RESERVED6 M(4,0),RESERVED7 M(4,0),RESERVED8 M(4,0),USER M(4,0)
+1252
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] Class     
+[START RESERVED1]
+VERSION =   3.00[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _R250M3BJV
+[CLASS] _form
+[CLASSLOC] _base.vcx
+[BASECLASS] form
+[OBJNAME] _finddialog
+[START PROPERTIES]
+Height = 131
+Width = 378
+ShowWindow = 1
+DoCreate = .T.
+AutoCenter = .T.
+BorderStyle = 0
+Caption = "Find"
+MaxButton = .F.
+MinButton = .F.
+Visible = .F.
+AlwaysOnTop = .T.
+calias = ("")
+cfindstring = ("")
+Name = "_finddialog"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Activate
+IF NOT EMPTY(ALIAS())
+   THIS.RefreshTableChoices()
+   STORE PROPER(ALIAS()) TO THIS.cboTables.Value, THIS.cboTables.DisplayValue
+
+ENDIF
+
+ENDPROC
+PROCEDURE Init
+LPARAMETERS tlAdvanced
+
+IF NOT DODEFAULT()
+   RETURN .F.
+ENDIF
+
+IF PCOUNT() > 0
+   THIS.lAdvanced = tlAdvanced
+ELSE
+   THIS.lAdvanced = THIS.lAdvanced
+   * default to the value of the property,
+   * but still synch up the positioning
+   * of the objects on the form to the current state
+ENDIF
+
+* localize strings
+THIS.Caption = FIND_CAPTION_LOC
+THIS.lblFind.Caption  = FIND_LOOKFOR_LOC
+THIS.lblOptions.Caption = FIND_OPTIONS_LOC
+THIS.chkWrapAround.Caption = FIND_WRAPAROUND_LOC
+THIS.chkMatchCase.Caption = FIND_MATCHCASE_LOC
+THIS.chkSkipMemos.Caption = FIND_SKIPMEMOS_LOC
+THIS.cmdFind.Caption = FIND_FIND_LOC
+THIS.cmdCancel.Caption = FIND_CANCEL_LOC
+THIS.lblLookIn.Caption = FIND_LOOKIN_LOC
+
+* bindings to member properties occurs
+* here rather than properties window
+* because of possible order conflicts (the
+* custom object may be created after some
+* of the members we wish to bind to its properties):
+
+THIS.cboFindString.ControlSource = "THISFORM.cusTableFind.cFindString"
+THIS.cboTables.ControlSource = "THISFORM.cusTableFind.cAlias"
+THIS.chkWrapAround.ControlSource = "THISFORM.cusTableFind.lWrapAround"
+THIS.chkSkipMemos.ControlSource = "THISFORM.cusTableFind.lSkipMemos"
+THIS.chkMatchCase.ControlSource = "THISFORM.cusTableFind.lMatchCase"
+
+IF SYSTEM_LARGEFONTS
+   THIS.SetAll("FontName",DIALOG_LARGEFONT_NAME)
+ENDIF
+
+
+
+ENDPROC
+PROCEDURE Show
+LPARAMETERS nStyle
+THIS.RefreshTableChoices()
+DO CASE
+CASE EMPTY(THIS.cusTableFind.cAlias)
+   THIS.cusTableFind.cAlias = THIS.cusTableFind.GetCurrentAlias()
+CASE NOT USED(THIS.cusTableFind.cAlias)
+   THIS.cusTableFind.cAlias = ""
+OTHERWISE
+   * leave it alone
+ENDCASE
+THIS.SetFindButtonCaption()
+THIS.SetFindButtonEnable()
+IF NOT THIS.cmdFind.Enabled
+   IF EMPTY(THIS.cFindString)
+      KEYBOARD SPACE(1)+"{HOME}"
+   ELSE
+      KEYBOARD THIS.cFindString
+   ENDIF
+ENDIF
+
+
+
+ENDPROC
+PROCEDURE calias_access
+RETURN THIS.cusTableFind.cAlias
+
+ENDPROC
+PROCEDURE calias_assign
+LPARAMETERS m.vNewVal
+THIS.cusTableFind.cAlias = m.vNewVal
+
+ENDPROC
+PROCEDURE cfindstring_access
+RETURN THIS.cusTableFind.cFindString
+
+ENDPROC
+PROCEDURE cfindstring_assign
+LPARAMETERS m.vNewVal
+STORE m.vNewVal TO THIS.cusTableFind.cFindString
+ENDPROC
+PROCEDURE clearfindstrings
+THIS.cboFindString.Clear()
+STORE "" TO THIS.cboFindString.Value, ;
+            THIS.cboFindString.DisplayValue, ;
+            THIS.cusTableFind.cFindString
+THIS.SetFindButtonCaption()
+THIS.SetFindButtonEnable()
+
+ENDPROC
+PROCEDURE ladvanced_assign
+LPARAMETERS m.vNewVal
+
+LOCAL lnMargin
+lnMargin = THIS.cmdFind.Top
+
+THIS.lAdvanced = m.vNewVal
+
+
+STORE THIS.lAdvanced TO ;
+      THIS.cboTables.Visible, THIS.cboTables.Enabled, ;
+      THIS.lblLookIn.Visible, THIS.lblLookIn.Enabled
+
+IF THIS.lAdvanced
+
+   THIS.lblOptions.Top = THIS.cboTables.Top + THIS.cboTables.Height + lnMargin
+
+ELSE
+
+   THIS.lblOptions.Top = THIS.cboTables.Top
+
+ENDIF
+
+THIS.shpOptionFrame.Top = THIS.lblOptions.Top  + THIS.lblOptions.Height/2
+
+THIS.SetAll("Top", ;
+            THIS.shpOptionFrame.Top + ;
+            ((THIS.shpOptionFrame.Height/2)-(THIS.chkMatchCase.Height/2)), ;
+            "_checkbox")
+
+THIS.Height=THIS.shpOptionFrame.Top+THIS.shpOptionFrame.Height+lnMargin
+
+
+ENDPROC
+PROCEDURE lfindagain_access
+RETURN THIS.cusTableFind.lFindAgain
+
+ENDPROC
+PROCEDURE lfindagain_assign
+LPARAMETERS m.vNewVal
+THIS.cusTableFind.lFindAgain = m.vNewVal
+
+ENDPROC
+PROCEDURE lmatchcase_access
+RETURN THIS.cusTableFind.lMatchCase
+
+ENDPROC
+PROCEDURE lmatchcase_assign
+LPARAMETERS m.vNewVal
+THIS.cusTableFind.lMatchCase = m.vNewVal
+
+ENDPROC
+PROCEDURE lskipmemos_access
+RETURN THIS.cusTableFind.lSkipMemos
+
+ENDPROC
+PROCEDURE lskipmemos_assign
+LPARAMETERS m.vNewVal
+THIS.cusTableFind.lSkipMemos = m.vNewVal
+
+ENDPROC
+PROCEDURE lwraparound_access
+RETURN THIS.cusTableFind.lWrapAround
+
+ENDPROC
+PROCEDURE lwraparound_assign
+LPARAMETERS m.vNewVal
+THIS.cusTableFind.lWrapAround = m.vNewVal
+
+ENDPROC
+PROCEDURE refreshtablechoices
+IF THIS.lAdvanced
+   THIS.cboTables.Refresh(.T.)
+ENDIF
+ENDPROC
+PROCEDURE setfindbuttoncaption
+IF THIS.cusTableFind.lFindAgain
+   THIS.cmdFind.Caption = FIND_FINDNEXT_LOC
+ELSE
+   THIS.cmdFind.Caption = FIND_FIND_LOC
+ENDIF
+ENDPROC
+PROCEDURE setfindbuttonenable
+THIS.cmdFind.Enabled = (NOT EMPTY(THIS.cusTableFind.cAlias)) AND ;
+                       (NOT EMPTY(THIS.cboFindString.DisplayValue))
+
+
+ENDPROC
+PROCEDURE skipfield
+LPARAMETERS tcField
+THIS.cusTableFind.SkipField(tcField)
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+13[END RESERVED2]
+[START RESERVED3]
+lwraparound Whether to continue searching from beginning if end of file reached.
+lmatchcase Case-sensitivity.
+lskipmemos Whether to skip searching in memo fields.
+lfindagain This determines whether the class will perform a SKIP before its next check, allowing you to move through a file finding successive instances of a string.
+calias The data source to search in.
+cfindstring The search string.
+ladvanced Whether to display advanced options in dialog.
+*clearfindstrings 
+*setfindbuttoncaption 
+*setfindbuttonenable 
+*lwraparound_access 
+*lwraparound_assign 
+*lmatchcase_access 
+*lmatchcase_assign 
+*lskipmemos_access 
+*lskipmemos_assign 
+*lfindagain_access 
+*lfindagain_assign 
+*calias_access 
+*calias_assign 
+*cfindstring_access 
+*cfindstring_assign 
+*skipfield 
+*dofind 
+*refreshtablechoices 
+*ladvanced_assign 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+_table.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RMI14YXAF
+[CLASS] _label
+[CLASSLOC] _base.vcx
+[BASECLASS] label
+[OBJNAME] lblFind
+[PARENT] _finddialog
+[START PROPERTIES]
+AutoSize = .T.
+FontName = "MS Sans Serif"
+FontSize = 8
+BackStyle = 0
+BorderStyle = 0
+Caption = "\<Look for:"
+Height = 15
+Left = 10
+Top = 14
+Width = 44
+TabIndex = 1
+Name = "lblFind"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RMI14YXAF
+[CLASS] _shape
+[CLASSLOC] _base.vcx
+[BASECLASS] shape
+[OBJNAME] shpOptionFrame
+[PARENT] _finddialog
+[START PROPERTIES]
+Top = 85
+Left = 10
+Height = 36
+Width = 284
+BackStyle = 0
+BorderStyle = 1
+BorderWidth = 1
+SpecialEffect = 0
+Name = "shpOptionFrame"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] RESERVED  
+[CLASS] _label
+[CLASSLOC] _base.vcx
+[BASECLASS] label
+[OBJNAME] lblOptions
+[PARENT] _finddialog
+[START PROPERTIES]
+AutoSize = .T.
+FontName = "MS Sans Serif"
+FontSize = 8
+BorderStyle = 0
+Caption = "Options"
+Height = 15
+Left = 15
+Top = 79
+Width = 38
+TabIndex = 5
+Name = "lblOptions"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _R250M3BJV
+[CLASS] _checkbox
+[CLASSLOC] _base.vcx
+[BASECLASS] checkbox
+[OBJNAME] chkMatchCase
+[PARENT] _finddialog
+[START PROPERTIES]
+Top = 99
+Left = 117
+Height = 15
+Width = 74
+FontName = "MS Sans Serif"
+FontSize = 8
+AutoSize = .T.
+BackStyle = 0
+Caption = "\<Match case"
+Value = .F.
+TabIndex = 7
+Name = "chkMatchCase"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _R250M3BCH
+[CLASS] _checkbox
+[CLASSLOC] _base.vcx
+[BASECLASS] checkbox
+[OBJNAME] chkWrapAround
+[PARENT] _finddialog
+[START PROPERTIES]
+Top = 99
+Left = 16
+Height = 15
+Width = 80
+FontName = "MS Sans Serif"
+FontSize = 8
+AutoSize = .T.
+BackStyle = 0
+Caption = "\<Wrap around"
+Value = .F.
+TabIndex = 6
+Name = "chkWrapAround"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _R250M3BEP
+[CLASS] _commandbutton
+[CLASSLOC] _base.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdFind
+[PARENT] _finddialog
+[START PROPERTIES]
+Top = 12
+Left = 305
+Height = 23
+Width = 63
+FontName = "MS Sans Serif"
+FontSize = 8
+Caption = "\<Find"
+Default = .T.
+TabIndex = 9
+Name = "cmdFind"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+THISFORM.cusTableFind.DoFind()
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _R250M3BHE
+[CLASS] _commandbutton
+[CLASSLOC] _base.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdCancel
+[PARENT] _finddialog
+[START PROPERTIES]
+Top = 43
+Left = 305
+Height = 23
+Width = 63
+FontName = "MS Sans Serif"
+FontSize = 8
+Cancel = .T.
+Caption = "\<Cancel"
+TabIndex = 10
+Name = "cmdCancel"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+THISFORM.Release()
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] RESERVED  
+[CLASS] _combobox
+[CLASSLOC] _base.vcx
+[BASECLASS] combobox
+[OBJNAME] cboFindString
+[PARENT] _finddialog
+[START PROPERTIES]
+FontName = "MS Sans Serif"
+FontSize = 8
+Height = 24
+Left = 78
+TabIndex = 2
+Top = 11
+Width = 216
+Name = "cboFindString"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE InteractiveChange
+THISFORM.SetFindButtonEnable()
+
+
+ENDPROC
+PROCEDURE Valid
+WITH THIS
+   IF NOT EMPTY(.DisplayValue)
+      LOCAL liItem, llFound
+      FOR liItem = 1 TO .ListCount
+         IF .List(liItem) == .DisplayValue
+            llFound = .T.
+            EXIT
+         ENDIF
+      ENDFOR
+      IF NOT llFound
+         .AddItem(.DisplayValue,1)
+      ENDIF
+   ENDIF
+   .Value = .DisplayValue
+ENDWITH
+
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RMJ11GU6T
+[CLASS] _checkbox
+[CLASSLOC] _base.vcx
+[BASECLASS] checkbox
+[OBJNAME] chkSkipMemos
+[PARENT] _finddialog
+[START PROPERTIES]
+Top = 99
+Left = 211
+Height = 15
+Width = 75
+FontName = "MS Sans Serif"
+FontSize = 8
+AutoSize = .T.
+Caption = "\<Skip memos"
+Value = .F.
+TabIndex = 8
+Name = "chkSkipMemos"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RMK0JJG2Y
+[CLASS] _label
+[CLASSLOC] _base.vcx
+[BASECLASS] label
+[OBJNAME] lblLookIn
+[PARENT] _finddialog
+[START PROPERTIES]
+AutoSize = .T.
+FontName = "MS Sans Serif"
+FontSize = 8
+BackStyle = 0
+BorderStyle = 0
+Caption = "Look \<in:"
+Height = 15
+Left = 10
+Top = 51
+Width = 40
+TabIndex = 3
+Name = "lblLookIn"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RMK0JJG3S
+[CLASS] _combobox
+[CLASSLOC] _base.vcx
+[BASECLASS] combobox
+[OBJNAME] cboTables
+[PARENT] _finddialog
+[START PROPERTIES]
+FontName = "MS Sans Serif"
+FontSize = 8
+Value = (THISFORM.cAlias)
+Height = 24
+Left = 78
+Style = 2
+TabIndex = 4
+Top = 48
+Width = 216
+Name = "cboTables"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Refresh
+LPARAMETERS tlForceRefresh
+IF THISFORM.lAdvanced
+   IF tlForceRefresh
+      THIS.Clear
+      LOCAL aAliases[1,2], liAlias, liAliasCount
+      liAliasCount = AUSED(aAliases)
+      FOR liAlias = 1 TO liAliasCount
+         THIS.AddItem(PROPER(aAliases[liAlias,1]))
+      ENDFOR
+      THIS.AddItem(SPACE(8))
+   ENDIF
+ENDIF
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RML0NI0LS
+[CLASS] _tablefind
+[CLASSLOC] _table.vcx
+[BASECLASS] custom
+[OBJNAME] cusTableFind
+[PARENT] _finddialog
+[START PROPERTIES]
+Top = 84
+Left = 324
+Name = "cusTableFind"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE calias_assign
+LPARAMETERS tcAlias
+DODEFAULT(tcAlias)
+
+LOCAL liAlias, llFound, llEmpty
+
+IF EMPTY(THIS.cAlias)
+   THISFORM.Caption = FIND_CAPTION_LOC
+   llEmpty = .T.
+ELSE
+   THISFORM.Caption = FIND_FINDIN_LOC+" "+ PROPER(THIS.cAlias)
+ENDIF
+
+THISFORM.SetFindButtonEnable()
+THISFORM.SetFindButtonCaption()
+
+IF THISFORM.lAdvanced
+   IF NOT llEmpty
+      FOR liAlias = 1 TO THISFORM.cboTables.ListCount
+         llFound = (THIS.cAlias == THISFORM.cboTables.List(liAlias))
+         IF llFound
+            EXIT
+         ENDIF
+      ENDFOR
+   ENDIF
+   IF NOT (llFound OR llEmpty)
+      THISFORM.cboTables.AddItem(THIS.cAlias)
+   ENDIF
+
+   STORE THIS.cAlias TO THISFORM.cboTables.Value, ;
+                        THISFORM.cboTables.DisplayValue
+   THISFORM.cboTables.Refresh()
+
+ENDIF
+ENDPROC
+PROCEDURE cfindstring_assign
+LPARAMETERS tcString
+DODEFAULT(tcString)
+THISFORM.SetFindButtonCaption()
+THISFORM.SetFindButtonEnable()
+ENDPROC
+PROCEDURE dofind
+LPARAMETERS tcString, tcAlias
+
+IF DODEFAULT(tcString, tcAlias)
+   THISFORM.cusTableFind.RefreshLastWindowAfterChange()
+ENDIF
+
+THISFORM.SetFindButtonEnable()
+THISFORM.SetFindButtonCaption()
+
+RETURN
+
+*!*	   * the commented version below can
+*!*	   * replace the above if "multiple find"
+*!*	   * is inadvisable on a modal dialog,
+*!*	   * for any reason,
+*!*	   * but it seems to be okay
+
+*!*	IF DODEFAULT(tcString, tcAlias)
+*!*	   THISFORM.cusTableFind.RefreshLastWindowAfterChange()
+*!*	   IF THISFORM.WindowType = 1
+*!*	      THISFORM.Release()
+*!*	   ENDIF
+*!*	ELSE
+*!*	   IF THISFORM.WindowType = 1
+*!*	      THISFORM.Release()
+*!*	   ELSE
+*!*	      THISFORM.SetFindButtonEnable()
+*!*	      THISFORM.SetFindButtonCaption()
+*!*	   ENDIF
+*!*	ENDIF
+
+ENDPROC
+PROCEDURE lfindagain_assign
+LPARAMETERS tlVal
+DODEFAULT(tlVal)
+THISFORM.SetFindButtonCaption()
+THISFORM.SetFindButtonEnable()
+ENDPROC
+PROCEDURE lmatchcase_assign
+LPARAMETERS tlVal
+DODEFAULT(tlVal)
+THISFORM.SetFindButtonCaption()
+THISFORM.SetFindButtonEnable()
+ENDPROC
+PROCEDURE lskipmemos_assign
+LPARAMETERS tlVal
+DODEFAULT(tlVal)
+THISFORM.SetFindButtonCaption()
+THISFORM.SetFindButtonEnable()
+ENDPROC
+PROCEDURE lwraparound_assign
+LPARAMETERS tlVal
+DODEFAULT(tlVal)
+THISFORM.SetFindButtonCaption()
+THISFORM.SetFindButtonEnable()
+ENDPROC
+PROCEDURE setfields
+DODEFAULT()
+THISFORM.SetFindButtonCaption()
+THISFORM.SetFindButtonEnable()
+ENDPROC
+PROCEDURE skipfield
+LPARAMETERS tcField
+DODEFAULT(tcField)
+THISFORM.SetFindButtonCaption()
+THISFORM.SetFindButtonEnable()
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _finddialog
+[START PROPERTIES]
+Arial, 0, 9, 5, 15, 12, 13, 3, 0
+MS Sans Serif, 0, 8, 5, 13, 11, 11, 2, 0
+[END PROPERTIES]
+[START RESERVED1]
+  _table.h •Px$[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RML0KNAOS
+[CLASS] _table
+[CLASSLOC] _table.vcx
+[BASECLASS] custom
+[OBJNAME] _tablefind
+[START PROPERTIES]
+cfields = ("")
+imemos = 0
+cfindstring = ("")
+ccontrolcharacter = ("~")
+calias = ("")
+Name = "_tablefind"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE calias_assign
+LPARAMETERS tcNewVal
+DO CASE
+CASE VARTYPE(tcNewVal) # "C" OR NOT USED(tcNewVal)
+   THIS.cAlias = ""
+   THIS.cFields = ""
+   THIS.lFindAgain = .F.
+CASE THIS.cAlias == PROPER(tcNewVal)
+   * do nothing
+OTHERWISE
+   THIS.cAlias = PROPER(tcNewVal)
+   THIS.SetFields()
+   THIS.lFindAgain = .F.
+ENDCASE
+
+
+ENDPROC
+PROCEDURE ccontrolcharacter_assign
+LPARAMETERS tcNewVal
+IF VARTYPE(tcNewVal) # "C" OR EMPTY(tcNewVal)
+   THIS.cControlCharacter = "~"
+ELSE
+
+   IF LEFTC(tcNewVal,1) == THIS.cControlCharacter
+      * do nothing
+   ELSE
+      * one character only
+      THIS.cControlCharacter = LEFTC(tcNewVal,1)
+      THIS.SetFields()
+   ENDIF
+ENDIF
+
+ENDPROC
+PROCEDURE cfindstring_assign
+LPARAMETERS tcNewVal
+IF VARTYPE(tcNewVal) # "C"
+  RETURN .F.
+ENDIF
+IF RTRIM(tcNewVal) == THIS.cFindString
+   * do nothing
+ELSE
+   STORE RTRIM(tcNewVal) TO THIS.cFindString
+   THIS.lFindAgain = .F.
+ENDIF
+
+ENDPROC
+PROCEDURE dofind
+LPARAMETERS tcFindString, tcAlias
+
+ASSERT EMPTY(tcFindString) OR VARTYPE(tcFindString) = "C"
+ASSERT EMPTY(tcAlias) OR VARTYPE(tcAlias) = "C"
+
+LOCAL llSuccess
+
+llSuccess = .T.
+
+IF NOT EMPTY(tcFindString)
+   THIS.cFindString = tcFindString
+ENDIF
+
+IF EMPTY(THIS.cFindString)
+   llSuccess = .F.
+ENDIF
+
+IF NOT EMPTY(tcAlias)
+   THIS.cAlias = tcAlias
+ENDIF
+IF EMPTY(THIS.cAlias)
+   THIS.cAlias = THIS.GetCurrentAlias()
+ENDIF
+IF NOT USED(THIS.cAlias)
+   THIS.cAlias = ""
+ENDIF
+IF EMPTY(THIS.cAlias)
+   llSuccess = .F.
+ENDIF
+
+IF llSuccess
+   llSuccess = THIS.CurrentTableAllowsNavigation(THIS.cAlias)
+ENDIF
+
+IF llSuccess
+
+   * now do the real work
+
+   LOCAL liRecno, liSelect
+   liSelect = SELECT()
+   SELECT (THIS.cAlias)
+   liRecno = RECNO()
+
+   IF THIS.lFindAgain
+      IF NOT EOF()
+         SKIP
+      ELSE
+         LOCATE
+      ENDIF
+   ENDIF
+
+   IF THIS.lMatchCase
+      LOCATE REST FOR AT_C(THIS.cFindString,EVAL(THIS.cFields)) > 0
+   ELSE
+      LOCATE REST FOR ATCC(THIS.cFindString,EVAL(THIS.cfields)) > 0
+   ENDIF
+   IF EOF() AND THIS.lWrapAround
+      IF THIS.lMatchCase
+         LOCATE FOR AT_C(THIS.cFindString,EVAL(THIS.cFields)) > 0
+      ELSE
+         LOCATE FOR ATCC(THIS.cFindString,EVAL(THIS.cFields)) > 0
+      ENDIF
+   ENDIF
+   IF EOF()
+      THIS.ShowMessageNotFound()
+      GO liRecno
+      llSuccess = .F.
+   ENDIF
+   SELECT (liSelect)
+
+ENDIF
+
+THIS.lFindAgain = llSuccess
+
+RETURN llSuccess
+
+
+ENDPROC
+PROCEDURE lfindagain_assign
+LPARAMETERS tlNewVal
+THIS.lFindAgain = tlNewVal
+ENDPROC
+PROCEDURE lmatchcase_assign
+LPARAMETERS tlNewVal
+IF THIS.lMatchCase = tlNewVal
+   * do nothing
+ELSE
+   THIS.lMatchCase = tlNewVal
+   THIS.lFindAgain = .F.
+ENDIF
+ENDPROC
+PROCEDURE lskipmemos_assign
+LPARAMETERS tlNewVal
+IF tlNewVal = THIS.lSkipMemos
+  * do nothing
+ELSE
+   THIS.lFindAgain = .F.
+   THIS.lSkipMemos = tlNewVal
+   THIS.SetFields()
+ENDIF
+ENDPROC
+PROCEDURE lwraparound_assign
+LPARAMETERS m.vNewVal
+THIS.lWrapAround = m.vNewVal
+
+ENDPROC
+PROCEDURE setfields
+IF VARTYPE(THIS.cAlias) # "C" OR NOT USED(THIS.cAlias)
+   THIS.cFields = ""
+   RETURN
+ENDIF
+
+LOCAL liIndex, lcThisField, lcThisFieldType
+
+THIS.iMemos = 0
+THIS.cFields = "["+THIS.cControlCharacter+"]"
+DIME THIS.aMemos[1]
+THIS.aMemos[1] = .F.
+
+FOR liIndex = 1 TO FCOUNT(THIS.cAlias)
+   lcThisField = FIELD(liIndex,THIS.cAlias)
+   lcThisFieldType = TYPE(THIS.cAlias+"."+lcThisField)
+   DO CASE
+   CASE lcThisFieldType = "M" AND NOT THIS.lSkipMemos
+      THIS.iMemos = THIS.iMemos + 1
+      DIME THIS.aMemos(THIS.iMemos)
+      THIS.aMemos(THIS.iMemos) = lcThisField
+      THIS.cFields = THIS.cFields+"+"+lcThisField+"+["+THIS.cControlCharacter+"]"
+   CASE lcThisFieldType = "C"
+      THIS.cFields = THIS.cFields+"+"+lcThisField+"+["+THIS.cControlCharacter+"]"
+   CASE INLIST(lcThisFieldType,"N","I","Y")
+      THIS.cfields = ;
+          THIS.cfields+"+ ALLTRIM(STR("+lcThisField+",12,4))+["+THIS.cControlCharacter+"]"
+   CASE lcThisFieldType = "D"
+      THIS.cfields = ;
+          THIS.cfields+"+ DTOC("+lcThisField+")+["+THIS.cControlCharacter+"]"
+   CASE lcThisFieldType = "T"
+      THIS.cfields = ;
+          THIS.cfields+"+ TTOC("+lcThisField+")+["+THIS.cControlCharacter+"]"
+   CASE lcThisFieldType = "L"
+      THIS.cfields = ;
+          THIS.cfields+"+ IIF("+lcThisField+",'.T.','.F.')+["+THIS.cControlCharacter+"]"
+   OTHERWISE
+      * a type we can't yet handle
+   ENDCASE
+ENDFOR
+
+THIS.cFields = UPPER(STRTRAN(THIS.cFields,SPACE(1),""))
+
+IF THIS.cFields == "["+THIS.cControlCharacter+"]"
+   THIS.cAlias = ""
+ENDIF
+
+ENDPROC
+PROCEDURE showmessagenotfound
+IF INLIST(_VFP.StartMode,0,4)
+   ?? CHR(7)
+   WAIT WINDOW NOWAIT LEFT(FIND_NOFIND_LOC,254)
+ENDIF
+ENDPROC
+PROCEDURE skipfield
+LPARAMETERS tcField
+LOCAL llSkipped, lcThisField, lcThisFieldType
+lcThisField = ""
+IF VARTYPE(tcField) = "C" AND NOT(EMPTY(tcField))
+   lcThisFieldType = TYPE(THIS.cAlias+"."+tcField)
+   DO CASE
+   CASE INLIST(lcThisFieldType,"N","Y","I")
+      lcThisField = "["+THIS.cControlCharacter+"]" +  ;
+                    "+ ALLTRIM(STR("+ ;
+                    tcField + ;
+                    ",12,4))+["+THIS.cControlCharacter+"]"
+   CASE INLIST(lcThisFieldType,"C","M")
+      lcThisField = "["+THIS.cControlCharacter+"]+" +  ;
+                     tcField + ;
+                     "+["+THIS.cControlCharacter+"]"
+   CASE lcThisFieldType = "D"
+      lcThisField = "["+THIS.cControlCharacter+"]" +  ;
+                     "+DTOC("+tcField+")" + ;
+                     "+["+THIS.cControlCharacter+"]"
+   CASE lcThisFieldType = "T"
+      lcThisField = "["+THIS.cControlCharacter+"]" +  ;
+                     "+TTOC("+tcField+")" + ;
+                     "+["+THIS.cControlCharacter+"]"
+   CASE lcThisFieldType = "L"
+      lcThisField = "["+THIS.cControlCharacter+"]" +  ;
+                    "+ IIF("+tcField+",'.T.','.F.')"+ ;
+                    "+["+THIS.cControlCharacter+"]"
+   ENDCASE
+   lcThisField = UPPER(STRTRAN(lcThisField,SPACE(1),""))
+   IF NOT EMPTY(lcThisField)
+      IF ATCC(lcThisField, THIS.cFields) > 0
+         THIS.cFields = STRTRAN(THIS.cFields,lcThisField,"["+THIS.cControlCharacter+"]")
+         llSkipped = .T.
+         IF LEFTC(THIS.cFields,1) = "+"
+            THIS.cFields = SUBSTRC(THIS.cFields,2)
+         ENDIF
+         IF RIGHTC(THIS.cFields,1) = "+"
+            THIS.cFields = SUBSTRC(THIS.cFields,1,LENC(THIS.cFields)-1)
+         ENDIF
+         IF EMPTY(THIS.cFields) OR ;
+            THIS.cFields == "["+THIS.cControlCharacter+"]"
+            THIS.cAlias = ""
+         ENDIF
+         THIS.lFindAgain = .F.
+      ENDIF
+   ENDIF
+ENDIF
+RETURN llSkipped
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+cfields List of fields to search.
+imemos
+cfindstring The string to search for.  Defaults to a null string.
+ccontrolcharacter
+lwraparound Whether to continue searching from beginning if end of file reached.
+lmatchcase Case-sensitivity.
+lskipmemos Whether to skip searching of memos.
+lfindagain This determines whether the class will perform a SKIP before its next check, allowing you to move through a file finding successive instances of a string.
+^amemos[1,0] 
+*skipfield This method allows you to eliminate any particular field or fields from the search.
+*dofind This is ordinarily the only method you need to call to do search.
+*calias_assign 
+*cfindstring_assign 
+*showmessagenotfound 
+*ccontrolcharacter_assign 
+*setfields 
+*lwraparound_assign 
+*lmatchcase_assign 
+*lskipmemos_assign 
+*lfindagain_assign 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+_table.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _tablefind
+[START RESERVED1]
+  _table.hF	¡MÕ([END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RML0QS704
+[CLASS] _container
+[CLASSLOC] _base.vcx
+[BASECLASS] container
+[OBJNAME] _findbutton
+[START PROPERTIES]
+Width = 69
+Height = 28
+BackStyle = 0
+BorderWidth = 0
+cfindstring = ("")
+calias = ("")
+Name = "_findbutton"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+IF NOT DODEFAULT()
+   RETURN .F.
+ENDIF
+
+* autosize the button for the larger caption,
+* then turn off the autosize
+THIS.cmdTableFind.AutoSize = .T.
+THIS.cmdTableFind.Caption = FIND_FINDNEXT_LOC
+THIS.cmdTableFind.AutoSize = .F.
+THIS.SetButtonUI()
+ENDPROC
+PROCEDURE calias_access
+RETURN THIS.cusTableFind.calias
+
+ENDPROC
+PROCEDURE calias_assign
+LPARAMETERS tcNewVal
+STORE tcNewVal TO THIS.cusTableFind.cAlias, THIS.cAlias
+THIS.SetButtonUI()
+
+ENDPROC
+PROCEDURE cfindstring_access
+RETURN THIS.cusTableFind.cfindstring
+
+ENDPROC
+PROCEDURE cfindstring_assign
+LPARAMETERS tcNewVal
+STORE tcNewVal TO THIS.cusTableFind.cFindString, THIS.cFindString
+THIS.SetButtonUI()
+
+
+ENDPROC
+PROCEDURE dofind
+LPARAMETERS tcString, tcAlias
+THIS.cusTableFind.DoFind(tcString,tcAlias)
+THIS.SetButtonUI()
+ENDPROC
+PROCEDURE lfindagain_access
+RETURN THIS.cusTableFind.lfindagain
+
+ENDPROC
+PROCEDURE lfindagain_assign
+LPARAMETERS tlNewVal
+STORE tlNewVal TO THIS.cusTableFind.lFindAgain, THIS.lFindAgain
+THIS.SetButtonUI()
+ENDPROC
+PROCEDURE lmatchcase_access
+RETURN THIS.cusTableFind.lmatchcase
+
+ENDPROC
+PROCEDURE lmatchcase_assign
+LPARAMETERS tlNewVal
+STORE tlNewVal TO THIS.cusTableFind.lMatchCase, THIS.lMatchCase
+THIS.SetButtonUI()
+ENDPROC
+PROCEDURE lskipmemos_access
+RETURN THIS.cusTableFind.lskipmemos
+
+ENDPROC
+PROCEDURE lskipmemos_assign
+LPARAMETERS tlNewVal
+STORE tlNewVal TO THIS.cusTableFind.lSkipMemos, THIS.lSkipMemos
+THIS.SetButtonUI()
+ENDPROC
+PROCEDURE lwraparound_access
+RETURN THIS.cusTableFind.lwraparound
+
+ENDPROC
+PROCEDURE lwraparound_assign
+LPARAMETERS tlNewVal
+STORE tlNewVal TO THIS.cusTableFind.lWrapAround, THIS.lWrapAround
+THIS.SetButtonUI()
+ENDPROC
+PROCEDURE setbuttonui
+THIS.cmdTableFind.Enabled = (NOT EMPTY(THIS.cAlias)) AND ;
+                            (NOT EMPTY(THIS.cFindString))
+IF THIS.lFindAgain
+   THIS.cmdTableFind.Caption = FIND_FINDNEXT_LOC
+ELSE
+   THIS.cmdTableFind.Caption = FIND_FIND_LOC
+ENDIF
+ENDPROC
+PROCEDURE skipfield
+LPARAMETERS tcField
+THIS.cusTableFind.SkipField(tcField)
+THIS.SetButtonUI()
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+3[END RESERVED2]
+[START RESERVED3]
+cfindstring The string to search for.  Defaults to a null string.
+calias The data source to search in.
+lwraparound Whether to continue searching from beginning if end of file reached.
+lmatchcase Case-sensitivity.
+lskipmemos Whether to skip searching in memo fields.
+lfindagain This determines whether the class will perform a SKIP before its next check, allowing you to move through a file finding successive instances of a string.
+*cfindstring_assign 
+*calias_assign 
+*dofind This is ordinarily the only method you need to call to do search.
+*lwraparound_assign 
+*lmatchcase_assign 
+*lskipmemos_assign 
+*lfindagain_assign 
+*skipfield This method allows you to eliminate any particular field or fields from the search.
+*cfindstring_access 
+*calias_access 
+*lwraparound_access 
+*lfindagain_access 
+*lskipmemos_access 
+*lmatchcase_access 
+*setbuttonui 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+_table.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RML0R3NGL
+[CLASS] _commandbutton
+[CLASSLOC] _base.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdTableFind
+[PARENT] _findbutton
+[START PROPERTIES]
+AutoSize = .T.
+Top = 0
+Left = 0
+Height = 27
+Width = 42
+Caption = "\<Find"
+ZOrderSet = 0
+Name = "cmdTableFind"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+THIS.Parent.DoFind()
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RML0R3NHU
+[CLASS] _tablefind
+[CLASSLOC] _table.vcx
+[BASECLASS] custom
+[OBJNAME] cusTableFind
+[PARENT] _findbutton
+[START PROPERTIES]
+Top = 0
+Left = 48
+Name = "cusTableFind"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _findbutton
+[START PROPERTIES]
+Arial, 0, 9, 5, 15, 12, 13, 3, 0
+[END PROPERTIES]
+[START RESERVED1]
+  _table.h •Px$[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RML11NDHD
+[CLASS] _findbutton
+[CLASSLOC] _table.vcx
+[BASECLASS] container
+[OBJNAME] _findnextbuttons
+[START PROPERTIES]
+Width = 134
+Height = 30
+calias = ("")
+Name = "_findnextbuttons"
+cmdTableFind.AutoSize = .F.
+cmdTableFind.Name = "cmdTableFind"
+cusTableFind.Top = 0
+cusTableFind.Left = 48
+cusTableFind.Name = "cusTableFind"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+IF NOT DODEFAULT()
+   RETURN .F.
+ENDIF
+
+THIS.cmdTableFind.Caption = FIND_FIND_LOC
+THIS.cmdTableFindNext.Caption = FIND_FINDNEXT_LOC
+THIS.cmdTableFind.Width = THIS.cmdTableFindNext.Width
+THIS.cmdTableFindNext.Left = THIS.cmdTableFind.Width+2
+THIS.Width = THIS.cmdTableFind.Width*2+2
+
+ENDPROC
+PROCEDURE cmdTableFind.Click
+THIS.Parent.lFindAgain = .F.
+DODEFAULT()
+ENDPROC
+PROCEDURE setbuttonui
+* override, so that the captions won't be re-set
+THIS.cmdTableFind.Enabled = (NOT EMPTY(THIS.cAlias)) AND ;
+                            (NOT EMPTY(THIS.cFindString))
+
+THIS.cmdTableFindNext.Enabled = THIS.cmdTableFind.Enabled AND ;
+                                THIS.lFindAgain
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+2[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+_table.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RML11SQK9
+[CLASS] _commandbutton
+[CLASSLOC] _base.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdTableFindNext
+[PARENT] _findnextbuttons
+[START PROPERTIES]
+AutoSize = .T.
+Top = 0
+Left = 64
+Height = 27
+Width = 69
+Caption = "Find \<Next"
+Name = "cmdTableFindNext"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+THIS.Parent.DoFind()
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _findnextbuttons
+[START PROPERTIES]
+Arial, 0, 9, 5, 15, 12, 13, 3, 0
+[END PROPERTIES]
+[START RESERVED1]
+  _table.h •Px$[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RMY0HJ5FW
+[CLASS] _custom
+[CLASSLOC] _base.vcx
+[BASECLASS] custom
+[OBJNAME] _table
+[START PROPERTIES]
+calias = ("")
+Name = "_table"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE currentrowbufferedandchanged
+LPARAMETERS tcAlias
+ASSERT EMPTY(tcAlias) OR VARTYPE(tcAlias) = "C" AND USED(tcAlias)
+
+LOCAL lcAlias, llReturn, loCurrentControl, lcCurrentField
+IF EMPTY(tcAlias)
+   lcAlias = THIS.GetCurrentAlias()
+ELSE
+   lcAlias = tcAlias
+ENDIF
+
+IF (NOT EMPTY(lcAlias)) AND ;
+   (EMPTY(RECCOUNT(lcAlias)))
+   lcAlias = ""
+ENDIF
+
+
+IF (NOT EMPTY(lcAlias)) AND ;
+   INLIST(CURSORGETPROP("BUFFERING",lcAlias), ;
+          DB_BUFLOCKRECORD, ;
+          DB_BUFOPTRECORD)
+
+   lcCurrentField = THIS.GetCurrentBoundField()
+   * return of GetCurrentBoundField() will always be aliased
+
+   IF NOT EMPTY(lcCurrentField)
+      IF UPPER(LEFT(lcCurrentField,LEN(lcAlias)+1)) == ;
+         UPPER(lcAlias)+"."
+         * check to see if we would need to flush the current control
+         * to actually see a change:
+         loCurrentControl = THIS.GetCurrentControl()
+         IF (NOT ISNULL(loCurrentControl)) AND ;
+            PEMSTATUS(loCurrentControl,"Value",5) AND ;
+            (NOT EVAL(lcCurrentField) == loCurrentControl.Value)
+            * we definitely have a change
+            llReturn = .T.
+         ENDIF
+      ENDIF
+   ENDIF
+
+   IF NOT llReturn && yet
+
+      llReturn = (GETFLDSTATE(-1,lcAlias) #  ;
+                  REPL("1",FCOUNT(lcAlias)+1))
+   ENDIF
+
+ENDIF
+
+RETURN llReturn
+
+
+ENDPROC
+PROCEDURE currenttableallowsnavigation
+LPARAMETERS tcAlias
+
+ASSERT EMPTY(tcAlias) OR VARTYPE(tcAlias) = "C" AND USED(tcAlias)
+
+LOCAL lcAlias, liReturn
+
+IF (NOT EMPTY(tcAlias)) AND USED(tcAlias)
+   lcAlias = tcAlias
+ELSE
+   lcAlias = THIS.GetCurrentAlias()
+ENDIF
+
+IF (NOT EMPTY(lcAlias)) AND ;
+   (EMPTY(RECCOUNT(lcAlias)))
+   lcAlias = ""
+ENDIF
+
+IF (NOT EMPTY(lcAlias)) AND ;
+    THIS.CurrentRowBufferedAndChanged(lcAlias)
+
+    IF INLIST(_VFP.Startmode,0,4)
+
+       liReturn = MESSAGEBOX(TABLE_MESSAGE_ROW_CHANGED_LOC,;
+                   MB_ICONEXCLAMATION+MB_YESNOCANCEL, ;
+                   TABLE_MESSAGE_TITLE_ROW_CHANGED_LOC)
+    ELSE
+       lcAlias = ""
+    ENDIF
+
+    DO CASE
+    CASE EMPTY(lcAlias)
+       * we're in a server
+       * and we shouldn't be moving
+       * the record pointer here;
+       * should make the determination
+       * to revert or update somewhere else!
+    CASE liReturn = IDYES
+       THIS.FlushCurrentControl()
+       IF NOT TABLEUPDATE(0,.T.,lcAlias)
+         lcAlias = ""
+       ENDIF
+    CASE liReturn = IDNO
+       =TABLEREVERT(.F.,lcAlias)
+    OTHERWISE && cancel
+       lcAlias = ""
+    ENDCASE
+
+ENDIF
+
+RETURN (NOT EMPTY(lcAlias))
+
+ENDPROC
+PROCEDURE currenttableallowsordering
+LPARAMETERS tcAlias
+
+ASSERT EMPTY(tcAlias) OR VARTYPE(tcAlias) = "C" AND USED(tcAlias)
+
+LOCAL lcAlias, llReturn, loCurrentControl, ;
+      loCurrentGrid, liIndex, liTables, liTarget, lcTarget
+
+LOCAL ARRAY laTables[1,2]
+
+IF (NOT EMPTY(tcAlias)) AND USED(tcAlias)
+   lcAlias = tcAlias
+ELSE
+   lcAlias = THIS.GetCurrentAlias()
+ENDIF
+
+
+IF (NOT EMPTY(lcAlias))
+
+   lcAlias = UPPER(lcAlias)
+
+   llReturn = .T.
+
+   * check for grid in a child relation
+
+   loCurrentControl = THIS.GetCurrentControl()
+
+   DO WHILE TYPE("loCurrentControl.Parent.Baseclass") = "C"
+
+      loCurrentControl = loCurrentControl.Parent
+
+      IF UPPER(loCurrentControl.Baseclass) == "GRID"
+         loCurrentGrid = loCurrentControl
+         EXIT
+      ENDIF
+
+   ENDDO
+
+   IF TYPE("loCurrentGrid.Name") = "C" AND ;
+      (NOT EMPTY(loCurrentGrid.LinkMaster+;
+                 loCurrentGrid.ChildOrder+;
+                 loCurrentGrid.RelationalExpr))
+
+      llReturn = .F.
+
+   ENDIF
+
+ENDIF
+
+IF llReturn
+
+   * check for a relational expression even though
+   * this isn't a grid
+
+   liTables = AUSED(laTables)
+
+   FOR liIndex = 1 TO liTables
+
+       liTarget = 1
+       lcTarget = UPPER(TARGET(1,laTables[liIndex,1]))
+       DO WHILE NOT EMPTY(lcTarget)
+          IF lcAlias == lcTarget
+             llReturn = .F.
+             EXIT
+          ELSE
+             liTarget = liTarget + 1
+             lcTarget = UPPER(TARGET(liTarget,laTables[liIndex,1]))
+          ENDIF
+       ENDDO
+       IF NOT llReturn
+          EXIT
+       ENDIF
+
+    ENDFOR
+
+ENDIF
+
+IF NOT llReturn
+   THIS.DoTargetOfRelationMessage(lcAlias)
+ENDIF
+
+RETURN llReturn
+
+
+ENDPROC
+PROCEDURE dotargetofrelationmessage
+LPARAMETERS tcAlias
+IF EMPTY(tcAlias)
+   RETURN
+ENDIF
+ENDPROC
+PROCEDURE flushcurrentcontrol
+LPARAMETERS tcAlias
+ASSERT EMPTY(tcAlias) OR VARTYPE(tcAlias) = "C" AND USED(tcAlias)
+
+LOCAL lcAlias, llReturn, loCurrentControl, lcCurrentField
+IF EMPTY(tcAlias)
+   lcAlias = THIS.GetCurrentAlias()
+ELSE
+   lcAlias = tcAlias
+ENDIF
+
+IF (NOT EMPTY(lcAlias)) AND ;
+   (EMPTY(RECCOUNT(lcAlias)))
+   lcAlias = ""
+ENDIF
+
+
+IF (NOT EMPTY(lcAlias)) AND ;
+   INLIST(CURSORGETPROP("BUFFERING",lcAlias), ;
+          DB_BUFLOCKRECORD, ;
+          DB_BUFOPTRECORD)
+
+   lcCurrentField = THIS.GetCurrentBoundField()
+   * return of GetCurrentBoundField() will always be aliased
+
+   IF NOT EMPTY(lcCurrentField)
+      IF UPPER(LEFT(lcCurrentField,LEN(lcAlias)+1)) == ;
+         UPPER(lcAlias)+"."
+         loCurrentControl = THIS.GetCurrentControl()
+         IF (NOT ISNULL(loCurrentControl)) AND ;
+            PEMSTATUS(loCurrentControl,"Value",5)
+            loCurrentControl.Value = loCurrentControl.Value
+            llReturn = .T.
+         ENDIF
+      ENDIF
+   ENDIF
+
+ENDIF
+
+RETURN llReturn
+
+
+ENDPROC
+PROCEDURE getcurrentalias
+LOCAL lcAlias
+
+IF EMPTY(THIS.cAlias) OR NOT USED(THIS.cAlias)
+
+   THIS.SetToActiveSession()
+
+   lcAlias = ALIAS()
+
+ELSE
+
+   lcAlias = THIS.cAlias
+
+ENDIF
+
+RETURN lcAlias
+
+ENDPROC
+PROCEDURE getcurrentboundfield
+* this will always return an aliased field in an existing
+* table or it will return an empty string.
+
+LOCAL lcFieldName, loCurrentControl, iPos, lcAlias
+
+loCurrentControl = THIS.GetCurrentControl()
+
+IF ISNULL(loCurrentControl) OR (TYPE("loCurrentControl.ControlSource") # "C")
+   IF NOT EMPTY(VARREAD())
+      * could be a browse...
+      RETURN UPPER(ALIAS()+"."+VARREAD())
+   ELSE
+      RETURN ""
+   ENDIF
+ELSE
+   lcFieldName = UPPER(loCurrentControl.ControlSource)
+ENDIF
+
+* is this a bound field we can find in the current list of tables?
+
+
+THIS.SetToActiveSession()
+
+iPos = AT(".",lcFieldName)
+lcAlias = ALIAS()
+
+DO CASE
+
+CASE OCCURS(".",lcFieldName) > 1 AND ;
+    VARTYPE(lcFieldName) = "O"
+
+   * we can't use a member object,
+   * we're looking for a table attribute/column
+   lcFieldName = ""
+
+CASE iPos <= 1 AND EMPTY(lcAlias)
+   lcFieldName = ""
+
+CASE iPos = 0
+   iPos = LEN(lcAlias)+ 1
+   lcFieldName = lcAlias+"."+lcFieldName
+
+CASE iPos = 1
+   iPos = LEN(lcAlias)+ 1
+   lcFieldName = lcAlias+lcFieldName
+
+CASE iPos = 2 AND LEFT(lcFieldName,1) = "M"
+   * we can't use a memvar
+   lcFieldName = ""
+
+OTHERWISE
+   * we may have an aliased field
+   * or we may have a property --
+   * which is it??
+
+   IF NOT USED(SUBSTR(lcAlias,1,iPos-1))
+      lcFieldName = ""
+   ENDIF
+
+ENDCASE
+
+* okay, now do we have something usable?
+IF NOT EMPTY(lcFieldName)
+   IF TYPE(lcFieldName) = "U"
+      lcFieldName = ""
+   ENDIF
+ENDIF
+
+RETURN lcFieldName
+
+
+
+
+ENDPROC
+PROCEDURE getcurrentcontrol
+LOCAL loRealActiveControl, liThisColumn, loActiveControl, loColumn
+
+loRealActiveControl = NULL
+
+IF TYPE("_SCREEN.ActiveForm.ActiveControl.BaseClass")= "C"
+
+   loActiveControl = _SCREEN.ActiveForm.ActiveControl
+
+   IF UPPER(loActiveControl.BaseClass) == "GRID"
+
+      liThisColumn = loActivecontrol.ActiveColumn
+
+      FOR EACH loColumn IN loActiveControl.Columns
+
+         IF loColumn.ColumnOrder = liThisColumn
+
+            IF TYPE("loColumn.CurrentControl") = "C"
+
+               loRealActiveControl = ;
+                 EVAL("loColumn."+loColumn.CurrentControl)
+
+            ELSE
+
+               loRealActiveControl = loColumn
+
+            ENDIF
+
+            EXIT
+
+         ENDIF
+
+      ENDFOR
+
+   ELSE
+
+     loRealActiveControl = loActiveControl
+
+   ENDIF
+
+ENDIF
+
+RETURN loRealActiveControl
+
+ENDPROC
+PROCEDURE refreshlastwindowafterchange
+LOCAL loForm, liForms, liThisForm, loThisForm
+liForms = _SCREEN.FormCount
+IF TYPE("THISFORM") = "O"
+   loThisForm = THISFORM
+ELSE
+   loThisForm = .NULL.
+ENDIF
+
+DO CASE
+CASE liForms > 1
+   * find the next one down in the stack, not counting toobars
+   FOR liThisForm = 2 TO liForms
+       loForm = _SCREEN.Forms(liThisForm)
+       IF (NOT ISNULL(loThisForm)) AND loForm = loThisForm
+          LOOP
+       ENDIF
+       IF UPPER(loForm.BaseClass) == "FORM"
+          IF TYPE("loForm.Parent") = "O"
+             loForm.Parent.Refresh()
+          ELSE
+             loForm.Refresh()
+          ENDIF
+          EXIT
+       ENDIF
+   ENDFOR
+CASE _SCREEN.Visible
+   _SCREEN.Refresh()
+OTHERWISE
+   * Not much we can do...
+ENDCASE
+
+
+ENDPROC
+PROCEDURE refreshuiafterchange
+DO CASE
+CASE TYPE("_SCREEN.ActiveForm.Parent") = "O"
+   _SCREEN.ActiveForm.Parent.Refresh()
+CASE  TYPE("_SCREEN.ActiveForm") = "O"
+   _SCREEN.ActiveForm.Refresh()
+OTHERWISE
+  IF NOT EMPTY(WONTOP())
+     SHOW WINDOW (WONTOP()) REFRESH
+  ENDIF
+ENDCASE
+ENDPROC
+PROCEDURE settoactivesession
+LOCAL liSession
+liSession = SET("DATASESSION")
+
+* we may be calling from the menu or a toolbar:
+DO CASE
+
+CASE TYPE("_SCREEN.ActiveForm.DatasessionID") = "N" AND ;
+   liSession # _SCREEN.ActiveForm.DatasessionID
+
+   SET DATASESSION TO (_SCREEN.ActiveForm.DatasessionID)
+
+CASE TYPE("_SCREEN.ActiveForm.Parent.DatasessionID") = "N" AND ;
+   liSession # _SCREEN.ActiveForm.Parent.DatasessionID
+
+   SET DATASESSION TO (_SCREEN.ActiveForm.Parent.DatasessionID)
+
+OTHERWISE
+
+   * we're in the right datasession already
+
+ENDCASE
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+calias Alias of data source.
+*getcurrentalias If the current value of the cAlias property is a currently-USED() table, this method RETURNs THIS.cAlias.
+*getcurrentcontrol Returns current control or NULL if there is no ActiveControl at the moment.
+*getcurrentboundfield Returns an aliased field in an existing table or, if there is no current bound field, it returns an empty string.
+*settoactivesession Looks for a _SCREEN.ActiveForm or _SCREEN.ActiveForm.Parent (formset) from which to derive an active DataSessionID, and SETs DATASESSION TO that session.
+*refreshuiafterchange Looks for an _SCREEN.ActiveForm.Parent (formset) or, failing that, simply a _SCREEN.ActiveForm to refresh.
+*currentrowbufferedandchanged Determines whether there is a change in the current control without actually doing a flush.
+*currenttableallowsnavigation Evaluates whether the user needs to be presented with choices before leaving the current row.
+*refreshlastwindowafterchange This is similar to RefreshUIAfterChange method, but it is designed especially for use by modal dialogs that may be affecting tables bound to them.
+*currenttableallowsordering Returns .F. if the current alias is a child of a relationship or if the current control is a grid that uses the Linkmaster/ChildOrder/RelationalExpr properties.
+*dotargetofrelationmessage Abstract method.
+*flushcurrentcontrol Flushes data when the user confirms a desire to do an update.
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+_table.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _table
+[START RESERVED1]
+  _table.hæô¡MÕ([END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RMY12056H
+[CLASS] _table
+[CLASSLOC] _table.vcx
+[BASECLASS] custom
+[OBJNAME] _tablenav
+[START PROPERTIES]
+Name = "_tablenav"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE gobottom
+LOCAL lcAlias
+
+lcAlias = THIS.GetCurrentAlias()
+
+IF THIS.CurrentTableAllowsNavigation(lcAlias)
+
+  GO BOTTOM IN (lcAlias)
+  THIS.RefreshUIAfterChange()
+
+ENDIF
+
+ENDPROC
+PROCEDURE gonext
+LOCAL lcAlias
+
+lcAlias = THIS.GetCurrentAlias()
+
+IF THIS.CurrentTableAllowsNavigation(lcAlias)
+
+   SKIP IN (lcAlias)
+
+   IF EOF(lcAlias)
+      SKIP -1 IN (lcAlias)
+      IF THIS.lCycle
+         THIS.DoCycleTopMessage()
+         THIS.GoTop()
+         THIS.RefreshUIAfterChange()
+      ELSE
+         THIS.DoBottomMessage()
+      ENDIF
+   ELSE
+      THIS.RefreshUIAfterChange()
+   ENDIF
+
+ENDIF
+
+
+ENDPROC
+PROCEDURE goprevious
+LOCAL lcAlias
+
+lcAlias = THIS.GetCurrentAlias()
+
+IF EMPTY(lcAlias) OR ;
+   NOT THIS.CurrentTableAllowsNavigation(lcAlias)
+   RETURN
+ENDIF
+
+DO CASE
+CASE (NOT BOF(lcAlias))
+
+   SKIP -1 IN (lcAlias)
+   IF BOF(lcAlias)
+      IF THIS.lCycle
+         THIS.DoCycleBottomMessage()
+         THIS.GoBottom()
+      ELSE
+         THIS.DoTopMessage()
+      ENDIF
+   ENDIF
+   THIS.RefreshUIAfterChange()
+
+CASE BOF(lcAlias)
+
+   IF THIS.lCycle
+      THIS.DoCycleBottomMessage()
+      THIS.GoBottom()
+      THIS.RefreshUIAfterChange()
+   ELSE
+      THIS.DoTopMessage()
+   ENDIF
+
+OTHERWISE
+
+ENDCASE
+
+ENDPROC
+PROCEDURE gotop
+LOCAL lcAlias
+
+lcAlias = THIS.GetCurrentAlias()
+
+IF THIS.CurrentTableAllowsNavigation(lcAlias)
+
+  GO TOP IN (lcAlias)
+  THIS.RefreshUIAfterChange()
+
+ENDIF
+
+ENDPROC
+PROCEDURE gotorecord
+LPARAMETERS tiRecord
+
+ASSERT PCOUNT() = 1 AND VARTYPE(tiRecord) = "N"
+
+LOCAL lcAlias
+
+lcAlias = THIS.GetCurrentAlias()
+
+IF THIS.CurrentTableAllowsNavigation(lcAlias) AND ;
+   (RECCOUNT(lcAlias) >= tiRecord)
+
+   GO tiRecord IN (lcAlias)
+   THIS.RefreshUIAfterChange()
+
+ENDIF
+
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+lcycle Controls movement when record pointer hits end or beginning of file.
+*gotorecord Moves record pointer to a specified record.
+*gotop Moves record pointer to first record.
+*gobottom Moves record pointer to last record.
+*gonext Moves record pointer to next record.
+*goprevious Moves record pointer to previous record.
+*dotopmessage 
+*dobottommessage 
+*docyclebottommessage 
+*docycletopmessage 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+_table.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _tablenav
+[START RESERVED1]
+  _table.h.Ú¡MÕ([END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RMY15T83Y
+[CLASS] _form
+[CLASSLOC] _base.vcx
+[BASECLASS] form
+[OBJNAME] _gotodialog
+[START PROPERTIES]
+Height = 81
+Width = 164
+ShowWindow = 1
+DoCreate = .T.
+AutoCenter = .T.
+BorderStyle = 0
+Caption = "Go To Record"
+MaxButton = .F.
+MinButton = .F.
+KeyPreview = .T.
+WindowType = 1
+Name = "_gotodialog"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+LOCAL llReturn, loControl
+
+llReturn = DODEFAULT()
+IF llReturn
+   IF EMPTY(THIS.cusTableNav.cAlias) OR RECCOUNT(THIS.cusTableNav.cAlias) < 2
+      llReturn = .F.
+   ELSE
+      WITH THIS.spnGoTo
+         STORE 1 TO .SpinnerLowValue, .KeyBoardLowValue
+         STORE RECCOUNT(THIS.cusTableNav.cAlias) TO ;
+                    .SpinnerHighValue, .KeyBoardHighValue
+         .Value = RECNO(THIS.cusTableNav.cAlias)
+         .Value = MIN(.Value,.SpinnerHighValue) && EOF()
+      ENDWITH
+   ENDIF
+
+  IF SYSTEM_LARGEFONTS
+     LOCAL lcStandardFont
+     lcStandardFont = UPPER(DIALOG_SMALLFONT_NAME)
+
+     FOR EACH loControl IN THIS.Controls
+         IF PEMSTATUS(loControl,"FontName",5) AND ;
+            UPPER(loControl.FontName) == lcStandardFont
+
+            loControl.FontName = DIALOG_LARGEFONT_NAME
+         ENDIF
+     ENDFOR
+     * Note: no recursion here.
+
+  ENDIF
+
+ENDIF
+
+RETURN llReturn
+
+ENDPROC
+PROCEDURE KeyPress
+LPARAMETERS nKeyCode, nShiftAltCtrl
+IF nKeyCode = 27
+   THIS.Release()
+ENDIF
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+4[END RESERVED2]
+[START RESERVED3]
+*refreshuiafterchange 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+_table.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RMY16KMQY
+[CLASS] _tablenav
+[CLASSLOC] _table.vcx
+[BASECLASS] custom
+[OBJNAME] cusTableNav
+[PARENT] _gotodialog
+[START PROPERTIES]
+Top = 0
+Left = 12
+Name = "cusTableNav"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+LOCAL llReturn
+llReturn = DODEFAULT()
+IF llReturn
+   THIS.cAlias = THIS.GetCurrentAlias()
+ENDIF
+RETURN llReturn
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RMY16KMRT
+[CLASS] _spinner
+[CLASSLOC] _base.vcx
+[BASECLASS] spinner
+[OBJNAME] spnGoTo
+[PARENT] _gotodialog
+[START PROPERTIES]
+FontName = "MS Sans Serif"
+Increment =   1.00
+InputMask = "9999999999999999999"
+Left = 22
+Top = 12
+Format = ""
+Name = "spnGoTo"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RMY16KMT2
+[CLASS] _commandbutton
+[CLASSLOC] _base.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdOK
+[PARENT] _gotodialog
+[START PROPERTIES]
+AutoSize = .T.
+Top = 48
+Left = 65
+FontName = "MS Sans Serif"
+Caption = "\<OK"
+Name = "cmdOK"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+
+THISFORM.cusTableNav.GoToRecord(THISFORM.spnGoTo.Value)
+* we may not have moved but we may have reverted data
+* so we have to refresh whether the pointer has
+* moved or not
+
+THISFORM.cusTableNav.RefreshLastWindowAfterChange()
+
+THISFORM.Release()
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _gotodialog
+[START PROPERTIES]
+Arial, 0, 9, 5, 15, 12, 32, 3, 0
+MS Sans Serif, 0, 9, 5, 13, 11, 11, 2, 0
+[END PROPERTIES]
+[START RESERVED1]
+  _table.h∂¡MÕ([END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RMY182VGR
+[CLASS] _container
+[CLASSLOC] _base.vcx
+[BASECLASS] container
+[OBJNAME] _nav2buttons
+[START PROPERTIES]
+Width = 78
+Height = 38
+BackStyle = 0
+BorderWidth = 0
+Name = "_nav2buttons"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE lcycle_access
+RETURN THIS.cusTableNav.lCycle
+
+ENDPROC
+PROCEDURE lcycle_assign
+LPARAMETERS m.vNewVal
+THIS.cusTableNav.lCycle= m.vNewVal
+
+ENDPROC
+PROCEDURE tablenav
+LPARAMETERS tcAction
+IF EMPTY(tcAction) OR VARTYPE(tcAction) # "C"
+  RETURN
+ENDIF
+
+DO CASE
+CASE UPPER(tcAction) = "NEXT"
+   THIS.cusTableNav.GoNext()
+CASE UPPER(tcAction) = "PREVIOUS"
+   THIS.cusTableNav.GoPrevious()
+OTHERWISE
+   *whoops!
+ENDCASE
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+3[END RESERVED2]
+[START RESERVED3]
+lcycle Controls movement when record pointer hits end or beginning of file.
+*tablenav Handles record navigation.
+*lcycle_access 
+*lcycle_assign 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+_table.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RMY18KGBK
+[CLASS] _commandgroup
+[CLASSLOC] _base.vcx
+[BASECLASS] commandgroup
+[OBJNAME] cmgNav
+[PARENT] _nav2buttons
+[START PROPERTIES]
+BorderStyle = 1
+Height = 37
+Left = 8
+Top = 1
+Width = 64
+ZOrderSet = 0
+Name = "cmgNav"
+Command1.AutoSize = .T.
+Command1.Top = 5
+Command1.Left = 5
+Command1.FontBold = .T.
+Command1.Caption = "<"
+Command1.Name = "Command1"
+Command2.AutoSize = .T.
+Command2.Top = 5
+Command2.Left = 32
+Command2.Height = 27
+Command2.Width = 27
+Command2.FontBold = .T.
+Command2.Caption = ">"
+Command2.Name = "Command2"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Command1.Click
+THIS.Parent.Parent.TableNav("PREVIOUS")
+ENDPROC
+PROCEDURE Command2.Click
+THIS.Parent.Parent.TableNav("NEXT")
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RMY18KGD5
+[CLASS] _tablenav
+[CLASSLOC] _table.vcx
+[BASECLASS] custom
+[OBJNAME] cusTableNav
+[PARENT] _nav2buttons
+[START PROPERTIES]
+Top = 0
+Left = 0
+Name = "cusTableNav"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _nav2buttons
+[START PROPERTIES]
+Arial, 1, 9, 6, 15, 12, 13, 3, 0
+[END PROPERTIES]
+[START RESERVED1]
+  _table.h •Px$[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RMY1ATY0X
+[CLASS] _table
+[CLASSLOC] _table.vcx
+[BASECLASS] custom
+[OBJNAME] _tablesort
+[START PROPERTIES]
+Name = "_tablesort"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE dosort
+LPARAMETERS tcField, tcAlias, tcTag, tlDescending
+
+THIS.SetToActiveSession()
+
+ASSERT EMPTY(tcField) OR ;
+       (VARTYPE(tcField) = "C" AND ;
+        TYPE(IIF(EMPTY(tcAlias),"",tcAlias+".")+tcField) # "U")
+
+ASSERT EMPTY(tcAlias) OR (VARTYPE(tcAlias) = "C" AND USED(tcAlias))
+
+ASSERT EMPTY(tcAlias) OR (NOT EMPTY(tcField))
+
+ASSERT EMPTY(tcTag) OR VARTYPE(tcTag) = "C"
+
+ASSERT VARTYPE(tlDescending) = "L"
+
+LOCAL lcField, lcAlias, liPos, lcTag, liSelect, llDescending
+
+IF PCOUNT() > 3
+   llDescending = tlDescending
+ELSE
+   llDescending = THIS.lDescending
+ENDIF
+
+DO CASE
+
+CASE EMPTY(tcAlias) AND EMPTY(tcField)
+   lcField = THIS.GetCurrentBoundField()
+   * will be properly aliased if one can be found
+   IF NOT EMPTY(lcField)
+      liPos = AT(".",lcField)
+      lcAlias = LEFT(lcField,liPos-1)
+      lcField = SUBSTR(lcField,liPos+1)
+   ELSE
+      lcField = ""
+      lcAlias = THIS.GetCurrentAlias()
+   ENDIF
+CASE (NOT EMPTY(tcAlias)) AND USED(tcAlias)
+   lcField = tcField
+   lcAlias = tcAlias
+OTHERWISE
+   lcField = tcField
+   lcAlias = THIS.GetCurrentAlias()
+ENDCASE
+
+IF NOT THIS.CurrentTableAllowsOrdering(lcAlias)
+   RETURN .F.
+ENDIF
+
+IF VARTYPE(tcTag) = "C"
+   * the SELECTs are necessary
+   * because TAGNO() doesn't work
+   * on the non-selected area properly,
+   * although it is doc'd to work...
+   IF NOT EMPTY(lcAlias)
+      liSelect = SELECT()
+      SELECT (lcAlias)
+   ENDIF
+
+   IF NOT EMPTY(TAGNO(tcTag))
+      lcTag = tcTag
+   ENDIF
+
+   IF NOT EMPTY(lcAlias)
+      SELECT (liSelect)
+   ENDIF
+
+ENDIF
+
+IF EMPTY(lcTag) AND (TYPE(lcAlias+"."+lcField) = "U")
+   RETURN .F.
+ENDIF
+
+IF EMPTY(lcTag)
+   lcTag = THIS.GetSortTag(lcField,lcAlias)
+ENDIF
+
+IF NOT EMPTY(lcTag)
+
+   IF EMPTY(lcAlias)
+      lcAlias  = ""
+   ELSE
+      lcAlias = "IN "+lcAlias
+   ENDIF
+
+   IF llDescending
+      SET ORDER TO (lcTag) &lcAlias DESCENDING
+   ELSE
+      SET ORDER TO (lcTag) &lcAlias ASCENDING
+   ENDIF
+
+   THIS.RefreshUIAfterChange()
+
+ENDIF
+
+RETURN (NOT EMPTY(lcTag))
+
+ENDPROC
+PROCEDURE getsorttag
+LPARAMETERS tcField, tcAlias
+
+ASSERT VARTYPE(tcAlias) = "C" AND USED(tcAlias)
+ASSERT TYPE(tcAlias+"."+tcField) # "U"
+
+LOCAL lcAlias, lcField, liTags, liSelect, lcKey, lcExact, lcTag, lcAliasedField, ;
+	lnIndex
+
+lcAlias = UPPER(tcAlias) && must be passed!
+lcField = UPPER(tcField) && ditto!
+lcTag = ""
+liSelect = SELECT()
+lcExact = SET("EXACT")
+SELECT (lcAlias)
+SET EXACT OFF
+liTags = TAGCOUNT()
+lcAliasedField = UPPER(lcAlias)+"."+lcField
+
+IF liTags > 0
+
+   FOR lnIndex = 1 to liTags
+      lcKey = UPPER(KEY(lnIndex))
+      IF TYPE(lcKey) # "U"
+         * this test makes sure that the index expression
+         * can be evaluated in the current environment
+
+         * now test to see if we can use it for
+         * the current purpose, with an inexact
+         * comparison since that's all we need
+         * for an adequate sort
+
+         lcKey = NORMALIZE(lcKey)
+
+         IF lcKey = lcField OR ;
+            lcKey = lcAliasedField OR ;
+            lcKey = "UPPER("+lcField+")" OR ;
+            lcKey = "UPPER("+lcAliasedField+")" OR ;
+            lcKey = "UPPER("+lcField+"+" OR ;
+            lcKey = "UPPER("+lcAliasedField+"+" OR ;
+            lcKey = "LOWER("+lcField+")" OR ;
+            lcKey = "LOWER("+lcAliasedField+")" OR ;
+            lcKey = "LOWER("+lcField+"+" OR ;
+            lcKey = "LOWER("+lcAliasedField+"+" OR ;
+            lcKey = "PROPER("+lcField+")" OR ;
+            lcKey = "PROPER("+lcAliasedField+")" OR ;
+            lcKey = "PROPER("+lcField+"+" OR ;
+            lcKey = "PROPER("+lcAliasedField+"+" OR ;
+            lcKey = "SUBSTR("+lcField+"," OR ;
+            lcKey = "SUBSTR("+lcAliasedField+"," OR ;
+            lcKey = "LEFT("+lcField+"," OR ;
+            lcKey = "LEFT("+lcAliasedField+"," OR ;
+            lcKey = "SUBSTRC("+lcField+"," OR ;
+            lcKey = "SUBSTRC("+lcAliasedField+"," OR ;
+            lcKey = "LEFTC("+lcField+"," OR ;
+            lcKey = "LEFTC("+lcAliasedField+","
+
+            lcTag = UPPER(TAG(lnIndex))
+            EXIT
+
+         ENDIF
+
+      ENDIF
+
+   ENDFOR
+
+ENDIF
+
+
+SET EXACT &lcExact
+SELECT (liSelect)
+
+RETURN lcTag
+ENDPROC
+PROCEDURE removesort
+LPARAMETERS tcAlias
+
+THIS.SetToActiveSession()
+
+ASSERT EMPTY(tcAlias) OR (VARTYPE(tcAlias) = "C" AND USED(tcAlias))
+
+LOCAL lcAlias
+
+IF EMPTY(tcAlias)
+   lcAlias = THIS.GetCurrentAlias()
+ELSE
+   lcAlias = tcAlias
+ENDIF
+
+IF NOT USED(lcAlias)
+   RETURN .F.
+ENDIF
+
+SET ORDER TO 0 IN (lcAlias)
+THIS.RefreshUIAfterChange()
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+ldescending Whether order is ascending or descending.
+*dosort DoSort([tcField] [,tcAlias] [,tcTag] [,tlDescending]) allows you to specify exactly what order in what table you would like to set -- or, if you prefer, which field in a given alias you would like to set order to.
+*getsorttag Looks for an appropriate tagname by looking at key expressions in this table relevant to this fieldname.
+*removesort Removes the current order (index tag).
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _tablesort
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RMZ0LY1XD
+[CLASS] _form
+[CLASSLOC] _base.vcx
+[BASECLASS] form
+[OBJNAME] _filterdialog
+[START PROPERTIES]
+Height = 326
+Width = 389
+DoCreate = .T.
+AutoCenter = .T.
+BorderStyle = 0
+Caption = ("Filter Conditions ")
+Closable = .T.
+FontName = "MS Sans Serif"
+FontSize = 8
+HalfHeightCaption = .F.
+MaxButton = .F.
+MinButton = .T.
+Movable = .T.
+ClipControls = .F.
+ZoomBox = .F.
+coldexact = ("OFF")
+ibact = 0
+iqptr = 0
+iquerymax = 50
+cfilter = ("")
+iselect = 0
+ocaller = .NULL.
+Name = "_filterdialog"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Activate
+LOCAL lidbc, liIndex
+LOCAL ARRAY laTemp[1,2]
+lidbc=AUSED(laTemp)
+
+THIS.iSelect = SELECT()
+THIS.cOldExact = SET("EXACT")
+SET EXACT OFF
+
+IF lidbc # ALEN(THIS.aDbfs) OR ;
+   EMPTY(THIS.aDbfs[1]) && empty array will happen only the first time
+
+   WAIT WINDOW NOWAIT LEFT(FILTER_CHECKING_OPEN_TABLES_LOC,254)
+
+   IF lidbc = 0
+      USE ?
+      IF EMPTY(ALIAS())
+         WAIT WINDOW LEFT(FILTER_CANCELLED_LOC,254) NOWAIT
+         NODEFAULT
+         RETURN .F.
+      ELSE
+         lidbc = 1
+         THIS.aDbfs[1] = PROPER(ALIAS())
+         THIS.cboTables.Requery()
+         THIS.cboTables.Value = 1
+      ENDIF
+   ELSE
+      DIME THIS.aDbfs[lidbc]
+      FOR liIndex = 1 TO lidbc
+         THIS.aDbfs[liIndex] = PROPER(laTemp[liIndex,1])
+      ENDFOR
+      THIS.cboTables.Requery()
+   ENDIF
+
+   WAIT CLEAR
+
+ENDIF
+
+IF EMPTY(ALIAS())
+   SELECT (THIS.aDbfs[1])
+   THIS.cboTables.Value = 1
+ELSE
+   THIS.cboTables.Value = ASCAN(THIS.aDbfs,PROPER(ALIAS()))
+ENDIF
+
+LOCAL lcFilter
+lcFilter = SET("FILTER")
+
+DO CASE
+CASE TYPE("THIS.oCaller.Name") = "C"
+   THIS.SetInitialQueryParts(THIS.oCaller.cFilter)
+CASE THIS.SetupFilter() AND ;
+    (THIS.cFilter == lcFilter)
+   * don't touch
+CASE EMPTY(lcFilter)
+   THIS.SetInitialQueryParts("")
+OTHERWISE
+   THIS.SetInitialQueryParts(lcFilter)
+ENDCASE
+
+THIS.SetAction()
+
+
+ENDPROC
+PROCEDURE Deactivate
+LOCAL lcExact
+lcExact = THIS.cOldExact
+SET EXACT &lcExact
+SELECT (THIS.iSelect)
+
+ENDPROC
+PROCEDURE Init
+LPARAMETERS toCaller
+IF NOT DODEFAULT()
+   RETURN .F.
+ENDIF
+
+IF TYPE("toCaller.Name") = "C" AND ;
+   PEMSTATUS(toCaller,"SetFilter",5) && this dialog is really only supposed
+                                     && to be called by a parent dialog, but
+                                     && what the heck, if you don't call it this way
+                                     && we will set the filter directly...
+
+   THIS.oCaller = toCaller
+
+ENDIF
+
+DIME THIS.aQuery[THIS.iQueryMax]
+THIS.aQuery = " "
+THIS.iqptr = 0
+THIS.edtSought.Value = ""
+THIS.cboOperator.Value = "="
+THIS.SetRowSources()
+
+IF SYSTEM_LARGEFONTS
+   THIS.SetAll("FontName",DIALOG_LARGEFONT_NAME)
+ENDIF
+
+RETURN
+
+ENDPROC
+PROCEDURE brackets
+LPARAMETERS tcx, tcb1, tcb2
+LOCAL  lcout, lii, lcv, lcx
+IF SUBSTR(tcx,1,1)=tcb1 AND SUBSTR(tcx,LEN(tcx),1)=tcb2
+	RETURN tcx
+ENDIF
+IF THIS.cboOperator.Value = "IN"
+   RETURN tcb1 + tcx + tcb2
+ENDIF
+lcout = ""
+lcx = tcx
+DO WHILE LEN(lcx) > 0
+   lii = AT(",", lcx)
+   IF lii = 0
+      lcv = lcx
+      lcx = ""
+   ELSE
+      lcv = SUBSTR(lcx,1,lii-1)
+      lcx = IIF(lii=LEN(lcx),"",SUBSTR(lcx,lii+1))
+   ENDIF
+   IF LEN(lcout) > 0
+      lcout = lcout + ","
+   ENDIF
+   lcout = lcout + tcb1 + lcv + tcb2
+ENDDO
+RETURN lcout
+
+
+ENDPROC
+PROCEDURE cleanparens
+LPARAMETERS piItem
+
+*-
+*- remove parens from filter
+*- Called from cmdDelete:Click and THISFORM:Init
+*-
+
+LOCAL i, lcItem
+
+lcItem = THISFORM.aQuery[piItem]
+
+DO WHILE .T.
+	*- there may be multiple sets of parentheses, so loop through
+	*- till we get rid of all of them
+	DO CASE
+		CASE OCCURS("(", lcItem) == OCCURS(")",lcItem)
+			*- ignore, since same number of left and right parens are on this item
+			EXIT
+		CASE LEFT(lcItem,1) == "("
+			*- scan forward, looking for matching ")"
+			FOR i = piItem TO ALEN(THISFORM.aquery,1)
+				IF RIGHT(THISFORM.aQuery[i],1) == ")"
+					THISFORM.aQuery[i] = LEFT(THISFORM.aquery[i],LEN(THISFORM.aquery[i]) - 1)
+					lcItem = IIF(i == piItem, THISFORM.aQuery[i], lcItem)
+					EXIT
+				ENDIF
+			NEXT
+			lcItem = SUBSTR(lcItem,2)		&& strip left paren
+		CASE RIGHT(lcItem,1) == ")"
+			*- scan backward, looking for matching "("
+			FOR i = piItem TO 1 STEP -1
+				IF LEFT(THISFORM.aQuery[i],1) == "("
+					THISFORM.aQuery[i] = SUBSTR(THISFORM.aquery[i],2)
+					lcItem = IIF(i == piItem, THISFORM.aQuery[i], lcItem)
+					EXIT
+				ENDIF
+			NEXT
+			lcItem = LEFT(lcItem, LEN(lcItem) - 1)	&& strip right paren
+		OTHERWISE
+			*- nothing to do
+			EXIT
+	ENDCASE
+ENDDO
+RETURN
+ENDPROC
+PROCEDURE editquery
+LPARAMETERS tcx
+LOCAL lcvar, lii, lcorig, lcout, lcv, lcx
+lcorig = tcx
+lii = AT(" ", tcx)
+IF lii = 0
+   RETURN lcorig
+ENDIF
+lcvar = SUBSTR(tcx,1,lii-1)
+lcx = SUBSTR(tcx,lii+1)
+lii = AT(" ", lcx)
+THIS.cboOperator.Value = SUBSTR(lcx,1,lii-1)
+lcx = SUBSTR(lcx,lii+1)
+IF THIS.cboOperator.Value # "IN"
+   RETURN lcorig
+ENDIF
+lcout = "("
+DO WHILE LEN(lcx) > 0
+   lii = AT(",", lcx)
+   IF lii = 0
+      lcv = lcx
+      lcx = ""
+   ELSE
+      lcv = SUBSTR(lcx,1,lii-1)
+      lcx = IIF(lii=LEN(lcx),"",SUBSTR(lcx,lii+1))
+   ENDIF
+   IF RIGHT(lcout,1) # "("
+      lcout = lcout + " OR "
+   ENDIF
+   lcout = lcout + lcvar + "=" + lcv
+ENDDO
+lcout = lcout + ")"
+RETURN lcout
+
+ENDPROC
+PROCEDURE fset
+LOCAL lcx, lctyp
+IF THIS.aQuery(THIS.lstQueryParts.Value) = "*OR*"
+   STORE .F. TO THIS.cboFieldName.Enabled, ;
+                THIS.edtSought.Enabled, ;
+                THIS.cboOperator.Enabled
+ELSE
+   THIS.cbofieldname.Enabled = .T.
+   IF THIS.cboFieldname.Value = 0
+      THIS.cboFieldname.Value = 1
+      THIS.cboOperator.Value = "="
+      THIS.edtSought.Value = ""
+   ENDIF
+   lcx = THIS.NoTag(THIS.aFlds[THIS.cbofieldname.Value])
+   lctyp = TYPE(lcx)
+   STORE (lcTyp # "L") TO ;
+         THIS.cboOperator.Enabled, ;
+         THIS.edtSought.Enabled
+ENDIF
+ENDPROC
+PROCEDURE nobrack
+LPARAMETERS tcx
+LOCAL lii,lcy,lcC
+lcy = ""
+FOR lii = 1 TO LEN(tcx)
+   lcC = SUBSTR(tcx,lii,1)
+   IF NOT lcC$"'{}"
+      lcy = lcy + lcC
+   ENDIF
+ENDFOR
+RETURN lcy
+ENDPROC
+PROCEDURE notag
+LPARAMETERS tcX
+LOCAL lcX
+lcX = SUBSTR(tcx,2)
+RETURN lcX
+
+ENDPROC
+PROCEDURE ontag
+LPARAMETERS tcx
+LOCAL lcX
+lcx = IIF(ASCAN(THIS.aTags,tcx)#0,"*"," ") + tcx
+RETURN lcx
+
+ENDPROC
+PROCEDURE qreset
+THIS.aQuery = " "
+THIS.iQptr = 0
+THIS.lstQueryParts.Value = 1
+THIS.cboOperator.Value = "="
+THIS.edtSought.Value = ""
+THIS.edtSought.Refresh()
+THIS.SetAction()
+
+ENDPROC
+PROCEDURE qset
+LOCAL lcx, lii, lcFieldname, liDot
+
+IF BETWEEN(1,THIS.lstQueryParts.Value,THIS.iQptr)
+   lcx = THIS.aQuery(THIS.lstQueryParts.Value)
+   IF lcx = CHR(205) && "Õ" -- should it be "=" ??
+      RETURN
+   ENDIF
+   lii = AT(" ",lcx)
+   liDot = AT(".",lcx)
+   IF lii <= 1
+      THIS.cboOperator.Value = "="
+      THIS.edtSought.Value = ""
+      IF TYPE(lcx) = "U" OR liDot = 0 OR ;
+         UPPER(SUBSTR(lcx,1,liDot)) # UPPER(ALIAS())+"."
+         THIS.cboFieldname.Value = 1
+      ELSE
+         THIS.cboFieldname.Value = ASCAN(THIS.aFlds,THIS.OnTag(SUBSTR(lcx,liDot+1)))
+      ENDIF
+   ELSE
+      lcFieldName = SUBSTR(lcx,1,lii-1)
+      IF TYPE(lcFieldName) = "U" OR liDot = 0 OR ;
+         UPPER(SUBSTR(lcFieldName,1,liDot)) # UPPER(ALIAS())+"."
+         THIS.cboFieldName.Value = 1
+      ELSE
+         THIS.cboFieldName.Value = ASCAN(THIS.aFlds,THIS.OnTag(SUBSTR(lcFieldName,liDot+1)))
+      ENDIF
+      lcx = SUBSTR(lcx,lii+1)
+      lii = AT(" ",lcx)
+      THIS.cboOperator.Value = SUBSTR(lcx,1,lii-1)
+      THIS.edtSought.Value = THIS.Nobrack(SUBSTR(lcx,lii+1))
+   ENDIF
+   THIS.cboFieldName.Refresh
+   THIS.cboOperator.Refresh
+   THIS.edtSought.Refresh
+ENDIF
+
+ENDPROC
+PROCEDURE setaction
+DO CASE
+
+CASE THIS.iQptr = 0
+   STORE .F. TO THIS.cmdReset.Enabled, ;
+                THIS.cmdOr.Enabled, ;
+                THIS.cmdOK.Enabled, ;
+                THIS.lstQueryParts.Enabled, ;
+                THIS.cmdDelete.Enabled, ;
+                THIS.cmdUp.Enabled, ;
+                THIS.cmdDown.Enabled
+
+CASE THIS.lstQueryParts.Value > THIS.iQptr
+
+   THIS.cmdOr.Enabled = ;
+      (THIS.lstQueryParts.Value = THIS.iQptr + 1)
+
+   STORE .F. TO THIS.cmdDelete.Enabled, ;
+                THIS.cmdUp.Enabled, ;
+                THIS.cmdDown.Enabled
+
+   STORE .T. TO THIS.cmdReset.Enabled, ;
+                   THIS.cmdOK.Enabled, ;
+                   THIS.lstQueryParts.Enabled
+
+OTHERWISE
+
+   STORE .T. TO THIS.cmdReset.Enabled, ;
+                THIS.cmdOK.Enabled, ;
+                THIS.cmdOr.Enabled, ;
+                THIS.lstQueryParts.Enabled, ;
+                THIS.cmdDelete.Enabled
+
+   THIS.cmdUp.Enabled = ;
+       (THIS.iQptr # 1 AND THIS.lstQueryParts.Value # 1)
+   THIS.cmdDown.Enabled = ;
+       (THIS.iQptr # 1 AND THIS.iQptr # THIS.lstQueryParts.Value)
+
+ENDCASE
+
+ENDPROC
+PROCEDURE setinitialqueryparts
+LPARAMETERS tcQueryString
+
+ASSERT EMPTY(tcQueryString) OR VARTYPE(tcQueryString) = "C"
+
+DIME THIS.aQuery[THIS.iQueryMax]
+THIS.cFilter = ""
+THIS.aQuery = " "
+THIS.iqptr = 0
+
+IF EMPTY(tcQueryString)
+   THIS.lstQueryParts.Value = 1
+   THIS.lstQueryParts.Enabled = .F.
+   RETURN
+ENDIF
+
+LOCAL lcQueryString, lcThisPart, liThisChar, ;
+      lcStringLength, lcThisChar, lcDelimiters
+
+lcQueryString = NORMALIZE(tcQueryString)
+
+liThisChar = 0
+liStringLength = LEN(lcQueryString)
+STORE "" TO lcThisPart, lcThisChar, lcDelimiters
+
+
+DO WHILE .T.
+
+  liThisChar = liThisChar + 1
+  lcThisChar = SUBSTR(lcQueryString,liThisChar,1)
+  lcThisPart = lcThisPart + lcThisChar
+
+  IF INLIST(lcThisChar,["], ['],"[", "]" )
+
+    IF (INLIST(lcThisChar,["],[']) AND ;
+             RIGHT(lcDelimiters,1) = lcThisChar) OR ;
+            (lcThisChar = "]" AND ;
+             RIGHT(lcDelimiters,1) = "[")
+             * finishing an expression
+             lcDelimiters = LEFT(lcDelimiters, LEN(lcDelimiters)-1)
+    ELSE
+       IF lcThisChar # "]"
+          lcDelimiters = lcDelimiters + lcThisChar
+       ENDIF
+    ENDIF
+
+  ENDIF
+
+  DO CASE
+  CASE LEN(lcDelimiters) > 0
+     * we're in an expression
+  CASE RIGHT(lcThisPart,4) = ".OR."
+     lcThisPart = LEFT(lcThisPart,LEN(lcThisPart)-4)
+     THIS.iQptr = THIS.iQptr + 1
+     THIS.aQuery(THIS.iQptr) = lcThisPart
+     THIS.iQptr = THIS.iQptr + 1
+     THIS.aQuery(THIS.iQptr) = "*OR*"
+     lcThisPart = ""
+
+  CASE RIGHT(lcThisPart,5) = ".AND."
+
+     lcThisPart = LEFT(lcThisPart,LEN(lcThisPart)-5)
+     THIS.iQptr = THIS.iQptr + 1
+     THIS.aQuery(THIS.iQptr) = lcThisPart
+     lcThisPart = ""
+
+  OTHERWISE
+     * continue
+  ENDCASE
+
+  IF liThisChar = liStringLength OR ;
+     THIS.iQptr = THIS.iQueryMax
+     EXIT
+  ENDIF
+
+
+ENDDO
+
+* final "part"
+THIS.iQptr = THIS.iQptr + 1
+THIS.aQuery(THIS.iQptr) = lcThisPart
+THIS.lstQueryParts.Value = THIS.iQptr+1
+THIS.lstQueryParts.Enabled = .T.
+
+ENDPROC
+PROCEDURE setrowsources
+
+THIS.cboFieldName.RowSource = "THISFORM.aFlds"
+THIS.cboOrder.RowSource = "THISFORM.aTags"
+THIS.cboTables.RowSource = "THISFORM.aDbfs"
+THIS.lstQueryParts.RowSource = "THISFORM.aQuery"
+ENDPROC
+PROCEDURE settags
+THIS.aTags[1] = "Record#"
+LOCAL iFl
+DIME THIS.aTags[TAGCOUNT()+1]
+FOR iFl = 2 TO (ALEN(THIS.aTags))
+  THIS.aTags(iFl) = TAG(iFl-1)
+ENDFOR
+
+DIME THIS.aFlds[FCOUNT()]
+FOR ifl = 1 TO ALEN(THIS.aFlds)
+   IF TYPE(FIELD(ifl)) = "G"
+      THIS.aFlds[ifl] = "\"+FIELD(ifl)
+   ELSE
+      THIS.aFlds[ifl] = ;
+       THIS.OnTag(FIELD(ifl))
+   ENDIF
+ENDFOR
+
+
+
+ENDPROC
+PROCEDURE setupfilter
+LOCAL lcx, lii, lnstime, lnetime, lcy, lik, liempty, liSelect, lcAlias
+
+lcx = ""
+
+IF THISFORM.iQptr # 0
+
+   FOR lik = 1 TO THISFORM.iQptr
+      IF THISFORM.aQuery(lik)#"*OR*"
+         lcx = "("+THISFORM.EditQuery(TRIM(THISFORM.aQuery(lik)))
+         EXIT
+      ENDIF
+   ENDFOR
+   FOR lii = lik+1 TO THISFORM.iQptr
+      IF THISFORM.aQuery(lii) = "*OR*"
+         IF THISFORM.aQuery(lii-1) = "*OR*"
+            LOOP
+         ENDIF
+         lcx = lcx + ") OR ("
+      ELSE
+         IF THISFORM.aQuery(lii-1) # "*OR*"
+            lcx = lcx + " AND "
+         ENDIF
+         lcx = lcx + THISFORM.EditQuery(TRIM(THISFORM.aQuery(lii)))
+      ENDIF
+   ENDFOR
+   lcx = lcx + ")"
+   liempty = RAT(' OR ()',lcx)
+   IF liempty#0
+      lcx = SUBSTR(lcx,1,liempty-1)
+   ENDIF
+   IF LEN(lcx) > FILTER_MAX_FILTER
+      WAIT WINDOW LEFT(FILTER_TOO_LONG_LOC,254) NOWAIT
+      RETURN 0
+   ENDIF
+   liSelect = SELECT()
+   lcAlias = "C"+SYS(2015)
+   lnstime = SECONDS()
+   SELECT COUNT(*) AS myTally, .T. ;
+     FROM (ALIAS()) WHERE &lcx ;
+     INTO CURSOR (lcAlias)
+   lnetime = SECONDS()
+   lcy = ALLTRIM(TRANS(myTally,"9,999,999"))+" "+ FILTER_RECORDS_LOC+", "
+   lcy = lcy + ALLTRIM(TRANS(lnetime-lnstime,"999.99")) + " "+FILTER_SECONDS_LOC+"."
+   USE IN (lcAlias)
+   SELECT (liSelect)
+   WAIT WINDOW LEFT(lcy,254) NOWAIT TIMEOUT 2
+ENDIF
+
+IF EMPTY(lcx)
+   STORE "" TO THISFORM.cfilter
+ELSE
+   STORE NORMALIZE(lcx) TO THISFORM.cFilter
+ENDIF
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+21[END RESERVED2]
+[START RESERVED3]
+coldexact
+ibact
+iqptr
+iquerymax
+cfilter This is the filter expression.
+iselect
+ocaller
+^adbfs[1,0] 
+^atags[1,0] 
+^aquery[1,0] 
+^aflds[1,0] 
+*setaction 
+*qreset 
+*qset 
+*fset 
+*nobrack 
+*brackets 
+*settags 
+*ontag 
+*notag 
+*editquery 
+*setrowsources 
+*setupfilter This takes the conditions listed in the dialog and rationalizes them into a filter expression (it also applies the NORMALIZE() function to the expression).
+*setinitialqueryparts 
+*cleanparens 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+_table.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RMZ0LY201
+[CLASS] _shape
+[CLASSLOC] _base.vcx
+[BASECLASS] shape
+[OBJNAME] shpExpressionFrame
+[PARENT] _filterdialog
+[START PROPERTIES]
+Top = 34
+Left = 5
+Height = 46
+Width = 379
+BackStyle = 0
+FillStyle = 1
+ReleaseErase = .F.
+SpecialEffect = 0
+Name = "shpExpressionFrame"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RMZ0LY20M
+[CLASS] _shape
+[CLASSLOC] _base.vcx
+[BASECLASS] shape
+[OBJNAME] shpFilterFrame
+[PARENT] _filterdialog
+[START PROPERTIES]
+Top = 98
+Left = 4
+Height = 179
+Width = 379
+BackStyle = 0
+FillStyle = 1
+ReleaseErase = .F.
+SpecialEffect = 0
+Name = "shpFilterFrame"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RMZ0LY217
+[CLASS] _label
+[CLASSLOC] _base.vcx
+[BASECLASS] label
+[OBJNAME] lblOrder
+[PARENT] _filterdialog
+[START PROPERTIES]
+AutoSize = .T.
+FontName = "MS Sans Serif"
+FontSize = 9
+BackStyle = 0
+Caption = ("Ord\<er")
+Height = 15
+Left = 238
+Top = 9
+Width = 28
+ReleaseErase = .F.
+TabIndex = 3
+DisabledBackColor = 225,225,225
+Name = "lblOrder"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RMZ0LY21U
+[CLASS] _label
+[CLASSLOC] _base.vcx
+[BASECLASS] label
+[OBJNAME] lblTables
+[PARENT] _filterdialog
+[START PROPERTIES]
+AutoSize = .T.
+FontName = "MS Sans Serif"
+FontSize = 9
+BackStyle = 0
+Caption = ("\<Table")
+Height = 15
+Left = 7
+Top = 9
+Width = 29
+ReleaseErase = .F.
+TabIndex = 1
+DisabledBackColor = 225,225,225
+Name = "lblTables"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RMZ0LY22I
+[CLASS] _label
+[CLASSLOC] _base.vcx
+[BASECLASS] label
+[OBJNAME] lblCriteria
+[PARENT] _filterdialog
+[START PROPERTIES]
+AutoSize = .T.
+FontName = "MS Sans Serif"
+FontSize = 9
+Caption = (" Criteria ")
+Height = 15
+Left = 13
+Top = 90
+Width = 40
+ReleaseErase = .F.
+TabIndex = 8
+DisabledBackColor = 225,225,225
+Name = "lblCriteria"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RMZ0LY235
+[CLASS] _combobox
+[CLASSLOC] _base.vcx
+[BASECLASS] combobox
+[OBJNAME] cboOperator
+[PARENT] _filterdialog
+[START PROPERTIES]
+FontBold = .F.
+FontName = "MS Sans Serif"
+FontSize = 9
+RowSourceType = 1
+RowSource = "=,<>,<,>,<=,>=,==,IN"
+Value = ("=")
+Enabled = .T.
+FirstElement = 1
+Height = 20
+Left = 127
+Sorted = .T.
+SpecialEffect = 0
+Style = 2
+TabIndex = 6
+Top = 46
+Width = 32
+ReleaseErase = .F.
+Name = "cboOperator"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RMZ0LY24J
+[CLASS] _editbox
+[CLASSLOC] _base.vcx
+[BASECLASS] editbox
+[OBJNAME] edtSought
+[PARENT] _filterdialog
+[START PROPERTIES]
+FontName = "MS Sans Serif"
+FontSize = 9
+AllowTabs = .F.
+BorderStyle = 1
+Enabled = .T.
+Format = "3K"
+Height = 20
+Left = 164
+Margin = 0
+ScrollBars = 0
+SpecialEffect = 0
+TabIndex = 7
+Top = 46
+Width = 212
+ReleaseErase = .F.
+DisabledBackColor = 223,223,223
+Name = "edtSought"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE InteractiveChange
+THISFORM.cmdAdd.Enabled = (NOT EMPTY(THIS.Value))
+ENDPROC
+PROCEDURE ProgrammaticChange
+THIS.InteractiveChange()
+
+ENDPROC
+PROCEDURE Valid
+IF "'"$THIS.Value
+   WAIT WINDOW LEFT(FILTER_NO_SINGLE_QUOTES_LOC,254) NOWAIT
+   RETURN 0
+ENDIF
+THIS.InteractiveChange()
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RMZ0LY25D
+[CLASS] _commandbutton
+[CLASSLOC] _base.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdAdd
+[PARENT] _filterdialog
+[START PROPERTIES]
+AutoSize = .F.
+Top = 245
+Left = 14
+Height = 23
+Width = 45
+FontName = "MS Sans Serif"
+FontSize = 9
+Caption = "\<Add"
+StatusBarText = ("Add this expression to the criteria list")
+TabIndex = 10
+ReleaseErase = .F.
+Name = "cmdAdd"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+LOCAL lcx, lcy, lcz, lctyp, lctyp2
+IF THISFORM.iQptr = THISFORM.iQueryMax
+   ?? CHR(7)
+   WAIT WINDOW LEFT(FILTER_QUERY_LIST_FULL_LOC,254) NOWAIT
+   RETURN 0
+ENDIF
+lcx = ALIAS()+"."+THISFORM.NoTag(TRIM(THISFORM.aFlds[THISFORM.cboFieldname.Value]))
+lcy = ALLTRIM(THISFORM.edtSought.Value)
+lctyp = TYPE(lcx)
+IF EMPTY(lcy) AND NOT lctyp = "L"
+   ?? CHR(7)
+   WAIT WINDOW LEFT(FILTER_MISSING_VALUE_LOC,254) NOWAIT
+   THISFORM.edtSought.SetFocus()
+   * this shouldn't happen anymore
+   * because of the programmatic/interactive change stuff
+   * on edtSought, but JIC.
+   RETURN 0
+ENDIF
+DO CASE
+CASE INLIST(lctyp,"C","M")
+   lcy = THISFORM.Brackets(lcy,"'","'")
+CASE INLIST(lctyp,"D","T")
+   lcy = THISFORM.Brackets(lcy,"{","}")
+CASE INLIST(lctyp,"N","Y","I")
+   IF AT('"',lcy)#0
+   	  WAIT WINDOW LEFT(FILTER_NUMERIC_NO_QUOTES_LOC,254) NOWAIT
+   	  RETURN 0
+   ENDIF
+   lctyp2 = TYPE(lcy)
+   IF NOT INLIST(lctyp2,"N","Y","I")
+      WAIT WINDOW LEFT(FILTER_NUMERIC_REQUIRED_LOC,254) NOWAIT
+      RETURN 0
+   ENDIF
+ENDCASE
+IF lctyp = "L"
+   lcz = lcx
+ELSE
+   lcz = lcx + " " + THISFORM.cboOperator.Value + " " + lcy
+ENDIF
+IF BETWEEN(1,THISFORM.lstQueryParts.Value,THISFORM.iQptr)
+   THISFORM.aQuery(THISFORM.lstQueryParts.Value) = lcz
+ELSE
+   THISFORM.iQptr = THISFORM.iQptr + 1
+   THISFORM.aQuery(THISFORM.iQptr) = lcz
+ENDIF
+THISFORM.lstQueryParts.Value = THISFORM.iQptr+1
+
+THISFORM.lstQueryParts.Enabled = .T.
+THISFORM.SetAction()
+
+
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RMZ0LY26G
+[CLASS] _listbox
+[CLASSLOC] _base.vcx
+[BASECLASS] listbox
+[OBJNAME] lstQueryParts
+[PARENT] _filterdialog
+[START PROPERTIES]
+FontName = "MS Sans Serif"
+FontSize = 9
+RowSourceType = 5
+Value = 1
+Enabled = .F.
+Height = 126
+Left = 14
+SpecialEffect = 0
+TabIndex = 9
+Top = 107
+Width = 359
+ReleaseErase = .F.
+IntegralHeight = .T.
+Name = "lstQueryParts"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE InteractiveChange
+THIS.Valid()
+ENDPROC
+PROCEDURE ProgrammaticChange
+THIS.Valid()
+
+ENDPROC
+PROCEDURE Valid
+THISFORM.SetAction()
+THISFORM.QSet()
+THISFORM.FSet()
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RMZ0LY27Q
+[CLASS] _combobox
+[CLASSLOC] _base.vcx
+[BASECLASS] combobox
+[OBJNAME] cboOrder
+[PARENT] _filterdialog
+[START PROPERTIES]
+FontBold = .F.
+FontName = "MS Sans Serif"
+FontSize = 9
+RowSourceType = 5
+Value = 1
+Enabled = .T.
+Height = 20
+Left = 271
+Sorted = .F.
+SpecialEffect = 0
+Style = 2
+TabIndex = 4
+Top = 5
+Width = 112
+ReleaseErase = .F.
+BorderStyle = 1
+Name = "cboOrder"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Valid
+LOCAL lcx
+lcx = ALLTRIM(THISFORM.aTags[THISFORM.cboOrder.Value])
+IF UPPER(lcx) = "RECORD#"
+   SET ORDER TO
+ELSE
+   SET ORDER TO (lcx)
+ENDIF
+GO TOP
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RMZ0LY28M
+[CLASS] _combobox
+[CLASSLOC] _base.vcx
+[BASECLASS] combobox
+[OBJNAME] cboTables
+[PARENT] _filterdialog
+[START PROPERTIES]
+FontBold = .F.
+FontName = "MS Sans Serif"
+FontSize = 9
+RowSourceType = 5
+Value = 1
+Enabled = .T.
+Height = 20
+Left = 50
+Sorted = .F.
+SpecialEffect = 0
+Style = 2
+TabIndex = 2
+Top = 5
+Width = 155
+ReleaseErase = .F.
+BorderStyle = 1
+Name = "cboTables"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE InteractiveChange
+SELECT (THISFORM.aDbfs[THIS.Value])
+THISFORM.SetTags()
+THISFORM.cboOrder.Requery()
+THISFORM.cboFieldname.Requery()
+THISFORM.cboOrder.Value = IIF(LEN(ORDER())=0,1,ASCAN(THISFORM.aTags,ORDER()))
+THISFORM.cboFieldname.Value = 1
+THISFORM.FSet()
+
+
+ENDPROC
+PROCEDURE ProgrammaticChange
+THIS.InteractiveChange()
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RMZ0LY29H
+[CLASS] _commandbutton
+[CLASSLOC] _base.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdOK
+[PARENT] _filterdialog
+[START PROPERTIES]
+AutoSize = .F.
+Top = 288
+Left = 128
+Height = 25
+Width = 51
+FontName = "MS Sans Serif"
+FontSize = 9
+Caption = "OK"
+TabIndex = 16
+ReleaseErase = .F.
+Name = "cmdOK"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+THISFORM.SetUpFilter()
+
+IF TYPE("THISFORM.oCaller.Name") = "C" AND ;
+   PEMSTATUS(THISFORM.oCaller,"setfilter",5)
+   THISFORM.oCaller.SetFilter(THISFORM.cFilter)
+ELSE
+   * set it directly after deciding that it is okay to do it
+   * using the _table object
+
+  IF THISFORM.cusTable.CurrentTableAllowsNavigation(ALIAS())
+     LOCAL lcFilter
+     lcFilter = THISFORM.cFilter
+     SET FILTER TO &lcFilter
+     LOCATE
+     THISFORM.cusTable.RefreshLastWindowAfterChange()
+  ENDIF
+
+ENDIF
+THISFORM.Release()
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RMZ0LY2B9
+[CLASS] _commandbutton
+[CLASSLOC] _base.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdReset
+[PARENT] _filterdialog
+[START PROPERTIES]
+AutoSize = .F.
+Top = 245
+Left = 325
+Height = 23
+Width = 46
+FontName = "MS Sans Serif"
+FontSize = 9
+Caption = "\<Reset"
+StatusBarText = ("Clear the criteria list")
+TabIndex = 15
+ReleaseErase = .F.
+Name = "cmdReset"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+THISFORM.aQuery = " "
+THISFORM.iQptr = 0
+THISFORM.lstQueryParts.Value = 1
+THISFORM.cboOperator.Value = "="
+THISFORM.edtSought.Value = ""
+THISFORM.SetAction()
+*THISFORM.edtSought.Refresh
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RMZ0LY2CD
+[CLASS] _commandbutton
+[CLASSLOC] _base.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdCancel
+[PARENT] _filterdialog
+[START PROPERTIES]
+AutoSize = .F.
+Top = 288
+Left = 204
+Height = 25
+Width = 51
+FontName = "MS Sans Serif"
+FontSize = 9
+Cancel = .T.
+Caption = "Cancel"
+TabIndex = 17
+ReleaseErase = .F.
+Name = "cmdCancel"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+THISFORM.Release()
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RMZ0LY2DK
+[CLASS] _commandbutton
+[CLASSLOC] _base.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdDelete
+[PARENT] _filterdialog
+[START PROPERTIES]
+AutoSize = .F.
+Top = 245
+Left = 67
+Height = 23
+Width = 45
+FontName = "MS Sans Serif"
+FontSize = 9
+Caption = "\<Delete"
+StatusBarText = ("Remove the current item from the list")
+TabIndex = 11
+ReleaseErase = .F.
+Name = "cmdDelete"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+THISFORM.ibact = 1
+
+*- clean up parens
+THISFORM.cleanparens(THISFORM.lstQueryParts.Value)
+= ADEL(THISFORM.aQuery,THISFORM.lstQueryParts.Value)
+THISFORM.aQuery(THISFORM.iQueryMax) = " "
+THISFORM.iQptr = THISFORM.iQptr - 1
+THISFORM.lstQueryParts.Value =  ;
+  MIN(THISFORM.lstQueryParts.Value,THISFORM.iQptr+1)
+THISFORM.Qset()
+THISFORM.SetAction()
+THISFORM.lstQueryParts.Refresh
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RMZ0LY2F7
+[CLASS] _commandbutton
+[CLASSLOC] _base.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdUp
+[PARENT] _filterdialog
+[START PROPERTIES]
+AutoSize = .F.
+Top = 245
+Left = 206
+Height = 23
+Width = 47
+FontName = "MS Sans Serif"
+FontSize = 9
+Caption = "\<Up"
+StatusBarText = ("Move selected item up one row")
+TabIndex = 13
+ReleaseErase = .F.
+Name = "cmdUp"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+LOCAL lcx
+THISFORM.iBact= 2
+IF THISFORM.lstQueryParts.Value > 1 AND ;
+   THISFORM.lstQueryParts.Value <= THISFORM.iQptr
+   lcx = THISFORM.aQuery(THISFORM.lstQueryParts.Value-1)
+   THISFORM.aQuery(THISFORM.lstQueryParts.Value-1) = ;
+     THISFORM.aQuery(THISFORM.lstQueryParts.Value)
+   THISFORM.aQuery(THISFORM.lstQueryParts.Value) = lcx
+   THISFORM.lstQueryParts.Value = THISFORM.lstQueryParts.Value - 1
+ENDIF
+THISFORM.SetAction()
+THISFORM.lstQueryParts.Enabled = .T.
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RMZ0LY2GB
+[CLASS] _commandbutton
+[CLASSLOC] _base.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdDown
+[PARENT] _filterdialog
+[START PROPERTIES]
+AutoSize = .F.
+Top = 245
+Left = 256
+Height = 23
+Width = 47
+FontName = "MS Sans Serif"
+FontSize = 9
+Caption = "Do\<wn"
+StatusBarText = ("Move selected item down one row")
+TabIndex = 14
+ReleaseErase = .F.
+Name = "cmdDown"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+LOCAL lcx
+THISFORM.ibact = 3
+IF THISFORM.lstQueryParts.Value <  THISFORM.iQptr
+  lcx = THISFORM.aQuery(THISFORM.lstQueryParts.Value+1)
+  THISFORM.aQuery(THISFORM.lstQueryParts.Value+1) =  ;
+  THISFORM.aQuery(THISFORM.lstQueryParts.Value)
+  THISFORM.aQuery(THISFORM.lstQueryParts.Value) = lcx
+  THISFORM.lstQueryParts.Value =  THISFORM.lstQueryParts.Value + 1
+ENDIF
+THISFORM.Setaction()
+THISFORM.lstQueryParts.Refresh
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RMZ0LY2I5
+[CLASS] _commandbutton
+[CLASSLOC] _base.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdOr
+[PARENT] _filterdialog
+[START PROPERTIES]
+AutoSize = .F.
+Top = 245
+Left = 134
+Height = 23
+Width = 45
+FontName = "MS Sans Serif"
+FontSize = 9
+Caption = "\<Or"
+StatusBarText = ("Add an OR condition to the list")
+TabIndex = 12
+ReleaseErase = .F.
+Name = "cmdOr"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+LOCAL lii
+THISFORM.ibact = 4
+IF THISFORM.lstQueryParts.Value < THISFORM.iQptr
+   FOR lii = THISFORM.iQptr TO THISFORM.lstQueryParts.Value+1 STEP -1
+      THISFORM.aQuery(lii+1) = THISFORM.aQuery(lii)
+   ENDFOR
+   THISFORM.aQuery(THISFORM.lstQueryParts.Value + 1) = "*OR*"
+   THISFORM.lstQueryParts.Value = THISFORM.lstQueryParts.Value + 2
+ELSE
+   THISFORM.aQuery(THISFORM.iQptr+1) = "*OR*"
+   THISFORM.lstQueryParts.Value = THISFORM.iQptr + 2
+ENDIF
+THISFORM.iQptr = THISFORM.iQptr + 1
+THISFORM.SetAction()
+THISFORM.lstQueryParts.Refresh
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RMZ0LY2J8
+[CLASS] _combobox
+[CLASSLOC] _base.vcx
+[BASECLASS] combobox
+[OBJNAME] cboFieldname
+[PARENT] _filterdialog
+[START PROPERTIES]
+FontBold = .F.
+FontName = "MS Sans Serif"
+FontSize = 9
+RowSourceType = 5
+RowSource = ""
+Value = 1
+Enabled = .T.
+Height = 20
+Left = 12
+Sorted = .F.
+SpecialEffect = 0
+Style = 2
+TabIndex = 5
+Top = 46
+Width = 108
+ReleaseErase = .F.
+BorderStyle = 1
+Name = "cboFieldname"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RMZ0REE3C
+[CLASS] _table
+[CLASSLOC] _table.vcx
+[BASECLASS] custom
+[OBJNAME] cusTable
+[PARENT] _filterdialog
+[START PROPERTIES]
+Top = 4
+Left = 211
+Name = "cusTable"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _filterdialog
+[START PROPERTIES]
+MS Sans Serif, 0, 8, 5, 13, 11, 11, 2, 0
+MS Sans Serif, 0, 9, 5, 13, 11, 11, 2, 0
+[END PROPERTIES]
+[START RESERVED1]
+  _table.hˆ°¡MÕ([END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RMZ0Q5WJU
+[CLASS] _nav2buttons
+[CLASSLOC] _table.vcx
+[BASECLASS] container
+[OBJNAME] _nav4buttons
+[START PROPERTIES]
+Width = 133
+Height = 37
+Name = "_nav4buttons"
+cmgNav.Command1.Top = 5
+cmgNav.Command1.Left = 33
+cmgNav.Command1.TabIndex = 1
+cmgNav.Command1.Name = "Command1"
+cmgNav.Command2.Top = 5
+cmgNav.Command2.Left = 60
+cmgNav.Command2.TabIndex = 2
+cmgNav.Command2.Name = "Command2"
+cmgNav.Height = 36
+cmgNav.Left = 8
+cmgNav.Width = 122
+cmgNav.TabIndex = 2
+cmgNav.Name = "cmgNav"
+cusTableNav.Name = "cusTableNav"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE tablenav
+LPARAMETERS tcAction
+IF EMPTY(tcAction) OR VARTYPE(tcAction) # "C"
+  RETURN
+ENDIF
+DODEFAULT(tcAction)
+DO CASE
+CASE UPPER(tcAction) = "TOP"
+   THIS.cusTableNav.GoTop()
+CASE UPPER(tcAction) = "BOTTOM"
+   THIS.cusTableNav.GoBottom()
+OTHERWISE
+   * ??
+ENDCASE
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+3[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+_table.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RML0QS704
+[CLASS] _commandbutton
+[CLASSLOC] _base.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdTop
+[PARENT] _nav4buttons
+[START PROPERTIES]
+AutoSize = .T.
+Top = 6
+Left = 11
+Height = 27
+Width = 30
+FontBold = .T.
+Caption = "|<"
+TabIndex = 1
+Name = "cmdTop"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+THIS.Parent.TableNav("TOP")
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RMZ0QDB47
+[CLASS] _commandbutton
+[CLASSLOC] _base.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdBottom
+[PARENT] _nav4buttons
+[START PROPERTIES]
+AutoSize = .T.
+Top = 6
+Left = 96
+Height = 27
+Width = 30
+FontBold = .T.
+Caption = ">|"
+TabIndex = 3
+Name = "cmdBottom"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+THIS.Parent.TableNav("BOTTOM")
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _nav4buttons
+[START PROPERTIES]
+Arial, 1, 9, 6, 15, 12, 13, 3, 0
+[END PROPERTIES]
+[START RESERVED1]
+  _table.h •Px$[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RN10PFB0E
+[CLASS] _form
+[CLASSLOC] _base.vcx
+[BASECLASS] form
+[OBJNAME] _filterexpr
+[START PROPERTIES]
+Height = 155
+Width = 328
+DoCreate = .T.
+AutoCenter = .T.
+BorderStyle = 0
+Caption = "Set Filter"
+WindowType = 1
+cfilter = (SPACE(254))
+ioldsession = 0
+ioldselect = 0
+Name = "_filterexpr"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+LOCAL loControl
+
+IF NOT DODEFAULT()
+   RETURN .F.
+ENDIF
+
+LOCAL ARRAY laCheck[1]
+IF EMPTY(ALIAS())
+   THIS.iOldSession = SET("DATASESSION")
+   IF EMPTY(AUSED(laCheck))
+      DO CASE
+      CASE TYPE("_SCREEN.ActiveForm.Parent") = "O"
+          SET DATASESSION TO _SCREEN.ActiveForm.Parent.DataSessionID
+      CASE TYPE("_SCREEN.ActiveForm") = "O"
+          SET DATASESSION TO _SCREEN.ActiveForm.DataSessionID
+      OTHERWISE
+          * no other real choices
+      ENDCASE
+      IF NOT EMPTY(AUSED(laCheck))
+         THIS.iOldSelect = SELECT()
+         SELECT (laCheck[1,1])
+      ELSE
+         SET DATASESSION TO THIS.iOldSession
+         RETURN .F.
+      ENDIF
+   ELSE
+      THIS.iOldSelect = SELECT()
+      SELECT (laCheck[1,1])
+   ENDIF
+ENDIF
+
+
+THIS.Caption = STRTRAN(SETFILTER_CAPTION_LOC,"\<","")
+THIS.cmdBuild.Caption = SETFILTER_BUILDEXPR_LOC
+THIS.cmdApply.Caption = SETFILTER_APPLY_LOC
+THIS.cmdCancel.Caption = SETFILTER_CANCEL_LOC
+THIS.lblEdit.Caption = SETFILTER_EDIT_LOC
+
+IF SYSTEM_LARGEFONTS
+   LOCAL lcStandardFont
+   lcStandardFont = UPPER(DIALOG_SMALLFONT_NAME)
+
+   FOR EACH loControl IN THIS.Controls
+       IF PEMSTATUS(loControl,"FontName",5) AND ;
+          UPPER(loControl.FontName) == lcStandardFont
+
+          loControl.FontName = DIALOG_LARGEFONT_NAME
+       ENDIF
+   ENDFOR
+   * Note: no recursion here.
+
+ENDIF
+
+THIS.SetFilter(SET("FILTER"))
+
+ENDPROC
+PROCEDURE Unload
+IF NOT EMPTY(THIS.iOldSession)
+   SET DATASESSION TO THIS.iOldSession
+ENDIF
+IF NOT EMPTY(THIS.iOldSelect)
+   SELECT (THIS.iOldSelect)
+ENDIF
+ENDPROC
+PROCEDURE cfilter_access
+LOCAL lcValue
+IF EMPTY(THIS.cFilter)
+   lcValue = SPACE(254)
+ELSE
+   lcValue = STRTRAN(ALLTRIM(THIS.cFilter),CHR(13),SPACE(1))
+   lcValue = STRTRAN(lcValue,CHR(9),SPACE(1))
+   lcValue = STRTRAN(lcValue,CHR(10),SPACE(1))
+ENDIF
+
+RETURN lcValue
+
+ENDPROC
+PROCEDURE setfilter
+LPARAMETERS tcValue
+LOCAL lcFilter
+IF VARTYPE(tcValue) = "C" AND TYPE(tcValue) = "L"
+   lcFilter = tcValue
+ELSE
+   lcFilter = SPACE(THIS.edtFilterExpression.MaxLength)
+ENDIF
+STORE lcFilter TO THIS.cFilter, ;
+                  THIS.edtFilterExpression.Value
+ENDPROC
+PROCEDURE setfilterontable
+IF THIS.cusTable.CurrentTableAllowsNavigation(ALIAS())
+   LOCAL lcFilter
+   lcFilter = THISFORM.cFilter
+   SET FILTER TO &lcFilter
+   LOCATE
+   THIS.cusTable.RefreshLastWindowAfterChange()
+ENDIF
+
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+7[END RESERVED2]
+[START RESERVED3]
+cfilter The filter expression.
+ladvanced This is used to toggle _FilterExpr between two modes (_FilterDialog and GETEXPR).
+ioldsession Old data session.
+ioldselect Old work area.
+*setfilter Sets the value of the cFilter property. This method is primarily useful when _FilterDialog is called modally to do further work on the expression to be built.
+*setfilterontable If the current table allows navigation according to the dialog's _table member, this method applies the current filter to the current alias, issues a LOCATE to refresh the filter.
+*cfilter_access 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+_table.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RN10PUU84
+[CLASS] _table
+[CLASSLOC] _table.vcx
+[BASECLASS] custom
+[OBJNAME] cusTable
+[PARENT] _filterexpr
+[START PROPERTIES]
+Top = 5
+Left = 298
+Height = 15
+Width = 24
+Name = "cusTable"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RN10R913A
+[CLASS] _editbox
+[CLASSLOC] _base.vcx
+[BASECLASS] editbox
+[OBJNAME] edtFilterExpression
+[PARENT] _filterexpr
+[START PROPERTIES]
+FontName = "MS Sans Serif"
+Height = 99
+Left = 8
+MaxLength = 254
+TabIndex = 2
+Top = 19
+Width = 312
+ZOrderSet = 2
+Value = ("")
+ControlSource = "THISFORM.cFilter"
+IntegralHeight = .T.
+Name = "edtFilterExpression"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Valid
+LOCAL llReturn, lcValue
+
+lcValue = STRTRAN(ALLTRIM(THIS.Value),CHR(13),SPACE(1))
+lcValue = STRTRAN(lcValue,CHR(9),SPACE(1))
+lcValue = STRTRAN(lcValue,CHR(10),SPACE(1))
+
+DO CASE
+CASE EMPTY(lcValue)
+   llReturn = .T.
+CASE LEN(lcValue) > THIS.MaxLength
+   WAIT WINDOW LEFT(SETFILTER_MAXLENGTH_LOC,254) NOWAIT
+CASE TYPE(lcValue) # "L"
+   WAIT WINDOW LEFT(SETFILTER_INVALID_LOC,254) NOWAIT
+OTHERWISE
+   llReturn = .T.
+   THISFORM.cFilter = lcValue
+ENDCASE
+
+RETURN IIF(llReturn,.T.,0)
+
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RN10TK10M
+[CLASS] _commandbutton
+[CLASSLOC] _base.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdBuild
+[PARENT] _filterexpr
+[START PROPERTIES]
+AutoSize = .F.
+Top = 125
+Left = 10
+Height = 23
+Width = 104
+FontName = "MS Sans Serif"
+Caption = "\<Build Expression..."
+TabIndex = 3
+ZOrderSet = 3
+Name = "cmdBuild"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+IF THISFORM.lAdvanced
+
+   LOCAL lcFilter
+
+   GETEXPR THISFORM.Caption ;
+       TO lcFilter ;
+       TYPE [L; SETFILTER_INVALID_LOC] ;
+       DEFAULT THISFORM.cFilter
+
+   IF TYPE(lcFilter) = "L"
+      THISFORM.cFilter = lcFilter
+      THISFORM.edtFilterExpression.Refresh
+   ENDIF
+
+ELSE
+
+   LOCAL lcfile, loForm
+   lcfile = FULLPATH(THISFORM.ClassLibrary)
+   loForm = NEWOBJECT("_FilterDialog",lcFile,"",THISFORM)
+   IF TYPE("loForm.Name") = "C"
+      loForm.Show(1)
+      THISFORM.edtFilterExpression.Refresh()
+   ENDIF
+
+ENDIF
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RML0QS704
+[CLASS] _commandbutton
+[CLASSLOC] _base.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdApply
+[PARENT] _filterexpr
+[START PROPERTIES]
+Top = 125
+Left = 178
+Height = 23
+Width = 68
+FontName = "MS Sans Serif"
+Caption = "\<Apply"
+TabIndex = 4
+Name = "cmdApply"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+THISFORM.SetFilterOnTable()
+THISFORM.Release()
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RN20BYT74
+[CLASS] _commandbutton
+[CLASSLOC] _base.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdCancel
+[PARENT] _filterexpr
+[START PROPERTIES]
+Top = 125
+Left = 252
+Height = 23
+Width = 68
+FontName = "MS Sans Serif"
+Cancel = .T.
+Caption = "\<Cancel"
+TabIndex = 5
+Name = "cmdCancel"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+
+THISFORM.Release()
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RN20BYT81
+[CLASS] _label
+[CLASSLOC] _base.vcx
+[BASECLASS] label
+[OBJNAME] lblEdit
+[PARENT] _filterexpr
+[START PROPERTIES]
+AutoSize = .T.
+FontName = "MS Sans Serif"
+Caption = "\<Edit"
+Height = 15
+Left = 8
+Top = 4
+Width = 20
+TabIndex = 1
+Name = "lblEdit"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _filterexpr
+[START PROPERTIES]
+Arial, 0, 9, 5, 15, 12, 32, 3, 0
+MS Sans Serif, 0, 9, 5, 13, 11, 11, 2, 0
+[END PROPERTIES]
+[START RESERVED1]
+  _table.h.W¡MÕ([END RESERVED1]
+[EOF]
