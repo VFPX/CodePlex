@@ -1,0 +1,1420 @@
+SCCTEXT Version 4.0.0.2
+PLATFORM C(8,0),UNIQUEID C(10,0),TIMESTAMP N(10,0),CLASS M(4,0),CLASSLOC M(4,0),BASECLASS M(4,0),OBJNAME M(4,0),PARENT M(4,0),PROPERTIES M(4,0),PROTECTED M(4,0),METHODS M(4,0),OBJCODE M(4,0),OLE M(4,0),OLE2 M(4,0),RESERVED1 M(4,0),RESERVED2 M(4,0),RESERVED3 M(4,0),RESERVED4 M(4,0),RESERVED5 M(4,0),RESERVED6 M(4,0),RESERVED7 M(4,0),RESERVED8 M(4,0),USER M(4,0)
+1252
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] Class     
+[START RESERVED1]
+VERSION =   3.00[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0AW1EONA2
+[CLASS] _custom
+[CLASSLOC] _base.vcx
+[BASECLASS] custom
+[OBJNAME] _typelib
+[START PROPERTIES]
+Height = 27
+Width = 101
+cerrormessage = 
+ccomfile = 
+ctypelib = 
+cclass = 
+Name = "_typelib"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Destroy
+THIS.omethods = null
+THIS.oclass = null
+THIS.otliapp = null
+THIS.otypelib = null
+THIS.aInts = null
+
+ENDPROC
+PROCEDURE Error
+LPARAMETERS nError, cMethod, nLine
+THIS.lhaderror = .T.
+IF THIS.lIgnoreErrors OR INLIST(nError,1113, 1426, 2012) OR _VFP.StartMode>0
+	RETURN
+ELSE
+	RETURN DODEFAULT(nError, cMethod, nLine)
+ENDIF
+ENDPROC
+PROCEDURE alert
+LPARAMETERS tcMessage
+IF _VFP.StartMode#0 OR THIS.lSkipAlerts
+	THIS.cErrorMessage = tcMessage
+ELSE
+	MESSAGEBOX(tcMessage,16)
+ENDIF
+
+ENDPROC
+PROCEDURE checkclass
+LPARAMETERS eClass, nClassType, eTypelib
+
+* nClassType details:
+* 0 - eClass passed in is class name (default)
+* 1 - eClass passed in is progid name
+* 2 - eClass passed in is interface name
+* ex. for a ProgID of "VFPTEST.STOCK", pass in
+*   0 - "STOCK"
+*   1 - "VFPTEST.STOCK"
+*   2 - "ISTOCK"
+
+LOCAL lnClassType,lnClasses,i,lcStr,loClass
+
+IF !THIS.CheckTypeLib(eTypelib)
+	RETURN .F.
+ENDIF
+
+IF VARTYPE(eClass)="C" AND !EMPTY(eClass)
+	IF VARTYPE(nClassType)#"N" OR !BETWEEN(nClassType,0,2)
+		lnClassType=0
+	ENDIF
+	lnClasses = THIS.otypelib.CoClasses.Count
+	FOR i = 1 TO lnClasses
+		DO CASE
+		CASE lnClassType=1
+			lcStr = UPPER(THIS.otypelib.Name+"."+THIS.otypelib.CoClasses(m.i).Name)
+		CASE lnClassType=2
+			lcStr = UPPER(THIS.otypelib.CoClasses(m.i).DefaultInterface.Name)
+		OTHERWISE
+			lcStr = UPPER(THIS.otypelib.CoClasses(m.i).Name)
+		ENDCASE
+		IF UPPER(eClass)==lcStr
+			THIS.nClassRef = m.i
+			THIS.oClass = THIS.otypelib.CoClasses(m.i).DefaultInterface
+			RETURN .T.
+		ENDIF
+	ENDFOR
+	RETURN .F.
+ENDIF
+
+RETURN VARTYPE(THIS.oClass)="O"
+
+ENDPROC
+PROCEDURE checktliapp
+IF VARTYPE(THIS.oTLIApp)#"O"
+	THIS.oTLIApp = CREATEOBJECT(TLIAPP_PROGID)
+	IF VARTYPE(THIS.oTLIApp)#"O"
+		RETURN .F.
+	ENDIF
+ENDIF
+
+ENDPROC
+PROCEDURE checktypelib
+LPARAMETERS eTypelib
+
+LOCAL lnClassCount, loTypelib, lcTypelib
+
+IF !THIS.CheckTLIApp()
+	RETURN .F.
+ENDIF
+
+* Check for valid typelib file passed
+IF VARTYPE(eTypelib)="C" AND !EMPTY(eTypelib)
+	IF !FILE(eTypelib)
+		RETURN .F.
+	ENDIF
+	THIS.cTypelib = eTypelib
+ENDIF
+
+* Check if user passed in an IDispath object instead of typelib name
+IF VARTYPE(eTypelib)="O"
+	THIS.lHadError = .F.
+	loTypelib = THIS.oTLIApp.InterfaceInfoFromObject(eTypelib)
+	IF THIS.lHadError OR VARTYPE(loTypelib)#"O"
+		THIS.lHadError = .F.
+		RETURN .F.
+	ENDIF
+	THIS.oTypelib = loTypelib.Parent
+	THIS.cTypelib = loTypelib.Parent.ContainingFile
+	RETURN .T.
+ENDIF
+
+* Check for valid cTypelib property (possibly set)
+IF VARTYPE(THIS.cTypelib )="C" AND !EMPTY(THIS.cTypelib)
+	IF !FILE(THIS.cTypelib)
+		RETURN .F.
+	ENDIF
+ENDIF
+
+* Check for valid oTypelib property
+IF VARTYPE(THIS.oTypelib)="O" AND UPPER(THIS.oTypelib.ContainingFile)==UPPER(THIS.cTypelib)
+	RETURN .T.
+ENDIF
+
+* Need to check if valid
+THIS.lHadError = .F.
+THIS.lignoreerrors = .T.
+loTypelib = THIS.oTLIApp.TypeLibInfoFromFile(THIS.cTypelib)
+THIS.lignoreerrors = .F.
+IF THIS.lHadError OR VARTYPE(loTypelib)#"O"
+	THIS.lHadError = .F.
+	THIS.ALERT(BADTYPELIB_LOC)
+	RETURN .F.
+ENDIF
+lnClassCount = loTypelib.CoClasses.Count
+IF lnClassCount=0
+	RETURN .F.
+ENDIF
+
+* Successful check, so let's set oTypelib property
+THIS.oTypelib = loTypelib
+
+ENDPROC
+PROCEDURE checkvariant
+LPARAMETERS tcInterface
+* Checks for Variant return type or parameter type which are not supported in SOAP.
+* Used for Web Services only since it doesn't check properties
+LOCAL lnMCount, lnPCount, laMeths, laParms, i, j
+DIMENSION laMeths[1]
+lnMCount = THIS.GetMethods(@laMeths,tcInterface, .F., .F., .T.)
+FOR i = 1 TO lnMCount
+	* Check for valid return type -- fail for Currency or Variant
+	IF INLIST(laMeths[m.i,2],6,12)
+		RETURN .F.
+	ENDIF
+	DIMENSION laParms[1]
+	lnPCount = THIS.GetParmInfo(@laParms,THIS.oMethods(m.i))
+	FOR j = 1 TO lnPCount
+		* Check for valid parameter type
+		IF INLIST(laParms[m.j,2],6,12)
+			RETURN .F.
+		ENDIF
+	ENDFOR
+ENDFOR
+
+ENDPROC
+PROCEDURE exporttypelib
+* You can use this method to export the contents of a type library to a text file.
+LPARAMETER cExportFile, lNoViewFile
+LOCAL cOldSafe,i,j,k,lcTmpStr
+LOCAL lnClasses,laClasses,lnMethods,laMethods,laParms,lnParms
+lcTmpStr=""
+IF TYPE("THIS.ctypelib")#"C" OR EMPTY(THIS.ctypelib)
+	THIS.ctypelib = GETFILE(GETFILE1_LOC,GETFILE2_LOC)
+ENDIF
+
+IF EMPTY(THIS.ctypelib) OR !FILE(THIS.ctypelib)
+	RETURN ""
+ENDIF
+
+IF TYPE("m.lNoViewFile")#"L"
+	m.lNoViewFile = .F.
+ENDIF
+
+IF TYPE("m.cExportFile")#"C" OR EMPTY("m.cExportFile")
+	m.cExportFile = JustStem(THIS.ctypelib) + ".TXT"
+ENDIF
+cOldSafe = SET("SAFETY")
+SET SAFETY OFF
+
+IF WEXIST(m.cExportFile)
+	RELEASE WINDOW (m.cExportFile)
+ENDIF
+
+SET TEXTMERGE ON NOSHOW
+SET TEXTMERGE TO MEMVAR lcTmpStr
+
+* Gather and output Typelib information
+\ <<TYPELIBSPACING + TLIB1_LOC>>  <<THIS.ctypelib>>
+DIMENSION laClasses[1]
+lnClasses=THIS.Getclasses(@laClasses)
+FOR i = 1 TO lnClasses
+	\ <<TYPEINFOSPACING+TCLASS_LOC+laClasses[m.i, 1]>>  <<laClasses[m.i, 2]>>
+	\
+	DIMENSION laMethods[1]
+	lnMethods=THIS.GetMethods(@laMethods,laClasses[m.i, 1])
+	FOR j = 1 TO lnMethods
+		\ <<FUNCDESCSPACING + laMethods[m.j, 1] + "(">>
+		DIMENSION laParms[1]
+		lnParms=THIS.Getparminfo(@laParms,THIS.oMethods[m.j])
+		FOR k = 1 TO lnParms
+			\\ <<laParms[m.k, 1] + " AS " + THIS.Vartypetostring(laParms[m.k, 2]) + IIF(laParms[m.k, 3]," @","")>>
+			IF k < lnParms
+				\\", "
+			ENDIF
+		ENDFOR
+		\\<<") AS " +THIS.vartypetostring(laMethods[m.j, 2])>>
+		\ <<FUNCDESCSPACING + "Type: "+THIS.Getinvokekind(THIS.oMethods[m.j].InvokeKind)>>
+		IF !EMPTY(ALLTRIM(laMethods[m.j, 3]))
+			\ <<FUNCDESCSPACING + laMethods[m.j, 3]>>
+		ENDIF
+		\
+	ENDFOR
+	\
+ENDFOR
+
+SET TEXTMERGE TO
+SET TEXTMERGE OFF
+IF !EMPTY(lcTmpStr)
+	STRTOFILE(lcTmpStr, m.cExportFile)
+ENDIF
+
+SET SAFETY &cOldSafe
+IF !m.lNoViewFile AND !EMPTY(lcTmpStr)
+	MODIFY FILE (m.cExportFile) NOWAIT
+ENDIF
+RETURN m.cExportFile
+
+ENDPROC
+PROCEDURE getclasses
+LPARAMETERS aClasses, eTypelib, lReturnProgID
+
+LOCAL lnClasses, i, lUseProgID
+
+IF !THIS.CheckTypeLib(eTypelib)
+	RETURN 0
+ENDIF
+
+IF VARTYPE(lReturnProgID)="L"
+	lUseProgID = lReturnProgID
+ENDIF
+
+lnClasses = THIS.otypelib.CoClasses.Count
+IF lnClasses > 0
+	DIMENSION aClasses[lnClasses,2]
+	FOR i = 1 TO lnClasses
+		IF lUseProgID
+			aClasses[m.i,1] = THIS.otypelib.Name + "." + THIS.otypelib.CoClasses(m.i).Name
+		ELSE
+			aClasses[m.i,1] = THIS.otypelib.CoClasses(m.i).Name		
+		ENDIF
+		aClasses[m.i,2] = THIS.otypelib.CoClasses(m.i).GUID		
+	ENDFOR
+ENDIF
+
+RETURN lnClasses
+
+ENDPROC
+PROCEDURE getinvokekind
+LPARAMETERS nKind
+DO CASE
+CASE nKind= 0
+	RETURN "Unknown"
+CASE nKind= 1
+	RETURN "Function"
+CASE nKind= 2
+	RETURN "PropertyGet"
+CASE nKind= 4
+	RETURN "PropertyPut"
+CASE nKind= 8
+	RETURN "PropertyPutRef"
+CASE nKind= 16
+	RETURN "EventFunction"
+CASE nKind= 32
+	RETURN "CONST"
+OTHERWISE
+	RETURN "Unknown"
+ENDCASE
+ENDPROC
+PROCEDURE getmethods
+LPARAMETERS aMethods, eClass, nClassType, etypelib, lMethodsOnly, lIncludeHidden
+* nClassType - see CheckClass method
+* populates aMethods array:
+*  element 1 - name
+*  element 2 - return type (numeric)
+*  element 3 - help string
+* also populates THIS.aMethods array with obj refs
+
+* InvokeKind:
+* 0 - Unknown
+* 1 - Function
+* 2 - PropertyGet
+* 4 - PropertyPut
+* 8 - PropertyPutRef
+* 16 - EventFunction
+* 32 - CONST
+
+LOCAL i, lnMemCount, lnMaxArr
+IF !THIS.CheckClass(eClass, nClassType, eTypelib)
+	RETURN 0
+ENDIF
+lnMaxArr=0
+lnMemCount = THIS.oClass.Members.Count
+IF lnMemCount > 0
+	DIMENSION aMethods[1,3]
+	DIMENSION THIS.oMethods[1]
+	aMethods=""
+	FOR i = 1 TO lnMemCount
+		* Skip hidden/restricted members (e.g., QueryInterface)
+		DO CASE
+		CASE m.lMethodsOnly AND THIS.oClass.Members(m.i).InvokeKind #1			&& properties
+			LOOP
+		CASE m.lIncludeHidden
+		CASE BITTEST(THIS.oClass.Members(m.i).AttributeMask, 0)  					&& hidden and restricted
+			LOOP
+		ENDCASE
+		lnMaxArr = ALEN(aMethods,1)
+		IF !EMPTY(aMethods)
+			lnMaxArr = lnMaxArr+1
+			DIMENSION aMethods[lnMaxArr,3]
+			DIMENSION THIS.oMethods[lnMaxArr]
+		ENDIF
+		aMethods[lnMaxArr,1] = THIS.oClass.Members(m.i).Name
+		aMethods[lnMaxArr,2] = THIS.oClass.Members(m.i).ReturnType.VarType
+		aMethods[lnMaxArr,3] = THIS.oClass.Members(m.i).HelpString
+		THIS.oMethods[lnMaxArr] = THIS.oClass.Members(m.i)
+	ENDFOR
+	lnMemCount = lnMaxArr
+ENDIF
+RETURN lnMemCount
+
+ENDPROC
+PROCEDURE getparminfo
+LPARAMETERS aParmInfo, oMethod
+* populates aParmInfoarray:
+*  element 1 - name
+*  element 2 - type (numeric)
+*  element 3 - byref
+
+LOCAL lnParmCount,i,lnMaxArr
+IF VARTYPE(oMethod)#"O"
+	RETURN 0
+ENDIF
+
+lnParmCount = oMethod.Parameters.Count
+IF lnParmCount>0
+	DIMENSION aParmInfo[1,3]
+	aParmInfo=""
+	FOR i = 1 TO lnParmCount
+		lnMaxArr = ALEN(aParmInfo,1)
+		IF !EMPTY(aParmInfo)
+			lnMaxArr = lnMaxArr+1
+			DIMENSION aParmInfo[lnMaxArr,3]
+		ENDIF
+		aParmInfo[lnMaxArr,1] = oMethod.Parameters(m.i).Name
+		aParmInfo[lnMaxArr,2] = oMethod.Parameters(m.i).VarTypeInfo.VarType
+		aParmInfo[lnMaxArr,3] = (BITAND(oMethod.Parameters(m.i).flags,3)=3)
+	ENDFOR
+ENDIF
+RETURN lnParmCount
+
+ENDPROC
+PROCEDURE vartypetostring
+LPARAMETERS nType
+
+DO CASE
+CASE ntype = 0		&& VT_EMPTY
+	RETURN "variant"
+CASE ntype = 1		&& VT_NULL
+	RETURN "NULL"
+CASE ntype = 2		&& VT_I2
+	RETURN "integer"
+CASE nType = 3		&& VT_I4
+	RETURN "long"
+CASE nType = 4		&& VT_R4
+	RETURN "single"
+CASE nType = 5		&& VT_R8
+	RETURN "double"
+CASE nType = 6		&& VT_CT
+	RETURN "currency"
+CASE ntype = 7
+	RETURN "date"
+CASE ntype = 8
+	RETURN "string"
+CASE ntype = 9		&& VT_DISPATCH
+	RETURN "VARIANT"
+CASE nType = 11
+	RETURN "boolean"
+CASE nType = 12		&& VT_VARIANT
+	RETURN "variant"
+CASE nType = 16 	&& VT_I1
+	RETURN "number"
+CASE nType = 17 	&& VT_UI1
+	RETURN "number"
+CASE nType = 18 	&& VT_UI2
+	RETURN "number"
+CASE nType = 19 	&& VT_UI4
+	RETURN "number"
+CASE nType = 22		&& VT_INT
+	RETURN "integer"
+CASE nType = 23		&& VT_UINT
+	RETURN "integer"
+CASE nType = 24		&& VT_VOID
+	RETURN "VOID"
+CASE nType = 25		&& VT_HRESULT
+	RETURN "VOID"
+OTHERWISE
+	RETURN "variant"
+ENDCASE
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+cerrormessage Error message.
+ccomfile Name of COM file being.
+lhaderror Whether an error has happened.
+otliapp Object reference to type library reader application.
+otypelib Object reference to type library.
+ctypelib Name of type library.
+nclassref Numeric reference to selected class in classes array.
+oclass Object reference to class in type library.
+lskipalerts Whether to skip alerts.
+cclass Name of class.
+*alert Displays alert messagebox.
+^aints[1,0] Array of interfaces.
+*checktliapp Checks and loads type library reader application.
+*checktypelib Checks and loads type library from COM server file.
+*getclasses Returns array of classes in specified type library.
+*checkclass Sets class as current one from a type library.
+*getmethods Returns array of methods in specified class of type library.
+*getparminfo Returns array of parameter info for a method in a class in specified type library.
+^omethods[1,0] Object references array to methods of a class in type library.
+*vartypetostring Returns data type (string) from numeric reference.
+*checkvariant Checks if a variant data type is used in method for parameter or return type.
+*exporttypelib Method to export typelib to file.
+*getinvokekind 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+_utility.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _typelib
+[START RESERVED1]
+ 
+ _utility.hÆßØ~*-[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _R5P0TYZ2F
+[CLASS] _custom
+[CLASSLOC] _base.vcx
+[BASECLASS] custom
+[OBJNAME] _stringlib
+[START PROPERTIES]
+Height = 23
+Width = 24
+Name = "_stringlib"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE trimcrlf
+LPARAMETERS tcString,tlTrimLeft,tlTrimRight
+LOCAL lcString
+
+lcString=tcString
+IF tlTrimLeft
+	DO WHILE LEFT(lcString,1)==CHR(13) OR LEFT(lcString,1)==CHR(10)
+		lcString=LTRIM(SUBSTR(lcString,2))
+	ENDDO
+ENDIF
+IF tlTrimRight
+	DO WHILE RIGHT(lcString,1)==CHR(13) OR RIGHT(lcString,1)==CHR(10)
+		lcString=TRIM(LEFT(lcString,LEN(lcString)-1))
+	ENDDO
+ENDIF
+RETURN lcString
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+*trimcrlf Trims carriage returns and line feeds from string.
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _stringlib
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RAH0Z90YP
+[CLASS] _custom
+[CLASSLOC] _base.vcx
+[BASECLASS] custom
+[OBJNAME] _arraylib
+[START PROPERTIES]
+Name = "_arraylib"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE acolscan
+* This function does an ASCAN for a specific row
+* aSearch - array to scan
+* sExpr - expression to scan
+* nColumn - column to scan
+* lRetRow - return row (T) or array element (F)
+LPARAMETER aSearch,sExpr,nColumn,lRetRow
+LOCAL npos
+IF VARTYPE(m.nColumn)#'N'
+	nColumn = 1
+ENDIF
+IF VARTYPE(m.lRetRow)#'L'
+	lRetRow = .F.
+ENDIF
+
+npos = 1
+DO WHILE .T.
+	npos = ASCAN(aSearch,m.sExpr,m.npos)
+	DO CASE
+	CASE m.npos=0	&&did not find match
+		EXIT
+	CASE ASUBSCRIPT(aSearch,m.npos,2)=m.nColumn
+		EXIT
+	OTHERWISE
+		m.npos=m.npos+1
+	ENDCASE
+ENDDO
+IF m.lRetRow
+	RETURN ASUBSCRIPT(aSearch,m.npos,1)
+ELSE
+	RETURN m.npos
+ENDIF
+
+ENDPROC
+PROCEDURE delaitem
+* Generic routine to delete an array element. If the array is
+* multi-dimensional, then a whole row is deleted.
+*
+* aArray- array to scan
+* wziRow - row to delete
+LPARAMETERS aArray,wziRow
+
+LOCAL nColumns
+IF ALEN(aArray,1)<m.wziRow OR m.wziRow<0
+	RETURN
+ENDIF
+IF ALEN(aArray,1)=1
+	STORE ""  TO aArray
+ELSE
+	nColumns = ALEN(aArray,2)
+	ADEL(aArray,m.wziRow)
+	IF nColumns=0
+		DIMENSION aArray[ALEN(aArray)-1]
+	ELSE
+		DIMENSION aArray[ALEN(aArray,1)-1,nColumns]
+	ENDIF
+ENDIF
+
+ENDPROC
+PROCEDURE insaitem
+* Inserts an array element into an array.
+*
+* aArray - array name
+* sContents - contents to insert
+* iRow - row to insert into
+* lSetAll - whether to set all elements in row for multi-dime array
+
+LPARAMETER aArray,sContents,iRow,lSetAll
+LOCAL nColumns, i
+
+IF VARTYPE(iRow) # "N"
+	iRow = ALEN(aArray)
+ENDIF
+
+nColumns = ALEN(aArray,2)
+DO CASE
+CASE iRow<0
+	RETURN
+CASE ALEN(aArray)=1 AND EMPTY(aArray[1])
+	aArray[1]=m.sContents
+CASE nColumns = 0
+	iRow = MIN(iRow,ALEN(aArray))
+	DIMENSION aArray[ALEN(aArray)+1]
+	IF iRow # ALEN(aArray)-1
+		AINS(aArray,m.iRow+1)	
+	ENDIF
+	aArray[m.iRow+1]=m.sContents
+OTHERWISE
+	iRow = MIN(iRow,ALEN(aArray,1))
+	DIMENSION aArray[ALEN(aArray,1)+1,nColumns]	
+	IF iRow # ALEN(aArray,1)-1
+		AINS(aArray,m.iRow+1)
+	ENDIF
+	IF !lSetAll
+		aArray[m.iRow+1,1]=m.sContents
+	ELSE
+		FOR i = 1 TO nColumns
+			aArray[m.iRow+1,i]=m.sContents	
+		ENDFOR
+	ENDIF
+ENDCASE
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+*insaitem Inserts and array element.
+*delaitem Deletes and array element.
+*acolscan Scans an array limited to a particular column.
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _arraylib
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RLE0O8441
+[CLASS] _custom
+[CLASSLOC] _base.vcx
+[BASECLASS] custom
+[OBJNAME] _fileversion
+[START PROPERTIES]
+Name = "_fileversion"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+DIMENSION THIS.aVersion[15]
+
+ENDPROC
+PROCEDURE cfilename_access
+*To do: Modify this routine for the Access method
+IF TYPE("THIS.cFilename")#"C" OR EMPTY(THIS.cFilename) OR !FILE(THIS.cFilename)
+	THIS.cFilename = GETFILE()
+	IF TYPE("THIS.cFilename")#"C" OR EMPTY(THIS.cFilename) OR !FILE(THIS.cFilename)
+		THIS.cFilename = ""
+	ENDIF
+ENDIF
+RETURN THIS.cfilename
+
+ENDPROC
+PROCEDURE displayversion
+*File Version Strings
+
+LOCAL cVerString
+cVerString = ""
+
+IF NOT EMPTY(THIS.aVersion(1))
+	cVerString =  FILEVER_COMMENT_LOC + ALLT(THIS.aVersion(1))
+ENDIF
+IF NOT EMPTY(THIS.aVersion(2))
+	cVerString = m.cVerString+CRLF+FILEVER_COMPANY_LOC+ ALLT(THIS.aVersion(2))
+ENDIF
+IF NOT EMPTY(THIS.aVersion(3))
+	cVerString =  m.cVerString+CRLF+FILEVER_FILEDESC_LOC+ ALLT(THIS.aVersion(3))
+ENDIF
+IF NOT EMPTY(THIS.aVersion(4))
+	cVerString = m.cVerString+CRLF+FILEVER_FILEVER_LOC+ ALLT(THIS.aVersion(4))
+ENDIF
+IF NOT EMPTY(THIS.aVersion(5))
+	cVerString = m.cVerString+CRLF+FILEVER_INTERNAL_LOC+ ALLT(THIS.aVersion(5))
+ENDIF
+IF NOT EMPTY(THIS.aVersion(6))
+	cVerString = m.cVerString+CRLF+FILEVER_COPYRIGHT_LOC+ ALLT(THIS.aVersion(6))
+ENDIF
+IF NOT EMPTY(THIS.aVersion(7))
+	cVerString = m.cVerString+CRLF+FILEVER_TRADMARK_LOC+ ALLT(THIS.aVersion(7))
+ENDIF
+IF NOT EMPTY(THIS.aVersion(8))
+	cVerString = m.cVerString+CRLF+FILEVER_FILENAME_LOC+ ALLT(THIS.aVersion(8))
+ENDIF
+IF NOT EMPTY(THIS.aVersion(9))
+	cVerString = m.cVerString+CRLF+FILEVER_PRIVATE_LOC+ ALLT(THIS.aVersion(9))
+ENDIF
+IF NOT EMPTY(THIS.aVersion(10))
+	cVerString = m.cVerString+CRLF+FILEVER_PRODUCTNAME_LOC+ ALLT(THIS.aVersion(10))
+ENDIF
+IF NOT EMPTY(THIS.aVersion(11))
+	cVerString = m.cVerString+CRLF+FILEVER_PRODUCTVER_LOC+ ALLT(THIS.aVersion(11))
+ENDIF
+IF NOT EMPTY(THIS.aVersion(12))
+	cVerString = m.cVerString+CRLF+FILEVER_SPECIAL_LOC+ ALLT(THIS.aVersion(12))
+ENDIF
+IF NOT EMPTY(THIS.aVersion(14))
+	cVerString = m.cVerString+CRLF+FILEVER_LANGUAGE_LOC+ ALLT(THIS.aVersion(14))
+ENDIF
+
+IF EMPTY(m.cVerString) OR TYPE("THIS.aVersion[1]")="L"
+	cVerString = FILEVER_NOVERSION_LOC
+ENDIF
+
+MESSAGEBOX(m.cVerString,MSG_FILEVERSION_LOC+THIS.cFileName)
+
+ENDPROC
+PROCEDURE getversion
+LOCAL aVerArray, nError
+IF FILE(THIS.cFileName)
+	DIMENSION aVerarray[1]
+	DIMENSION THIS.aVersion[15]
+	STORE "" TO THIS.aVersion
+	nError = AGetFileVersion(aVerArray,THIS.cFileName)
+	IF m.nError # 0
+		ACOPY(aVerArray,THIS.aVersion)
+		RETURN .T.
+	ENDIF
+ENDIF
+RETURN .F.
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+cfilename Name of file to get information.
+^aversion[12,0] Array of file version information.
+*getversion Retrieves version information for cFileName.
+*displayversion Displays version information for cFileName.
+*cfilename_access 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+_utility.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _fileversion
+[START RESERVED1]
+ 
+ _utility.h&çØ~*-[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RLE19XUNE
+[CLASS] _custom
+[CLASSLOC] _base.vcx
+[BASECLASS] custom
+[OBJNAME] _filer
+[START PROPERTIES]
+csearchpath = 
+cfileexpression = 
+csearchtext = 
+lsubfolder = .T.
+lignorecase = .T.
+lpromptdir = .T.
+Name = "_filer"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Destroy
+THIS.oFiles = .NULL.
+ENDPROC
+PROCEDURE Error
+LPARAMETERS nError, cMethod, nLine
+
+LOCAL cFilerFile
+
+* Check to make sure library is registered
+IF INLIST(nError,1426,1733)
+	DO CASE
+	CASE FILE(HOME()+C_FILERDLL)
+		cFilerFile = HOME()+C_FILERDLL
+	CASE FILE(HOME()+C_FILERPATH+C_FILERDLL)
+		cFilerFile = HOME()+C_FILERPATH+C_FILERDLL
+	CASE FILE(C_FILERDLL)
+		cFilerFile = C_FILERDLL
+	OTHERWISE
+		MESSAGEBOX(ERR_NOFILERDLL_LOC,48)
+		RETURN
+	ENDCASE
+	
+	IF MESSAGEBOX(MSG_REGFILERDLL_LOC,36)=6
+			RUN /n REGSVR32 /s &cFilerFile
+		RETRY
+	ELSE
+		RETURN	
+	ENDIF
+ENDIF
+ENDPROC
+PROCEDURE csearchpath_access
+*To do: Modify this routine for the Access method
+IF EMPTY(THIS.cSearchPath)
+	IF THIS.lPromptDir
+		THIS.cSearchPath = GETDIR()
+	ENDIF
+	IF EMPTY(THIS.cSearchPath)
+		THIS.cSearchPath = FULLPATH(CURDIR())
+	ENDIF
+ENDIF
+RETURN THIS.cSearchPath
+
+ENDPROC
+PROCEDURE find
+*!*	Filer PEMS
+*!* =================
+*!*	SearchPath
+*!*	FileExpression
+*!*	SubFolder
+*!*	SearchText1,SearchText2,SearchText3
+*!*	IgnoreCase
+*!*	WholeWords
+*!*	SearchAnd
+*!*	Find
+*!*	DoSearch
+*!*	Files (collection)
+
+*!*	Files Collection PEMS
+*!* =====================
+*!*	Item
+*!*	Count
+*!*	Edit
+
+*!*	File Object PEMS
+*!* =================
+*!*	Name
+*!*	Size
+*!*	SizeHigh
+*!*	Attr
+*!*	DateTime
+*!*	LastAccessTime
+*!*	LastWriteTime
+*!*	AlternateName
+*!*	Path
+*!*	Edit
+*!*	Delete
+
+
+LOCAL oFiler,nFiles
+
+oFiler = CreateObject(C_FILERCLASS)
+IF TYPE("oFiler")#"O" OR ISNULL(oFiler)
+	MESSAGEBOX(ERR_NOCLASS_LOC)
+	RETURN
+ENDIF
+
+oFiler.fileexpression = IIF(EMPTY(THIS.cFileExpression),"*.*",THIS.cFileExpression)
+oFiler.searchpath = THIS.cSearchPath
+oFiler.subfolder = THIS.lsubfolder
+
+IF !EMPTY(THIS.cSearchText)
+	oFiler.SearchText1 = THIS.cSearchText
+ENDIF
+oFiler.WholeWords = THIS.lWholeWords
+oFiler.IgnoreCase = THIS.lIgnoreCase
+
+THIS.oFiles = null
+nFiles = oFiler.find(1)
+
+IF nFiles # 0
+	THIS.oFiles = oFiler.Files
+ENDIF
+RETURN m.nFiles
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+csearchpath The folder path to begin searching for files.
+cfileexpression File skeleton for searching. Can include wildcards such as ? and *.
+csearchtext Text string to search for within files.
+lsubfolder Whether to search in subfolders for files.
+lignorecase Whether to ignore case during search.
+lwholewords Whether to search for whole word matches.
+ofiles Collection of files returned by Find search.
+lpromptdir Whether to prompt the user for search path if none entered.
+*find Runs search for files based on criteria.
+*csearchpath_access 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+_utility.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _filer
+[START RESERVED1]
+ 
+ _utility.h&çØ~*-[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _ROF14MCMU
+[CLASS] _custom
+[CLASSLOC] _base.vcx
+[BASECLASS] custom
+[OBJNAME] _xtab
+[START PROPERTIES]
+coutfile = xtabquery
+lcursoronly = .T.
+lclosetable = .T.
+lshowthem = .T.
+nrowfield = 1
+ncolfield = 2
+ndatafield = 3
+ntotaloption = 0
+lbrowseafter = .T.
+Name = "_xtab"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE runxtab
+LOCAL oNewXtab,lcxtabfile
+
+lcxtabfile = IIF(EMPTY(_GENXTAB),"vfpxtab.prg",_GENXTAB)
+
+oNewXtab=NEWOBJECT('genxtab',lcxtabfile,"",;
+THIS.cOutFile,;
+THIS.lCursorOnly,;
+THIS.lCloseTable,;
+THIS.lShowThem,;
+THIS.nRowField,;
+THIS.nColField,;
+THIS.nDataField,;
+THIS.lTotalRows,;
+THIS.nTotalOption,;
+THIS.lDisplayNulls)
+
+oNewXtab.MakeXtab()
+
+IF THIS.lBrowseAfter
+	BROWSE NOWAIT NORMAL
+ENDIF
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+coutfile Name of the output file.
+lcursoronly Whether input datasource is cursor.
+lclosetable Whether to close source datasource after cross tab is generated.
+lshowthem Whether to show thermometer during cross tab generation.
+nrowfield Field position in datasource of cross tab rows.
+ncolfield Field position in datasource of cross tab columns.
+ndatafield Field position in datasource of cross tab data.
+ltotalrows Whether to total rows in cross tab output.
+ntotaloption Totaling options (0-sum, 1-count, 2-% of total).
+ldisplaynulls Whether to display nulls in cross tab output.
+lbrowseafter Whether to browse cross tab output after being generated.
+*runxtab Generates cross tab.
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _xtab
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _ROH11E03M
+[CLASS] _container
+[CLASSLOC] _base.vcx
+[BASECLASS] container
+[OBJNAME] _graphbyrecord
+[START PROPERTIES]
+Width = 302
+Height = 270
+BorderWidth = 0
+cgraphtitle = Record: 
+ncharttype = 78
+lseriesbyrow = .T.
+laddlegend = .T.
+cgraphfield = 
+ccharttype = 
+Name = "_graphbyrecord"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+THIS.SetupGraph()
+ENDPROC
+PROCEDURE laddlegend_assign
+LPARAMETERS m.vNewVal
+IF VARTYPE(m.vNewVal)="L"
+	THIS.lAddlegend = m.vNewVal
+	THIS.AutoGraph.lAddlegend = m.vNewVal
+	THIS.RefreshGraph()
+ENDIF
+ENDPROC
+PROCEDURE lseriesbyrow_assign
+LPARAMETERS m.vNewVal
+IF VARTYPE(m.vNewVal)="L"
+	THIS.lseriesbyrow = m.vNewVal
+	THIS.AutoGraph.lseriesbyrow = m.vNewVal
+	THIS.RefreshGraph()
+ENDIF
+ENDPROC
+PROCEDURE ncharttype_assign
+LPARAMETERS m.vNewVal
+IF VARTYPE(m.vNewVal)="N"
+	THIS.ncharttype = m.vNewVal
+	THIS.AutoGraph.ncharttype = m.vNewVal
+	THIS.RefreshGraph()
+ENDIF
+
+ENDPROC
+PROCEDURE refreshgraph
+IF EMPTY(ALIAS())
+	RETURN .F.
+ENDIF
+
+THISFORM.LockScreen = .T.
+
+WITH THIS.Autograph
+	.graphpreview = THISFORM					&& the form
+	.oGraphRef = THIS.oleGraph.object			&& and the ole control object
+	.lAddedData = .F.
+	DO CASE
+	CASE !EMPTY(THIS.cGraphField)
+		.lAddTitle = .T.
+		.cTitle = EVAL(THIS.cGraphField)
+	CASE !EMPTY(THIS.cGraphTitle)
+		.lAddTitle = .T.
+		.cTitle = IIF(THIS.cGraphTitle=C_RECDESC_LOC,;
+			C_RECDESC_LOC+" "+TRANS(RECNO()),THIS.cGraphTitle)
+	OTHERWISE
+		.lAddTitle = .F.
+	ENDCASE
+	IF !.MakeOutput()
+		MESSAGEBOX(ERR_NOGRAPH_LOC)
+	ENDIF	
+	.graphpreview = null
+	.oGraphRef = null
+ENDWITH
+
+THIS.OleGraph.Visible = .T.
+
+THISFORM.LockScreen = .F.
+
+ENDPROC
+PROCEDURE setcharttype
+LPARAMETER nIndex
+
+IF VARTYPE(m.nIndex)#"N"
+	RETURN .F.
+ENDIF
+
+LOCAL lnChartType,nChartValue
+
+nChartValue = m.nIndex
+
+DO CASE
+CASE m.nChartValue = 1	&&Area
+	lnChartType = I_AREA_GRAPH
+CASE m.nChartValue = 2	&&Area 3D
+	lnChartType = I_AREA3D_GRAPH
+CASE m.nChartValue = 3	&&Bar
+	lnChartType = I_BAR_GRAPH
+CASE m.nChartValue = 4	&&Bar 3D
+	lnChartType = I_BAR3D_GRAPH
+CASE m.nChartValue = 5	&&Column
+	lnChartType = I_COLUMN_GRAPH
+CASE m.nChartValue = 6	&&Column 3D
+	lnChartType = I_COLUMN3D_GRAPH
+CASE m.nChartValue = 7	&&Pie
+	lnChartType = I_PIE_GRAPH
+CASE m.nChartValue = 8	&&Pie 3D
+	lnChartType = I_PIE3D_GRAPH
+CASE m.nChartValue = 9	&&Line
+	lnChartType = I_LINE_GRAPH
+CASE m.nChartValue = 10	&&Line 3D
+	lnChartType = I_LINE3D_GRAPH
+ENDCASE
+
+THIS.nChartType = lnChartType
+
+ENDPROC
+PROCEDURE setupgraph
+LOCAL i
+
+IF EMPTY(ALIAS())
+	WAIT WINDOW C_NOALIAS_LOC TIMEOUT 2
+	RETURN .F.
+ENDIF
+
+* Check if no THIS.aDataFields array not populated by user.
+IF EMPTY(THIS.aDataFields[1])
+	FOR i = 2 TO FCOUNT()
+		IF ATC(TYPE("EVAL(FIELD(m.i))"),"CLGDMT")#0
+			LOOP
+		ENDIF
+		IF !EMPTY(THIS.aDataFields[1])
+			DIMENSION THIS.aDataFields[ALEN(THIS.aDataFields)+1]
+		ENDIF
+		THIS.aDataFields[ALEN(THIS.aDataFields)] = FIELD(m.i)
+	ENDFOR
+ENDIF
+
+ACOPY(THIS.aDataFields,THIS.Autograph.aDataFields)
+
+WITH THIS.autograph
+	.lGraphRecord = .t.							&& graph just one record
+	.nAction = 0								&& preview/display mode
+	.lAddlegend = THIS.lAddlegend 				&& data is in rows
+	.lSeriesByRow = THIS.lSeriesByRow			&& data is in rows
+	.nChartType = THIS.nChartType				&& line chart
+	.lStripExcessLegend = .t.					&& if MS Graph adds extra legends, get rid of them
+	.lUse8Type = .t.							&& use documented graph types
+	.lShowWhenDone = .F.						&& don't display (our form will handle it)
+	.lKeepForm = .T.							&& don't reset form (use this one)
+ENDWITH
+
+THIS.RefreshGraph()
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+8[END RESERVED2]
+[START RESERVED3]
+cgraphtitle Caption for record label.
+ncharttype Chart type (numeric value).
+lseriesbyrow Whether to plot series by column or row.
+laddlegend Whether to add a legend.
+cgraphfield Field to use for caption.
+ccharttype
+*setupgraph Initializes graph controls.
+*refreshgraph Refreshes graph when record pointer moved.
+^adatafields[1,0] Array of data fields to graph.
+*lseriesbyrow_assign 
+*ncharttype_assign 
+*setcharttype Sets the chart type.
+*laddlegend_assign 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+_utility.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _ROH11JJHF
+[CLASS] autograph
+[CLASSLOC] autgraph.vcx
+[BASECLASS] custom
+[OBJNAME] Autograph
+[PARENT] _graphbyrecord
+[START PROPERTIES]
+Top = 252
+Left = 252
+Height = 17
+Width = 24
+naction = 0
+Name = "Autograph"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _ROH11JJHP
+[CLASS] olecontrol
+[BASECLASS] olecontrol
+[OBJNAME] oleGraph
+[PARENT] _graphbyrecord
+[START PROPERTIES]
+Top = 7
+Left = 12
+Height = 184
+Width = 279
+Visible = .F.
+TabIndex = 5
+Name = "oleGraph"
+[END PROPERTIES]
+[BINSTART OLE]
+CHECKSUM=36114
+[BINEND OLE]
+[BINSTART OLE2]
+CHECKSUM=6198
+[BINEND OLE2]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _ROH12634E
+[CLASS] _nav4buttons
+[CLASSLOC] _table.vcx
+[BASECLASS] container
+[OBJNAME] _nav4buttons
+[PARENT] _graphbyrecord
+[START PROPERTIES]
+Top = 206
+Left = 7
+TabIndex = 1
+Name = "_nav4buttons"
+cmgNav.Command1.Top = 5
+cmgNav.Command1.Left = 33
+cmgNav.Command1.Name = "Command1"
+cmgNav.Command2.Top = 5
+cmgNav.Command2.Left = 60
+cmgNav.Command2.Name = "Command2"
+cmgNav.BorderStyle = 0
+cmgNav.TabIndex = 2
+cmgNav.Name = "cmgNav"
+cusTableNav.Name = "cusTableNav"
+cmdTop.TabIndex = 1
+cmdTop.Name = "cmdTop"
+cmdBottom.TabIndex = 3
+cmdBottom.Name = "cmdBottom"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE tablenav
+LPARAMETERS tcAction
+DODEFAULT(tcAction)
+THIS.Parent.RefreshGraph()
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RP30PFK67
+[CLASS] _combobox
+[CLASSLOC] _base.vcx
+[BASECLASS] combobox
+[OBJNAME] cboChartType
+[PARENT] _graphbyrecord
+[START PROPERTIES]
+Height = 24
+Left = 192
+Style = 2
+TabIndex = 2
+Top = 211
+Width = 90
+Name = "cboChartType"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+THIS.AddItem(C_AREA_GRAPH)
+THIS.AddItem(C_AREA3D_GRAPH)
+THIS.AddItem(C_BAR_GRAPH)
+THIS.AddItem(C_BAR3D_GRAPH)
+THIS.AddItem(C_COLUMN_GRAPH)
+THIS.AddItem(C_COLUMN3D_GRAPH)
+THIS.AddItem(C_PIE_GRAPH)
+THIS.AddItem(C_PIE3D_GRAPH)
+THIS.AddItem(C_LINE_GRAPH)
+THIS.AddItem(C_LINE3D_GRAPH)
+
+LOCAL nGetValue,lnChartType
+nGetValue = THIS.Parent.nChartType
+IF VARTYPE(nGetValue)#"N"
+	nGetValue = I_AREA_GRAPH
+ENDIF
+
+DO CASE
+CASE m.nGetValue= I_AREA_GRAPH	&&Area
+	lnChartType = C_AREA_GRAPH
+CASE m.nGetValue= I_AREA3D_GRAPH	&&Area 3D
+	lnChartType = C_AREA3D_GRAPH
+CASE m.nGetValue= I_BAR_GRAPH	&&Bar
+	lnChartType = C_BAR_GRAPH
+CASE m.nGetValue = I_BAR3D_GRAPH	&&Bar 3D
+	lnChartType = C_BAR3D_GRAPH
+CASE m.nGetValue = I_COLUMN_GRAPH	&&Column
+	lnChartType = C_COLUMN_GRAPH
+CASE m.nGetValue = I_COLUMN3D_GRAPH	&&Column 3D
+	lnChartType = C_COLUMN3D_GRAPH
+CASE m.nGetValue = I_PIE_GRAPH	&&Pie
+	lnChartType = C_PIE_GRAPH
+CASE m.nGetValue = I_PIE3D_GRAPH	&&Pie 3D
+	lnChartType = C_PIE3D_GRAPH
+CASE m.nGetValue = I_LINE_GRAPH	&&Line
+	lnChartType = C_LINE_GRAPH
+CASE m.nGetValue = I_LINE3D_GRAPH	&&Line 3D
+	lnChartType = C_LINE3D_GRAPH
+ENDCASE
+
+THIS.Value = lnChartType
+
+ENDPROC
+PROCEDURE InteractiveChange
+THIS.Parent.SetChartType(THIS.ListIndex)
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] Class     
+[CLASS] _checkbox
+[CLASSLOC] _base.vcx
+[BASECLASS] checkbox
+[OBJNAME] chkPlotBy
+[PARENT] _graphbyrecord
+[START PROPERTIES]
+Top = 248
+Left = 160
+Height = 17
+Width = 84
+BackStyle = 0
+Caption = "\<Plot by row"
+TabIndex = 4
+Name = "chkPlotBy"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+THIS.Parent.lSeriesByRow = THIS.Value
+
+ENDPROC
+PROCEDURE Init
+THIS.Value = THIS.Parent.lSeriesByRow
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RP30PPHS9
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label1
+[PARENT] _graphbyrecord
+[START PROPERTIES]
+BackStyle = 0
+Caption = "\<Type:"
+Height = 17
+Left = 160
+Top = 217
+Width = 31
+TabIndex = 6
+Name = "Label1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RP30PPHSJ
+[CLASS] _checkbox
+[CLASSLOC] _base.vcx
+[BASECLASS] checkbox
+[OBJNAME] chkShowLegend
+[PARENT] _graphbyrecord
+[START PROPERTIES]
+Top = 248
+Left = 19
+Height = 17
+Width = 90
+BackStyle = 0
+Caption = "\<Show legend"
+TabIndex = 3
+Name = "chkShowLegend"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+THIS.Parent.lAddLegend = THIS.Value
+ENDPROC
+PROCEDURE Init
+THIS.Value = THIS.Parent.lAddLegend
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _graphbyrecord
+[START PROPERTIES]
+Arial, 1, 9, 6, 15, 12, 15, 3, 0
+Arial, 0, 9, 5, 15, 12, 16, 3, 0
+[END PROPERTIES]
+[START RESERVED1]
+ 
+ _utility.h&çØ~*-[END RESERVED1]
+[EOF]
