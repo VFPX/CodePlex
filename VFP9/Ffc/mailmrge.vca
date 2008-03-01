@@ -1,0 +1,1446 @@
+SCCTEXT Version 4.0.0.2
+PLATFORM C(8,0),UNIQUEID C(10,0),TIMESTAMP N(10,0),CLASS M(4,0),CLASSLOC M(4,0),BASECLASS M(4,0),OBJNAME M(4,0),PARENT M(4,0),PROPERTIES M(4,0),PROTECTED M(4,0),METHODS M(4,0),OBJCODE M(4,0),OLE M(4,0),OLE2 M(4,0),RESERVED1 M(4,0),RESERVED2 M(4,0),RESERVED3 M(4,0),RESERVED4 M(4,0),RESERVED5 M(4,0),RESERVED6 M(4,0),RESERVED7 M(4,0),RESERVED8 M(4,0),USER M(4,0)
+1252
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] Class     
+[START RESERVED1]
+VERSION =   3.00[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RHK0NBLCK
+[CLASS] automation
+[CLASSLOC] automate.vcx
+[BASECLASS] custom
+[OBJNAME] mailmerge
+[START PROPERTIES]
+nwordproc = 1
+nnewdoc = 1
+cdocname = 
+ntemplate = 1
+cfieldlist = 
+cdatafile = 
+cdatasrc = 
+codbcsource = 
+csqlstmt = 
+csqlstmt2 = 
+csavefile = 
+ctmpfile = 
+cdatapath = 
+cwordversion = 
+cexe = 
+sysch = -1
+Name = "mailmerge"
+[END PROPERTIES]
+[START PROTECTED]
+cfieldlist
+cdatafile
+codbcsource
+csqlstmt
+csqlstmt2
+ctmpfile
+cdatapath
+lenglish
+cexe
+sysch
+lalerted
+mrgword
+makefieldlist
+prepdata
+mailmergeword8
+mailmergeword6
+mswmldlg
+startword
+checkver
+getmsw
+getsqlst
+mrgcommadel
+wzmmdata
+mmcleanup
+savesql
+mswerr
+[END PROTECTED]
+[START METHODS]
+PROCEDURE Error
+LPARAMETER ErrorNum, Method, Line, cMessage
+IF !L_DEBUG
+	Automation::Error(ErrorNum, Method, Line, cMessage)
+ELSE
+	THIS.ALERT("Error: " + message() + C_CRLF + ;
+		"Error Number: " + ALLT(STR(m.Errornum)) + C_CRLF + ;
+		"Method: " + m.Method + C_CRLF + ;
+		"Line: " + LTRIM(STR(LINENO())) + ": " + message(1))
+	SET TRBE OFF
+	ACTI WINDOW DEBUG
+	ACTI WINDOW TRACE
+	SUSPEND
+ENDIF
+
+ENDPROC
+PROCEDURE Init
+IF !Automation::Init()
+	RETURN .F.
+ENDIF
+
+IF _mac
+	THIS.SetErrorOff = .T.
+	THIS.cExe = THIS.LocateApp(C_MSWORDCREATOR)
+	IF EMPTY(THIS.cExe)
+		*- assume word is not installed
+		IF "FOXTOOLS" $ SET("LIBRARY")
+			*- assume library loaded and was okay, and Word really isn;t there
+			THIS.Alert(E_NOWORDMACERR_LOC)
+		ENDIF
+		RETURN .F.
+	ENDIF
+	THIS.SetErrorOff = .F.
+ENDIF
+
+THIS.sysch = -1
+THIS.aODBCDrivers = ""
+THIS.aAutoFields = ""
+THIS.aWPMrg[1] = "THIS.MrgWord"
+THIS.aWPMrg[2] = IIF(_mac,"THIS.MrgCommaDel(CHR(9))","THIS.MrgCommaDel")
+
+RETURN .T.
+
+
+ENDPROC
+PROCEDURE checkver
+	*- Verify WORD version
+
+	PARAMETER m.cversion
+
+	LOCAL lwoozle
+
+	m.lwoozle = ("Woozle" $ DDERequest(THIS.sysch,'Formats'))
+	RETURN ((m.cversion = "2.0" AND !m.lwoozle) OR (m.cversion = "6.0" AND m.lwoozle))
+
+ENDPROC
+PROCEDURE getmsw
+*- get the MS Word command line from registry file
+
+PARAMETER m.cversion
+
+LOCAL cCommand, cExtKey, oReg, cCommand2, cExtKey2
+
+cCommand = ""
+cExtKey = ""
+cCommand2 = ""
+cExtKey2 = ""
+
+IF !("REGISTRY" $ SET("CLASS"))
+	SET CLASSLIB TO registry ADDITIVE
+ENDIF
+
+oReg = CREATE("FileReg")	&& in Registry.VCX
+IF TYPE("oReg") # 'O'
+	*- failed to create registry object, so fail...
+	RETURN ""
+ENDIF
+
+DO CASE
+
+	CASE m.cversion = C_WORD6_OR_LATER
+
+		*- look in the Registry for the current installed version of Word
+		oReg.GetLatestVersion(REG_MSWDOC_KEY,@cExtKey2,@cCommand)
+		oReg.GetLatestVersion(REG_MSWAPP_KEY,@cExtKey,@cCommand2)
+		IF EMPTY(cExtKey)
+			RETURN ""
+		ENDIF
+		
+		* THIS.cWordVersion = RIGHT(cExtKey,1)
+		THIS.cWordVersion = GETWORDNUM(cExtKey,3,".")
+		
+		IF VAL(THIS.cWordVersion) < VAL(C_WORD6)
+			*- no Word 6.0 or later in Registry
+			RETURN ""
+		ENDIF
+		
+		*- strip off any command line options (e.g., "/W")
+		m.cCommand = ALLT(IIF("/" $ m.cCommand,LEFT(m.cCommand,AT("/",m.cCommand) - 1),m.cCommand))
+
+		*-------------------------------------------------
+		*- if MS Word 6.0 or later, make sure ODBC stuff is present
+
+		IF VAL(THIS.cWordVersion) < VAL(C_WORD10)
+			*- don't use ODBC - use OLE DB provider if Word 10 or more
+			IF !THIS.IsODBC(FOXODBC_ANY,"D")
+				WAIT CLEAR
+				THIS.Alert(E_ODBC2_LOC)
+				THIS.lAlerted = .T.
+				RETURN ""
+			ENDIF
+
+			*- set the data source
+			THIS.GetDSN
+			IF EMPTY(THIS.aODBCDrivers[1,1])
+				RETURN ""
+			ENDIF
+		ELSE
+			 * Word 10 or later -- use OLE DB Provider
+			RETURN m.cCommand
+		ENDIF	&& < Word 10
+		
+	OTHERWISE
+		m.nRetLen = 0
+ENDCASE
+
+IF EMPTY(m.cCommand)
+	*- couldn't get the info
+	WAIT CLEAR
+	THIS.Alert(STRTRAN(E_NOWORDERR_LOC,"@1",m.cversion))
+	THIS.lAlerted = .T.
+ENDIF
+
+RETURN m.cCommand
+
+
+ENDPROC
+PROCEDURE getsqlst
+	*- get the SQL statement for extracting data
+
+	PRIVATE m.nfh, m.cext, m.ccurtable
+
+	STORE "" TO csqlstmt, cconnstmt
+	m.cfname = ""
+
+	IF CURSORGETPROP("sourcetype") = K_TABLE
+		*- simple table, so give them the whole mess
+		THIS.csqlstmt = [select ] + THIS.cFieldList + [ from '] + THIS.JustFName(SYS(2027,THIS.cDataSrc)) + [']
+		THIS.cDataPath = THIS.AddBS(THIS.JustPath(SYS(2027,THIS.cDataSrc)))
+	ELSE
+		THIS.csqlstmt = DBGETPROP(THIS.cDBCTable,"VIEW","SQL")
+	ENDIF
+	RETURN
+
+ENDPROC
+PROCEDURE mailmergemacword6
+		*- drive MS Word for Macintosh 6.0
+		*-
+		*- step 1: Create text file of data
+		*- step 2: Create Applescript using textmerge that will open specified
+		*-         file, and attach data to it.
+		*- step 3: Run Applescript
+	
+		LOCAL cscript, lscripterr
+
+		IF !_mac
+			*- this is only for the Mac
+			RETURN .F.
+		ENDIF
+
+		IF EMPTY(THIS.cexe)
+			THIS.cexe = ""
+			*- locate MS Word 6.0
+			*- look to see if there is a "Word Settings (6)" file in
+			*- the Preferences folder
+			*- check the resource file
+			IF !FILE(SYS(2033,2) + ":" + C_WORDSETTINGS)
+				*- assume word is not installed
+				THIS.Alert(E_NOWORDMACERR_LOC)
+				RETURN .F.
+			ENDIF
+			THIS.cexe = THIS.GetPref(C_MAILMRG_SECT,C_WORD6ID,C_FOXPROINI_MAC)
+			IF !FILE(THIS.cexe)
+				THIS.cexe = ""
+			ENDIF
+			IF EMPTY(THIS.cexe)
+				THIS.cexe = SYS(2027,GETFILE("",C_LOCATE_LOC + C_MSWORDMAC,"",0,'APPL'))
+				IF EMPTY(THIS.cexe)
+					*- cancelled
+					RETURN .F.
+				ELSE
+					*- update prefs
+					=THIS.PutPref(C_MAILMRG_SECT,C_WORD6ID,THIS.cexe,C_FOXPROINI_MAC)
+				ENDIF
+			ENDIF
+		ENDIF
+
+		*- works the same as Word for DOS, except will go on
+		*- to pass name of text data file to Word via DDE
+		IF !THIS.MrgCommaDel(',')
+			RETURN .F.
+		ENDIF
+
+
+		WAIT WINDOW NOWAIT C_STARTWORD60_LOC
+
+		*- prepare to create Applescript
+		cscript = SYS(2027,SYS(2023)) + SYS(3) + ".script"
+
+		SET TEXTMERGE TO (m.cscript)
+		SET TEXTMERGE ON NOSHOW
+		\\ -- AppleScript<<CHR(170)>> script to drive MS Word for Macintosh 6.0
+		\tell application "<<THIS.cExe>>"
+		*- bring to front
+		\	Activate
+		*- open document, or create a new one
+		IF THIS.nNewDoc = N_EXISTING_DOC
+			\	Open "<<THIS.cDocName>>"
+			\	do script <<CHR(194)>>
+			\		"MailMergeOpenDataSource .Name = \"<<SYS(2027,THIS.cSaveFile)>>\"
+		ELSE
+			\	do script <<CHR(194)>>
+			\		"
+			\\FileNew
+			DO CASE
+				CASE THIS.nTemplate = N_LABEL
+					\		MailMergeMainDocumentType 1
+				CASE THIS.nTemplate = N_ENVELOPE
+					\		MailMergeMainDocumentType 2
+				CASE THIS.nTemplate = N_CATALOG
+					\		MailMergeMainDocumentType 3
+			ENDCASE
+			*- attach data file
+			\		MailMergeOpenDataSource .Name = \"<<SYS(2027,THIS.cSaveFile)>>\"
+		ENDIF
+
+
+#IF 0
+	*- the next few lines show how to use ODBC
+	*- in this version we generate a text file of data instead, and attach it to a Word
+	*- doc for the user (see above)
+		\		MailMergeOpenDataSource .Name = \"<<SYS(2027,THIS.cDataSrc)>>\",
+		\\ .Connection = \"DSN=<<THIS.cODBC_DSN>>;DBQ=<<SYS(2027,SET("DEFA") + SYS(2003))>>;FIL=<<THIS.cODBC_FIL>>\",
+		\\ .SQLStatement = \"<<THIS.csqlstmt>>\"
+#ENDIF
+
+		IF THIS.nNewDoc = N_NEW_DOC AND (THIS.nTemplate = N_LABEL OR THIS.nTemplate = N_ENVELOPE)
+			\		Dim dlg As MailMergeHelper
+			\		GetCurValues dlg
+			\		x = Dialog(dlg)
+		ENDIF
+		*- end WordBasic script
+		\		"
+		\end tell
+		\
+
+		*- close textmerge file, strip out linefeeds
+		SET TEXTMERGE TO
+		THIS.FxStripLF(m.cscript)
+
+		THIS.SetErrorOff = .T.
+
+		*- now go ahead and run it
+		RUNSCRIPT (m.cscript)
+
+		*- restore normal error handling
+		THIS.SetErrorOff = .F.
+
+#IF 0
+		*- second script, to display appropriate dialog, if labels or envelopes
+		IF THIS.nNewDoc = N_NEW_DOC AND (THIS.nTemplate = N_LABEL OR THIS.nTemplate = N_ENVELOPE)
+			cscript2 = SYS(2027,SYS(2023)) + SYS(3) + ".script"
+
+			SET TEXTMERGE TO (m.cscript2)
+			SET TEXTMERGE ON NOSHOW
+			\\ -- AppleScript<<CHR(170)>> script to drive MS Word for Macintosh 6.0
+			\tell application "<<THIS.cExe>>"
+			\	with timeout of 0 seconds
+			\		do script <<CHR(194)>>
+			\			"Dim dlg As MailMergeHelper
+			\			GetCurValues dlg
+			\			x = Dialog(dlg)"
+			\	end timeout
+			\end tell
+			\
+
+			*- close textmerge file, strip out linefeeds
+			SET TEXTMERGE TO
+			THIS.FxStripLF(m.cscript2)
+
+			THIS.SetErrorOff = .T.
+
+			*- now go ahead and run it
+			RUNSCRIPT (m.cscript2)
+
+			*- restore normal error handling
+			THIS.SetErrorOff = .F.
+
+			*- toss the script file 2
+			ERASE (m.cscript2)
+
+		ENDIF
+#ENDIF
+		IF !L_DEBUG
+			*- toss the script file 1
+			ERASE (m.cscript)
+		ENDIF
+
+		WAIT CLEAR
+
+		RETURN .T.
+
+
+ENDPROC
+PROCEDURE mailmergeword10
+	*- drive MS Word 8.0
+
+	PRIVATE colddocs, wa
+	LOCAL cDummy, nWordDocType, cSqlStmt, cOLEDBSource, cDBQPath
+	LOCAL oDoc, lcFileName, lcTableName, lcDataSource
+	LOCAL lcFldStr, lcWord, i, lnFldLen
+
+	*- We need to set the Localization ID to english (1033)
+	*- so that OLE Automation will be understood by OLE server.
+	=SYS(3006,I_ENGLISH)
+
+	WAIT WINDOW C_STARTWORD80_LOC NOWAIT
+	*- create word object
+
+	wa = CreateObject("word.application")
+
+	*- Check if problem creating Word object
+	IF TYPE('wa') # 'O'
+		THIS.ALERT(E_NOOPENWORD_LOC)
+		RETURN
+	ENDIF
+
+	*- Test language
+	THIS.lEnglish = (wa.application.international[26] == I_ENGLISH)
+
+	*- Get data -- should use same directory as foxpro table
+	SELECT (THIS.cAlias)
+	
+	*  Check for parameterized view
+	IF CURSORGETPROP("SourceType")#3 AND ATC("?",CURSORGETPROP("SQL"))#0
+		MESSAGEBOX(NOPARAMVIEW_LOC)
+		RETURN
+	ENDIF
+	
+	lcDataSource = IIF(!EMPTY(THIS.cdbcname), THIS.cdbcname, JUSTPATH(DBF()))
+		
+	* Create the Office ODC file
+	lcFileName = THIS.MakeODC(lcDataSource, THIS.codcfile)
+	IF EMPTY(lcFileName)
+		RETURN
+	ENDIF
+	
+	* Check if data is open shared
+	IF ISEXCLUSIVE() AND FILE(DBF())
+		USE (DBF()) SHARED ALIAS (THIS.cAlias)
+	ENDIF
+	
+*	THIS.cDataSrc =	[C:\Documents and Settings\randybr\My Documents\My Data Sources\testdata.odc]
+*	cOLEDBSource =	[Provider=VFPOLEDB.1;Data Source=c:\vfp7\samples\data\testdata.dbc]	&& DBC Database
+* 	cOLEDBSource =	[Provider=VFPOLEDB.1;Data Source=C:\VFP7]    && free table directory
+*	THIS.csqlstmt =	[SELECT last_name AS last_name, first_name AS first_name FROM 'employee']
+
+	THIS.cDataSrc = lcFileName
+    cOLEDBSource =	[Provider=VFPOLEDB.1;Data Source=] + lcDataSource
+	lcTableName = IIF(EMPTY(THIS.cdbcname),JUSTSTEM(DBF()),THIS.cdbctable)
+
+	* Create SQL Select statement
+	lcFldStr=""
+	FOR i = 1 TO GETWORDCOUNT(THIS.cFieldList, ",")
+		lcWord = GETWORDNUM(THIS.cFieldList, m.i, ",")
+		lcFldStr = lcFldStr + lcWord + " AS " + lcWord + ", "
+	ENDFOR
+	lcFldStr = ALLTRIM(lcFldStr)
+	IF RIGHT(lcFldStr,1)=","
+		lcFldStr = LEFT(lcFldStr,LEN(lcFldStr)-1)
+	ENDIF
+	lnFldLen = LEN(lcFldStr)+LEN(lcTableName)+14
+		
+	IF EMPTY(lcFldStr) OR lnFldLen > 255	&& max length of string is 255
+		THIS.csqlstmt =	[SELECT * FROM '] + lcTableName + [']
+	ELSE
+		THIS.csqlstmt =	[SELECT ]+ lcFldStr +[ FROM '] + lcTableName + [']
+	ENDIF
+	
+	wa.Visible = .T.
+	IF THIS.nNewDoc = N_EXISTING_DOC
+		oDoc = wa.documents.Open(THIS.cDocName)
+	ELSE
+		oDoc = wa.documents.Add()
+		*- set main document type
+		DO CASE
+			CASE THIS.nTemplate = N_LABEL
+				m.nWordDocType = 1
+			CASE THIS.nTemplate = N_ENVELOPE
+				m.nWordDocType = 2
+			CASE THIS.nTemplate = N_CATALOG
+				m.nWordDocType = 3
+			OTHERWISE
+				m.nWordDocType = 0
+		ENDCASE
+		oDoc.MailMerge.MainDocumentType = m.nWordDocType
+	ENDIF
+
+	WAIT WINDOW C_OPENDATA80_LOC NOWAIT
+
+	*- attach data file
+	oDoc.MailMerge.OpenDataSource(THIS.cDataSrc,0,0,0,0,0,"","",0,"","",m.cOLEDBSource,;
+		THIS.csqlstmt, THIS.csqlstmt2)
+
+	WAIT CLEAR
+	
+	*- activate MSW with proper document
+	wa.Visible = .T.
+	wa.Activate
+	
+	IF THIS.nNewDoc = N_NEW_DOC
+		*- display Word MailMergeHelper dialog
+		IF THIS.nTemplate # N_FORMLETTER
+			wa.Dialogs[I_WDDIALOGMAILMERGEHELPER].Show
+		ENDIF
+	ENDIF
+
+	*- terminate the connection
+	wa = .NULL.
+
+	RETURN
+ENDPROC
+PROCEDURE mailmergeword6
+	*- drive MS Word 6.0
+	#INCLUDE ddecmd.h
+	
+	PRIVATE colddocs, wa
+	LOCAL cDummy, nWordDocType, cSqlStmt, cODBCSource, cDBQPath
+
+	*- launch MSW, so it hangs around after word.basic is done
+	IF !THIS.StartWord(C_WORD6)
+		RETURN .F.
+	ELSE
+		*- We need to set the Localization ID to english (1033)
+		*- so that OLE Automation will be understood by OLE server.
+		=SYS(3006,I_ENGLISH)
+	ENDIF
+	
+	*- create word object
+	wa = CreateObject(WIN_6OBJ)
+
+	*- Check if problem creating Word object
+	IF TYPE('wa') # 'O'
+		THIS.ALERT(E_NOOPENWORD_LOC)
+		RETURN
+	ENDIF
+
+	*- Test language
+	THIS.lEnglish = .T.
+	THIS.SetErrorOff = .t.
+	m.cdummy = wa.AppInfo(16)
+	IF THIS.HadError
+		THIS.lEnglish = .f.
+		THIS.HadError = .f.
+	ENDIF
+	THIS.SetErrorOff = .f.
+
+	*- Get data -- should use same directory as foxpro table
+	SELECT (THIS.cAlias)
+	m.cDBQPath = IIF(EMPTY(THIS.cDataPath),SYS(2027,SET("DEFA") + SYS(2003)),THIS.cDataPath)
+
+	IF THIS.lHas30Drivers
+		cODBCSource = "DSN="+THIS.cODBC_DSN+;
+					 ";SourceDB="+IIF(EMPTY(THIS.cDBCName),m.cDBQPath,THIS.cDBCName)+;
+					 ";SourceType="+IIF(EMPTY(THIS.cDBCName),"DBF","DBC")+;
+					 ";Exclusive=No"+;
+					 ";BackgroundFetch=Yes;"
+    ELSE
+		cODBCSource =	"DSN=" + THIS.cODBC_DSN + ;
+						";DBQ=" + m.cDBQPath + ;
+						";DefaultDir=" + m.cDBQPath + ;
+						";FIL=" + THIS.cODBC_FIL +";"
+	ENDIF
+
+	IF THIS.lEnglish
+		IF THIS.nNewDoc = N_EXISTING_DOC
+			wa.ENG_OLE_FILEOPEN(THIS.cDocName)
+		ELSE
+			wa.ENG_OLE_FILENEW
+			*- set main document type
+			DO CASE
+				CASE THIS.nTemplate = N_LABEL
+					m.nWordDocType = 1
+				CASE THIS.nTemplate = N_ENVELOPE
+					m.nWordDocType = 2
+				CASE THIS.nTemplate = N_CATALOG
+					m.nWordDocType = 3
+				OTHERWISE
+					m.nWordDocType = 0
+			ENDCASE
+			IF THIS.lEnglish
+				wa.ENG_OLE_MMERGEDOCTYPE(m.nWordDocType)
+			ELSE
+				wa.X_OLE_MMERGEDOCTYPE_LOC(m.nWordDocType)
+			ENDIF
+		ENDIF
+
+		*- attach data file
+		wa.ENG_OLE_MMERGEOPENSRC(THIS.cDataSrc,0,0,0,0,"","",0,"","",m.cODBCSource,;
+			THIS.csqlstmt, THIS.csqlstmt2)
+
+		*- activate MSW with proper document
+		wa.ENG_OLE_APPRESTORE				&& this doesn't seem to work, hence...
+
+		THIS.sysch = DDEInitiate(C_MSWORDWIN,"System")
+		IF THIS.sysch > 0
+			=DDEExecute(THIS.sysch,ENG_APPRESTORE)
+			=DDETerminate(THIS.sysch)
+		ENDIF
+
+		wa.ENG_OLE_APPACTIVATE(WIN_SECT6,1)
+
+	ELSE
+		IF THIS.nNewDoc = N_EXISTING_DOC
+			wa.X_OLE_FILEOPEN_LOC(THIS.cDocName)
+		ELSE
+			wa.X_OLE_FILENEW_LOC
+		ENDIF
+
+		*- attach data file
+		wa.X_OLE_MMERGEOPENSRC_LOC(THIS.cDataSrc,0,0,0,0,"","",0,"","",m.cODBCSource,;
+			THIS.csqlstmt, THIS.csqlstmt2)
+
+		*- activate MSW with proper document
+		wa.X_OLE_APPRESTORE_LOC
+
+		THIS.sysch = DDEInitiate(C_MSWORDWIN,"System")
+		IF THIS.sysch > 0
+			=DDEExecute(THIS.sysch,X_APPRESTORE_LOC)
+			=DDETerminate(THIS.sysch)
+		ENDIF
+
+		wa.X_OLE_APPACTIVATE_LOC(WIN_SECT6,1)
+	ENDIF
+
+	*- try to display the appropriate dialog
+	IF THIS.nNewDoc = N_NEW_DOC
+		*- display appropriate Word dialog
+		DO CASE
+			CASE THIS.nTemplate = N_LABEL
+				THIS.mswmldlg(N_LABEL)
+			CASE THIS.nTemplate = N_ENVELOPE
+				THIS.mswmldlg(N_ENVELOPE)
+			CASE THIS.nTemplate = N_CATALOG
+				THIS.mswmldlg(N_CATALOG)
+			OTHERWISE
+		ENDCASE
+	ENDIF
+
+	*- terminate the connection
+	wa = .NULL.
+
+	RETURN
+
+ENDPROC
+PROCEDURE mailmergeword8
+	*- drive MS Word 8.0
+
+	PRIVATE colddocs, wa
+	LOCAL cDummy, nWordDocType, cSqlStmt, cODBCSource, cDBQPath
+	LOCAL oDoc
+
+	*- We need to set the Localization ID to english (1033)
+	*- so that OLE Automation will be understood by OLE server.
+	=SYS(3006,I_ENGLISH)
+
+	WAIT WINDOW C_STARTWORD80_LOC NOWAIT
+	*- create word object
+	wa = CreateObject(WIN_8OBJ)
+
+	*- Check if problem creating Word object
+	IF TYPE('wa') # 'O'
+		THIS.ALERT(E_NOOPENWORD_LOC)
+		RETURN
+	ENDIF
+
+	*- Test language
+	THIS.lEnglish = (wa.application.international[26] == I_ENGLISH)
+
+	*- Get data -- should use same directory as foxpro table
+	SELECT (THIS.cAlias)
+	m.cDBQPath = IIF(EMPTY(THIS.cDataPath),SYS(2027,SET("DEFA") + SYS(2003)),THIS.cDataPath)
+
+	IF THIS.lHas30Drivers
+		cODBCSource = "DSN="+THIS.cODBC_DSN+;
+					 ";SourceDB="+IIF(EMPTY(THIS.cDBCName),m.cDBQPath,THIS.cDBCName)+;
+					 ";SourceType="+IIF(EMPTY(THIS.cDBCName),"DBF","DBC")+;
+					 ";Exclusive=No"+;
+					 ";BackgroundFetch=Yes;"
+    ELSE
+		cODBCSource =	"DSN=" + THIS.cODBC_DSN + ;
+						";DBQ=" + m.cDBQPath + ;
+						";DefaultDir=" + m.cDBQPath + ;
+						";FIL=" + THIS.cODBC_FIL +";"
+	ENDIF
+
+*-
+*-
+
+*-	cODBCSource = "File name=d:\vfp.bug\test1.udl"
+*-	cODBCSource = [Provider=VFPOLEDB.1;Data Source=d:\vfp.bug\foo.dbc]
+
+	IF THIS.nNewDoc = N_EXISTING_DOC
+		oDoc = wa.documents.Open(THIS.cDocName)
+	ELSE
+		oDoc = wa.documents.Add
+		*- set main document type
+		DO CASE
+			CASE THIS.nTemplate = N_LABEL
+				m.nWordDocType = 1
+			CASE THIS.nTemplate = N_ENVELOPE
+				m.nWordDocType = 2
+			CASE THIS.nTemplate = N_CATALOG
+				m.nWordDocType = 3
+			OTHERWISE
+				m.nWordDocType = 0
+		ENDCASE
+		oDoc.MailMerge.MainDocumentType = m.nWordDocType
+	ENDIF
+
+	WAIT WINDOW C_OPENDATA80_LOC NOWAIT
+
+	*- attach data file
+	oDoc.MailMerge.OpenDataSource(THIS.cDataSrc,0,0,0,0,0,"","",0,"","",m.cODBCSource,;
+		THIS.csqlstmt, THIS.csqlstmt2)
+
+	WAIT CLEAR
+	
+	*- activate MSW with proper document
+	wa.Visible = .T.
+	wa.Activate
+	
+	IF THIS.nNewDoc = N_NEW_DOC
+		*- display Word MailMergeHelper dialog
+		IF THIS.nTemplate # N_FORMLETTER
+			wa.Dialogs[I_WDDIALOGMAILMERGEHELPER].Show
+		ENDIF
+	ENDIF
+
+	*- terminate the connection
+	wa = .NULL.
+
+	RETURN
+
+
+ENDPROC
+PROCEDURE makefieldlist
+	PARAMETER iMaxFldLen, cDelimit
+	
+	*- make field list
+	THIS.cFieldList = ""
+	FOR m.i = 1 TO ALEN(THIS.aAutoFields)
+		THIS.cFieldList = THIS.cFieldList + LEFT(THIS.aAutoFields[i],iMaxFldLen) + ','
+	NEXT
+	THIS.cFieldList = LEFT(	THIS.cFieldList,LEN(THIS.cFieldList) - 1)	&& remove extra delimiter
+
+
+ENDPROC
+PROCEDURE makeoutput
+
+LOCAL m.cProc
+*- call the procedure that does the work
+
+*- make sure values are reasonable
+IF !BETWEEN(THIS.nWordProc,1,ALEN(THIS.aWPMrg,1))
+	*- invalid word processor index
+	THIS.Alert(E_BADWORDPROC_LOC)
+	RETURN
+ENDIF
+
+IF !BETWEEN(THIS.nTemplate,1,N_CATALOG)
+	*- invalid template index (should be 1 - 4)
+	THIS.Alert(E_BADTEMPLATE_LOC)
+	RETURN
+ENDIF
+
+IF THIS.nNewDoc == N_EXISTING_DOC AND EMPTY(THIS.cDocName)
+	*- no existing document was specified
+	THIS.Alert(E_BADEXDOC_LOC)
+	RETURN
+ENDIF
+
+IF !THIS.CheckData()
+	RETURN
+ENDIF
+
+THIS.MakeFieldList(255)
+
+cProc = THIS.aWPMrg[THIS.nWordProc]
+IF !EMPTY(cProc) AND TYPE("cProc") == 'C'
+	&cProc
+ENDIF
+
+ENDPROC
+PROCEDURE mmcleanup
+	*- Close files, erase temp file
+	PARAMETER lok, nfh1, nfh2, ctempfile
+
+	IF !m.lok
+		THIS.ALERT(E_FILEERR_LOC)
+	ENDIF
+
+	IF m.nfh1 > -1
+		=FCLOSE(m.nfh1)
+	ENDIF
+
+	IF m.nfh2 > -1
+		=FCLOSE(m.nfh2)
+	ENDIF
+
+	IF !EMPTY(ctempfile) AND FILE(ctempfile)
+		ERASE (ctempfile)
+	ENDIF
+
+	RETURN  .T.
+
+ENDPROC
+PROCEDURE mrgcommadel
+	*-Generate a delimited text file of data
+	PARAMETER cdelimit
+
+	IF PARAMETER() = 0
+		cdelimit = ","
+	ENDIF
+
+	PRIVATE ncurselect, lretval
+
+	m.ncurselect = SELECT()
+
+	THIS.cDataSrc = DBF()
+
+	THIS.GetSQLSt
+	IF EMPTY(THIS.csqlstmt)
+		*- couldn't come up with SQL statement
+		RETURN .F.
+	ENDIF
+
+	THIS.cSaveFile = ALLT(PUTFILE(C_MMSAVEAS_LOC,C_DFLTNAME_LOC,EXT_TXT))
+	IF EMPTY(THIS.cSaveFile)
+		RETURN .F.
+	ENDIF
+
+	THIS.SaveSql(L_DONTGETFILE)
+	IF !EMPTY(THIS.ctmpfile) AND FILE(THIS.ctmpfile)
+		SELECT 0
+		USE (THIS.ctmpfile)
+	ELSE
+		RETURN .F.
+	ENDIF
+
+
+	m.lretval = THIS.wzmmdata(THIS.cSaveFile,m.cdelimit)
+
+	IF !EMPTY(THIS.cTmpFile)
+		*- close temp file
+		USE
+		ERASE (THIS.cTmpFile)
+		IF FILE(THIS.JustStem(THIS.ctmpfile) + ".FPT")
+			ERASE (THIS.JustStem(THIS.ctmpfile) + ".FPT")
+		ENDIF
+		IF FILE(THIS.JustStem(THIS.ctmpfile) + ".CDX")
+			ERASE (THIS.JustStem(THIS.ctmpfile) + ".CDX")
+		ENDIF
+	ENDIF
+
+	*- reselect current work area
+	SELECT (ncurselect)
+
+	RETURN m.lretval
+
+
+ENDPROC
+PROCEDURE mrgword
+IF !THIS.PrepData()
+	RETURN .F.
+ENDIF
+
+IF _mac
+	*- we'll use Applescript for doing this on the Mac
+	RETURN THIS.MailMergeMacWord6()
+ENDIF
+
+*- get the version of Word that's installed (and while we're at it, the command line)
+THIS.cexe = THIS.GetMSW(C_WORD6_OR_LATER)		&& will also fill in THIS.cWordVersion
+
+*- drive versions of MS Word
+IF VAL(THIS.cWordVersion)<10
+	IF !THIS.Checkdbcevents(THIS.cdbcname, THIS.cWordversion, .T.)
+		RETURN .F.
+	ENDIF
+ELSE
+	* If version is greater than 10, then check for OLE DB Provider
+	IF !THIS.checkoledb()
+		RETURN .F.
+	ENDIF	
+ENDIF
+
+
+DO CASE
+	CASE VAL(THIS.cWordVersion) > 9
+		THIS.MailMergeWord10
+	CASE THIS.cWordVersion $ '8,9'
+		THIS.MailMergeWord8
+	OTHERWISE
+		THIS.MailMergeWord6			
+ENDCASE
+
+ENDPROC
+PROCEDURE mswerr
+	*- Error handler while script is being run
+	PARAMETER errnum, cmsg
+
+	#DEFINE N_RUNSCRIPTFAIL		1921	&& FP error numbers
+	#DEFINE N_SCRIPTERROR		1917
+
+	IF errnum = K_RUNSCRIPTFAIL
+		THIS.MrgCommaDel
+		THIS.ALERT(E_NOAPPLESCRIPT_LOC)
+	ENDIF
+
+	RETURN .T.
+
+
+ENDPROC
+PROCEDURE mswmldlg
+	PARAMETER itmpl
+
+
+	IF THIS.nWordProc # N_WORD60
+		RETURN .T.
+	ENDIF
+
+	IF THIS.lEnglish
+		wa.ENG_OLE_TOOLSMACRO("MailMergeHelper",1,0)
+	ELSE
+		wa.X_OLE_TOOLSMACRO_LOC(X_OLE_MAILMERGEHELPER_LOC,1,0)
+	ENDIF
+
+	RETURN .T.
+
+ENDPROC
+PROCEDURE prepdata
+
+	*- prepare data source
+	
+	LOCAL cFlds, cOldSafe, iLen, iFH, lCopyFile, cDBQPath
+	
+	IF THIS.nNewDoc = N_EXISTING_DOC
+		THIS.cDocName = ALLT(THIS.cDocName)
+		IF EMPTY(THIS.cDocName)
+			RETURN .F.
+		ENDIF
+	ENDIF
+
+	IF !_mac												&& we aren't using ODBC on Mac
+		*- get ODBC drivers -- we'll need this info later on
+		*- Check for proper ODBC drivers
+		IF !THIS.ODBCCheck()
+			RETURN .F.
+		ENDIF
+	ENDIF
+
+	m.lCopyFile = .F.
+
+	IF THIS.lHas30Drivers AND CURSORGETPROP('sourcetype') # K_TABLE
+		*- assume is a view that Word 6.0 can't handle -- don't use datasource
+		THIS.cDataSrc = ""
+	ELSE
+		THIS.cDataSrc = DBF()
+	ENDIF
+
+	*- Check if we have a DBC in use
+	SELECT (THIS.cAlias)
+
+	*- Check if 3.0 DBC is opened exclusively
+	IF THIS.lHas30Drivers AND !EMPTY(THIS.cDBCName) AND ISEXCL(THIS.JustStem(THIS.cDBCName),2)
+		IF THIS.ALERT(C_EXCLDBC1_LOC + THIS.cDBCName + C_EXCLDBC2_LOC,36) == "YES"
+			cTmpDbcAlias = THIS.cDBCName
+			SET DATABASE TO (m.cTmpDbcAlias)
+			CLOSE DATABASE
+			OPEN DATABASE (THIS.cDBCName) SHARED
+			USE (THIS.cDBCTable) ALIAS (THIS.cAlias) SHARED
+		ELSE
+			RETURN
+		ENDIF
+	ENDIF
+	
+	*- Check for 3.0 Table type OR View
+	*- Mac doesn't use ODBC so can handle 3.0 files, but can't handle Views
+	IF !m.lCopyFile AND ;
+		((!_mac AND !THIS.lHas30Drivers AND;
+		(VAL(SYS(2029)) = DBFTYPE_30 OR CURSORGETPROP('sourcetype') # K_TABLE)) OR;
+		(_mac AND CURSORGETPROP("sourcetype") # K_TABLE))
+		IF THIS.Alert(IIF(_mac,C_COPYFOX3_LOC,C_COPYFOX2_LOC),36) $ "YES"
+			lCopyFile = .T.
+		ELSE
+			RETURN .F.
+		ENDIF
+	ENDIF
+
+
+	IF m.lCopyFile		
+				
+		LOCAL m.cSaveFile
+
+		cFlds = THIS.cFieldList
+
+		IF CURSORGETPROP('sourcetype') # 3		 && OR ATC(".TMP",DBF())#0
+			THIS.cDataFile = CursorGetprop("sourcename")
+		ELSE
+			THIS.cDataFile = THIS.JustStem(DBF())
+		ENDIF
+
+		iLen = LEN(THIS.cDataFile)
+		IF RIGHT(STR(VAL(THIS.cDataFile) + 10^iLen,iLen + 1),iLen) = THIS.cDataFile
+			*- apparently a view? The filename is all numbers
+			*- use the alias instead
+			THIS.cDataFile = LEFT(THIS.cAlias,6)
+		ENDIF
+		DO CASE
+		CASE LEN(THIS.cDataFile) < 7
+			THIS.cDataFile = THIS.cDataFile + "_2"
+		CASE LEN(THIS.cDataFile) = 7
+			THIS.cDataFile = THIS.cDataFile + "2"
+		CASE RIGHT(THIS.cDataFile,1) = "2"
+			THIS.cDataFile = LEFT(THIS.cDataFile,7) + "_"
+		OTHERWISE
+			THIS.cDataFile = LEFT(THIS.cDataFile,7) + "2"
+		ENDCASE
+						
+		m.coldsafe = SET("SAFE")
+		SET SAFETY ON
+		THIS.cDataFile = PUTFILE(C_COPYPROMPT_LOC,THIS.cDataFile + ".dbf","DBF")
+		SET SAFETY &coldsafe
+		IF EMPTY(THIS.cDataFile)
+			RETURN .F.
+		ENDIF
+
+		THIS.cDataFile = THIS.FORCEEXT(THIS.cDataFile,"DBF")
+
+		*- check if file exists, and if so, make sure that we can overwrite it
+		IF FILE(THIS.cDataFile)
+			THIS.SetErrorOff = .t.
+			ERASE (THIS.cDataFile)
+			THIS.SetErrorOff = .f.
+			IF FILE(THIS.cDataFile)
+				*- can't get rid of file, so fail
+				THIS.Alert(E_NOREPLACETBL_LOC)
+				RETURN .F.
+			ENDIF
+		ENDIF
+		
+		IF CURSORGETPROP("sourcetype") # K_TABLE
+			=REQUERY()			&& get some data
+		ENDIF
+		COPY FIELDS &cFlds TO (THIS.cDataFile) TYPE FOX2
+
+		*- Copied ok?
+		IF !FILE(THIS.cDataFile)
+			RETURN .F.
+		ENDIF
+
+		SELECT 0
+		USE (THIS.cDataFile) SHARED
+
+		*- Failed somewhere
+		IF EMPTY(ALIAS()) OR VAL(SYS(2029))=DBFTYPE_30
+			RETURN .F.
+		ELSE
+			*- get the SQL statement now, while we are using this temp table
+			THIS.cDataSrc = THIS.cDataFile
+			*- redo field list, since max for Fox 2.x table is only 10 chars
+			THIS.MakeFieldList(10)
+			THIS.GetSQLSt
+		ENDIF
+		USE
+
+		SELECT (THIS.cAlias)
+
+	ELSE
+		THIS.cDataFile = DBF()
+		THIS.GetSQLSt
+	ENDIF
+
+	THIS.cSqlStmt = STRTRAN(THIS.cSqlStmt,'"',"")		&& Word complains if quotes surround the table name
+														&& but VFP won't execute SQL statement unless they are there
+
+	IF THIS.nWordProc = N_WORD60 AND !_mac
+		DO CASE
+			CASE LEN(THIS.csqlstmt) > 510
+				THIS.Alert(C_ERROR_SQL_LOC)
+				THIS.csqlstmt = ""			&& error return below
+			CASE LEN(THIS.csqlstmt) > 255
+				THIS.csqlstmt2 = SUBS(THIS.csqlstmt,256)
+				THIS.csqlstmt = LEFT(THIS.csqlstmt,255)
+			OTHERWISE
+				*- do nothing
+		ENDCASE
+	ENDIF
+
+	IF EMPTY(THIS.csqlstmt)
+		*- couldn't come up with SQL statement
+		RETURN .F.
+	ENDIF
+
+	*- need to open table as shared access
+	IF ISEXCLUSIVE() AND CURSORGETPROP('sourcetype') = K_TABLE
+		USE IN (THIS.cAlias)
+		m.iFH = FOPEN(THIS.cDataFile,0)
+		IF m.iFH == -1
+			*- can't open file, so fail
+			THIS.ALERT(E_NOOPENTBL_LOC)
+			RETURN .F.
+		ELSE
+			=FCLOSE(m.iFH)
+		ENDIF
+		USE (THIS.cDataFile) ALIAS (THIS.cAlias) SHARED
+	ENDIF
+
+	*- Get data -- should use same directory as foxpro table
+	SELECT (THIS.cAlias)
+	m.cDBQPath = IIF(EMPTY(THIS.cDataPath),SYS(2027,SET("DEFA") + SYS(2003)),THIS.cDataPath)
+
+	IF THIS.lHas30Drivers
+		THIS.cODBCSource = "DSN="+THIS.cODBC_DSN+;
+					 ";SourceDB="+IIF(EMPTY(THIS.cDBCName),m.cDBQPath,THIS.cDBCName)+;
+					 ";SourceType="+IIF(EMPTY(THIS.cDBCName),"DBF","DBC")+;
+					 ";Exclusive=No"+;
+					 ";BackgroundFetch=Yes;"
+    ELSE
+		THIS.cODBCSource =	"DSN=" + THIS.cODBC_DSN + ;
+						";DBQ=" + m.cDBQPath + ;
+						";DefaultDir=" + m.cDBQPath + ;
+						";FIL=" + THIS.cODBC_FIL +";"
+	ENDIF
+
+
+ENDPROC
+PROCEDURE savesql
+	*- Generate a table of the SQL query results
+
+	PARAMETER lgetfname
+
+	PRIVATE m.ccurtable
+	
+	LOCAL cOldDefa
+
+	IF lgetfname
+			m.coldsafe = SET("SAFE")
+			SET SAFETY ON
+			THIS.ctmpfile = PUTFILE(C_MMSAVEAS_LOC,C_DFLTDBF_LOC,EXT_DBF)
+			SET SAFETY &coldsafe
+	ELSE
+		THIS.ctmpfile = SYS(3) + ".DBF"
+	ENDIF
+
+	IF EMPTY(THIS.ctmpfile)
+		RETURN .F.
+	ELSE
+		m.ccurtable = IIF(!EMPTY(ALIAS()),ALIAS(),"")
+		m.csqlstmt = THIS.csqlstmt
+
+		*- execute the SQL query
+		cOldDefa = SET("DEFAULT") + CURDIR()
+		IF !EMPTY(THIS.cDataPath)
+			SET DEFAULT TO (THIS.cDataPath)
+		ENDIF
+		&csqlstmt INTO DBF (THIS.cTmpFile)
+		THIS.ctmpfile = FULLPATH(THIS.ctmpfile)
+		USE
+		IF !EMPTY(m.ccurtable) AND USED(m.ccurtable)
+			SELECT (ccurtable)
+		ENDIF
+		THIS.csqlstmt = "SELECT * FROM " + THIS.JustFName(THIS.cTmpFile)
+		THIS.cDataPath = THIS.AddBS(THIS.JustPath(THIS.cTmpFile))
+		SET DEFAULT TO (m.cOldDefa)	
+	ENDIF
+	RETURN .T.
+
+
+ENDPROC
+PROCEDURE startword
+	PARAMETER cversion
+	*- Routine is called to check if Word is
+	*- running and/or DDE system channel is set.
+	*- Also check if Word was closed by user
+	*- while FoxPro screen open.
+
+	LOCAL llauncherr, lsafety, cworddir, claunchmsg, m.nLastDDEError, cSysItems,;
+		cScript, cExe
+
+	m.llauncherr = .F.
+
+	DO CASE
+		CASE _windows
+			THIS.cexe = C_MSWORDEXE
+		CASE _mac
+			THIS.cexe = C_MSWORDMAC
+		OTHERWISE
+			THIS.cexe = ""
+	ENDCASE
+
+	DO CASE
+		CASE cversion = C_WORD6
+			m.cLaunchMsg = C_STARTWORD60_LOC
+		OTHERWISE
+			RETURN .F.
+	ENDCASE
+		
+	m.cOldErr = ON('ERROR')
+	ON ERROR m.llauncherr = .T.
+
+	IF _mac
+		*-
+		*- note -- the following is to support interacting with Word via OLE automation
+		*- It is not currently used (Applescript is used instead, called above)
+		*-
+		*- get word location
+		*- force user to locate it
+
+		THIS.cexe = "Raw:Apps:Microsoft Office:Microsoft Word 6:Microsoft Word"
+		IF !FILE(THIS.cexe)
+			THIS.cexe = SYS(2027,GETFILE("","Locate " + ALLT(THIS.cexe),"",0,'APPL'))
+		ENDIF
+		IF EMPTY(THIS.cexe)
+			*- cancelled
+			RETURN .F.
+		ELSE
+			*- update prefs
+			*=PutPref('PREFM',K_WORD6ID,'MS Word 6.0 Location',.F.,C_MSWORDMAC)
+		ENDIF
+
+		*- create Applescript
+		cScript = SYS(2027,SYS(2023)) + SYS(3) + ".script"
+
+		SET TEXTMERGE TO (m.cScript)
+		SET TEXTMERGE ON NOSHOW
+		\\ -- AppleScript™ script to launch MS Word for Macintosh 6.0
+		\tell application "<<THIS.cexe>>"
+		\	Run
+		\end tell
+		*- close textmerge file, strip out linefeeds
+		SET TEXTMERGE TO
+		THIS.FxStripLF(m.cScript)
+		*- run Applescript
+		RUNSCRIPT (m.cScript)
+
+	ELSE
+		*- Not Macintosh
+		*- Terminate a prior channel if user quit Word
+		*- while still in screen.
+		IF THIS.sysch # -1
+			=DDERequest(THIS.sysch,'topics')
+			m.nLastDDEError = DDELastError()
+			IF m.nLastDDEError == N_NOCLIENTERR OR m.nLastDDEError == N_BADCHANNELERR
+				=DDETerminate(THIS.sysch)
+				THIS.sysch = -1
+			ENDIF
+		ENDIF
+		IF THIS.sysch = -1
+			m.lsafety = DDESetOption("SAFETY")
+			=DDESetOption("SAFETY",.F.)
+			THIS.sysch = DDEInitiate(C_MSWORDWIN,"System")
+			IF THIS.sysch = -1				&& failed
+				*- obtain Word directory
+				THIS.cexe = THIS.GetMSW(m.cversion)
+				IF EMPTY(THIS.cexe)
+					*- failed to find .INI info, so fail
+					THIS.sysch = -1
+				ELSE
+					WAIT WINDOW m.cLaunchMsg NOWAIT
+					m.cexe = THIS.cexe
+					RUN /N7 &cexe
+					THIS.sysch = DDEInitiate(C_MSWORDWIN,"System")
+				ENDIF
+			ENDIF
+			IF THIS.sysch = -1 AND !THIS.lAlerted
+				THIS.ALERT(E_NOMSWLAUNCH_LOC)
+			ENDIF
+		ENDIF
+		IF THIS.sysch <> -1
+			*- if they got it launched
+			*- check version of word
+			IF !THIS.checkver(m.cversion)
+				THIS.ALERT(E_WRONGWORD_LOC)
+				=DDETerminate(THIS.sysch)
+				THIS.sysch = -1
+			ENDIF
+		ENDIF
+	ENDIF
+
+	*- okay, re-set error handler
+	ON ERROR &cOldErr
+	IF _mac
+		THIS.sysch = 0		&& so it looks like success
+	ELSE
+		=DDESetOption("SAFETY",m.lsafety)
+	ENDIF
+	WAIT CLEAR
+
+	RETURN (THIS.sysch # -1)
+
+
+ENDPROC
+PROCEDURE wzmmdata
+	*-	Copy data to a text file, with field names on line 1
+	*-	Assumes source file is open in current work area
+	*-
+	*-	Parameters	csavefile	C	name of text file to hold results
+	*-				cdelimit		C	delimter
+	*-
+	*-	Returns .T. if success, otherwise .F.
+
+	PARAMETER csavefile, cdelimit
+
+	PRIVATE wzmmflds, nctr, nfh, ntempfh, nfsize, cbytesread, wztempfile
+	LOCAL ccrlf
+
+	IF _mac
+		ccrlf = IIF(THIS.nWordProc = N_WORD60,CHR(13) + CHR(10), CHR(13))	&& so it matches the way Fox exports the data
+	ELSE
+		ccrlf = CHR(13) + CHR(10)
+	ENDIF
+
+
+	STORE -1 TO m.nfh, m.ntempfh
+	m.wztempfile = ""
+
+	*- step 1: create the destination file
+	m.nfh = FCREATE(m.csavefile,0)
+	IF m.nfh = -1
+		*- failed to create file
+		THIS.MMCleanup(.F.,m.nfh, m.ntempfh, m.wztempfile)
+		RETURN .F.
+	ENDIF
+
+	*- step 2 -- write out header (field names)
+	m.nfcount = AFIELDS(wzmmflds)
+	FOR m.nctr = 1 TO m.nfcount
+		*- keep last field name even if memo, to prevent invalid field name err
+		IF wzmmflds[m.nctr,2] $ 'MG' AND m.nctr < m.nfcount
+			*- skip Memo fields and General fields
+			LOOP
+		ENDIF
+		IF FWRITE(m.nfh,wzmmflds[m.nctr,1]) = 0
+			THIS.MMCleanup(.F.,m.nfh, m.ntempfh, m.wztempfile)
+			RETURN .F.
+		ENDIF
+		IF m.nctr < m.nfcount
+			IF FWRITE(m.nfh,cdelimit) = 0
+				THIS.MMCleanup(.F.,m.nfh, m.ntempfh, m.wztempfile)
+				RETURN .F.
+			ENDIF
+		ENDIF	
+	NEXT
+
+	IF m.nfcount = 1 AND THIS.nWordProc = N_WORD60 AND _mac
+		*- Word complains if there is only one field
+		IF FWRITE(m.nfh,cdelimit) = 0
+		THIS.MMCleanup(.F.,m.nfh, m.ntempfh, m.wztempfile)
+		RETURN .F.
+	ENDIF
+	ENDIF
+
+	IF FWRITE(m.nfh,ccrlf) = 0
+		THIS.MMCleanup(.F.,m.nfh, m.ntempfh, m.wztempfile)
+		RETURN .F.
+	ENDIF
+
+	*- step 3 -- write data out to a separate file
+	m.wztempfile = SYS(3) + ".TXT"
+
+	IF m.cdelimit = K_TAB
+		COPY TO (m.wztempfile) DELI WITH TAB
+	ELSE
+		COPY TO (m.wztempfile) DELI
+	ENDIF
+
+	*- step 4: move temp file data to end of destination file
+	m.ntempfh = FOPEN(m.wztempfile,0)
+	IF m.ntempfh = -1
+		*- failed to open temp file
+		THIS.MMCleanup(.F.,m.nfh, m.ntempfh, m.wztempfile)
+		RETURN .F.
+	ENDIF
+
+	*- get file size, and return pointer to top of file
+	=FSEEK(m.ntempfh,0)
+
+	*- Readin' and writin'
+	DO WHILE !FEOF(m.ntempfh)
+		m.cbytesread = FREAD(m.ntempfh,K_TRANSFER)
+		IF m.nfcount = 1 AND THIS.nWordProc = N_WORD60 AND _mac
+			*- add a extra delimiter
+			m.cbytesread = STRTRAN(m.cbytesread,ccrlf,cdelimit + ccrlf)
+		ENDIF
+		IF THIS.nWordProc # N_WORD60 AND _mac
+			*- remove LFs on Mac
+			m.cbytesread = STRTRAN(m.cbytesread,CHR(10),'')
+		ENDIF
+		m.nbyteswrit = FWRITE(m.nfh, m.cbytesread)
+		IF m.nbyteswrit <> LEN(m.cbytesread)
+			*- error writing file
+			THIS.MMCleanup(.F.,m.nfh, m.ntempfh, m.wztempfile)
+			RETURN .F.
+		ENDIF
+	ENDDO
+
+	*- that should be it
+	THIS.MMCleanup(.T.,m.nfh, m.ntempfh, m.wztempfile)
+
+	RETURN .T.
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+nwordproc selected word processor (see MailMrge.h)
+nnewdoc Indicates it a new document will be used (see MailMrge.h)
+cdocname If an existing doc is used, that doc's file name
+ntemplate Word only -- the main document type (see MailMrge.h)
+cfieldlist
+cdatafile 2.6 copy of 3.0+ table
+cdatasrc The data source for the ODBC connection
+codbcsource The ODBC connection string
+csqlstmt SQL statement for extracting data
+csqlstmt2 Additional SQL statement, if cSQLStmt > 255 (for Word)
+csavefile file for holding merged data
+ctmpfile
+cdatapath path to FROM table
+lhasverword Have we verified that Word is present?
+cwordversion The version of Word that is installed, as char (e.g., '8')
+lenglish Does Word recognize English Word Basic commands?
+cexe Full path to the Word application
+sysch A DDE channel
+lalerted Has user been alerted of failure?
+^awpmrg[2,0] Array of procedures for handling various merge styles.
+*mrgword Drive versions of MS Word
+*makefieldlist 
+*prepdata Prepare data source
+*mailmergeword8 
+*mailmergeword6 
+*mswmldlg 
+*startword 
+*checkver Verify Word version
+*getmsw Get the MS Word command line from registry
+*getsqlst Get the SQL statement for extracting data
+*mrgcommadel Generate a delimited text file from data
+*wzmmdata Copy data to text file
+*mmcleanup close files
+*savesql Generate a table of SQL results
+*mailmergemacword6 
+*mswerr Error handler while Mac Applescript is being run
+*mailmergeword10 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+mailmrge.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] mailmerge
+[START RESERVED1]
+ 
+ mailmrge.hûıõ, ddecmd.h¶œ°ç+[END RESERVED1]
+[EOF]
