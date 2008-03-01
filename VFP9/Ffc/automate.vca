@@ -1,0 +1,910 @@
+SCCTEXT Version 4.0.0.2
+PLATFORM C(8,0),UNIQUEID C(10,0),TIMESTAMP N(10,0),CLASS M(4,0),CLASSLOC M(4,0),BASECLASS M(4,0),OBJNAME M(4,0),PARENT M(4,0),PROPERTIES M(4,0),PROTECTED M(4,0),METHODS M(4,0),OBJCODE M(4,0),OLE M(4,0),OLE2 M(4,0),RESERVED1 M(4,0),RESERVED2 M(4,0),RESERVED3 M(4,0),RESERVED4 M(4,0),RESERVED5 M(4,0),RESERVED6 M(4,0),RESERVED7 M(4,0),RESERVED8 M(4,0),USER M(4,0)
+1252
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] Class     
+[START RESERVED1]
+VERSION =   3.00[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RHK0ISHHT
+[CLASS] custom
+[BASECLASS] custom
+[OBJNAME] automation
+[START PROPERTIES]
+capptitle = 
+calias = 
+cdbctable = 
+ncurrentos = 0
+codbc_dsn = 
+codbc_fil = 
+cdbcname = 
+cdbcalias = 
+coldmessage = 
+builder = 
+builderx = (HOME()+"Wizards\BuilderD,BuilderDForm")
+codcfile = 
+Name = "automation"
+[END PROPERTIES]
+[START PROTECTED]
+ncurrentos
+codbc_dsn
+codbc_fil
+lhas30drivers
+seterroroff
+haderror
+ascanany
+checkodbcfoxver
+aodbcdrivers
+isodbc
+getodbcdata
+odbccheck
+getodbc
+getdsn
+getos
+[END PROTECTED]
+[START METHODS]
+PROCEDURE Destroy
+IF THIS.lCloseReg AND "REGISTRY" $ SET("CLASS")
+	RELEASE CLASS ALIAS registry
+ENDIF
+
+=SYS(3006,THIS.nSaveLocaleId)
+
+ENDPROC
+PROCEDURE Error
+#define MB_ICONEXCLAMATION		48
+#define MB_ABORTRETRYIGNORE		2
+#define MB_OK					0
+#define ERRORMESSAGE_LOC ;
+	"Error #" + alltrim(str(m.nError)) + " in " + m.cMethod + ;
+	" (" + alltrim(str(m.nLine)) + "): " + m.cMessage
+
+
+LPARAMETERS nError, cMethod, nLine, cMessage
+
+LOCAL cAction
+
+THIS.HadError = .T.
+
+if this.SetErrorOff
+	RETURN
+endif
+
+m.cMessage = iif(empty(m.cMessage), message(), m.cMessage)
+
+if L_DEBUG
+	m.cAction = this.Alert(ERRORMESSAGE_LOC, MB_ICONEXCLAMATION + ;
+		MB_ABORTRETRYIGNORE, THIS.cAppTitle)
+	do case
+		case m.cAction='RETRY'
+			this.HadError = .f.
+			clear typeahead
+			set step on
+			&cAction
+		case m.cAction='IGNORE'
+			this.HadError = .f.
+			return
+	endcase
+else
+	if m.nError = 1098
+		* User-defined error
+		m.cAction = this.Alert(message(), MB_ICONEXCLAMATION + ;
+			MB_OK, THIS.cAppTitle)
+	else
+		m.cAction = this.Alert(ERRORMESSAGE_LOC, MB_ICONEXCLAMATION + ;
+			MB_OK, THIS.cAppTitle)
+	endif
+endif
+release this
+
+ENDPROC
+PROCEDURE Init
+THIS.GetOS()	&& fills in THIS.nCurrentOS
+IF THIS.nCurrentOS == OS_DOS OR THIS.nCurrentOS == OS_UNIX  && fail
+	THIS.Alert(E_UNSUPPORTEDOS_LOC)
+	RETURN .F.
+ENDIF
+
+IF !("REGISTRY" $ SET("CLASS"))
+	THIS.SetErrorOff = .T.
+	THIS.HadError = .F.
+	lcRegFile="registry.vcx"
+	IF !FILE(lcRegFile)
+		* class may be used in automation, so search in same directory
+		lcRegFile = JUSTPATH(THIS.ClassLibrary)+"\registry.vcx"
+		IF !FILE(lcRegFile)
+			lcRegFile = HOME()+"FFC\registry.vcx"	
+		ENDIF
+	ENDIF
+	SET CLASSLIB TO (lcRegFile) ALIAS registry ADDITIVE
+	IF THIS.HadError
+		THIS.Alert(E_NOREGISTRY_LOC)
+		RETURN .F.
+	ENDIF
+	THIS.SetErrorOff = .F.
+	THIS.lCloseReg = .T.
+ENDIF
+
+THIS.nSaveLocaleId = VAL(SYS(3004))
+
+ENDPROC
+PROCEDURE addbs
+	* Add a backslash unless there is one already there.
+	LPARAMETER m.pathname
+	LOCAL m.separator
+	m.separator = IIF(_MAC,":","\")
+	m.pathname = ALLTRIM(UPPER(m.pathname))
+	IF !(RIGHT(m.pathname,1) $ '\:') AND !EMPTY(m.pathname)
+	   m.pathname = m.pathname + m.separator
+	ENDIF
+	RETURN m.pathname
+
+ENDPROC
+PROCEDURE alert
+parameters m.cMessage, m.cOptions, m.cTitle, m.cParameter1, m.cParameter2
+
+private m.cOptions, m.cResponse
+
+m.cOptions = iif(empty(m.cOptions), 0, m.cOptions)
+
+if parameters() > 3 && a parameter was passed
+	m.cMessage = [&cMessage]
+endif
+
+clear typeahead
+if !empty(m.cTitle)
+	m.cResponse = MessageBox(m.cMessage, m.cOptions, m.cTitle)
+else
+	m.cResponse = MessageBox(m.cMessage, m.cOptions, THIS.cAppTitle)
+endif
+
+do case
+* The strings below are used internally and should not
+	* be localized
+	case m.cResponse = 1
+		m.cResponse = 'OK'
+	case m.cResponse = 6
+		m.cResponse = 'YES'
+	case m.cResponse = 7
+		m.cResponse = 'NO'
+	case m.cResponse = 2
+		m.cResponse = 'CANCEL'
+	case m.cResponse = 3
+		m.cResponse = 'ABORT'
+	case m.cResponse = 4
+		m.cResponse = 'RETRY'
+	case m.cResponse = 5
+		m.cResponse = 'IGNORE'
+endcase
+return m.cResponse
+
+
+ENDPROC
+PROCEDURE ascanany
+	* This procedure searches an array for an expression and returns
+	* the element number of the first match.
+	* It searches for the string anywhere within an array item (not just the beginning)
+	* Pass .T. for lReturnRow to
+	* get the Row number.)
+	* The search may be restricted to a particular column of the array.
+	* This procedure makes a copy of the array received to allow it to work
+	* with member arrays.
+	* it returns a row number of the first item it finds, or 0 if no find
+	* it ignores case
+	
+	parameters m.cArrayName, m.expression, m.column
+		
+	private iElement, thearray, i
+	
+	=acopy(&cArrayName, thearray)
+	
+	if alen(thearray,2)=0
+		dimension thearray[alen(thearray),1]
+		m.column = 1
+	endif
+
+	iElement = 0
+	
+	FOR i = 1 TO ALEN(thearray,1)
+		IF TYPE("thearray[i,m.column]") # 'C'
+			LOOP
+		ENDIF
+		IF m.expression $ thearray[i,m.column]
+			iElement = i
+			EXIT
+		ENDIF
+	NEXT
+	
+	RETURN iElement
+
+ENDPROC
+PROCEDURE checkdata
+LOCAL cDataAlias,cSetData,i
+
+IF EMPTY(THIS.cAlias)
+	IF EMPTY(ALIAS())
+		*- no alias specified
+		THIS.Alert(E_NODATA_LOC)
+		RETURN .F.
+	ELSE
+		THIS.cAlias = ALIAS()
+		IF !EMPTY(CURSORGETPROP('database'))
+			cDataAlias = UPPER(JUSTSTEM(CURSORGETPROP('database')))
+			cSetData = UPPER(SET('DATABASE'))
+			IF EMPTY(m.cSetData) OR !(m.cSetData==m.cDataAlias)
+				SET DATABASE TO (m.cDataAlias)
+			ENDIF
+			IF EMPTY(THIS.cdbcname)
+				THIS.cdbcname = DBC()
+			ENDIF
+			IF EMPTY(THIS.cdbctable)
+				THIS.cdbctable = CURSORGETPROP('sourcename')
+			ENDIF
+		ENDIF
+	ENDIF
+ELSE
+	IF EMPTY(ALIAS()) OR !UPPER(THIS.cAlias)==ALIAS()
+		IF USED(THIS.cAlias)
+			SELECT (THIS.cAlias)
+		ELSE
+			*- alias not found
+			THIS.Alert(E_NOALIAS_LOC)
+			RETURN .F.
+		ENDIF
+	ENDIF
+ENDIF
+
+IF EMPTY(THIS.aAutoFields[1,1]) AND !EMPTY(ALIAS())
+	DIMENSION THIS.aAutoFields[FCOUNT(),1]
+	FOR i = 1 TO FCOUNT()
+		THIS.aAutoFields[m.i,1] = FIELD(m.i)
+	ENDFOR
+ENDIF
+
+ENDPROC
+PROCEDURE checkdbcevents
+LPARAMETERS lcDBCName, lcVersion, llAlert
+
+*-
+*- Check if a database is being used.
+*- If so, see if database events is turned on.
+*- If version < 10, complain -- MS-Office < 10 only supports ODBC
+*- If so, see if the VFP OLE DB provider is available
+*- If everything is okay, return .T., otherwise .F.
+*- If using this to check a product other that Office, pass a lcVersion > '10'
+
+LOCAL llHasDBCEvents
+
+IF !EMPTY(THIS.cDBCName)
+
+	llHasDBCEvents = DBGETPROP(THIS.cDBCname,"DATABASE","DBCEvents")
+
+	IF VAL(m.lcversion) >= 10
+		*- OLE DB provider not available
+		IF !THIS.CheckOleDB()
+			IF llAlert
+				THIS.Alert(E_UNSUPPDBCEVENT_LOC)
+			ENDIF
+			RETURN .F.
+		ELSE
+			*- Word 10
+			*- deal with later
+		ENDIF
+	ELSE
+		*- version < 10
+		IF llHasDBCEvents
+			*- DBC Events are on, won't work w/ ODBC driver
+			THIS.Alert(E_NODBCEVENT_LOC)
+			RETURN .F.
+		ELSE
+			*- DBC Events is off, so should be okay, as long as ODBC driver,
+			*- is available, which needs to be checked elsewhere (e.g., GETMSW)
+		ENDIF
+	ENDIF
+ELSE
+	*- free table
+ENDIF
+
+RETURN .T.
+ENDPROC
+PROCEDURE checkodbcfoxver
+*- This checks for the Win32s (16bit) DriverID ODBC.INI
+*- setting for FoxPro Files 2.6 section. It merely alerts user if there
+*- is an old driver installed.
+
+IF THIS.lHas30Drivers
+	RETURN
+ENDIF	
+
+LOCAL aFoxSect,retlen,i,cValue
+DIMENSION aFoxSect[1]
+IF THIS.nCurrentOS = OS_W32S	&& Win322
+	IF oreg.GetINISection(@aFoxSect,THIS.aODBCDrivers[1,1],ODBC_FILE)#0
+		*- Failed to read INI file, so skip this check
+		RETURN
+	ENDIF
+	FOR i = 1 TO ALEN(aFoxSect)
+		IF ATC(C_DRIVEID,aFoxSect[m.i])#0	&& Look for DriverID
+			cValue = ""			
+			oreg.GetINIEntry(@cValue,THIS.aODBCDrivers[1,1],aFoxSect[m.i],ODBC_FILE)
+			IF VAL(m.cValue) = FOX_DRIVEID	&&24
+				THIS.ALERT(C_ODBCOLDVER_LOC)
+			ENDIF
+			EXIT
+		ENDIF
+	ENDFOR
+ELSE
+	*- Check for correct version in NT, Win95
+	IF oReg.EnumOptions(@aFoxSect,ODBC_DATA_KEY+THIS.aODBCDrivers[1,1],HKEY_CURRENT_USER,.F.)#0
+		*- Failed to read Registry, so skip this check
+		RETURN
+	ENDIF
+	FOR i = 1 TO ALEN(aFoxSect,1)
+		IF ATC(C_FIL,aFoxSect[m.i,1])#0	AND ATC(C_FOX2,aFoxSect[m.i,2]) # 0		&& Look for FIL
+			THIS.ALERT(C_ODBCOLDVER_LOC)
+			EXIT
+		ENDIF
+		IF ATC(C_DRIVEID,aFoxSect[m.i,1])#0	&&Look for DriverID
+			*- test for DWORD first and then ASCII
+			IF (ASC(SUBSTR(aFoxSect[m.i,2],1,1)) = FOX_DRIVEID AND ASC(SUBSTR(aFoxSect[m.i,2],2,1))=0) OR;
+				VAL(aFoxSect[m.i,2]) = FOX_DRIVEID
+				THIS.ALERT(C_ODBCOLDVER_LOC)
+				EXIT
+			ENDIF
+		ENDIF
+	ENDFOR
+ENDIF
+
+ENDPROC
+PROCEDURE checkoledb
+*- check for presence of VFP OLE DB provider
+*- return .T. if present, .F. if not
+
+LOCAL loReg
+
+loReg = CREATEOBJECT("registry")	&& VCX was opened in INIT
+IF VARTYPE(loReg) # 'O' OR ISNULL(loReg)
+	RETURN .F.
+ENDIF
+
+RETURN loReg.iskey(OLEDBPROVIDER_KEY, HKEY_CLASSES_ROOT)
+ENDPROC
+PROCEDURE displaystatus
+LPARAMETER cMessage
+IF TYPE("m.cMessage") = "C"
+	SET MESSAGE TO m.cMessage
+ELSE
+	IF EMPTY(THIS.cOldMessage)
+		SET MESSAGE TO
+	ELSE
+		SET MESSAGE TO THIS.cOldMessage
+	ENDIF
+ENDIF
+
+ENDPROC
+PROCEDURE forceext
+	* Force filename to have a particular extension.
+	LPARAMETERS m.filname,m.ext
+	LOCAL m.ext
+	IF SUBSTR(m.ext,1,1) = "."
+	   m.ext = SUBSTR(m.ext,2,3)
+	ENDIF
+
+	m.pname = THIS.justpath(m.filname)
+	m.filname = THIS.justfname(UPPER(ALLTRIM(m.filname)))
+	IF AT('.',m.filname) > 0
+	   m.filname = SUBSTR(m.filname,1,AT('.',m.filname)-1) + '.' + m.ext
+	ELSE
+	   m.filname = m.filname + '.' + m.ext
+	ENDIF
+	RETURN THIS.addbs(m.pname) + m.filname
+
+ENDPROC
+PROCEDURE getdbcalias
+* Takes the current DBC and gets its alias name
+* cDBC - DBC name passed if not current DBC()
+LPARAMETER cDBC
+LOCAL aDBCtmp,cGetDBC,nPos
+IF TYPE("m.cDBC") # "C"
+	m.cDBC  =""
+ENDIF
+IF EMPTY(m.cDBC) AND EMPTY(DBC())
+	RETURN ""
+ENDIF
+m.cGetDBC = IIF(EMPTY(m.cDBC),DBC(),UPPER(m.cDBC))
+DIMENSION aDBCtmp[1,2]
+ADATA(aDBCtmp)
+m.nPos = ASCAN(aDBCtmp,m.cGetDBC)
+RETURN IIF(m.nPos = 0,"",aDBCtmp[m.nPos-1])
+
+ENDPROC
+PROCEDURE getdsn
+	*- set value of DSN
+	*- do cascading list of drivers
+	LOCAL cOldExact, nVal
+
+	m.cOldExact = SET("EXACT")
+	SET EXACT OFF
+
+	nVal = THIS.AScanAny("THIS.aODBCDrivers",FOXODBC_30,2)
+	IF nVal > 0
+		THIS.cODBC_DSN = THIS.aODBCDrivers[nVal,1]
+	ELSE		
+		nVal = THIS.AScanAny("THIS.aODBCDrivers",FOXODBC_26,2)
+		IF nVal > 0
+			THIS.cODBC_DSN = THIS.aODBCDrivers[nVal,1]
+		ELSE
+			nVal = THIS.AScanAny("THIS.aODBCDrivers",FOXODBC_25,2)
+			IF nVal > 0
+				THIS.cODBC_DSN = THIS.aODBCDrivers[nVal,1]
+			ENDIF
+		ENDIF
+	ENDIF
+
+	SET EXACT &cOldExact
+
+
+ENDPROC
+PROCEDURE getodbc
+*- get a list of the ODBC drivers, and store in a property of the automation class
+PARAMETER cSect
+LOCAL aODBCSects,retval,oINI,cValue,nArrLen,i
+LOCAL nPos,cSaveExact, retval, cValue
+
+DIMENSION aODBCSects[1]
+
+IF PARAMETERS()=0
+	cSect = 0
+ENDIF
+
+retval = oReg.GetINISection(@aODBCSects,m.cSect,ODBC_FILE)
+DO CASE
+	CASE m.retval = ERROR_NOINIFILE
+		THIS.Alert(E_ODBCDLL_LOC)
+		RETURN .F.
+	CASE m.retval = ERROR_NOINIENTRY
+		*- do nothing
+	CASE m.retval = ERROR_FAILINI
+		*- do nothing
+	OTHERWISE
+		FOR i = 1 TO ALEN(aODBCSects)
+			cValue = ""
+			=oReg.GetINIEntry(@cValue,m.cSect,aODBCSects[m.i],ODBC_FILE)
+			IF ATC("FoxPro",cValue) # 0
+				IF !EMPTY(THIS.aODBCDrivers[1])
+					DIMENSION THIS.aODBCDrivers[ALEN(THIS.aODBCDrivers,1) + 1, 2]
+				ENDIF
+				THIS.aODBCDrivers[ALEN(THIS.aODBCDrivers, 1),1] = aODBCSects[m.i]
+				THIS.aODBCDrivers[ALEN(THIS.aODBCDrivers, 1),2] = m.cValue			
+			ENDIF
+		ENDFOR
+ENDCASE
+
+RETURN .T.
+
+
+ENDPROC
+PROCEDURE getodbcdata
+	LOCAL nPos,cSaveExact
+	
+	*- First check to see if we have 3.0 drivers
+	FOR nPOS = 1 TO ALEN(THIS.aODBCDrivers,1)
+		IF ATC(FOXODBC_30, THIS.aODBCDrivers[m.nPos, 1]) # 0
+			THIS.cODBC_DSN = THIS.aODBCDrivers[m.nPos, 1]
+			THIS.lHas30Drivers = .T.
+			RETURN
+		ENDIF
+	ENDFOR
+	
+	*- Check to see if we have "FoxPro Files" generic 2.6 driver
+	cSaveExact = SET("EXACT")
+	SET EXACT ON
+	nPOS = ASCAN(THIS.aODBCDrivers, THIS.cODBC_DSN)
+	IF m.nPOS == 0 OR nPos = ALEN(THIS.aODBCDrivers)
+		nPOS = 1
+		THIS.cODBC_DSN = THIS.aODBCDrivers[1, 1]
+	ENDIF
+	SET EXACT &cSaveExact
+
+ENDPROC
+PROCEDURE getos
+	DO CASE
+		CASE _DOS
+			THIS.nCurrentOS = OS_DOS
+		CASE _UNIX
+			THIS.nCurrentOS = OS_UNIX
+		CASE _MAC
+			THIS.nCurrentOS = OS_MAC
+		CASE ATC("Windows 3",OS(1)) # 0
+			THIS.nCurrentOS = OS_W32S
+		CASE ATC("Windows NT",OS(1)) # 0 OR VAL(OS(3))>=5
+			THIS.nCurrentOS = OS_NT
+		OTHERWISE
+			* Some future system (Windows 95)
+			THIS.nCurrentOS = OS_WIN95
+	ENDCASE
+
+ENDPROC
+PROCEDURE isodbc
+	PARAMETER cODBCStr, cItemType
+	*- check aODBCDrivers array for presence of requested driver
+	*- cItemType = "D" search for driver (column 2)
+	*-           = "S" search for data source (column 1)
+
+	LOCAL cOldExact, nVal
+
+	m.cOldExact = SET("EXACT")
+	SET EXACT OFF
+	nVal = THIS.AScanAny("THIS.aODBCDrivers",cODBCStr,IIF(cItemType = "S",1,2))
+	SET EXACT &cOldExact
+
+	RETURN (nVal > 0)
+
+
+ENDPROC
+PROCEDURE justext
+	* Return just the extension from "filname"
+	PARAMETERS m.filname
+	LOCAL m.ext
+	m.filname = this.justfname(m.filname)   && prevents problems with ..\ paths
+	m.ext = ""
+	IF AT('.', m.filname) > 0
+	   m.ext = SUBSTR(m.filname, AT('.', m.filname) + 1, 3)
+	ENDIF
+	RETURN UPPER(m.ext)
+
+ENDPROC
+PROCEDURE justfname
+	* Return just the filename (i.e., no path) from "filname"
+	LPARAMETERS m.filname
+	LOCAL clocalfname, cdirsep
+	clocalfname = SYS(2027,m.filname)
+	cdirsep = IIF(_mac,':','\')
+	IF RAT(m.cdirsep ,m.clocalfname) > 0
+	   m.clocalfname= SUBSTR(m.clocalfname,RAT(m.cdirsep,m.clocalfname)+1,255)
+	ENDIF
+	IF AT(':',m.clocalfname) > 0
+	   m.clocalfname= SUBSTR(m.clocalfname,AT(':',m.clocalfname)+1,255)
+	ENDIF
+	RETURN ALLTRIM(UPPER(m.clocalfname))
+
+ENDPROC
+PROCEDURE justpath
+	* Returns just the pathname.
+	LPARAMETERS m.filname
+	LOCAL cdirsep
+	cdirsep = IIF(_mac,':','\')
+	m.filname = SYS(2027,ALLTRIM(UPPER(m.filname)))
+	IF m.cdirsep $ m.filname
+	   m.filname = SUBSTR(m.filname,1,RAT(m.cdirsep,m.filname))
+	   IF RIGHT(m.filname,1) = m.cdirsep AND LEN(m.filname) > 1 ;
+	            AND SUBSTR(m.filname,LEN(m.filname)-1,1) <> ':'
+	         filname = SUBSTR(m.filname,1,LEN(m.filname)-1)
+	   ENDIF
+	   RETURN m.filname
+	ELSE
+	   RETURN ''
+	ENDIF
+
+ENDPROC
+PROCEDURE juststem
+	* Return just the stem name from "filname"
+	LPARAMETERS m.filname
+	IF RAT('\',m.filname) > 0
+	   m.filname = SUBSTR(m.filname,RAT('\',m.filname)+1,255)
+	ENDIF
+	IF RAT(':',m.filname) > 0
+	   m.filname = SUBSTR(m.filname,RAT(':',m.filname)+1,255)
+	ENDIF
+	IF AT('.',m.filname) > 0
+	   m.filname = SUBSTR(m.filname,1,AT('.',m.filname)-1)
+	ENDIF
+	RETURN ALLTRIM(UPPER(m.filname))
+
+ENDPROC
+PROCEDURE makeodc
+LPARAMETERS tcDataSource, tcFileName
+
+LOCAL lcODCStr, lcDataSource, lcFileName
+lcDataSource = tcDataSource
+lcFileName = tcFileName
+
+IF EMPTY(lcDataSource)
+	RETURN ""
+ENDIF
+
+IF EMPTY(lcFileName)
+	IF UPPER(JUSTEXT(lcDataSource))="DBC"
+		lcFileName = FORCEEXT(lcDataSource,"ODC")
+	ELSE
+		lcFileName = ADDBS(lcDataSource)+"FOXDBFS.ODC"
+	ENDIF
+ENDIF
+
+* If file exists, don't recreate it.
+IF FILE(lcFileName)
+	RETURN lcFileName
+ENDIF
+
+* Create generic data source file for DBC or free table directory.
+TEXT TO lcODCStr NOSHOW TEXTMERGE
+<html>
+
+<head>
+<meta http-equiv=Content-Type content="text/x-ms-odc; charset=utf-8">
+<meta name=ProgId content=ODC.Database>
+<meta name=SourceType content=OLEDB>
+<xml id=docprops></xml><xml id=msodc><odc:OfficeDataConnection
+  xmlns:odc="urn:schemas-microsoft-com:office:odc"
+  xmlns="http://www.w3.org/TR/REC-html40">
+  <odc:Connection odc:Type="OLEDB">
+   <odc:ConnectionString>Provider=VFPOLEDB;Data Source=<<lcDataSource>>;Mode=Share Deny None;Extended Properties=&quot;&quot;;User ID=&quot;&quot;;Mask Password=False;Cache Authentication=False;Encrypt Password=False;Collating Sequence=Machine;DSN=&quot;&quot;</odc:ConnectionString>
+   <odc:CommandType>Table</odc:CommandType>
+  </odc:Connection>
+ </odc:OfficeDataConnection>
+</xml>
+<style>
+<!--
+    .ODCDataSource
+    {
+    behavior: url(dataconn.htc);
+    }
+-->
+</style>
+
+</head>
+
+<body onload='init()' scroll=no leftmargin=0 topmargin=0 rightmargin=0 style='border: 0px'>
+<table style='border: solid 1px threedface; height: 100%; width: 100%' cellpadding=0 cellspacing=0 width='100%'>
+  <tr>
+    <td id=tdName style='font-family:arial; font-size:medium; padding: 3px; background-color: threedface'>
+      &nbsp;
+    </td>
+     <td id=tdTableDropdown style='padding: 3px; background-color: threedface; vertical-align: top; padding-bottom: 3px'>
+
+      &nbsp;
+    </td>
+  </tr>
+  <tr>
+    <td id=tdDesc colspan='2' style='border-bottom: 1px threedshadow solid; font-family: Arial; font-size: 1pt; padding: 2px; background-color: threedface'>
+
+      &nbsp;
+    </td>
+  </tr>
+  <tr>
+    <td colspan='2' style='height: 100%; padding-bottom: 4px; border-top: 1px threedhighlight solid;'>
+      <div id='pt' style='height: 100%' class='ODCDataSource'></div>
+    </td>
+  </tr>
+</table>
+
+
+<script language='javascript'>
+
+function init() {
+  var sName, sDescription;
+  var i, j;
+
+  try {
+    sName = unescape(location.href)
+
+    i = sName.lastIndexOf(".")
+    if (i>=0) { sName = sName.substring(1, i); }
+
+    i = sName.lastIndexOf("/")
+    if (i>=0) { sName = sName.substring(i+1, sName.length); }
+
+    document.title = sName;
+    document.getElementById("tdName").innerText = sName;
+
+    sDescription = document.getElementById("docprops").innerHTML;
+
+    i = sDescription.indexOf("escription>")
+    if (i>=0) { j = sDescription.indexOf("escription>", i + 11); }
+
+    if (i>=0 && j >= 0) {
+      j = sDescription.lastIndexOf("</", j);
+
+      if (j>=0) {
+          sDescription = sDescription.substring(i+11, j);
+        if (sDescription != "") {
+            document.getElementById("tdDesc").style.fontSize="x-small";
+          document.getElementById("tdDesc").innerHTML = sDescription;
+          }
+        }
+      }
+    }
+  catch(e) {
+
+    }
+  }
+</script>
+
+</body>
+
+</html>
+ENDTEXT
+
+STRTOFILE(lcODCStr,lcFileName)
+
+RETURN lcFileName
+ENDPROC
+PROCEDURE odbccheck
+* Checks and gets FoxPro ODBC data sources for MS Query to use
+* when called by Excel thru OLE automation. Note: MS Query 1.0
+* reads from INI files and NOT the Registry.
+
+LOCAL cBuffer,nBufSize,cDLLName,i,cSection,cValue,aODBCSects,lcRegFile
+cValue = ""
+
+IF !("REGISTRY" $ SET("CLASS"))
+	THIS.SetErrorOff = .T.
+	THIS.HadError = .F.
+	lcRegFile="registry.vcx"
+	IF !FILE(lcRegFile)
+		* class may be used in automation, so search in same directory
+		lcRegFile = JUSTPATH(THIS.ClassLibrary)+"\registry.vcx"
+		IF !FILE(lcRegFile)
+			lcRegFile = HOME()+"FFC\registry.vcx"	
+		ENDIF
+	ENDIF
+	SET CLASSLIB TO (lcRegFile) ALIAS registry ADDITIVE
+	IF THIS.HadError
+		THIS.Alert(E_NOREGISTRY_LOC)
+		RETURN .F.
+	ENDIF
+	THIS.SetErrorOff = .F.
+	THIS.lCloseReg = .T.
+ENDIF
+
+*- Registry class is set in INIT
+oReg = CREATE('oldinireg')		&& in Registry.VCX
+
+*- Check to see if we have a registered FoxPro ODBC Data Source in ODBC.INI.
+IF !THIS.GetODBC(ODBC_SOURCE)
+	THIS.ALERT(E_ODBC1_LOC)
+	RETURN .F.
+ENDIF
+
+*- Check to see if we have a registered FoxPro ODBC 32 bit Data Source in ODBC.INI.
+IF !THIS.GetODBC(ODBC_32SOURCE)
+	THIS.ALERT(E_ODBC1_LOC)
+	RETURN .F.
+ENDIF
+
+*- Finally, check if "FoxPro Files" is a section but somehow
+*- was not listed as a registered ODBC Data Source. Let's
+*- by default set it to FoxPro 2.6 driver.
+IF EMPTY(THIS.aODBCDrivers[1])
+	DIMENSION aODBCSects[1]
+	IF oReg.GetINISection(@aODBCSects,THIS.cODBC_DSN,ODBC_FILE) = ERROR_SUCCESS
+		m.cSection = THIS.cODBC_DSN
+		THIS.aODBCDrivers[1,1] = THIS.cODBC_DSN
+		THIS.aODBCDrivers[1,2] = FOXODBC_26FIX
+	ENDIF
+ENDIF
+
+*- Failed to find a FoxPro section
+IF EMPTY(THIS.aODBCDrivers[1])
+	*- failed to find any ODBC sources
+	THIS.ALERT(E_ODBC2_LOC)
+	RETURN .F.
+ENDIF
+
+*- Get Data Driver name and File type here
+THIS.GetODBCData()
+
+*- Check for correct driver installed
+THIS.CheckODBCFoxVer()
+
+RETURN .T.
+
+ENDPROC
+PROCEDURE saveoutfile
+LPARAMETER pMess,pDefFile,pExtn
+LOCAL cSaveFile,iFHand
+
+IF TYPE("m.pMess")# "C"
+	m.pMess = ""
+ENDIF
+IF TYPE("m.pDefFile")# "C"
+	m.pDefFile = ""
+ENDIF
+IF TYPE("m.pExtn")# "C" OR EMPTY(m.pExtn)
+	m.pExtn = "*"
+ENDIF
+
+DO WHILE .T.
+	m.cSaveFile = PUTFILE(m.pMess,m.pDefFile,m.pExtn)
+
+	IF EMPTY(m.cSaveFile)
+		EXIT
+	ENDIF
+
+	IF m.pExtn # "*"
+		m.cSaveFile = THIS.FORCEEXT(m.cSaveFile,m.pExtn)
+	ENDIF
+
+	IF FILE(m.cSaveFile)
+		*check if file already open
+		m.iFHand=FOPEN(m.cSaveFile)
+		IF m.iFHand= -1
+			THIS.Alert(C_FILEUSE2_LOC)
+			LOOP
+		ENDIF
+		=FCLOSE(m.iFHand)
+	ENDIF
+	
+	EXIT
+ENDDO
+
+THIS.cOutFile = m.cSaveFile
+RETURN !EMPTY(THIS.cOutFile)
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+capptitle Title of calling application (used in Alert)
+calias Alias of source table or view
+cdbctable Name of source DBC table
+ncurrentos Current OS
+codbc_dsn ODBC data set name
+codbc_fil ODBC File Type
+lhas30drivers Are VFP 3.0 ODBC drivers available?
+seterroroff Flag to disable normal error handling
+haderror Flag to indicate an error occurred while normal error handling was off
+cdbcname
+cdbcalias
+coldmessage
+lclosereg
+nsavelocaleid
+builder
+builderx
+codcfile Name of Office Data Source file for use with OLE DB Provider.
+^aautofields[1,1] Array of source field names
+*alert Displays an alert
+*ascanany Scan an array for a string anywhere in the array item
+*checkodbcfoxver 
+^aodbcdrivers[1,2] Array of installed drivers
+*isodbc Is requested ODBC driver present?
+*getodbcdata Get DSN for a FoxPro driver
+*odbccheck Gets FoxPro ODBC data source
+*getodbc Get a list of the ODBC drivers, and store in the aODBCDrivers property
+*getdsn Get DSN and set cODBC_DSN property
+*justpath 
+*justfname 
+*forceext 
+*juststem 
+*addbs 
+*justext 
+*getos Fills in nCurrentOS property
+*getdbcalias 
+*displaystatus 
+*makeoutput 
+*saveoutfile 
+*checkdata 
+*checkoledb 
+*checkdbcevents 
+*makeodc 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+automate.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] automation
+[START RESERVED1]
+ 
+ automate.hØ™˜,[END RESERVED1]
+[EOF]
