@@ -24,4 +24,6 @@ AutoIncrement=.F.
 [OLEServers]
 [OLEServersEnd]
 [ProjectFiles]
+ 945918226,P,frxcommon.prg,.F.,.F.,1252,,,
+ 945918228,P,frxpreview.prg,.F.,.T.,1252,,,
 [EOF]
