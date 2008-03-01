@@ -1,0 +1,164 @@
+SCCTEXT Version 4.0.0.2
+PLATFORM C(8,0),UNIQUEID C(10,0),TIMESTAMP N(10,0),CLASS M(4,0),CLASSLOC M(4,0),BASECLASS M(4,0),OBJNAME M(4,0),PARENT M(4,0),PROPERTIES M(4,0),PROTECTED M(4,0),METHODS M(4,0),OBJCODE M(4,0),OLE M(4,0),OLE2 M(4,0),RESERVED1 M(4,0),RESERVED2 M(4,0),RESERVED3 M(4,0),RESERVED4 M(4,0),RESERVED5 M(4,0),RESERVED6 M(4,0),RESERVED7 M(4,0),RESERVED8 M(4,0),USER M(4,0)
+1252
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] Class     
+[START RESERVED1]
+VERSION =   3.00[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _S4X0ULI7I
+[CLASS] _custom
+[CLASSLOC] _base.vcx
+[BASECLASS] custom
+[OBJNAME] _setallx
+[START PROPERTIES]
+cevalexpr = 
+cexpr = 
+cproperty = 
+cobjectname = 
+Name = "_setallx"
+[END PROPERTIES]
+[START PROTECTED]
+lerrorflag
+lerrorwait
+cevalexpr
+cexpr
+cproperty
+cobjectname
+[END PROTECTED]
+[START METHODS]
+PROCEDURE Error
+LPARAMETERS nError, cMethod, nLine
+LOCAL lcMessage
+
+IF NOT this.lErrorWait
+	RETURN
+ENDIF
+WAIT CLEAR
+this.lErrorFlag=.T.
+lcMessage=MESSAGE()+CHR(13)+CHR(13)+this.cObjectName+"."+this.cProperty
+IF NOT EMPTY(this.cEvalExpr)
+	lcMessage=lcMessage+CHR(13)+CHR(13)+this.cEvalExpr
+ENDIF
+MESSAGEBOX(lcMessage,16,"SetAllX")
+
+ENDPROC
+PROCEDURE Init
+LPARAMETERS toParent,tcProperty,tcExpr,tcBaseClassList,tlNoContainerMode,tlErrorWait
+
+IF PCOUNT()=0
+	RETURN
+ENDIF
+RETURN this.SetAllX(toParent,tcProperty,tcExpr,tcBaseClassList,tlNoContainerMode,tlErrorWait)
+
+ENDPROC
+PROCEDURE setallx
+LPARAMETERS toParent,tcProperty,tcExpr,tcBaseClassList,tlNoContainerMode,tlErrorWait
+LOCAL lcObjectName,lnCount
+LOCAL lcBaseClass,lcBaseClassList
+LOCAL llMethodMode,llEvalMode,lcEvalExpr,lcCodeLine,llUpdateFlag
+LOCAL laChild[1],laChild2[1]
+
+IF PCOUNT()<=1
+	RETURN .F.
+ENDIF
+IF TYPE("toParent")#"O" OR ISNULL(toParent)
+	IF TYPE("this.parent")#"O"
+		RETURN .F.
+	ENDIF
+	toParent=this.parent
+ENDIF
+IF AMEMBERS(laChild,toParent,2)=0
+	RETURN .F.
+ENDIF
+this.lErrorWait=tlErrorWait
+this.cObjectName=""
+this.cProperty=tcProperty
+this.cExpr=tcExpr
+this.cEvalExpr=""
+this.lErrorFlag=.F.
+lcBaseClass=UPPER(toParent.BaseClass)
+lcBaseClassList=IIF(EMPTY(tcBaseClassList),"",ALLTRIM(tcBaseClassList))
+llUpdateFlag=.F.
+llMethodMode=(RIGHT(tcProperty,1)==")")
+llEvalMode=(TYPE("tcExpr")=="C" AND LEFT(tcExpr,1)=="(" AND RIGHT(tcExpr,1)==")")
+IF NOT tlNoContainerMode AND NOT llMethodMode AND NOT llEvalMode AND ;
+		EMPTY(lcBaseClassList) AND PEMSTATUS(lcBaseClass,"AddObject",5) AND ;
+		NOT PEMSTATUS(lcBaseClass,"AddObject",4) AND ;
+		PEMSTATUS(lcBaseClass,"AddObject",3)=="Method"
+	RETURN toParent.SetAllX(tcProperty,tcExpr)
+ENDIF
+FOR lnCount = 1 to ALEN(laChild)
+	IF this.lErrorFlag
+		EXIT
+	ENDIF
+	lcObjectName=laChild[lnCount]
+	this.cObjectName=lcObjectName
+	IF NOT tlNoContainerMode
+		RELEASE laChild2
+		IF AMEMBERS(laChild2,toParent.&lcObjectName,2)>0
+			CREATEOBJECT(this.Class,toParent.&lcObjectName, ;
+					tcProperty,tcExpr,lcBaseClassList,tlNoContainerMode,tlErrorWait)
+		ENDIF
+	ENDIF
+	IF NOT EMPTY(lcBaseClassList)
+		lcCodeLine=lcObjectName+".BaseClass"
+		lcBaseClass=UPPER(toParent.&lcCodeLine)
+		IF ATC(lcBaseClass+",",lcBaseClassList+",")=0
+			LOOP
+		ENDIF
+	ENDIF
+	lcCodeLine=lcObjectName+"."+tcProperty
+	llUpdateFlag=.T.
+	IF llEvalMode
+		lcEvalExpr=tcExpr
+		IF ATC("this.parent.",lcEvalExpr)>0
+			lcEvalExpr=STRTRAN(LOWER(lcEvalExpr),"this.parent.","toParent.")
+		ENDIF
+		IF ATC("this.",lcEvalExpr)>0
+			lcEvalExpr=STRTRAN(LOWER(lcEvalExpr),"this.","toParent."+lcObjectName+".")
+		ENDIF
+		this.cEvalExpr=lcEvalExpr
+		IF llMethodMode
+			lcCodeLine=LEFT(lcCodeLine,LEN(lcCodeLine)-1)+"EVALUATE(lcEvalExpr))"
+		ELSE
+			lcCodeLine=lcCodeLine+"=EVALUATE(lcEvalExpr)"
+		ENDIF
+	ELSE
+		IF NOT llMethodMode
+			lcCodeLine=lcCodeLine+"=tcExpr"
+		ENDIF
+	ENDIF
+	toParent.&lcCodeLine
+ENDFOR
+RETURN (llUpdateFlag AND NOT this.lErrorFlag)
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+lerrorflag
+lerrorwait
+cevalexpr
+cexpr
+cproperty
+cobjectname
+*setallx Extends functionality of Visual FoxPro's SetAll() method.
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED7]
+SetAll eXtended to support expressions, methods, and other additions.[END RESERVED7]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _setallx
+[EOF]
