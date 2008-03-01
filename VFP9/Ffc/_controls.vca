@@ -1,0 +1,840 @@
+SCCTEXT Version 4.0.0.2
+PLATFORM C(8,0),UNIQUEID C(10,0),TIMESTAMP N(10,0),CLASS M(4,0),CLASSLOC M(4,0),BASECLASS M(4,0),OBJNAME M(4,0),PARENT M(4,0),PROPERTIES M(4,0),PROTECTED M(4,0),METHODS M(4,0),OBJCODE M(4,0),OLE M(4,0),OLE2 M(4,0),RESERVED1 M(4,0),RESERVED2 M(4,0),RESERVED3 M(4,0),RESERVED4 M(4,0),RESERVED5 M(4,0),RESERVED6 M(4,0),RESERVED7 M(4,0),RESERVED8 M(4,0),USER M(4,0)
+1252
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] Class     
+[START RESERVED1]
+VERSION =  0.029[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _R5S0NGX66
+[CLASS] _custom
+[CLASSLOC] _base.vcx
+[BASECLASS] custom
+[OBJNAME] _resizable
+[START PROPERTIES]
+Height = 19
+Width = 27
+initialresize = .T.
+initialformheight = 0
+initialformwidth = 0
+Name = "_resizable"
+[END PROPERTIES]
+[START PROTECTED]
+initialresize
+initialformheight
+initialformwidth
+addtoarray
+setsize
+loopthroughcontrols
+acontrolstats
+[END PROTECTED]
+[START METHODS]
+PROCEDURE Init
+THIS.InitialFormHeight = THISFORM.Height
+THIS.InitialFormWidth = THISFORM.Width
+ENDPROC
+PROCEDURE addtoarray
+LPARAMETERS oControl
+LOCAL nLen
+nLen = ALEN(THIS.aControlStats,1)
+THIS.aControlStats[nLen,1] = oControl.Top / THIS.InitialFormHeight
+THIS.aControlStats[nLen,2] = oControl.Left / THIS.InitialFormWidth
+THIS.aControlStats[nLen,3] = oControl.Height / THIS.InitialFormHeight
+THIS.aControlStats[nLen,4] = oControl.Width / THIS.InitialFormWidth
+THIS.aControlStats[nLen,5] = IIF(TYPE("oControl.FontSize") = 'U', 0, oControl.FontSize)
+DIMENSION THIS.aControlStats[nLen+1, 5]
+
+ENDPROC
+PROCEDURE adjustcontrols
+IF THIS.InitialResize
+	THIS.LoopThroughControls("INITIALIZE_AND_ADJUST")
+	THIS.InitialResize = .F.
+ELSE
+	THIS.LoopThroughControls("ADJUST")
+ENDIF
+ENDPROC
+PROCEDURE loopthroughcontrols
+LPARAMETERS cTask
+* Valid parameters for cTask are 'Initialize_And_Adjust' and 'Adjust'
+
+LOCAL nOldDecimal, nPos, i, j, k, oControl
+
+cTask = UPPER(cTask)
+
+nOldDecimal = SET("DECIMAL")
+SET DECIMAL TO 4
+
+#define BASE_CLASS "Commandbutton Combobox Checkbox Listbox Form Grid Textbox Label Shape Editbox Olecontrol Pageframe Image Spinner"
+
+nPos = 0
+THISFORM.LockScreen = .T.
+FOR m.i = 1 TO THISFORM.ControlCount
+	oControl = THISFORM.Controls[m.i]
+	IF oControl.Baseclass$BASE_CLASS
+		nPos = nPos + 1
+		DO CASE
+			CASE cTask = 'INITIALIZE_AND_ADJUST'
+				THIS.AddToArray(oControl)
+				THIS.SetSize(oControl, nPos)
+			CASE cTask = 'ADJUST'
+				THIS.SetSize(oControl, nPos)
+		ENDCASE
+	ENDIF
+	*A pageframe can contain only pages
+	IF THISFORM.Controls[m.i].Baseclass$"Pageframe"
+		*Loop through each page of the pageframe
+		FOR m.j = 1 TO THISFORM.Controls[m.i].PageCount
+			WITH THISFORM.Controls[m.i].pages[m.j]
+				*loop through all the controls on the page
+				FOR m.k = 1 TO .ControlCount
+					IF .Controls[m.k].Baseclass$BASE_CLASS
+						nPos = nPos + 1
+						DO CASE
+							CASE cTask = 'INITIALIZE_AND_ADJUST'
+								THIS.AddToArray(.Controls[m.k])
+								THIS.SetSize(.Controls[m.k], nPos)
+							CASE cTask = 'ADJUST'
+								THIS.SetSize(.Controls[m.k], nPos)
+						ENDCASE
+					ENDIF
+				ENDFOR
+			ENDWITH
+		ENDFOR
+	ENDIF			
+ENDFOR
+
+THISFORM.LockScreen = .F.
+SET DECIMAL TO nOldDecimal
+ENDPROC
+PROCEDURE reset
+THIS.InitialResize = .T.
+DIMENSION THIS.aControlStats[1,5]
+ENDPROC
+PROCEDURE setsize
+LPARAMETERS oControl, nPos
+oControl.Top = THISFORM.Height * THIS.aControlStats[nPos,1]
+oControl.Left = THISFORM.Width * THIS.aControlStats[nPos,2]
+oControl.Width = THISFORM.Width * THIS.aControlStats[nPos,4]
+IF !oControl.Baseclass $ "Textbox Spinner"
+	oControl.Height = THISFORM.Height * THIS.aControlStats[nPos,3]
+ENDIF
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+initialresize Is this the first time the controls are being adjusted?
+initialformheight
+initialformwidth
+*adjustcontrols Call from resize event of a form to adjust the placement and size of contained objects.
+*addtoarray 
+*setsize 
+*loopthroughcontrols 
+*reset Resets the Timer control so that it starts counting from 0.
+^acontrolstats[1,5] 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _resizable
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _R8C0U0LVK
+[CLASS] _container
+[CLASSLOC] _base.vcx
+[BASECLASS] container
+[OBJNAME] _moverlists
+[START PROPERTIES]
+Width = 409
+Height = 132
+BackStyle = 0
+BorderWidth = 0
+mousex = 0
+mousey = 0
+candropicon = DRAGMOVE.CUR
+nodropicon = NODROP01.CUR
+dragthreshold = 8
+Name = "_moverlists"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+This.lstSource.DragIcon = This.CanDropIcon
+This.lstSelected.DragIcon = This.CanDropIcon
+
+ENDPROC
+PROCEDURE selectall
+LPARAMETERS oList
+LOCAL lnCnt
+FOR lnCnt = 1 to oList.ListCount
+	oList.Selected(lnCnt) = .T.
+ENDFOR
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+7[END RESERVED2]
+[START RESERVED3]
+mousex Stores x coordinate of mouse pointer position.
+mousey Stores y coordinate of mouse pointer position.
+candropicon Cursor when dropping is okay.
+nodropicon Cursor when dropping is not okay.
+dragthreshold Number of pixels a user has to move the mouse with the left mouse button down for the drag method to be called.
+*selectall Selects all items in the listbox passed in as a parameter.
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED7]
+mover list boxes[END RESERVED7]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _R8C0U0LQK
+[CLASS] _listbox
+[CLASSLOC] _base.vcx
+[BASECLASS] listbox
+[OBJNAME] lstSource
+[PARENT] _moverlists
+[START PROPERTIES]
+DragMode = 0
+DragIcon = grid\
+FontBold = .F.
+FontName = "MS Sans Serif"
+FontSize = 8
+ColumnCount = 0
+ColumnWidths = ""
+RowSourceType = 0
+RowSource = ""
+ControlSource = ""
+Height = 132
+Left = 0
+MultiSelect = .T.
+NumberOfElements = 0
+TabIndex = 1
+Top = 0
+Width = 169
+Name = "lstSource"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE DblClick
+THIS.Parent.lstSelected.AddItem(This.List(This.ListIndex))
+This.RemoveItem(This.ListIndex)
+
+ENDPROC
+PROCEDURE DragDrop
+LPARAMETERS oSource, nXCoord, nYCoord
+IF oSource.Name != THIS.Name
+	THIS.Parent.cmdRemove.Click
+ENDIF
+
+ENDPROC
+PROCEDURE DragOver
+LPARAMETERS oSource, nXCoord, nYCoord, nState
+DO CASE
+	CASE nState = 0 && Enter
+		oSource.DragIcon = THIS.Parent.CanDropIcon
+	CASE nState = 1 && Leave
+		oSource.DragIcon = THIS.Parent.NoDropIcon
+ENDCASE
+
+
+ENDPROC
+PROCEDURE KeyPress
+LPARAMETERS nKeyCode, nShiftAltCtrl
+IF nKeyCode = 63 AND nShiftAltCtrl = 1
+	THIS.Parent.SelectAll(THIS)
+ENDIF
+ENDPROC
+PROCEDURE MouseDown
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+THIS.Parent.MouseX = nXCoord
+THIS.Parent.MouseY = nYCoord
+
+ENDPROC
+PROCEDURE MouseMove
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+IF nButton = 1 && Left Mouse
+	IF ABS(nXCoord - THIS.Parent.MouseX) > THIS.Parent.DragThreshold OR ;
+			ABS(nYCoord - THIS.Parent.MouseY) > THIS.Parent.DragThreshold
+		THIS.Drag
+	ENDIF
+ENDIF
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _R8C0U0LRO
+[CLASS] _listbox
+[CLASSLOC] _base.vcx
+[BASECLASS] listbox
+[OBJNAME] lstSelected
+[PARENT] _moverlists
+[START PROPERTIES]
+DragMode = 0
+DragIcon = grid\
+FontBold = .F.
+FontName = "MS Sans Serif"
+FontSize = 8
+ColumnCount = 0
+ColumnWidths = ""
+RowSourceType = 0
+RowSource = ""
+ControlSource = ""
+FirstElement = 1
+Height = 132
+Left = 240
+MoverBars = .T.
+MultiSelect = .T.
+NumberOfElements = 0
+TabIndex = 2
+Top = 0
+Width = 169
+Name = "lstSelected"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE DblClick
+THIS.Parent.lstSource.AddItem(This.List(This.ListIndex))
+This.RemoveItem(This.ListIndex)
+
+ENDPROC
+PROCEDURE DragDrop
+LPARAMETERS oSource, nXCoord, nYCoord
+IF oSource.Name != THIS.Name
+	THIS.Parent.cmdAdd.Click
+ENDIF
+
+ENDPROC
+PROCEDURE DragOver
+LPARAMETERS oSource, nXCoord, nYCoord, nState
+DO CASE
+	CASE nState = 0 && Enter
+		oSource.DragIcon = THIS.Parent.CanDropIcon
+	CASE nState = 1 && Leave
+		oSource.DragIcon = THIS.Parent.NoDropIcon
+ENDCASE
+
+ENDPROC
+PROCEDURE KeyPress
+LPARAMETERS nKeyCode, nShiftAltCtrl
+IF nKeyCode = 63 AND nShiftAltCtrl = 1
+	THIS.Parent.SelectAll(THIS)
+ENDIF
+ENDPROC
+PROCEDURE MouseDown
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+THIS.Parent.MouseX = nXCoord
+THIS.Parent.MouseY = nYCoord
+
+ENDPROC
+PROCEDURE MouseMove
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+IF nButton = 1 && Left Mouse
+	IF ABS(nXCoord - THIS.Parent.MouseX) > THIS.Parent.DragThreshold OR ;
+			ABS(nYCoord - THIS.Parent.MouseY) > THIS.Parent.DragThreshold
+		THIS.Drag
+	ENDIF
+ENDIF
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _R8C0U0LT2
+[CLASS] _commandbutton
+[CLASSLOC] _base.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdAdd
+[PARENT] _moverlists
+[START PROPERTIES]
+Top = 2
+Left = 186
+Height = 25
+Width = 37
+FontBold = .T.
+FontName = "Courier New"
+FontSize = 11
+Caption = ">"
+TabIndex = 3
+ToolTipText = "Add Selected Items"
+Name = "cmdAdd"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+LOCAL nCnt
+THISFORM.LockScreen = .T.
+* The ListCount value changes whenever the RemoveItem method is called
+nCnt = 1
+DO WHILE m.nCnt <= THIS.Parent.lstSource.ListCount
+	IF THIS.Parent.lstSource.Selected(m.nCnt)
+		THIS.Parent.lstSelected.AddItem(THIS.Parent.lstSource.List(m.nCnt))
+		THIS.Parent.lstSource.RemoveItem(m.nCnt)
+	ELSE
+		nCnt = m.nCnt + 1
+	ENDIF
+ENDDO
+THISFORM.LockScreen = .F.
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _R8C0U0LTM
+[CLASS] _commandbutton
+[CLASSLOC] _base.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdAddAll
+[PARENT] _moverlists
+[START PROPERTIES]
+Top = 33
+Left = 186
+Height = 25
+Width = 37
+FontBold = .T.
+FontName = "Courier New"
+FontSize = 11
+Caption = ">>"
+TabIndex = 4
+ToolTipText = "Add All Items"
+Name = "cmdAddAll"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+LOCAL i
+THISFORM.LockScreen = .T.
+FOR i = 1 to THIS.Parent.lstSource.ListCount
+	THIS.Parent.lstSelected.AddItem(THIS.Parent.lstSource.List(m.i))
+ENDFOR
+THIS.Parent.lstSource.Clear
+THISFORM.LockScreen = .F.
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _R8C0U0LUG
+[CLASS] _commandbutton
+[CLASSLOC] _base.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdRemove
+[PARENT] _moverlists
+[START PROPERTIES]
+Top = 71
+Left = 186
+Height = 25
+Width = 37
+FontBold = .T.
+FontName = "Courier New"
+FontSize = 11
+Caption = "<"
+TabIndex = 5
+ToolTipText = "Remove Selected Items"
+Name = "cmdRemove"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+LOCAL nCnt
+THISFORM.LockScreen = .T.
+nCnt = 1
+DO WHILE m.nCnt <= THIS.Parent.lstSelected.ListCount
+	IF THIS.Parent.lstSelected.Selected(m.nCnt)
+		THIS.Parent.lstSource.AddItem(THIS.Parent.lstSelected.List(m.nCnt))
+		THIS.Parent.lstSelected.RemoveItem(m.nCnt)
+	ELSE
+		nCnt = m.nCnt + 1
+	ENDIF
+ENDDO
+THISFORM.LockScreen = .F.
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _R8C0U0LV0
+[CLASS] _commandbutton
+[CLASSLOC] _base.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdRemoveAll
+[PARENT] _moverlists
+[START PROPERTIES]
+Top = 102
+Left = 186
+Height = 25
+Width = 37
+FontBold = .T.
+FontName = "Courier New"
+FontSize = 11
+Caption = "<<"
+TabIndex = 6
+ToolTipText = "Remove All Items"
+Name = "cmdRemoveAll"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+LOCAL i
+THISFORM.LockScreen = .T.
+FOR i = 1 to THIS.Parent.lstSelected.ListCount
+	THIS.Parent.lstSource.AddItem(THIS.Parent.lstSelected.List(m.i))
+ENDFOR
+THIS.Parent.lstSelected.Clear
+THISFORM.LockScreen = .F.
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _moverlists
+[START PROPERTIES]
+MS Sans Serif, 0, 8, 5, 13, 11, 11, 2, 0
+Courier New, 1, 11, 9, 17, 12, 11, 5, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RM615MHKP
+[CLASS] container
+[BASECLASS] container
+[OBJNAME] _folder
+[START PROPERTIES]
+Width = 336
+Height = 125
+BorderWidth = 0
+clastprojectfile = 
+cext = .pjx
+Name = "_folder"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE release
+IF this.lRelease
+	NODEFAULT
+	RETURN .F.
+ENDIF
+this.lRelease=.T.
+RELEASE this
+
+ENDPROC
+PROCEDURE trimfile
+LPARAMETERS tcFileName
+LOCAL lcFileName,lnAtPos
+lnAtPos=RATC("\",tcFileName)
+lcFileName=ALLTRIM(IIF(lnAtPos=0,tcFileName,LEFTC(tcFileName,lnAtPos)))
+RETURN LOWER(lcFileName)
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+7[END RESERVED2]
+[START RESERVED3]
+clastprojectfile
+cext
+lrelease
+*trimfile 
+*release Releases a FormSet or Form from memory.
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RM6166RSS
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] lblProjectName
+[PARENT] _folder
+[START PROPERTIES]
+FontName = "MS Sans Serif"
+FontSize = 8
+Caption = "P\<roject name:"
+Height = 23
+Left = 10
+Top = 8
+Width = 98
+TabIndex = 1
+Name = "lblProjectName"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RM6166RT2
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] txtProjectName
+[PARENT] _folder
+[START PROPERTIES]
+FontName = "MS Sans Serif"
+FontSize = 8
+Height = 22
+InputMask = (REPLICATE("X",128))
+Left = 10
+TabIndex = 2
+Top = 23
+Width = 315
+Name = "txtProjectName"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE GotFocus
+LOCAL lcProjectFile
+
+lcProjectFile=ALLTRIM(this.parent.txtProjectFile.Value)
+IF LOWER(JustStem(lcProjectFile))=LOWER(ALLTRIM(this.Value))
+	lcProjectFile=""
+ENDIF
+this.parent.cLastProjectFile=lcProjectFile
+
+ENDPROC
+PROCEDURE InteractiveChange
+LOCAL lcProjectDir,lcProjectDir2,lcProjectDir3,lcProjectFile,lcProjectFile2
+LOCAL lcBadChars,lnAtPos
+
+lcBadChars=" ?/\,=:;{}[]!@#$%^&*.<>()+|"+CHR(34)+CHR(39)
+IF EMPTY(this.parent.cLastProjectFile)
+	lcProjectDir=THIS.Parent.TrimFile(ALLTRIM(this.parent.txtProjectFile.Value))
+	lcProjectDir3=lcProjectDir
+	lcProjectFile2=JustStem(ALLTRIM(this.parent.txtProjectFile.Value))
+	IF EMPTY(lcProjectDir)
+		lcProjectDir=LOWER(SYS(5)+CURDIR())
+		IF lcProjectDir==LOWER(HOME())
+			lcProjectDir=LOWER(SYS(5)+"\")
+		ENDIF
+	ENDIF
+	IF NOT "\"$lcProjectDir
+		lcProjectDir="\"+lcProjectDir
+	ENDIF
+	lcProjectFile=ALLTRIM(CHRTRANC(LEFTC(ALLTRIM(this.Value),16),lcBadChars,""))
+	lnAtPos=AT_C("\",lcProjectDir)
+	IF lnAtPos>0
+		lcProjectDir2=ALLTRIM(SUBSTRC(lcProjectDir,MIN(lnAtPos+1,LENC(lcProjectDir))))
+		IF RIGHTC(lcProjectDir2,1)=="\"
+			lcProjectDir2=ALLTRIM(LEFTC(lcProjectDir2,LENC(lcProjectDir2)-1))
+		ENDIF
+		IF LOWER(lcProjectDir2)==LOWER(lcProjectFile2)
+			lnAtPos=AT_C("\",lcProjectDir3)
+			lcProjectDir=ALLTRIM(LEFTC(lcProjectDir3,lnAtPos-1))+"\"+lcProjectFile+"\"
+		ENDIF
+	ENDIF
+	IF NOT ":"$lcProjectDir AND LEFTC(lcProjectDir,2)#"\\"
+		lcProjectDir=LOWER(SYS(5))+lcProjectDir
+	ENDIF
+	IF RIGHTC(lcProjectDir,2)==":\"
+		lcProjectDir=lcProjectDir+lcProjectFile+"\"
+	ENDIF
+	IF NOT LOWER(RIGHTC(lcProjectFile,4))==THIS.PARENT.cExt
+		lcProjectFile=lcProjectFile+THIS.PARENT.cExt
+	ENDIF
+	this.parent.txtProjectFile.Value=lcProjectDir+lcProjectFile
+ENDIF
+this.parent.txtProjectFile.Refresh
+this.parent.cmdProjectFile.Refresh
+
+ENDPROC
+PROCEDURE KeyPress
+LPARAMETERS nKeyCode, nShiftAltCtrl
+
+IF AT(CHR(nKeyCode),"?/\,=:;{}[]!@#$%^&*.<>()+|"+CHR(34)+CHR(39))>0
+	NODEFAULT
+	RETURN .F.
+ENDIF
+
+ENDPROC
+PROCEDURE ProgrammaticChange
+this.InteractiveChange
+
+ENDPROC
+PROCEDURE Valid
+LOCAL lcValue
+
+lcValue=ALLTRIM(this.Value)
+IF ":"$lcValue OR "\"$lcValue OR "."$lcValue
+	this.Value=JustStem(ALLTRIM(lcValue))
+ENDIF
+IF EMPTY(lcValue) AND NOT EMPTY(this.parent.txtProjectFile.Value)
+	this.parent.txtProjectFile.Value=THIS.Parent.cLastProjectFile
+ENDIF
+THIS.Parent.cLastProjectFile=""
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RM6166RTW
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] lblProjectFile
+[PARENT] _folder
+[START PROPERTIES]
+FontName = "MS Sans Serif"
+FontSize = 8
+FontExtend = .T.
+Caption = "Proj\<ect file:"
+Height = 23
+Left = 10
+Top = 53
+Width = 86
+TabIndex = 3
+Name = "lblProjectFile"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RM6166RU6
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] txtProjectFile
+[PARENT] _folder
+[START PROPERTIES]
+FontName = "MS Sans Serif"
+FontSize = 8
+Height = 22
+InputMask = (REPLICATE("X",128))
+Left = 10
+TabIndex = 4
+Top = 68
+Width = 243
+Name = "txtProjectFile"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE InteractiveChange
+LOCAL lcValue,lcProjectFile,lcBadChars,lnSelStart
+
+lnSelStart=this.SelStart
+lcBadChars="?/,=;{}[]!@#$%^&*<>()+|"+CHR(34)+CHR(39)
+lcValue=this.Value
+lcProjectFile=CHRTRANC(lcValue,lcBadChars,"")
+
+IF NOT lcValue=lcProjectFile
+	this.Value=lcProjectFile
+	this.SelStart=MAX(lnSelStart-1,0)
+ENDIF
+
+ENDPROC
+PROCEDURE Refresh
+this.Enabled=(NOT EMPTY(this.parent.txtProjectName.Value))
+
+ENDPROC
+PROCEDURE Valid
+LOCAL lcValue,lcExt,lcProjectFile,lcProjectPath
+
+lcValue=ALLTRIM(this.Value)
+lcExt = IIF(EMPTY(THIS.PARENT.cExt),"PJX",ALLTRIM(THIS.PARENT.cExt))
+IF EMPTY(lcValue)
+	this.parent.txtProjectName.InteractiveChange
+	RETURN (NOT EMPTY(this.Value))
+ENDIF
+IF lcValue=="\" OR lcValue==":" OR RIGHTC(lcValue,1)=="\"
+	RETURN .F.
+ENDIF
+
+lcProjectFile=FORCEEXT(ALLTRIM(LEFTC(JUSTSTEM(lcValue),16)),lcExt)
+lcProjectPath=ADDBS(ALLTRIM(JUSTPATH(lcValue)))
+
+* check for invalid path (also handle network drives)
+IF RATC("\\",lcProjectPath)>1
+	lcProjectPath=STRTRAN(lcProjectPath,"\\","\",IIF(LEFTC(lcValue,2)="\\",2,1))
+ENDIF
+lcProjectFile=LOWER(FORCEPATH(lcProjectFile,lcProjectPath))
+IF NOT lcValue==lcProjectFile
+	this.Value=lcProjectFile
+ENDIF
+
+RETURN NOT EMPTY(JustStem(lcValue))
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RM6166RUQ
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] cmdProjectFile
+[PARENT] _folder
+[START PROPERTIES]
+Top = 68
+Left = 260
+Height = 23
+Width = 66
+FontName = "MS Sans Serif"
+FontSize = 8
+Caption = "Bro\<wse..."
+TabIndex = 5
+Name = "cmdProjectFile"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+LOCAL lcDirectory,lcProjectFile
+
+lcDirectory=LOWER(GETDIR())
+IF EMPTY(lcDirectory)
+	RETURN
+ENDIF
+lcProjectFile=JustStem(ALLTRIM(this.parent.txtProjectFile.Value))
+IF EMPTY(lcProjectFile)
+	lcProjectFile=JustStem(ALLTRIM(this.parent.txtProjectName.Value))
+ENDIF
+IF NOT LOWER(RIGHTC(lcProjectFile,4))==THIS.PARENT.cExt
+	lcProjectFile=lcProjectFile+THIS.PARENT.cExt
+ENDIF
+this.parent.txtProjectFile.Value=lcDirectory+lcProjectFile
+
+ENDPROC
+PROCEDURE Refresh
+this.Enabled=(NOT EMPTY(this.parent.txtProjectName.Value))
+
+ENDPROC
+PROCEDURE Valid
+LOCAL lcProjectFile
+
+lcProjectFile=ALLTRIM(this.parent.txtProjectFile.Value)
+IF NOT EMPTY(lcProjectFile) AND NOT LOWER(RIGHTC(lcProjectFile,4))==THIS.PARENT.cExt
+	lcProjectFile=lcProjectFile+THIS.PARENT.cExt
+	this.parent.txtProjectFile.Value=lcProjectFile
+ENDIF
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RM6166RVA
+[CLASS] checkbox
+[BASECLASS] checkbox
+[OBJNAME] chkCreateProjDir
+[PARENT] _folder
+[START PROPERTIES]
+Top = 98
+Left = 10
+Height = 21
+Width = 218
+FontName = "MS Sans Serif"
+FontSize = 8
+Caption = "\<Create project directory structure"
+Value = .T.
+TabIndex = 6
+Name = "chkCreateProjDir"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _folder
+[START PROPERTIES]
+MS Sans Serif, 0, 8, 5, 13, 11, 11, 2, 0
+[END PROPERTIES]
+[EOF]
