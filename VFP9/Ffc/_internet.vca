@@ -1,0 +1,987 @@
+SCCTEXT Version 4.0.0.2
+PLATFORM C(8,0),UNIQUEID C(10,0),TIMESTAMP N(10,0),CLASS M(4,0),CLASSLOC M(4,0),BASECLASS M(4,0),OBJNAME M(4,0),PARENT M(4,0),PROPERTIES M(4,0),PROTECTED M(4,0),METHODS M(4,0),OBJCODE M(4,0),OLE M(4,0),OLE2 M(4,0),RESERVED1 M(4,0),RESERVED2 M(4,0),RESERVED3 M(4,0),RESERVED4 M(4,0),RESERVED5 M(4,0),RESERVED6 M(4,0),RESERVED7 M(4,0),RESERVED8 M(4,0),USER M(4,0)
+1252
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] Class     
+[START RESERVED1]
+VERSION =   3.00[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _R8W0NNA5W
+[CLASS] _dialog
+[CLASSLOC] _dialogs.vcx
+[BASECLASS] form
+[OBJNAME] _openaddressdialog
+[START PROPERTIES]
+Height = 121
+Width = 339
+ShowWindow = 1
+DoCreate = .T.
+Caption = "Open"
+Icon = graphics\hyperlink.ico
+WindowType = 1
+ctarget = 
+lshellexecute = .T.
+cfileext = htm;html;asp;txt;doc;xls;ppt;gif;jpg;jpeg;au;aiff;xbm;app
+Name = "_openaddressdialog"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Activate
+IF NOT DODEFAULT()
+	RETURN .F.
+ENDIF
+SELECT 0
+
+ENDPROC
+PROCEDURE Init
+LPARAMETERS tlNoShellExecute,tcFileExt
+
+IF NOT DODEFAULT()
+	RETURN .F.
+ENDIF
+IF VARTYPE(tlNoShellExecute)=="L"
+	this.lShellExecute=(NOT tlNoShellExecute)
+ENDIF
+IF NOT EMPTY(tcFileExt) AND VARTYPE(tcFileExt)=="C"
+	this.cFileExt=ALLTRIM(tcFileExt)
+ENDIF
+
+ENDPROC
+PROCEDURE Unload
+RETURN this.cTarget
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+9[END RESERVED2]
+[START RESERVED3]
+ctarget Name of target URL.
+lshellexecute Executes selected URL.
+cfileext
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _R8W0NN9F9
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] imgOpenInternetAddress
+[PARENT] _openaddressdialog
+[START PROPERTIES]
+Picture = graphics\openadlg.bmp
+Height = 36
+Left = 8
+Top = 12
+Width = 42
+Name = "imgOpenInternetAddress"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _R8W0NN9HS
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] lblHeader1
+[PARENT] _openaddressdialog
+[START PROPERTIES]
+FontName = "MS Sans Serif"
+FontSize = 8
+BackStyle = 0
+Caption = "Type the Internet address of a document or folder."
+Height = 16
+Left = 64
+Top = 22
+Width = 264
+TabIndex = 1
+Name = "lblHeader1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _R8W0NN9OJ
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] lblOpen
+[PARENT] _openaddressdialog
+[START PROPERTIES]
+FontName = "MS Sans Serif"
+FontSize = 8
+BackStyle = 0
+Caption = "\<Open:"
+Height = 18
+Left = 13
+Top = 57
+Width = 51
+Name = "lblOpen"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _R8W0NN9RJ
+[CLASS] _urlcombobox
+[CLASSLOC] _internet.vcx
+[BASECLASS] combobox
+[OBJNAME] cboURL
+[PARENT] _openaddressdialog
+[START PROPERTIES]
+Height = 23
+Left = 63
+TabIndex = 4
+Top = 57
+Width = 267
+lformnavigate = .T.
+Name = "cboURL"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE InteractiveChange
+this.parent.cmdOK.Enabled=(NOT EMPTY(this.DisplayValue))
+
+ENDPROC
+PROCEDURE ProgrammaticChange
+this.InteractiveChange
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _R8W0NN9UZ
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] cmdOK
+[PARENT] _openaddressdialog
+[START PROPERTIES]
+Top = 86
+Left = 94
+Height = 23
+Width = 75
+FontName = "MS Sans Serif"
+FontSize = 8
+Caption = "OK"
+Default = .T.
+Enabled = .F.
+TabIndex = 6
+Name = "cmdOK"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+LOCAL lcURL
+
+thisform.Hide
+lcURL=ALLTRIM(this.parent.cboURL.DisplayValue)
+IF NOT EMPTY(lcURL)
+	this.parent.cboURL.AddItem(lcURL,1,1)
+	lcURL=ALLTRIM(this.parent.cboURL.DisplayValue)
+	thisform.cTarget=lcURL
+	IF thisform.lShellExecute
+		thisform.oShellExecute.ShellExecute(lcURL)
+	ENDIF
+ENDIF
+thisform.Release
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _R8W0NN9XT
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] cmdCancel
+[PARENT] _openaddressdialog
+[START PROPERTIES]
+Top = 86
+Left = 175
+Height = 23
+Width = 75
+FontName = "MS Sans Serif"
+FontSize = 8
+Caption = "Cancel"
+TabIndex = 7
+Name = "cmdCancel"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+thisform.Hide
+thisform.Release
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _R8W0NNA0G
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] cmdOpenFile
+[PARENT] _openaddressdialog
+[START PROPERTIES]
+Top = 86
+Left = 256
+Height = 23
+Width = 75
+FontName = "MS Sans Serif"
+FontSize = 8
+Caption = "\<Browse..."
+TabIndex = 8
+Name = "cmdOpenFile"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+LOCAL lcURL
+
+lcURL=LOWER(GETFILE(thisform.cFileExt,"File Name:"))
+IF EMPTY(lcURL)
+	RETURN .F.
+ENDIF
+this.parent.cboURL.DisplayValue=lcURL
+this.parent.cmdOK.SetFocus
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RMI17VFG5
+[CLASS] _shellexecute
+[CLASSLOC] _environ.vcx
+[BASECLASS] custom
+[OBJNAME] oShellExecute
+[PARENT] _openaddressdialog
+[START PROPERTIES]
+Top = 10
+Left = 310
+Name = "oShellExecute"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _openaddressdialog
+[START PROPERTIES]
+MS Sans Serif, 0, 8, 5, 13, 11, 11, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _R930NVQHY
+[CLASS] _combobox
+[CLASSLOC] _base.vcx
+[BASECLASS] combobox
+[OBJNAME] _urlcombobox
+[START PROPERTIES]
+FontName = "MS Sans Serif"
+FontSize = 8
+ColumnCount = 1
+Height = 23
+TabIndex = 2
+Width = 200
+Format = "K"
+InputMask = (REPLICATE("X",254))
+DisplayCount = 16
+curl = 
+curlhistorytable = (IIF(VERSION(2)=0,"",HOME())+"URLHstry.dbf")
+lurlhistory = .T.
+ctempfileprefix = _temp
+ohyperlink = .NULL.
+chyperlinkclass = _HyperLinkBase
+chyperlinkclasslibrary = _HyperLink.vcx
+Name = "_urlcombobox"
+[END PROPERTIES]
+[START PROTECTED]
+linitialized
+ldropdown
+[END PROTECTED]
+[START METHODS]
+PROCEDURE AddItem
+LPARAMETERS tcItem,tnIndex,tnColumn
+LOCAL lcItem,lnLastSelect,ltDateTime,lnCount,lnAtPos,lcTempFilePrefix
+
+IF EMPTY(tcItem)
+	NODEFAULT
+	RETURN .F.
+ENDIF
+IF TYPE("tnColumn")=="N" AND tnColumn#1
+	RETURN
+ENDIF
+ltDateTime=DATETIME()
+lcItem=this.ValidURL(tcItem)
+lnLastSelect=SELECT()
+this.OpenURLHistory
+lnAtPos=RAT("#",lcItem)
+IF lnAtPos>0 AND lnAtPos>RAT("\",lcItem) AND lnAtPos>RAT("/",lcItem)
+	NODEFAULT
+	SELECT (lnLastSelect)
+	RETURN .F.
+ENDIF
+lcTempFilePrefix=LOWER(ALLTRIM(this.cTempFilePrefix))
+IF "."$lcItem AND LOWER(LEFT(JUSTFNAME(lcItem),LEN(lcTempFilePrefix)))==lcTempFilePrefix
+	this.DisplayValue=lcItem
+	NODEFAULT
+	SELECT (lnLastSelect)
+	RETURN .F.
+ENDIF
+FOR lnCount = 1 TO this.ListCount
+	IF LOWER(ALLTRIM(this.List[lnCount]))==LOWER(lcItem)
+		this.RemoveItem(lnCount)
+		EXIT
+	ENDIF
+ENDFOR
+DODEFAULT(lcItem,tnIndex,tnColumn)
+NODEFAULT
+this.DisplayValue=lcItem
+IF NOT USED("urlhistory")
+	SELECT (lnLastSelect)
+	RETURN
+ENDIF
+SELECT urlhistory
+IF EOF()
+	LOCATE
+ENDIF
+LOCATE FOR ALLTRIM(LOWER(MLINE(URLName,1)))==LOWER(lcItem)
+IF FOUND()
+	REPLACE LastAccess WITH ltDateTime, ExecCount WITH ExecCount+1
+ELSE
+	INSERT INTO urlhistory (URLName, CreateDate, LastAccess, ExecCount) ;
+			VALUES (lcItem, ltDateTime, ltDateTime, 1)
+ENDIF
+SELECT (lnLastSelect)
+
+ENDPROC
+PROCEDURE Destroy
+IF USED("urlhistory")
+	USE IN urlhistory
+ENDIF
+
+ENDPROC
+PROCEDURE DropDown
+this.lDropDown=.T.
+
+ENDPROC
+PROCEDURE GotFocus
+this.lDropDown=.F.
+this.lMoveFocus=.F.
+IF this.lGotFocus
+	RETURN
+ENDIF
+IF EMPTY(this.DisplayValue)
+	this.SelStart=0
+	this.SelLength=0
+ELSE
+	this.SelStart=0
+	this.SelLength=LEN(this.DisplayValue)
+ENDIF
+
+ENDPROC
+PROCEDURE KeyPress
+LPARAMETERS nKeyCode, nShiftAltCtrl
+
+this.lGotFocus=.T.
+IF this.lRequestOnEnter AND nKeyCode=13
+	IF this.lDropDown
+		this.lDropDown=.F.
+		KEYBOARD "{TAB}" PLAIN
+	ENDIF
+	this.Valid
+ENDIF
+
+ENDPROC
+PROCEDURE LostFocus
+this.lGotFocus=.F.
+this.lDropDown=.F.
+
+ENDPROC
+PROCEDURE MouseUp
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+
+IF this.lGotFocus
+	RETURN
+ENDIF
+this.lGotFocus=.T.
+IF this.SelLength>0
+	RETURN
+ENDIF
+IF EMPTY(this.DisplayValue)
+	this.SelStart=0
+	this.SelLength=0
+ELSE
+	this.SelStart=0
+	this.SelLength=LEN(this.DisplayValue)
+ENDIF
+
+ENDPROC
+PROCEDURE ProgrammaticChange
+this.cURL=this.DisplayValue
+
+ENDPROC
+PROCEDURE Refresh
+this.Initialize
+
+ENDPROC
+PROCEDURE Valid
+LOCAL llDropDown
+
+llDropDown=this.lDropDown
+IF this.lRequestOnEnter AND NOT this.lMoveFocus
+	this.Navigate
+ENDIF
+IF llDropDown
+	this.lMoveFocus=.T.
+	IF this.lRequestOnEnter
+		KEYBOARD "{TAB}" PLAIN
+	ELSE
+		KEYBOARD "{Ctrl+A}" PLAIN
+	ENDIF
+ENDIF
+
+ENDPROC
+PROCEDURE When
+IF this.lMoveFocus
+	this.lMoveFocus=.F.
+	RETURN .F.
+ENDIF
+
+ENDPROC
+PROCEDURE initialize
+IF this.lInitialized
+	RETURN
+ENDIF
+this.lInitialized=.T.
+IF NOT this.OpenURLHistory()
+	SELECT 0
+	RETURN .F.
+ENDIF
+IF USED("urlhistory")
+	SELECT urlhistory
+	SCAN ALL
+		this.AddItem(URLName,1,1.1)
+	ENDSCAN
+ENDIF
+SELECT 0
+
+ENDPROC
+PROCEDURE navigate
+LOCAL lcURL,lcTempFilePrefix
+
+IF this.lDropDown
+	lcURL=ALLTRIM(this.Value)
+ELSE
+	lcURL=ALLTRIM(this.DisplayValue)
+ENDIF
+this.lDropDown=.F.
+IF EMPTY(lcURL)
+	RETURN .F.
+ENDIF
+lcTempFilePrefix=LOWER(ALLTRIM(this.cTempFilePrefix))
+IF "."$lcURL AND LOWER(LEFT(JUSTFNAME(lcURL),LEN(lcTempFilePrefix)))==lcTempFilePrefix
+	this.DisplayValue=lcURL
+	RETURN .F.
+ENDIF
+IF LOWER(lcURL)==LOWER(this.cURL)
+	RETURN
+ENDIF
+IF SUBSTR(PADR(lcURL,5),5,1)==":" AND (LOWER(lcURL)==LOWER("file://"+this.cURL) OR ;
+		LOWER(lcURL)==LOWER("http://"+this.cURL))
+	RETURN
+ENDIF
+this.AddItem(lcURL,1,1)
+IF NOT this.lFormNavigate
+	this.oHyperLink.NavigateTo(lcURL)
+	RETURN
+ENDIF
+IF NOT this.lFormNavigate OR TYPE("thisform")#"O" OR ;
+		NOT LOWER(PEMSTATUS(thisform,"Navigate",3))=="method"
+	RETURN
+ENDIF
+thisform.Navigate(lcURL)
+
+ENDPROC
+PROCEDURE ohyperlink_access
+IF VARTYPE(this.oHyperlink)#"O"
+	this.SetObjectRef("oHyperLink",this.cHyperLinkClass,this.cHyperLinkClassLibrary)
+ENDIF
+RETURN this.oHyperlink
+
+ENDPROC
+PROCEDURE openurlhistory
+LOCAL lcFileName,lnLastSelect
+
+IF NOT this.lURLHistory OR EMPTY(this.cURLHistoryTable)
+	IF USED("urlhistory")
+		USE IN urlhistory
+	ENDIF
+	RETURN .F.
+ENDIF
+lnLastSelect=SELECT()
+IF USED("urlhistory")
+	SELECT urlhistory
+ELSE
+	lcFileName=LOWER(FULLPATH(this.cURLHistoryTable))
+	SELECT 0
+	IF NOT EMPTY(SYS(2000,lcFileName))
+		USE (lcFileName) SHARED ALIAS urlhistory AGAIN
+		IF NOT USED()
+			SELECT (lnLastSelect)
+			RETURN .F.
+		ENDIF
+		IF TYPE("URLName")#"M"
+			USE
+			ERASE (lcFileName)
+		ENDIF
+	ENDIF
+	IF EMPTY(SYS(2000,lcFileName))
+		CREATE TABLE (lcFileName) ;
+				(URLName M, CreateDate T, LastAccess T, ExecCount N(8))
+		USE (lcFileName) SHARED ALIAS urlhistory AGAIN
+	ENDIF
+	IF TYPE("CreateDate")#"T" OR TYPE("LastAccess")#"T" OR TYPE("ExecCount")#"N"
+		USE (lcFileName) EXCLUSIVE ALIAS urlhistory
+		IF NOT USED()
+			SELECT (lnLastSelect)
+			RETURN .F.
+		ENDIF
+		IF TYPE("CreateDate")#"T"
+			ZAP
+			ALTER TABLE (lcFileName) ADD COLUMN CreateDate T NULL
+		ENDIF
+		IF TYPE("LastAccess")#"T"
+			ALTER TABLE (lcFileName) ADD COLUMN LastAccess T NULL
+		ENDIF
+		IF TYPE("ExecCount")#"N"
+			ALTER TABLE (lcFileName) ADD COLUMN ExecCount N(8) NULL
+		ENDIF
+		USE (lcFileName) SHARED ALIAS urlhistory AGAIN
+	ENDIF
+	IF KEY(1)=="LASTACCESS"
+		SET ORDER TO LastAccess
+	ELSE
+		INDEX ON LastAccess TAG LastAccess ASCENDING ADDITIVE
+	ENDIF
+	SET FILTER TO NOT DELETED()
+	LOCATE
+ENDIF
+
+ENDPROC
+PROCEDURE validurl
+LPARAMETERS tcURL
+LOCAL lcURL
+
+IF EMPTY(tcURL)
+	RETURN ""
+ENDIF
+lcURL=ALLTRIM(tcURL)
+IF NOT ":"$lcURL AND NOT LOWER(LEFT(lcURL,5))=="http:" AND ;
+		NOT LOWER(LEFT(lcURL,5))=="file:" AND ;
+		NOT LOWER(LEFT(lcURL,4))=="ftp." AND (LOWER(LEFT(lcURL,4))=="www." OR ;
+		INLIST(LOWER(RIGHT(lcURL,4)),".com",".gov",".net") OR ;
+		(NOT SUBSTR(lcURL,2,1)==":" AND NOT LEFT(lcURL,2)=="\\"))
+	lcURL="http://"+lcURL
+ENDIF
+IF SUBSTR(PADR(lcURL,5),5,1)==":"
+	lcURL=STRTRAN(STRTRAN(lcURl,"\","/"),"///","//")
+ELSE
+	IF (NOT ":"$lcURL OR AT(":",lcURL)=2) AND NOT LOWER(LEFT(lcURL,4))=="ftp."
+		lcURL="file://"+STRTRAN(STRTRAN(STRTRAN(lcURL,"\","/"),"///","//"),"//","/")
+	ENDIF
+ENDIF
+RETURN lcURL
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+linitialized Control initialized flag.
+ldropdown
+lrequestonenter
+lmovefocus
+lgotfocus
+curl Current URL.
+curlhistorytable Name of URL history table.
+lurlhistory Saves URL history.
+ctempfileprefix
+lformnavigate
+ohyperlink
+chyperlinkclass
+chyperlinkclasslibrary
+*openurlhistory 
+*navigate Request document based on URL address.
+*initialize 
+*validurl 
+*ohyperlink_access 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED7]
+Select URL address combo box.[END RESERVED7]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _urlcombobox
+[START PROPERTIES]
+MS Sans Serif, 0, 8, 5, 13, 11, 11, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RNJ0YTKSY
+[CLASS] _custom
+[CLASSLOC] _base.vcx
+[BASECLASS] custom
+[OBJNAME] _cookie
+[START PROPERTIES]
+ccookie = 
+cookietable = cookies.dbf
+dbfalias = 
+Name = "_cookie"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+* We could present the user with a Login screen,
+* and use the username as a key for the cookie.
+LOCAL cCookieDBF
+IF EMPTY(THIS.CookieTable)
+	RETURN .F.
+ENDIF
+cCookieDBF = IIF(EMPTY(TRAN(THIS.CookieTable)),C_DEFCOOKIEDBF,THIS.CookieTable)
+IF !FILE(m.cCookieDBF)
+	* a table to store user state based on a cookie (timestamp)
+	CREATE TABLE (m.cCookieDBF) free (cookie c(20), rnum i, extra c(10))	
+	INDEX ON cookie TAG cookie
+ENDIF
+USE (m.cCookieDBF) ALIAS cookies ORDER 1  && Reopen shared
+THIS.CookieTable = m.cCookieDBF
+THIS.dbfAlias=ALIAS()
+
+ENDPROC
+PROCEDURE fixurl
+LPARAMETERS  m.cStr
+LOCAL m.n1,m.rv
+m.cstr=STRTRAN(m.cstr,"+"," ")
+m.rv = ""
+DO WHILE .T.
+	IF "%" $ m.cStr
+		m.n1 = AT('%',m.cStr)
+		IF m.n1 > LEN(m.cStr) - 2
+			m.rv = m.rv + m.cStr
+			EXIT
+		ENDIF
+		IF atc(SUBSTR(m.cStr,m.n1+1,1),"0123456789ABCDEF")=0 && not hex digit
+			m.rv = m.rv + LEFT(m.cStr,m.n1)
+			m.cStr = SUBSTR(m.cStr,m.n1+1)
+			LOOP
+		ENDIF
+		m.rv = m.rv + LEFT(m.cStr,m.n1-1) + ;
+			CHR(EVAL("0x"+SUBSTR(m.cStr,m.n1+1,2)))
+		IF LEN(m.cStr) > m.n1 + 2
+			m.cStr = SUBSTR(m.cStr,m.n1+3)
+		ELSE
+			EXIT
+		ENDIF
+	ELSE
+		m.rv = m.rv + m.cStr
+		EXIT
+	ENDIF
+ENDDO
+m.cStr = m.rv
+RETURN m.rv
+
+ENDPROC
+PROCEDURE getcookie
+LPARAMETERS cStr
+THIS.FixURL(@m.cStr)
+*Get the cookie value from either a parameter or a
+*hidden input field
+IF "Cookie="$ m.cStr
+	THIS.cCookie=THIS.getval(m.cStr,"Cookie")
+	m.cStr = STRTRAN(m.cStr,"&Cookie=")
+	m.cStr = STRTRAN(m.cStr,"Cookie=")
+ELSE
+	THIS.cCookie= LEFT(m.cStr,LEN(THIS.MakeCookie()))
+ENDIF
+cStr = STRTRAN(m.cStr,THIS.cCookie,"")
+IF !SEEK(THIS.cCookie,"cookies")
+	INSERT INTO cookies (cookie) VALUES (THIS.cCookie)
+ELSE
+	IF !EMPTY(THIS.dbfAlias)
+		GOTO (cookies.rnum) IN (THIS.dbfAlias)
+	ENDIF
+ENDIF
+RETURN m.cstr
+
+ENDPROC
+PROCEDURE getval
+LPARAMETERS cstr,cVal
+LOCAL n1,c2
+n1 = AT(m.cVal,m.cStr)
+IF n1 = 0
+	return ""
+ENDIF
+c2 = ALLTRIM(SUBSTR(m.cStr,n1 + LEN(m.cVal)))
+IF LEFT(m.c2,1) = '='
+	c2 = SUBSTR(m.c2,2)
+ENDIF
+IF "&"$c2
+	RETURN ALLTRIM(LEFT(m.c2,AT('&',m.c2)-1))
+ELSE
+	RETURN ALLTRIM(m.c2)
+ENDIF
+
+ENDPROC
+PROCEDURE makecookie
+RETURN STRTRAN(STRTRAN(TIME()+ PADL(SECONDS(),10,'0'),":",""),".","")
+
+ENDPROC
+PROCEDURE writecookieinfo
+IF !EMPTY(THIS.cCookie)
+	SELECT cookies
+	SEEK THIS.cCookie
+	IF !FOUND()
+		INSERT INTO cookies (cookie) VALUES (THIS.cCookie)
+	ENDIF
+	IF !EMPTY(THIS.dbfAlias)
+		REPLACE rnum WITH RECNO(THIS.dbfAlias)
+	ENDIF
+ENDIF
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+ccookie Name of current cookie.
+cookietable Name of cookie table.
+dbfalias Alias of cookie table.
+*makecookie Generates unique cookie based on system datetime.
+*getcookie Gets cookie from HTML.
+*writecookieinfo Writes cookie information to cookie table.
+*fixurl Reads and cleans up URL for reading cookie.
+*getval Retrieves value from given string.
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _cookie
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RNJ100PQC
+[CLASS] _custom
+[CLASSLOC] _base.vcx
+[BASECLASS] custom
+[OBJNAME] _dbf2html
+[START PROPERTIES]
+csource = 
+ngenoutput = 2
+coutfile = 
+lusecurrentalias = .T.
+lautonameoutput = .T.
+cscope = 
+cstyle = 
+Name = "_dbf2html"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE genhtml
+LOCAL lcSource
+
+IF VARTYPE(THIS.lUseCurrentAlias)="L" AND;
+	THIS.lUseCurrentAlias AND !EMPTY(ALIAS())
+	lcSource=ALIAS()
+ENDIF
+
+IF EMPTY(lcSource)
+	lcSource=this.cSource
+	IF !FILE(lcSource)
+		lcSource = GETFILE("DBF")
+		IF EMPTY(lcSource) OR !FILE(lcSource)
+			RETURN .F.
+		ENDIF
+	ENDIF
+ENDIF
+
+this.cSource=lcSource
+IF VARTYPE(THIS.lAutoNameOutput)="L" AND;
+	THIS.lAutoNameOutput
+	THIS.cOutFile = FORCEEXT(lcSource,"HTM")
+ENDIF
+
+DO (_GENHTML) WITH (this.cOutFile),(this.cSource),(this.nGenOutput),"",(this.cStyle),(this.cScope)
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+csource This is source file from which to generate HTML.
+ngenoutput _GENHTML output options. See _GENHTML file header.
+coutfile This is name of HTM file to output.
+lusecurrentalias Use current alias as source.
+lautonameoutput Causes _GENHTML to automatically name the output file based on source.
+cscope The scope of records to process (e.g., NEXT 1, REST).
+cstyle The registered style to use for visual display.
+*genhtml Generates HTML calling _GENHTML engine.
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _dbf2html
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RNJ10NO6U
+[CLASS] _custom
+[CLASSLOC] _base.vcx
+[BASECLASS] custom
+[OBJNAME] _scx2html
+[START PROPERTIES]
+csource = 
+coutfile = 
+ngenoutput = 2
+lautonameoutput = .T.
+cscope = 
+cstyle = 
+Name = "_scx2html"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE genhtml
+LOCAL lcSource
+
+lcSource = THIS.cSource
+IF VARTYPE(lcSource)#"C" OR !FILE(lcSource)
+	lcSource = GETFILE("SCX")
+	IF !FILE(lcSource)
+		RETURN .F.
+	ENDIF
+ENDIF
+
+THIS.cSource = lcSource
+
+IF UPPER(JUSTEXT(lcSource))#"SCX"
+	RETURN .F.
+ENDIF
+
+IF VARTYPE(THIS.lAutoNameOutput)="L" AND;
+	THIS.lAutoNameOutput
+	THIS.cOutFile = FORCEEXT(lcSource,"HTM")
+ENDIF
+
+DO (_GENHTML) WITH (this.cOutFile),(this.cSource),(this.nGenOutput),"",(this.cStyle),(this.cScope)
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+csource This is source file from which to generate HTML.
+coutfile This is name of HTM file to output.
+ngenoutput _GENHTML output options. See _GENHTML file header.
+lautonameoutput Causes _GENHTML to automatically name the output file based on source.
+cscope The scope of records to process (e.g., NEXT 1, REST).
+cstyle The registered style to use for visual display (tables only).
+*genhtml Generates HTML calling _GENHTML engine.
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _scx2html
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RNJ10VLXV
+[CLASS] _custom
+[CLASSLOC] _base.vcx
+[BASECLASS] custom
+[OBJNAME] _frx2html
+[START PROPERTIES]
+coutfile = 
+csource = 
+ngenoutput = 2
+lautonameoutput = .T.
+cscope = 
+cstyle = 
+lcreatetempreport = .T.
+Name = "_frx2html"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE genhtml
+LOCAL lcSource,lcReport,lcSafety
+
+lcSource = THIS.cSource
+IF VARTYPE(lcSource)#"C" OR !FILE(lcSource)
+	lcSource = GETFILE("FRX")
+	IF !FILE(lcSource)
+		RETURN .F.
+	ENDIF
+ENDIF
+
+THIS.cSource = lcSource
+
+IF UPPER(JUSTEXT(lcSource))="DBF"
+	IF THIS.lCreateTempReport
+		lcSafety = SET("SAFETY")
+		SET SAFETY OFF
+		lcReport = SYS(2023)+"\"+ JUSTFNAME(FORCEEXT(lcSource,"FRX"))
+		CREATE REPORT (lcReport) FROM (lcSource)
+		SET SAFETY &lcSafety
+		THIS.cSource = lcReport
+	ELSE
+		RETURN .F.
+	ENDIF
+ENDIF
+
+IF VARTYPE(THIS.lAutoNameOutput)="L" AND;
+	THIS.lAutoNameOutput
+	THIS.cOutFile = FORCEEXT(lcSource,"HTM")
+ENDIF
+
+DO (_GENHTML) WITH (this.cOutFile),(this.cSource),(this.nGenOutput),"",(this.cStyle),(this.cScope)
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+coutfile This is name of HTM file to output.
+csource This is source file from which to generate HTML.
+ngenoutput _GENHTML output options. See _GENHTML file header.
+lautonameoutput Causes _GENHTML to automatically name the output file based on source.
+cscope The scope of records to process (e.g., NEXT 1, REST).
+cstyle The registered style to use for visual display (tables only).
+lcreatetempreport Whether to automatically create a new temp report if DBF passed.
+*genhtml Generates HTML calling _GENHTML engine.
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _frx2html
+[EOF]
