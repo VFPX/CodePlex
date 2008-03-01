@@ -1,0 +1,3897 @@
+SCCTEXT Version 4.0.0.2
+PLATFORM C(8,0),UNIQUEID C(10,0),TIMESTAMP N(10,0),CLASS M(4,0),CLASSLOC M(4,0),BASECLASS M(4,0),OBJNAME M(4,0),PARENT M(4,0),PROPERTIES M(4,0),PROTECTED M(4,0),METHODS M(4,0),OBJCODE M(4,0),OLE M(4,0),OLE2 M(4,0),RESERVED1 M(4,0),RESERVED2 M(4,0),RESERVED3 M(4,0),RESERVED4 M(4,0),RESERVED5 M(4,0),RESERVED6 M(4,0),RESERVED7 M(4,0),RESERVED8 M(4,0),USER M(4,0)
+1252
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] Class     
+[START RESERVED1]
+VERSION =   3.00[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1230V5NK9
+[CLASS] frxhandlerform
+[CLASSLOC] frxbuilder.vcx
+[BASECLASS] form
+[OBJNAME] textlabelhandler
+[START PROPERTIES]
+Height = 457
+Width = 409
+DoCreate = .T.
+BorderStyle = 3
+Caption = "Text / Label"
+Name = "textlabelhandler"
+grabber.Height = 11
+grabber.Width = 11
+grabber.Name = "grabber"
+frxcursor.Name = "frxcursor"
+CMDOK.Top = 400
+CMDOK.Left = 167
+CMDOK.TabIndex = 2
+CMDOK.Name = "CMDOK"
+CMDCANCEL.Top = 400
+CMDCANCEL.Left = 248
+CMDCANCEL.TabIndex = 3
+CMDCANCEL.Name = "CMDCANCEL"
+cmdHelp.Top = 420
+cmdHelp.Left = 204
+cmdHelp.Name = "cmdHelp"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE loadfromfrx
+*=====================================================================
+* LoadFromFrx()
+*
+* Read values from the FRX record(s) and configure the controls
+*=====================================================================
+local OkToContinue
+
+*---------------------------------------------------------------
+* Call each panel's LoadFromFrx()
+* Assigns .event and .frxCursor references
+* Removes protection panel
+* sets activePage:
+*---------------------------------------------------------------
+OkToContinue = dodefault()
+if not m.OkToContinue
+	return .F.
+endif
+
+*---------------------------------------------------------------
+* Event-specific actions:
+*   - Set title of dialog:
+*---------------------------------------------------------------
+do case
+case this.frxEvent.eventType = FRX_BLDR_EVENT_OBJECTCREATE
+	THIS.Caption = DLG_TITLE_NEW_PREFIX_LOC + TARGET_TEXT_LABEL_LOC + DLG_TITLE_PROPERTIES_LOC
+
+otherwise	
+*	THIS.Caption = TARGET_TEXT_LABEL_LOC + "  " + left(trim(chrtran(EXPR,chr(13)+chr(10),"  ")),20)
+	THIS.Caption = TARGET_TEXT_LABEL_LOC  + DLG_TITLE_PROPERTIES_LOC
+
+endcase
+if THIS.frxEvent.protected and ;
+   THIS.frxEvent.frxCursor.hasProtectionFlag( ORDER, FRX_PROTECT_OBJECT_NO_EDIT)
+
+	THIS.Caption = THIS.Caption + DLG_TITLE_READONLY_SUFFIX_LOC
+	
+	*----------------------------------------------
+	* CHANGE: Do not show dialog if PROTECT_NO_EDIT
+	*----------------------------------------------
+	OkToContinue = .F.
+endif
+
+*---------------------------------------------------------------
+* Set the active page:
+*---------------------------------------------------------------
+THIS.pagetoactivate = 1
+
+return m.OkToContinue
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+10[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+frxbuilder.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1230V70ZN
+[CLASS] pgfhandlerframe
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] pageframe
+[OBJNAME] Frame
+[PARENT] textlabelhandler
+[START PROPERTIES]
+ErasePage = .T.
+PageCount = 5
+Top = 9
+Left = 4
+Width = 364
+Height = 367
+TabIndex = 1
+autorefreshonpagechange = .T.
+Name = "Frame"
+Pge1.Caption = "General"
+Pge1.PageOrder = 1
+Pge1.Name = "pageGeneral"
+Pge2.Caption = "Print when"
+Pge2.PageOrder = 3
+Pge2.Name = "pagePrintWhen"
+Pge3.Caption = "Protection"
+Pge3.PageOrder = 4
+Pge3.Name = "pageProtection"
+Pge4.Caption = "Style"
+Pge4.PageOrder = 2
+Pge4.Name = "pageStyle"
+Pge5.Caption = "Other"
+Pge5.PageOrder = 5
+Pge5.Name = "pageOther"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE pageGeneral.Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_TAB_GENERAL_LOC
+#ENDIF
+THIS.HelpContextID = UI_CONTROL_PROPS_GENERAL_HELP_ID
+ENDPROC
+PROCEDURE pageOther.Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_TAB_OTHER_LOC
+#ENDIF
+THIS.HelpContextID = UI_CONTROL_PROPS_OTHER_HELP_ID
+ENDPROC
+PROCEDURE pagePrintWhen.Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_TAB_PRINTWHEN_LOC
+#ENDIF
+THIS.HelpContextID = UI_CONTROL_PROPS_PRINTWHEN_HELP_ID
+ENDPROC
+PROCEDURE pageProtection.Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_TAB_PROTECTION_LOC
+#ENDIF
+THIS.HelpContextID = UI_CONTROL_PROPS_PROTECTION_HELP_ID
+ENDPROC
+PROCEDURE pageStyle.Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_TAB_STYLE_LOC
+#ENDIF
+THIS.HelpContextID = UI_CONTROL_PROPS_STYLE_HELP_ID
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1230VF6WU
+[CLASS] paneltextlabel
+[CLASSLOC] frxpanels.vcx
+[BASECLASS] container
+[OBJNAME] panel
+[PARENT] textlabelhandler.Frame.pageGeneral
+[START PROPERTIES]
+Top = 8
+Left = 7
+Width = 304
+TabIndex = 1
+Name = "panel"
+OBJPOSITION.OptionGroup.Opt1.Left = 64
+OBJPOSITION.OptionGroup.Opt1.Top = 13
+OBJPOSITION.OptionGroup.Opt1.Name = "Opt1"
+OBJPOSITION.OptionGroup.Opt2.Left = 64
+OBJPOSITION.OptionGroup.Opt2.Top = 34
+OBJPOSITION.OptionGroup.Opt2.Name = "Opt2"
+OBJPOSITION.OptionGroup.OPT3.Left = 64
+OBJPOSITION.OptionGroup.OPT3.Top = 55
+OBJPOSITION.OptionGroup.OPT3.Name = "OPT3"
+OBJPOSITION.OptionGroup.Name = "OptionGroup"
+OBJPOSITION.Label.Name = "Label"
+OBJPOSITION.GIFFLOAT.Height = 34
+OBJPOSITION.GIFFLOAT.Width = 31
+OBJPOSITION.GIFFLOAT.Name = "GIFFLOAT"
+OBJPOSITION.GIFTOP.Height = 34
+OBJPOSITION.GIFTOP.Width = 31
+OBJPOSITION.GIFTOP.Name = "GIFTOP"
+OBJPOSITION.GIFBOTTOM.Height = 34
+OBJPOSITION.GIFBOTTOM.Width = 31
+OBJPOSITION.GIFBOTTOM.Name = "GIFBOTTOM"
+OBJPOSITION.Name = "OBJPOSITION"
+TXTCAPTION.Name = "TXTCAPTION"
+CMD1.Name = "CMD1"
+LBL3.Name = "LBL3"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _12I0OF27T
+[CLASS] panelabsolutepositioning
+[CLASSLOC] frxpanels.vcx
+[BASECLASS] container
+[OBJNAME] Panelabsolutepositioning1
+[PARENT] textlabelhandler.Frame.pageGeneral
+[START PROPERTIES]
+Top = 149
+Left = 7
+Width = 296
+TabIndex = 2
+Name = "Panelabsolutepositioning1"
+Shp1.Top = 8
+Shp1.Left = 0
+Shp1.Width = 288
+Shp1.Name = "Shp1"
+SPNHEIGHT.Left = 153
+SPNHEIGHT.Name = "SPNHEIGHT"
+SPNWIDTH.Left = 153
+SPNWIDTH.Name = "SPNWIDTH"
+SPNTOP.Name = "SPNTOP"
+SPNLEFT.Name = "SPNLEFT"
+lblHeading.Name = "lblHeading"
+Lbl4.Left = 154
+Lbl4.Name = "Lbl4"
+LBL5.Left = 153
+LBL5.Name = "LBL5"
+LBL7.Name = "LBL7"
+LBL6.Name = "LBL6"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _16I0KB807
+[CLASS] panelprintwhen
+[CLASSLOC] frxpanels.vcx
+[BASECLASS] container
+[OBJNAME] panel
+[PARENT] textlabelhandler.Frame.pagePrintWhen
+[START PROPERTIES]
+Top = 7
+Left = 7
+Name = "panel"
+Shp1.Name = "Shp1"
+PrintRepeated.opt1.Left = 10
+PrintRepeated.opt1.Top = 12
+PrintRepeated.opt1.Name = "opt1"
+PrintRepeated.opt2.Left = 10
+PrintRepeated.opt2.Top = 33
+PrintRepeated.opt2.Name = "opt2"
+PrintRepeated.Name = "PrintRepeated"
+onFirstWholeBand.Alignment = 0
+onFirstWholeBand.Name = "onFirstWholeBand"
+onGroupChange.Alignment = 0
+onGroupChange.Name = "onGroupChange"
+group.Name = "group"
+onOverflow.Alignment = 0
+onOverflow.Name = "onOverflow"
+removeBlank.Alignment = 0
+removeBlank.Name = "removeBlank"
+cmdGetExpr.Name = "cmdGetExpr"
+Lbl1.Name = "Lbl1"
+Expression.Name = "Expression"
+Lbl2.Name = "Lbl2"
+Lbl3.Name = "Lbl3"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1230VF6X4
+[CLASS] panelobjectprotection
+[CLASSLOC] frxpanels.vcx
+[BASECLASS] container
+[OBJNAME] panel
+[PARENT] textlabelhandler.Frame.pageProtection
+[START PROPERTIES]
+Top = 8
+Left = 7
+Name = "panel"
+Shp1.Name = "Shp1"
+chkObjectLock.Alignment = 0
+chkObjectLock.Name = "chkObjectLock"
+chkObjectNoEdit.Alignment = 0
+chkObjectNoEdit.Name = "chkObjectNoEdit"
+Lbl1.Name = "Lbl1"
+chkObjectHidden.Alignment = 0
+chkObjectHidden.Name = "chkObjectHidden"
+chkObjectNoDelete.Alignment = 0
+chkObjectNoDelete.Name = "chkObjectNoDelete"
+chkObjectNoSelect.Alignment = 0
+chkObjectNoSelect.Name = "chkObjectNoSelect"
+LBL2.Name = "LBL2"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _12G017U7Y
+[CLASS] paneltextformat
+[CLASSLOC] frxpanels.vcx
+[BASECLASS] container
+[OBJNAME] panel
+[PARENT] textlabelhandler.Frame.pageStyle
+[START PROPERTIES]
+Top = 6
+Left = 6
+Width = 305
+Name = "panel"
+opgMode.Opt1.Left = 15
+opgMode.Opt1.Top = 12
+opgMode.Opt1.Name = "Opt1"
+opgMode.Opt2.Left = 15
+opgMode.Opt2.Top = 33
+opgMode.Opt2.Name = "Opt2"
+opgMode.Name = "opgMode"
+shpFontBorder.Name = "shpFontBorder"
+shpColorBorder.Name = "shpColorBorder"
+shpAlphaBorder.Name = "shpAlphaBorder"
+lblFont.Name = "lblFont"
+txtFont.Name = "txtFont"
+cmdFont.Name = "cmdFont"
+chkOverrideCharset.Alignment = 0
+chkOverrideCharset.Name = "chkOverrideCharset"
+lblColor.Name = "lblColor"
+CHKFOREDEFAULT.Alignment = 0
+CHKFOREDEFAULT.Name = "CHKFOREDEFAULT"
+cmdForeColor.Name = "cmdForeColor"
+CHKBACKDEFAULT.Alignment = 0
+CHKBACKDEFAULT.Name = "CHKBACKDEFAULT"
+cmdBackcolor.Name = "cmdBackcolor"
+oFormatter.Name = "oFormatter"
+lblBackstyle.Name = "lblBackstyle"
+chkStrikethru.Alignment = 0
+chkStrikethru.Name = "chkStrikethru"
+chkUnderline.Alignment = 0
+chkUnderline.Name = "chkUnderline"
+cntPreview.shpBorder.Name = "shpBorder"
+cntPreview.canvas.vertLine.Name = "vertLine"
+cntPreview.canvas.hozLine.Name = "hozLine"
+cntPreview.canvas.Text.Name = "Text"
+cntPreview.canvas.Name = "canvas"
+cntPreview.lblSample.Name = "lblSample"
+cntPreview.Name = "cntPreview"
+lblAlpha.Name = "lblAlpha"
+spnAlphaPen.Name = "spnAlphaPen"
+cntBackColor.Name = "cntBackColor"
+cntForeColor.Name = "cntForeColor"
+spnAlphaFill.Name = "spnAlphaFill"
+lblPen.Name = "lblPen"
+lblFill.Name = "lblFill"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _18B0SIL9D
+[CLASS] panelcommentuser
+[CLASSLOC] frxpanels.vcx
+[BASECLASS] container
+[OBJNAME] Panelcommentuser1
+[PARENT] textlabelhandler.Frame.pageOther
+[START PROPERTIES]
+Top = 6
+Left = 6
+Width = 345
+Height = 165
+Name = "Panelcommentuser1"
+shpUser.Top = 86
+shpUser.Left = 5
+shpUser.Height = 2
+shpUser.Width = 330
+shpUser.Name = "shpUser"
+LBLCOMMENTTEXT.Height = 62
+LBLCOMMENTTEXT.Left = 56
+LBLCOMMENTTEXT.Top = 17
+LBLCOMMENTTEXT.Width = 289
+LBLCOMMENTTEXT.Name = "LBLCOMMENTTEXT"
+CMDCOMMENT.Top = 56
+CMDCOMMENT.Left = 216
+CMDCOMMENT.Name = "CMDCOMMENT"
+LBLUSERCAPTION.Left = 2
+LBLUSERCAPTION.Top = 78
+LBLUSERCAPTION.Name = "LBLUSERCAPTION"
+LBLUSERTEXT.Height = 60
+LBLUSERTEXT.Left = 58
+LBLUSERTEXT.Top = 98
+LBLUSERTEXT.Width = 287
+LBLUSERTEXT.Name = "LBLUSERTEXT"
+IMGCOMMENT.Height = 32
+IMGCOMMENT.Width = 32
+IMGCOMMENT.Name = "IMGCOMMENT"
+CMDUSER.Top = 134
+CMDUSER.Left = 216
+CMDUSER.Name = "CMDUSER"
+Shape1.Top = 9
+Shape1.Left = 5
+Shape1.Height = 2
+Shape1.Width = 330
+Shape1.Name = "Shape1"
+LBLCOMMENTCAPTION.Name = "LBLCOMMENTCAPTION"
+IMGUSER.Height = 32
+IMGUSER.Left = 8
+IMGUSER.Top = 98
+IMGUSER.Width = 32
+IMGUSER.Name = "IMGUSER"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _18B0SIL9E
+[CLASS] paneltooltip
+[CLASSLOC] frxpanels.vcx
+[BASECLASS] container
+[OBJNAME] Paneltooltip1
+[PARENT] textlabelhandler.Frame.pageOther
+[START PROPERTIES]
+Top = 165
+Left = 6
+Width = 345
+Height = 78
+Name = "Paneltooltip1"
+SHPUSER.Top = 9
+SHPUSER.Left = 5
+SHPUSER.Height = 2
+SHPUSER.Width = 330
+SHPUSER.Name = "SHPUSER"
+lblTooltipText.Height = 45
+lblTooltipText.Left = 56
+lblTooltipText.Top = 17
+lblTooltipText.Width = 281
+lblTooltipText.Name = "lblTooltipText"
+CmdTooltip.Top = 50
+CmdTooltip.Left = 217
+CmdTooltip.Name = "CmdTooltip"
+lblTooltipCaption.Name = "lblTooltipCaption"
+imgTooltip.Height = 32
+imgTooltip.Width = 32
+imgTooltip.Name = "imgTooltip"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _18B0SIL9F
+[CLASS] panelmemberdata
+[CLASSLOC] frxpanels.vcx
+[BASECLASS] container
+[OBJNAME] Panelmemberdata1
+[PARENT] textlabelhandler.Frame.pageOther
+[START PROPERTIES]
+Top = 240
+Left = 6
+Width = 345
+Height = 95
+Name = "Panelmemberdata1"
+LBLSCRIPTTEXT.Height = 53
+LBLSCRIPTTEXT.Left = 56
+LBLSCRIPTTEXT.Top = 18
+LBLSCRIPTTEXT.Width = 281
+LBLSCRIPTTEXT.Name = "LBLSCRIPTTEXT"
+Shape4.Top = 9
+Shape4.Left = 5
+Shape4.Height = 2
+Shape4.Width = 330
+Shape4.Name = "Shape4"
+CMDSCRIPT.Top = 64
+CMDSCRIPT.Left = 218
+CMDSCRIPT.Name = "CMDSCRIPT"
+IMGSCRIPT.Height = 32
+IMGSCRIPT.Width = 32
+IMGSCRIPT.Name = "IMGSCRIPT"
+LBLSCRIPTCAPTION.Name = "LBLSCRIPTCAPTION"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] textlabelhandler
+[START PROPERTIES]
+Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+[END PROPERTIES]
+[START RESERVED1]
+  frxbuilder.hŒzGO7 foxpro_reporting.h÷zGO7 frxbuilder_loc.hﬁzGO7 _frxcursor.hÊzGO7 foxpro_reporting.hÓzGO7[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _12A1F4KUK
+[CLASS] frxhandlerform
+[CLASSLOC] frxbuilder.vcx
+[BASECLASS] form
+[OBJNAME] pictureboundhandler
+[START PROPERTIES]
+Height = 521
+Width = 382
+DoCreate = .T.
+BorderStyle = 3
+Caption = "Picture / Bound"
+Name = "pictureboundhandler"
+grabber.Height = 11
+grabber.Left = 74
+grabber.Top = 438
+grabber.Width = 11
+grabber.Name = "grabber"
+frxcursor.Name = "frxcursor"
+CMDOK.Top = 480
+CMDOK.Left = 143
+CMDOK.TabIndex = 2
+CMDOK.Name = "CMDOK"
+CMDCANCEL.Top = 480
+CMDCANCEL.Left = 224
+CMDCANCEL.TabIndex = 3
+CMDCANCEL.Name = "CMDCANCEL"
+cmdHelp.Top = 468
+cmdHelp.Left = 288
+cmdHelp.Name = "cmdHelp"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE loadfromfrx
+*=====================================================================
+* LoadFromFrx()
+*
+* Read values from the FRX record(s) and configure the controls
+*=====================================================================
+local OkToContinue
+
+*---------------------------------------------------------------
+* Call each panel's LoadFromFrx()
+* Assigns .event and .frxCursor references
+* Removes protection panel
+* sets activePage:
+*---------------------------------------------------------------
+OkToContinue = dodefault()
+if not m.OkToContinue
+	return .F.
+endif
+
+*---------------------------------------------------------------
+* Event-specific actions:
+*   - Set title of dialog:
+*---------------------------------------------------------------
+
+if this.frxEvent.eventType = FRX_BLDR_EVENT_OBJECTCREATE
+	THIS.Caption = DLG_TITLE_NEW_PREFIX_LOC + TARGET_PICTURE_LOC + DLG_TITLE_PROPERTIES_LOC
+else
+	THIS.Caption = TARGET_PICTURE_LOC + DLG_TITLE_PROPERTIES_LOC
+endif
+
+if THIS.frxEvent.protected and ;
+   THIS.frxEvent.frxCursor.hasProtectionFlag( ORDER, FRX_PROTECT_OBJECT_NO_EDIT)
+
+	THIS.Caption = THIS.Caption + DLG_TITLE_READONLY_SUFFIX_LOC
+	OkToContinue = .F.
+	
+endif
+return m.OkToContinue
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+10[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+frxbuilder.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _12A1F8KSV
+[CLASS] pgfhandlerframe
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] pageframe
+[OBJNAME] frame
+[PARENT] pictureboundhandler
+[START PROPERTIES]
+ErasePage = .T.
+PageCount = 4
+Top = 12
+Left = 6
+Width = 354
+Height = 464
+TabIndex = 1
+Name = "frame"
+Pge1.Caption = "General"
+Pge1.Name = "pageGeneral"
+Pge2.Caption = "Print when"
+Pge2.Name = "pagePrintWhen"
+Pge3.Caption = "Protection"
+Pge3.Name = "pageProtection"
+Pge4.Caption = "Other"
+Pge4.Name = "pageComment"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE pageComment.Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_TAB_OTHER_LOC
+#ENDIF
+THIS.HelpContextID = UI_CONTROL_PROPS_OTHER_HELP_ID
+ENDPROC
+PROCEDURE pageGeneral.Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_TAB_GENERAL_LOC
+#ENDIF
+THIS.HelpContextID = UI_CONTROL_PROPS_GENERAL_HELP_ID
+ENDPROC
+PROCEDURE pagePrintWhen.Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_TAB_PRINTWHEN_LOC
+#ENDIF
+THIS.HelpContextID = UI_CONTROL_PROPS_PRINTWHEN_HELP_ID
+ENDPROC
+PROCEDURE pageProtection.Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_TAB_PROTECTION_LOC
+#ENDIF
+THIS.HelpContextID = UI_CONTROL_PROPS_PROTECTION_HELP_ID
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _19C0VA3ND
+[CLASS] panelpicturebound
+[CLASSLOC] frxpanels.vcx
+[BASECLASS] container
+[OBJNAME] Panelpicturebound1
+[PARENT] pictureboundhandler.frame.pageGeneral
+[START PROPERTIES]
+Top = 9
+Left = 7
+TabIndex = 1
+Name = "Panelpicturebound1"
+PICTURESOURCE.OPT1.Left = 9
+PICTURESOURCE.OPT1.Top = 15
+PICTURESOURCE.OPT1.Name = "OPT1"
+PICTURESOURCE.OPT2.Left = 9
+PICTURESOURCE.OPT2.Top = 36
+PICTURESOURCE.OPT2.Name = "OPT2"
+PICTURESOURCE.OPT3.Left = 9
+PICTURESOURCE.OPT3.Top = 57
+PICTURESOURCE.OPT3.Name = "OPT3"
+PICTURESOURCE.Name = "PICTURESOURCE"
+TXTLOCATOR.Name = "TXTLOCATOR"
+CMDLOCATE.Name = "CMDLOCATE"
+CHKCENTERED.Alignment = 0
+CHKCENTERED.Name = "CHKCENTERED"
+LBL3.Name = "LBL3"
+LBL1.Name = "LBL1"
+CBOPICTUREMODE.Name = "CBOPICTUREMODE"
+LBL2.Name = "LBL2"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _19C0VA3NE
+[CLASS] panelpicturepositioning
+[CLASSLOC] frxpanels.vcx
+[BASECLASS] container
+[OBJNAME] Panelpicturepositioning1
+[PARENT] pictureboundhandler.frame.pageGeneral
+[START PROPERTIES]
+Top = 224
+Left = 8
+Width = 317
+TabIndex = 2
+Name = "Panelpicturepositioning1"
+OBJPOSITION.OptionGroup.OPT1.Left = 66
+OBJPOSITION.OptionGroup.OPT1.Top = 13
+OBJPOSITION.OptionGroup.OPT1.Name = "OPT1"
+OBJPOSITION.OptionGroup.OPT2.Left = 66
+OBJPOSITION.OptionGroup.OPT2.Top = 34
+OBJPOSITION.OptionGroup.OPT2.Name = "OPT2"
+OBJPOSITION.OptionGroup.OPT3.Left = 66
+OBJPOSITION.OptionGroup.OPT3.Top = 55
+OBJPOSITION.OptionGroup.OPT3.Name = "OPT3"
+OBJPOSITION.OptionGroup.Left = 0
+OBJPOSITION.OptionGroup.Top = 7
+OBJPOSITION.OptionGroup.Width = 313
+OBJPOSITION.OptionGroup.Name = "OptionGroup"
+OBJPOSITION.Label.Name = "Label"
+OBJPOSITION.GIFFLOAT.Height = 34
+OBJPOSITION.GIFFLOAT.Width = 31
+OBJPOSITION.GIFFLOAT.Name = "GIFFLOAT"
+OBJPOSITION.GIFTOP.Height = 34
+OBJPOSITION.GIFTOP.Width = 31
+OBJPOSITION.GIFTOP.Name = "GIFTOP"
+OBJPOSITION.GIFBOTTOM.Height = 34
+OBJPOSITION.GIFBOTTOM.Width = 31
+OBJPOSITION.GIFBOTTOM.Name = "GIFBOTTOM"
+OBJPOSITION.Top = 0
+OBJPOSITION.Left = 0
+OBJPOSITION.Width = 317
+OBJPOSITION.Name = "OBJPOSITION"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _19C0VA3NF
+[CLASS] panelabsolutepositioning
+[CLASSLOC] frxpanels.vcx
+[BASECLASS] container
+[OBJNAME] Panelabsolutepositioning1
+[PARENT] pictureboundhandler.frame.pageGeneral
+[START PROPERTIES]
+Top = 315
+Left = 8
+Width = 318
+TabIndex = 3
+Name = "Panelabsolutepositioning1"
+SHP1.Top = 8
+SHP1.Left = 1
+SHP1.Width = 313
+SHP1.Name = "SHP1"
+SPNHEIGHT.Left = 157
+SPNHEIGHT.Name = "SPNHEIGHT"
+SPNWIDTH.Left = 157
+SPNWIDTH.Name = "SPNWIDTH"
+SPNTOP.Name = "SPNTOP"
+SPNLEFT.Name = "SPNLEFT"
+LBLHEADING.Name = "LBLHEADING"
+LBL4.Left = 158
+LBL4.Name = "LBL4"
+LBL5.Left = 157
+LBL5.Name = "LBL5"
+LBL7.Name = "LBL7"
+LBL6.Name = "LBL6"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _12A1F8KTB
+[CLASS] panelprintwhen
+[CLASSLOC] frxpanels.vcx
+[BASECLASS] container
+[OBJNAME] panel
+[PARENT] pictureboundhandler.frame.pagePrintWhen
+[START PROPERTIES]
+Top = 9
+Left = 8
+Height = 271
+Name = "panel"
+SHP1.Top = 76
+SHP1.Left = 0
+SHP1.Name = "SHP1"
+PRINTREPEATED.OPT1.Left = 10
+PRINTREPEATED.OPT1.Top = 12
+PRINTREPEATED.OPT1.Name = "OPT1"
+PRINTREPEATED.OPT2.Left = 10
+PRINTREPEATED.OPT2.Top = 33
+PRINTREPEATED.OPT2.Name = "OPT2"
+PRINTREPEATED.Left = 0
+PRINTREPEATED.Name = "PRINTREPEATED"
+ONFIRSTWHOLEBAND.Alignment = 0
+ONFIRSTWHOLEBAND.Name = "ONFIRSTWHOLEBAND"
+ONGROUPCHANGE.Alignment = 0
+ONGROUPCHANGE.Name = "ONGROUPCHANGE"
+GROUP.Left = 40
+GROUP.Width = 265
+GROUP.Name = "GROUP"
+ONOVERFLOW.Alignment = 0
+ONOVERFLOW.Name = "ONOVERFLOW"
+REMOVEBLANK.Alignment = 0
+REMOVEBLANK.Name = "REMOVEBLANK"
+cmdGetExpr.Name = "cmdGetExpr"
+LBL1.Name = "LBL1"
+EXPRESSION.Left = 0
+EXPRESSION.Name = "EXPRESSION"
+LBL2.Name = "LBL2"
+LBL3.Name = "LBL3"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _12A1F8KTC
+[CLASS] panelobjectprotection
+[CLASSLOC] frxpanels.vcx
+[BASECLASS] container
+[OBJNAME] panel
+[PARENT] pictureboundhandler.frame.pageProtection
+[START PROPERTIES]
+Top = 9
+Left = 8
+Width = 329
+Height = 214
+Name = "panel"
+SHP1.Top = 7
+SHP1.Left = 0
+SHP1.Name = "SHP1"
+chkObjectLock.Alignment = 0
+chkObjectLock.Name = "chkObjectLock"
+chkObjectNoEdit.Alignment = 0
+chkObjectNoEdit.Name = "chkObjectNoEdit"
+LBL1.Name = "LBL1"
+chkObjectHidden.Alignment = 0
+chkObjectHidden.Name = "chkObjectHidden"
+chkObjectNoDelete.Alignment = 0
+chkObjectNoDelete.Name = "chkObjectNoDelete"
+chkObjectNoSelect.Alignment = 0
+chkObjectNoSelect.Name = "chkObjectNoSelect"
+Lbl2.Name = "Lbl2"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _18B0SCN4L
+[CLASS] panelcommentuser
+[CLASSLOC] frxpanels.vcx
+[BASECLASS] container
+[OBJNAME] Panelcommentuser1
+[PARENT] pictureboundhandler.frame.pageComment
+[START PROPERTIES]
+Top = 7
+Left = 7
+Width = 338
+Height = 213
+Name = "Panelcommentuser1"
+shpUser.Top = 111
+shpUser.Left = 5
+shpUser.Width = 322
+shpUser.Name = "shpUser"
+LBLCOMMENTTEXT.Height = 68
+LBLCOMMENTTEXT.Left = 56
+LBLCOMMENTTEXT.Top = 17
+LBLCOMMENTTEXT.Width = 270
+LBLCOMMENTTEXT.Name = "LBLCOMMENTTEXT"
+CMDCOMMENT.Top = 77
+CMDCOMMENT.Left = 208
+CMDCOMMENT.Name = "CMDCOMMENT"
+LBLUSERCAPTION.Left = 2
+LBLUSERCAPTION.Top = 104
+LBLUSERCAPTION.Name = "LBLUSERCAPTION"
+LBLUSERTEXT.Height = 67
+LBLUSERTEXT.Left = 58
+LBLUSERTEXT.Top = 122
+LBLUSERTEXT.Width = 272
+LBLUSERTEXT.Name = "LBLUSERTEXT"
+IMGCOMMENT.Height = 32
+IMGCOMMENT.Width = 32
+IMGCOMMENT.Name = "IMGCOMMENT"
+CMDUSER.Top = 180
+CMDUSER.Left = 208
+CMDUSER.Name = "CMDUSER"
+Shape1.Width = 322
+Shape1.Name = "Shape1"
+LBLCOMMENTCAPTION.Name = "LBLCOMMENTCAPTION"
+IMGUSER.Height = 32
+IMGUSER.Left = 8
+IMGUSER.Top = 124
+IMGUSER.Width = 32
+IMGUSER.Name = "IMGUSER"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _18B0SCN51
+[CLASS] paneltooltip
+[CLASSLOC] frxpanels.vcx
+[BASECLASS] container
+[OBJNAME] Paneltooltip1
+[PARENT] pictureboundhandler.frame.pageComment
+[START PROPERTIES]
+Top = 217
+Left = 7
+Width = 338
+Height = 100
+Name = "Paneltooltip1"
+SHPUSER.Width = 322
+SHPUSER.Name = "SHPUSER"
+lblTooltipText.Height = 59
+lblTooltipText.Left = 56
+lblTooltipText.Top = 17
+lblTooltipText.Width = 274
+lblTooltipText.Name = "lblTooltipText"
+CmdTooltip.Top = 73
+CmdTooltip.Left = 208
+CmdTooltip.Name = "CmdTooltip"
+lblTooltipCaption.Name = "lblTooltipCaption"
+imgTooltip.Height = 32
+imgTooltip.Width = 32
+imgTooltip.Name = "imgTooltip"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _18B0SCN52
+[CLASS] panelmemberdata
+[CLASSLOC] frxpanels.vcx
+[BASECLASS] container
+[OBJNAME] Panelmemberdata1
+[PARENT] pictureboundhandler.frame.pageComment
+[START PROPERTIES]
+Top = 320
+Left = 7
+Width = 338
+Height = 106
+Name = "Panelmemberdata1"
+LBLSCRIPTTEXT.Height = 64
+LBLSCRIPTTEXT.Left = 56
+LBLSCRIPTTEXT.Top = 18
+LBLSCRIPTTEXT.Width = 274
+LBLSCRIPTTEXT.Name = "LBLSCRIPTTEXT"
+Shape4.Width = 322
+Shape4.Name = "Shape4"
+CMDSCRIPT.Top = 80
+CMDSCRIPT.Left = 208
+CMDSCRIPT.Name = "CMDSCRIPT"
+IMGSCRIPT.Height = 32
+IMGSCRIPT.Width = 32
+IMGSCRIPT.Name = "IMGSCRIPT"
+LBLSCRIPTCAPTION.Name = "LBLSCRIPTCAPTION"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] pictureboundhandler
+[START PROPERTIES]
+Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+[END PROPERTIES]
+[START RESERVED1]
+  frxbuilder.hfõzGO7 foxpro_reporting.hnúzGO7 frxbuilder_loc.hvùzGO7 _frxcursor.h~ûzGO7 foxpro_reporting.hÜüzGO7[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _12B17F91V
+[CLASS] frxhandlerform
+[CLASSLOC] frxbuilder.vcx
+[BASECLASS] form
+[OBJNAME] reportpropertieshandler
+[START PROPERTIES]
+Height = 384
+Width = 664
+DoCreate = .T.
+Caption = "Report Properties"
+Name = "reportpropertieshandler"
+grabber.Height = 11
+grabber.Width = 11
+grabber.Name = "grabber"
+frxcursor.Name = "frxcursor"
+cmdOK.Top = 356
+cmdOK.Left = 388
+cmdOK.TabIndex = 2
+cmdOK.Name = "cmdOK"
+cmdCancel.Top = 352
+cmdCancel.Left = 532
+cmdCancel.TabIndex = 3
+cmdCancel.Name = "cmdCancel"
+cmdHelp.Top = 356
+cmdHelp.Left = 292
+cmdHelp.Name = "cmdHelp"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE KeyPress
+LPARAMETERS nKeyCode, nShiftAltCtrl
+
+dodefault(nKeyCode, nShiftAltCtrl)
+
+*---------------------------------------------------
+* Keypress in the parent class can change the
+* active tab. There is code in the frame.click()
+* to update the tab as it changes, so force the code
+* to run (because click() won't run itself):
+*---------------------------------------------------
+if THIS.frame.CurrentPage <> THIS.frame.ActivePage
+	THIS.Frame.Click()
+endif
+ENDPROC
+PROCEDURE loadfromfrx
+*=====================================================================
+* LoadFromFrx()
+*
+* Read values from the FRX record(s) and configure the controls
+*                -------------------------------------
+*                INTENTIONALLY OVERRIDES PARENT METHOD
+*                -------------------------------------
+* Note: We are OVERRIDING the default method here.
+* The code is basically following the same pattern, but
+* there are some different things to do for the report header:
+*=====================================================================
+local OkToContinue, i, j, oPage, oPanel
+OkToContinue = .T.
+
+*---------------------------------------------------------------
+* Ensure we are on the report header record:
+*---------------------------------------------------------------
+select frx
+locate for OBJTYPE = FRX_OBJTYP_REPORTHEADER
+
+*-------------------------------------------------------------
+* ENH for SP2: Open memberdata cursor
+*-------------------------------------------------------------
+if not THIS.frxCursor.UnpackMemberData()
+	THIS.frxEvent.SetHandledByBuilder(.T.)
+	return .F.
+endif
+
+*-------------------------------------------------------------
+* Enhancement for SP1:
+* Add any additional tab classes registered as 'T' in Handler Registry:
+*-------------------------------------------------------------
+local curRec, curSel, cPageName
+curSel = select(0)
+select frxRegistry
+curRec = recno()
+
+scan for REC_TYPE = HANDLREG_EXTRATAB ;
+     and inlist( EVENTTYPE, THIS.frxEvent.EventType, -1 ) ;
+     and inlist( OBJTYPE,   THIS.frxEvent.ObjType,   -1 ) ;
+     and inlist( OBJCODE,   THIS.frxEvent.ObjCode,   -1 ) ;
+     and not deleted()
+	
+	cPageName = 'T' + sys(2015)
+
+	if THIS.Frame.NewRegisteredObject( m.cPageName, trim(HNDL_CLASS),trim(HNDL_LIB))
+		*------------------------------------------------
+		* Enhancement for SP2:
+		* Allow setting of PageOrder thru the FLTR_ORDR
+		* column. Note that it might be C(1) or I
+		*------------------------------------------------
+		if val(trans(FLTR_ORDR)) > 0	
+			THIS.Frame.Pages( THIS.Frame.PageCount ).PageOrder = val(trans(FLTR_ORDR))
+		endif
+		THIS.HasAdditionalTabs = .T.
+
+	endif
+endscan
+go m.curRec
+select (m.curSel)
+
+*-------------------------------------------------------------
+* Assign references to utility objects:
+*-------------------------------------------------------------
+for i = 1 to THIS.Frame.PageCount
+	oPage = THIS.Frame.Pages(m.i)
+	for j = 1 to oPage.ControlCount
+		oPanel = oPage.Controls(m.j)
+
+		*----------------------------------------------
+		* Fix for SP1: Does not rely on panel control
+		* being subclasses from frxPanel; rather, uses
+		* reflection instead:
+		*----------------------------------------------
+		if pemstatus( m.oPanel, "event", 5 )
+			oPanel.event     = THIS.frxEvent
+		endif
+		if pemstatus( m.oPanel, "frxCursor", 5 )
+			oPanel.frxCursor = THIS.frxEvent.frxCursor
+		endif
+		
+		oPanel = .NULL.			
+	endfor
+	oPage = .NULL.
+endfor
+
+*----------------------------------------------------------------
+* New for SP2: Sync up the fonts if there are any new tabs
+*----------------------------------------------------------------
+if THIS.HasAdditionalTabs
+	THIS.CheckForLargeFonts()
+endif
+
+*-------------------------------------------------------------
+* Invoke every control's LoadFromFrx():
+*-------------------------------------------------------------
+* SP2: Delegate to the pageframe:
+*-------------------------------------------------------------
+OkToContinue = THIS.frame.LoadPanelsFromFrx()
+
+
+*-------------------------------------------------------------
+* Change for SP2: Remove any tabs that do not have any visible
+*                 contents (controls), rather than explicitly
+*                 removing the page objects by name
+*                 This replaces the former method of
+*                 hiding protected pages.
+*-------------------------------------------------------------
+THIS.frame.RemoveUnusedPages()
+
+*---------------------------------------------------------------
+* Determine the name of the page appropriate for the event:
+*---------------------------------------------------------------
+local i, iPageToActivate, cPageName
+cPageName = "pageLayout"	
+iPageToActivate = 1
+
+do case
+case THIS.frxevent.eventType = FRX_BLDR_EVENT_PROPERTIES
+	cPageName = "pageLayout"
+
+case THIS.frxevent.eventType = FRX_BLDR_EVENT_VARIABLES
+	cPageName = "pageVariables"
+
+case THIS.frxevent.eventType = FRX_BLDR_EVENT_OPTIONALBANDS
+	cPageName = "pageBands"
+
+case THIS.frxevent.eventType = FRX_BLDR_EVENT_DATAGROUPING
+	cPageName = "pageGrouping"
+
+case THIS.frxevent.eventType = FRX_BLDR_EVENT_SETGRIDSCALE
+	cPageName = "pageRuler"
+
+case THIS.frxevent.eventType = FRX_BLDR_EVENT_IMPORTDE	
+	cPageName = "pageDataEnv"
+
+endcase
+
+*---------------------------------------------------------------
+* Set the active page:
+*---------------------------------------------------------------
+for i = 1 to THIS.Frame.PageCount
+	if upper(THIS.Frame.Pages[m.i].Name) = upper(m.cPageName)
+		iPageToActivate = m.i
+	endif
+endfor
+
+THIS.PageToActivate  = m.iPageToActivate
+*THIS.Frame.ActivePage = m.iPageToActivate
+THIS.Frame.CurrentPage = m.iPageToActivate
+
+return
+
+ENDPROC
+PROCEDURE savetofrx
+*=======================================================================
+* SaveToFrx()
+*
+* Write values back to the FRX.
+*                -------------------------------------
+*                INTENTIONALLY OVERRIDES PARENT METHOD
+*                -------------------------------------
+* In this method, we iterate through the container objects, calling
+* their .SaveToFRX() methods.
+*=======================================================================
+
+*-------------------------------------------------------------
+* instrumenting the xbase code
+*-------------------------------------------------------------
+if DEBUG_WAITMSG_WHILE_EXECUTING
+	wait window "Saving changes..." nowait
+endif
+
+*-------------------------------------------------------------
+* Call each panel's SaveToFrx() method:
+* This method returns .T. if ok to exit the dialog:
+*-------------------------------------------------------------
+if type("THIS.frame") = "O" and ;
+   upper(THIS.frame.BaseClass)="PAGEFRAME"
+
+	if not THIS.frame.SavePanelsToFrx()
+		wait clear
+		return .F.
+	endif
+	
+endif
+
+*---------------------------------------------------------------
+* Ensure we are on the report header record:
+*---------------------------------------------------------------
+select frx
+locate for OBJTYPE = FRX_OBJTYP_REPORTHEADER
+
+*-------------------------------------------------------------
+* ENH for SP2: Put memberdata cursor back into the STYLE column:
+*-------------------------------------------------------------
+if THIS.frxCursor.PackupMemberData()
+	if used("memberdata")
+		use in memberdata
+	endif
+endif
+
+*-------------------------------------------------------------
+* Set the return flags:
+*-------------------------------------------------------------
+THIS.frxEvent.setReloadChanges(.T.)
+THIS.frxEvent.setHandledByBuilder(.T.)
+						
+return .T.						
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+10[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+frxbuilder.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _12C0IWTQ5
+[CLASS] pgfhandlerframe
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] pageframe
+[OBJNAME] frame
+[PARENT] reportpropertieshandler
+[START PROPERTIES]
+ErasePage = .T.
+PageCount = 7
+Anchor = 0
+Top = 9
+Left = 6
+Width = 606
+Height = 331
+TabIndex = 1
+autorefreshonpagechange = .T.
+Name = "frame"
+Pge1.Caption = "Page Layout"
+Pge1.Name = "pageLayout"
+Pge2.Caption = "Optional Bands"
+Pge2.Name = "pageBands"
+Pge3.Caption = "Data Grouping"
+Pge3.Name = "pageGrouping"
+Pge4.Caption = "Variables"
+Pge4.Name = "pageVariables"
+Pge5.Caption = "Protection"
+Pge5.Name = "pageProtection"
+Pge6.Caption = "Ruler/Grid"
+Pge6.Name = "pageRuler"
+Pge7.Caption = "Data Environment"
+Pge7.Name = "pageDataEnv"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE pageBands.Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_TAB_OPTIONALBANDS_LOC
+#ENDIF
+THIS.HelpContextID = UI_REPORT_PROPS_OPTIONALBANDS_HELP_ID
+ENDPROC
+PROCEDURE pageDataEnv.Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_TAB_DATAENV_LOC
+#ENDIF
+THIS.HelpContextID = UI_REPORT_PROPS_DATAENV_HELP_ID
+ENDPROC
+PROCEDURE pageGrouping.Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_TAB_DATAGROUP_LOC
+#ENDIF
+THIS.HelpContextID = UI_REPORT_PROPS_DATAGROUP_HELP_ID
+ENDPROC
+PROCEDURE pageLayout.Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_TAB_PAGELAYOUT_LOC
+#ENDIF
+THIS.HelpContextID = UI_REPORT_PROPS_PAGELAYOUT_HELP_ID
+ENDPROC
+PROCEDURE pageProtection.Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_TAB_PROTECTION_LOC
+#ENDIF
+THIS.HelpContextID = UI_REPORT_PROPS_PROTECTION_HELP_ID
+ENDPROC
+PROCEDURE pageRuler.Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_TAB_RULERGRID_LOC
+#ENDIF
+THIS.HelpContextID = UI_REPORT_PROPS_RULERGRID_HELP_ID
+ENDPROC
+PROCEDURE pageVariables.Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_TAB_VARIABLES_LOC
+#ENDIF
+THIS.HelpContextID = UI_REPORT_PROPS_VARIABLES_HELP_ID
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _18W13KWN2
+[CLASS] panelpagelayout
+[CLASSLOC] frxpanels.vcx
+[BASECLASS] container
+[OBJNAME] Panelpagelayout1
+[PARENT] reportpropertieshandler.frame.pageLayout
+[START PROPERTIES]
+Top = 7
+Left = 9
+Width = 564
+Name = "Panelpagelayout1"
+Shp1.Name = "Shp1"
+Lbl1.Name = "Lbl1"
+Lbl5.Name = "Lbl5"
+spnNumberCols.Name = "spnNumberCols"
+lblWidth.Name = "lblWidth"
+spnWidth.Name = "spnWidth"
+lblSpacing.Name = "lblSpacing"
+spnSpacing.Name = "spnSpacing"
+LBL8.Name = "LBL8"
+spnLeftMargin.Name = "spnLeftMargin"
+opgPrintArea.opt1.Left = 10
+opgPrintArea.opt1.Top = 13
+opgPrintArea.opt1.Name = "opt1"
+opgPrintArea.opt2.Left = 10
+opgPrintArea.opt2.Top = 34
+opgPrintArea.opt2.Name = "opt2"
+opgPrintArea.Name = "opgPrintArea"
+LBL3.Name = "LBL3"
+opgPrintOrder.opt1.Left = 10
+opgPrintOrder.opt1.Top = 14
+opgPrintOrder.opt1.Name = "opt1"
+opgPrintOrder.opt2.Left = 10
+opgPrintOrder.opt2.Top = 35
+opgPrintOrder.opt2.Name = "opt2"
+opgPrintOrder.Name = "opgPrintOrder"
+Lbl4.Name = "Lbl4"
+Shape2.Name = "Shape2"
+Lbl6.Name = "Lbl6"
+txtFont.Name = "txtFont"
+cmdPickFont.Name = "cmdPickFont"
+oFormatter.Name = "oFormatter"
+chkOverrideCharset.Alignment = 0
+chkOverrideCharset.Name = "chkOverrideCharset"
+Shp2.Name = "Shp2"
+Lbl2.Name = "Lbl2"
+txtPrintDevice.Name = "txtPrintDevice"
+Cmd1.Name = "Cmd1"
+chkPrintEnvironment.Alignment = 0
+chkPrintEnvironment.Name = "chkPrintEnvironment"
+pagePreview.shadow.Name = "shadow"
+pagePreview.Page.marginBox.Name = "marginBox"
+pagePreview.Page.extraMargin.Name = "extraMargin"
+pagePreview.Page.Name = "Page"
+pagePreview.Name = "pagePreview"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1330LTRAY
+[CLASS] paneloptionalbands
+[CLASSLOC] frxpanels.vcx
+[BASECLASS] container
+[OBJNAME] Paneloptionalbands1
+[PARENT] reportpropertieshandler.frame.pageBands
+[START PROPERTIES]
+Top = 6
+Left = 8
+Name = "Paneloptionalbands1"
+Shp2.Name = "Shp2"
+Shp1.Name = "Shp1"
+Lbl2.Name = "Lbl2"
+Lbl1.Name = "Lbl1"
+chkHasTitle.Alignment = 0
+chkHasTitle.Name = "chkHasTitle"
+chkTitleNewPage.Alignment = 0
+chkTitleNewPage.Name = "chkTitleNewPage"
+chkHasSummary.Alignment = 0
+chkHasSummary.Name = "chkHasSummary"
+chkSummaryNewPage.Alignment = 0
+chkSummaryNewPage.Name = "chkSummaryNewPage"
+chkPageHeader.Alignment = 0
+chkPageHeader.Name = "chkPageHeader"
+chkPageFooter.Alignment = 0
+chkPageFooter.Name = "chkPageFooter"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1331DSWG3
+[CLASS] paneldetailbands
+[CLASSLOC] frxpanels.vcx
+[BASECLASS] container
+[OBJNAME] Paneldetailbands1
+[PARENT] reportpropertieshandler.frame.pageBands
+[START PROPERTIES]
+Top = 6
+Left = 303
+Width = 245
+Height = 204
+Name = "Paneldetailbands1"
+Shp3.Top = 8
+Shp3.Left = 0
+Shp3.Width = 224
+Shp3.Name = "Shp3"
+detailList.Name = "detailList"
+cmdAdd.Left = 9
+cmdAdd.Name = "cmdAdd"
+Lbl3.Name = "Lbl3"
+cmdRemove.Name = "cmdRemove"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _13U1AO1SC
+[CLASS] panelgrouping
+[CLASSLOC] frxpanels.vcx
+[BASECLASS] container
+[OBJNAME] Panelgrouping1
+[PARENT] reportpropertieshandler.frame.pageGrouping
+[START PROPERTIES]
+Anchor = 15
+Top = 5
+Left = 6
+Name = "Panelgrouping1"
+groupList.Name = "groupList"
+Lbl1.Name = "Lbl1"
+edtExpr.Name = "edtExpr"
+Lbl2.Name = "Lbl2"
+chkReprint.Alignment = 0
+chkReprint.Name = "chkReprint"
+lblThreshold.Name = "lblThreshold"
+cmdAdd.Name = "cmdAdd"
+cmdGetExpr.Name = "cmdGetExpr"
+cmdRemove.Name = "cmdRemove"
+spnThreshold.Name = "spnThreshold"
+opgPaginate.Opt1.Left = 17
+opgPaginate.Opt1.Top = 12
+opgPaginate.Opt1.Name = "Opt1"
+opgPaginate.Opt2.Left = 17
+opgPaginate.Opt2.Top = 33
+opgPaginate.Opt2.Name = "Opt2"
+opgPaginate.Opt3.Left = 17
+opgPaginate.Opt3.Top = 54
+opgPaginate.Opt3.Name = "Opt3"
+opgPaginate.Opt4.Left = 17
+opgPaginate.Opt4.Top = 75
+opgPaginate.Opt4.Name = "Opt4"
+opgPaginate.Name = "opgPaginate"
+Lbl4.Name = "Lbl4"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _13V1AK8UP
+[CLASS] panelreportvars
+[CLASSLOC] frxpanels.vcx
+[BASECLASS] container
+[OBJNAME] Panelreportvars1
+[PARENT] reportpropertieshandler.frame.pageVariables
+[START PROPERTIES]
+Anchor = 15
+Top = 4
+Left = 6
+Name = "Panelreportvars1"
+varList.Name = "varList"
+Lbl1.Name = "Lbl1"
+edtStoreValue.Name = "edtStoreValue"
+Lbl3.Name = "Lbl3"
+edtInitialValue.Name = "edtInitialValue"
+cmdAdd.Name = "cmdAdd"
+cmdGetExpr.Name = "cmdGetExpr"
+cmdRemove.Name = "cmdRemove"
+cmdGetExpr2.Name = "cmdGetExpr2"
+Lbl4.Name = "Lbl4"
+Lbl5.Name = "Lbl5"
+Lbl6.Name = "Lbl6"
+cboCalculate.Name = "cboCalculate"
+CHKRELEASE.Alignment = 0
+CHKRELEASE.Name = "CHKRELEASE"
+cboReset.Name = "cboReset"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _12P0XQ6MQ
+[CLASS] panelreportprotection
+[CLASSLOC] frxpanels.vcx
+[BASECLASS] container
+[OBJNAME] Panelreportprotection1
+[PARENT] reportpropertieshandler.frame.pageProtection
+[START PROPERTIES]
+Top = 7
+Left = 9
+Name = "Panelreportprotection1"
+SHP1.Name = "SHP1"
+LBL1.Name = "LBL1"
+chkPageLayout.Alignment = 0
+chkPageLayout.Name = "chkPageLayout"
+LBL4.Name = "LBL4"
+chkOptionalBands.Alignment = 0
+chkOptionalBands.Name = "chkOptionalBands"
+chkDataEnv.Alignment = 0
+chkDataEnv.Name = "chkDataEnv"
+chkDataGrouping.Alignment = 0
+chkDataGrouping.Name = "chkDataGrouping"
+chkPreview.Alignment = 0
+chkPreview.Name = "chkPreview"
+chkReportPrint.Alignment = 0
+chkReportPrint.Name = "chkReportPrint"
+chkVariables.Alignment = 0
+chkVariables.Name = "chkVariables"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _12P0XQ6N5
+[CLASS] panelreportruler
+[CLASSLOC] frxpanels.vcx
+[BASECLASS] container
+[OBJNAME] Panelreportruler1
+[PARENT] reportpropertieshandler.frame.pageRuler
+[START PROPERTIES]
+Top = 6
+Left = 11
+Name = "Panelreportruler1"
+Shp2.Name = "Shp2"
+SHP1.Name = "SHP1"
+LBL6.Name = "LBL6"
+cboRuler.Name = "cboRuler"
+chkShowPosition.Alignment = 0
+chkShowPosition.Name = "chkShowPosition"
+LBL1.Name = "LBL1"
+chkVisibleGrid.Alignment = 0
+chkVisibleGrid.Name = "chkVisibleGrid"
+chkSnapTo.Alignment = 0
+chkSnapTo.Name = "chkSnapTo"
+LBL4.Name = "LBL4"
+spnHorizontalSpacing.Name = "spnHorizontalSpacing"
+LBL5.Name = "LBL5"
+spnVerticalSpacing.Name = "spnVerticalSpacing"
+Lbl2.Name = "Lbl2"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _151147J3M
+[CLASS] panelde
+[CLASSLOC] frxpanels.vcx
+[BASECLASS] container
+[OBJNAME] Panelde1
+[PARENT] reportpropertieshandler.frame.pageDataEnv
+[START PROPERTIES]
+Top = 15
+Left = 11
+Name = "Panelde1"
+opgDeSource.Opt1.Left = 9
+opgDeSource.Opt1.Top = 17
+opgDeSource.Opt1.Name = "Opt1"
+opgDeSource.Opt2.Left = 9
+opgDeSource.Opt2.Top = 38
+opgDeSource.Opt2.Name = "Opt2"
+opgDeSource.Name = "opgDeSource"
+CMDLOAD.Name = "CMDLOAD"
+Lbl2.Name = "Lbl2"
+txtClass.Name = "txtClass"
+txtClasslib.Name = "txtClasslib"
+LBL3.Name = "LBL3"
+Lbl4.Name = "Lbl4"
+chkPrivateSession.Alignment = 0
+chkPrivateSession.Name = "chkPrivateSession"
+chkUseFullPath.Alignment = 0
+chkUseFullPath.Name = "chkUseFullPath"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] reportpropertieshandler
+[START PROPERTIES]
+Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+[END PROPERTIES]
+[START RESERVED1]
+  frxbuilder.hfõzGO7 foxpro_reporting.hnúzGO7 frxbuilder_loc.hvùzGO7 _frxcursor.h~ûzGO7 foxpro_reporting.hÜüzGO7[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _12B17GOLR
+[CLASS] frxhandlerform
+[CLASSLOC] frxbuilder.vcx
+[BASECLASS] form
+[OBJNAME] fieldexprhandler
+[START PROPERTIES]
+Height = 412
+Width = 453
+DoCreate = .T.
+BorderStyle = 3
+Caption = "Field/Expression"
+Name = "fieldexprhandler"
+grabber.Height = 11
+grabber.Left = 168
+grabber.Top = 384
+grabber.Width = 11
+grabber.Name = "grabber"
+frxcursor.Name = "frxcursor"
+cmdOK.Top = 375
+cmdOK.Left = 237
+cmdOK.TabIndex = 2
+cmdOK.Name = "cmdOK"
+cmdCancel.Top = 375
+cmdCancel.Left = 318
+cmdCancel.TabIndex = 3
+cmdCancel.Name = "cmdCancel"
+cmdHelp.Top = 368
+cmdHelp.Left = 80
+cmdHelp.Name = "cmdHelp"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE loadfromfrx
+*=====================================================================
+* LoadFromFrx()
+*
+* Read values from the FRX record(s) and configure the controls
+*=====================================================================
+local OkToContinue
+
+*---------------------------------------------------------------
+* Call each panel's LoadFromFrx()
+* Assigns .event and .frxCursor references
+* Removes protection panel
+* sets activePage:
+*---------------------------------------------------------------
+OkToContinue = dodefault()
+if not m.OkToContinue
+	return .F.
+endif
+
+*---------------------------------------------------------------
+* Set the active page:
+*---------------------------------------------------------------
+*THIS.Frame.ActivePage = 1
+THIS.Frame.CurrentPage = 1
+
+*---------------------------------------------------------------
+* Event-specific actions:
+*   - Set title of dialog:
+*---------------------------------------------------------------
+do case
+case this.frxEvent.eventType = FRX_BLDR_EVENT_OBJECTCREATE
+	THIS.Caption = DLG_TITLE_NEW_PREFIX_LOC + TARGET_FIELD_LOC + DLG_TITLE_PROPERTIES_LOC
+
+otherwise	
+*	THIS.Caption = TARGET_FIELD_LOC + ":  " + trim(EXPR)
+	THIS.Caption = TARGET_FIELD_LOC + DLG_TITLE_PROPERTIES_LOC
+
+endcase
+if THIS.frxEvent.protected and ;
+   THIS.frxEvent.frxCursor.hasProtectionFlag( ORDER, FRX_PROTECT_OBJECT_NO_EDIT)
+
+	THIS.Caption = THIS.Caption + DLG_TITLE_READONLY_SUFFIX_LOC
+
+	*----------------------------------------------
+	* CHANGE: Do not show dialog if PROTECT_NO_EDIT
+	*----------------------------------------------
+	OkToContinue = .F.
+
+endif
+return m.OkToContinue
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+14[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+frxbuilder.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _141139C4H
+[CLASS] pgfhandlerframe
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] pageframe
+[OBJNAME] frame
+[PARENT] fieldexprhandler
+[START PROPERTIES]
+ErasePage = .T.
+PageCount = 7
+TabStyle = 1
+Top = 6
+Left = 5
+Width = 391
+Height = 362
+TabIndex = 1
+autorefreshonpagechange = .T.
+Name = "frame"
+Pge1.Caption = "General"
+Pge1.PageOrder = 1
+Pge1.Name = "pageGeneral"
+Pge2.Caption = "Print when"
+Pge2.PageOrder = 4
+Pge2.Name = "pagePrintWhen"
+Pge3.Caption = "Protection"
+Pge3.PageOrder = 6
+Pge3.Name = "pageProtection"
+Pge4.Caption = "Calculate"
+Pge4.PageOrder = 5
+Pge4.Name = "pageCalculate"
+Pge5.Caption = "Other"
+Pge5.PageOrder = 7
+Pge5.Name = "pageComment"
+Pge6.Caption = "Style"
+Pge6.PageOrder = 2
+Pge6.Name = "pageStyle"
+Pge7.Caption = "Format"
+Pge7.PageOrder = 3
+Pge7.Name = "pageFormat"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE pageCalculate.Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_TAB_CALCULATE_LOC
+#ENDIF
+THIS.HelpContextID = UI_CONTROL_PROPS_CALCULATE_HELP_ID
+ENDPROC
+PROCEDURE pageComment.Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_TAB_OTHER_LOC
+#ENDIF
+THIS.HelpContextID = UI_CONTROL_PROPS_OTHER_HELP_ID
+ENDPROC
+PROCEDURE pageFormat.Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_TAB_FORMAT_LOC
+#ENDIF
+
+THIS.HelpContextID = UI_CONTROL_PROPS_FORMAT_HELP_ID
+ENDPROC
+PROCEDURE pageGeneral.Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_TAB_GENERAL_LOC
+#ENDIF
+THIS.HelpContextID = UI_CONTROL_PROPS_GENERAL_HELP_ID
+ENDPROC
+PROCEDURE pagePrintWhen.Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_TAB_PRINTWHEN_LOC
+#ENDIF
+THIS.HelpContextID = UI_CONTROL_PROPS_PRINTWHEN_HELP_ID
+ENDPROC
+PROCEDURE pageProtection.Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_TAB_PROTECTION_LOC
+#ENDIF
+THIS.HelpContextID = UI_CONTROL_PROPS_PROTECTION_HELP_ID
+ENDPROC
+PROCEDURE pageStyle.Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_TAB_STYLE_LOC
+#ENDIF
+THIS.HelpContextID = UI_CONTROL_PROPS_STYLE_HELP_ID
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1420O04AW
+[CLASS] panelfieldexpr
+[CLASSLOC] frxpanels.vcx
+[BASECLASS] container
+[OBJNAME] Panel
+[PARENT] fieldexprhandler.frame.pageGeneral
+[START PROPERTIES]
+Top = 10
+Left = 8
+Width = 342
+Height = 66
+TabIndex = 1
+Name = "Panel"
+Lbl1.TabIndex = 1
+Lbl1.Name = "Lbl1"
+objExpr.txtExpression.Height = 41
+objExpr.txtExpression.Left = 0
+objExpr.txtExpression.Top = 1
+objExpr.txtExpression.Width = 293
+objExpr.txtExpression.Name = "txtExpression"
+objExpr.cmdExprBuilder.Top = 1
+objExpr.cmdExprBuilder.Left = 298
+objExpr.cmdExprBuilder.Name = "cmdExprBuilder"
+objExpr.Left = 1
+objExpr.Width = 329
+objExpr.Height = 46
+objExpr.TabIndex = 2
+objExpr.Name = "objExpr"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _16X0SRF41
+[CLASS] panelabsolutepositioning
+[CLASSLOC] frxpanels.vcx
+[BASECLASS] container
+[OBJNAME] PANELABSOLUTEPOSITIONING1
+[PARENT] fieldexprhandler.frame.pageGeneral
+[START PROPERTIES]
+Top = 196
+Left = 9
+Width = 329
+TabIndex = 3
+Name = "PANELABSOLUTEPOSITIONING1"
+Shp1.Top = 8
+Shp1.Left = 0
+Shp1.Width = 317
+Shp1.Name = "Shp1"
+spnHeight.Left = 162
+spnHeight.Name = "spnHeight"
+spnWidth.Left = 162
+spnWidth.Name = "spnWidth"
+spnTop.Name = "spnTop"
+spnLeft.Name = "spnLeft"
+lblHeading.Name = "lblHeading"
+Lbl4.Left = 163
+Lbl4.Name = "Lbl4"
+Lbl5.Left = 162
+Lbl5.Name = "Lbl5"
+Lbl7.Name = "Lbl7"
+Lbl6.Name = "Lbl6"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _16X0SRF45
+[CLASS] panelfieldpositioning
+[CLASSLOC] frxpanels.vcx
+[BASECLASS] container
+[OBJNAME] Panelfieldpositioning1
+[PARENT] fieldexprhandler.frame.pageGeneral
+[START PROPERTIES]
+Top = 76
+Left = 7
+Width = 343
+TabIndex = 2
+Name = "Panelfieldpositioning1"
+chkStretch.Left = 2
+chkStretch.Alignment = 0
+chkStretch.Name = "chkStretch"
+objPosition.OptionGroup.OPT1.Left = 66
+objPosition.OptionGroup.OPT1.Top = 13
+objPosition.OptionGroup.OPT1.Name = "OPT1"
+objPosition.OptionGroup.OPT2.Left = 66
+objPosition.OptionGroup.OPT2.Top = 34
+objPosition.OptionGroup.OPT2.Name = "OPT2"
+objPosition.OptionGroup.OPT3.Left = 66
+objPosition.OptionGroup.OPT3.Top = 55
+objPosition.OptionGroup.OPT3.Name = "OPT3"
+objPosition.OptionGroup.Left = 0
+objPosition.OptionGroup.Top = 7
+objPosition.OptionGroup.Width = 317
+objPosition.OptionGroup.Name = "OptionGroup"
+objPosition.Label.Name = "Label"
+objPosition.gifFloat.Height = 34
+objPosition.gifFloat.Width = 31
+objPosition.gifFloat.Name = "gifFloat"
+objPosition.gifTop.Height = 34
+objPosition.gifTop.Width = 31
+objPosition.gifTop.Name = "gifTop"
+objPosition.gifBottom.Height = 34
+objPosition.gifBottom.Width = 31
+objPosition.gifBottom.Name = "gifBottom"
+objPosition.Top = 1
+objPosition.Left = 2
+objPosition.Width = 337
+objPosition.Name = "objPosition"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] RESERVED  
+[CLASS] panelprintwhen
+[CLASSLOC] frxpanels.vcx
+[BASECLASS] container
+[OBJNAME] panel
+[PARENT] fieldexprhandler.frame.pagePrintWhen
+[START PROPERTIES]
+Top = 8
+Left = 10
+Width = 352
+Name = "panel"
+Shp1.Top = 76
+Shp1.Left = 0
+Shp1.Name = "Shp1"
+PrintRepeated.Opt1.Left = 10
+PrintRepeated.Opt1.Top = 10
+PrintRepeated.Opt1.Name = "Opt1"
+PrintRepeated.Opt2.Left = 10
+PrintRepeated.Opt2.Top = 30
+PrintRepeated.Opt2.Name = "Opt2"
+PrintRepeated.Left = 0
+PrintRepeated.Name = "PrintRepeated"
+onFirstWholeBand.Alignment = 0
+onFirstWholeBand.Name = "onFirstWholeBand"
+onGroupChange.Alignment = 0
+onGroupChange.Name = "onGroupChange"
+group.Left = 40
+group.Width = 272
+group.Name = "group"
+onOverflow.Alignment = 0
+onOverflow.Name = "onOverflow"
+removeBlank.Alignment = 0
+removeBlank.Name = "removeBlank"
+cmdGetExpr.Name = "cmdGetExpr"
+LBL1.Name = "LBL1"
+Expression.Left = 0
+Expression.Name = "Expression"
+Lbl2.Name = "Lbl2"
+LBL3.Name = "LBL3"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _12B17F91V
+[CLASS] panelobjectprotection
+[CLASSLOC] frxpanels.vcx
+[BASECLASS] container
+[OBJNAME] panel
+[PARENT] fieldexprhandler.frame.pageProtection
+[START PROPERTIES]
+Top = 9
+Left = 9
+Width = 330
+Height = 273
+TabIndex = 1
+Name = "panel"
+Shp1.Top = 7
+Shp1.Left = 0
+Shp1.Height = 258
+Shp1.Width = 325
+Shp1.Name = "Shp1"
+chkObjectLock.Alignment = 0
+chkObjectLock.Name = "chkObjectLock"
+chkObjectNoSelect.Alignment = 0
+chkObjectNoSelect.Name = "chkObjectNoSelect"
+chkObjectNoDelete.Alignment = 0
+chkObjectNoDelete.Name = "chkObjectNoDelete"
+chkObjectHidden.Alignment = 0
+chkObjectHidden.Name = "chkObjectHidden"
+chkObjectNoEdit.Alignment = 0
+chkObjectNoEdit.Name = "chkObjectNoEdit"
+LBL1.Name = "LBL1"
+Lbl2.Name = "Lbl2"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1731DLO61
+[CLASS] paneldesigntimelabel
+[CLASSLOC] frxpanels.vcx
+[BASECLASS] container
+[OBJNAME] Paneldesigntimelabel1
+[PARENT] fieldexprhandler.frame.pageProtection
+[START PROPERTIES]
+Top = 212
+Left = 24
+Width = 289
+TabIndex = 2
+Name = "Paneldesigntimelabel1"
+LBL1.Name = "LBL1"
+txtDesignTimeLabel.Name = "txtDesignTimeLabel"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _16X0SRF4H
+[CLASS] panelcalculate
+[CLASSLOC] frxpanels.vcx
+[BASECLASS] container
+[OBJNAME] Panelcalculate1
+[PARENT] fieldexprhandler.frame.pageCalculate
+[START PROPERTIES]
+Top = 7
+Left = 8
+Name = "Panelcalculate1"
+Shp3.Name = "Shp3"
+CBOCALCULATE.Name = "CBOCALCULATE"
+Lbl5.Name = "Lbl5"
+Lbl3.Name = "Lbl3"
+cboReset.Name = "cboReset"
+Lbl6.Name = "Lbl6"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _18B0S7QY5
+[CLASS] panelcommentuser
+[CLASSLOC] frxpanels.vcx
+[BASECLASS] container
+[OBJNAME] Panelcommentuser1
+[PARENT] fieldexprhandler.frame.pageComment
+[START PROPERTIES]
+Top = 5
+Left = 7
+Width = 387
+Height = 170
+Name = "Panelcommentuser1"
+shpUser.Top = 87
+shpUser.Left = 5
+shpUser.Height = 2
+shpUser.Width = 368
+shpUser.Name = "shpUser"
+LBLCOMMENTTEXT.Height = 46
+LBLCOMMENTTEXT.Left = 56
+LBLCOMMENTTEXT.Width = 315
+LBLCOMMENTTEXT.Name = "LBLCOMMENTTEXT"
+CMDCOMMENT.Top = 57
+CMDCOMMENT.Left = 253
+CMDCOMMENT.Name = "CMDCOMMENT"
+LBLUSERCAPTION.Left = 2
+LBLUSERCAPTION.Top = 79
+LBLUSERCAPTION.Name = "LBLUSERCAPTION"
+LBLUSERTEXT.Height = 49
+LBLUSERTEXT.Left = 58
+LBLUSERTEXT.Width = 317
+LBLUSERTEXT.Name = "LBLUSERTEXT"
+IMGCOMMENT.Height = 32
+IMGCOMMENT.Width = 32
+IMGCOMMENT.Name = "IMGCOMMENT"
+CMDUSER.Top = 134
+CMDUSER.Left = 253
+CMDUSER.Name = "CMDUSER"
+Shape1.Top = 9
+Shape1.Left = 5
+Shape1.Height = 2
+Shape1.Width = 368
+Shape1.Name = "Shape1"
+LBLCOMMENTCAPTION.Name = "LBLCOMMENTCAPTION"
+IMGUSER.Height = 32
+IMGUSER.Left = 8
+IMGUSER.Top = 99
+IMGUSER.Width = 32
+IMGUSER.Name = "IMGUSER"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _18B0S7QY6
+[CLASS] paneltooltip
+[CLASSLOC] frxpanels.vcx
+[BASECLASS] container
+[OBJNAME] Paneltooltip1
+[PARENT] fieldexprhandler.frame.pageComment
+[START PROPERTIES]
+Top = 160
+Left = 7
+Width = 391
+Height = 78
+Name = "Paneltooltip1"
+SHPUSER.Top = 9
+SHPUSER.Left = 5
+SHPUSER.Height = 2
+SHPUSER.Width = 369
+SHPUSER.Name = "SHPUSER"
+lblTooltipText.Height = 36
+lblTooltipText.Left = 56
+lblTooltipText.Width = 319
+lblTooltipText.Name = "lblTooltipText"
+CmdTooltip.Top = 47
+CmdTooltip.Left = 253
+CmdTooltip.Name = "CmdTooltip"
+lblTooltipCaption.Name = "lblTooltipCaption"
+imgTooltip.Height = 32
+imgTooltip.Width = 32
+imgTooltip.Name = "imgTooltip"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _18B0S7QY7
+[CLASS] panelmemberdata
+[CLASSLOC] frxpanels.vcx
+[BASECLASS] container
+[OBJNAME] Panelmemberdata1
+[PARENT] fieldexprhandler.frame.pageComment
+[START PROPERTIES]
+Top = 228
+Left = 7
+Width = 387
+Height = 86
+Name = "Panelmemberdata1"
+LBLSCRIPTTEXT.Height = 46
+LBLSCRIPTTEXT.Left = 56
+LBLSCRIPTTEXT.Width = 315
+LBLSCRIPTTEXT.Name = "LBLSCRIPTTEXT"
+Shape4.Top = 9
+Shape4.Left = 5
+Shape4.Height = 2
+Shape4.Width = 368
+Shape4.Name = "Shape4"
+CMDSCRIPT.Top = 58
+CMDSCRIPT.Left = 253
+CMDSCRIPT.Name = "CMDSCRIPT"
+IMGSCRIPT.Height = 32
+IMGSCRIPT.Width = 32
+IMGSCRIPT.Name = "IMGSCRIPT"
+LBLSCRIPTCAPTION.Name = "LBLSCRIPTCAPTION"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1331DSWG3
+[CLASS] paneltextformat
+[CLASSLOC] frxpanels.vcx
+[BASECLASS] container
+[OBJNAME] panel
+[PARENT] fieldexprhandler.frame.pageStyle
+[START PROPERTIES]
+Top = 6
+Left = 9
+Width = 329
+Name = "panel"
+opgMode.Opt1.Left = 15
+opgMode.Opt1.Top = 10
+opgMode.Opt1.Name = "Opt1"
+opgMode.Opt2.Left = 15
+opgMode.Opt2.Top = 31
+opgMode.Opt2.Name = "Opt2"
+opgMode.Left = 0
+opgMode.Width = 317
+opgMode.Name = "opgMode"
+shpFontBorder.Width = 317
+shpFontBorder.Name = "shpFontBorder"
+shpColorBorder.Width = 317
+shpColorBorder.Name = "shpColorBorder"
+shpAlphaBorder.Left = 185
+shpAlphaBorder.Name = "shpAlphaBorder"
+lblFont.Name = "lblFont"
+txtFont.Height = 21
+txtFont.Left = 15
+txtFont.Width = 262
+txtFont.Name = "txtFont"
+cmdFont.Left = 284
+cmdFont.Name = "cmdFont"
+chkOverrideCharset.Alignment = 0
+chkOverrideCharset.Name = "chkOverrideCharset"
+lblColor.Name = "lblColor"
+CHKFOREDEFAULT.Alignment = 0
+CHKFOREDEFAULT.Name = "CHKFOREDEFAULT"
+cmdForeColor.Left = 283
+cmdForeColor.Name = "cmdForeColor"
+CHKBACKDEFAULT.Alignment = 0
+CHKBACKDEFAULT.Name = "CHKBACKDEFAULT"
+cmdBackcolor.Left = 283
+cmdBackcolor.Name = "cmdBackcolor"
+oFormatter.Top = 44
+oFormatter.Left = 269
+oFormatter.Name = "oFormatter"
+lblBackstyle.Name = "lblBackstyle"
+chkStrikethru.Alignment = 0
+chkStrikethru.Name = "chkStrikethru"
+chkUnderline.Left = 158
+chkUnderline.Alignment = 0
+chkUnderline.Name = "chkUnderline"
+cntPreview.shpBorder.Top = 6
+cntPreview.shpBorder.Left = 0
+cntPreview.shpBorder.Width = 317
+cntPreview.shpBorder.Name = "shpBorder"
+cntPreview.canvas.vertLine.Name = "vertLine"
+cntPreview.canvas.hozLine.Name = "hozLine"
+cntPreview.canvas.Text.Name = "Text"
+cntPreview.canvas.Left = 6
+cntPreview.canvas.Width = 303
+cntPreview.canvas.Height = 46
+cntPreview.canvas.Name = "canvas"
+cntPreview.lblSample.Name = "lblSample"
+cntPreview.Left = 0
+cntPreview.Width = 325
+cntPreview.Name = "cntPreview"
+lblAlpha.Left = 192
+lblAlpha.Top = 162
+lblAlpha.Name = "lblAlpha"
+spnAlphaPen.Left = 239
+spnAlphaPen.Name = "spnAlphaPen"
+cntBackColor.Left = 265
+cntBackColor.Name = "cntBackColor"
+cntForeColor.Left = 265
+cntForeColor.Name = "cntForeColor"
+spnAlphaFill.Left = 239
+spnAlphaFill.Name = "spnAlphaFill"
+lblPen.Left = 194
+lblPen.Name = "lblPen"
+lblFill.Left = 194
+lblFill.Name = "lblFill"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1970S8DDW
+[CLASS] panelfieldformat
+[CLASSLOC] frxpanels.vcx
+[BASECLASS] container
+[OBJNAME] Panelfieldformat1
+[PARENT] fieldexprhandler.frame.pageFormat
+[START PROPERTIES]
+Top = 14
+Left = 10
+priority = 2
+Name = "Panelfieldformat1"
+Lbl1.Name = "Lbl1"
+SHP1.Name = "SHP1"
+txtFormat.Name = "txtFormat"
+LBL3.Name = "LBL3"
+opgDataType.OPT1.Left = 5
+opgDataType.OPT1.Top = 5
+opgDataType.OPT1.Name = "OPT1"
+opgDataType.OPT2.Left = 120
+opgDataType.OPT2.Top = 4
+opgDataType.OPT2.Name = "OPT2"
+opgDataType.OPT3.Left = 225
+opgDataType.OPT3.Top = 4
+opgDataType.OPT3.Name = "OPT3"
+opgDataType.Name = "opgDataType"
+LBL2.Name = "LBL2"
+cboStringTrimMode.Name = "cboStringTrimMode"
+cntCharFormat.CHKUPPER.Alignment = 0
+cntCharFormat.CHKUPPER.Name = "CHKUPPER"
+cntCharFormat.CHKSETDATE.Alignment = 0
+cntCharFormat.CHKSETDATE.Name = "CHKSETDATE"
+cntCharFormat.CHKBRITISHDATE.Alignment = 0
+cntCharFormat.CHKBRITISHDATE.Name = "CHKBRITISHDATE"
+cntCharFormat.OPGIGNOREINPUTMASK.OPT1.Left = 15
+cntCharFormat.OPGIGNOREINPUTMASK.OPT1.Top = 11
+cntCharFormat.OPGIGNOREINPUTMASK.OPT1.Name = "OPT1"
+cntCharFormat.OPGIGNOREINPUTMASK.OPT2.Left = 15
+cntCharFormat.OPGIGNOREINPUTMASK.OPT2.Top = 30
+cntCharFormat.OPGIGNOREINPUTMASK.OPT2.Name = "OPT2"
+cntCharFormat.OPGIGNOREINPUTMASK.Name = "OPGIGNOREINPUTMASK"
+cntCharFormat.LBL1.Name = "LBL1"
+cntCharFormat.OPGJUSTIFY.OPT1.Left = 19
+cntCharFormat.OPGJUSTIFY.OPT1.Top = 14
+cntCharFormat.OPGJUSTIFY.OPT1.Name = "OPT1"
+cntCharFormat.OPGJUSTIFY.OPT2.Left = 19
+cntCharFormat.OPGJUSTIFY.OPT2.Top = 33
+cntCharFormat.OPGJUSTIFY.OPT2.Name = "OPT2"
+cntCharFormat.OPGJUSTIFY.opt3.Left = 19
+cntCharFormat.OPGJUSTIFY.opt3.Top = 52
+cntCharFormat.OPGJUSTIFY.opt3.Name = "opt3"
+cntCharFormat.OPGJUSTIFY.Name = "OPGJUSTIFY"
+cntCharFormat.LBL2.Name = "LBL2"
+cntCharFormat.Name = "cntCharFormat"
+cntNumFormat.CHKLEFTJUSTIFY.Alignment = 0
+cntNumFormat.CHKLEFTJUSTIFY.Name = "CHKLEFTJUSTIFY"
+cntNumFormat.CHKBLANKIFZERO.Alignment = 0
+cntNumFormat.CHKBLANKIFZERO.Name = "CHKBLANKIFZERO"
+cntNumFormat.CHKNEGATIVE.Alignment = 0
+cntNumFormat.CHKNEGATIVE.Name = "CHKNEGATIVE"
+cntNumFormat.CHKSETDATE.Alignment = 0
+cntNumFormat.CHKSETDATE.Name = "CHKSETDATE"
+cntNumFormat.CHKBRITISHDATE.Alignment = 0
+cntNumFormat.CHKBRITISHDATE.Name = "CHKBRITISHDATE"
+cntNumFormat.CHKCRIFPOSITIVE.Alignment = 0
+cntNumFormat.CHKCRIFPOSITIVE.Name = "CHKCRIFPOSITIVE"
+cntNumFormat.CHKDBIFNEGATIVE.Alignment = 0
+cntNumFormat.CHKDBIFNEGATIVE.Name = "CHKDBIFNEGATIVE"
+cntNumFormat.CHKLEADINGZEROS.Alignment = 0
+cntNumFormat.CHKLEADINGZEROS.Name = "CHKLEADINGZEROS"
+cntNumFormat.CHKCURRENCY.Alignment = 0
+cntNumFormat.CHKCURRENCY.Name = "CHKCURRENCY"
+cntNumFormat.CHKSCIENTIFIC.Alignment = 0
+cntNumFormat.CHKSCIENTIFIC.Name = "CHKSCIENTIFIC"
+cntNumFormat.Name = "cntNumFormat"
+cntDateFormat.CHKSETDATE.Alignment = 0
+cntDateFormat.CHKSETDATE.Name = "CHKSETDATE"
+cntDateFormat.CHKBRITISHDATE.Alignment = 0
+cntDateFormat.CHKBRITISHDATE.Name = "CHKBRITISHDATE"
+cntDateFormat.CHKBLANKIFZERO.Alignment = 0
+cntDateFormat.CHKBLANKIFZERO.Name = "CHKBLANKIFZERO"
+cntDateFormat.CHKYL.Alignment = 0
+cntDateFormat.CHKYL.Name = "CHKYL"
+cntDateFormat.CHKYS.Alignment = 0
+cntDateFormat.CHKYS.Name = "CHKYS"
+cntDateFormat.Name = "cntDateFormat"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] fieldexprhandler
+[START PROPERTIES]
+Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+[END PROPERTIES]
+[START RESERVED1]
+  frxbuilder.hfõzGO7 foxpro_reporting.hnúzGO7 frxbuilder_loc.hvùzGO7 _frxcursor.h~ûzGO7 foxpro_reporting.hÜüzGO7[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _12O14JV42
+[CLASS] frxhandlerform
+[CLASSLOC] frxbuilder.vcx
+[BASECLASS] form
+[OBJNAME] shapelinehandler
+[START PROPERTIES]
+Height = 400
+Width = 405
+DoCreate = .T.
+BorderStyle = 3
+Caption = "Shape/Line"
+Name = "shapelinehandler"
+grabber.Height = 11
+grabber.Width = 11
+grabber.Name = "grabber"
+frxcursor.Name = "frxcursor"
+cmdOK.Top = 372
+cmdOK.Left = 148
+cmdOK.TabIndex = 2
+cmdOK.Name = "cmdOK"
+cmdCancel.Top = 372
+cmdCancel.Left = 232
+cmdCancel.TabIndex = 3
+cmdCancel.Name = "cmdCancel"
+cmdHelp.Top = 344
+cmdHelp.Left = 284
+cmdHelp.Name = "cmdHelp"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE loadfromfrx
+*=====================================================================
+* LoadFromFrx()
+*
+* Read values from the FRX record(s) and configure the controls
+*=====================================================================
+local OKToContinue
+
+*---------------------------------------------------------------
+* Call each panel's LoadFromFrx()
+* Assigns .event and .frxCursor references
+* Removes protection panel
+* sets activePage:
+*---------------------------------------------------------------
+OkToContinue = dodefault()
+if not m.OkToContinue
+	return .F.
+endif
+
+*---------------------------------------------------------------
+* Event-specific actions:
+*   - Set title of dialog:
+*---------------------------------------------------------------
+do case
+case frx.OBJTYPE = FRX_OBJTYP_LINE
+	THIS.Caption = TARGET_LINE_LOC
+
+case frx.OBJTYPE = FRX_OBJTYP_RECTANGLE
+	THIS.Caption = TARGET_BOX_LOC
+
+case this.frxEvent.objType = FRX_OBJTYP_LINE
+	THIS.Caption = TARGET_LINE_LOC
+
+case this.frxEvent.objType = FRX_OBJTYP_RECTANGLE
+	THIS.Caption = TARGET_BOX_LOC
+
+otherwise
+	THIS.Caption = TARGET_BOX_LOC
+endcase
+
+THIS.Caption = THIS.Caption + DLG_TITLE_PROPERTIES_LOC
+
+if THIS.frxEvent.eventType = FRX_BLDR_EVENT_OBJECTCREATE
+	THIS.Caption = DLG_TITLE_NEW_PREFIX_LOC + THIS.Caption
+endif
+
+if THIS.frxEvent.protected and ;
+   THIS.frxEvent.frxCursor.hasProtectionFlag( ORDER, FRX_PROTECT_OBJECT_NO_EDIT)
+
+	THIS.Caption = THIS.Caption + DLG_TITLE_READONLY_SUFFIX_LOC
+
+	*----------------------------------------------
+	* CHANGE: Do not show dialog if PROTECT_NO_EDIT
+	*----------------------------------------------
+	OkToContinue = .F.
+endif
+
+return m.OkToContinue
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+10[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+frxbuilder.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _12O14MIIJ
+[CLASS] pgfhandlerframe
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] pageframe
+[OBJNAME] frame
+[PARENT] shapelinehandler
+[START PROPERTIES]
+ErasePage = .T.
+PageCount = 5
+Top = 9
+Left = 6
+Width = 370
+Height = 343
+TabIndex = 1
+Name = "frame"
+Pge1.Caption = "General"
+Pge1.Name = "pageGeneral"
+Pge2.Caption = "Style"
+Pge2.Name = "pageStyle"
+Pge3.Caption = "Print when"
+Pge3.Name = "pagePrintWhen"
+Pge4.Caption = "Protection"
+Pge4.Name = "pageProtection"
+Pge5.Caption = "Other"
+Pge5.Name = "pageComment"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE pageComment.Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_TAB_OTHER_LOC
+#ENDIF
+THIS.HelpContextID = UI_CONTROL_PROPS_OTHER_HELP_ID
+ENDPROC
+PROCEDURE pageGeneral.Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_TAB_GENERAL_LOC
+#ENDIF
+THIS.HelpContextID = UI_CONTROL_PROPS_GENERAL_HELP_ID
+ENDPROC
+PROCEDURE pagePrintWhen.Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_TAB_PRINTWHEN_LOC
+#ENDIF
+THIS.HelpContextID = UI_CONTROL_PROPS_PRINTWHEN_HELP_ID
+ENDPROC
+PROCEDURE pageProtection.Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_TAB_PROTECTION_LOC
+#ENDIF
+THIS.HelpContextID = UI_CONTROL_PROPS_PROTECTION_HELP_ID
+ENDPROC
+PROCEDURE pageStyle.Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_TAB_STYLE_LOC
+#ENDIF
+THIS.HelpContextID = UI_CONTROL_PROPS_STYLE_HELP_ID
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _12Q0SPZE6
+[CLASS] panelshape
+[CLASSLOC] frxpanels.vcx
+[BASECLASS] container
+[OBJNAME] Panelshape1
+[PARENT] shapelinehandler.frame.pageGeneral
+[START PROPERTIES]
+Top = 3
+Left = 8
+TabIndex = 1
+Name = "Panelshape1"
+objPosition.OptionGroup.opt1.Left = 66
+objPosition.OptionGroup.opt1.Top = 13
+objPosition.OptionGroup.opt1.Name = "opt1"
+objPosition.OptionGroup.opt2.Left = 66
+objPosition.OptionGroup.opt2.Top = 34
+objPosition.OptionGroup.opt2.Name = "opt2"
+objPosition.OptionGroup.opt3.Left = 66
+objPosition.OptionGroup.opt3.Top = 55
+objPosition.OptionGroup.opt3.Name = "opt3"
+objPosition.OptionGroup.Name = "OptionGroup"
+objPosition.Label.Name = "Label"
+objPosition.gifFloat.Height = 34
+objPosition.gifFloat.Width = 31
+objPosition.gifFloat.Name = "gifFloat"
+objPosition.gifTop.Height = 34
+objPosition.gifTop.Width = 31
+objPosition.gifTop.Name = "gifTop"
+objPosition.gifBottom.Height = 34
+objPosition.gifBottom.Width = 31
+objPosition.gifBottom.Name = "gifBottom"
+objPosition.Name = "objPosition"
+objStretch.OptionGroup.opt1.Left = 66
+objStretch.OptionGroup.opt1.Top = 12
+objStretch.OptionGroup.opt1.Name = "opt1"
+objStretch.OptionGroup.opt2.Left = 66
+objStretch.OptionGroup.opt2.Top = 33
+objStretch.OptionGroup.opt2.Name = "opt2"
+objStretch.OptionGroup.opt3.Left = 66
+objStretch.OptionGroup.opt3.Top = 54
+objStretch.OptionGroup.opt3.Name = "opt3"
+objStretch.OptionGroup.Name = "OptionGroup"
+objStretch.Label.Name = "Label"
+objStretch.gifNoStretch.Height = 34
+objStretch.gifNoStretch.Width = 31
+objStretch.gifNoStretch.Name = "gifNoStretch"
+objStretch.gifToTallest.Height = 34
+objStretch.gifToTallest.Width = 31
+objStretch.gifToTallest.Name = "gifToTallest"
+objStretch.gifToHeight.Height = 34
+objStretch.gifToHeight.Width = 31
+objStretch.gifToHeight.Name = "gifToHeight"
+objStretch.Name = "objStretch"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _12O14P049
+[CLASS] panelabsolutepositioning
+[CLASSLOC] frxpanels.vcx
+[BASECLASS] container
+[OBJNAME] Panelabsolutepositioning1
+[PARENT] shapelinehandler.frame.pageGeneral
+[START PROPERTIES]
+Top = 191
+Left = 8
+Width = 341
+TabIndex = 2
+Name = "Panelabsolutepositioning1"
+Shp1.Top = 8
+Shp1.Left = 0
+Shp1.Width = 332
+Shp1.Name = "Shp1"
+spnHeight.Left = 165
+spnHeight.Name = "spnHeight"
+spnWidth.Left = 165
+spnWidth.Name = "spnWidth"
+spnTop.Name = "spnTop"
+spnLeft.Name = "spnLeft"
+lblHeading.Name = "lblHeading"
+Lbl4.Left = 166
+Lbl4.Name = "Lbl4"
+Lbl5.Left = 165
+Lbl5.Name = "Lbl5"
+Lbl7.Name = "Lbl7"
+Lbl6.Name = "Lbl6"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _12O157Y4A
+[CLASS] panelshapeformat
+[CLASSLOC] frxpanels.vcx
+[BASECLASS] container
+[OBJNAME] Panelshapeformat1
+[PARENT] shapelinehandler.frame.pageStyle
+[START PROPERTIES]
+Top = 3
+Left = 8
+Width = 333
+Height = 285
+Name = "Panelshapeformat1"
+Shape2.Top = 95
+Shape2.Left = 1
+Shape2.Height = 67
+Shape2.Width = 288
+Shape2.Name = "Shape2"
+Shape1.Left = 1
+Shape1.Height = 54
+Shape1.Width = 288
+Shape1.Name = "Shape1"
+opgMode.opt1.Left = 21
+opgMode.opt1.Top = 10
+opgMode.opt1.Name = "opt1"
+opgMode.opt2.Left = 148
+opgMode.opt2.Top = 10
+opgMode.opt2.Name = "opt2"
+opgMode.Left = 1
+opgMode.Width = 288
+opgMode.Name = "opgMode"
+spnCurvature.Name = "spnCurvature"
+chkForeDefault.Alignment = 0
+chkForeDefault.Name = "chkForeDefault"
+lblCurvature.Name = "lblCurvature"
+chkBackDefault.Alignment = 0
+chkBackDefault.Name = "chkBackDefault"
+lblMode.Name = "lblMode"
+Lbl1.Name = "Lbl1"
+cmdForeColor.Left = 257
+cmdForeColor.Name = "cmdForeColor"
+cmdBackcolor.Left = 257
+cmdBackcolor.Name = "cmdBackcolor"
+cboStyle.Name = "cboStyle"
+LBL3.Name = "LBL3"
+Lbl2.Name = "Lbl2"
+lblWeight.Name = "lblWeight"
+cboWeight.Name = "cboWeight"
+oFormatter.Name = "oFormatter"
+shpPreview.Top = 237
+shpPreview.Left = 48
+shpPreview.Height = 27
+shpPreview.Width = 200
+shpPreview.Name = "shpPreview"
+linPreview.Height = 0
+linPreview.Left = 26
+linPreview.Top = 250
+linPreview.Width = 244
+linPreview.Name = "linPreview"
+CNTFORECOLOR.Name = "CNTFORECOLOR"
+CNTBACKCOLOR.Name = "CNTBACKCOLOR"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _12O14R8HV
+[CLASS] panelprintwhen
+[CLASSLOC] frxpanels.vcx
+[BASECLASS] container
+[OBJNAME] Panelprintwhen1
+[PARENT] shapelinehandler.frame.pagePrintWhen
+[START PROPERTIES]
+Top = 9
+Left = 8
+Height = 266
+Name = "Panelprintwhen1"
+Shp1.Name = "Shp1"
+PrintRepeated.opt1.Left = 10
+PrintRepeated.opt1.Top = 10
+PrintRepeated.opt1.Name = "opt1"
+PrintRepeated.opt2.Left = 10
+PrintRepeated.opt2.Top = 30
+PrintRepeated.opt2.Name = "opt2"
+PrintRepeated.Name = "PrintRepeated"
+onFirstWholeBand.Alignment = 0
+onFirstWholeBand.Name = "onFirstWholeBand"
+onGroupChange.Alignment = 0
+onGroupChange.Name = "onGroupChange"
+group.Name = "group"
+onOverflow.Alignment = 0
+onOverflow.Name = "onOverflow"
+removeBlank.Alignment = 0
+removeBlank.Name = "removeBlank"
+cmdGetExpr.Name = "cmdGetExpr"
+Lbl1.Name = "Lbl1"
+Expression.Name = "Expression"
+Lbl2.Name = "Lbl2"
+LBL3.Name = "LBL3"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _12O14R8HW
+[CLASS] panelobjectprotection
+[CLASSLOC] frxpanels.vcx
+[BASECLASS] container
+[OBJNAME] Panelobjectprotection1
+[PARENT] shapelinehandler.frame.pageProtection
+[START PROPERTIES]
+Top = 6
+Left = 8
+Name = "Panelobjectprotection1"
+Shp1.Name = "Shp1"
+chkObjectLock.Alignment = 0
+chkObjectLock.Name = "chkObjectLock"
+chkObjectNoEdit.Alignment = 0
+chkObjectNoEdit.Name = "chkObjectNoEdit"
+Lbl1.Name = "Lbl1"
+chkObjectHidden.Alignment = 0
+chkObjectHidden.Name = "chkObjectHidden"
+chkObjectNoDelete.Alignment = 0
+chkObjectNoDelete.Name = "chkObjectNoDelete"
+chkObjectNoSelect.Alignment = 0
+chkObjectNoSelect.Name = "chkObjectNoSelect"
+LBL2.Name = "LBL2"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _18B0SFW70
+[CLASS] panelcommentuser
+[CLASSLOC] frxpanels.vcx
+[BASECLASS] container
+[OBJNAME] Panelcommentuser1
+[PARENT] shapelinehandler.frame.pageComment
+[START PROPERTIES]
+Top = 4
+Left = 7
+Width = 354
+Height = 164
+Name = "Panelcommentuser1"
+shpUser.Top = 90
+shpUser.Left = 5
+shpUser.Height = 2
+shpUser.Width = 334
+shpUser.Name = "shpUser"
+LBLCOMMENTTEXT.Height = 66
+LBLCOMMENTTEXT.Left = 56
+LBLCOMMENTTEXT.Top = 17
+LBLCOMMENTTEXT.Width = 286
+LBLCOMMENTTEXT.Name = "LBLCOMMENTTEXT"
+CMDCOMMENT.Top = 60
+CMDCOMMENT.Left = 220
+CMDCOMMENT.Name = "CMDCOMMENT"
+LBLUSERCAPTION.Name = "LBLUSERCAPTION"
+LBLUSERTEXT.Height = 61
+LBLUSERTEXT.Left = 58
+LBLUSERTEXT.Top = 98
+LBLUSERTEXT.Width = 284
+LBLUSERTEXT.Name = "LBLUSERTEXT"
+IMGCOMMENT.Height = 32
+IMGCOMMENT.Width = 32
+IMGCOMMENT.Name = "IMGCOMMENT"
+CMDUSER.Top = 134
+CMDUSER.Left = 220
+CMDUSER.Name = "CMDUSER"
+Shape1.Top = 9
+Shape1.Left = 5
+Shape1.Height = 2
+Shape1.Width = 334
+Shape1.Name = "Shape1"
+LBLCOMMENTCAPTION.Name = "LBLCOMMENTCAPTION"
+IMGUSER.Height = 32
+IMGUSER.Width = 32
+IMGUSER.Name = "IMGUSER"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _18B0SFW71
+[CLASS] paneltooltip
+[CLASSLOC] frxpanels.vcx
+[BASECLASS] container
+[OBJNAME] Paneltooltip1
+[PARENT] shapelinehandler.frame.pageComment
+[START PROPERTIES]
+Top = 159
+Left = 8
+Width = 353
+Height = 78
+Name = "Paneltooltip1"
+SHPUSER.Top = 9
+SHPUSER.Left = 5
+SHPUSER.Height = 2
+SHPUSER.Width = 334
+SHPUSER.Name = "SHPUSER"
+lblTooltipText.Height = 55
+lblTooltipText.Left = 56
+lblTooltipText.Top = 17
+lblTooltipText.Width = 285
+lblTooltipText.Name = "lblTooltipText"
+CmdTooltip.Top = 47
+CmdTooltip.Left = 220
+CmdTooltip.Name = "CmdTooltip"
+lblTooltipCaption.Name = "lblTooltipCaption"
+imgTooltip.Height = 32
+imgTooltip.Width = 32
+imgTooltip.Name = "imgTooltip"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _18B0SFW7G
+[CLASS] panelmemberdata
+[CLASSLOC] frxpanels.vcx
+[BASECLASS] container
+[OBJNAME] Panelmemberdata1
+[PARENT] shapelinehandler.frame.pageComment
+[START PROPERTIES]
+Top = 227
+Left = 7
+Width = 354
+Height = 86
+Name = "Panelmemberdata1"
+LBLSCRIPTTEXT.Height = 62
+LBLSCRIPTTEXT.Left = 56
+LBLSCRIPTTEXT.Top = 18
+LBLSCRIPTTEXT.Width = 290
+LBLSCRIPTTEXT.Name = "LBLSCRIPTTEXT"
+Shape4.Top = 9
+Shape4.Left = 5
+Shape4.Height = 2
+Shape4.Width = 334
+Shape4.Name = "Shape4"
+CMDSCRIPT.Top = 54
+CMDSCRIPT.Left = 222
+CMDSCRIPT.Name = "CMDSCRIPT"
+IMGSCRIPT.Height = 32
+IMGSCRIPT.Width = 32
+IMGSCRIPT.Name = "IMGSCRIPT"
+LBLSCRIPTCAPTION.Name = "LBLSCRIPTCAPTION"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] shapelinehandler
+[START PROPERTIES]
+Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+[END PROPERTIES]
+[START RESERVED1]
+  frxbuilder.hfõzGO7 foxpro_reporting.hnúzGO7 frxbuilder_loc.hvùzGO7 _frxcursor.h~ûzGO7 foxpro_reporting.hÜüzGO7[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _12Q0SPZE6
+[CLASS] frxhandlerform
+[CLASSLOC] frxbuilder.vcx
+[BASECLASS] form
+[OBJNAME] bandhandler
+[START PROPERTIES]
+Height = 441
+Width = 474
+DoCreate = .T.
+BorderStyle = 3
+Caption = "Band"
+Name = "bandhandler"
+grabber.Height = 11
+grabber.Left = 140
+grabber.Top = 376
+grabber.Width = 11
+grabber.Name = "grabber"
+frxcursor.Name = "frxcursor"
+cmdOK.Top = 384
+cmdOK.Left = 192
+cmdOK.TabIndex = 2
+cmdOK.Name = "cmdOK"
+cmdCancel.Top = 408
+cmdCancel.Left = 376
+cmdCancel.TabIndex = 3
+cmdCancel.Name = "cmdCancel"
+cmdHelp.Top = 384
+cmdHelp.Left = 296
+cmdHelp.Name = "cmdHelp"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE loadfromfrx
+*=====================================================================
+* LoadFromFrx()
+*
+* Read values from the FRX record(s) and configure the controls.
+*
+* Normally, the superclass method does everything. Here, we need
+* a little extra processing.
+*=====================================================================
+
+*---------------------------------------------------------------
+* Remove the Detail Band page if this is not a
+* detail band:
+*---------------------------------------------------------------
+if THIS.frxEvent.OBJCODE <> FRX_OBJCOD_DETAIL
+	THIS.frame.RemoveObject( "pageBand" )
+endif
+
+
+*---------------------------------------------------------------
+* Invoke the superclass method:
+* -- Calls each panel's LoadFromFrx()
+* -- Assigns .event and .frxCursor references
+* -- Removes protection panel
+* -- sets activePage:
+*---------------------------------------------------------------
+OkToContinue = dodefault()
+if not m.OkToContinue
+	return .F.
+endif
+
+*---------------------------------------------------------------
+* If we *are* a detail band, let's make
+* that the default page coming in:
+*---------------------------------------------------------------
+if THIS.frxEvent.OBJCODE = FRX_OBJCOD_DETAIL
+	THIS.PageToActivate = 2
+endif
+
+*---------------------------------------------------------------
+* Set title of dialog:
+*---------------------------------------------------------------
+THIS.Caption = this.frxevent.getTargetTypeText() + DLG_TITLE_BAND_LOC + DLG_TITLE_PROPERTIES_LOC
+
+if THIS.frxEvent.protected and ;
+   THIS.frxEvent.frxCursor.hasProtectionFlag( ORDER, FRX_PROTECT_BAND_NO_EDIT)
+	
+	THIS.Caption = THIS.Caption + DLG_TITLE_READONLY_SUFFIX_LOC
+
+	THIS.frxEvent.setReloadChanges(.F.)
+	
+	*----------------------------------------------
+	* CHANGE: Do not show dialog if PROTECT_NO_EDIT
+	*----------------------------------------------
+	OkToContinue = .F.
+
+endif
+return m.OkToContinue
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+7[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+frxbuilder.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _12Q0SW2N6
+[CLASS] pgfhandlerframe
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] pageframe
+[OBJNAME] frame
+[PARENT] bandhandler
+[START PROPERTIES]
+ErasePage = .T.
+PageCount = 4
+Top = 8
+Left = 12
+Width = 392
+Height = 332
+TabIndex = 1
+Name = "frame"
+Pge1.Caption = "General"
+Pge1.PageOrder = 1
+Pge1.Name = "pageGeneral"
+Pge2.Caption = "Protection"
+Pge2.PageOrder = 3
+Pge2.Name = "pageProtection"
+Pge3.Caption = "Other"
+Pge3.PageOrder = 4
+Pge3.Name = "pageComment"
+Pge4.Caption = "Band"
+Pge4.PageOrder = 2
+Pge4.Name = "pageBand"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE pageBand.Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_TAB_BAND_LOC
+#ENDIF
+THIS.HelpContextID = UI_BAND_PROPS_BAND_HELP_ID
+ENDPROC
+PROCEDURE pageComment.Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_TAB_OTHER_LOC
+#ENDIF
+THIS.HelpContextID = UI_BAND_PROPS_OTHER_HELP_ID
+ENDPROC
+PROCEDURE pageGeneral.Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_TAB_GENERAL_LOC
+#ENDIF
+THIS.HelpContextID = UI_BAND_PROPS_GENERAL_HELP_ID
+ENDPROC
+PROCEDURE pageProtection.Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_TAB_PROTECTION_LOC
+#ENDIF
+THIS.HelpContextID = UI_BAND_PROPS_PROTECTION_HELP_ID
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1AN0M8O02
+[CLASS] panelband
+[CLASSLOC] frxpanels.vcx
+[BASECLASS] container
+[OBJNAME] Panelband1
+[PARENT] bandhandler.frame.pageGeneral
+[START PROPERTIES]
+Top = 3
+Left = 8
+Width = 311
+Name = "Panelband1"
+lblHeight.Name = "lblHeight"
+SPNHEIGHT.Name = "SPNHEIGHT"
+CHKCONSTANTHEIGHT.Alignment = 0
+CHKCONSTANTHEIGHT.Name = "CHKCONSTANTHEIGHT"
+SHP1.Top = 80
+SHP1.Left = 0
+SHP1.Height = 108
+SHP1.Width = 303
+SHP1.Name = "SHP1"
+lblRunExpr.Name = "lblRunExpr"
+EXPENTRY.TXTEXPRESSION.Name = "TXTEXPRESSION"
+EXPENTRY.CMDEXPRBUILDER.Name = "CMDEXPRBUILDER"
+EXPENTRY.Top = 108
+EXPENTRY.Left = 12
+EXPENTRY.Width = 279
+EXPENTRY.Height = 23
+EXPENTRY.Name = "EXPENTRY"
+EXPEXIT.TXTEXPRESSION.Name = "TXTEXPRESSION"
+EXPEXIT.CMDEXPRBUILDER.Name = "CMDEXPRBUILDER"
+EXPEXIT.Top = 156
+EXPEXIT.Left = 12
+EXPEXIT.Width = 279
+EXPEXIT.Height = 23
+EXPEXIT.Name = "EXPEXIT"
+lblOnEntry.Name = "lblOnEntry"
+lblOnExit.Name = "lblOnExit"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _12Q0SW2NG
+[CLASS] panelbandprotection
+[CLASSLOC] frxpanels.vcx
+[BASECLASS] container
+[OBJNAME] Panelbandprotection1
+[PARENT] bandhandler.frame.pageProtection
+[START PROPERTIES]
+Top = 4
+Left = 7
+Width = 312
+Height = 124
+priority = 1
+Name = "Panelbandprotection1"
+SHP1.Top = 8
+SHP1.Left = 1
+SHP1.Height = 112
+SHP1.Width = 307
+SHP1.Name = "SHP1"
+chkBandEdit.Alignment = 0
+chkBandEdit.Name = "chkBandEdit"
+chkBandResize.Alignment = 0
+chkBandResize.Name = "chkBandResize"
+LBL1.Name = "LBL1"
+Lbl2.Name = "Lbl2"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _18B0S3DI6
+[CLASS] panelcommentuser
+[CLASSLOC] frxpanels.vcx
+[BASECLASS] container
+[OBJNAME] Panelcommentuser1
+[PARENT] bandhandler.frame.pageComment
+[START PROPERTIES]
+Top = 3
+Left = 7
+Width = 364
+Height = 197
+Name = "Panelcommentuser1"
+shpUser.Top = 102
+shpUser.Left = 5
+shpUser.Width = 350
+shpUser.Name = "shpUser"
+LBLCOMMENTTEXT.Height = 58
+LBLCOMMENTTEXT.Left = 56
+LBLCOMMENTTEXT.Top = 17
+LBLCOMMENTTEXT.Width = 296
+LBLCOMMENTTEXT.Name = "LBLCOMMENTTEXT"
+CMDCOMMENT.Top = 73
+CMDCOMMENT.Left = 235
+CMDCOMMENT.Name = "CMDCOMMENT"
+LBLUSERCAPTION.Left = 2
+LBLUSERCAPTION.Top = 95
+LBLUSERCAPTION.Name = "LBLUSERCAPTION"
+LBLUSERTEXT.Height = 64
+LBLUSERTEXT.Left = 57
+LBLUSERTEXT.Top = 113
+LBLUSERTEXT.Width = 299
+LBLUSERTEXT.Name = "LBLUSERTEXT"
+IMGCOMMENT.Height = 32
+IMGCOMMENT.Width = 32
+IMGCOMMENT.Name = "IMGCOMMENT"
+CMDUSER.Top = 169
+CMDUSER.Left = 235
+CMDUSER.Name = "CMDUSER"
+Shape1.Width = 350
+Shape1.Name = "Shape1"
+LBLCOMMENTCAPTION.Name = "LBLCOMMENTCAPTION"
+IMGUSER.Height = 32
+IMGUSER.Left = 8
+IMGUSER.Top = 116
+IMGUSER.Width = 32
+IMGUSER.Name = "IMGUSER"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1NZ0KOCM7
+[CLASS] panelmemberdata
+[CLASSLOC] frxpanels.vcx
+[BASECLASS] container
+[OBJNAME] Panelmemberdata1
+[PARENT] bandhandler.frame.pageComment
+[START PROPERTIES]
+Top = 202
+Left = 7
+Width = 360
+Height = 86
+Name = "Panelmemberdata1"
+LBLSCRIPTTEXT.Height = 56
+LBLSCRIPTTEXT.Left = 56
+LBLSCRIPTTEXT.Top = 18
+LBLSCRIPTTEXT.Width = 300
+LBLSCRIPTTEXT.Name = "LBLSCRIPTTEXT"
+SHAPE4.Width = 350
+SHAPE4.Name = "SHAPE4"
+CMDSCRIPT.Top = 60
+CMDSCRIPT.Left = 235
+CMDSCRIPT.Name = "CMDSCRIPT"
+IMGSCRIPT.Height = 32
+IMGSCRIPT.Width = 32
+IMGSCRIPT.Name = "IMGSCRIPT"
+LBLSCRIPTCAPTION.Name = "LBLSCRIPTCAPTION"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _12R11Q4RF
+[CLASS] paneldetail
+[CLASSLOC] frxpanels.vcx
+[BASECLASS] container
+[OBJNAME] Paneldetail1
+[PARENT] bandhandler.frame.pageBand
+[START PROPERTIES]
+Top = 3
+Left = 7
+Width = 340
+Height = 241
+priority = 1
+Name = "Paneldetail1"
+Shp1.Top = 8
+Shp1.Left = 1
+Shp1.Height = 220
+Shp1.Name = "Shp1"
+chkNewColumn.Alignment = 0
+chkNewColumn.Name = "chkNewColumn"
+chkNewPage.Alignment = 0
+chkNewPage.Name = "chkNewPage"
+Lbl1.Name = "Lbl1"
+chkHasHeader.Alignment = 0
+chkHasHeader.Name = "chkHasHeader"
+chkReprintHeader.Alignment = 0
+chkReprintHeader.Name = "chkReprintHeader"
+chkResetPage.Alignment = 0
+chkResetPage.Name = "chkResetPage"
+lblThreshold.Name = "lblThreshold"
+spnThreshold.Name = "spnThreshold"
+expTargetAlias.txtExpression.Name = "txtExpression"
+expTargetAlias.cmdExprBuilder.Name = "cmdExprBuilder"
+expTargetAlias.Top = 195
+expTargetAlias.Left = 12
+expTargetAlias.Width = 284
+expTargetAlias.Name = "expTargetAlias"
+lblTargetAlias.Name = "lblTargetAlias"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] bandhandler
+[START PROPERTIES]
+Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+[END PROPERTIES]
+[START RESERVED1]
+  frxbuilder.h∂zGO7 foxpro_reporting.hæzGO7 frxbuilder_loc.h∆zGO7 _frxcursor.hŒzGO7 foxpro_reporting.h÷zGO7[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _13U1B9EH3
+[CLASS] frxhandlerform
+[CLASSLOC] frxbuilder.vcx
+[BASECLASS] form
+[OBJNAME] groupbandhandler
+[START PROPERTIES]
+Height = 387
+Width = 548
+DoCreate = .T.
+Name = "groupbandhandler"
+GRABBER.Height = 11
+GRABBER.Left = 302
+GRABBER.Top = 351
+GRABBER.Width = 11
+GRABBER.Name = "GRABBER"
+frxcursor.Name = "frxcursor"
+CMDOK.Top = 348
+CMDOK.Left = 360
+CMDOK.Name = "CMDOK"
+CMDCANCEL.Top = 348
+CMDCANCEL.Left = 440
+CMDCANCEL.Name = "CMDCANCEL"
+cmdHelp.Top = 354
+cmdHelp.Left = 317
+cmdHelp.Name = "cmdHelp"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE loadfromfrx
+*=====================================================================
+* LoadFromFrx()
+*
+* Read values from the FRX record(s) and configure the controls.
+*
+*=====================================================================
+local OkToContinue
+
+*---------------------------------------------------------------
+* Invoke the superclass method:
+* -- Calls each panel's LoadFromFrx()
+* -- Assigns .event and .frxCursor references
+* -- sets activePage:
+*---------------------------------------------------------------
+OkToContinue = dodefault()
+if not m.OkToContinue
+	return .F.
+endif
+
+*---------------------------------------------------------------
+* Set title of dialog:
+*---------------------------------------------------------------
+THIS.Caption = this.frxevent.getTargetTypeText() + DLG_TITLE_BAND_LOC + DLG_TITLE_PROPERTIES_LOC
+
+if THIS.frxEvent.protected and ;
+   THIS.frxEvent.frxCursor.hasProtectionFlag( ORDER, FRX_PROTECT_BAND_NO_EDIT)
+
+	THIS.Caption = THIS.Caption + DLG_TITLE_READONLY_SUFFIX_LOC
+	*----------------------------------------------
+	* CHANGE: Do not show dialog if PROTECT_NO_EDIT
+	*----------------------------------------------
+	OkToContinue = .F.
+endif
+return m.OkToContinue
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+8[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+frxbuilder.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _12O14JV42
+[CLASS] pgfhandlerframe
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] pageframe
+[OBJNAME] frame
+[PARENT] groupbandhandler
+[START PROPERTIES]
+ErasePage = .T.
+PageCount = 4
+Top = 6
+Left = 6
+Width = 534
+Height = 314
+Name = "frame"
+Pge1.Caption = "General"
+Pge1.Name = "pageGeneral"
+Pge2.Caption = "Data Grouping"
+Pge2.Name = "pageGrouping"
+Pge3.Caption = "Protection"
+Pge3.Name = "pageProtection"
+Pge4.Caption = "Other"
+Pge4.Name = "pageComment"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+*---------------------------------------------------
+* This code deals with ensuring that inter-related
+* tabs reflect changes.
+*
+* Assumptions:
+*   - oControl will be an instance of frxPanel
+*
+* Possible checks:
+*   use THISFORM.isInstanceOf('frxPanel',oControl)
+*
+*---------------------------------------------------
+if THIS.CurrentPage <> THIS.ActivePage
+
+	local oControl
+
+	if THIS.CurrentPage > 0
+
+		for each oControl in THIS.Pages(THIS.CurrentPage).Controls
+			*----------------------------------------------
+			* Fix for SP1: Does not rely on panel control
+			* being subclasses from frxPanel; rather, uses
+			* reflection instead:
+			*----------------------------------------------
+			if pemstatus( m.oControl, "SaveToFrx", 5 )
+				oControl.SaveToFrx()
+			endif
+		endfor	
+
+		for each oControl in THIS.Pages(THIS.ActivePage).Controls
+			*----------------------------------------------
+			* Fix for SP1: Does not rely on panel control
+			* being subclasses from frxPanel; rather, uses
+			* reflection instead:
+			*----------------------------------------------
+			if pemstatus( m.oControl, "LoadFromFrx", 5 )
+				oControl.LoadFromFrx()
+			endif
+		endfor
+
+	endif
+	THIS.CurrentPage = THIS.ActivePage
+endif
+ENDPROC
+PROCEDURE pageComment.Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_TAB_OTHER_LOC
+#ENDIF
+THIS.HelpContextID = UI_BAND_PROPS_OTHER_HELP_ID
+ENDPROC
+PROCEDURE pageGeneral.Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_TAB_GENERAL_LOC
+#ENDIF
+THIS.HelpContextID = UI_BAND_PROPS_GENERAL_HELP_ID
+ENDPROC
+PROCEDURE pageGrouping.Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_TAB_DATAGROUP_LOC
+#ENDIF
+THIS.HelpContextID = UI_REPORT_PROPS_DATAGROUP_HELP_ID
+ENDPROC
+PROCEDURE pageProtection.Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_TAB_PROTECTION_LOC
+#ENDIF
+THIS.HelpContextID = UI_BAND_PROPS_PROTECTION_HELP_ID
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _12O14MIIJ
+[CLASS] panelgroupexpr
+[CLASSLOC] frxpanels.vcx
+[BASECLASS] container
+[OBJNAME] Panelgroupexpr1
+[PARENT] groupbandhandler.frame.pageGeneral
+[START PROPERTIES]
+Top = 6
+Left = 7
+TabIndex = 1
+ZOrderSet = 0
+Name = "Panelgroupexpr1"
+LBL1.Name = "LBL1"
+OBJEXPR.TXTEXPRESSION.Name = "TXTEXPRESSION"
+OBJEXPR.CMDEXPRBUILDER.Name = "CMDEXPRBUILDER"
+OBJEXPR.Name = "OBJEXPR"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _12O14P048
+[CLASS] panelband
+[CLASSLOC] frxpanels.vcx
+[BASECLASS] container
+[OBJNAME] Panelband1
+[PARENT] groupbandhandler.frame.pageGeneral
+[START PROPERTIES]
+Top = 57
+Left = 8
+TabIndex = 2
+ZOrderSet = 1
+Name = "Panelband1"
+LBLHEIGHT.Name = "LBLHEIGHT"
+SPNHEIGHT.Name = "SPNHEIGHT"
+CHKCONSTANTHEIGHT.Alignment = 0
+CHKCONSTANTHEIGHT.Name = "CHKCONSTANTHEIGHT"
+SHP1.Name = "SHP1"
+LBLRUNEXPR.Name = "LBLRUNEXPR"
+EXPENTRY.TXTEXPRESSION.Name = "TXTEXPRESSION"
+EXPENTRY.CMDEXPRBUILDER.Name = "CMDEXPRBUILDER"
+EXPENTRY.Name = "EXPENTRY"
+EXPEXIT.TXTEXPRESSION.Name = "TXTEXPRESSION"
+EXPEXIT.CMDEXPRBUILDER.Name = "CMDEXPRBUILDER"
+EXPEXIT.Name = "EXPEXIT"
+LBLONENTRY.Name = "LBLONENTRY"
+LBLONEXIT.Name = "LBLONEXIT"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _12O14P049
+[CLASS] panelgrouping
+[CLASSLOC] frxpanels.vcx
+[BASECLASS] container
+[OBJNAME] Panelgrouping1
+[PARENT] groupbandhandler.frame.pageGrouping
+[START PROPERTIES]
+Top = 3
+Left = 5
+priority = 2
+Name = "Panelgrouping1"
+groupList.Name = "groupList"
+Lbl1.Name = "Lbl1"
+edtExpr.Name = "edtExpr"
+Lbl2.Name = "Lbl2"
+chkReprint.Alignment = 0
+chkReprint.Name = "chkReprint"
+lblThreshold.Name = "lblThreshold"
+cmdAdd.Name = "cmdAdd"
+cmdGetExpr.Name = "cmdGetExpr"
+cmdRemove.Name = "cmdRemove"
+spnThreshold.Name = "spnThreshold"
+opgPaginate.Opt1.Left = 17
+opgPaginate.Opt1.Top = 12
+opgPaginate.Opt1.Name = "Opt1"
+opgPaginate.Opt2.Left = 17
+opgPaginate.Opt2.Top = 33
+opgPaginate.Opt2.Name = "Opt2"
+opgPaginate.Opt3.Left = 17
+opgPaginate.Opt3.Top = 54
+opgPaginate.Opt3.Name = "Opt3"
+opgPaginate.Opt4.Left = 17
+opgPaginate.Opt4.Top = 75
+opgPaginate.Opt4.Name = "Opt4"
+opgPaginate.Name = "opgPaginate"
+Lbl4.Name = "Lbl4"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _12O157Y4A
+[CLASS] panelbandprotection
+[CLASSLOC] frxpanels.vcx
+[BASECLASS] container
+[OBJNAME] Panelbandprotection1
+[PARENT] groupbandhandler.frame.pageProtection
+[START PROPERTIES]
+Top = 9
+Left = 8
+Width = 325
+Height = 145
+Name = "Panelbandprotection1"
+SHP1.Top = 8
+SHP1.Left = 1
+SHP1.Width = 312
+SHP1.Name = "SHP1"
+CHKBANDEDIT.Alignment = 0
+CHKBANDEDIT.Name = "CHKBANDEDIT"
+chkBandResize.Alignment = 0
+chkBandResize.Name = "chkBandResize"
+Lbl1.Name = "Lbl1"
+Lbl2.Name = "Lbl2"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _12O14R8HV
+[CLASS] panelcommentuser
+[CLASSLOC] frxpanels.vcx
+[BASECLASS] container
+[OBJNAME] Panelcommentuser1
+[PARENT] groupbandhandler.frame.pageComment
+[START PROPERTIES]
+Anchor = 15
+Top = 8
+Left = 8
+Width = 329
+Height = 222
+Name = "Panelcommentuser1"
+shpUser.Top = 99
+shpUser.Left = 5
+shpUser.Height = 2
+shpUser.Width = 316
+shpUser.Name = "shpUser"
+lblCommentText.Height = 69
+lblCommentText.Left = 56
+lblCommentText.Top = 17
+lblCommentText.Width = 265
+lblCommentText.Name = "lblCommentText"
+cmdComment.Top = 71
+cmdComment.Left = 202
+cmdComment.Name = "cmdComment"
+lblUserCaption.Left = 2
+lblUserCaption.Top = 92
+lblUserCaption.Name = "lblUserCaption"
+lblUserText.Height = 68
+lblUserText.Left = 58
+lblUserText.Top = 108
+lblUserText.Width = 263
+lblUserText.Name = "lblUserText"
+imgComment.Height = 32
+imgComment.Width = 32
+imgComment.Name = "imgComment"
+cmdUser.Top = 165
+cmdUser.Left = 202
+cmdUser.Name = "cmdUser"
+Shape1.Top = 9
+Shape1.Left = 5
+Shape1.Height = 2
+Shape1.Width = 316
+Shape1.Name = "Shape1"
+lblCommentCaption.Name = "lblCommentCaption"
+imgUser.Height = 32
+imgUser.Left = 8
+imgUser.Top = 112
+imgUser.Width = 32
+imgUser.Name = "imgUser"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1PO1C0VFX
+[CLASS] panelmemberdata
+[CLASSLOC] frxpanels.vcx
+[BASECLASS] container
+[OBJNAME] Panelmemberdata1
+[PARENT] groupbandhandler.frame.pageComment
+[START PROPERTIES]
+Top = 192
+Left = 8
+Width = 326
+Height = 86
+Name = "Panelmemberdata1"
+LBLSCRIPTTEXT.Height = 63
+LBLSCRIPTTEXT.Left = 56
+LBLSCRIPTTEXT.Top = 20
+LBLSCRIPTTEXT.Width = 265
+LBLSCRIPTTEXT.Name = "LBLSCRIPTTEXT"
+SHAPE4.Top = 9
+SHAPE4.Left = 5
+SHAPE4.Height = 2
+SHAPE4.Width = 316
+SHAPE4.Name = "SHAPE4"
+CMDSCRIPT.Top = 60
+CMDSCRIPT.Left = 202
+CMDSCRIPT.Name = "CMDSCRIPT"
+IMGSCRIPT.Height = 32
+IMGSCRIPT.Width = 32
+IMGSCRIPT.Name = "IMGSCRIPT"
+LBLSCRIPTCAPTION.Name = "LBLSCRIPTCAPTION"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] groupbandhandler
+[START PROPERTIES]
+Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+[END PROPERTIES]
+[START RESERVED1]
+  frxbuilder.hfõzGO7 foxpro_reporting.hnúzGO7 frxbuilder_loc.hvùzGO7 _frxcursor.h~ûzGO7 foxpro_reporting.hÜüzGO7[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _141139C4H
+[CLASS] frxhandlerform
+[CLASSLOC] frxbuilder.vcx
+[BASECLASS] form
+[OBJNAME] multiselecthandler
+[START PROPERTIES]
+Height = 444
+Width = 415
+DoCreate = .T.
+BorderStyle = 3
+MaxButton = .T.
+WindowState = 0
+Name = "multiselecthandler"
+grabber.Height = 11
+grabber.Left = 40
+grabber.Top = 400
+grabber.Width = 11
+grabber.Name = "grabber"
+frxcursor.Name = "frxcursor"
+cmdOK.Top = 412
+cmdOK.Left = 228
+cmdOK.Name = "cmdOK"
+cmdCancel.Top = 412
+cmdCancel.Left = 324
+cmdCancel.Name = "cmdCancel"
+cmdHelp.Top = 388
+cmdHelp.Left = 280
+cmdHelp.Name = "cmdHelp"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+DoDefault()
+*----------------------------------------
+* Override the default HandlerForm property:
+*----------------------------------------
+THIS.BorderStyle = 3
+
+ENDPROC
+PROCEDURE canceltofrx
+dodefault()
+THIS.frxEvent.SetReloadChanges(.F.)
+ENDPROC
+PROCEDURE loadfromfrx
+*=======================================================================
+* LoadFromFrx()
+*
+* Read values in from the FRX
+*
+* In this method, we iterate through the container objects, calling
+* their .LoadToFRX() methods.
+*
+* DELIBERATE OVERRIDE OF PARENT CLASS METHOD
+*=======================================================================
+local OkToContinue
+OkToContinue = .T.
+
+THIS.Caption = TARGET_MULTISELECT_LOC
+
+local curSel, curRec, cPageName
+curSel = select(0)
+select frxRegistry
+curRec = recno()
+
+*---------------------------------------------------------------
+* Load up additional pages from "M" classes in the registry:
+* DEPRECATED: Included for backward-compatibility only
+*---------------------------------------------------------------
+scan for REC_TYPE = HANDLREG_MULTITAB
+	if THIS.Frame.NewRegisteredObject(sys(2015),trim(HNDL_CLASS),trim(HNDL_LIB))
+		THIS.HasAdditionalTabs = .T.
+	endif
+endscan
+
+*---------------------------------------------------------------
+* Load up additional pages from "T" classes in the registry:
+*---------------------------------------------------------------
+scan for REC_TYPE = HANDLREG_EXTRATAB ;
+	and inlist( EVENTTYPE, THIS.frxEvent.EventType, -1 ) ;
+	and (inlist( OBJTYPE,   THIS.frxEvent.ObjType,  -1 ) ;
+    	or (OBJTYPE = FRX_OBJTYPE_LAYOUTCONTROLS AND THIS.frxcursor.IsLayoutControl(THIS.frxEvent.ObjType))) ;
+	and inlist( OBJCODE,   THIS.frxEvent.ObjCode,   -1 ) ;
+	and not deleted()
+
+	cPageName = 'T'+sys(2015)
+
+	if THIS.Frame.NewRegisteredObject( m.cPageName, trim(HNDL_CLASS),trim(HNDL_LIB))
+
+		*------------------------------------------------
+		* Enhancement for SP2:
+		* Allow setting of PageOrder thru the FLTR_ORDR
+		* column. Note that it might be C(1) or I
+		*------------------------------------------------
+		if val(trans(FLTR_ORDR)) > 0	
+			THIS.Frame.Pages( THIS.Frame.PageCount ).PageOrder = min(THIS.Frame.PageCount,max(1,val(trans(FLTR_ORDR))))
+		endif
+		
+		THIS.HasAdditionalTabs = .T.
+		
+	endif
+endscan
+
+*----------------------------------------------------------------
+* New for SP2: Sync up the fonts if there are any new tabs
+*----------------------------------------------------------------
+if THIS.HasAdditionalTabs
+	THIS.CheckForLargeFonts()
+endif
+
+go m.curRec
+select (m.curSel)
+
+
+select frx
+local oPage, oPanel, lSkip
+for each oPage in THIS.Frame.Pages foxobject
+	for each oPanel in oPage.Controls foxobject
+		if oPanel.BaseClass = "Container"
+
+			if pemstatus( oPanel, "frxCursor", 5 )
+				oPanel.frxCursor = THIS.frxEvent.frxCursor
+			endif
+			if pemstatus( oPanel, "event", 5 )
+				oPanel.event     = THIS.frxEvent
+			endif
+			if pemstatus( oPanel, "LoadFromFrx", 5 )
+				OkToContinue = m.OkToContinue and oPanel.LoadFromFrx()					
+			endif
+		endif
+	endfor	
+endfor
+
+THIS.PageToActivate = 1
+*THIS.frame.ActivePage = 1
+
+return m.OkToContinue
+
+ENDPROC
+PROCEDURE savetofrx
+*=======================================================================
+* SaveToFrx()
+*
+* Write values back to the FRX
+*
+*=======================================================================
+return dodefault()
+
+
+
+*=======================================================================
+* TODO: TAKE OUT EVERYTHING BELOW
+*=======================================================================
+
+
+
+*-------------------------------------------------------------
+* instrumenting the xbase code
+*-------------------------------------------------------------
+if DEBUG_WAITMSG_WHILE_EXECUTING
+	wait window "Saving changes..." nowait
+endif
+
+*-------------------------------------------------------------
+* Call each panel's SaveToFrx() method:
+* This method returns .T. if ok to exit the dialog:
+*-------------------------------------------------------------
+if not THIS.Frame.pagMulti.panel.SaveToFrx()
+	wait clear
+	return .F.
+endif
+
+if THIS.frame.pagProperties.chkApplyProtection.value
+	if not THIS.Frame.pagProperties.panelProtection.SaveToFrx()
+		wait clear
+		return .F.
+	endif
+
+	*-----------------------------------------------------
+	* apply the protection flags to all selected objects:
+	*-----------------------------------------------------
+	select frx
+	local curRec
+	curRec = recno()
+	scan for CURPOS and recno() > 1
+		if OBJTYPE <> FRX_OBJTYP_GROUP
+			replace ORDER with multibuff.ORDER
+		endif
+	endscan	
+	THIS.frxEvent.frxCursor.goRec(m.curRec,"frx")
+endif
+
+if THIS.frame.pagProperties.chkApplyPrintWhen.value
+	if not THIS.Frame.pagProperties.panelMultiPrintWhen.SaveToFrx()
+		wait clear
+		return .F.
+	endif
+
+	* Create the objects cursor
+	THIS.frxEvent.frxCursor.CreateObjectCursor()
+
+	*-----------------------------------------------------
+	* apply the PrintWhen condition to all selected objects:
+	*-----------------------------------------------------
+	select frx
+	local curRec
+	curRec = recno()
+	scan for CURPOS and recno() > 1
+
+		if OBJTYPE = FRX_OBJTYP_GROUP
+			*----------------------------------
+			* Ignore aggregated element groups:
+			*----------------------------------
+			loop
+		endif
+
+		*-----------------------
+		* Print When Expression:
+		*-----------------------
+		replace SUPEXPR with multibuff.SUPEXPR
+		
+		*----------------------------
+		* Remove line/space if blank.
+		* This value can only be set if the object does not span bands
+		* and is not in a Column Footer.
+		*----------------------------
+		select objects
+
+		*----------------------------------------- Does it span between bands?
+		locate for UNIQUEID = frx.UNIQUEID
+		if objects.START_BAND_ID = objects.END_BAND_ID
+
+			select bands
+
+			*------------------------------------- Is it in a column footer?
+			locate for UNIQUEID = objects.START_BAND_ID
+			if not inlist( bands.OBJCODE, FRX_OBJCOD_COLFOOTER )
+				select frx
+				replace NOREPEAT with multibuff.NOREPEAT
+			endif
+
+		endif						
+		select frx
+	endscan	
+
+	THIS.frxEvent.frxCursor.goRec(m.curRec,"frx")
+endif
+
+*-------------------------------------------------------------
+* Call each additional panel's SaveToFrx() method:
+*-------------------------------------------------------------
+local oPage, oPanel
+for each oPage in THIS.Frame.Pages foxobject
+
+	if inlist( oPage.Name, "pagMulti", "pagProperties" )
+		* We did these ones up front:
+		loop
+	endif
+
+	for each oPanel in oPage.Controls foxobject
+		if oPanel.BaseClass = "Container" and pemstatus( oPanel, "SaveToFrx", 5 )
+			if not oPanel.SaveToFrx()
+				wait clear
+				return .F.
+			endif
+		endif
+	endfor
+endfor
+
+*-------------------------------------------------------------
+* Clean up and exit:
+*-------------------------------------------------------------
+use in multibuff
+
+THIS.frxEvent.setHandledByBuilder(.T.)
+THIS.frxEvent.setReloadChanges(.T.)
+
+return .T.						
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+3[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+frxbuilder.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _17117VIOH
+[CLASS] pgfhandlerframe
+[CLASSLOC] frxcontrols.vcx
+[BASECLASS] pageframe
+[OBJNAME] Frame
+[PARENT] multiselecthandler
+[START PROPERTIES]
+ErasePage = .T.
+PageCount = 1
+Top = 9
+Left = 9
+Width = 375
+Height = 367
+Name = "Frame"
+Pge1.Caption = "Selection"
+Pge1.Name = "pagMulti"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+*---------------------------------------------------
+* OVERRIDE the default behavior - do not allow
+* automatic refresh of control panels.
+*---------------------------------------------------
+return
+
+ENDPROC
+PROCEDURE pagMulti.Init
+#IF USE_LOC_STRINGS_IN_UI
+    THIS.Caption = UI_TAB_SELECTION_LOC
+#ENDIF
+THIS.HelpContextID = UI_MULTI_PROPS_SELECTION_HELP_ID
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _17210BKEC
+[CLASS] panelmultiselect
+[CLASSLOC] frxpanels.vcx
+[BASECLASS] container
+[OBJNAME] panel
+[PARENT] multiselecthandler.Frame.pagMulti
+[START PROPERTIES]
+Anchor = 15
+Top = 6
+Left = 8
+Width = 359
+Height = 317
+Name = "panel"
+lstGroupItems.Height = 242
+lstGroupItems.Left = 1
+lstGroupItems.Width = 351
+lstGroupItems.Name = "lstGroupItems"
+LBL1.Name = "LBL1"
+obgSortOrder.opt1.Left = 9
+obgSortOrder.opt1.Top = 11
+obgSortOrder.opt1.Name = "opt1"
+obgSortOrder.opt2.Left = 96
+obgSortOrder.opt2.Top = 11
+obgSortOrder.opt2.Name = "opt2"
+obgSortOrder.Height = 33
+obgSortOrder.Left = 2
+obgSortOrder.Top = 275
+obgSortOrder.Width = 204
+obgSortOrder.Name = "obgSortOrder"
+Lbl2.Left = 8
+Lbl2.Top = 268
+Lbl2.Name = "Lbl2"
+Lbl4.Name = "Lbl4"
+cmdUnselect.Top = 280
+cmdUnselect.Left = 216
+cmdUnselect.Name = "cmdUnselect"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] multiselecthandler
+[START PROPERTIES]
+Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+[END PROPERTIES]
+[START RESERVED1]
+  frxbuilder.h∂zGO7 foxpro_reporting.hæzGO7 frxbuilder_loc.h∆zGO7 _frxcursor.hŒzGO7 foxpro_reporting.h÷zGO7[END RESERVED1]
+[EOF]
