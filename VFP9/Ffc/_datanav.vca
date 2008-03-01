@@ -1,0 +1,1082 @@
+SCCTEXT Version 4.0.0.2
+PLATFORM C(8,0),UNIQUEID C(10,0),TIMESTAMP N(10,0),CLASS M(4,0),CLASSLOC M(4,0),BASECLASS M(4,0),OBJNAME M(4,0),PARENT M(4,0),PROPERTIES M(4,0),PROTECTED M(4,0),METHODS M(4,0),OBJCODE M(4,0),OLE M(4,0),OLE2 M(4,0),RESERVED1 M(4,0),RESERVED2 M(4,0),RESERVED3 M(4,0),RESERVED4 M(4,0),RESERVED5 M(4,0),RESERVED6 M(4,0),RESERVED7 M(4,0),RESERVED8 M(4,0),USER M(4,0)
+1252
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] Class     
+[START RESERVED1]
+VERSION =   3.00[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _QW016XL23
+[CLASS] _commandbutton
+[CLASSLOC] _base.vcx
+[BASECLASS] commandbutton
+[OBJNAME] _cmdnavbtn
+[START PROPERTIES]
+Height = 24
+Width = 29
+FontSize = 10
+Caption = ""
+ForeColor = 0,0,0
+tablealias = 
+manyalias = 
+manykey = 
+lastselect = 1
+Name = "_cmdnavbtn"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE refreshform
+IF NOT EMPTY(this.ManyAlias) AND NOT EMPTY(this.ManyKey)
+	THIS.UpdateMany()	&&special handling for 1-Many side if needed.
+ENDIF
+DO CASE
+	CASE TYPE('thisformset')=='O'
+		thisformset.Refresh()
+	CASE TYPE('_screen.ActiveForm')=='O'
+		_screen.ActiveForm.Refresh()
+ENDCASE
+SELECT (this.LastSelect)
+RETURN
+
+ENDPROC
+PROCEDURE setsession
+IF TYPE('_screen.ActiveForm')#'O'
+	RETURN .F.
+ENDIF
+IF NOT TYPE('thisformset')=='O'
+	***	SET SESSION TO (_screen.ActiveForm.DataSessionID)
+ENDIF
+this.LastSelect=SELECT()
+IF NOT EMPTY(this.TableAlias)
+	IF NOT USED(this.TableAlias)
+		RETURN .F.
+	ENDIF
+	SELECT (this.TableAlias)
+ENDIF
+IF NOT USED()
+	RETURN .F.
+ENDIF
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+tablealias Table alias to move record pointer.
+manyalias Alias of child table in 1-Many form.
+manykey Key of child table in 1-Many form.
+lastselect Last selected alias.
+*refreshform Refreshes current form.
+*setsession 
+*updatemany 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED7]
+Abstract VCR command button.[END RESERVED7]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _cmdnavbtn
+[START PROPERTIES]
+Arial, 0, 10, 6, 16, 13, 23, 3, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _QW301RJ3S
+[CLASS] _container
+[CLASSLOC] _base.vcx
+[BASECLASS] container
+[OBJNAME] _navbtns
+[START PROPERTIES]
+Width = 97
+Height = 25
+BackStyle = 0
+BorderWidth = 0
+lastselect = 1
+tablealias = 
+manyalias = 
+manykey = 
+builder = vcrtlbrb.scx
+Name = "_navbtns"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+this.SetDefault(this.VCRTop)
+this.SetDefault(this.VCRPrevious)
+this.SetDefault(this.VCRNext)
+this.SetDefault(this.VCRBottom)
+IF TYPE('thisform')=='O'
+	thisform.ShowTips=.T.
+ENDIF
+
+
+ENDPROC
+PROCEDURE setdefault
+LPARAMETERS oBtn
+oBtn.LastSelect=this.LastSelect
+oBtn.TableAlias=this.TableAlias
+oBtn.ManyAlias=this.ManyAlias
+oBtn.ManyKey=this.ManyKey
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+5[END RESERVED2]
+[START RESERVED3]
+lastselect Last selected work area.
+tablealias Alias of workarea.
+manyalias Alias
+manykey
+*setdefault 
+[END RESERVED3]
+[START RESERVED4]
+graphics\vcr.bmp[END RESERVED4]
+[START RESERVED5]
+graphics\vcr.bmp[END RESERVED5]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED7]
+Standard VCR Buttons[END RESERVED7]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _QW301RIUM
+[CLASS] _cmdtop
+[CLASSLOC] _datanav.vcx
+[BASECLASS] commandbutton
+[OBJNAME] Vcrtop
+[PARENT] _navbtns
+[START PROPERTIES]
+Top = 0
+Left = 0
+Height = 24
+Width = 24
+Picture = graphics\top.bmp
+Name = "Vcrtop"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _R5Z0WREFN
+[CLASS] _cmdprevious
+[CLASSLOC] _datanav.vcx
+[BASECLASS] commandbutton
+[OBJNAME] Vcrprevious
+[PARENT] _navbtns
+[START PROPERTIES]
+Top = 0
+Left = 24
+Height = 24
+Width = 24
+Picture = graphics\previous.bmp
+Name = "Vcrprevious"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] RESERVED  
+[CLASS] _cmdnext
+[CLASSLOC] _datanav.vcx
+[BASECLASS] commandbutton
+[OBJNAME] Vcrnext
+[PARENT] _navbtns
+[START PROPERTIES]
+Top = 0
+Left = 48
+Height = 24
+Width = 24
+Picture = graphics\next.bmp
+Name = "Vcrnext"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _QW301RJ1K
+[CLASS] _cmdbottom
+[CLASSLOC] _datanav.vcx
+[BASECLASS] commandbutton
+[OBJNAME] Vcrbottom
+[PARENT] _navbtns
+[START PROPERTIES]
+Top = 0
+Left = 72
+Height = 24
+Width = 24
+Picture = graphics\bottom.bmp
+Name = "Vcrbottom"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _navbtns
+[START PROPERTIES]
+Arial, 0, 10, 6, 16, 13, 23, 3, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _R5R08CLVY
+[CLASS] _cmdnavbtn
+[CLASSLOC] _datanav.vcx
+[BASECLASS] commandbutton
+[OBJNAME] _cmdbottom
+[START PROPERTIES]
+Height = 24
+Width = 29
+Picture = graphics\bottom.bmp
+ToolTipText = "Bottom"
+Name = "vcrbottom"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+IF NOT this.SetSession()
+	RETURN .F.
+ENDIF
+GO BOTTOM
+this.RefreshForm()
+RETURN
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED4]
+graphics\bottom.bmp[END RESERVED4]
+[START RESERVED5]
+graphics\bottom.bmp[END RESERVED5]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _cmdbottom
+[START PROPERTIES]
+Arial, 0, 10, 6, 16, 13, 14, 3, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _R5R08HLRK
+[CLASS] _cmdnavbtn
+[CLASSLOC] _datanav.vcx
+[BASECLASS] commandbutton
+[OBJNAME] _cmdnext
+[START PROPERTIES]
+Height = 24
+Width = 29
+Picture = graphics\next.bmp
+ToolTipText = "Next"
+Name = "_cmdnext"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+IF NOT this.SetSession()
+	RETURN .F.
+ENDIF
+IF NOT EOF()
+	SKIP
+ENDIF
+IF EOF()
+	SKIP -1
+ENDIF
+this.RefreshForm()
+RETURN
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED4]
+graphics\next.bmp[END RESERVED4]
+[START RESERVED5]
+graphics\next.bmp[END RESERVED5]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _cmdnext
+[START PROPERTIES]
+Arial, 0, 10, 6, 16, 13, 14, 3, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _R5R08HYKH
+[CLASS] _cmdnavbtn
+[CLASSLOC] _datanav.vcx
+[BASECLASS] commandbutton
+[OBJNAME] _cmdprevious
+[START PROPERTIES]
+Height = 24
+Width = 29
+Picture = graphics\previous.bmp
+ToolTipText = "Previous"
+Name = "_cmdprevious"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+IF NOT this.SetSession()
+	RETURN .F.
+ENDIF
+IF NOT BOF()
+	SKIP -1
+ENDIF
+this.RefreshForm()
+RETURN
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED4]
+graphics\previous.bmp[END RESERVED4]
+[START RESERVED5]
+graphics\previous.bmp[END RESERVED5]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _cmdprevious
+[START PROPERTIES]
+Arial, 0, 10, 6, 16, 13, 14, 3, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _R5R08IBGA
+[CLASS] _cmdnavbtn
+[CLASSLOC] _datanav.vcx
+[BASECLASS] commandbutton
+[OBJNAME] _cmdtop
+[START PROPERTIES]
+Height = 24
+Width = 29
+Picture = graphics\top.bmp
+Caption = ""
+TabIndex = 1
+ToolTipText = "Top"
+Name = "_cmdtop"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+IF NOT this.SetSession()
+	RETURN .F.
+ENDIF
+GO TOP
+this.RefreshForm()
+RETURN
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED4]
+graphics\top.bmp[END RESERVED4]
+[START RESERVED5]
+graphics\top.bmp[END RESERVED5]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED7]
+VCR Top.[END RESERVED7]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _cmdtop
+[START PROPERTIES]
+Arial, 0, 10, 6, 16, 13, 14, 3, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _R5Z0WREFN
+[CLASS] _custom
+[CLASSLOC] _base.vcx
+[BASECLASS] custom
+[OBJNAME] _datachecker
+[START PROPERTIES]
+Height = 15
+Width = 23
+Name = "_datachecker"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE checkconflicts
+*---------------------------------------------------------------*
+*  Checks to see whether another user has changed the value
+*  stored in a table.  If so, calls HandleRecord to display
+*  the new value and allow the user to decide what to do.
+*
+*  RETURNS NUMERIC VALUES:
+*    0 -- No Changes Made to the Current Values
+*    1 -- Successfully Made User-Specified Changes
+*	 2 -- Unable to Make Write One or More User-Specifed Changes to Table
+*---------------------------------------------------------------*
+
+LOCAL lnSuccess, llnRec
+m.lnSuccess = 0
+
+DO CASE
+	CASE INLIST(CURSORGETPROP('Buffering'), 2,3) && Row Buffering
+		IF '2' $ GETFLDSTATE(-1)				 && Data has changed
+			m.lnSuccess = THIS.HandleRecord(0)
+		ENDIF	
+	CASE INLIST(CURSORGETPROP('Buffering'), 4,5) && Table Buffering
+		m.llnRec = GETNEXTMODIFIED(0)
+		DO WHILE m.llnRec > 0
+			GO m.llnRec
+			m.lnSuccess = IIF(m.lnSuccess != 2, THIS.HandleRecord(0), 2)
+			m.llnRec = GETNEXTMODIFIED(m.llnRec)	
+		ENDDO
+	OTHERWISE									 && no buffering
+		WAIT WINDOW NOBUFF_LOC NOWAIT
+ENDCASE
+RETURN m.lnSuccess
+ENDPROC
+PROCEDURE handlerecord
+*---------------------------------------------------------------*
+*  This method is called from the CheckConflicts method and the
+*  VerifyEachChange method.  It loops through each field in the
+*  current record and compares the current value with the value
+*  stored in the table. If a value of 1 is passed to this method,
+*  the method also compares the current value with the value in
+*  the field before user made any edits.
+*
+*  RETURNS NUMERIC VALUES:
+*    0 -- No Change Made to the Current Value
+*    1 -- Successfully Made User-Specified Change
+*	 2 -- Unable to Make User-Specifed Change
+*---------------------------------------------------------------*
+
+LPARAMETERS lnScope
+
+*--Valid values for lnScope:
+* 	0 - Only manage conflicts   && default
+*   1 - Also prompt for changed values
+
+* Verify parameter
+IF TYPE("m.lnScope") != "N"
+	m.lnScope = 0
+ENDIF
+IF !BETWEEN(m.lnScope, 0, 1)
+	WAIT WINDOW WINDMSG_LOC
+ENDIF
+
+LOCAL lnChoice, lnField, lcField, luOldVal, luCurVal, luField, llMadeChange, llSuccess
+m.llMadeChange = .F.
+m.llSuccess = .T.
+
+* refresh current record in views before checking for conflicts
+IF CURSORGETPROP('SourceType') != 3 && not a local table
+	=REFRESH()
+ENDIF
+
+* Check each field in the record for conflict or value change
+FOR m.lnField = 1 to FCOUNT()
+	m.lnChoice = 0
+	
+	m.lcField = FIELD(m.lnField)
+	IF TYPE(m.lcField) = "G"
+		LOOP && Can't check general fields
+	ENDIF
+	m.luOldVal = OLDVAL(m.lcField)
+	m.luCurVal = CURVAL(m.lcField)
+	
+	DO CASE
+		* -----< check for conflicts only >--------
+		CASE m.lnScope = 0
+			IF m.luOldVal != m.luCurVal
+				m.llMadeChange = .T.
+				m.lnChoice = MESSAGEBOX(VALCHG1_LOC + CR_LOC + FIELD_LOC + lcField + CR_LOC + ;
+				RECORD_LOC + ALLTRIM(STR(RECNO())) + ;
+					IIF(TYPE("m.lcField") != "M", CR_LOC + CR_LOC + ORG_LOC + THIS.String(m.luOldVal) + ;
+					CR_LOC + CUR_LOC + THIS.String(m.luCurVal) + ;
+					CR_LOC + CHG_LOC + THIS.String(EVAL(m.lcField)), CR_LOC + CR_LOC + m.lcField + MEMO_LOC) + ;
+					CR_LOC + CR_LOC + SAVE_LOC, + 3+48+0, CONFLICT_LOC)					
+			ENDIF
+		* -----< check for conflicts and verify all changes >--------
+		CASE m.lnScope = 1 && Verify all changes
+			m.luField = EVAL(m.lcField)
+			IF m.luOldVal != m.luField OR m.luCurVal != m.luField
+				m.llMadeChange = .T.
+				m.lnChoice = MESSAGEBOX(VALCHG2_LOC + CR_LOC + FIELD_LOC + m.lcField + CR_LOC + ;
+				RECORD_LOC + ALLTRIM(STR(RECNO())) + ;
+					IIF(TYPE("m.lcField") != "M", CR_LOC + CR_LOC + ORG_LOC + THIS.String(m.luOldVal) + ;
+					CR_LOC + CUR_LOC + THIS.String(m.luCurVal) + ;
+					CR_LOC + CHG_LOC + THIS.String(EVAL(m.lcField)), CR_LOC  + CR_LOC + m.lcField + MEMO_LOC) + ;
+				CR_LOC + CR_LOC + SAVE_LOC, + 3+48+0, VERIFY_LOC)
+			ENDIF
+	ENDCASE
+	DO CASE
+	CASE m.lnChoice = 7 && No, don't save changes
+		REPLACE (m.lcField) WITH m.luCurVal
+	CASE m.lnChoice = 2 && Cancel, restore original value
+		REPLACE (m.lcField) WITH m.luOldVal
+	ENDCASE
+ENDFOR
+IF m.llMadeChange
+	m.llSuccess = TABLEUPDATE(.F., .T.)
+	RETURN IIF(m.llSuccess, 1, 2)
+ELSE
+	RETURN 0
+ENDIF
+
+ENDPROC
+PROCEDURE string
+*---------------------------------------------------------------*
+*  This method is called from the HandleRecord method.  It
+*  returns the character equivalent of the value passed in as a
+*  parameter.  If a memo field is passed in, a notice to this
+*  effect is returned rather than the value in the memo field so
+*  that potentially large amounts of text aren't displayed in the
+*  messagebox.
+*---------------------------------------------------------------*
+
+LPARAMETERS luValue
+LOCAL uType
+
+m.uType = TYPE('m.luValue')
+DO CASE
+	CASE m.uType = 'C'
+		RETURN ALLTRIM(m.luValue)
+	CASE INLIST(m.uType, 'N', 'Y')
+		RETURN ALLTRIM(STR(m.luValue))
+	CASE m.uType = 'D'
+		RETURN DTOC(m.luValue)
+	CASE m.uType = 'T'
+		RETURN TTOC('m.luValue')
+	CASE m.uType = 'L'
+		RETURN IIF(m.luValue, '.T.', '.F.')
+	CASE uType = 'M'
+		RETURN 'Memo field'
+ENDCASE
+ENDPROC
+PROCEDURE verifychanges
+*---------------------------------------------------------------*
+*  If any changes have been made to the table or record, prompt the
+*  user to save the changes.  If the user says 'yes,' all changes
+*  are saved.  Any changes made to the data by other users after
+*  this user made the change and before the change was committed
+*  will be lost.
+*
+*  RETURNS NUMERIC VALUES:
+*    0 -- No Changes Made to the Current Values
+*    1 -- Successfully Made All User Changes
+*	 2 -- Unable to Write One or More User-Specifed Changes to Table
+*---------------------------------------------------------------*
+
+LOCAL lnChoice, llMadeChange, lnSuccess
+m.llMadeChange = .F.
+m.lnSuccess = 0
+
+* If the user has changed anything, prompt to save or discard changes
+DO CASE
+	CASE INLIST(CURSORGETPROP('Buffering'), 2,3) && Row Buffering
+		IF '2' $ GETFLDSTATE(-1)
+			m.llMadeChange = .T.
+		ENDIF
+	CASE INLIST(CURSORGETPROP('Buffering'), 4,5) && Table Buffering
+		IF GETNEXTMODIFIED(0) > 0
+			m.llMadeChange = .T.
+		ENDIF
+	OTHERWISE
+		WAIT WINDOW NOBUFF_LOC NOWAIT
+ENDCASE
+
+IF m.llMadeChange
+	m.lnChoice = MESSAGEBOX(SAVECHG_LOC, 4+32, SAVECHG2_LOC)
+	IF m.lnChoice = 6 && Yes
+		m.lnSuccess = IIF(TABLEUPDATE(.T.,.T.), 1, 2)
+	ELSE
+		=TABLEREVERT(.T.)
+	ENDIF
+ENDIF	
+RETURN m.lnSuccess
+ENDPROC
+PROCEDURE verifyeachchange
+*--------------------------------------------------------------------
+*  If any changes have been made to the table or record, for each
+*  change, display the old value and the new value, prompting the
+*  user to save or discard the change.  Conflict management is also
+*  included in the HandleRecord method.
+*
+*  RETURNS NUMERIC VALUES:
+*    0 -- No Changes Made to the Current Values
+*    1 -- Successfully Made User-Specified Changes
+*	 2 -- Unable to Write One or More User-Specifed Changes to Table
+*---------------------------------------------------------------*
+
+LOCAL lnSuccess, lnRec
+m.lnSuccess = 0
+
+DO CASE
+	CASE INLIST(CURSORGETPROP('Buffering'), 2,3) && Row Buffering
+		IF '2' $ GETFLDSTATE(-1)				 && Data has changed
+			m.lnSuccess = THIS.HandleRecord(1)
+		ENDIF	
+	CASE INLIST(CURSORGETPROP('Buffering'), 4,5) && Table Buffering
+		m.lnRec = GETNEXTMODIFIED(0)
+		DO WHILE m.lnRec > 0
+			GO m.lnRec
+			m.lnSuccess = IIF(m.lnSuccess != 2, THIS.HandleRecord(1), 2)
+			m.lnRec = GETNEXTMODIFIED(m.lnRec)	
+		ENDDO
+	OTHERWISE									 && No Buffering
+		WAIT WINDOW NOBUFF_LOC NOWAIT
+ENDCASE
+RETURN m.lnSuccess
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+*handlerecord Compares the current value, old value, and original value of each field, displaying a messagebox if a change or conflict is detected.
+*string Returns type 'c' equivalent of passed value
+*verifychanges Prompts a user to save all changes made to a table or record.
+*verifyeachchange Prompts a user to confirm each change he or she made.
+*checkconflicts Notifies a user if someone else has changed the data in the table after he or she began editing a record.
+[END RESERVED3]
+[START RESERVED4]
+graphics\checker.bmp[END RESERVED4]
+[START RESERVED5]
+graphics\checker.bmp[END RESERVED5]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED7]
+manages conflicts[END RESERVED7]
+[START RESERVED8]
+_data.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _datachecker
+[START RESERVED1]
+  _data.h>ß  ‚$[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _R8I0ZDLPI
+[CLASS] _container
+[CLASSLOC] _base.vcx
+[BASECLASS] container
+[OBJNAME] _datanavbtns
+[START PROPERTIES]
+Width = 104
+Height = 24
+BorderWidth = 1
+BackColor = 192,192,192
+skiptable = 
+enabledisableoninit = .T.
+Name = "_datanavbtns"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Error
+Parameters nError, cMethod, nLine
+
+LOCAL cNewTable, nConflictStatus, lcMsg, lnAnswer
+
+DO CASE
+	CASE nError = 13 && Alias not found
+	*-----------------------------------------------------------
+	* If the user tries to move the record pointer when no
+	* table is open or when an invalid SkipTable property has been
+	* specified, prompt the user for a table to open.
+	*-----------------------------------------------------------
+		cNewTable = GETFILE('DBF', SELTABLE_LOC, OPEN_LOC)
+		IF FILE(cNewTable)
+			SELECT 0
+			USE (cNewTable)
+			This.SkipTable = ALIAS()
+		ELSE
+			This.SkipTable = ""
+		ENDIF
+	CASE nError = 1585
+	*-----------------------------------------------------------
+	* Update conflict handled by datachecker class.
+	*-----------------------------------------------------------
+		nConflictStatus = THIS.DataChecker1.CheckConflicts()
+		IF nConflictStatus = 2
+			WAIT WINDOW CONFLICT_LOC
+		ENDIF
+	OTHERWISE
+	*-----------------------------------------------------------
+	* Display information about an unanticipated error.
+	*-----------------------------------------------------------
+		lcMsg = NUM_LOC + ALLTRIM(STR(nError)) + CR_LOC + CR_LOC + ;
+				MSG_LOC + MESSAGE( )+ CR_LOC + CR_LOC + ;
+				PROG_LOC + PROGRAM(1)
+		lnAnswer = MESSAGEBOX(lcMsg, 2+48+512)
+		DO CASE
+			CASE lnAnswer = 3 &&Abort
+				CANCEL
+			CASE lnAnswer = 4 &&Retry
+				RETRY
+			OTHERWISE
+				RETURN
+		ENDCASE
+ENDCASE
+
+ENDPROC
+PROCEDURE Init
+IF THIS.EnableDisableOnInit
+	THIS.EnableDisableButtons
+ENDIF
+ENDPROC
+PROCEDURE beforerecordpointermoved
+IF !EMPTY(This.SkipTable)
+	SELECT (This.SkipTable)
+ENDIF
+
+ENDPROC
+PROCEDURE enabledisablebuttons
+LOCAL nRec, nTop, nBottom
+IF EMPTY(ALIAS()) OR EOF() && Table empty or no records match a filter
+	THIS.SetAll("Enabled", .F.)
+	RETURN
+ENDIF
+
+nRec = RECNO()
+GO TOP
+nTop = RECNO()
+GO BOTTOM
+nBottom = RECNO()
+GO nRec
+
+DO CASE
+	CASE nRec = nTop
+		THIS.cmdTop.Enabled = .F.
+		THIS.cmdPrior.Enabled = .F.
+		THIS.cmdNext.Enabled = .T.
+		THIS.cmdBottom.Enabled = .T.
+	CASE nRec = nBottom
+		THIS.cmdTop.Enabled = .T.
+		THIS.cmdPrior.Enabled = .T.
+		THIS.cmdNext.Enabled = .F.
+		THIS.cmdBottom.Enabled = .F.
+	OTHERWISE
+		THIS.SetAll("Enabled", .T.)
+ENDCASE
+ENDPROC
+PROCEDURE recordpointermoved
+IF TYPE('_VFP.ActiveForm') = 'O'
+	_VFP.ActiveForm.Refresh
+ENDIF
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+6[END RESERVED2]
+[START RESERVED3]
+skiptable The table to move the record pointer in .
+enabledisableoninit Whether to enable/disable buttons when first loaded.
+*recordpointermoved Called each time the record pointer is moved, basically providing a new event for the class.
+*enabledisablebuttons Enables/disables buttons based on record pointer location.
+*beforerecordpointermoved Called before record pointer is moved.
+[END RESERVED3]
+[START RESERVED4]
+graphics\vcr.bmp[END RESERVED4]
+[START RESERVED5]
+graphics\vcr.bmp[END RESERVED5]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED7]
+VCR Buttons with Data Checker[END RESERVED7]
+[START RESERVED8]
+_data.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _R8I0ZDLL1
+[CLASS] _commandbutton
+[CLASSLOC] _base.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdTop
+[PARENT] _datanavbtns
+[START PROPERTIES]
+Top = 0
+Left = 0
+Height = 24
+Width = 26
+FontBold = .T.
+FontName = "Courier New"
+FontSize = 11
+Caption = "|<"
+TabIndex = 1
+ToolTipText = "Top"
+Name = "cmdTop"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+THIS.Parent.BeforeRecordPointerMoved
+
+GO TOP
+
+THIS.Parent.RecordPointerMoved
+THIS.Parent.EnableDisableButtons
+
+ENDPROC
+PROCEDURE Error
+Parameters nError, cMethod, nLine
+This.Parent.Error(nError, cMethod, nLine)
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _R8I0ZDLMG
+[CLASS] _commandbutton
+[CLASSLOC] _base.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdPrior
+[PARENT] _datanavbtns
+[START PROPERTIES]
+Top = 0
+Left = 26
+Height = 24
+Width = 26
+FontBold = .T.
+FontName = "Courier New"
+FontSize = 11
+Caption = "<"
+TabIndex = 2
+ToolTipText = "Prior"
+Name = "cmdPrior"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+THIS.Parent.BeforeRecordPointerMoved
+
+SKIP -1
+IF BOF()
+	GO TOP
+ENDIF
+
+THIS.Parent.RecordPointerMoved
+THIS.Parent.EnableDisableButtons
+
+ENDPROC
+PROCEDURE Error
+Parameters nError, cMethod, nLine
+This.Parent.Error(nError, cMethod, nLine)
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _R8I0ZDLNA
+[CLASS] _commandbutton
+[CLASSLOC] _base.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdNext
+[PARENT] _datanavbtns
+[START PROPERTIES]
+Top = 0
+Left = 52
+Height = 24
+Width = 26
+FontBold = .T.
+FontName = "Courier New"
+FontSize = 11
+Caption = ">"
+TabIndex = 3
+ToolTipText = "Next"
+Name = "cmdNext"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+THIS.Parent.BeforeRecordPointerMoved
+
+SKIP 1
+IF EOF()
+	GO BOTTOM
+ENDIF
+
+THIS.Parent.RecordPointerMoved
+THIS.Parent.EnableDisableButtons
+
+ENDPROC
+PROCEDURE Error
+Parameters nError, cMethod, nLine
+This.Parent.Error(nError, cMethod, nLine)
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _R8I0ZDLOE
+[CLASS] _commandbutton
+[CLASSLOC] _base.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdBottom
+[PARENT] _datanavbtns
+[START PROPERTIES]
+Top = 0
+Left = 78
+Height = 24
+Width = 26
+FontBold = .T.
+FontName = "Courier New"
+FontSize = 11
+Caption = ">|"
+TabIndex = 4
+ToolTipText = "Bottom"
+Name = "cmdBottom"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+THIS.Parent.BeforeRecordPointerMoved
+
+GO BOTTOM
+
+THIS.Parent.EnableDisableButtons
+THIS.Parent.RecordPointerMoved
+ENDPROC
+PROCEDURE Error
+Parameters nError, cMethod, nLine
+This.Parent.Error(nError, cMethod, nLine)
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _R8I0ZDLP8
+[CLASS] _datachecker
+[CLASSLOC] _datanav.vcx
+[BASECLASS] custom
+[OBJNAME] Datachecker1
+[PARENT] _datanavbtns
+[START PROPERTIES]
+Top = 6
+Left = 44
+Height = 15
+Width = 23
+Name = "Datachecker1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _datanavbtns
+[START PROPERTIES]
+Courier New, 1, 11, 9, 17, 12, 11, 5, 0
+[END PROPERTIES]
+[START RESERVED1]
+  _data.hV^  ‚$[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RLP0MP3VD
+[CLASS] _container
+[CLASSLOC] _base.vcx
+[BASECLASS] container
+[OBJNAME] _basicnavbtns
+[START PROPERTIES]
+Width = 48
+Height = 25
+Name = "_basicnavbtns"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+this.SetDefault(this.VCRPrevious)
+this.SetDefault(this.VCRNext)
+IF TYPE('thisform')=='O'
+	thisform.ShowTips=.T.
+ENDIF
+
+ENDPROC
+PROCEDURE setdefault
+LPARAMETERS oBtn
+oBtn.LastSelect=this.LastSelect
+oBtn.TableAlias=this.TableAlias
+oBtn.ManyAlias=this.ManyAlias
+oBtn.ManyKey=this.ManyKey
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+3[END RESERVED2]
+[START RESERVED3]
+lastselect Last selected alias.
+tablealias Table alias to move record pointer.
+manyalias Alias of child table in 1-Many form.
+manykey Key of child table in 1-Many form.
+*setdefault 
+[END RESERVED3]
+[START RESERVED4]
+graphics\vcr.bmp[END RESERVED4]
+[START RESERVED5]
+graphics\vcr.bmp[END RESERVED5]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RLP0MVETG
+[CLASS] _cmdprevious
+[CLASSLOC] _datanav.vcx
+[BASECLASS] commandbutton
+[OBJNAME] Vcrprevious
+[PARENT] _basicnavbtns
+[START PROPERTIES]
+Top = 0
+Left = 0
+Height = 24
+Width = 24
+Picture = graphics\previous.bmp
+Name = "Vcrprevious"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RLP0MVETQ
+[CLASS] _cmdnext
+[CLASSLOC] _datanav.vcx
+[BASECLASS] commandbutton
+[OBJNAME] Vcrnext
+[PARENT] _basicnavbtns
+[START PROPERTIES]
+Top = 0
+Left = 24
+Height = 24
+Width = 24
+Picture = graphics\next.bmp
+Name = "Vcrnext"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _basicnavbtns
+[START PROPERTIES]
+Arial, 0, 10, 6, 16, 13, 23, 3, 0
+[END PROPERTIES]
+[EOF]
