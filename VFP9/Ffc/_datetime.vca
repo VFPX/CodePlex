@@ -1,0 +1,406 @@
+SCCTEXT Version 4.0.0.2
+PLATFORM C(8,0),UNIQUEID C(10,0),TIMESTAMP N(10,0),CLASS M(4,0),CLASSLOC M(4,0),BASECLASS M(4,0),OBJNAME M(4,0),PARENT M(4,0),PROPERTIES M(4,0),PROTECTED M(4,0),METHODS M(4,0),OBJCODE M(4,0),OLE M(4,0),OLE2 M(4,0),RESERVED1 M(4,0),RESERVED2 M(4,0),RESERVED3 M(4,0),RESERVED4 M(4,0),RESERVED5 M(4,0),RESERVED6 M(4,0),RESERVED7 M(4,0),RESERVED8 M(4,0),USER M(4,0)
+1252
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] Class     
+[START RESERVED1]
+VERSION =   3.00[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0BC1472GG
+[CLASS] olecontrol
+[BASECLASS] olecontrol
+[OBJNAME] _olecalendar
+[START PROPERTIES]
+Height = 180
+Width = 198
+builder = 
+builderx = (HOME()+"Wizards\BuilderD,BuilderDForm")
+date_column = 
+Name = "_olecalendar"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE SelChange
+*** ActiveX Control Event ***
+LPARAMETERS startdate, enddate, cancel
+
+nYear = YEAR(startdate)
+nDay = DAY(startdate)
+nMonth = MONTH(startdate)
+
+dValue = DATE(m.nYear, m.nMonth, m.nDay)
+
+cColumn = THIS.date_column
+
+IF !EMPTY(m.cColumn)
+	REPLACE &cColumn WITH m.dValue
+ENDIF
+
+IF TYPE("THISFORM")="O"
+	THISFORM.Refresh
+ENDIF
+
+ENDPROC
+PROCEDURE refreshdisplay
+LOCAL cColumn
+cColumn = this.date_column
+
+IF !EMPTY(m.cColumn) THEN
+	THIS.Month = MONTH(&cColumn)
+	THIS.Day = DAY(&cColumn)
+	THIS.Year = YEAR(&cColumn)
+ENDIF
+
+ENDPROC
+[END METHODS]
+[BINSTART OLE]
+CHECKSUM=45829
+[BINEND OLE]
+[BINSTART OLE2]
+CHECKSUM=24817
+[BINEND OLE2]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+builder
+builderx
+date_column
+*refreshdisplay 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _olecalendar2
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _R2Z0NXWN8
+[CLASS] _container
+[CLASSLOC] _base.vcx
+[BASECLASS] container
+[OBJNAME] _stopwatch
+[START PROPERTIES]
+Width = 92
+Height = 27
+BackStyle = 0
+BorderWidth = 0
+nsec = 0
+nmin = 0
+nhour = 0
+elapsedseconds = 0
+Name = "_stopwatch"
+[END PROPERTIES]
+[START PROTECTED]
+nsec
+nmin
+nhour
+[END PROTECTED]
+[START METHODS]
+PROCEDURE Init
+#DEFINE SEPARATOR_LOC ':'
+
+This.lblSeparator1.Caption = SEPARATOR_LOC
+This.lblSeparator2.Caption = SEPARATOR_LOC
+
+ENDPROC
+PROCEDURE increment
+THIS.nSec = THIS.nSec + 1
+
+IF THIS.nSec = 60
+	THIS.nSec = 0
+	THIS.nMin = THIS.nMin + 1
+ENDIF
+
+IF THIS.nMin = 60
+	THIS.nMin = 0
+	THIS.nHour = THIS.nHour + 1
+ENDIF
+THIS.UpdateDisplay
+THIS.ElapsedSeconds = (THIS.nHour * 3600) + ;
+                               (THIS.nMin * 60) + ;
+                                (This.nSec)
+
+ENDPROC
+PROCEDURE reset
+This.nSec = 0
+This.nMin = 0
+This.nHour = 0
+This.UpdateDisplay
+ENDPROC
+PROCEDURE start
+This.tmrSWatch.enabled = .T.
+ENDPROC
+PROCEDURE stop
+This.tmrSWatch.enabled = .f.
+ENDPROC
+PROCEDURE updatedisplay
+LOCAL cSecDisplay , cMinDisplay, cHourDisplay
+
+cSecDisplay = ALLTRIM(STR(This.nSec))
+cMinDisplay = ALLTRIM(STR(This.nMin))
+cHourDisplay = ALLTRIM(STR(This.nHour))
+
+This.lblSeconds.Caption = IIF(This.nSec < 10, "0" + m.cSecDisplay , m.cSecDisplay)
+This.lblMinutes.Caption = IIF(This.nMin < 10, "0" + m.cMinDisplay , m.cMinDisplay)
+This.lblHours.Caption = IIF(This.nHour < 10, "0" + m.cHourDisplay , m.cHourDisplay)
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+7[END RESERVED2]
+[START RESERVED3]
+nsec
+nmin
+nhour
+elapsedseconds The time displayed in the stopwatch in elapsed seconds.
+*start Starts stopwatch.
+*stop Stops stopwatch.
+*reset Resets stopwatch.
+*updatedisplay Refresh display.
+*increment Increment the stopwatch display.
+[END RESERVED3]
+[START RESERVED4]
+graphics\watch.bmp[END RESERVED4]
+[START RESERVED5]
+graphics\watch.bmp[END RESERVED5]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED7]
+stop watch with start, stop, and reset methods[END RESERVED7]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _R2Z0NXWA5
+[CLASS] _timer
+[CLASSLOC] _base.vcx
+[BASECLASS] timer
+[OBJNAME] tmrSWatch
+[PARENT] _stopwatch
+[START PROPERTIES]
+Top = 2
+Left = 52
+Height = 25
+Width = 25
+Interval = 1000
+Name = "tmrSWatch"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Timer
+THIS.Parent.Increment
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _QYC0Z5IUF
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] lblSeparator1
+[PARENT] _stopwatch
+[START PROPERTIES]
+AutoSize = .T.
+FontBold = .T.
+FontName = "Arial"
+FontSize = 13
+BackStyle = 0
+Caption = ":"
+Height = 22
+Left = 26
+Top = 4
+Width = 8
+Name = "lblSeparator1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _R2Z0NXWEL
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] lblSeparator2
+[PARENT] _stopwatch
+[START PROPERTIES]
+FontBold = .T.
+FontName = "Arial"
+FontSize = 13
+Alignment = 0
+BackStyle = 0
+Caption = ":"
+Height = 19
+Left = 58
+Top = 4
+Width = 11
+Name = "lblSeparator2"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _R2Z0NXWCR
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] lblhours
+[PARENT] _stopwatch
+[START PROPERTIES]
+AutoSize = .T.
+FontBold = .T.
+FontName = "Arial"
+FontSize = 13
+BackStyle = 0
+Caption = "00"
+Height = 22
+Left = 6
+Top = 5
+Width = 20
+Name = "lblhours"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _R2Z0NXWGG
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] lblMinutes
+[PARENT] _stopwatch
+[START PROPERTIES]
+AutoSize = .T.
+FontBold = .T.
+FontName = "Arial"
+FontSize = 13
+BackStyle = 0
+Caption = "00"
+Height = 22
+Left = 37
+Top = 5
+Width = 20
+Name = "lblMinutes"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _R2Z0NXWLH
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] lblSeconds
+[PARENT] _stopwatch
+[START PROPERTIES]
+AutoSize = .T.
+FontBold = .T.
+FontName = "Arial"
+FontSize = 13
+BackStyle = 0
+Caption = "00"
+Height = 22
+Left = 68
+Top = 5
+Width = 20
+Name = "lblSeconds"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _stopwatch
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _R460NOG7P
+[CLASS] _container
+[CLASSLOC] _base.vcx
+[BASECLASS] container
+[OBJNAME] _clock
+[START PROPERTIES]
+Width = 263
+Height = 28
+BackStyle = 0
+BorderWidth = 0
+timeformat = 0
+Name = "_clock"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE DblClick
+THIS.TimeFormat = ABS(THIS.TimeFormat - 1)
+THIS.txtDate.DateFormat = IIF(THIS.TimeFormat=0,13,14)
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+3[END RESERVED2]
+[START RESERVED3]
+timeformat Toggles between 12 and 24 hour format.
+[END RESERVED3]
+[START RESERVED4]
+graphics\clock.bmp[END RESERVED4]
+[START RESERVED5]
+graphics\clock.bmp[END RESERVED5]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED7]
+day, date, and time control[END RESERVED7]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _R460NOFRA
+[CLASS] _textbox
+[CLASSLOC] _base.vcx
+[BASECLASS] textbox
+[OBJNAME] txtDate
+[PARENT] _clock
+[START PROPERTIES]
+DateFormat = 13
+Alignment = 2
+BackStyle = 0
+BorderStyle = 0
+Enabled = .F.
+Height = 21
+Left = 3
+Top = 5
+Width = 256
+BackColor = 255,255,0
+DisabledBackColor = 255,255,255
+DisabledForeColor = 0,0,0
+Name = "txtDate"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _R460NOG3T
+[CLASS] _timer
+[CLASSLOC] _base.vcx
+[BASECLASS] timer
+[OBJNAME] Timer1
+[PARENT] _clock
+[START PROPERTIES]
+Top = 3
+Left = 8
+Height = 12
+Width = 14
+Interval = 1000
+Name = "Timer1"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Timer
+This.Parent.txtDate.Value = DATETIME()
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _clock
+[START PROPERTIES]
+Arial, 0, 9, 5, 15, 12, 21, 3, 0
+[END PROPERTIES]
+[EOF]
