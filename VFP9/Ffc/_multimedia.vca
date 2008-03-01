@@ -1,0 +1,708 @@
+SCCTEXT Version 4.0.0.2
+PLATFORM C(8,0),UNIQUEID C(10,0),TIMESTAMP N(10,0),CLASS M(4,0),CLASSLOC M(4,0),BASECLASS M(4,0),OBJNAME M(4,0),PARENT M(4,0),PROPERTIES M(4,0),PROTECTED M(4,0),METHODS M(4,0),OBJCODE M(4,0),OLE M(4,0),OLE2 M(4,0),RESERVED1 M(4,0),RESERVED2 M(4,0),RESERVED3 M(4,0),RESERVED4 M(4,0),RESERVED5 M(4,0),RESERVED6 M(4,0),RESERVED7 M(4,0),RESERVED8 M(4,0),USER M(4,0)
+1252
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] Class     
+[START RESERVED1]
+VERSION =   3.00[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RA20UPS3F
+[CLASS] _container
+[CLASSLOC] _base.vcx
+[BASECLASS] container
+[OBJNAME] _soundplayer
+[START PROPERTIES]
+Width = 33
+Height = 36
+BorderWidth = 0
+Visible = .F.
+BackColor = 0,128,255
+mcierror = 0
+mcierrorstring = 
+autoopen = .T.
+mcialias = 
+autoplay = .T.
+autorepeat = .T.
+controlsource = 
+cfilename = 
+Name = "_soundplayer"
+[END PROPERTIES]
+[START PROTECTED]
+getmcierror^
+[END PROTECTED]
+[START METHODS]
+PROCEDURE Destroy
+THIS.closeSound
+ENDPROC
+PROCEDURE Error
+#DEFINE INVALID_CONTROLSOURCE_LOC "Invalid controlSource specified."
+LPARAMETERS nError, cMethod, nLine
+
+DO CASE
+	CASE nError=12 AND cMethod="opensound"
+		messageBox(INVALID_CONTROLSOURCE_LOC)
+	OTHERWISE
+		ERROR (nError)
+ENDCASE
+
+ENDPROC
+PROCEDURE Init
+THIS.Visible = .F.
+
+*!* This is the primary Windows API function that is used to
+*!* send MCI commands
+DECLARE INTEGER mciSendString ;
+   IN WinMM.DLL ;
+   STRING cMCIString,;
+   STRING @cRetString,;
+   INTEGER nRetLength,;
+   INTEGER hInstance
+
+*!* This function allows us to retrieve the last MCI error that occured
+DECLARE INTEGER mciGetErrorString ;
+   IN WINMM.DLL ;
+   INTEGER nErrorno, ;
+   STRING @cBuffer, ;
+   INTEGER nBufSize
+
+*!* When MCI plays a video, it creates its own Window.  By using
+*!* this Windows API function we can position this Window to be
+*!* in the same position as our Player rectangle on the form
+DECLARE integer SetWindowPos ;
+	IN User32 ;
+	integer, integer, integer, integer, integer, integer, integer
+
+ENDPROC
+PROCEDURE Refresh
+IF THIS.autoOpen = .T. THEN
+	THIS.openSound
+ENDIF
+
+ENDPROC
+PROCEDURE closesound
+*!* If sound is not already closed, then close it
+LOCAL cCmd
+cCmd = ("STATUS " + THIS.MCIalias + " READY")
+IF THIS.doMCI(cCmd) = "true" THEN
+	*!* If one is, close it
+	cCMD = ("CLOSE " + THIS.MCIalias + " WAIT")
+	THIS.doMCI(cCmd)
+	IF THIS.MCIerror > 0 THEN
+		THIS.showMCIerror
+	ENDIF
+	IF THIS.autoRepeat = .T. THEN
+		THIS.tmrCheckMode.INTERVAL = 0
+	ENDIF
+ENDIF
+
+ENDPROC
+PROCEDURE domci
+LPARAMETERS cMCIcmd
+LOCAL cRetString,nRetValue,cErr
+*!* This method takes a MCI command string and executes it using
+*!* the Windows API function mciSendString
+
+*!* If the function executes successfully, the result is returned.
+*!* Otherwise, the error string is returned.
+cRetString = space(80)
+nRetValue = mciSendString(cMCIcmd,@cRetString,len(cRetString),0)
+
+cErr = THIS.getMCIerror(nRetValue)
+IF nRetValue > 0
+	RETURN CeRR
+ENDIF
+
+RETURN TRIM(STRTRAN(cRetString,chr(0),""))
+
+ENDPROC
+PROCEDURE getmcierror
+LPARAMETERS cError
+LOCAL nError,cErrorString
+
+*!* This method is called from the doMCI to retrieve the last
+*!* MCI error string.
+*!* This function also saves the last error number and string
+*!* into properties associated with the form.
+
+nError=0
+IF TYPE("cError")="C"
+   IF LEFT(cError,7)="*ERROR*"
+      nError=val(substr(cError,8))
+   ENDIF
+ENDIF
+
+IF TYPE("cError")="N"
+  nError=cError
+ENDIF
+
+cErrorString=SPACE(256)
+=mciGetErrorString(nError,@cErrorString,len(cErrorString))
+
+THIS.MCIerror = nError
+THIS.MCIerrorString = cErrorString
+
+RETURN TRIM(CHRTRAN(cErrorString,CHR(0),""))
+
+ENDPROC
+PROCEDURE opensound
+#DEFINE C_NOFILENAME_LOC "No filename or control source specified!"
+
+LOCAL cFileName,cAlias,cCmd
+
+*!* Get needed properties into variables
+IF EMPTY(THIS.controlSource) THEN
+	cFileName = THIS.cFileName
+	IF EMPTY(cFileName) THEN
+		MESSAGEBOX(C_NOFILENAME_LOC)
+		RETURN
+	ENDIF
+ELSE
+	cFileName = ALLTRIM(&controlSource)
+	IF EMPTY(cFileName) THEN
+		RETURN
+	ENDIF
+ENDIF
+	
+cAlias = THIS.MCIalias
+IF EMPTY(cAlias) THEN
+	cAlias = THIS.name
+	THIS.MCIalias = cAlias
+ENDIF
+
+_SCREEN.MousePointer = 11
+
+*!* If sound is already loaded, then close it
+cCmd = ("STATUS " + cAlias + " READY")
+IF THIS.doMCI(cCmd) = "true" THEN
+	*!* If one is, close it
+	cCMD = ("CLOSE " + cAlias + " WAIT")
+	THIS.doMCI(cCmd)
+ENDIF
+
+*!* Set up open MCI command into string variable
+cCmd = ('OPEN "' + cFileName + '" alias ' + cAlias + ' WAIT')
+
+THIS.doMCI(cCmd)
+
+*!* Check to see if MCI command succeeded
+IF THIS.MCIerror > 0 THEN
+	messagebox(THIS.MCIerrorString)
+	_SCREEN.MousePointer = 0
+	RETURN
+ENDIF
+
+*!* Set the device to use milliseconds when setting/getting position
+THIS.doMCI("SET " + cAlias + " time format milliseconds")
+
+IF THIS.autoPlay = .T. THEN
+	THIS.playSound
+ENDIF
+
+_SCREEN.MousePointer = 0
+
+ENDPROC
+PROCEDURE pausesound
+LOCAL cAlias
+cAlias = THIS.MCIalias
+
+*!* Check to see if there is media acutally playing
+IF THIS.doMCI("STATUS " + cAlias + " mode") = "playing" THEN
+	*!* Yes there is, so execute the PAUSE MCI command
+	THIS.doMCI("PAUSE " + cAlias)
+	IF THIS.MCIerror > 0 THEN
+		THIS.showMCIerror
+	ENDIF
+	IF THIS.autoRepeat = .T. THEN
+		THIS.tmrCheckMode.INTERVAL = 0
+	ENDIF
+ENDIF
+ENDPROC
+PROCEDURE playsound
+LOCAL cAlias,nMediaLength,nMediaPosition
+cAlias = THIS.MCIalias
+
+*!* First need to see if the media is at the end
+*!* by comparing the total length with the current position
+nMediaLength = VAL(THIS.doMCI("STATUS " + cAlias + " length"))
+nMediaPosition = VAL(THIS.doMCI("STATUS " + cAlias + " position"))
+
+IF nMediaPosition >= nMediaLength THEN
+	*!* The media is at the end, so we need to seek back to the start
+	*!* of the clip before playing
+	THIS.doMCI("SEEK " + cAlias + " to start WAIT")
+ENDIF
+
+*!* Now we can play the media
+THIS.doMCI("PLAY " + cAlias)
+IF THIS.MCIerror > 0 THEN
+	THIS.showMCIerror
+ENDIF
+
+IF THIS.autoRepeat = .T. THEN
+	THIS.tmrCheckMode.INTERVAL = 300
+ENDIF
+ENDPROC
+PROCEDURE setposition
+PARAMETERS cPosition
+
+LOCAL cAlias,nPosition,cPosCmd,nMediaLength,cCmd
+cAlias = THIS.MCIalias
+
+IF UPPER(cPosition) = "START" or UPPER(cPosition) = "END" THEN
+	cPosCmd = "to " + cPosition
+ELSE
+	nPosition = VAL(cPosition)
+	IF EMPTY(nPosition) THEN
+		RETURN
+	ELSE
+		*!* Check to make sure position is not greater than the length
+		
+		nMediaLength = VAL(THIS.doMCI("STATUS " + cAlias + " length"))
+		IF nMediaLength < nPosition THEN
+			RETURN
+		ELSE
+			cPosCmd = "to " + STR(nPosition)
+		ENDIF
+	ENDIF
+ENDIF
+
+*!* Make sure video is loaded
+cCmd = ("STATUS " + cAlias + " READY")
+IF THIS.doMCI(cCmd) = "true" THEN
+	cCmd = "SEEK " + cAlias + " " + cPosCmd
+	THIS.doMCI(cCmd)
+ENDIF
+ENDPROC
+PROCEDURE showmcierror
+MESSAGEBOX(STR(THIS.MCIerror) + ": " + THIS.MCIerrorString)
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+2[END RESERVED2]
+[START RESERVED3]
+mcierror Specifies the result of the last MCI command executed.
+mcierrorstring Stores the error string from the last MCI command executed.
+autoopen Specifies whether the sound file specified should be automatically opened when the class is created.
+mcialias Specifies the alias for the video file when calling MCI commands.  If empty, the name of the file is used.
+autoplay Specifies whether the sound file should automatically play after opening.
+autorepeat If .T., sound will continuously play
+controlsource Specifies the source of data to which an object is bound.
+cfilename Sound file name to play.
+*domci Executes a MCI command.
+*getmcierror Stores the last MCI error into properties of the class.
+*showmcierror Displays the result of the last MCI command in a messagebox.
+*setposition Allows the user to set the position of the media file; Valid values are Start, End, or a number representing milliseconds.
+*opensound Opens the sound file.
+*pausesound Pauses the currently playing sound.
+*playsound Plays the loaded sound file.
+*closesound Closes the loaded sound file and releases it's resources.
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RA20XBHSA
+[CLASS] timer
+[BASECLASS] timer
+[OBJNAME] tmrCheckMode
+[PARENT] _soundplayer
+[START PROPERTIES]
+Name = "tmrCheckMode"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Timer
+LOCAL cCmd
+cCmd = ("STATUS " + THIS.PARENT.MCIalias + " MODE")
+IF THIS.PARENT.doMCI(cCmd) = "stopped" THEN
+	THIS.PARENT.playSound
+ENDIF
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _soundplayer
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RA20UPS3F
+[CLASS] _container
+[CLASSLOC] _base.vcx
+[BASECLASS] container
+[OBJNAME] _videoplayer
+[START PROPERTIES]
+Width = 201
+Height = 133
+BorderWidth = 0
+Visible = .F.
+BackColor = 0,128,192
+mcierror = 0
+mcierrorstring = 
+autoopen = .T.
+mcialias = 
+autoplay = .T.
+autorepeat = .T.
+controlsource = 
+cfilename = 
+Name = "_videoplayer"
+[END PROPERTIES]
+[START PROTECTED]
+getmcierror^
+[END PROTECTED]
+[START METHODS]
+PROCEDURE Destroy
+THIS.closeVideo
+ENDPROC
+PROCEDURE Error
+#DEFINE INVALID_CONTROLSOURCE_LOC "Invalid controlSource specified."
+
+LPARAMETERS nError, cMethod, nLine
+
+DO CASE
+	CASE nError = 12 and cMethod = "openvideo"
+		messageBox(INVALID_CONTROLSOURCE_LOC)
+	OTHERWISE
+		ERROR (nError)
+ENDCASE
+
+ENDPROC
+PROCEDURE Init
+THIS.Visible = .F.
+
+*!* This is the primary Windows API function that is used to
+*!* send MCI commands
+DECLARE INTEGER mciSendString ;
+   IN WinMM.DLL ;
+   STRING cMCIString,;
+   STRING @cRetString,;
+   INTEGER nRetLength,;
+   INTEGER hInstance
+
+*!* This function allows us to retrieve the last MCI error that occured
+DECLARE INTEGER mciGetErrorString ;
+   IN WINMM.DLL ;
+   INTEGER nErrorno, ;
+   STRING @cBuffer, ;
+   INTEGER nBufSize
+
+*!* When MCI plays a video, it creates its own Window.  By using
+*!* this Windows API function we can position this Window to be
+*!* in the same position as our Player rectangle on the form
+DECLARE integer SetWindowPos ;
+	IN User32 ;
+	integer, integer, integer, integer, integer, integer, integer
+
+ENDPROC
+PROCEDURE Refresh
+
+IF THIS.autoOpen = .T. THEN
+	THIS.openVideo
+ENDIF
+
+ENDPROC
+PROCEDURE closevideo
+LOCAL cCmd
+*!* If video is not already closed, then close it
+cCmd = ("STATUS " + THIS.MCIalias + " READY")
+IF THIS.doMCI(cCmd) = "true" THEN
+	*!* If one is, close it
+	cCMD = ("CLOSE " + THIS.MCIalias + " WAIT")
+	THIS.doMCI(cCmd)
+	IF THIS.MCIerror > 0 THEN
+		THIS.showMCIerror
+	ENDIF
+	IF THIS.autoRepeat = .T. THEN
+		THIS.tmrCheckMode.INTERVAL = 0
+	ENDIF
+ENDIF
+
+ENDPROC
+PROCEDURE domci
+LPARAMETERS cMCIcmd
+LOCAL cRetString,cErr,nRetValue
+
+*!* This method takes a MCI command string and executes it using
+*!* the Windows API function mciSendString
+
+*!* If the function executes successfully, the result is returned.
+*!* Otherwise, the error string is returned.
+cRetString = space(80)
+nRetValue = mciSendString(cMCIcmd,@cRetString,len(cRetString),0)
+
+cErr = THIS.getMCIerror(nRetValue)
+IF nRetValue > 0
+	RETURN CeRR
+ENDIF
+
+RETURN TRIM(STRTRAN(cRetString,chr(0),""))
+
+ENDPROC
+PROCEDURE getmcierror
+LPARAMETERS cError
+LOCAL nError,cErrorString
+
+*!* This method is called from the doMCI to retrieve the last
+*!* MCI error string.
+*!* This function also saves the last error number and string
+*!* into properties associated with the form.
+
+nError=0
+IF TYPE("cError")="C"
+   IF LEFT(cError,7)="*ERROR*"
+      nError=val(substr(cError,8))
+   ENDIF
+ENDIF
+
+IF TYPE("cError")="N"
+  nError=cError
+ENDIF
+
+cErrorString=SPACE(256)
+=mciGetErrorString(nError,@cErrorString,len(cErrorString))
+
+THIS.MCIerror = nError
+THIS.MCIerrorString = cErrorString
+
+RETURN TRIM(CHRTRAN(cErrorString,CHR(0),""))
+
+ENDPROC
+PROCEDURE openvideo
+#DEFINE C_NOFILENAME_LOC "No filename specified or control source specified!"
+LOCAL cControlSource,cFileName,cAlias,cCmd,hWin,Main_hWnd,cur_window
+LOCAL x1Pos,x2Pos,y1Pos,y2Pos,NullPointer
+*!* Get needed properties into variables
+cControlSource = THIS.controlSource
+IF EMPTY(cControlSource) THEN
+	cFileName = THIS.cFileName
+	IF EMPTY(cFileName) THEN
+		MESSAGEBOX(C_NOFILENAME_LOC)
+		RETURN
+	ENDIF
+ELSE
+	cFileName = ALLTRIM(&cControlSource)
+	IF EMPTY(cFileName) THEN
+		RETURN
+	ENDIF
+ENDIF
+
+	
+cAlias = THIS.MCIalias
+IF EMPTY(cAlias) THEN
+	cAlias = THIS.name
+	THIS.MCIalias = cAlias
+ENDIF
+
+_SCREEN.MousePointer = 11
+
+*!* If video is already loaded, then close it
+cCmd = ("STATUS " + cAlias + " READY")
+IF THIS.doMCI(cCmd) = "true" THEN
+	*!* If one is, close it
+	cCMD = ("CLOSE " + cAlias + " WAIT")
+	THIS.doMCI(cCmd)
+ENDIF
+
+*!* Need to use window handle functions in FoxTools
+SET LIBRARY TO HOME() + ".\FOXTOOLS.FLL"
+EXTERNAL PROCEDURE MainHWND
+EXTERNAL PROCEDURE _WhToHwnd
+EXTERNAL PROCEDURE _WOnTop
+
+* Returns Handle of Main VFP Window
+* Main_hWnd = MainHWND()	
+Main_hWnd = _VFP.hWnd
+
+* Get Handle of the form with FOXTOOLS.FLL
+IF TYPE("THISFORM")="O"
+	cur_window = THISFORM.HWnd
+ELSE
+	cur_window = _WhToHwnd(_WonTop())
+ENDIF
+
+NullPointer = 0
+
+*!* Set up open MCI command into string variable
+cCmd = ('OPEN "' + cFileName + '" alias ' + cAlias + ;
+  ' style child parent ' + ALLTRIM(STR(cur_window)) + ' WAIT')
+
+THIS.doMCI(cCmd)
+
+*!* Check to see if MCI command succeeded
+IF THIS.MCIerror > 0 THEN
+	messagebox(THIS.MCIerrorString)
+	_SCREEN.MousePointer = 0
+	RETURN
+ELSE
+	*!* It does have visual media, so we need to set up the window
+	*!* it will play in.
+	
+	*!* Get the window handle of the window playing the video
+	cCmd = "status " + cAlias + " window handle wait"
+	hWin = INT(VAL(THIS.doMCI(cCmd)))
+
+	*!* Once we have the window handle, we need to position
+	*!* the video window to be the same position and size
+	*!* as our player rectangle on the form
+	x1Pos = THIS.LEFT
+	y1Pos = THIS.TOP
+	x2Pos = THIS.WIDTH
+	y2Pos = THIS.HEIGHT
+
+	*!* Use the SetWindowPos Windows function to set position and size
+	setWindowPos(hWin,0,x1Pos,y1Pos,x2Pos,y2Pos,0)
+
+	*!* Everything's done, let's show the video
+	cCmd = ("WINDOW " + cAlias + " state show")
+	THIS.doMCI(cCmd)
+
+ENDIF
+
+*!* Set the device to use milliseconds when setting/getting position
+THIS.doMCI("SET " + cAlias + " time format milliseconds")
+
+IF THIS.autoPlay = .T. THEN
+	THIS.playVideo
+ENDIF
+
+_SCREEN.MousePointer = 0
+
+ENDPROC
+PROCEDURE pausevideo
+LOCAL cAlias
+cAlias = THIS.MCIalias
+
+*!* Check to see if there is media acutally playing
+IF THIS.doMCI("STATUS " + cAlias + " mode") = "playing" THEN
+	*!* Yes there is, so execute the PAUSE MCI command
+	THIS.doMCI("PAUSE " + cAlias)
+	IF THIS.MCIerror > 0 THEN
+		THIS.showMCIerror
+	ENDIF
+	IF THIS.autoRepeat = .T. THEN
+		THIS.tmrCheckMode.INTERVAL = 0
+	ENDIF
+ENDIF
+ENDPROC
+PROCEDURE playvideo
+LOCAL cAlias,nMediaLength,nMediaPosition
+cAlias = THIS.MCIalias
+
+*!* First need to see if the media is at the end
+*!* by comparing the total length with the current position
+nMediaLength = VAL(THIS.doMCI("STATUS " + cAlias + " length"))
+nMediaPosition = VAL(THIS.doMCI("STATUS " + cAlias + " position"))
+
+IF nMediaPosition >= nMediaLength THEN
+	*!* The media is at the end, so we need to seek back to the start
+	*!* of the clip before playing
+	THIS.doMCI("SEEK " + cAlias + " to start WAIT")
+ENDIF
+
+*!* Now we can play the media
+THIS.doMCI("PLAY " + cAlias)
+IF THIS.MCIerror > 0 THEN
+	THIS.showMCIerror
+ENDIF
+
+IF THIS.autoRepeat = .T. THEN
+	THIS.tmrCheckMode.INTERVAL = 100
+ENDIF
+ENDPROC
+PROCEDURE setposition
+PARAMETERS cPosition
+LOCAL cAlias,cPosCmd,nPosition,nMediaLength
+cAlias = THIS.MCIalias
+
+IF UPPER(cPosition) = "START" or UPPER(cPosition) = "END" THEN
+	cPosCmd = "to " + cPosition
+ELSE
+	nPosition = VAL(cPosition)
+	IF EMPTY(nPosition) THEN
+		RETURN
+	ELSE
+		*!* Check to make sure position is not greater than the length
+		
+		nMediaLength = VAL(THIS.doMCI("STATUS " + cAlias + " length"))
+		IF nMediaLength < nPosition THEN
+			RETURN
+		ELSE
+			cPosCmd = "to " + STR(nPosition)
+		ENDIF
+	ENDIF
+ENDIF
+
+*!* Make sure video is loaded
+cCmd = ("STATUS " + cAlias + " READY")
+IF THIS.doMCI(cCmd) = "true" THEN
+	cCmd = "SEEK " + cAlias + " " + cPosCmd
+	THIS.doMCI(cCmd)
+ENDIF
+ENDPROC
+PROCEDURE showmcierror
+MESSAGEBOX(STR(THIS.MCIerror) + ": " + THIS.MCIerrorString)
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+2[END RESERVED2]
+[START RESERVED3]
+mcierror Specifies the result of the last MCI command executed.
+mcierrorstring Stores the error string from the last MCI command executed.
+autoopen Specifies whether the video file specified should be automatically opened when the class is created.
+mcialias Specifies the alias for the video file when calling MCI commands.  If empty, the name of the file is used.
+autoplay Specifies whether the video file should automatically play after opening.
+autorepeat If .T., video will continuously play
+controlsource Specifies the source of data to which an object is bound.
+cfilename Specifies the video file associated with the Video Frame.
+*domci Executes a MCI command.
+*getmcierror Stores the last MCI error into properties of the class.
+*openvideo Opens the video file and shows it.
+*playvideo Plays the currently loaded video.
+*pausevideo Pauses a currently playing video.
+*showmcierror Displays the result of the last MCI command in a messagebox.
+*closevideo Closes the video file and releases all resources.
+*setposition Allows the user to set the position of the media file; Valid values are Start, End, or a number representing milliseconds.
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RA20XBHSA
+[CLASS] timer
+[BASECLASS] timer
+[OBJNAME] tmrCheckMode
+[PARENT] _videoplayer
+[START PROPERTIES]
+Top = 96
+Left = 120
+Height = 23
+Width = 23
+Name = "tmrCheckMode"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Timer
+LOCAL cCmd
+cCmd = ("STATUS " + THIS.PARENT.MCIalias + " MODE")
+IF THIS.PARENT.doMCI(cCmd) = "stopped" THEN
+	THIS.PARENT.playVideo
+ENDIF
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _videoplayer
+[EOF]
