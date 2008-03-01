@@ -1,0 +1,639 @@
+SCCTEXT Version 4.0.0.2
+PLATFORM C(8,0),UNIQUEID C(10,0),TIMESTAMP N(10,0),CLASS M(4,0),CLASSLOC M(4,0),BASECLASS M(4,0),OBJNAME M(4,0),PARENT M(4,0),PROPERTIES M(4,0),PROTECTED M(4,0),METHODS M(4,0),OBJCODE M(4,0),OLE M(4,0),OLE2 M(4,0),RESERVED1 M(4,0),RESERVED2 M(4,0),RESERVED3 M(4,0),RESERVED4 M(4,0),RESERVED5 M(4,0),RESERVED6 M(4,0),RESERVED7 M(4,0),RESERVED8 M(4,0),USER M(4,0)
+1252
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] Class     
+[START RESERVED1]
+VERSION =   3.00[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RKL0YO99B
+[CLASS] _hyperlink
+[CLASSLOC] _base.vcx
+[BASECLASS] hyperlink
+[OBJNAME] _hyperlinkbase
+[START PROPERTIES]
+Height = 27
+Width = 25
+clocationurl = 
+oie = .NULL.
+ctarget = 
+clocation = 
+cframe = 
+cieclass = InternetExplorer.Application
+cshellexecuteclass = _ShellExecute
+cshellexecuteclasslibrary = _Environ.vcx
+Name = "_hyperlinkbase"
+[END PROPERTIES]
+[START PROTECTED]
+clocationurl_access
+clocationurl_assign
+[END PROTECTED]
+[START METHODS]
+PROCEDURE Error
+LPARAMETERS nError, cMethod, nLine
+
+IF nError=1733 AND LOWER(cMethod)=="navigateto"
+	RETURN
+ENDIF
+RETURN DODEFAULT(nError,cMethod,nLine)
+
+ENDPROC
+PROCEDURE GoBack
+IF TYPE("this.oIE.LocationURL")=="C"
+	NODEFAULT
+	this.oIE.GoBack
+	RETURN
+ENDIF
+
+ENDPROC
+PROCEDURE GoForward
+IF TYPE("this.oIE.LocationURL")=="C"
+	NODEFAULT
+	this.oIE.GoForward
+	RETURN
+ENDIF
+
+ENDPROC
+PROCEDURE NavigateTo
+LPARAMETERS cTarget, cLocation, cFrame
+LOCAL lcTarget,lcLocation,lcFrame,oShellExecute
+
+lcTarget=ALLTRIM(IIF(EMPTY(cTarget),this.cTarget,cTarget))
+lcLocation=ALLTRIM(IIF(EMPTY(cLocation),this.cLocation,cLocation))
+lcFrame=ALLTRIM(IIF(EMPTY(cFrame),this.cFrame,cFrame))
+NODEFAULT
+IF EMPTY(lcTarget)
+	RETURN .F.
+ENDIF
+IF (this.lNewWindow OR TYPE("this.oIE.LocationURL")#"C") AND LOWER(this.GetDefaultBrowser())=="iexplore"
+	this.oIE=CREATEOBJECT(this.cIEClass)
+ENDIF
+IF TYPE("this.oIE.LocationURL")#"C"
+	this.SetObjectRef("oShellExecute",this.cShellExecuteClass,this.cShellExecuteClassLibrary)
+	IF VARTYPE(this.oShellExecute)=="O"
+		RETURN this.oShellExecute.ShellExecute(lcTarget)
+	ENDIF
+	RETURN DODEFAULT(lcTarget,lcLocation,lcFrame)
+ENDIF
+IF EMPTY(this.oIE.LocationURL)
+	lcFrame=""
+ENDIF
+this.oIE.Navigate2(lcTarget,0,lcFrame)
+this.oIE.Visible=.T.
+
+ENDPROC
+PROCEDURE clocationurl_access
+IF TYPE("this.oIE.LocationURL")=="C"
+	RETURN this.oIE.LocationURL
+ENDIF
+RETURN this.cLocationURL
+
+ENDPROC
+PROCEDURE clocationurl_assign
+LPARAMETERS m.vNewVal
+
+this.cTarget=m.vNewVal
+this.NavigateTo
+
+ENDPROC
+PROCEDURE follow
+RETURN this.NavigateTo()
+
+ENDPROC
+PROCEDURE getdefaultbrowser
+#DEFINE HKEY_CLASSES_ROOT		-2147483648
+#DEFINE	HTTP_PATH				"HTTP\shell\open\ddeexec\Application"
+#DEFINE ERROR_SUCCESS			0
+#DEFINE REG_SZ 					1
+
+LOCAL nHKey,cSubKey,nResult,lpszValueName,dwReserved
+LOCAL lpdwType,lpbData,lpcbData,lnErrCode,lnGetKey
+
+DECLARE Integer RegOpenKey IN Win32API ;
+	Integer nHKey, String @cSubKey, Integer @nResult
+DECLARE Integer RegQueryValueEx IN Win32API ;
+	Integer nHKey, String lpszValueName, Integer dwReserved,;
+	Integer @lpdwType, String @lpbData, Integer @lpcbData
+DECLARE Integer RegCloseKey IN Win32API ;
+	Integer nHKey
+lnGetKey=0
+lnErrCode=RegOpenKey(HKEY_CLASSES_ROOT,HTTP_PATH,@lnGetKey)
+IF lnErrCode#ERROR_SUCCESS
+	RETURN ""
+ENDIF
+lpdwType=0
+lpbData=SPACE(256)
+lpcbData=LEN(lpbData)
+lnErrCode=RegQueryValueEx(lnGetKey,"",0,@lpdwType,@lpbData,@lpcbData)
+IF lnErrCode#ERROR_SUCCESS OR lpdwType#REG_SZ
+	RegCloseKey(nGetKey)
+	RETURN ""
+ENDIF
+RegCloseKey(lnGetKey)
+RETURN ALLTRIM(LEFT(lpbData,lpcbData-1))
+
+ENDPROC
+PROCEDURE validurl
+LPARAMETERS tcURL
+LOCAL lcURL
+
+IF EMPTY(tcURL)
+	RETURN ""
+ENDIF
+lcURL=ALLTRIM(tcURL)
+IF NOT LOWER(LEFT(lcURL,5))=="http:" AND NOT LOWER(LEFT(lcURL,5))=="file:" AND ;
+		NOT LOWER(LEFT(lcURL,4))=="ftp." AND (LOWER(LEFT(lcURL,4))=="www." OR ;
+		INLIST(LOWER(RIGHT(lcURL,4)),".com",".gov",".net") OR ;
+		(NOT SUBSTR(lcURL,2,1)==":" AND NOT LEFT(lcURL,2)=="\\"))
+	lcURL="http://"+lcURL
+ENDIF
+IF SUBSTR(PADR(lcURL,5),5,1)==":"
+	lcURL=STRTRAN(STRTRAN(lcURl,"\","/"),"///","//")
+ELSE
+	IF NOT LOWER(LEFT(lcURL,4))=="ftp."
+		lcURL="file://"+STRTRAN(STRTRAN(STRTRAN(lcURL,"\","/"),"///","//"),"//","/")
+	ENDIF
+ENDIF
+RETURN lcURL
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+clocationurl URL of the current document location.
+oie Object reference to instance of Internet Explorer linked.
+lnewwindow Specifies if navigating to a URL will create a new window (.T.) or navigate in the current Internet Explorer link.
+ctarget A character string expression representing the document or URL to jump to.
+clocation A character string expression specifying the location within the URL specified in cTarget to jump to. If cLocation is not specified, the default document will be jumped to.
+cframe A character string expression specifying the frame within the URL specified in cTarget to jump to. If cFrameName is not specified, the default frame will be jumped to.
+cieclass Class name used to create link for oIE.
+cshellexecuteclass
+cshellexecuteclasslibrary
+*clocationurl_access 
+*clocationurl_assign 
+*follow Executes a hyperlink jump to the specified cTarget URL.
+*validurl Returns a valid URL from the specified URL.
+*getdefaultbrowser 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED7]
+This class provides the functionality of an OLE Hyperlink and launches a Web Browser by executing the Follow method..[END RESERVED7]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _hyperlinkbase
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RKL0Z8FO8
+[CLASS] _label
+[CLASSLOC] _base.vcx
+[BASECLASS] label
+[OBJNAME] _hyperlinklabel
+[START PROPERTIES]
+AutoSize = .T.
+FontUnderline = .T.
+MousePointer = 15
+ForeColor = 0,0,255
+ctarget = 
+clocation = 
+cframe = 
+nvisitedforecolor = 8388736
+lformsynch = .T.
+ohyperlink = .NULL.
+chyperlinkclass = _HyperLinkBase
+chyperlinkclasslibrary = _HyperLink.vcx
+lautotooltip = .T.
+Name = "_hyperlinklabel"
+[END PROPERTIES]
+[START PROTECTED]
+lvisited_assign
+nvisitedforecolor_assign
+ohyperlink_access
+ctarget_assign
+[END PROTECTED]
+[START METHODS]
+PROCEDURE Click
+this.Follow
+
+ENDPROC
+PROCEDURE Destroy
+IF NOT DODEFAULT()
+	RETURN .F.
+ENDIF
+this.oHyperLink=.NULL.
+
+ENDPROC
+PROCEDURE MouseMove
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+
+IF NOT this.lHyperLinkCreated
+	=this.oHyperLink
+ENDIF
+
+ENDPROC
+PROCEDURE ctarget_assign
+LPARAMETERS m.vNewVal
+
+IF this.lHyperLinkCreated
+	this.cTarget=this.oHyperLink.ValidURL(m.vNewVal)
+ELSE
+	this.cTarget=ALLTRIM(m.vNewVal)
+ENDIF
+IF this.lAutoTooltip
+	this.ToolTipText=this.cTarget
+ENDIF
+ENDPROC
+PROCEDURE follow
+this.oHyperLink.lNewWindow=this.lNewWindow
+this.oHyperLink.NavigateTo(this.cTarget,this.cLocation,this.cFrame)
+this.lVisited=.T.
+
+ENDPROC
+PROCEDURE goback
+RETURN this.oHyperLink.GoBack()
+
+ENDPROC
+PROCEDURE goforward
+RETURN this.oHyperLink.GoForward()
+
+ENDPROC
+PROCEDURE lvisited_assign
+LPARAMETERS m.vNewVal
+
+IF this.lVisited=m.vNewVal
+	RETURN
+ENDIF
+this.lVisited=m.vNewVal
+IF this.lVisited
+	this.ShowVisitedForeColor
+ENDIF
+
+ENDPROC
+PROCEDURE nvisitedforecolor_assign
+LPARAMETERS m.vNewVal
+
+IF this.nVisitedForeColor=m.vNewVal
+	RETURN
+ENDIF
+this.nVisitedForeColor=m.vNewVal
+IF this.lVisited
+	this.ShowVisitedForeColor
+ENDIF
+
+ENDPROC
+PROCEDURE ohyperlink_access
+IF this.lFormSynch AND TYPE("thisform")=="O" AND NOT ISNULL(thisform)
+	IF TYPE("thisform.oHyperLinkFormSynch")=="O" AND ;
+			NOT ISNULL(thisform.oHyperLinkFormSynch)
+		this.oHyperLink=thisform.oHyperLinkFormSynch
+	ELSE
+		this.SetObjectRef("oHyperLink",this.cHyperLinkClass,this.cHyperLinkClassLibrary)
+		thisform.AddProperty("oHyperLinkFormSynch",this.oHyperLink)
+	ENDIF
+ELSE
+	this.SetObjectRef("oHyperLink",this.cHyperLinkClass,this.cHyperLinkClassLibrary)
+ENDIF
+this.oHyperLink.lNewWindow=this.lNewWindow
+IF NOT this.lHyperLinkCreated
+	this.lHyperLinkCreated=.T.
+	this.cTarget=this.cTarget
+ENDIF
+RETURN this.oHyperLink
+
+ENDPROC
+PROCEDURE showvisitedforecolor
+this.ForeColor=this.nVisitedForeColor
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+ctarget A character string expression representing the document or URL to jump to.
+clocation A character string expression specifying the location within the URL specified in cTarget to jump to. If cLocation is not specified, the default document will be jumped to.
+cframe A character string expression specifying the frame within the URL specified in cTarget to jump to. If cFrameName is not specified, the default frame will be jumped to.
+lvisited Specifies if the target URL location has been visited.
+nvisitedforecolor Specifies visited mode text forecolor.
+lnewwindow Specifies if navigating to a URL will create a new window (.T.) or navigate in the current Internet Explorer link.
+lformsynch Specifies if hyperlink Internet Explorer link is scoped at the form level so that other hyperlink objects on the form all share the same link to the Internet Explorer link.
+ohyperlink Object reference to hyperlink class used to navigate.
+chyperlinkclass Class name used to create the oHyperlink object reference.
+chyperlinkclasslibrary Class library containing the class used to create the oHyperlink object reference.
+lhyperlinkcreated Speicifes that a hyperlink object reference has been created for oHyperlinik.
+lautotooltip
+*follow Executes a hyperlink jump to the specified cTarget URL.
+*goback Executes a hyperlink jump backward within the history list.
+*goforward Executes a hyperlink jump forward within the history list.
+*lvisited_assign 
+*nvisitedforecolor_assign 
+*showvisitedforecolor Changes text forecolor to specified visited color.
+*ohyperlink_access 
+*ctarget_assign 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED7]
+This class provides the functionality of an OLE Hyperlink and launches a Web Browser from a label.[END RESERVED7]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _hyperlinklabel
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RKL0Z98NZ
+[CLASS] _commandbutton
+[CLASSLOC] _base.vcx
+[BASECLASS] commandbutton
+[OBJNAME] _hyperlinkcommandbutton
+[START PROPERTIES]
+AutoSize = .T.
+FontUnderline = .T.
+MousePointer = 99
+MouseIcon = graphics\h_point.cur
+ForeColor = 0,0,255
+ctarget = 
+clocation = 
+cframe = 
+nvisitedforecolor = 8388736
+ohyperlink = .NULL.
+chyperlinkclass = _HyperLinkBase
+chyperlinkclasslibrary = _HyperLink.vcx
+lformsynch = .T.
+lautotooltip = .T.
+Name = "_hyperlinkcommandbutton"
+[END PROPERTIES]
+[START PROTECTED]
+lvisited_assign
+nvisitedforecolor_assign
+ohyperlink_access
+ctarget_assign
+[END PROTECTED]
+[START METHODS]
+PROCEDURE Click
+this.Follow
+
+ENDPROC
+PROCEDURE Destroy
+IF NOT DODEFAULT()
+	RETURN .F.
+ENDIF
+this.oHyperLink=.NULL.
+
+ENDPROC
+PROCEDURE MouseMove
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+
+IF NOT this.lHyperLinkCreated
+	=this.oHyperLink
+ENDIF
+
+ENDPROC
+PROCEDURE ctarget_assign
+LPARAMETERS m.vNewVal
+
+IF this.lHyperLinkCreated
+	this.cTarget=this.oHyperLink.ValidURL(m.vNewVal)
+ELSE
+	this.cTarget=ALLTRIM(m.vNewVal)
+ENDIF
+IF this.lAutoTooltip
+	this.ToolTipText=this.cTarget
+ENDIF
+ENDPROC
+PROCEDURE follow
+this.oHyperLink.NavigateTo(this.cTarget,this.cLocation,this.cFrame)
+this.lVisited=.T.
+
+ENDPROC
+PROCEDURE goback
+RETURN this.oHyperLink.GoBack()
+
+ENDPROC
+PROCEDURE goforward
+RETURN this.oHyperLink.GoForward()
+
+ENDPROC
+PROCEDURE lvisited_assign
+LPARAMETERS m.vNewVal
+
+IF this.lVisited=m.vNewVal
+	RETURN
+ENDIF
+this.lVisited=m.vNewVal
+IF this.lVisited
+	this.ShowVisitedForeColor
+ENDIF
+
+ENDPROC
+PROCEDURE nvisitedforecolor_assign
+LPARAMETERS m.vNewVal
+
+IF this.nVisitedForeColor=m.vNewVal
+	RETURN
+ENDIF
+this.nVisitedForeColor=m.vNewVal
+IF this.lVisited
+	this.ShowVisitedForeColor
+ENDIF
+
+ENDPROC
+PROCEDURE ohyperlink_access
+IF this.lFormSynch AND TYPE("thisform")=="O" AND NOT ISNULL(thisform)
+	IF TYPE("thisform.oHyperLinkFormSynch")=="O" AND ;
+			NOT ISNULL(thisform.oHyperLinkFormSynch)
+		this.oHyperLink=thisform.oHyperLinkFormSynch
+	ELSE
+		this.SetObjectRef("oHyperLink",this.cHyperLinkClass,this.cHyperLinkClassLibrary)
+		thisform.AddProperty("oHyperLinkFormSynch",this.oHyperLink)
+	ENDIF
+ELSE
+	this.SetObjectRef("oHyperLink",this.cHyperLinkClass,this.cHyperLinkClassLibrary)
+ENDIF
+this.oHyperLink.lNewWindow=this.lNewWindow
+IF NOT this.lHyperLinkCreated
+	this.lHyperLinkCreated=.T.
+	this.cTarget=this.cTarget
+ENDIF
+RETURN this.oHyperLink
+
+ENDPROC
+PROCEDURE showvisitedforecolor
+this.ForeColor=this.nVisitedForeColor
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+ctarget A character string expression representing the document or URL to jump to.
+clocation A character string expression specifying the location within the URL specified in cTarget to jump to. If cLocation is not specified, the default document will be jumped to.
+cframe A character string expression specifying the frame within the URL specified in cTarget to jump to. If cFrameName is not specified, the default frame will be jumped to.
+lvisited Specifies if the target URL location has been visited.
+nvisitedforecolor Specifies visited mode text forecolor.
+lnewwindow Specifies if navigating to a URL will create a new window (.T.) or navigate in the current Internet Explorer link.
+ohyperlink Object reference to hyperlink class used to navigate.
+chyperlinkclass Class name used to create the oHyperlink object reference.
+chyperlinkclasslibrary Class library containing the class used to create the oHyperlink object reference.
+lformsynch Specifies if hyperlink Internet Explorer link is scoped at the form level so that other hyperlink objects on the form all share the same link to the Internet Explorer link.
+lhyperlinkcreated Speicifes that a hyperlink object reference has been created for oHyperlinik.
+lautotooltip
+*follow Executes a hyperlink jump to the specified cTarget URL.
+*goback Executes a hyperlink jump backward within the history list.
+*goforward Executes a hyperlink jump forward within the history list.
+*lvisited_assign 
+*nvisitedforecolor_assign 
+*showvisitedforecolor Changes text forecolor to specified visited color.
+*ohyperlink_access 
+*ctarget_assign 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED7]
+This class provides the functionality of an OLE Hyperlink and launches a Web Browser from a button.[END RESERVED7]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _hyperlinkcommandbutton
+[START PROPERTIES]
+Arial, 4, 9, 5, 15, 12, 32, 3, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _RKL0ZAG0E
+[CLASS] _image
+[CLASSLOC] _base.vcx
+[BASECLASS] image
+[OBJNAME] _hyperlinkimage
+[START PROPERTIES]
+MousePointer = 99
+MouseIcon = graphics\h_point.cur
+ctarget = 
+clocation = 
+cframe = 
+ohyperlink = .NULL.
+chyperlinkclass = _HyperLinkBase
+chyperlinkclasslibrary = _HyperLink.vcx
+lformsynch = .T.
+lautotooltip = .T.
+Name = "_hyperlinkimage"
+[END PROPERTIES]
+[START PROTECTED]
+ohyperlink_access
+ctarget_assign
+[END PROTECTED]
+[START METHODS]
+PROCEDURE Click
+this.Follow
+
+ENDPROC
+PROCEDURE Destroy
+IF NOT DODEFAULT()
+	RETURN .F.
+ENDIF
+this.oHyperLink=.NULL.
+
+ENDPROC
+PROCEDURE MouseMove
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+
+IF NOT this.lHyperLinkCreated
+	=this.oHyperLink
+ENDIF
+
+ENDPROC
+PROCEDURE ctarget_assign
+LPARAMETERS m.vNewVal
+
+IF this.lHyperLinkCreated
+	this.cTarget=this.oHyperLink.ValidURL(m.vNewVal)
+ELSE
+	this.cTarget=ALLTRIM(m.vNewVal)
+ENDIF
+IF this.lAutoTooltip
+	this.ToolTipText=this.cTarget
+ENDIF
+ENDPROC
+PROCEDURE follow
+this.oHyperLink.NavigateTo(this.cTarget,this.cLocation,this.cFrame)
+this.lVisited=.T.
+
+ENDPROC
+PROCEDURE goback
+RETURN this.oHyperLink.GoBack()
+
+ENDPROC
+PROCEDURE goforward
+RETURN this.oHyperLink.GoForward()
+
+ENDPROC
+PROCEDURE ohyperlink_access
+IF this.lFormSynch AND TYPE("thisform")=="O" AND NOT ISNULL(thisform)
+	IF TYPE("thisform.oHyperLinkFormSynch")=="O" AND ;
+			NOT ISNULL(thisform.oHyperLinkFormSynch)
+		this.oHyperLink=thisform.oHyperLinkFormSynch
+	ELSE
+		this.SetObjectRef("oHyperLink",this.cHyperLinkClass,this.cHyperLinkClassLibrary)
+		thisform.AddProperty("oHyperLinkFormSynch",this.oHyperLink)
+	ENDIF
+ELSE
+	this.SetObjectRef("oHyperLink",this.cHyperLinkClass,this.cHyperLinkClassLibrary)
+ENDIF
+this.oHyperLink.lNewWindow=this.lNewWindow
+IF NOT this.lHyperLinkCreated
+	this.lHyperLinkCreated=.T.
+	this.cTarget=this.cTarget
+ENDIF
+RETURN this.oHyperLink
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+ctarget A character string expression representing the document or URL to jump to.
+clocation A character string expression specifying the location within the URL specified in cTarget to jump to. If cLocation is not specified, the default document will be jumped to.
+cframe A character string expression specifying the frame within the URL specified in cTarget to jump to. If cFrameName is not specified, the default frame will be jumped to.
+lvisited Specifies if the target URL location has been visited.
+lnewwindow Specifies if navigating to a URL will create a new window (.T.) or navigate in the current Internet Explorer link.
+ohyperlink Object reference to hyperlink class used to navigate.
+chyperlinkclass Class name used to create the oHyperlink object reference.
+chyperlinkclasslibrary Class library containing the class used to create the oHyperlink object reference.
+lformsynch Specifies if hyperlink Internet Explorer link is scoped at the form level so that other hyperlink objects on the form all share the same link to the Internet Explorer link.
+lhyperlinkcreated Speicifes that a hyperlink object reference has been created for oHyperlinik.
+lautotooltip
+*follow Executes a hyperlink jump to the specified cTarget URL.
+*goback Executes a hyperlink jump backward within the history list.
+*goforward Executes a hyperlink jump forward within the history list.
+*ohyperlink_access 
+*ctarget_assign 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED7]
+This class provides the functionality of an OLE Hyperlink and launches a Web Browser from an image.[END RESERVED7]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _hyperlinkimage
+[EOF]
