@@ -1,0 +1,2459 @@
+SCCTEXT Version 4.0.0.2
+PLATFORM C(8,0),UNIQUEID C(10,0),TIMESTAMP N(10,0),CLASS M(4,0),CLASSLOC M(4,0),BASECLASS M(4,0),OBJNAME M(4,0),PARENT M(4,0),PROPERTIES M(4,0),PROTECTED M(4,0),METHODS M(4,0),OBJCODE M(4,0),OLE M(4,0),OLE2 M(4,0),RESERVED1 M(4,0),RESERVED2 M(4,0),RESERVED3 M(4,0),RESERVED4 M(4,0),RESERVED5 M(4,0),RESERVED6 M(4,0),RESERVED7 M(4,0),RESERVED8 M(4,0),USER M(4,0)
+1252
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] Class     
+[START RESERVED1]
+VERSION =   3.00[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _01801M3LI
+[CLASS] custom
+[BASECLASS] custom
+[OBJNAME] _cryptapi
+[START PROPERTIES]
+nlastapierror = 0
+ldisplayhighlevelapierrors = .T.
+Name = "_cryptapi"
+[END PROPERTIES]
+[START PROTECTED]
+nlastapierror^
+hproviderhandle^
+ldoubleencrypterror^
+ldoubledecrypterror^
+lisinstalled^
+cryptacquirecontext^
+cryptgetuserkey^
+cryptgenkey^
+cryptexportkey^
+cryptderivekey^
+cryptcreatehash^
+crypthashdata^
+getcryptsessionkeyhandle^
+cryptencrypt^
+decryptstr^
+cryptdecrypt^
+cryptgetkeyparam^
+cryptdestroykey^
+releasecryptkeyhandle^
+systemmessage^
+formatmessage^
+cryptdestroyhash^
+cryptgetprovparam^
+getcryptblocklength^
+strtobin^
+bintostr^
+getcryptuserkeyhandle^
+cryptimportkey^
+getlastapierrorfacility^
+getlastapierrorseverity^
+getlastapierrorcode^
+getlastapierrorcustomercodeflag^
+cryptreleasecontext^
+cryptsignhash^
+cryptverifysignature^
+createrandomcryptkeys^
+apideclarations^
+apisetup^
+encryptstrstream^
+encryptstrblock^
+doubleencrypterror^
+doubledecrypterror^
+exportsignaturepairkeys^
+exportexchangepairkeys^
+[END PROTECTED]
+[START METHODS]
+PROCEDURE Init
+* this.ldisplaylowlevelapierrors = .T.
+this.ApiDeclarations	&& Declare API Functions
+this.ApiSetup	&& Create CSP Handle for use with this class
+ENDPROC
+PROCEDURE apideclarations
+*** Declare Parameter Types and Location
+*** of the Windows API Crypt Functions
+*** See Crypto API Documentation for Information on Calls
+
+Declare INTEGER CryptAcquireContextA ;
+	IN WIN32API AS CryptAcquireContext ;
+	INTEGER @hProvHandle, ;
+	STRING  cContainer, ;
+	STRING  cProvider, ;
+	INTEGER nProvType, ;
+	INTEGER nFlags
+
+Declare INTEGER CryptCreateHash ;
+	IN WIN32API AS CryptCreateHash ;
+	INTEGER hProviderHandle, ;
+	INTEGER nALG_ID, ;
+	INTEGER hKeyhandle, ;
+	INTEGER nFlags, ;
+	INTEGER @hCryptHashHandle
+
+Declare INTEGER CryptDeriveKey ;
+	IN WIN32API AS CryptDeriveKey ;
+	INTEGER hProviderHandle, ;
+	INTEGER nALG_ID, ;
+	INTEGER hBaseDataHandle, ;
+	INTEGER nFlags, ;
+	INTEGER @hCryptKeyHandle
+
+Declare INTEGER CryptDecrypt ;
+	IN WIN32API as CryptDecrypt ;
+	INTEGER hKeyHandle, ;
+	INTEGER hHashHandle, ;
+	SHORT   nFinished, ;
+	INTEGER nFlags, ;
+	STRING  @cData, ;
+	STRING  @nDataLen   && Pointer to DWORD INTEGER
+
+Declare INTEGER CryptDestroyKey ;
+	IN WIN32API AS CryptDestroyKey;
+	INTEGER hKeyHandle
+
+Declare INTEGER CryptDestroyHash ;
+	IN WIN32API AS CryptDestroyHash;
+	INTEGER hKeyHandle
+
+Declare INTEGER CryptEncrypt ;
+	IN WIN32API as CryptEncrypt ;
+	INTEGER hKeyHandle, ;
+	INTEGER hHashHandle, ;
+	SHORT   nFinished, ;
+	INTEGER nFlags, ;
+	STRING  @cData, ;
+	STRING  @cDataLen, ; && Pointer to DWORD value
+	INTEGER nBufLen
+
+Declare INTEGER CryptExportKey ;
+	IN WIN32API AS CryptExportKey ;
+	INTEGER hKey, ;
+	INTEGER hExpKey, ;
+	INTEGER nBlobType, ;
+	INTEGER nFlags, ;
+	STRING  @lcData, ;
+	STRING  @lcDataLen    && Pointer to DWORD INTEGER
+
+Declare INTEGER CryptGenKey ;
+	IN WIN32API AS CryptGenKey ;
+	INTEGER hProviderHandle, ;
+	INTEGER nALG_ID, ;
+	INTEGER nFlags, ;
+	INTEGER @hCryptKeyHandle
+
+Declare INTEGER CryptGetUserKey ;
+	IN WIN32API AS CryptGetUserKey;
+	INTEGER hProvHandle, ;
+	INTEGER nKeySpec, ;
+	INTEGER @hUserKey
+
+Declare INTEGER CryptGetKeyParam ;
+	IN WIN32API as CryptGetKeyParam ;
+	INTEGER hKeyHandle, ;
+	INTEGER nParam, ;
+	STRING  @cData, ;
+	STRING  @nDataLen, ; && Pointer to DWORD INTEGER
+	INTEGER nFlags
+
+Declare INTEGER CryptGetProvParam ;
+	IN WIN32API as CryptGetProvParam ;
+	INTEGER hKeyHandle, ;
+	INTEGER nParam, ;
+	STRING  @cData, ;
+	STRING  @nDataLen, ; && Pointer to DWROD INTEGER
+	INTEGER nFlags
+
+Declare INTEGER CryptHashData ;
+	IN WIN32API AS CryptHashData ;
+	INTEGER hHashHandle, ;
+	STRING  @cData, ;
+	INTEGER nDataLen, ;
+	INTEGER nFlags
+
+Declare INTEGER CryptImportKey ;
+	IN WIN32API AS CryptImportKey ;
+	INTEGER hProviderHandle, ;
+	STRING  @cEncryptedBlob, ;
+	INTEGER nEncryptedBlobLen, ;
+	INTEGER hDecryptionKeyHandle, ;
+	INTEGER nFlags, ;
+	STRING  @cImportKeyHandle
+
+Declare INTEGER CryptReleaseContext ;
+	IN WIN32API AS CryptReleaseContext ;
+	INTEGER hProvHandle, ;
+	INTEGER nReserved
+
+Declare INTEGER CryptSignHash ;
+	IN WIN32API AS CryptSignHash ;
+	INTEGER hHashKeyHandle, ;
+	INTEGER nKeyType, ;
+	STRING  @cDescription, ;
+	INTEGER inFlags, ;
+	STRING  @cSignature, ;
+	STRING  @cSignatureLen  && Pointer to DWROD INTEGER
+
+Declare INTEGER CryptVerifySignature ;
+	IN WIN32API AS CryptVerifySignature ;
+	INTEGER hHashKeyHandle, ;
+	STRING  @cSignature, ;
+	INTEGER nSignatureLen, ;
+	INTEGER inPublicKeyHandle, ;
+	STRING  @cDescription, ;
+	INTEGER inFlags
+
+Declare INTEGER GetLastError ;
+	in win32api as GetLastError
+
+
+Declare INTEGER FindWindow ;
+	IN WIN32API ;
+	STRING cNull, ;
+	STRING cWinName
+
+Declare INTEGER FormatMessage ;
+	IN WIN32API ;
+	INTEGER nFlags, ;
+	STRING @cSource, ;
+	INTEGER nMessageId, ;
+	INTEGER nLanguageId, ;
+	STRING @cMessage, ;
+	INTEGER nMessageLen, ;
+	STRING @cArgum
+	
+
+ENDPROC
+PROCEDURE apierror
+LPARAMETER picProgram
+LOCAL lnError, lcErrorMessage
+
+*** picProgram - Progrm/User Defined Message String
+***              that Initiated the Call
+*** Returns    - .T.
+
+***
+*** Displays the last Windows error using the Windows API
+***
+
+lnError = this.getlasterror()
+lcErrorMessage = this.SystemMessage(lnError)
+
+if this.lDisplayLowLevelApiErrors then
+		messagebox(dcErrorIn+picProgram+chr(13)+chr(10)+ ;
+    	       dcErrorSeverity+alltrim(str(this.GetLastApiErrorSeverity(),10))+chr(13)+chr(10)+ ;
+        	   dcErrorFacility+alltrim(str(this.GetLastApiErrorFacility(),10))+chr(13)+chr(10)+ ;
+	           dcErrorCode+alltrim(str(this.GetLastApiErrorCode(),10))+chr(13)+chr(10)+ ;
+    	       lcErrorMessage+chr(13)+chr(10), ;
+        	   16, ;
+	           dcError)
+endif
+
+ENDPROC
+PROCEDURE apisetup
+LOCAL lhProviderHandle, lcProviderName, lcContainerName
+*** Create Handle to Crypto Provider
+
+
+If type('this.cProviderName') != T_CHARACTER then
+	this.cProviderName = dcEmpty	&& Default
+EndIf
+lcProviderName = this.cProviderName
+If type('this.cContainerName') != T_CHARACTER then
+	this.cContainerName = dcFOXPRO_APP	&& Default
+EndIf
+lcContainerName = this.cContainerName
+lhProviderHandle = 0
+
+if !this.CreateRandomCryptKeys(lcContainerName,lcProviderName,dnPROV_RSA_FULL)
+	return .F.
+endif
+
+this.CryptAcquireContext(@lhProviderHandle,lcContainerName,lcProviderName,dnPROV_RSA_FULL,0)
+this.hProviderHandle = lhProviderHandle
+
+Return .T.
+
+ENDPROC
+PROCEDURE bintostr
+LPARAMETER pinInput, pinStringLen
+
+*** pinInput - Integer to be encoded into a character string
+*** return   - Integer represented by character string
+***            Left most Character is least significant
+***            Right most character is most significant
+
+*** Converts an Integer into a Character String
+
+LOCAL lnreturn, lnCounter
+
+lcReturn = dcEmpty
+for lnCounter = 1 to pinStringLen
+   lcReturn = lcReturn + chr(bitand(bitrshift(pinInput,bitlshift((lnCounter-1),3)),255))
+endfor
+
+return lcReturn
+ENDPROC
+PROCEDURE createnewkeycontainer
+LPARAMETER pcContainerName
+*** Creates a new Key Container and Makes it the Container Currently in Use
+
+LOCAL lnError, lhProviderHandle
+
+lhProviderHandle = 0
+
+this.cContainerName = pcContainerName
+
+lnError = this.CryptAcquireContext(@lhProviderHandle,pcContainerName,this.cProviderName,dnPROV_RSA_FULL,dnCRYPT_NEWKEYSET)
+If lnError = 0
+	this.hProviderHandle = 0
+	if this.lDisplayLowLevelApiErrors
+		messagebox(dcCRYPTNEWKEYCONTAINER_ERR_LOC,MB_APPLMODAL+MB_ICONEXCLAMATION+MB_OK,dcError)
+	endif
+	this.nlastapierror = getlasterror()
+	this.apierror(program())
+	return .F.
+else
+	this.nlastapierror = 0
+	this.hProviderHandle = lhProviderHandle
+endif
+
+return .T.
+ENDPROC
+PROCEDURE createrandomcryptkeys
+LPARAMETER picContainerName, picProviderName, pinProviderType
+
+* pihProviderHandle	- 	Handle of CSP
+* picContainerName	- 	Name of Container to Create (NULL is Default)
+* picProviderName	- 	Name of CSP Provider (NULL is Default)
+* pihProviderType	-	MS Windows Defnied CSP provider Type
+
+* Returns			- 	.T. Success, .F. Error
+
+** Creates a Key Container in the CSP Provider
+
+local lnError, lhUserKey, lhProviderHandle
+
+lhProviderHandle = 0
+lhUserKey = 0
+* Create New Key Container
+lnError = CryptAcquireContext(@lhProviderHandle,picContainerName,picProviderName,pinProviderType,dnCRYPT_NEWKEYSET)
+if lnError = 0 then
+	do case
+		* Test for Key Containter Already Exists (This is an OK Condition)
+		case bitxor(getlasterror(),0x8009000F)=0
+			this.nlastapierror = 0
+			* Open Context Normally
+			lnError = CryptAcquireContext(@lhProviderHandle,picContainerName,picProviderName,pinProviderType,0)
+			if lnError = 0
+				this.nlastapierror = getlasterror()
+				if this.lDisplayLowLevelApiErrors
+					messagebox(dcCRYPTPROVTYP_ERR_LOC,MB_APPLMODAL+MB_ICONEXCLAMATION+MB_OK,dcError)
+				endif
+				this.apierror(program())
+				return .F.
+			endif
+		* Test for Service Provider Not Defined Error
+		case bitxor(getlasterror(),0x80090017)=0
+			this.nlastapierror = getlasterror()
+			if this.lDisplayLowLevelApiErrors
+				messagebox(dcCRYPTPROVTYP_ERR_LOC,MB_APPLMODAL+MB_ICONEXCLAMATION+MB_OK,dcError)
+			endif
+			this.apierror(program())
+			return .F.
+		* Any Other Error
+		otherwise
+			this.nlastapierror = getlasterror()
+			if this.lDisplayLowLevelApiErrors
+				messagebox(dcCRYPTINITIALIZE_ERR_LOC,MB_APPLMODAL+MB_ICONEXCLAMATION+MB_OK,dcError)
+			endif
+			this.apierror(program())
+			return .F.
+	endcase
+else
+	this.nlastapierror = 0
+endif
+
+* Try to Retrieve Signature Key
+lnError = CryptGetUserKey(lhProviderHandle,dnAT_SIGNATURE,@lhUserKey)
+if lnError = 0 then
+	* Test for NTE_NO_KEY
+	if bitxor(getlasterror(),0x8009000D)=0 then
+		* (Attempt to Create a Key)
+		lnError = CryptGenKey(lhProviderHandle,dnAT_SIGNATURE,0,@lhUserKey)
+		if lnError = 0 then
+			this.nlastapierror = getlasterror()
+			if this.lDisplayLowLevelApiErrors
+				messagebox(dcCRYPTSIGGENKEY_ERR_LOC,MB_APPLMODAL+MB_ICONEXCLAMATION+MB_OK,dcError)
+			endif
+			this.apierror(program())
+			this.CryptReleaseContext(lhProviderHandle)
+			return .F.
+		else
+			this.nlastapierror = 0
+		endif
+	else
+		this.nlastapierror = getlasterror()
+		if this.lDisplayLowLevelApiErrors
+			messagebox(dcCRYPTSIGGETKEY_ERR_LOC,MB_APPLMODAL+MB_ICONEXCLAMATION+MB_OK,dcError)
+		endif
+		this.apierror(program())
+		this.CryptReleaseContext(lhProviderHandle)
+		return .F.
+	endif
+else
+	this.nlastapierror = 0
+endif
+
+lnError = CryptDestroyKey(lhUserKey)
+
+* Try to Retrieve Exchange Key
+lnError = CryptGetUserKey(lhProviderHandle,dnAT_KEYEXCHANGE,@lhUserKey)
+if lnError = 0 then
+	* Test for NTE_NO_KEY
+	if bitxor(getlasterror(),0x8009000D)=0 then
+		* (Attempt to Create a Key)
+		lnError = CryptGenKey(lhProviderHandle,dnAT_KEYEXCHANGE,0,@lhUserKey)
+		if lnError = 0 then
+			this.nlastapierror = getlasterror()
+			if this.lDisplayLowLevelApiErrors
+				messagebox(dcCRYPTEXCGENKEY_ERR_LOC,MB_APPLMODAL+MB_ICONEXCLAMATION+MB_OK,dcError)
+			endif
+			this.apierror(program())
+			this.CryptReleaseContext(lhProviderHandle)
+			return .F.
+		else
+			this.nlastapierror = 0
+		endif
+	else
+		this.nlastapierror = getlasterror()
+		if this.lDisplayLowLevelApiErrors
+			messagebox(dcCRYPTEXCGETKEY_ERR_LOC,MB_APPLMODAL+MB_ICONEXCLAMATION+MB_OK,dcError)
+		endif
+		this.apierror(program())
+		this.CryptReleaseContext(lhProviderHandle)
+		return .F.
+	endif
+else
+	this.nlastapierror = 0
+endif
+
+lnError = CryptDestroyKey(lhUserKey)
+
+this.CryptReleaseContext(lhProviderHandle)
+this.lIsInstalled = .T.
+return .T.
+
+ENDPROC
+PROCEDURE cryptacquirecontext
+Lparameter pihProvhandle, picContainer, picProvider, pinProvType, pinFlags
+
+*** pihProvHandle - Variable passed by reference and defnied as REPLICATE(CHR(0),4)
+*** picContainer - CHR(0) terminated String Name of the Key Container
+***                null means a default key container will be used
+***                A container is where the keys are stored
+***			 	   Depending on the Crypt Provider
+***                it could be stored internally,
+***                In the registry, on the hard drive,
+***				   or in a special hardware device.
+*** picProvider -  CHR(0) terminated String Name of the Crypt Provider
+***		 	 	   Null means the user default provider is used
+***				   The user default provider is identified in the Registry
+***				   HKEY_LOCAL_MACHINE\Software\Microsoft\;
+***				   cryptography\defaults\provider types\typexx\name
+***				   Windows supports multiple providers
+***                The provider is the program that does all
+***                of the work. It's conforms to the Windows API
+***                calls that interface with it.
+*** pinProvType -  Identifies the Crypt Provider Type
+***				   Defined in WinCrypt.h
+***				   i.e. PROV_RSA_FULL
+*** pinFlags    -  Normally 0
+***				   Defined in WinCrypt.h
+***				   Used to carry out specific functions
+*** Return - Handle to the Crypt Provider in pihProvHandle
+
+*** Creates a Crypt Key Container handle for Use in Most Crypt Functions
+
+Local lnError
+
+lnError = CryptAcquireContext( ;
+	@pihProvhandle, ;
+	picContainer, ;
+	picProvider, ;
+	pinProvType, ;
+	pinFlags)
+
+if lnError = 0 then
+	this.nlastapierror = getlasterror()
+	this.apierror(program())
+else
+	this.nlastapierror = 0
+endif
+
+Return
+
+ENDPROC
+PROCEDURE cryptcreatehash
+Lparameter pihProvHandle, pinALG_ID, pihKeyHandle, pinFlags, pihCryptHashHandle
+
+*** pihProvHandle - Crypto Service Provider Handle,
+***				    Returned by CryptAcquireContext()
+*** pinALG_ID	  - Algorith Identifier (defined in wincrypt.h) for hashing
+*** pihKeyHandle  - If Keyed Hash, Handle of the Key
+***					Returned by CryptDeriveKey()
+***	 			    or CryptGenKey(), else 0
+*** pinFlags	  - Must be 0, reserved for future use
+*** pihCryptHashHandle - Reference to Pointer to HashHandle
+*** Return		  - Handle of the Hash Object in pihCryptHashHandle,
+***				    Used by CryptHashKey() or
+***				    CryptHashSessionKey()
+
+*** Create a Hash Object Handle for se in Hashing Functions
+
+Local lnError
+
+lnError = CryptCreateHash( ;
+	pihProvHandle, ;
+	pinALG_ID, ;
+	pihKeyHandle, ;
+	pinFlags, ;
+	@pihCryptHashHandle)
+
+if lnError = 0 then
+	this.nlastapierror = getlasterror()
+	this.apierror(program())
+else
+	this.nlastapierror = 0
+endif
+
+Return
+
+ENDPROC
+PROCEDURE cryptdecrypt
+Lparameter pihKeyHandle, pihHashKeyHandle, pinFinal, ;
+		   pinFlags, ptcData, ptcDataLen
+
+*** pihKeyHandle	 - Handle of Key Objcet,
+***					   Returned by CryptGenKey() or CryptImportKey()
+*** pihHashKeyHandle - 0 if no hash is to be done, else
+***                	   Handle of Hash Object Returned by CryptCreateHash()
+*** pinFinal		 - -1 (True) if last block,
+***					   0 (False) if not the last block to decrypt
+*** pinFlags		 - Optional: CRYPT_OAEP when Enhanced and RSA Decryption
+***				   	   for PKCS #1 version 2 formatting
+*** ptcData		 	 - in: Data String to be Decrypted; out: decrypted data
+*** ptcDataLen	 	 - in: Length of pcData to decrypt; out: length of decrypted data
+***                    Encoded as a 4 character string (use - BinToStr(n,4) to create
+***                                                     use - StrToBin(c) to read)
+*** Return		 	 - Decrypted Data via Left(pcData,lnDataLenLen)
+
+*** Used to Decrypt and Simultaneously Hash (Optional:pnHashKey) the Decrypted Data to Verify it's
+*** signature
+
+Local lnError
+
+lnError = CryptDecrypt( ;
+	pihKeyHandle, ;
+	pihHashKeyHandle, ;
+	pinFinal, ;
+	pinFlags, ;
+	@ptcData, ;
+	@ptcDataLen)
+
+if lnError = 0 then
+	this.nlastapierror = getlasterror()
+	this.apierror(program())
+else
+	this.nlastapierror = 0
+endif
+
+Return left(ptcData,this.StrToBin(ptcDataLen))
+ENDPROC
+PROCEDURE cryptderivekey
+Lparameter pihProvHandle, pinALG_ID, pihBaseDataHandle, pinFlags, pihCryptKeyHandle
+
+*** pihProvHandle	  - Handle Returned by CryptAcquireContext()
+*** pinALG_ID		  - Algorithm Identifier (defined in wincrypt.h), cypher to use
+***						--- Session Keys ---
+***	   				    	--- Microsoft Base CSP ---
+***							dnCALG_RC2   block
+***							dnCALG_RC4   stream
+***	   				    	--- Microsoft Enhamced CSP ---
+***							CALG_DES     DES block
+***							CALG_3DES	 Triple DES Block
+***							CALG_3DES_112 Triple DES 2 Key Block
+***							--- Diffie-Hellman CSP ---
+***							CALG_DH_EPHEM
+***							CALG_DH_SF
+***						--- Public/Private Key Pairs ---
+***						dnAT_KEYEXCHANGE
+***						dnAT_SIGNATURE
+*** pihBaseDataHandle - Handle of Hashed Key Returned by CryptHashData
+*** pinFlags		  - Upper 16 bits - The Size of the Session key to Generate
+***                                     0x0080???? = 128 bits
+***                                     0x0028???? = 40 bits
+***					    Lower 16 Bits: (Defined in wincrypt.h)
+***									  CRYPT_CREATE_SALT - value calculated
+***                                                       from unused session key bits
+***														  retrieved with CryptGetKeyParam()
+***					   				  dnCRYPT_EXPORTABLE    - Can Export Key with CryptExportKey()
+***					                  CRYPT_NO_SALT     - Do not Create a Salt Value
+***									  CRYPT_PREGEN      - Initial DSS Key Generation
+***					                  CRYPT_UPDATE_KEY  - If multiple hash vales are required
+***														  then use this flag to update the last
+***     												  key with this hash value. MicroSoft's
+***														  CSP does not support this functionality
+*** Returns			 - Handle of Crypt Key in pihCryptKeyHandle
+
+*** Used to Create a Key Handle for use in CryptEncrypt() and CryptDecrypt()
+
+Local lnError
+
+lnError = CryptDeriveKey( ;
+	pihProvHandle, ;
+	pinALG_ID, ;
+	pihBaseDatahandle, ;
+	pinFlags, ;
+	@pihCryptKeyHandle)
+
+if lnError = 0 then
+	this.nlastapierror = getlasterror()
+	this.apierror(program())
+else
+	this.nlastapierror = 0
+endif
+
+Return
+
+ENDPROC
+PROCEDURE cryptdestroyhash
+Lparameter pihHashKeyHandle
+
+*** pihHashKeyHandle - Handle of Hashed Key returned by CryptCreateHash()
+*** Return           - .T.
+
+*** Destroys the Hashed Key Pointer where the hashed crypt key was located
+*** This is suggested for Security Reasons
+*** Many CSP's also scrub the key before removing the handle. This function is
+*** not required to scrub the container, just to destroy the pointer.
+
+
+Local lnError
+
+lnError = cryptdestroyhash(pihHashKeyHandle)
+
+if lnError = 0 then
+	this.nlastapierror = getlasterror()
+	this.apierror(program())
+else
+	this.nlastapierror = 0
+endif
+
+return
+ENDPROC
+PROCEDURE cryptdestroykey
+Lparameter pihKeyHandle
+
+*** pihKeyHandle - Handle of CSP Key returned by CryptAcquireContext()
+*** Return       - .T.
+
+*** Destroys the Key Container Pointer where the encrypt/decrypt key was located
+*** This is suggested for Security Reasons
+*** Many CSP's also scrub the key before removing the handle. This function is
+*** not required to scrub the container, just to destroy the pointer.
+
+Local lnError
+
+lnError = cryptdestroykey(pihKeyHandle)
+
+if lnError = 0 then
+	this.nlastapierror = getlasterror()
+	this.apierror(program())
+else
+	this.nlastapierror = 0
+endif
+
+return
+ENDPROC
+PROCEDURE cryptencrypt
+Lparameter 	pihKeyHandle, pihHashKeyHandle, pinFinal, ;
+			pinFlags, ptcData, ptcDataLen, pinMaxDataLen
+
+*** pihKeyHandle	 - Handle of Key Objcet,
+***					   Returned by CryptGenKey() or CryptImportKey()
+*** pihHashKeyHandle - 0 if no hash is to be done, else
+***                	     Handle of Hash Object, Returned by CryptCreateHash()
+*** pinFinal		 - -1 (True) if last block, 0 (False) if not the last block to decrypt
+*** pinFlags		 - Optional: CRYPT_OAEP when Enhanced and RSA Encryption
+***				   	   for PKCS #1 version 2 formatting
+*** ptcData		 	 - in: Data String to be Encrypted; out: Encrypted data
+*** ptcDataLen	 	 - in: Length of pcData to Encrypt; out: length of Encrypted data
+***                    Encoded as a 4 character string (use - BinToStr(n,4) to create
+***                                                     use - StrToBin(c) to read)
+*** pinMaxDataLen	 - Length of pcData buffer (Block Encryption Requires extra buffer space
+***					   by as much as 1 Block Length
+*** Return		 	 - Decrypted Data via Left(pcData,lnDataLenLen)
+
+*** Used to Encrypt and Simultaneously Hash (Optional:pnHashKey) the Data
+*** for use by the CryptGetHashParam() or CryptSignHash() signature
+
+Local lnError
+lnError = CryptEncrypt( ;
+	pihKeyHandle, ;
+	pihHashKeyHandle, ;
+	pinFinal, ;
+	pinFlags, ;
+	@ptcData, ;
+	@ptcDataLen, ;
+	pinMaxDataLen)
+
+if lnError = 0 then
+	this.nlastapierror = getlasterror()
+	this.apierror(program())
+else
+	this.nlastapierror = 0
+endif
+
+Return left(ptcData,this.strtobin(ptcDataLen))
+
+
+ENDPROC
+PROCEDURE cryptexportkey
+Lparameter pihKeyHandle, pihExpKeyHandle, pinBlobType, pinFlags, poKeyString
+
+*** pihKeyHandle    - Handle of the Key to Be Exported
+*** pihExpKeyHandle - Handle of a Crypt Key to use to encrypt this key
+***					  If Public Key is to be exported, then set to 0
+***				      Usually this is the public key of the destination Computer/User
+*** pinBlobType	    - (defined in wincrypt.h)
+***				   	  	OPAQUEKEYBLOB - Store an encrypted session key in the CSP
+***				     	dnPRIVATEKEYBLOB - Private/Public Key pair
+***						dnPUBLICKEYBLOB - Public Key
+***						dnSIMPLEBLOB - Session Key
+*** pinFlags	 	-	(defined in wincrypt.h)
+***						CRYPT_DESTROYKEY - destroy OPAQUEKEYBLOB key in CSP
+***						CRYPT_SSL2_FALLBACK -
+***						CRYPT_OAEP -  when Enhanced and RSA Encryption
+***				   	    	          for PKCS #1 version 2 formatting
+*** poKeyString		-  Encrypted Key String
+*** Returns		    .T. success
+***					.F. Failure
+
+*** Exports a crypto key from a Crypto Service Provider in a Secure Manner.
+
+Local lcData, lnError
+Local lcLen, lcEmptyString
+
+lcLen = this.BinToStr(0,4)
+lcEmptyString = dcEmpty
+
+* Get the Len of the String First
+*	pihExpKeyHandle, ;
+
+    CryptExportKey( ;
+	pihKeyHandle, ;
+	pihExpKeyHandle, ;
+	pinBlobType, ;
+	pinFlags, ;
+	@lcEmptyString, ;
+	@lcLen)
+
+* Create the String and Stuff it with the BLOB
+lcData = space(this.StrToBin(lcLen))
+lnError = CryptExportKey( ;
+	pihKeyHandle, ;
+	pihExpKeyHandle, ;
+	pinBlobType, ;
+	pinFlags, ;
+	@lcData, ;
+	@lcLen)
+
+if lnError = 0 then
+	this.nlastapierror = getlasterror()
+	this.apierror(program())
+	Return .F.
+else
+	this.nlastapierror = 0
+endif
+
+poKeyString = lcData
+
+Return .T.
+
+ENDPROC
+PROCEDURE cryptgenkey
+Lparameter pihProvHandle, pinALG_ID, pinFlags, pihCryptKeyHandle
+
+*** pihProvHandle	  - Handle Returned by CryptAcquireContext()
+*** pinALG_ID		  - Algorithm Identifier (defined in wincrypt.h), cypher to use
+***						--- Session Keys ---
+***	   				    	--- Microsoft Base CSP ---
+***							dnCALG_RC2   block
+***							dnCALG_RC4   stream
+***	   				    	--- Microsoft Enhamced CSP ---
+***							CALG_DES     DES block
+***							CALG_3DES	 Triple DES Block
+***							CALG_3DES_112 Triple DES 2 Key Block
+***							--- Diffie-Hellman CSP ---
+***							CALG_DH_EPHEM
+***							CALG_DH_SF
+***						--- Public/Private Key Pairs ---
+***						dnAT_KEYEXCHANGE
+***						dnAT_SIGNATURE
+*** pinFlags		  - Upper 16 bits - The Size of the key to Generate
+***                                     0x0800???? = 2048 bits
+***					    Lower 16 Bits: (Defined in wincrypt.h)
+***									  CRYPT_CREATE_SALT - value calculated
+***                                                       from unused session key bits
+***														  retrieved with CryptGetKeyParam()
+***					   				  dnCRYPT_EXPORTABLE  - Can Export Key with CryptExportKey()
+***					                  CRYPT_NO_SALT     - Do not Create a Salt Value
+***									  CRYPT_PREGEN      - Initial DSS Key Generation
+***									  CRYPT_USER_PROTECTED - Notify User via Dialog
+***                											 on certain access functions
+*** 														 of this key (IE4 or greater)
+*** pihCryptKeyHandle - Reference to CryptKeyHandle, Initialize as replicate(chr(0),4)
+*** Returns			 - Handle of Generated Crypt Key
+
+*** Used to Create a Random Key Handle for use in CryptEncrypt() and CryptDecrypt()
+
+
+Local lnError
+
+lnError = CryptGenKey( ;
+	pihProvHandle, ;
+	pinALG_ID, ;
+	pinFlags, ;
+	@pihCryptKeyHandle)
+
+if lnError = 0 then
+	this.nlastapierror = getlasterror()
+	this.apierror(program())
+else
+	this.nlastapierror = 0
+endif
+
+Return
+
+ENDPROC
+PROCEDURE cryptgetkeyparam
+Lparameter 	pihKeyHandle, pinParam, ptcData, ;
+	 		ptcDataLen, pinFlags
+
+*** pihKeyHandle	 - Handle of Key Objcet,
+***					   Returned by CryptGenKey() or CryptImportKey()
+*** pinParam		 - Parameter to Retrieve(defined in wincrypt.h)
+***                     --- All Keys Support ---
+***                     dnKP_IV Initialization vector
+***                     dnKP_SALT        Salt value
+***                     dnKP_PADDING     Padding values
+***                     dnKP_MODE        Mode of the cipher
+***                     dnKP_MODE_BITS   Number of bits to feedback
+***                     dnKP_PERMISSIONS Key permissions DWORD
+***                     dnKP_ALGID       Key algorithm
+***						dnKP_BLOCKLEN    Block size of the cipher
+***                     --- pihKeyHandle is DSS Key BLOB Pointer ---
+***					    dnKP_P			 Prime Modulus from DSS Key BLOB
+***					    dnKP_Q			 Prime Q from DSS Key BLOB
+***					    dnKP_G			 Generator from DSS Key BLOB
+***                     --- pihKeyHandle is Block Session Key Pointer ---
+***                     dnKP_IV          Initialization vector
+***                     dnKP_SALT        Salt value
+***                     dnKP_PADDING     Padding values
+***                     dnKP_MODE        Mode of the cipher
+***                     dnKP_MODE_BITS   Number of bits to feedback
+***                     dnKP_PERMISSIONS Key permissions DWORD
+***                     dnKP_ALGID       Key algorithm
+***                     dnKP_BLOCKLEN    Block size of the cipher
+*** ptcData		 	 - in: Buffer String; out:Parameter String
+*** ptcDataLen	 	 - in: Length of ptcData Buffer;
+***                    out: length of Parameter String
+***                    Encoded as a 4 character string (use - BinToStr(n,4) to create
+***                                                     use - StrToBin(c) to read)
+*** Return		 	 - Requested Parameter as a String Value
+
+*** Used to return a Parameter from the CSP that pihKeyHandle points to
+
+Local lnError
+
+lnError = CryptGetKeyParam( ;
+	pihKeyHandle, ;
+	pinParam, ;
+	@ptcData, ;
+	@ptcDataLen, ;
+	pinFlags)
+
+if lnError = 0 then
+	this.nlastapierror = getlasterror()
+	this.apierror(program())
+else
+	this.nlastapierror = 0
+endif
+
+Return left(ptcData,this.StrToBin(ptcDataLen))
+
+ENDPROC
+PROCEDURE cryptgetprovparam
+Lparameter 	pihKeyHandle, pinParam, ptcData, ;
+			ptcDataLen, pinFlags
+
+*** pihKeyHandle	 - Handle of Key Objcet,
+***					   Returned by CryptGenKey() or CryptImportKey()
+*** pinParam		 - Parameter to Retrieve(defined in wincrypt.h)
+*** 					dnPP_ENUMALGS
+*** 					dnPP_ENUMCONTAINERS
+*** 					dnPP_IMPTYPE
+*** 					dnPP_NAME
+*** 					dnPP_VERSION
+*** 					dnPP_CONTAINER
+***						PP_SIG_KEYSIZE_INC
+***						PP_KEYX_KEYSIZE_INC
+***						PP_ENUMALGS_EX
+***					    PP_KEYSET_SEC_DESCR
+***						PP_UNIQUE_CONTAINER
+***					    PP_PROVTYPE
+***                     PP_USE_HARDWARE_RNG
+*** ptcData		 	 - in: Buffer String; out:Parameter String
+*** ptcDataLen	 	 - in: Length of ptcData Buffer;
+***                    out: length of Parameter String
+***                    Encoded as a 4 character string (use - BinToStr(n,4) to create
+***                                                     use - StrToBin(c) to read)
+*** Return		 	 - Requested Parameter as a String Value
+
+*** Used to return a Parameter from the CSP that pihKeyHandle points to
+
+Local lnError
+
+lnError = CryptGetProvParam( ;
+	pihKeyHandle, ;
+	pinParam, ;
+	@ptcData, ;
+	@ptcDataLen, ;
+	pinFlags)
+
+if lnError = 0 then
+	this.nlastapierror = getlasterror()
+	this.apierror(program())
+else
+	this.nlastapierror = 0
+endif
+
+Return left(ptcData,this.StrToBin(ptnDataLen))
+
+ENDPROC
+PROCEDURE cryptgetuserkey
+Lparameter pihProvHandle, pinKeySpec, pohUserKeyHandle
+
+*** pihProvHandle	 - Handle of Service Provider
+***					   Returned by CryptGenKey() or CryptImportKey()
+*** pinKeySpec       - defined in WinCrypt.h
+***					   	dnAT_SIGNATURE
+***						dnAT_KEYEXCHANGE
+*** pohUserKeyHandle - Handle to User Key
+Local lnUserKey, lnError
+
+lnError = CryptGetUserKey( ;
+	pihProvHandle, ;
+	pinKeySpec, ;
+	@pohUserKeyHandle)
+
+if lnError = 0 then
+	this.nlastapierror = getlasterror()
+	this.apierror(program())
+	Return .F.
+else
+	this.nlastapierror = 0
+endif
+
+Return .T.
+
+ENDPROC
+PROCEDURE crypthashdata
+Lparameter pihHashKeyHandle, picData, pinDataLen, pinFlags
+
+*** pihHashKeyHandle - Handle of Hash Object, Returned by CryptCreateHash()
+*** picData		 	 - Data String to be added to Hash Key
+*** pinDataLen		 - Length of picData
+*** pinFlags		 - Length of pcData buffer (Block Encryption Requires extra buffer space
+***					   by as much as 1 Block Length
+*** Return		 	 - .T.
+
+*** Used to added data to the hash key pointed to by hash handle
+
+Local lnError
+
+lnError = CryptHashData( ;
+	pihHashKeyHandle, ;
+	@picData, ;
+	pinDataLen, ;
+	pinFlags)
+
+if lnError = 0 then
+	this.nlastapierror = getlasterror()
+	this.apierror(program())
+else
+	this.nlastapierror = 0
+endif
+
+Return
+
+ENDPROC
+PROCEDURE cryptimportkey
+Lparameter pihProviderHandle, picBlob, pinBlobLen, pihImpKeyHandle, pinFlags, pthKeyHandle
+
+*** pihProviderHandle - Handle of the CSP
+*** @picBlob	    -  Encrypted Blob
+*** pinBlobLen      - Length of Encrypted Blob
+*** pihImpKeyHandle - Handle of a Crypt Key to use to decrypt this key
+***				      Usually this is the private key of the this Computer
+*** pinFlags	 	-	(defined in wincrypt.h)
+***						CRYPT_DESTROYKEY - destroy OPAQUEKEYBLOB key in CSP
+***						CRYPT_SSL2_FALLBACK -
+***						CRYPT_OAEP -  when Enhanced and RSA Encryption
+***				   	    	          for PKCS #1 version 2 formatting
+*** pthKeyHandle    - Handle of the Key to Be Exported
+
+*** Returns			-  Sesion Key Handle
+
+*** Imports a crypto key by Decrypting a Key Blob and converting it into a key Handle
+
+Local lnError
+Local lcKeyHandle
+
+lcKeyHandle = this.BinToStr(pthKeyHandle,4)
+lnError = CryptImportKey( ;
+	pihProviderHandle, ;
+	@picBlob, ;
+	pinBlobLen, ;
+	pihImpKeyHandle, ;
+	pinFlags, ;
+	@lcKeyHandle ;
+	)
+
+pthKeyHandle = this.StrToBin(lcKeyHandle)
+
+if lnError = 0 then
+	this.nlastapierror = getlasterror()
+	this.apierror(program())
+else
+	this.nlastapierror = 0
+endif
+
+Return
+
+ENDPROC
+PROCEDURE cryptreleasecontext
+LPARAMETER pihProviderHandle
+
+*** pihContextHandle - Handle of CSP to Release
+
+*** Release a CSP Handle and Frees up Memory Reserved by it
+
+CryptReleaseContext(pihProviderHandle,0)
+
+Return
+ENDPROC
+PROCEDURE cryptsignhash
+Lparameter pihHashKeyHandle, pinKeyType, pinFlags
+
+*** pihHashKeyHandle - Handle of Hash Object, Returned by CryptCreateHash()
+*** pinKeyType 	 	 - Private Key to Sign with (usually AT_SIGNATURE)
+*** pinFlags		 - Flags (See Crypto API Documentation)
+***					   by as much as 1 Block Length
+*** Returned	 	 - Signed String in picSignature
+
+*** Used to Sign a Hash for storage as a signanture.
+
+Local lnError, lnSignatureLen
+Local lcDescription, lcSignature, lcSingatureLen
+
+*** lcDescription	 - No Longer used, set to NULL
+lcDescription = dcEmpty
+lcSignature = dcEmpty
+lcSignatureLen = this.BinToStr(0,4)
+* Get the Signature Length
+lnError = CryptSignHash( ;
+	pihHashKeyHandle, ;
+	pinKeyType, ;
+	@lcDescription, ;
+	pinFlags, ;
+	@lcSignature, ;
+	@lcSignatureLen ;
+	)
+
+*** Do not check for error, since More Data Needed may result from 0 length
+lcSignature = space(this.StrToBin(lcSignatureLen))
+lnError = CryptSignHash( ;
+	pihHashKeyHandle, ;
+	pinKeyType, ;
+	@lcDescription, ;
+	pinFlags, ;
+	@lcSignature, ;
+	@lcSignatureLen ;
+	)
+
+if lnError = 0 then
+	this.nlastapierror = getlasterror()
+	this.apierror(program())
+else
+	this.nlastapierror = 0
+endif
+
+Return lcSignature
+
+ENDPROC
+PROCEDURE cryptverifysignature
+Lparameter pihHashKeyHandle, picSignature, pihPublicKeyHandle, pinFlags
+
+*** pihHashKeyHandle - Handle of Hash Object, Returned by CryptCreateHash()
+*** picSignature	 - Signature String to Verify
+*** pihPublicKeyHandle - Handle of Public Signature Key
+*** pinFlags		 - Flags (See Crypto API Documentation)
+*** Returns		 	 - .T. if verified, .F. if not verified or a different error occured
+
+*** Used to Verify a Signature
+
+Local lnError, lnSignatureLen
+
+lnSignatureLen = len(picSignature)
+lnError = CryptVerifySignature( ;
+	pihHashKeyHandle, ;
+	@picSignature, ;
+	lnSignatureLen, ;
+	pihPublicKeyHandle, ;
+	dcEmpty, ;
+	pinFlags ;
+	)
+
+if lnError = 0 then
+	* Signature did not verify or a different error occured.
+	* Error Number for NTE_BAD_SIGNATURE 0x80090006
+	* getlasterror() returns a signed number and 0x??????? is unsigned,
+	* getlasterror() and 0x???? cannot be compared with an =
+	*    compare with bitxor()
+	this.nlastapierror = getlasterror()
+	this.apierror(program())
+	Return .F.
+else
+	* Signature Verified
+	this.nlastapierror = 0
+	Return .T.
+endif
+
+ENDPROC
+PROCEDURE decryptsessionblockfile
+LPARAMETER pcEncryptedFileName, pcPassword, pcDecryptedFileName
+*** pcEncryptedFileName - File Path and Name of file with Encrypted Contents
+*** pcPassword - Password
+*** pcDecryptedFileName - File Path and Name of file to Create with Decrypted Contents
+
+*** Returns .T. - Successful
+***         .F. - Error
+
+LOCAL lhKeyHandle, lhExportKeyHandle, lhEncryptedFileHandle, lhDecryptedFileHandle
+LOCAL lnYN, lnBytesWritten, lnKeyLength, lnBlockReadSize, lnCryptBlockLen
+LOCAL lcEncryptedSessionKey, lcEncryptedText, lcTestLength
+
+this.lDoubleDecryptError = .F.
+
+if (empty(pcEncryptedFileName) or empty(pcEncryptedFileName) or empty(pcPassword)) and this.ldisplayhighlevelapierrors
+	if this.ldisplayhighlevelapierrors then
+		messagebox(dcDecryptSessionFileParameter_ERR_LOC)
+	endif
+	return .F.
+endif
+
+lhEncryptedFileHandle = fopen(alltrim(pcEncryptedFileName))
+if lhEncryptedFileHandle = -1 and this.ldisplayhighlevelapierrors then
+	if this.ldisplayhighlevelapierrors then
+		messagebox(dcDecryptSessionFileNoFile_ERR_LOC,MB_ICONEXCLAMATION + MB_APPLMODAL + MB_OK)
+	endif
+	return .F.
+endif
+
+if file(alltrim(pcDecryptedFileName))
+	if this.ldisplayhighlevelapierrors then
+		lnYN =messagebox(dcDecryptSessionFileExists_ERR_LOC, MB_APPLMODAL + MB_YESNO + MB_ICONQUESTION, dcFileExists)
+		if lnYN = IDNo then
+			fclose(lhEncryptedFileHandle)
+			return .F.
+		endif
+	endif
+endif
+
+lhDecryptedFileHandle = fcreate(alltrim(pcDecryptedFileName))
+if lhDecryptedFileHandle = -1 then
+	if this.ldisplayhighlevelapierrors then
+		messagebox(dcDecryptSessionFileCreate_ERR_LOC,MB_ICONEXCLAMATION + MB_APPLMODAL + MB_OK)
+	endif
+	fclose(lhEncryptedFileHandle)
+	return .F.
+endif
+
+lhKeyHandle = 0
+lhExchangeKeyHandle = 0
+this.GetCryptSessionKeyHandle(this.hProviderHandle,@lhKeyHandle, dcB,rtrim(pcPassword))
+if lhKeyHandle <> 0 then
+	*** Get Block Length for this Encryption Key
+	lnCryptBlockLen = this.GetCryptBlockLength(lhKeyHandle)
+	lnBlockReadSize = 1024 - mod(1024,lnCryptBlockLen)
+	*** See what encryption Length would be for an ecrypted block of this size
+	lcTestLength = space(lnBlockReadSize)
+	lnBlockReadSize = len(this.EncryptStrBlock(lcTestLength, lhKeyHandle, .F.))
+	fseek(lhEncryptedFileHandle,0,0)
+	do while !feof(lhEncryptedFileHandle)
+		lcEncryptedText = fread(lhEncryptedFileHandle,lnBlockReadSize)
+		lnBytesWritten = fwrite(lhDecryptedFileHandle,this.DecryptStr(lcEncryptedText, lhKeyHandle, feof(lhEncryptedFileHandle)))
+		if this.GetLastApiError() <> 0   or lnBytesWritten = 0 then
+			if this.GetLastApiError() = this.DoubleDecryptError()
+				this.lDoubleDecryptError = .T.
+			else
+				if this.ldisplayhighlevelapierrors then
+					messagebox(dcDecryptSessionFileWrite_ERR_LOC)
+				endif
+				this.ReleaseCryptKeyHandle(lhKeyHandle)
+			endif
+			fclose(lhDecryptedFileHandle)
+			fclose(lhEncryptedFileHandle)
+			return .F.
+		endif
+	enddo
+	if this.ldisplayhighlevelapierrors then
+		messagebox(dcDecryptSessionFileComplete_LOC, MB_OK, dcCompleted)
+	endif
+	this.ReleaseCryptKeyHandle(lhKeyHandle)
+endif
+
+fclose(lhDecryptedFileHandle)
+fclose(lhEncryptedFileHandle)
+
+return .T.
+ENDPROC
+PROCEDURE decryptsessionblockstring
+LPARAMETERS pcEncryptedString, pcPassword, pcDecryptedString
+*** pcEncryptedString - String to Decrypt
+*** pcPassword - Password
+*** pcDecryptedString - Decrypted String
+
+*** Returns .T. - Ok
+***         .F. - Error
+
+LOCAL lhKeyHandle, lhExchangeKeyHandle
+LOCAL lcSaveText, lcReturn, llOk
+
+lhKeyHandle = 0
+lhExchangeKeyHandle = 0
+llOk = .F.
+this.GetCryptSessionKeyHandle(this.hProviderHandle,@lhKeyHandle,dcB,rtrim(pcPassword))
+if lhKeyHandle <> 0 then
+	if len(pcEncryptedString) > 0 then
+		lcSaveText = this.DecryptStr(pcEncryptedString, lhKeyHandle, .T.)
+		if this.GetLastApiError() = 0 then
+			pcDecryptedString = lcSaveText
+			llOk = .T.
+		else
+			if this.GetLastApiError() = this.DoubleDecryptError()
+				this.lDoubleDecryptError = .T.
+			endif
+		endif
+	endif
+	this.ReleaseCryptKeyHandle(lhKeyHandle)
+endif
+
+return llOk
+
+ENDPROC
+PROCEDURE decryptsessionstreamfile
+LParameter pcEncryptedFileName,  pcPassword, pcDecryptedFileName
+*** pcEncryptedFileName - File Path and Name of file to Decrypt
+*** pcPassword - Password
+*** pcDecryptedFileName - File Path and Name of file to Place Decrypted Contents Into
+
+*** Returns .T. - Successful
+***         .F. - Error
+
+LOCAL lhKeyHandle, lhExportKeyHandle, lhEncryptedFileHandle, lhDecryptedFileHandle
+LOCAL lnYN, lnBytesWritten, lnKeyLength
+LOCAL lcEncryptedSessionKey, lcEncryptedText
+
+if empty(pcEncryptedFileName) or empty(pcEncryptedFileName) or empty(pcPassword)
+	if this.ldisplayhighlevelapierrors then
+		messagebox(dcDecryptSessionFileParameter_ERR_LOC)
+	endif
+	return .F.
+endif
+
+lhEncryptedFileHandle = fopen(alltrim(pcEncryptedFileName))
+if lhEncryptedFileHandle = -1 then
+	if this.ldisplayhighlevelapierrors then
+		messagebox(dcDecryptSessionFileNoFile_ERR_LOC,MB_ICONEXCLAMATION + MB_APPLMODAL + MB_OK)
+	endif
+	return .F.
+endif
+
+if file(alltrim(pcDecryptedFileName))
+	if this.ldisplayhighlevelapierrors then
+		lnYN =messagebox(dcDecryptSessionFileExists_ERR_LOC, MB_APPLMODAL + MB_YESNO + MB_ICONQUESTION, dcFileExists)
+		if lnYN = IDNo then
+			fclose(lhEncryptedFileHandle)
+			return .F.
+		endif
+	endif
+endif
+
+lhDecryptedFileHandle = fcreate(alltrim(pcDecryptedFileName))
+if lhDecryptedFileHandle = -1 then
+	if this.ldisplayhighlevelapierrors then
+		messagebox(dcDecryptSessionFileCreate_ERR_LOC,MB_ICONEXCLAMATION + MB_APPLMODAL + MB_OK)
+	endif
+	fclose(lhEncryptedFileHandle)
+	return .F.
+endif
+
+lhKeyHandle = 0
+lhExchangeKeyHandle = 0
+this.GetCryptSessionKeyHandle(this.hProviderHandle,@lhKeyHandle, dcS,rtrim(pcPassword))
+if lhKeyHandle <> 0 then
+	fseek(lhEncryptedFileHandle,0,0)
+	do while !feof(lhEncryptedFileHandle)
+		lcEncryptedText = fread(lhEncryptedFileHandle,1024)
+		lnBytesWritten = fwrite(lhDecryptedFileHandle,this.DecryptStr(lcEncryptedText, lhKeyHandle, feof(lhEncryptedFileHandle)))
+		if this.GetLastApiError() <> 0  or lnBytesWritten = 0 then
+			if this.ldisplayhighlevelapierrors then
+				messagebox(dcDecryptSessionFileWrite_ERR_LOC)
+			endif
+			this.ReleaseCryptKeyHandle(lhKeyHandle)
+			fclose(lhDecryptedFileHandle)
+			fclose(lhEncryptedFileHandle)
+			return .F.
+		endif
+	enddo
+	if this.ldisplayhighlevelapierrors then
+		messagebox(dcDecryptSessionFileComplete_LOC, MB_OK, dcCompleted)
+	endif
+	this.ReleaseCryptKeyHandle(lhKeyHandle)
+endif
+
+fclose(lhDecryptedFileHandle)
+fclose(lhEncryptedFileHandle)
+
+return .T.
+ENDPROC
+PROCEDURE decryptsessionstreamstring
+LPARAMETERS pcEncryptedString, pcPassword, pcDecryptedString
+*** pcEncryptedString - String to Decrypt
+*** pcPassword - Password
+
+*** Returns != '' - Decrypton of pcEncryptedString
+***         == '' - Error
+
+LOCAL lhKeyHandle, lhExchangeKeyHandle
+
+lhKeyHandle = 0
+lhExchangeKeyHandle = 0
+this.GetCryptSessionKeyHandle(this.hProviderHandle,@lhKeyHandle, dcS,rtrim(pcPassword))
+if lhKeyHandle <> 0 then
+	if len(pcEncryptedString) > 0 then
+		lcSaveText = this.DecryptStr(pcEncryptedString, lhKeyHandle, .T.)
+		if this.GetLastApiError() = 0 then
+			pcDecryptedString = lcSaveText
+		else
+			pcDecryptedString = dcEmpty
+			this.ReleaseCryptKeyHandle(lhKeyHandle)
+			return .F.
+		endif
+	else
+		pcDecryptedString = dcEmpty
+		this.ReleaseCryptKeyHandle(lhKeyHandle)
+		return .F.
+	endif
+	this.ReleaseCryptKeyHandle(lhKeyHandle)
+endif
+
+
+return .T.
+ENDPROC
+PROCEDURE decryptstr
+Lparameter picData, pihKeyHandle, pilLastString
+
+*** picData		 - Data to be Decrypted
+*** pihKeyHandle - Handle to Decryption Key (Type determine Block or Stream)
+*** pilLastString - .T. when this is the last string to decrypt
+*** Returns		 - Decrypted String
+
+*** Wrapper to decrypt a string
+
+Local lcDataLen
+
+lcDataLen = this.BinToStr(len(picData),4)
+Return this.CryptDecrypt( ;
+	pihKeyHandle, ;
+	0, ;
+	iif(pilLastString,-1,0), ;
+	0, ;
+	picData, ;
+	lcDataLen)
+	
+ENDPROC
+PROCEDURE deletekeycontainer
+LPARAMETER pcContainer
+*** pcContainer - Container Name of the Key Container to Delete
+
+*** Deletes a Key Container and
+*** Releases the Provider Handle when the Container to Delete is the one currently in use
+
+LOCAL lhProviderHandle
+
+lhProviderHandle = 0
+
+if this.cContainerName = pcContainer then
+	this.CryptReleaseContext(this.hProviderHandle)
+	this.hProviderHandle = 0
+endif
+
+lnError = this.CryptAcquireContext(@lhProviderHandle,pcContainerName,this.cProviderName,dnPROV_RSA_FULL,dnCRYPT_DELETEKEYSET)
+if lnError = 0
+	if this.lDisplayLowLevelApiErrors
+		messagebox(dcCRYPTDELETEKEYCONTAINER_ERR_LOC,MB_APPLMODAL+MB_ICONEXCLAMATION+MB_OK,dcError)
+	endif
+	this.nlastapierror = getlasterror()
+	this.apierror(program())
+	return .F.
+else
+	this.nlastapierror = 0
+endif
+
+return .T.
+
+ENDPROC
+PROCEDURE doubledecrypterror
+*** Convert 0x80090005 to two's complement
+return  -1 * ( bitxor(0x80090005,0xffffffff) + 1 )
+ENDPROC
+PROCEDURE doubleencrypterror
+*** Convert 0x80090012 to two's complement
+return  -1 * ( bitxor(0x80090012,0xffffffff) + 1 )
+ENDPROC
+PROCEDURE encryptsessionblockfile
+
+LPARAMETER pcDecryptedFileName, pcPassword, pcEncryptedFileName
+*** pcDecryptedFileName - File Path and Name of file with Decrypted Contents
+*** pcPassword - Password
+*** pcEncryptedFileName - File Path and Name of file to Create with Encrypted Contents
+
+*** Returns .T. - Successful
+***         .F. - Error
+
+LOCAL lhKeyHandle, lhExportKeyHandle, lhEncryptedFileHandle, lhDecryptedFileHandle
+LOCAL lnYN, lnBytesWritten, lnCryptBlockLen, lnBlockReadSize
+LOCAL lcEncryptedSessionKey, lcDecryptedText
+
+if empty(pcDecryptedFileName) or empty(pcEncryptedFileName) or empty(pcPassword)
+	if this.ldisplayhighlevelapierrors then
+		messagebox(dcEncryptSessionFileParameter_ERR_LOC)
+	endif
+	return .F.
+endif
+lhDecryptedFileHandle = fopen(alltrim(pcDecryptedFileName))
+if lhDecryptedFileHandle = -1 then
+	if this.ldisplayhighlevelapierrors then
+		messagebox(dcEncryptSessionFileNoFile_ERR_LOC,MB_ICONEXCLAMATION + MB_APPLMODAL + MB_OK)
+	endif
+	return .F.
+endif
+if file(alltrim(pcEncryptedFileName))
+	if this.ldisplayhighlevelapierrors then
+		lnYN =messagebox(dcEncryptSessionFileExists_ERR_LOC, MB_APPLMODAL + MB_YESNO + MB_ICONQUESTION, dcFileExists)
+		if lnYN = IDNo then
+			fclose(lhDecryptedFileHandle)
+			return .F.
+		endif
+	endif
+endif
+lhEncryptedFileHandle = fcreate(alltrim(pcEncryptedFileName))
+if lhEncryptedFileHandle = -1 then
+	if this.ldisplayhighlevelapierrors then
+		messagebox(dcEncryptSessionFileCreate_ERR_LOC,MB_ICONEXCLAMATION + MB_APPLMODAL + MB_OK)
+	endif
+	fclose(lhDecryptedFileHandle)
+	return .F.
+endif
+
+lhKeyHandle = 0
+lhExchangeKeyHandle = 0
+lcEncryptedSessionKey = dcEmpty
+this.GetCryptSessionKeyHandle(this.hProviderHandle,@lhKeyHandle,dcB,rtrim(pcPassword))
+if lhKeyHandle <> 0 then
+	*** Get Block Length for this Encryption Key
+	lnCryptBlockLen = this.GetCryptBlockLength(lhKeyHandle)
+	lnBlockReadSize = 1024 - mod(1024,lnCryptBlockLen)
+	fseek(lhDecryptedFileHandle,0,0)
+	do while !feof(lhDecryptedFileHandle)
+		lcDecryptedText = fread(lhDecryptedFileHandle,lnBlockReadSize)
+		lnBytesWritten = fwrite(lhEncryptedFileHandle,this.EncryptStrBlock(lcDecryptedText, lhKeyHandle, feof(lhDecryptedFileHandle)))
+		if this.GetLastApiError() <> 0  or lnBytesWritten = 0 then
+			if this.ldisplayhighlevelapierrors then
+				messagebox(dcEncryptSessionFileWrite_ERR_LOC)
+			endif
+			this.ReleaseCryptKeyHandle(lhKeyHandle)
+			fclose(lhDecryptedFileHandle)
+			fclose(lhEncryptedFileHandle)
+			return .F.
+		endif
+	enddo
+	if this.ldisplayhighlevelapierrors then
+		messagebox(dcEncryptSessionFileComplete_LOC, MB_OK, dcCompleted)
+	endif
+	this.ReleaseCryptKeyHandle(lhKeyHandle)
+endif
+
+fclose(lhDecryptedFileHandle)
+fclose(lhEncryptedFileHandle)
+
+return .T.
+
+ENDPROC
+PROCEDURE encryptsessionblockstring
+LPARAMETERS pcDecryptedString, pcPassword, pcEncryptedString
+*** pcDecryptedString - String to Encrypt
+*** pcEncryptedString - Reference to String to Hold Encrypted Value
+*** pcPassword - Password
+
+*** Returns != '' - Encryption of pcDecryptedString
+***         == '' - Error
+
+LOCAL lhKeyHandle, lhExchangeKeyHandle
+LOCAL llOk, lcSaveString
+
+lhKeyHandle = 0
+lhExchangeKeyHandle = 0
+llOk = .F.
+this.lDoubleEncryptError = .F.
+this.GetCryptSessionKeyHandle(this.hProviderHandle,@lhKeyHandle,dcB,rtrim(pcPassword))
+if lhKeyHandle <> 0 then
+	if len(pcDecryptedString) > 0 then
+		lcSaveString = this.EncryptStrBlock(pcDecryptedString, lhKeyHandle, .T.)
+		if this.GetLastApiError() = 0 then
+			pcEncryptedString = lcSaveString
+			llOk = .T.
+		else
+			if this.GetLastApiError() = this.DoubleEncryptError()
+				this.lDoubleEncryptError = .T.
+			endif
+		endif
+	endif
+	this.ReleaseCryptKeyHandle(lhKeyHandle)
+endif
+
+return llOk
+
+ENDPROC
+PROCEDURE encryptsessionstreamfile
+LPARAMETER pcDecryptedFileName, pcPassword, pcEncryptedFileName
+*** pcDecryptedFileName - File Path and Name of file with Decrypted Contents
+*** pcPassword - Password
+*** pcEncryptedFileName - File Path and Name of file to Create with Encrypted Contents
+
+*** Returns .T. - Successful
+***         .F. - Error
+
+LOCAL lhKeyHandle, lhExportKeyHandle, lhEncryptedFileHandle, lhDecryptedFileHandle
+LOCAL lnYN, lnBytesWritten
+LOCAL lcEncryptedSessionKey, lcDecryptedText
+
+if empty(pcDecryptedFileName) or empty(pcEncryptedFileName) or empty(pcPassword)
+	if this.ldisplayhighlevelapierrors then
+		messagebox(dcEncryptSessionFileParameter_ERR_LOC)
+	endif
+	return .F.
+endif
+lhDecryptedFileHandle = fopen(alltrim(pcDecryptedFileName))
+if lhDecryptedFileHandle = -1 then
+	if this.ldisplayhighlevelapierrors then
+		messagebox(dcEncryptSessionFileNoFile_ERR_LOC,MB_ICONEXCLAMATION + MB_APPLMODAL + MB_OK)
+	endif
+	return .F.
+endif
+if file(alltrim(pcEncryptedFileName))
+	if this.ldisplayhighlevelapierrors then
+		lnYN =messagebox(dcEncryptSessionFileExists_ERR_LOC, MB_APPLMODAL + MB_YESNO + MB_ICONQUESTION, dcFileExists)
+		if lnYN = IDNo then
+			fclose(lhDecryptedFileHandle)
+			return .F.
+		endif
+	endif
+endif
+lhEncryptedFileHandle = fcreate(alltrim(pcEncryptedFileName))
+if lhEncryptedFileHandle = -1 then
+	if this.ldisplayhighlevelapierrors then
+		messagebox(dcEncryptSessionFileCreate_ERR_LOC,MB_ICONEXCLAMATION + MB_APPLMODAL + MB_OK)
+	endif
+	fclose(lhDecryptedFileHandle)
+	return .F.
+endif
+
+lhKeyHandle = 0
+lhExchangeKeyHandle = 0
+lcEncryptedSessionKey = dcEmpty
+this.GetCryptSessionKeyHandle(this.hProviderHandle,@lhKeyHandle, dcS,rtrim(pcPassword))
+if lhKeyHandle <> 0 then
+	fseek(lhDecryptedFileHandle,0,0)
+	do while !feof(lhDecryptedFileHandle)
+		lcDecryptedText = fread(lhDecryptedFileHandle,1024)
+		lnBytesWritten = fwrite(lhEncryptedFileHandle,this.EncryptStrStream(lcDecryptedText, lhKeyHandle, feof(lhDecryptedFileHandle)))
+		if this.GetLastApiError() <> 0  or lnBytesWritten = 0 then
+			if this.ldisplayhighlevelapierrors then
+				messagebox(dcEncryptSessionFileWrite_ERR_LOC)
+			endif
+			this.ReleaseCryptKeyHandle(lhKeyHandle)
+			fclose(lhDecryptedFileHandle)
+			fclose(lhEncryptedFileHandle)
+			return .F.
+		endif
+	enddo
+	if this.ldisplayhighlevelapierrors then
+		messagebox(dcEncryptSessionFileComplete_LOC, MB_OK, dcCompleted)
+	endif
+	this.ReleaseCryptKeyHandle(lhKeyHandle)
+endif
+
+fclose(lhDecryptedFileHandle)
+fclose(lhEncryptedFileHandle)
+
+return .T.
+ENDPROC
+PROCEDURE encryptsessionstreamstring
+LPARAMETERS pcDecryptedString, pcPassword, pcEncryptedString
+*** pcDecryptedString - String to Encrypt
+*** pcPassword - Password
+*** pcEncryptedString - Refrence to a String to hold the Encrypted String Value
+
+*** Returns != '' - Encryption of pcDecryptedString
+***         == '' - Error
+
+LOCAL lhKeyHandle, lhExportKeyHandle
+LOCAL lcEncryptedSessionKey, llOk, lcSaveString
+
+
+lhKeyHandle = 0
+lhExchangeKeyHandle = 0
+lcEncryptedSessionKey = dcEmpty
+llOk = .F.
+this.GetCryptSessionKeyHandle(this.hProviderHandle,@lhKeyHandle,dcS,rtrim(pcPassword))
+if lhKeyHandle <> 0 then
+	if len(pcDecryptedString) > 0 then
+		lcSaveString = this.EncryptStrStream(pcDecryptedString, lhKeyHandle, .T.)
+		if this.GetLastApiError() = 0 then
+			pcEncryptedString = lcSaveString
+			llOk = .T.
+		endif
+	endif
+	this.ReleaseCryptKeyHandle(lhKeyHandle)
+endif
+
+return llOk
+ENDPROC
+PROCEDURE encryptstrblock
+Lparameter picData, pihKeyHandle, pilLastString
+
+*** picData		  - Data to be Encrypted
+*** pihKeyHandle  - Handle to Encryption Key (Type determines Block or Stream)
+*** pilLastString - Last String to Encrypt with this Key
+*** Returns		  - Encrypted String
+
+*** Wrapper to encrypt a string
+Local lnDataLen, lnMaxLen
+LOCAL lcDataLen, lcEmptySpace
+
+lnDataLen = len(picData)
+lcDataLen = this.BinToStr(lnDataLen,4)
+*** The following is needed, Just in case a stream key is passed
+*** When called with a Stream pihKeyHandle, this routine encrypts the
+*** EmptySpace string even though maxlen = 0
+*** Leaving this out would corrupt memory and result in a GPF
+lcEmptySpace = space(lnDataLen)
+CryptEncrypt( ;
+	pihKeyHandle, ;
+	0, ;
+	-1, ;
+	0, ;
+	@lcEmptySpace, ;
+	@lcDataLen, ;
+	0)
+*** Do not check lnError since more data is available error will result from this call
+*** on a block, when the data length is shorter (Not a multiple of the block length)
+lnMaxLen = this.strtobin(lcDataLen)
+* ReSet lcDataLen, since last cryptencrypt call changed it
+lcDataLen = this.BinToStr(lnDataLen,4)
+picData = picData + space(lnMaxLen - lnDataLen)
+Return this.CryptEncrypt( ;
+	pihKeyHandle, ;
+	0, ;
+	iif(pilLastString,-1,0), ;
+	0, ;
+	picData, ;
+	lcDataLen, ;
+	lnMaxLen)
+	
+
+ENDPROC
+PROCEDURE encryptstrstream
+Lparameter picData, pihKeyHandle, pilLastString
+
+*** picData		  - Data to be Encrypted
+*** pihKeyHandle  - Handle to Encryption Key (Type determines Block or Stream)
+*** pilLastString - Last String to Encrypt with this Key
+*** Returns		  - Encrypted String
+
+*** Wrapper to encrypt a string
+Local lnDataLen
+LOCAL lcDataLen
+
+lnDataLen = len(picData)
+lcDataLen = this.BinToStr(lnDataLen,4)
+Return this.CryptEncrypt( ;
+	pihKeyHandle, ;
+	0, ;
+	iif(pilLastString,-1,0), ;
+	0, ;
+	@picData, ;
+	@lcDataLen, ;
+	lnDataLen)
+	
+
+ENDPROC
+PROCEDURE exportexchangepairkeys
+LPARAMETER pcPassword, pcPairKey
+*** pcPassword - Password for Encryption of Exported Key
+*** pcPairKey - Reference String to pass Encrypted Key back to caller
+
+*** Return .T. - Success
+***        .F. - Failure
+
+LOCAL lcPairKey, lhHash, lhEncryptKey, lhExchangeKey, lhExchangeKey
+
+lhHash = 0
+lhExchangeKey = 0
+lhexchangeKey = 0
+lhEncryptKey = 0
+lcPairKey = dcEmpty
+
+if !this.cryptcreatehash(this.hProviderHandle, dnCALG_MD5, 0, 0, @lhHash)
+	return .F.
+endif
+
+if !this.crypthashdata(lhHash, pcPassword, len(pcPassword), 0)
+	return .F.
+endif
+
+if !this.cryptderivekey(this.hProviderHandle, dnCALG_RC2, lhHash, dnCRYPT_EXPORTABLE, @lhEncryptKey)
+	return .F.
+endif
+
+if !this.cryptgetuserkey(this.hProviderHandle, dnAT_KEYEXCHANGE, @lhExchangeKey)
+	return .F.
+endif
+
+if !this.cryptgetuserkey(this.hProviderHandle, dnAT_KEYEXCHANGE, @lhExchangeKey)
+	return .F.
+endif
+
+if !this.cryptexportkey(lhExchangeKey ,lhEncryptKey, dnPRIVATEKEYBLOB, 0, @lcPairKey)
+	return .F.
+endif
+
+pcPairKey = lcPairKey
+
+return .T.
+
+ENDPROC
+PROCEDURE exportexchangepublickey
+LPARAMETER pcPublicKey
+
+LOCAL lcPublicKey, lhExchangeKey
+
+lhExchangeKey = 0
+lcPublicKey = dcEmpty
+
+if !this.cryptgetuserkey(this.hProviderHandle,dnAT_KEYEXCHANGE,@lhExchangeKey)
+	return .F.
+endif
+
+if !this.cryptexportkey(lhExchangeKey,0,dnPUBLICKEYBLOB,0,@lcPublicKey)
+	return .F.
+endif
+
+pcPublicKey = lcPublicKey
+
+return .T.
+
+ENDPROC
+PROCEDURE exportsessionkey
+LPARAMETER pcPassword, pcSessionKey
+*** pcPassword - Password for Encryption of Exported Key
+*** pcSessionKey - Reference String to pass Encrypted Key back to caller
+
+*** Return .T. - Success
+***        .F. - Failure
+
+*** Exports a session key encrypted with the Exchange Private Key of the Current Key Container
+
+LOCAL lcPairKey, lhHash, lhEncryptKey, lhExchangeKey
+
+lhHash = 0
+lhExchangeKey = 0
+lhEncryptKey = 0
+lcPairKey = dcEmpty
+
+if !this.cryptcreatehash(this.hProviderHandle, dnCALG_MD5, 0, 0, @lhHash)
+	return .F.
+endif
+
+if !this.crypthashdata(lhHash, pcPassword, len(pcPassword), 0)
+	return .F.
+endif
+
+if !this.cryptderivekey(this.hProviderHandle, dnCALG_RC2, lhHash, dnCRYPT_EXPORTABLE, @lhEncryptKey)
+	return .F.
+endif
+
+if !this.cryptgetuserkey(this.hProviderHandle, dnAT_KEYEXCHANGE, @lhExchangeKey)
+	return .F.
+endif
+
+if !this.cryptexportkey(lhEncryptKey ,lhExchangeKey, dnSIMPLEBLOB, 0, @lcPairKey)
+	return .F.
+endif
+
+pcSessionKey = lcPairKey
+
+return .T.
+
+ENDPROC
+PROCEDURE exportsignaturepairkeys
+LPARAMETER pcPassword, pcPairKey
+*** pcPassword - Password for Encryption of Exported Key
+*** pcPairKey - Reference String to pass Encrypted Key back to caller
+
+*** Return .T. - Success
+***        .F. - Failure
+
+LOCAL lcPairKey, lhHash, lhEncryptKey, lhExchangeKey, lhSignatureKey
+
+lhHash = 0
+lhExchangeKey = 0
+lhSignatureKey = 0
+lhEncryptKey = 0
+lcPairKey = dcEmpty
+
+if !this.cryptcreatehash(this.hProviderHandle, dnCALG_MD5, 0, 0, @lhHash)
+	return .F.
+endif
+
+if !this.crypthashdata(lhHash, pcPassword, len(pcPassword), 0)
+	return .F.
+endif
+
+if !this.cryptderivekey(this.hProviderHandle, dnCALG_RC2, lhHash, dnCRYPT_EXPORTABLE, @lhEncryptKey)
+	return .F.
+endif
+
+if !this.cryptgetuserkey(this.hProviderHandle, dnAT_KEYEXCHANGE, @lhExchangeKey)
+	return .F.
+endif
+
+if !this.cryptgetuserkey(this.hProviderHandle, dnAT_SIGNATURE, @lhSignatureKey)
+	return .F.
+endif
+
+if !this.cryptexportkey(lhSignatureKey ,lhEncryptKey, dnPRIVATEKEYBLOB, 0, @lcPairKey)
+	return .F.
+endif
+
+pcPairKey = lcPairKey
+
+return .T.
+
+ENDPROC
+PROCEDURE exportsignaturepublickey
+LPARAMETER pcPublicKey
+
+LOCAL lcPublicKey, lhSignatureKey
+
+lhSignatureKey = 0
+lcPublicKey = dcEmpty
+
+if !this.cryptgetuserkey(this.hProviderHandle,dnAT_SIGNATURE,@lhSignatureKey)
+	return .F.
+endif
+
+if !this.cryptexportkey(lhSignatureKey,0,dnPUBLICKEYBLOB,0,@lcPublicKey)
+	return .F.
+endif
+
+pcPublicKey = lcPublicKey
+
+return .T.
+
+ENDPROC
+PROCEDURE formatmessage
+Lparameter pinFlags, pinMessageNum
+
+*** pinFlags - Windows API defined flags for Format Message
+*** pinMessageNum - Windows API Message Number
+*** Returns - Formated Message String Associated
+***           with the Message Number that was input
+
+***
+*** Windows API call to FormatMessage
+*** Returns the Windows String Text Assocaited with
+*** the Windows Message Number that a Windows API
+*** returns, formated based on the flags that were passed to it.
+*** currently does not support C like printf() ability
+***
+
+Local lcMessage, lcNull
+
+lcMessage = space(256)
+lcNull = dcEmpty
+lnMessageLen = FormatMessage( ;
+	pinFlags, ;
+	@lcNull, ;
+	pinMessageNum, ;
+	0, ;
+	@lcMessage, ;
+	256, ;
+	@lcNull)
+Return left(lcMessage,lnMessageLen)
+
+ENDPROC
+PROCEDURE getcryptblocklength
+LPARAMETER pihKeyHandle
+
+*** pihKeyHandle	 - Handle of Key Objcet,
+***					   Returned by CryptGenKey() or CryptImportKey()
+*** Return		 	 - Length of an encryption block for the current key
+
+*** Used to return a Parameter from a Crypt Key
+
+Local lnParamLen, lnReturn
+Local lcParam, lcParamLen
+
+lnReturn = 0
+lnParamLen = 4
+lcParam = space(lnParamLen)
+lcParamLen = this.BinToStr(lnParamLen,4)
+lcParam = this.CryptGetKeyParam( ;
+	pihKeyHandle, ;
+	dnKP_BLOCKLEN, ;
+	lcParam, ;
+	lcParamLen, ;
+	0)
+
+return this.StrToBin(lcParam)
+
+ENDPROC
+PROCEDURE getcryptsessionkeyhandle
+LPARAMETER pihProviderHandle,pihCryptKeyHandle, picType, picPassword
+
+***
+*** pihProviderHandle - Handle of the CSP
+*** pihCryptKeyHandle - Handle to a cryptographic session key
+*** picPassword - Password to use as Encryption Key
+*** picType     - 'B' Use Block Cypher (Harder to Crack, but takes longer and results
+***                                in longer encrypted string than decryphered
+***                                by as much as one block length)
+***             - 'S' Use Stream Cyper (Easier to Crack, but runs faster and results
+***                                in same length encrypted string as decyphered string)
+***             - 'BR' Random, Use Block Cypher (Harder to Crack, but takes longer and results
+***                                in longer encrypted string than decryphered
+***                                by as much as one block length)
+***             - 'SR' Random, Use Stream Cyper (Easier to Crack, but runs faster and results
+***                                in same length encrypted string as decyphered string)
+*** Returns     - Handle to Session Crypt Key (Numberic)
+***
+*** Uses Microsoft Windows Base Cryptographic Provider
+*** to Return a Handle to a cryptographic key that can be used to Encrypt/Decrypt Data
+***
+
+Local lhCryptHashHandle, lnSaveError
+
+If !(picType $ dcgetcryptsessionkeyhandleparam ) and this.ldisplayhighlevelapierrors
+	if this.ldisplayhighlevelapierrors then
+		Messagebox(program()+ ;
+			dcgetcryptsessionkeyhandleERR_LOC)
+	endif
+	Return 0
+Endif
+
+lhCryptHashHandle = 0
+lnSaveError = 0
+Do case
+	Case picType == dcB
+		this.CryptCreateHash(pihProviderHandle,dnCALG_MD5,0,0,@lhCryptHashHandle)
+	    if this.nlastapierror <> 0 then
+		    lnSaveError = this.nlastapierror
+		endif
+		this.CryptHashData(lhCryptHashHandle, picPassword , len(picPassword),0)
+	    if this.nlastapierror <> 0 then
+		    lnSaveError = this.nlastapierror
+		endif
+		this.CryptDeriveKey(;
+			pihProviderHandle, ;
+			dnCALG_RC2, ;
+			lhCryptHashHandle, ;
+			dnCRYPT_EXPORTABLE, ;
+			@pihCryptKeyHandle)
+	    if this.nlastapierror <> 0 then
+		    lnSaveError = this.nlastapierror
+		endif
+		this.CryptDestroyHash(lhCryptHashHandle)
+	    if this.nlastapierror = 0 then
+		    this.nlastapierror = lnSaveError
+		endif
+	Case picType == dcS
+		this.CryptCreateHash(pihProviderHandle,dnCALG_MD5,0,0,@lhCryptHashHandle)
+	    if this.nlastapierror <> 0 then
+		    lnSaveError = this.nlastapierror
+		endif
+		This.CryptHashData(lhCryptHashHandle, picPassword, len(picPassword), 0)
+	    if this.nlastapierror <> 0 then
+		    lnSaveError = this.nlastapierror
+		endif
+		this.CryptDeriveKey(;
+			pihProviderHandle, ;
+			dnCALG_RC4, ;
+			lhCryptHashHandle, ;
+			dnCRYPT_EXPORTABLE, ;
+			@pihCryptKeyHandle)
+	    if this.nlastapierror <> 0 then
+		    lnSaveError = this.nlastapierror
+		endif
+		this.CryptDestroyHash(lhCryptHashHandle)
+	    if this.nlastapierror = 0 then
+		    this.nlastapierror = lnSaveError
+		endif
+	Case picType == dcBR
+		this.CryptGenKey( ;
+			pihProviderHandle, ;
+			dnCALG_RC2, ;
+			dnCRYPT_EXPORTABLE, ;
+		    @pihCryptKeyHandle)
+	Case picType == dcSR
+		this.CryptGenKey(;
+			pihProviderHandle, ;
+			dnCALG_RC4, ;
+			dnCRYPT_EXPORTABLE, ;
+		    @pihCryptKeyHandle)
+Endcase
+
+Return
+
+ENDPROC
+PROCEDURE getcryptuserkeyhandle
+LPARAMETER pihProviderHandle, pihUserKey, pinKeySpec
+
+*** pihProvHandle - Handle of CSP
+*** pinKeySpec - Type of a User Key to Generate
+
+*** Returns Handle to the User Key of Specified Type
+
+this.CryptGetUserKey( ;
+    pihProviderHandle, ;
+    pinKeySpec, ;
+ 	@pihUserKey ;
+	)
+	
+Return
+ENDPROC
+PROCEDURE getdoubledecrypterror
+return this.lDoubleDecryptError
+ENDPROC
+PROCEDURE getdoubleencrypterror
+return this.lDoubleEncryptError
+ENDPROC
+PROCEDURE getisinstalled
+return this.lIsInstalled
+ENDPROC
+PROCEDURE getlastapierror
+*** Returns the last error from the last crypto API call
+return this.nlastapierror
+ENDPROC
+PROCEDURE getlastapierrorcode
+*** Returns the code of the last error from the last crypto API call
+
+return bitand(this.nlastapierror,0xFFFF)
+ENDPROC
+PROCEDURE getlastapierrorcustomercodeflag
+*** Returns the severity code of the last error from the last crypto API call
+***         00 - Windows Code
+***         01 - Customer Code
+
+return bitand(bitrshift(this.nlastapierror,29),1)
+ENDPROC
+PROCEDURE getlastapierrorfacility
+*** Returns the facility code of the last error from the last crypto API call
+
+*** FACILITY_NULL                    0
+*** FACILITY_RPC                     1
+*** FACILITY_DISPATCH                2
+*** FACILITY_STORAGE                 3
+*** FACILITY_ITF                     4
+*** FACILITY_WIN32                   7
+*** FACILITY_WINDOWS                 8
+*** FACILITY_SSPI                    9
+*** FACILITY_CONTROL                 10
+*** FACILITY_CERT                    11
+*** FACILITY_INTERNET                12
+*** FACILITY_MEDIASERVER             13
+*** FACILITY_MSMQ                    14
+*** FACILITY_SETUPAPI                15
+
+return bitand(bitrshift(this.nlastapierror,16),0xFFF)
+ENDPROC
+PROCEDURE getlastapierrorseverity
+*** Returns the severity code of the last error from the last crypto API call
+***          00 - Success
+***         01 - Informational
+***         10 - Warning
+***         11 - Error
+
+return bitrshift(this.nlastapierror,30)
+ENDPROC
+PROCEDURE getlasterror
+*** Call to the Windows API
+RETURN getlasterror()
+
+ENDPROC
+PROCEDURE importpublickey
+LPARAMETERS pcPublicKey, phPublicKeyHandle
+
+*** pcPublicKey - Public Key to Import
+*** phPublicKeyHandle - Reference to a Handle, in which the Public Key is Returned
+
+*** Returns - Public Key Handle in phPublicKeyHandle
+***			.T. - Success
+***			.F. - Failure
+
+LOCAL lhPublicKeyHandle, lnError
+
+lhPublicKeyHandle = 0
+
+if !this.CryptImportKey(this.hProviderHandle, pcPublicKey, len(pcPublicKey), 0, 0, @lhPublicKeyHandle)
+	Return .F.
+endif
+
+phPublicKeyHandle = lhPublicKeyHandle
+
+Return .T.
+ENDPROC
+PROCEDURE releasecryptkeyhandle
+LPARAMETER pihKeyHandle
+
+*** pihKeyHandle - Handle to the Key structure to destroy
+*** Returns      - .T. (Logical)
+
+*** Releases the memory where the key structure was stored.
+*** Most Cryptographic Service Providers Scramble the Structure Contents
+*** as well as freeing it up. This is done so that another program can't query
+*** looking for keys that are left laying around.
+
+this.cryptdestroykey(pihKeyHandle)
+
+ENDPROC
+PROCEDURE signfile
+LPARAMETERS pcDecryptedFileName, pcSignature, pcSignaturePublicKey
+*** pcDecryptedFileName - File name to Create an Encrypted Signature for
+*** pcSignature - Reference to a Signature String
+*** pcSignaturePublicKey - Reference to a Signature Public Key String
+
+*** Return Signature in pcSignature
+***        Signature PublicKey in pcSignaturePublicKey
+*** .T. - Success
+*** .F. - Failure
+
+*** Create a Signature for the given file.
+
+Local lhHashHandle, lnError, lnYN, lhSignFileHandle, lhDecryptedFileHandle, lnBytesWritten, lhKey
+Local lcInput, lcSignature, lcDecrytedText
+
+if empty(pcDecryptedFileName)
+	if this.ldisplayhighlevelapierrors then
+		messagebox(dcSignFileParamter_ERR_LOC)
+	endif
+	return .F.
+endif
+lhDecryptedFileHandle = fopen(alltrim(pcDecryptedFileName))
+if lhDecryptedFileHandle = -1 then
+	if this.ldisplayhighlevelapierrors then
+		messagebox(dcSignFileDecryptedFile_ERR_LOC,MB_ICONEXCLAMATION + MB_APPLMODAL + MB_OK)
+	endif
+	return .F.
+endif
+lhHashHandle = 0
+this.CryptCreateHash(this.hProviderHandle,dnCALG_MD5,0,0,@lhHashHandle)
+if this.GetLastApiError() <> 0 then
+	if this.ldisplayhighlevelapierrors then
+		messagebox (dcSignFileHashObject_ERR_LOC)
+	endif
+	fclose(lhDecryptedFileHandle)
+	return .F.
+endif
+do while !feof(lhDecryptedFileHandle)
+	lcDecryptedText = fread(lhDecryptedFileHandle,1024)
+	this.CryptHashData(lhHashHandle, lcDecryptedText, len(lcDecryptedText), 0)
+	if this.GetLastApiError() <> 0 then
+		if this.ldisplayhighlevelapierrors then
+			messagebox (dcSignFileHashing_ERR_LOC)
+		endif
+		this.CryptDestroyHash(lhHashHandle)
+		fclose(lhDecryptedFileHandle)
+		return .F.
+	endif
+enddo
+lcSignature = this.CryptSignHash(lhHashHandle, dnAT_SIGNATURE, 0)
+if this.GetLastApiError() <> 0
+	if this.ldisplayhighlevelapierrors then
+		messagebox (ErrorSigningData)
+	endif
+	this.CryptDestroyHash(lhHashHandle)
+	fclose(lhDecryptedFileHandle)
+	return .F.
+endif
+pcSignature = lcSignature
+
+this.CryptDestroyHash(lhHashHandle)
+
+this.ExportSignaturePublicKey(@pcSignaturePublicKey)
+
+fclose(lhDecryptedFileHandle)
+
+return .T.
+
+ENDPROC
+PROCEDURE strtobin
+LPARAMETER picInput
+
+*** picInput - Integer encoded into a character string
+***            Left most Character is least significant
+***            Right most character is most significant
+*** return   - Integer represented by character string
+
+*** Converts Integer encoded Character String into an Integer
+
+LOCAL lnreturn, lnCounter
+
+lnReturn = 0
+for lnCounter = 1 to len(picInput)
+   lnReturn = lnReturn + bitlshift(asc(substr(picInput,lnCounter,1)),bitlshift((lnCounter-1),3))
+endfor
+
+return lnReturn
+ENDPROC
+PROCEDURE systemmessage
+LPARAMETER pinError
+
+*** pinError - Windows API Error Number
+*** returns  - Formated Windows API Error Message String
+
+*** Sets flags and calls for Windows API Format Message which
+***      Returns the Windows Error Message associated
+***      with the Windows Error Number Input
+***
+
+return this.FormatMessage(BITOR(dnFORMAT_MESSAGE_FROM_SYSTEM, ;
+                                dnFORMAT_MESSAGE_IGNORE_INSERTS) , ;
+                                pinError)
+
+ENDPROC
+PROCEDURE usekeycontanier
+LParameter pcContainerName
+
+*** Change Key Container Currently in Use
+
+LOCAL lhProviderHandle
+
+this.cContainerName = pcContainerName
+
+this.CryptReleaseContext(this.hProviderHandle)
+
+lnError = this.CryptAcquireContext(@lhProviderHandle,pcContainerName,this.cProviderName,dnPROV_RSA_FULL,0)
+If lnError = 0
+	this.hProviderHandle = 0
+	if this.lDisplayLowLevelApiErrors
+		messagebox(dcCRYPTUSEKEYCONTAINER_ERR_LOC,MB_APPLMODAL+MB_ICONEXCLAMATION+MB_OK,dcError)
+	endif
+	this.nlastapierror = getlasterror()
+	this.apierror(program())
+	return .F.
+else
+	this.nlastapierror = 0
+	this.hProviderHandle = lhProviderHandle
+endif
+
+return .T.
+
+ENDPROC
+PROCEDURE verifyfilesignature
+LPARAMETERS pcDecryptedFileName, pcSignature, pcSignaturePublicKey, plVerified
+*** pcDecryptedFileName - File name to Create an Encrypted Signature for
+*** pcSignature - Signature String
+*** pcSignaturePublicKey - Public Key String
+*** plVerified - Reference to Verification Logical
+
+*** Return Signature in pcSignature
+***        Signature PublicKey in pcSignaturePublicKey
+*** .T. - Success
+*** .F. - Failure
+
+*** Logical Variable to Return Verification Information
+
+Local lhHashHandle, lnError, lnYN, lhSignFileHandle, lhDecryptedFileHandle, lnBytesWritten, lhPublicKey
+Local lcInput, lcSignature, lcDecrytedText
+
+if empty(pcDecryptedFileName)
+	if this.ldisplayhighlevelapierrors then
+		messagebox(dcSignFileParamter_ERR_LOC)
+	endif
+	return .F.
+endif
+lhDecryptedFileHandle = fopen(alltrim(pcDecryptedFileName))
+if lhDecryptedFileHandle = -1 then
+	if this.ldisplayhighlevelapierrors then
+		messagebox(dcSignFileDecryptedFile_ERR_LOC,MB_ICONEXCLAMATION + MB_APPLMODAL + MB_OK)
+	endif
+	return .F.
+endif
+lhHashHandle = 0
+this.CryptCreateHash(this.hProviderHandle,dnCALG_MD5,0,0,@lhHashHandle)
+if this.GetLastApiError() <> 0 then
+	if this.ldisplayhighlevelapierrors then
+		messagebox (dcSignFileHashObject_ERR_LOC)
+	endif
+	fclose(lhDecryptedFileHandle)
+	return .F.
+endif
+do while !feof(lhDecryptedFileHandle)
+	lcDecryptedText = fread(lhDecryptedFileHandle,1024)
+	this.CryptHashData(lhHashHandle, lcDecryptedText, len(lcDecryptedText), 0)
+	if this.GetLastApiError() <> 0 then
+		if this.ldisplayhighlevelapierrors then
+			messagebox (dcSignFileHashing_ERR_LOC)
+		endif
+		this.CryptDestroyHash(lhHashHandle)
+		fclose(lhDecryptedFileHandle)
+		return .F.
+	endif
+enddo
+
+lhPublicKey = 0
+this.ImportPublicKey(pcSignaturePublicKey, @lhPublicKey)
+
+if this.CryptVerifySignature(lhHashHandle, pcSignature, lhPublicKey, 0)
+	this.CryptDestroyHash(lhHashHandle)
+	fclose(lhDecryptedFileHandle)
+	plVerified = .T.
+else
+	this.CryptDestroyHash(lhHashHandle)
+	fclose(lhDecryptedFileHandle)
+	return .F.
+endif
+
+return .T.
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+nlastapierror See Crypto API documentation.
+cprovidername Name of Crypto Provider for use with this class
+ccontainername Name of Crypto Container for Use with this Class
+hproviderhandle Handle of Crypto Provider/Containter Initialized during setup of this class. For use within this class.
+ldisplaylowlevelapierrors Display Low Level API Error's as they are encountered (in apierror function)
+ldoubleencrypterror Error for Last Run of Block Encryption
+ldoubledecrypterror Error for Last Run of Block Decryption
+lisinstalled Flag for Crypt Provider Installed
+ldisplayhighlevelapierrors
+*cryptacquirecontext See Crypto API documentation.
+*cryptgetuserkey See Crypto API documentation.
+*cryptgenkey See Crypto API documentation.
+*cryptexportkey See Crypto API documentation.
+*getlasterror Return the last system error number.
+*cryptderivekey See Crypto API documentation.
+*cryptcreatehash See Crypto API documentation.
+*crypthashdata See Crypto API documentation.
+*getcryptsessionkeyhandle Simple call for returning a session key handle.
+*cryptencrypt See Crypto API documentation.
+*decryptstr Simple call that returns a decrypted string.
+*cryptdecrypt See Crypto API documentation.
+*cryptgetkeyparam See Crypto API documentation.
+*cryptdestroykey See Crypto API documentation.
+*releasecryptkeyhandle Release handle and free memory allocated to it.
+*apierror Get the Last Error Number from the System and Display an Error Message on the Screen
+*systemmessage Look an Error Number up in the system table and return the string message text.
+*formatmessage Formats a system error message into a string for display.
+*cryptdestroyhash See Crypto API documentation.
+*cryptgetprovparam See Crypto API documentation.
+*getcryptblocklength Returns the Block length of a block key. This is need to calculate even block boundries during a block encryption of a large amount of text. To break it down into smaller chunks.
+*strtobin Convert a byte stream  with the  least significate byte first and the most significan last into a Number.
+*bintostr Convert a Number to a byte stream, puttnig the least significate byte first and the most significan last.
+*getcryptuserkeyhandle Simple call for returning a user key. (Public Key part of a private.public key pair)
+*cryptimportkey See Crypto API documentation.
+*getlastapierror Returns the last error message trapped by this api. Each low level API call traps the error number returned in this parameter. This is needed for an error check from a form. By the time a form looks for the error number, another one may have occured.
+*getlastapierrorfacility Returns the facitily code of an error number. (Bits 17-28)
+*getlastapierrorseverity Return the severity code of an error number (BITS 31-32)
+*getlastapierrorcode Returns the code from an error number (BITS 1-16)
+*getlastapierrorcustomercodeflag Returns the Customer flag from a system error number (Bit 29)
+*cryptreleasecontext See Crypto API documentation.
+*cryptsignhash Sign a Hash with a Private Key.
+*cryptverifysignature Verify a Signed Hash
+*createrandomcryptkeys Create a Key Container, Signature and Exchange Public/Private Key Pairs for that Container.
+*apideclarations Declare API Fnuctions
+*apisetup Initalization Code for this Class
+*decryptsessionblockfile Decrypt a File using a Session Block Key
+*decryptsessionblockstring Decrypt a Strnig using a Block Session Key
+*decryptsessionstreamfile Decrypt a File with a session stream key
+*decryptsessionstreamstring Decrypt a String using a Session Stream Key
+*encryptsessionblockfile Encrypt a File using a Session Block Key
+*encryptsessionblockstring Encrypt a Strnig Using a Session Block Key
+*encryptsessionstreamfile Encrypt a File using a Session Stream Key
+*encryptsessionstreamstring Encrypt a Strnig using a SessionStream Key
+*signfile Create a Signature for a File.
+*encryptstrstream 
+*encryptstrblock 
+*doubleencrypterror Calculation of Error Number returned by getlasterror() for Double Encryption/Decryption of a Block String
+*getdoubleencrypterror Return Logical Error Value of Last Rnu of Block Encryption
+*getdoubledecrypterror Return Logical Error Value of Last Rnu of Block Decryption
+*doubledecrypterror 
+*getisinstalled Return the Flag value for the init check of the Crypto Service Provider Installation
+*usekeycontanier Make a Named or Default key container the one currently in use
+*createnewkeycontainer Create a New Named Key Container in the Cryptography Service Provider for storage of Signature and Exchange Pairs
+*deletekeycontainer Delete a Cryptography Service Provider Named Key Container
+*exportexchangepublickey Export an Exchange Key from a named key container
+*exportsignaturepublickey Export a Signature Key from a named Container
+*importpublickey Import a Public Key into a Key Handle Structure
+*exportsignaturepairkeys Export the Signature Key Pair
+*exportexchangepairkeys Export the Exchange Key Pair
+*exportsessionkey Export a Session Key Encrypted with an Exchange Key
+*verifyfilesignature Verify File Signature
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED7]
+Windows Crypt API Library[END RESERVED7]
+[START RESERVED8]
+wincrypt.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] _cryptapi
+[START RESERVED1]
+ 
+ wincrypt.h6Îv‰) foxpro.h>Ï  z&[END RESERVED1]
+[EOF]
