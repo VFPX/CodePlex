@@ -17,10 +17,6 @@
 
 lparameters roRef
 
-#IF DEBUG_METHOD_LOGGING 
-	debugout space(program(-1)) + "frxpreview.prg::(main)"
-#ENDIF
-
 *--------------------------------------------------------------
 * Ensure some essential files are built in:
 *--------------------------------------------------------------
@@ -92,7 +88,7 @@ THIS.errorText = m.cErrorMsg
 if DEBUG_SUSPEND_ON_ERROR
 	cErrorMsg = m.cErrorMsg + chr(13)+chr(13) + "Do you want to suspend execution?"
 
-	iRetval = messagebox( m.cErrorMsg, 3+16+512, DEFAULT_MBOX_TITLE_LOC + " Error" )
+	iRetval = messagebox( cErrorMsg, 3+16+512, DEFAULT_MBOX_TITLE_LOC + " Error" )
 	do case
 	case m.iRetVal = 6 && yes
 		this.suspended = .T.
@@ -102,7 +98,7 @@ if DEBUG_SUSPEND_ON_ERROR
 
 	endcase
 else
-	=messagebox( m.cErrorMsg, 0+16, DEFAULT_MBOX_TITLE_LOC + " Error" )
+	=messagebox( cErrorMsg, 0+16, DEFAULT_MBOX_TITLE_LOC + " Error" )
 	this.cancelled = .T.
 endif
 

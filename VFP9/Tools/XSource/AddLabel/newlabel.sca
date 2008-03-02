@@ -1,0 +1,815 @@
+SCCTEXT Version 4.0.0.2
+PLATFORM C(8,0),UNIQUEID C(10,0),TIMESTAMP N(10,0),CLASS M(4,0),CLASSLOC M(4,0),BASECLASS M(4,0),OBJNAME M(4,0),PARENT M(4,0),PROPERTIES M(4,0),PROTECTED M(4,0),METHODS M(4,0),OBJCODE M(4,0),OLE M(4,0),OLE2 M(4,0),RESERVED1 M(4,0),RESERVED2 M(4,0),RESERVED3 M(4,0),RESERVED4 M(4,0),RESERVED5 M(4,0),RESERVED6 M(4,0),RESERVED7 M(4,0),RESERVED8 M(4,0),USER M(4,0)
+1252
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] Screen    
+[START RESERVED1]
+VERSION =   3.00[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _R8T13G40P
+[CLASS] dataenvironment
+[BASECLASS] dataenvironment
+[OBJNAME] Dataenvironment
+[START PROPERTIES]
+Name = "Dataenvironment"
+[END PROPERTIES]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED4]
+1[END RESERVED4]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _R8T13G40X
+[CLASS] form
+[BASECLASS] form
+[OBJNAME] Form1
+[START PROPERTIES]
+Height = 364
+Width = 500
+DoCreate = .T.
+AutoCenter = .T.
+BorderStyle = 2
+Caption = "New Label Defintion"
+WindowType = 1
+WindowState = 0
+LockScreen = .F.
+lenglish = .T.
+cchangevalue = ("")
+Name = "Form1"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE convertmm
+LPARAMETER cInValue,lwhichway
+* Converts metric values entered in millimeters to 10,000ths of an inch.
+LOCAL nInValue,cOutValue
+*!*	nInValue = VAL(ALLTRIM(m.cInValue))
+m.nInValue = m.cInValue
+IF !m.lwhichway
+	* metric to english
+	nInValue = ROUND(((m.nInValue*39.3700787402E-2)),4)
+ELSE
+	* english to metric
+	nInValue = ROUND(((m.nInValue/39.3700787402E-2)),4)
+ENDIF
+*!*	cOutValue = ALLTRIM(STR(m.nInValue,8,3))
+RETURN m.nInValue
+ENDPROC
+PROCEDURE resetlabel
+#DEFINE ENGMEASURE	'"'
+#DEFINE METMEASURE	'cm'
+#DEFINE ENGPROMPT_LOC	"Enter label measurements in inches:"
+#DEFINE	METPROMPT_LOC	"Enter label measurements in centimeters:"
+#DEFINE CMDADDCAP_LOC	"\<Update"
+
+LOCAL cLblData,cDesc,cDelim,cDataDesc
+
+cLblData = ALLTRIM(Data)
+
+THIS.cmdAdd.Caption = CMDADDCAP_LOC
+This.LayoutName.Value = Name
+This.ogpMetric.Value = IIF(RIGHT(m.cLblData,1)="T",2,1)
+IF This.ogpMetric.Value = 2 
+	This.LblPrompt.Caption = METPROMPT_LOC
+ENDIF
+cDelim=IIF(This.ogpMetric.Value = 2,METMEASURE,ENGMEASURE)
+
+This.LeftMargin.Value= VAL(SUBSTR(m.cLblData,40,8))/10000 
+This.NumberAcross.Value= VAL(SUBSTR(m.cLblData,48,2))
+This.SpacesBetween.Value= VAL(SUBSTR(m.cLblData,50,8))/10000
+This.LabelWidth.Value= VAL(SUBSTR(m.cLblData,58,8))/10000
+This.TopMargin.Value= VAL(SUBSTR(m.cLblData,66,8))/10000
+This.LabelHeight.Value = VAL(SUBSTR(m.cLblData,74,8))/10000
+
+IF This.ogpMetric.Value = 2
+	* If the values are metric, convert them to english
+	This.LeftMargin.Value= ThisForm.ConvertMM(This.LeftMargin.Value,.T.)
+	This.SpacesBetween.Value= ThisForm.ConvertMM(This.SpacesBetween.Value,.T.)
+	This.LabelWidth.Value= ThisForm.ConvertMM(This.LabelWidth.Value,.T.)
+	This.TopMargin.Value= ThisForm.ConvertMM(This.TopMargin.Value,.T.)
+	This.LabelHeight.Value= ThisForm.ConvertMM(This.LabelHeight.Value,.T.)
+ENDIF
+
+m.cDesc = PADR(LEFT(ALLTRIM(This.LayoutName.Value),11),11)+ " "
+m.cDesc = m.cDesc + PADR(ALLTRIM(STR(This.LabelHeight.Value,8,2))+m.cDelim,11)
+m.cDesc = m.cDesc + PADR(ALLTRIM(STR(This.LabelWidth.Value,8,2))+m.cDelim,11)
+m.cDesc = m.cDesc +	PADL(ALLTRIM(STR(This.NumberAcross.Value)),2," ")+" "
+
+cDataDesc = ALLTRIM(SUBSTR(data,3,37))
+cDesc = ALLTRIM(m.cDesc)
+
+THIS.lChangeDesc = (m.cDataDesc#m.cDesc)
+
+IF THIS.lChangeDesc
+	LOCAL cPart1,cPart2
+	cPart1 = ALLTRIM(SUBSTR(m.cDataDesc,11,11))
+	cPart2 = ALLTRIM(SUBSTR(m.cDataDesc,22,11))
+	cPart1 = m.cPart1+" x "+m.cPart2
+	THIS.Description.Value = m.cPart1
+	THIS.Description.Enabled = .T.
+	THIS.chkSet.Value = 1
+	THIS.cChangeValue = m.cPart1
+ELSE
+	IF This.ogpMetric.Value = 2
+		m.cDelim = " "+m.cDelim
+	ENDIF
+	This.Description.Value = ALLT(STR(This.LabelHeight.Value,8,2))+;
+		m.cDelim+" x "+ALLT(STR(This.LabelWidth.Value,8,2))+m.cDelim
+ENDIF
+
+THISFORM.REFRESH
+ENDPROC
+PROCEDURE Init
+PARAMETER lEditMode
+IF TYPE("m.lEditMode")="L" AND m.lEditMode
+	* Edit record - if we ever add support for this
+	THIS.EditMode = 1
+	THIS.ResetLabel
+ELSE
+	* Add record
+	THIS.EditMode = 0
+ENDIF
+
+ENDPROC
+[END METHODS]
+[START RESERVED3]
+label_file
+lenglish
+lchangedesc
+editmode
+cchangevalue
+*convertmm 
+*resetlabel 
+[END RESERVED3]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _R8T13G40P
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] cmdCancel
+[PARENT] Form1
+[START PROPERTIES]
+Top = 38
+Left = 408
+Height = 23
+Width = 72
+FontName = "MS Sans Serif"
+FontSize = 8
+Cancel = .T.
+Caption = "Cancel"
+Default = .F.
+TabIndex = 11
+Name = "cmdCancel"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+THISFORM.RELEASE
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _R8T13G43F
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] cmdAdd
+[PARENT] Form1
+[START PROPERTIES]
+Top = 10
+Left = 408
+Height = 23
+Width = 72
+FontName = "MS Sans Serif"
+FontSize = 8
+Caption = "\<Add"
+Default = .T.
+TabIndex = 10
+Name = "cmdAdd"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+#DEFINE cMess1_loc 'Please supply a value for Label Name'
+#DEFINE cMess2_loc 'Please supply a value for Description'
+#DEFINE cMess3_loc 'Please supply a value for Left Margin'
+#DEFINE cMess4_loc 'Please supply a value for Label Height'
+#DEFINE cMess5_loc 'Please supply a value for Number Across'
+#DEFINE cMess6_loc 'Please supply a value for Top Margin'
+#DEFINE cMess7_loc 'Please supply a value for Label Width'
+#DEFINE cMess8_loc 'Please supply a value for Space Between'
+#DEFINE cMess9_loc 'New Label Layout successfully added to labels file and registry.'
+#DEFINE cMess10_loc 'The new label layout could not be added. Make sure you have Labels file.'
+#DEFINE cDupeLbL_LOC "A label with the same name already exists, would you like to replace it?"
+
+LOCAL nLeftMarg, nSpace, nLblWid, nTopMarg
+LOCAL nLblHgt, cDataFld, cDesc, cDelim
+LOCAL lExists, cSaveName
+
+DO CASE
+CASE EMPTY(ThisForm.LayoutName.Value)
+	=messagebox(cMess1_loc)
+	ThisForm.LayoutName.SetFocus
+	RETURN
+CASE EMPTY(ThisForm.LabelHeight.Value)
+	=messagebox(cMess4_loc)
+	ThisForm.LabelHeight.SetFocus
+	RETURN
+CASE EMPTY(ThisForm.LabelWidth.Value)
+	=messagebox(cMess7_loc)
+	ThisForm.LabelWidth.SetFocus
+	RETURN
+CASE EMPTY(ThisForm.NumberAcross.Value)
+	=messagebox(cMess5_loc)
+	ThisForm.LabelWidth.SetFocus
+	RETURN
+ENDCASE
+
+m.cSaveName = ""
+SELECT userlbls
+
+* Add mode only
+IF THISFORM.EditMode = 0
+	LOCATE FOR UPPER(ALLTRIM(name)) == UPPER(ALLTRIM(THISFORM.LayOutName.Value));
+	 AND !DELETE()
+	IF FOUND()
+		IF MESSAGEBOX(cDupeLbL_LOC,36)#6
+			RETURN
+		ENDIF
+		m.lExists = .T.
+	m.cSaveName = THISFORM.LayOutName.Value
+	ENDIF
+ELSE
+	* Edit mode
+	m.cSaveName = WzLabels.Name	
+	LOCATE FOR UPPER(ALLTRIM(name)) == UPPER(ALLTRIM(m.cSaveName));
+	 AND !DELETE()
+	m.lExists = .T.
+ENDIF
+
+nLeftMarg = ThisForm.LeftMargin.Value
+nSpace = ThisForm.SpacesBetween.Value
+nLblWid = ThisForm.LabelWidth.Value
+nTopMarg =	ThisForm.TopMargin.Value
+nLblHgt	= ThisForm.LabelHeight.Value
+
+IF (ThisForm.ogpMetric.Value = 2)
+	* If the values are metric, convert them to english
+	nLeftMarg = ThisForm.ConvertMM(m.nLeftMarg)
+	nSpace = ThisForm.ConvertMM(m.nSpace)
+	nLblWid = ThisForm.ConvertMM(m.nLblWid)
+	nTopMarg = ThisForm.ConvertMM(m.nTopMarg)
+	nLblHgt = ThisForm.ConvertMM(m.nLblHgt)
+ENDIF
+
+* Convert to 1/10000 of an inch for report writer
+nLeftMarg = ALLTRIM(STR(ROUND(m.nLeftMarg,5) * 10000))
+nSpace = ALLTRIM(STR(ROUND(m.nSpace,5) * 10000))
+nLblWid = ALLTRIM(STR(ROUND(m.nLblWid,5) * 10000))
+nTopMarg = ALLTRIM(STR(ROUND(m.nTopMarg,5) * 10000))
+nLblHgt = ALLTRIM(STR(ROUND(m.nLblHgt,5) * 10000))
+
+m.cDelim = IIF(THISFORM.ogpMetric.Value=1,'"','cm')
+
+m.cDesc = PADR(LEFT(ALLTRIM(ThisForm.LayoutName.Value),11),11)+ " "
+IF THISFORM.lChangeDesc
+	LOCAL nSepPos,cPart1,cPart2,cTmpStr
+	cTmpStr = LEFT(ALLTRIM(ThisForm.Description.Value),22)
+	nSepPos = ATC("X",m.cTmpStr)
+	IF nSepPos #0
+		cPart1 = PADR(SUBSTR(cTmpStr,1,nSepPos-1),11)
+		cPart2 = PADR(ALLTRIM(SUBSTR(cTmpStr,nSepPos+1)),11)
+		m.cDesc = m.cDesc + m.cPart1 + m.cPart2
+	ELSE
+		* No separator, so we can't parse
+		THISFORM.lChangeDesc = .F.
+	ENDIF
+ENDIF
+IF !THISFORM.lChangeDesc
+	m.cDesc = m.cDesc + PADR(ALLTRIM(STR(ThisForm.LabelHeight.Value,8,2))+m.cDelim,11)
+	m.cDesc = m.cDesc + PADR(ALLTRIM(STR(ThisForm.LabelWidth.Value,8,2))+m.cDelim,11)
+ENDIF
+m.cDesc = m.cDesc +	PADL(ALLTRIM(STR(ThisForm.NumberAcross.Value)),2," ")+" "
+
+m.cDataFld = CHR(4)+CHR(0) + m.cDesc + ;
+	PADL(m.nLeftMarg,8,"0") + ;
+	PADL(ALLTRIM(STR(ThisForm.NumberAcross.Value)),2,"0") + ;
+	PADL(m.nSpace,8,"0") + ;
+	PADL(m.nLblWid,8,"0") + ;
+	PADL(m.nTopMarg,8,"0") + ;
+	PADL(m.nLblHgt,8,"0") + ;
+	IIF(ThisForm.ogpMetric.Value#1,'T','F')
+
+IF m.lExists
+	REPLACE Name WITH ThisForm.LayoutName.Value,;
+			Ckval WITH VAL(SYS(2007,SUBSTR(m.cDataFld,3))),;
+		 	Data WITH m.cDataFld
+	SELECT wzlabels
+	LOCATE FOR UPPER(ALLTRIM(name)) == UPPER(ALLTRIM(m.cSaveName)) AND !DELETE()
+	IF FOUND()
+		REPLACE Name WITH ThisForm.LayoutName.Value,;
+			LblDimen WITH ALLT(SUBSTR(userlbls.Data,15,11))+" x "+ALLT(SUBSTR(userlbls.Data,26,11)),;
+		 	LblColumns WITH ALLT(SUBSTR(userlbls.Data,37,2)),;
+		 	Data WITH m.cDataFld
+	ENDIF
+ELSE
+	INSERT INTO userlbls VALUES;
+	 	('DATAW','LABELLYT' ,ThisForm.LayoutName.Value,.F.,;
+	 	VAL(SYS(2007, SUBSTR(m.cDataFld,3))),m.cDataFld,{})
+
+	INSERT INTO WzLabels (Name, LblDimen, LblColumns, Data);
+		 VALUE (userlbls.Name,;
+		  ALLTRIM(SUBSTR(userlbls.Data,15,11))+" x "+ALLTRIM(SUBSTR(userlbls.Data,26,11)), ;
+	      ALLTRIM(SUBSTR(userlbls.Data,37,2)),userlbls.Data)
+ENDIF
+
+DO labeltoreg
+
+WAIT WINDOW cMess9_loc TIMEOUT 1
+
+THISFORM.RELEASE
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _R8T13G40P
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label1
+[PARENT] Form1
+[START PROPERTIES]
+AutoSize = .T.
+FontName = "MS Sans Serif"
+FontSize = 8
+Caption = "\<Label Name:"
+Height = 15
+Left = 14
+Top = 14
+Width = 62
+TabIndex = 0
+BackColor = 192,192,192
+Name = "Label1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _R8T13G45X
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] LayoutName
+[PARENT] Form1
+[START PROPERTIES]
+FontName = "MS Sans Serif"
+FontSize = 8
+Value = Label1
+Height = 21
+InputMask = "XXXXXXXXXXX"
+Left = 81
+TabIndex = 1
+Top = 10
+Width = 256
+Name = "LayoutName"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _R8T13G472
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] Description
+[PARENT] Form1
+[START PROPERTIES]
+FontName = "MS Sans Serif"
+FontSize = 8
+Value = 0.00" x 0.00"
+Enabled = .F.
+Height = 21
+InputMask = "XXXXXXXXXXXXXXXXXXXXXX"
+Left = 81
+TabIndex = 2
+Top = 40
+Width = 256
+DisabledForeColor = 64,0,64
+Name = "Description"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _R9K15742G
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] Image1
+[PARENT] Form1
+[START PROPERTIES]
+Picture = label2.bmp
+Height = 205
+Left = 12
+Top = 150
+Width = 481
+Name = "Image1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _R9K15742W
+[CLASS] shape
+[BASECLASS] shape
+[OBJNAME] Shape1
+[PARENT] Form1
+[START PROPERTIES]
+Top = 173
+Left = 338
+Height = 20
+Width = 43
+FillStyle = 0
+Name = "Shape1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _R9K15743C
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] LeftMargin
+[PARENT] Form1
+[START PROPERTIES]
+FontName = "MS Sans Serif"
+FontSize = 8
+Alignment = 1
+BackStyle = 0
+BorderStyle = 0
+Value = 0.00
+Height = 17
+InputMask = "999.9999"
+Left = 30
+SpecialEffect = 1
+TabIndex = 4
+Top = 269
+Width = 55
+Name = "LeftMargin"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _R9K157446
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] TopMargin
+[PARENT] Form1
+[START PROPERTIES]
+FontName = "MS Sans Serif"
+FontSize = 8
+Alignment = 1
+BackStyle = 0
+BorderStyle = 0
+Value = 0.0000
+Height = 17
+InputMask = "999.9999"
+Left = 132
+SpecialEffect = 1
+TabIndex = 5
+Top = 172
+Width = 55
+Name = "TopMargin"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _R8T13G40P
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] LabelHeight
+[PARENT] Form1
+[START PROPERTIES]
+FontName = "MS Sans Serif"
+FontSize = 8
+Alignment = 1
+BackStyle = 0
+BorderStyle = 0
+Value = 0.00
+Height = 17
+InputMask = "999.9999"
+Left = 100
+SpecialEffect = 1
+TabIndex = 6
+Top = 209
+Width = 55
+Name = "LabelHeight"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE LostFocus
+IF THISFORM.lChangeDesc
+	RETURN
+ENDIF
+LOCAL cDelim
+m.cDelim = IIF(THISFORM.ogpMetric.Value=1,'"',' cm')
+ThisForm.Description.Value = ALLTRIM(STR(ThisForm.LabelHeight.Value,8,2))+;
+		m.cDelim+" x "+ALLTRIM(STR(ThisForm.LabelWidth.Value,8,2))+m.cDelim
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _R9K15745P
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] LabelWidth
+[PARENT] Form1
+[START PROPERTIES]
+FontName = "MS Sans Serif"
+FontSize = 8
+Alignment = 1
+BackStyle = 0
+BorderStyle = 0
+Value = 0.00
+Height = 17
+InputMask = "999.9999"
+Left = 162
+SpecialEffect = 1
+TabIndex = 7
+Top = 246
+Width = 55
+Name = "LabelWidth"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE LostFocus
+IF THISFORM.lChangeDesc
+	RETURN
+ENDIF
+LOCAL cDelim
+m.cDelim = IIF(THISFORM.ogpMetric.Value=1,'"',' cm')
+ThisForm.Description.Value = ALLTRIM(STR(ThisForm.LabelHeight.Value,8,2))+;
+		m.cDelim+" x "+ALLTRIM(STR(ThisForm.LabelWidth.Value,8,2))+m.cDelim
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _R9K15746I
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] SpacesBetween
+[PARENT] Form1
+[START PROPERTIES]
+FontName = "MS Sans Serif"
+FontSize = 8
+Alignment = 1
+BackStyle = 0
+BorderStyle = 0
+Value = 0.00
+Height = 17
+InputMask = "999.9999"
+Left = 223
+SpecialEffect = 1
+TabIndex = 8
+Top = 313
+Width = 55
+Name = "SpacesBetween"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _R8T13G40P
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label3
+[PARENT] Form1
+[START PROPERTIES]
+FontName = "MS Sans Serif"
+FontSize = 8
+BackStyle = 0
+Caption = "Number Across:"
+Height = 15
+Left = 255
+Top = 173
+Width = 76
+TabIndex = 0
+Name = "Label3"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _R9K15747V
+[CLASS] spinner
+[BASECLASS] spinner
+[OBJNAME] NumberAcross
+[PARENT] Form1
+[START PROPERTIES]
+FontName = "MS Sans Serif"
+FontSize = 8
+Height = 21
+InputMask = "##"
+KeyboardHighValue = 20
+KeyboardLowValue = 1
+Left = 335
+SpecialEffect = 1
+SpinnerHighValue =  20.00
+SpinnerLowValue =   1.00
+TabIndex = 9
+Top = 170
+Width = 44
+Value = 0
+Name = "NumberAcross"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+this.value = 1
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _R8T13G40P
+[CLASS] optiongroup
+[BASECLASS] optiongroup
+[OBJNAME] ogpMetric
+[PARENT] Form1
+[START PROPERTIES]
+ButtonCount = 2
+Value = 1
+Height = 41
+Left = 14
+Top = 78
+Width = 155
+TabIndex = 3
+Name = "ogpMetric"
+Option1.FontName = "MS Sans Serif"
+Option1.FontSize = 8
+Option1.Caption = "Englis\<h"
+Option1.Value = 1
+Option1.Height = 17
+Option1.Left = 9
+Option1.Top = 13
+Option1.Width = 60
+Option1.AutoSize = .F.
+Option1.Name = "Option1"
+Option2.FontName = "MS Sans Serif"
+Option2.FontSize = 8
+Option2.Caption = "\<Metric"
+Option2.Value = 0
+Option2.Height = 17
+Option2.Left = 82
+Option2.Top = 13
+Option2.Width = 60
+Option2.AutoSize = .F.
+Option2.Name = "Option2"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+#DEFINE ENGMEASURE	'"'
+#DEFINE METMEASURE	' cm'
+#DEFINE ENGPROMPT_LOC	"Enter label measurements in inches:"
+#DEFINE	METPROMPT_LOC	"Enter label measurements in centimeters:"
+
+LOCAL cDelim
+IF (THIS.Value = 1 AND THISFORM.lEnglish) OR;
+	(THIS.Value # 1 AND !THISFORM.lEnglish)
+	RETURN
+ENDIF
+
+cDelim = IIF(This.Value=1,ENGMEASURE,METMEASURE)
+THISFORM.lEnglish = (This.Value = 1)
+
+IF This.Value = 1
+	ThisForm.lblPrompt.Caption = ENGPROMPT_LOC
+	* Convert metric to english
+	ThisForm.LeftMargin.Value = ThisForm.ConvertMM(ThisForm.LeftMargin.Value)
+	ThisForm.SpacesBetween.Value = ThisForm.ConvertMM(ThisForm.SpacesBetween.Value)
+	ThisForm.LabelWidth.Value = ThisForm.ConvertMM(ThisForm.LabelWidth.Value)
+	ThisForm.TopMargin.Value = ThisForm.ConvertMM(ThisForm.TopMargin.Value)
+	ThisForm.LabelHeight.Value = ThisForm.ConvertMM(ThisForm.LabelHeight.Value)
+	ThisForm.Description.Value = ALLTRIM(STR(ThisForm.LabelHeight.Value,8,2))+;
+		ALLTRIM(STR(ThisForm.LabelHeight.Value,8,2))
+ELSE
+	ThisForm.lblPrompt.Caption = METPROMPT_LOC
+	* Convert english to metric
+	ThisForm.LeftMargin.Value = ThisForm.ConvertMM(ThisForm.LeftMargin.Value,.t.)
+	ThisForm.SpacesBetween.Value = ThisForm.ConvertMM(ThisForm.SpacesBetween.Value,.t.)
+	ThisForm.LabelWidth.Value = ThisForm.ConvertMM(ThisForm.LabelWidth.Value,.t.)
+	ThisForm.TopMargin.Value = ThisForm.ConvertMM(ThisForm.TopMargin.Value,.t.)
+	ThisForm.LabelHeight.Value = ThisForm.ConvertMM(ThisForm.LabelHeight.Value,.t.)
+ENDIF
+
+IF !THISFORM.lChangeDesc
+	ThisForm.Description.Value = ALLTRIM(STR(ThisForm.LabelHeight.Value,8,2))+;
+		m.cDelim+" x "+ALLTRIM(STR(ThisForm.LabelWidth.Value,8,2))+m.cDelim
+ENDIF
+
+ThisForm.Refresh
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _R8T13G40P
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label6
+[PARENT] Form1
+[START PROPERTIES]
+FontName = "MS Sans Serif"
+FontSize = 8
+BackStyle = 1
+Caption = "Unit of Measure"
+Height = 15
+Left = 22
+Top = 72
+Width = 78
+TabIndex = 0
+Name = "Label6"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _R9K163WGW
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] lblPrompt
+[PARENT] Form1
+[START PROPERTIES]
+FontName = "MS Sans Serif"
+FontSize = 8
+BackStyle = 1
+Caption = "Enter label measurements in inches:"
+Height = 15
+Left = 14
+Top = 135
+Width = 217
+TabIndex = 0
+Name = "lblPrompt"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _R9K163WHK
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label8
+[PARENT] Form1
+[START PROPERTIES]
+AutoSize = .T.
+FontName = "MS Sans Serif"
+FontSize = 8
+Caption = "Dimensions:"
+Height = 15
+Left = 14
+Top = 44
+Width = 59
+TabIndex = 0
+BackColor = 192,192,192
+Name = "Label8"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _R9L05FSRW
+[CLASS] checkbox
+[BASECLASS] checkbox
+[OBJNAME] chkSet
+[PARENT] Form1
+[START PROPERTIES]
+Top = 42
+Left = 347
+Height = 17
+Width = 36
+FontName = "MS Sans Serif"
+FontSize = 8
+Caption = "\<Set"
+Name = "chkSet"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+THISFORM.Description.Enabled = (THIS.Value=1)
+THISFORM.lChangeDesc = (THIS.Value=1)
+IF THIS.Value # 1
+	LOCAL cDelim,cSaveValue
+	cSaveValue = ALLTRIM(ThisForm.Description.Value)
+	m.cDelim = IIF(THISFORM.ogpMetric.Value=1,'"',' cm')
+	ThisForm.Description.Value = ALLTRIM(STR(ThisForm.LabelHeight.Value,8,2))+;
+		m.cDelim+" x "+ALLTRIM(STR(ThisForm.LabelWidth.Value,8,2))+m.cDelim
+	IF ALLTRIM(ThisForm.Description.Value)#m.cSaveValue
+		THISFORM.cChangeValue = m.cSaveValue
+	ENDIF
+ELSE
+	IF !EMPTY(THISFORM.cChangeValue)
+		ThisForm.Description.Value = THISFORM.cChangeValue
+	ENDIF
+ENDIF
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[START PROPERTIES]
+Arial, 0, 9, 5, 15, 12, 13, 3, 0
+MS Sans Serif, 0, 8, 5, 13, 11, 11, 2, 0
+[END PROPERTIES]
+[EOF]
