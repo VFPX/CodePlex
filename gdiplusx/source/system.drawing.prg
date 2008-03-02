@@ -1554,6 +1554,7 @@ DEFINE CLASS xfcBitmap AS xfcimage
 		
 		LOCAL lnLeft0, lnRight0, llMoved
 		LOCAL loImage, lhImage, lhBitmap
+		LOCAL llUseClient
 		LOCAL lqRect, lnLeft, lnTop, lnRight, lnBottom, lnWidth, lnHeight
 		LOCAL loForm as Form
 		
@@ -1564,7 +1565,9 @@ DEFINE CLASS xfcBitmap AS xfcimage
 		
 		LOCAL loExc AS Exception
 		TRY
-			
+			IF PCOUNT()=2 AND tiX = -1
+				llUseClient = .T.
+			ENDIF
 			DO CASE
 			CASE VARTYPE(m.tHWnd) = "O" AND m.tHWnd.BaseClass = "Form"
 				m.lnFunctionType = 2 && VFP Form
@@ -1629,7 +1632,11 @@ DEFINE CLASS xfcBitmap AS xfcimage
 		
 		   	m.lqRect = EMPTY_RECTANGLE
 		
-		    m.lnStat = xfcGetWindowRect(m.tHWnd, @lqRect)
+		    IF m.llUseCLient
+		    	m.lnStat = xfcGetClientRect(m.tHWnd, @lqRect)
+		    ELSE
+		    	m.lnStat = xfcGetWindowRect(m.tHWnd, @lqRect)
+		    ENDIF
 		   	m.lnLeft   = CTOBIN(SUBSTR(m.lqRect,  1, 4),"4rs")
 		    m.lnTop    = CTOBIN(SUBSTR(m.lqRect,  5, 4),"4rs")
 		   	m.lnRight  = CTOBIN(SUBSTR(m.lqRect,  9, 4),"4rs")
@@ -1651,7 +1658,11 @@ DEFINE CLASS xfcBitmap AS xfcimage
 			ENDIF
 		
 		    LOCAL hdc, hbSave, hdcCompat, hbm
-		    hdc = xfcGetWindowDC(m.tHWnd)
+		    IF m.llUseCLient
+				m.hdc = xfcGetDC(m.tHWnd)
+			ELSE
+				m.hdc = xfcGetWindowDC(m.tHWnd)
+			ENDIF
 		
 		    m.hdcCompat = xfcCreateCompatibleDC(hDC)
 		    m.hbm = xfcCreateCompatibleBitmap(hDC, m.lnWidth, m.lnHeight)
@@ -26598,6 +26609,13 @@ FUNCTION xfcCreateCompatibleBitmap(hDC, width, Height)
 *********************************************************************
 	DECLARE Integer CreateCompatibleBitmap IN WIN32API AS xfcCreateCompatibleBitmap Integer hDC, Integer width, Integer Height
 	RETURN xfcCreateCompatibleBitmap(m.hDC, m.width, m.Height)
+ENDFUNC
+
+*********************************************************************
+FUNCTION xfcGetClientRect(hwnd, lpRect)
+*********************************************************************
+	DECLARE Long GetClientRect IN WIN32API AS xfcGetClientRect Long hwnd, String @lpRect
+	RETURN xfcGetClientRect(m.hwnd, @m.lpRect)
 ENDFUNC
 
 *********************************************************************
