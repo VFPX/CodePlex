@@ -1,0 +1,67 @@
+<html>
+<head>
+<style>
+	ErrorStyle {
+		font-family:verdana;
+		font-size:9pt;
+		margin-top:0px;
+		margin-left:2px;
+		margin-right:2px;	
+		margin-bottom:2px;
+	}  
+	TABLE.ErrorDetails {background-color:#FFFFCC}
+	TABLE.Error TD   {font-size:8pt}
+	A.error:link {  color: #000000;text-decoration: none}
+	A.error:visited {   text-decoration: none}
+	A.error:hover {  color: #000000;text-decoration: underline}
+	A.error {  text-decoration: none; color: #000000}
+</style>
+
+<script>
+function showDetails() {
+	if (document.all.ErrorDetails.style.display == "") {
+		document.all.ErrorDetails.style.display = "none"
+	} else {
+		document.all.ErrorDetails.style.display = ""
+	}	
+}
+</script>
+
+</head>
+
+<body>
+<div class="ErrorStyle">
+<XML ID="ErrorsXML">
+<ERRORS>
+	<ERROR>
+		<TITLE>Invalid username or password</TITLE>
+		<MESSAGE>The Universal Thread needs a valid username and password to connect to their web service.</MESSAGE>
+		<OPTIONMSG>Set up your username and password.</OPTIONMSG>
+		<OPTIONLINK><![CDATA[vfps:openoption?cat=something]]></OPTIONLINK>
+	</ERROR>
+</ERRORS>
+</XML>
+
+<table border="0" cellpadding="2" cellspacing="2" width="100%" id="PaneErrors" class="Error">
+  <tr class="errorhead">
+    <td><a href="Javascript:showDetails()" class="Error"><img src="..\error.gif" border="0" alt="" align="absmiddle"> 
+    An error occurred. Click here for details.</a></td>
+  </tr>
+  <tr>
+    <td>
+    <table datasrc="#ErrorsXML" id="ErrorDetails" cellpadding="2" cellspacing="2" width="100%" class="ErrorDetails" style="display: none">
+      <tr>
+        <td>
+        <b><div datafld="TITLE"></div></b>
+        <div datafld="MESSAGE"></div>
+        <div><a datafld="OPTIONLINK"><span datafld="OPTIONMSG"></span></a></div>
+        </td>
+      </tr>
+    </table>
+    </td>
+  </tr>
+</table>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,5 @@
+SCC = This is a Source Code Control file
+
+[fd3.mak]
+SCC_Aux_Path = "\\fox1\wizards\VSS"
+SCC_Project_Name = "$/VFP7/WZFOXDOC/FD3FLL", PJABAAAA

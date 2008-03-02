@@ -1,0 +1,27 @@
+ Volume in drive D has no label.
+ Volume Serial Number is 1868-AA3E
+
+ Directory of D:\xbaseslm\SRC\WZFORM
+
+10/25/94  03:03p        <DIR>          .
+10/25/94  03:03p        <DIR>          ..
+10/20/94  09:46p        <DIR>          bmps
+10/24/94  05:50p                 4,963 FORMWIZ.H
+10/24/94  08:59p                 1,023 FORMWIZ.PJT
+10/24/94  08:59p                 1,184 FORMWIZ.PJX
+10/24/94  08:59p                72,256 FORMWIZ.VCT
+10/24/94  08:59p                 5,722 FORMWIZ.VCX
+10/24/94  05:50p                 1,258 STYLES.DBF
+10/24/94  05:50p                 1,472 STYLES.FPT
+10/24/94  05:50p                   535 WIZBMP.DBF
+10/24/94  05:50p                 6,464 WIZBMP.FPT
+10/24/94  05:50p                44,141 WIZFORM.PRG
+10/07/94  06:27a                 1,025 wizstart.prg
+10/24/94  05:50p                16,684 WIZSTYLE.PRG
+10/24/94  05:50p                86,016 WIZSTYLE.VCT
+10/24/94  05:50p                26,831 WIZSTYLE.VCX
+10/24/94  09:34p                64,192 WZFORM.PJT
+10/24/94  09:34p                 5,676 WZFORM.PJX
+10/25/94  03:03p                     0 wzform.txt
+              20 File(s)        339,442 bytes
+                             53,544,960 bytes free
