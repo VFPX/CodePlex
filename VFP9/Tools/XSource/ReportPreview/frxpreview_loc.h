@@ -38,7 +38,6 @@
 #define ZOOM_LEVEL_PROMPT_200_LOC          "200%"
 #define ZOOM_LEVEL_PROMPT_300_LOC          "300%"
 #define ZOOM_LEVEL_PROMPT_500_LOC          "500%"
-#define ZOOM_LEVEL_PROMPT_FIT_WIDTH_LOC    "Fit to Width"
 #define ZOOM_LEVEL_PROMPT_WHOLE_PAGE_LOC   "Whole Page"
 
 *-------------------------------------------------------
@@ -54,7 +53,7 @@
 #define CONTEXT_MENU_PROMPT_TOOLBAR_LOC            "Toolbar"
 #define CONTEXT_MENU_PROMPT_PRINT_LOC              "Print"
 #define CONTEXT_MENU_PROMPT_CLOSE_LOC              "Close"
-#define CONTEXT_MENU_PROMPT_INFODEBUG_LOC          "About..."
+#define CONTEXT_MENU_PROMPT_INFODEBUG_LOC          "Info...[DEBUG]"
 #define CONTEXT_MENU_PROMPT_1PAGE_LOC              "1 page"
 #define CONTEXT_MENU_PROMPT_2PAGES_LOC             "2 pages"
 #define CONTEXT_MENU_PROMPT_4PAGES_LOC             "4 pages"
