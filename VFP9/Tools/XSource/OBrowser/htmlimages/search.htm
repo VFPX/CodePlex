@@ -1,0 +1,125 @@
+<HTML>
+	<HEAD>
+		<meta name=vs_targetSchema content="http://schemas.microsoft.com/intellisense/ie5">
+	</head>
+<BODY scroll="no" topmargin="0" leftmargin="0" bottommargin="0" rightmargin="0">
+			<script language="VBScript">
+	Sub HighlightItem(src)
+		src.style.textDecoration="Underline"
+		src.style.color="#6666FF"
+	End Sub
+
+	Sub LowlightItem(src)
+		src.style.textDecoration="None"
+		src.style.color="#000000"
+	End Sub
+	
+	Sub ShowAdvanced
+		IF AdvancedTable.style.display="none" THEN
+			AdvancedTable.style.display=""
+			txtAdvancedFind.innerHTML="Switch to simple find..."
+		ELSE
+			AdvancedTable.style.display="none"
+			txtAdvancedFind.innerHTML="Switch to advanced find..."
+		END IF
+	End sub
+	
+	Sub StartSearch
+		lcURL = "vfps://search/"+txtSearch.value+"/"+cmbLibs.value+"/"+cmbScope.value+"/"+cmbOption.value
+		Navigate lcURL
+	End Sub
+	
+			</script>
+			<table width="100%" cellspacing="0" cellpadding="0">
+				<tr height="21">
+					<td bgcolor="silver">
+					</td>
+					<td bgcolor="silver" align="right">
+						<!--font id="txtAdvancedFind" face="Tahoma" size="-1" color="white" style="CURSOR: hand" onmouseover="HighlightItem(txtAdvancedFind)" onmouseout="LowlightItem(txtAdvancedFind)" onclick="ShowAdvanced()">Switch 
+							to advanced find...</font-->
+						<font face="Tahoma" size="-1" color="black">
+						<a href="vfps://ShowAdvanced" id="txtAdvancedFind" style="CURSOR: hand; color:black; text-decoration:None" onmouseover="HighlightItem(txtAdvancedFind)" onmouseout="LowlightItem(txtAdvancedFind)" onclick="ShowAdvanced()">Switch to advanced 
+							find...</a> 
+						</font>
+					</td>
+					<td bgcolor="silver" width="10">
+					</td>
+					<td width="1" bgcolor="white"></td>
+					<td bgcolor="silver" width="25"><font face="Tahoma" size="-1" color="white"><center><b><a href="vfps://close/" id="txtClose" style="CURSOR: hand; color:black; text-decoration:none " onmouseover="HighlightItem(txtClose)" onmouseout="LowlightItem(txtClose)" onclick="Navigate('vfps://close/')">x</a></b></center>
+						</font>
+					</td>
+				</tr>
+			</table>
+			<table width="100%" height="100%" cellspacing="0" cellpadding="0">
+				<tr height="*">
+					<td bgcolor="silver" valign="top" width="20">
+					</td>
+					<td bgcolor="white" width="20" valign="top"><IMG src="corner.gif"></td>
+					<td bgcolor="white" valign="top" width="*">
+						<table width="100%">
+							<tr>
+								<td valign="center">
+									<table cellspacing="0" cellpadding="0">
+										<tr>
+											<td align="left" width="60"><font face="Tahoma" size="-1">Look for:</font>
+											</td>
+											<td align="left"><font face="Tahoma" size="-1"> <INPUT id="txtSearch" name="txtSearch" style="WIDTH: 140px" width="150">
+													<INPUT id="button1" name="button1" type="button" value="Go" onclick="StartSearch()"></font></td>
+										</tr>
+									</table>
+									<table id="AdvancedTable" cellspacing="0" cellpadding="0" style="DISPLAY: none" width="100%">
+										<tr height="7">
+											<td></td>
+											<td></td>
+										</tr>
+										<tr>
+											<td align="left" width="60"><font face="Tahoma" size="-1">Libraries:</font></td>
+											<td align="left"><font face="Tahoma" size="-1">
+													<SELECT id="cmbLibs" name="cmbLibs" style="WIDTH: 174px">
+														<OPTION value="::all">All Libraries</OPTION>
+														<!--LIBRARYOPTIONS-->
+													</SELECT>
+												</font>
+											</td>
+										</tr>
+										<tr>
+											<td align="left" width="60"><font face="Tahoma" size="-1">Scope:</font>
+											</td>
+											<td align="left"><font face="Tahoma" size="-1">
+													<SELECT id="cmbScope" name="cmbScope" style="WIDTH: 174px">
+														<OPTION selected value="--">All Items</OPTION>
+														<OPTION value="C">Classes</OPTION>
+														<OPTION value="D">Constants</OPTION>
+														<OPTION value="E">Enums</OPTION>
+														<OPTION value="I">Interfaces</OPTION>
+														<OPTION value="M">Methods and Events</OPTION>
+														<OPTION value="P">Properties</OPTION>
+													</SELECT>
+												</font>
+											</td>
+										</tr>
+										<tr>
+											<td align="left" width="60"><font face="Tahoma" size="-1">Options:</font>
+											</td>
+											<td align="left"><font face="Tahoma" size="-1">
+													<SELECT id="cmbOption" name="cmbOption" style="WIDTH: 174px">
+														<OPTION value="1">Contained in</OPTION>
+														<OPTION value="2">Starts with</OPTION>
+														<OPTION value="3">Exactly like</OPTION>
+													</SELECT>
+												</font>
+											</td>
+										</tr>
+									</table>
+									<br>
+								</td>
+								<td align="right" width="100" valign="top">
+									<IMG id="searchimages" src="fox.gif">
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</BODY>
+</HTML>
