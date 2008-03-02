@@ -1,0 +1,100 @@
+//Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+#define VER_FILE_DESCRIPTION    "Microsoft\256 Visual FoxPro\256 FoxDoc Support Library\0"
+#define VER_INTERNAL_NAME       "FD3\0"
+#define VER_ORIGINAL_FILENAME   "FD3.FLL\0"
+#define VER_FILETYPE		VFT_DLL
+#define VER_PRIVATE_BUILD_STR	szVerUser
+#include "version.rc"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_ABORT               "Abort"
+    IDS_ADDINGFILE          "Adding %s file"
+    IDS_LINE_TOKEN          "Line %d  %s"
+    IDS_PASSSTR             "Pass %d %s"
+    IDS_PASSLINE            "Pass %d Line %d"
+    IDS_ADDING              "Adding %s file"
+    IDS_ERROR_SCX           "%s  FP 2.x and 3.0 SCX files only\n"
+    IDS_PROCEDURE           "Adding Procedure file"
+    IDS_FORMAT              "Adding Format file"
+    IDS_LIBRARY             "Adding Library file"
+    IDS_HELP                "Adding Help file"
+    IDS_RESOURCE            "Adding Resource file"
+    IDS_PRINTER             "Adding Printer file"
+    IDS_ALTERNATE           "Adding Alternate file"
+    IDS_INDEX               "Adding Index file"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_CLASSLIBRARY        "Adding ClassLibrary file"
+    IDS_EXTERNALS           "External %s"
+    IDS_ILLEGAL_TOP         "Illegal top file type"
+    IDS_INDEXING            "wait wind nowait 'indexing symbol table '+str(recc(),6)"
+    IDS_DONE                "Done"
+    IDS_THERMUP             "this.ThermRef.Update(50,'Pass 2')"
+END
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

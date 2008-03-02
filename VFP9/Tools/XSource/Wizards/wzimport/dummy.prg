@@ -1,0 +1,8 @@
+* Functions found in WIZARD.FLL
+procedure ANALYZESDF
+procedure COUNTDELIMITEDFIELDS
+procedure DELIMITEDFIELDWIDTHS
+procedure SCATTERREC
+procedure WIZARDVER
+procedure SETWIZARDCODEPAGE
+procedure ISDBCSCODEPAGE
