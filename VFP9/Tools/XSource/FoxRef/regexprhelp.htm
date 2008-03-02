@@ -1,0 +1,394 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN"
+           "http://www.w3.org/TR/REC-html40/strict.dtd">
+<html xmlns:o="urn:schemas-microsoft-com:office:office"
+xmlns:w="urn:schemas-microsoft-com:office:word"
+xmlns="http://www.w3.org/TR/REC-html40">
+
+<head>
+<meta http-equiv=Content-Type content="text/html; charset=windows-1252">
+<meta name=ProgId content=Word.Document>
+<meta name=Generator content="Microsoft Word 9">
+<meta name=Originator content="Microsoft Word 9">
+<link rel=File-List href="./regexp2_files/filelist.xml">
+<title>Regular expression operators</title>
+<!--[if gte mso 9]><xml>
+ <o:DocumentProperties>
+  <o:Author>Randy Brown</o:Author>
+  <o:LastAuthor>Randy Brown</o:LastAuthor>
+  <o:Revision>3</o:Revision>
+  <o:TotalTime>2</o:TotalTime>
+  <o:Created>2000-05-29T20:12:00Z</o:Created>
+  <o:LastSaved>2000-05-29T20:15:00Z</o:LastSaved>
+  <o:Pages>1</o:Pages>
+  <o:Words>330</o:Words>
+  <o:Characters>1886</o:Characters>
+  <o:Company>Microsoft Corp.</o:Company>
+  <o:Lines>15</o:Lines>
+  <o:Paragraphs>3</o:Paragraphs>
+  <o:CharactersWithSpaces>2316</o:CharactersWithSpaces>
+  <o:Version>9.3821</o:Version>
+ </o:DocumentProperties>
+</xml><![endif]-->
+<style>
+<!--
+ /* Font Definitions */
+@font-face
+	{font-family:Verdana;
+	panose-1:2 11 6 4 3 5 4 4 2 4;
+	mso-font-charset:0;
+	mso-generic-font-family:swiss;
+	mso-font-pitch:variable;
+	mso-font-signature:536871559 0 0 0 415 0;}
+ /* Style Definitions */
+p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{mso-style-parent:"";
+	margin:0in;
+	margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";}
+p
+	{margin-right:0in;
+	mso-margin-top-alt:auto;
+	mso-margin-bottom-alt:auto;
+	margin-left:0in;
+	mso-pagination:widow-orphan;
+	font-size:12.0pt;
+	font-family:"Times New Roman";
+	mso-fareast-font-family:"Times New Roman";}
+@page Section1
+	{size:8.5in 11.0in;
+	margin:1.0in 1.25in 1.0in 1.25in;
+	mso-header-margin:.5in;
+	mso-footer-margin:.5in;
+	mso-paper-source:0;}
+div.Section1
+	{page:Section1;}
+ /* List Definitions */
+@list l0
+	{mso-list-id:717437537;
+	mso-list-type:hybrid;
+	mso-list-template-ids:-855713530 1278927652 -1875606794 -1600241906 1652866926 -1888708334 -587439620 -1905743686 1673851584 1399633472;}
+@list l0:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:.5in;
+	mso-level-number-position:left;
+	text-indent:-.25in;
+	mso-ansi-font-size:10.0pt;
+	font-family:Symbol;}
+ol
+	{margin-bottom:0in;}
+ul
+	{margin-bottom:0in;}
+-->
+</style>
+
+<script language="JavaScript"  src="MS-ITS:ntshared.chm::/shared.js">
+</script>
+<meta name=MS-IT-LOC content="Indexing Service">
+<meta name=MS.LOCALE content=EN-US>
+<meta http-equiv=PICS-Label
+content="(PICS-1.1 &quot;http://www.rsac.org/ratingsv01.html&quot; 1 COMMENT &quot;RSACi North America Server&quot; BY &quot;inet@microsoft.com&quot; R (N 0 S 0 V 0 I 0))">
+<meta name=MS-HAID content="a_ismain-concepts_66">
+<meta name=MS-HAID content="a_ismain-concepts_66.htm">
+<link rel=stylesheet media=screen type="text/css"
+href="MS-ITS:ntshared.chm::/coUA.css">
+<link rel=stylesheet media=print type="text/css"
+href="MS-ITS:ntshared.chm::/coUAprint.css">
+</head>
+
+<body lang=EN-US style='tab-interval:.5in'>
+
+<div class=Section1>
+
+<h1><a name="ismain-concepts_66"><span style='font-size:12.0pt;mso-bidi-font-size:
+24.0pt;font-family:Verdana'>Regular expression operators</span></a><span
+style='font-size:12.0pt;mso-bidi-font-size:24.0pt;font-family:Verdana'><o:p></o:p></span></h1>
+
+<h2><a name="H2_126334010"></a><span style='font-size:8.0pt;mso-bidi-font-size:
+18.0pt;font-family:Verdana'>The rules for using regular expression operators
+are:<o:p></o:p></span></h2>
+
+<ul type=disc>
+ <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+     mso-list:l0 level1 lfo3;tab-stops:list .5in'><span style='font-size:8.0pt;
+     mso-bidi-font-size:12.0pt;font-family:Verdana'>When making a query, the
+     asterisk (*), period (.) and question mark (?) behave as they do in
+     Windows. The asterisk (*) matches any number of characters. The period (.)
+     matches end of string. The question mark (?) matches any single character.<o:p></o:p></span></li>
+ <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+     mso-list:l0 level1 lfo3;tab-stops:list .5in'><span style='font-size:8.0pt;
+     mso-bidi-font-size:12.0pt;font-family:Verdana'>Any character except
+     asterisk (*), period (.), question mark (?), and vertical bar (|) defaults
+     to matching itself.<o:p></o:p></span></li>
+ <li class=MsoNormal style='mso-margin-top-alt:auto;mso-margin-bottom-alt:auto;
+     mso-list:l0 level1 lfo3;tab-stops:list .5in'><span style='font-size:8.0pt;
+     mso-bidi-font-size:12.0pt;font-family:Verdana'>Regular expressions can be
+     enclosed in matching quotation marks (&quot;&nbsp;&quot;), and must be
+     enclosed in quotation marks if they contain a space or closing parenthesis
+     (&nbsp;)&nbsp;).<o:p></o:p></span></li>
+</ul>
+
+<p><span style='font-size:8.0pt;mso-bidi-font-size:12.0pt;font-family:Verdana'>When
+preceded by a vertical bar (|), the following characters have special meaning:<o:p></o:p></span></p>
+
+<table border=0 cellpadding=0 style='mso-cellspacing:1.5pt;mso-padding-alt:
+ 0in 0in 0in 0in'>
+ <tr>
+  <td style='padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal align=center style='text-align:center'><b><span
+  style='font-size:8.0pt;mso-bidi-font-size:12.0pt;font-family:Verdana'>Character<o:p></o:p></span></b></p>
+  </td>
+  <td style='padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal align=center style='text-align:center'><b><span
+  style='font-size:8.0pt;mso-bidi-font-size:12.0pt;font-family:Verdana'>Description<o:p></o:p></span></b></p>
+  </td>
+ </tr>
+ <tr>
+  <td style='padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:8.0pt;mso-bidi-font-size:12.0pt;
+  font-family:Verdana'>&nbsp;(<o:p></o:p></span></p>
+  </td>
+  <td style='padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:8.0pt;mso-bidi-font-size:12.0pt;
+  font-family:Verdana'>Opens a group. Must be followed by a matching closing
+  parenthesis (&nbsp;)&nbsp;).<o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td style='padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:8.0pt;mso-bidi-font-size:12.0pt;
+  font-family:Verdana'>&nbsp;)<o:p></o:p></span></p>
+  </td>
+  <td style='padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:8.0pt;mso-bidi-font-size:12.0pt;
+  font-family:Verdana'>Closes a group. Must be preceded by a matching opening
+  parenthesis (&nbsp;(&nbsp;).<o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td style='padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:8.0pt;mso-bidi-font-size:12.0pt;
+  font-family:Verdana'>&nbsp;[<o:p></o:p></span></p>
+  </td>
+  <td style='padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:8.0pt;mso-bidi-font-size:12.0pt;
+  font-family:Verdana'>Opens a character class. Must be followed by a matching
+  closing bracket (]).<o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td style='padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:8.0pt;mso-bidi-font-size:12.0pt;
+  font-family:Verdana'>&nbsp;]<o:p></o:p></span></p>
+  </td>
+  <td style='padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:8.0pt;mso-bidi-font-size:12.0pt;
+  font-family:Verdana'>Closes a character class. Must be preceded by a matching
+  opening bracket ([).<o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td style='padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:8.0pt;mso-bidi-font-size:12.0pt;
+  font-family:Verdana'>&nbsp;{<o:p></o:p></span></p>
+  </td>
+  <td style='padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:8.0pt;mso-bidi-font-size:12.0pt;
+  font-family:Verdana'>Opens a counted match. Must be followed by a matching
+  closing brace (}).<o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td style='padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:8.0pt;mso-bidi-font-size:12.0pt;
+  font-family:Verdana'>&nbsp;}<o:p></o:p></span></p>
+  </td>
+  <td style='padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:8.0pt;mso-bidi-font-size:12.0pt;
+  font-family:Verdana'>Closes a counted match. Must be preceded by a matching
+  opening brace ({).<o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td style='padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:8.0pt;mso-bidi-font-size:12.0pt;
+  font-family:Verdana'>&nbsp;,<o:p></o:p></span></p>
+  </td>
+  <td style='padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:8.0pt;mso-bidi-font-size:12.0pt;
+  font-family:Verdana'>Separates OR clauses.<o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td style='padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:8.0pt;mso-bidi-font-size:12.0pt;
+  font-family:Verdana'>&nbsp;*<o:p></o:p></span></p>
+  </td>
+  <td style='padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:8.0pt;mso-bidi-font-size:12.0pt;
+  font-family:Verdana'>Matches zero or more occurrences of the preceding
+  expression.<o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td style='padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:8.0pt;mso-bidi-font-size:12.0pt;
+  font-family:Verdana'>&nbsp;?<o:p></o:p></span></p>
+  </td>
+  <td style='padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:8.0pt;mso-bidi-font-size:12.0pt;
+  font-family:Verdana'>Matches zero or one occurrence of the preceding
+  expression.<o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td style='padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:8.0pt;mso-bidi-font-size:12.0pt;
+  font-family:Verdana'>&nbsp;+<o:p></o:p></span></p>
+  </td>
+  <td style='padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:8.0pt;mso-bidi-font-size:12.0pt;
+  font-family:Verdana'>Matches one or more occurrences of the preceding
+  expression.<o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td style='padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:8.0pt;mso-bidi-font-size:12.0pt;
+  font-family:Verdana'>All else<o:p></o:p></span></p>
+  </td>
+  <td style='padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:8.0pt;mso-bidi-font-size:12.0pt;
+  font-family:Verdana'>Matches itself.<o:p></o:p></span></p>
+  </td>
+ </tr>
+</table>
+
+<h2><a name="H2_126335933"></a><span style='font-size:8.0pt;mso-bidi-font-size:
+18.0pt;font-family:Verdana'>Brackets<o:p></o:p></span></h2>
+
+<p><span style='font-size:8.0pt;mso-bidi-font-size:12.0pt;font-family:Verdana'>Between
+brackets ([&nbsp;]), the following characters have special meaning:<o:p></o:p></span></p>
+
+<table border=0 cellpadding=0 style='mso-cellspacing:1.5pt;mso-padding-alt:
+ 0in 0in 0in 0in'>
+ <tr>
+  <td style='padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal align=center style='text-align:center'><b><span
+  style='font-size:8.0pt;mso-bidi-font-size:12.0pt;font-family:Verdana'>Character<o:p></o:p></span></b></p>
+  </td>
+  <td style='padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal align=center style='text-align:center'><b><span
+  style='font-size:8.0pt;mso-bidi-font-size:12.0pt;font-family:Verdana'>Description<o:p></o:p></span></b></p>
+  </td>
+ </tr>
+ <tr>
+  <td style='padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:8.0pt;mso-bidi-font-size:12.0pt;
+  font-family:Verdana'>&nbsp;^<o:p></o:p></span></p>
+  </td>
+  <td style='padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:8.0pt;mso-bidi-font-size:12.0pt;
+  font-family:Verdana'>Must be the first character. Matches everything but
+  following classes.<o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td style='padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:8.0pt;mso-bidi-font-size:12.0pt;
+  font-family:Verdana'>&nbsp;]<o:p></o:p></span></p>
+  </td>
+  <td style='padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:8.0pt;mso-bidi-font-size:12.0pt;
+  font-family:Verdana'>Closes the class. May only be preceded by a caret (^).<o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td style='padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:8.0pt;mso-bidi-font-size:12.0pt;
+  font-family:Verdana'>&nbsp;-<o:p></o:p></span></p>
+  </td>
+  <td style='padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:8.0pt;mso-bidi-font-size:12.0pt;
+  font-family:Verdana'>Range operator. Preceded and followed by other
+  characters.<o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td style='padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:8.0pt;mso-bidi-font-size:12.0pt;
+  font-family:Verdana'>All else<o:p></o:p></span></p>
+  </td>
+  <td style='padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:8.0pt;mso-bidi-font-size:12.0pt;
+  font-family:Verdana'>Matches itself, begins, or ends a range.<o:p></o:p></span></p>
+  </td>
+ </tr>
+</table>
+
+<h2><a name="H2_126336499"></a><span style='font-size:8.0pt;mso-bidi-font-size:
+18.0pt;font-family:Verdana'>Braces<o:p></o:p></span></h2>
+
+<p><span style='font-size:8.0pt;mso-bidi-font-size:12.0pt;font-family:Verdana'>Between
+braces ({&nbsp;}), the following meanings apply.<o:p></o:p></span></p>
+
+<table border=0 cellpadding=0 style='mso-cellspacing:1.5pt;mso-padding-alt:
+ 0in 0in 0in 0in'>
+ <tr>
+  <td style='padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal align=center style='text-align:center'><b><span
+  style='font-size:8.0pt;mso-bidi-font-size:12.0pt;font-family:Verdana'>Character<o:p></o:p></span></b></p>
+  </td>
+  <td style='padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal align=center style='text-align:center'><b><span
+  style='font-size:8.0pt;mso-bidi-font-size:12.0pt;font-family:Verdana'>Description<o:p></o:p></span></b></p>
+  </td>
+ </tr>
+ <tr>
+  <td style='padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:8.0pt;mso-bidi-font-size:12.0pt;
+  font-family:Verdana'>m<o:p></o:p></span></p>
+  </td>
+  <td style='padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:8.0pt;mso-bidi-font-size:12.0pt;
+  font-family:Verdana'>Matches exactly <i>m</i> occurrences of the preceding
+  expression (0&lt; m &lt;&nbsp;256).<o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td style='padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:8.0pt;mso-bidi-font-size:12.0pt;
+  font-family:Verdana'>m,<o:p></o:p></span></p>
+  </td>
+  <td style='padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:8.0pt;mso-bidi-font-size:12.0pt;
+  font-family:Verdana'>Matches at least <i>m</i> occurrences of the preceding
+  expression (1&lt; m &lt;&nbsp;256).<o:p></o:p></span></p>
+  </td>
+ </tr>
+ <tr>
+  <td style='padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:8.0pt;mso-bidi-font-size:12.0pt;
+  font-family:Verdana'>m,n<o:p></o:p></span></p>
+  </td>
+  <td style='padding:.75pt .75pt .75pt .75pt'>
+  <p class=MsoNormal><span style='font-size:8.0pt;mso-bidi-font-size:12.0pt;
+  font-family:Verdana'>Matches between <i>m</i> and <i>n</i> occurrences of the
+  preceding expression, inclusive (0 &lt; m &lt; 256, 0 &lt; n &lt;&nbsp;256).<o:p></o:p></span></p>
+  </td>
+ </tr>
+</table>
+
+<p><span style='font-size:8.0pt;mso-bidi-font-size:12.0pt;font-family:Verdana'>To
+match the asterisk (*), the period (.), and the question mark (?), enclose them
+in brackets. For example, to search for &quot;hello?&quot;, type <b>hello[?]</b>
+in the query.<o:p></o:p></span></p>
+
+</div>
+
+</body>
+
+</html>
