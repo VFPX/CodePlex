@@ -1,0 +1,33 @@
+Version=  1.20
+Author=
+Company=
+Address=
+City=
+State=
+Zip=
+Country=
+SaveCode=.T.
+Debug=.T.
+Encrypt=.F.
+NoLogo=.F.
+CommentStyle=1
+Comments=
+CompanyName=
+FileDescription=
+LegalCopyright=
+LegalTrademarks=
+ProductName=
+Major=
+Minor=
+Revision=
+AutoIncrement=.F.
+[OLEServers]
+[OLEServersEnd]
+[ProjectFiles]
+ 945994888,K,newlabel.scx,.F.,.F.,1252,,,
+ 945994890,K,addlabel.scx,.F.,.T.,1252,,,
+ 945994890,x,label2.bmp,.F.,.F.,0,,,
+ 945994891,x,label2.msk,.F.,.F.,0,,,
+ 945994891,D,labels.dbf,.T.,.F.,1252,,,
+ 945994891,x,labels.reg,.F.,.F.,1252,,,
+[EOF]
