@@ -12,4 +12,10 @@ Encrypt=.F.
 NoLogo=.F.
 Comments=0
 [ProjectFiles]
+542479234,K,addlabel.scx,.F.,.T.,0,,,
+542479235,D,labels.dbf,.T.,.F.,0,,,
+544315228,K,newlabel.scx,.F.,.F.,1252,,,
+546180977,x,label2.bmp,.F.,.F.,1252,,,
+552108657,x,label2.msk,.F.,.F.,0,,,
+579768067,V,..\wzcommon\registry.vcx,.F.,.F.,1252,,,
 [EOF]
