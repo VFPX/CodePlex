@@ -28,6 +28,7 @@ DEFINE CLASS _codeAnalyzer AS CUSTOM
 	oObject = .NULL.
 	cObject= ""
 	cCode = ""
+	cFontString = "Tahoma,8,N"
 	cError = ""
 	cHomeDir = ""
 	cAnalysisCursor = ""
@@ -41,6 +42,104 @@ DEFINE CLASS _codeAnalyzer AS CUSTOM
 	cClassName = ""
 
 
+	PROCEDURE SetPrefs
+		LOCAL nSelect
+		LOCAL lcRes
+		lcRes = "ANALYST"
+		LOCAL lSuccess
+		LOCAL nMemoWidth
+		LOCAL nCnt
+		LOCAL cData
+
+		_analystFontString       = THIS.cFontString
+	
+		nSelect = SELECT()
+		
+		lSuccess = .F.
+
+  		* make sure Resource file exists and is not read-only
+  		nCnt = ADIR(aFileList, SYS(2005))		
+		IF nCnt > 0 AND ATC('R', aFileList[1, 5]) == 0
+			USE (SYS(2005)) IN SELECT("FOXRESOURCE") SHARED AGAIN ALIAS FoxResource
+			IF USED("FoxResource") AND !ISREADONLY("FoxResource")
+				nMemoWidth = SET('MEMOWIDTH')
+				SET MEMOWIDTH TO 255
+
+				SELECT FoxResource
+				LOCATE FOR UPPER(ALLTRIM(type)) == "PREFW" AND UPPER(ALLTRIM(id)) == lcRes AND EMPTY(name)
+				IF !FOUND()
+					APPEND BLANK IN FoxResource
+					REPLACE ; 
+					  Type WITH "PREFW", ;
+					  ID WITH lcRes, ;
+					  ReadOnly WITH .F. ;
+					 IN FoxResource
+				ENDIF
+
+				IF !FoxResource.ReadOnly
+					SAVE TO MEMO Data ALL LIKE _analyst*
+
+					REPLACE ;
+					  Updated WITH DATE(), ;
+					  ckval WITH VAL(SYS(2007, FoxResource.Data)) ;
+					 IN FoxResource
+
+					lSuccess = .T.
+				ENDIF
+				SET MEMOWIDTH TO (nMemoWidth)
+			
+				USE IN FoxResource
+			ENDIF
+		ENDIF
+
+		SELECT (nSelect)
+		
+		RETURN lSuccess
+	
+	ENDPROC
+	
+	PROCEDURE GetPrefs
+			LOCAL nSelect
+			LOCAL lcRes
+			lcRes = "ANALYST"
+			LOCAL lSuccess
+			LOCAL nMemoWidth
+
+
+		nSelect = SELECT()
+		
+		lSuccess = .F.
+		
+		IF FILE(SYS(2005))    && resource file not found.
+			USE (SYS(2005)) IN SELECT("FOXRESOURCE") SHARED AGAIN ALIAS FoxResource
+			IF USED("FoxResource")
+				nMemoWidth = SET('MEMOWIDTH')
+				SET MEMOWIDTH TO 255
+
+				SELECT FoxResource
+				LOCATE FOR UPPER(ALLTRIM(type)) == "PREFW" ;
+		   			AND UPPER(ALLTRIM(id)) == lcRes ;
+		   			AND !DELETED()
+
+				IF FOUND() AND !EMPTY(Data) AND ckval == VAL(SYS(2007, Data)) AND EMPTY(name)
+					RESTORE FROM MEMO Data ADDITIVE
+					
+					THIS.cFontString = _Analystfontstring
+
+					lSuccess = .T.
+				ENDIF
+				
+				SET MEMOWIDTH TO (nMemoWidth)
+
+				USE IN FoxResource
+			ENDIF
+		ENDIF
+
+		SELECT (nSelect)
+		
+		RETURN lSuccess
+
+	ENDPROC
 	PROCEDURE CreateRuleTable
 
 		IF NOT FILE(THIS.cHomeDir+"CODERULE.DBF")
@@ -176,6 +275,7 @@ DEFINE CLASS _codeAnalyzer AS CUSTOM
 		IF NOT PEMSTATUS(THIS,"aRules",5)
 			THIS.ADDPROPERTY("aRules(1,5)")
 		ENDIF
+		THIS.GetPrefs()
 		THIS.CreateRuleTable()
 		
 		THIS.LoadRules()
@@ -269,6 +369,13 @@ DEFINE CLASS _codeAnalyzer AS CUSTOM
 		LPARAMETERS tcFile
 		THIS.cMessage = ""
 		THIS.cMainProgram = tcFile
+		IF NOT EMPTY(tcFile)
+			IF NOT FILE(tcFile)
+				MESSAGEBOX("File "+tcFile+" does not exist.",16,"Code Analyst")
+				RETURN
+			
+			ENDIF
+		ENDIF
 		IF ISNULL(THIS.oTherm)
 			THIS.oTherm = NEWOBJECT("cprogressform","foxref.vcx",THIS.cHomeDir+"ANALYST.APP")
 			THIS.oTherm.SetMax(100)
@@ -878,6 +985,7 @@ DEFINE CLASS frmResults AS FORM
 	PROCEDURE command1.CLICK
 		THISFORM.RELEASE()
 	ENDPROC
+
 
 
 ENDDEFINE
