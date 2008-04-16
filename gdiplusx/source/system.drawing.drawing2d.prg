@@ -2890,15 +2890,9 @@ DEFINE CLASS xfcGraphicsPath AS xfcgpobject OF System.Drawing.prg
 			LOCAL lqPoints, liCount
 			m.lqPoints = 0h
 			m.liCount = 0
-		
-			LOCAL llIsArray
-			m.llIsArray = IIF(TYPE("taoPoints",1) = "A", .T., .F.)
-		
+
 		** Check precision
-			IF m.tlIsFloat OR ;
-				(m.llIsArray AND m.taoPoints[1].BaseName == "PointF") OR ;
-				(! m.llIsArray AND m.taoPoints.BaseName == "PointF")
-		
+			IF m.tlIsFloat
 				m.loPoint = NEWOBJECT("xfcPointF",XFCCLASS_DRAWING)
 				m.lqPoints = m.loPoint.ToVarBinary(@taoPoints, @liCount)
 				This.SetStatus(xfcGdipAddPathBeziers(This.Handle, @lqPoints, m.liCount))
@@ -2953,23 +2947,19 @@ DEFINE CLASS xfcGraphicsPath AS xfcgpobject OF System.Drawing.prg
 			LOCAL loPoint AS xfcPoint, lqPoints, liCount
 			m.liCount = 0
 			
-			LOCAL llIsArray
-			m.llIsArray = IIF(TYPE("taoPoints",1) = "A", .T., .F.)
-		
+
 		** Check precision
-			IF m.tlIsFloat OR ;
-				(llIsArray AND m.taoPoints[1].BaseName == "PointF") OR ;
-				(! llIsArray AND m.taoPoints.BaseName == "PointF")
-				m.loPoint = m.taoPoints
+			IF m.tlIsFloat
+				m.loPoint = NEWOBJECT("xfcPointF",XFCCLASS_DRAWING)
 				m.lqPoints = m.loPoint.ToVarBinary(@taoPoints, @liCount)
 				IF VARTYPE(m.tnTension)="N"
 					This.SetStatus(xfcGdipAddPathClosedCurve(This.Handle, m.lqPoints, m.liCount))
 				ELSE
 					This.SetStatus(xfcGdipAddPathClosedCurve2(This.Handle, m.lqPoints, m.liCount, m.tnTension))
 				ENDIF
-				
+
 			ELSE
-				m.loPoint = m.taoPoints
+				m.loPoint = NEWOBJECT("xfcPoint",XFCCLASS_DRAWING)
 				m.lqPoints = m.loPoint.ToVarBinary(@taoPoints, @liCount)
 				IF VARTYPE(m.tnTension)="N"
 					This.SetStatus(xfcGdipAddPathClosedCurveI(This.Handle, m.lqPoints, m.liCount))
@@ -2977,7 +2967,7 @@ DEFINE CLASS xfcGraphicsPath AS xfcgpobject OF System.Drawing.prg
 					This.SetStatus(xfcGdipAddPathClosedCurve2I(This.Handle, m.lqPoints, m.liCount, m.tnTension))
 				ENDIF
 			ENDIF
-		
+
 		CATCH TO loExc
 			THROW_EXCEPTION
 		ENDTRY
@@ -3027,15 +3017,8 @@ DEFINE CLASS xfcGraphicsPath AS xfcgpobject OF System.Drawing.prg
 			m.liCount = 0
 			m.llUsePrecision = .F.
 		
-			LOCAL llIsArray	
-			m.llIsArray = IIF(TYPE("taoPoints",1) = "A", .T., .F.)
-		
-		
 		** Check precision
-			IF m.tlIsFloat OR ;
-				(llIsArray AND m.taoPoints[1].BaseName == "PointF") OR ;
-				(! llIsArray AND m.taoPoints.BaseName == "PointF")
-		
+			IF m.tlIsFloat
 				m.loPoint = NEWOBJECT("xfcPointF",XFCCLASS_DRAWING)
 				m.lqPoints = m.loPoint.ToVarBinary(@taoPoints, @liCount)
 				m.llUsePrecision = .T.
@@ -3044,7 +3027,7 @@ DEFINE CLASS xfcGraphicsPath AS xfcgpobject OF System.Drawing.prg
 				m.lqPoints = m.loPoint.ToVarBinary(@taoPoints, @liCount)
 				m.llUsePrecision = .F.
 			ENDIF
-		
+
 		
 			LOCAL lnFunctionType
 			m.lnFunctionType = 0
@@ -3226,13 +3209,8 @@ DEFINE CLASS xfcGraphicsPath AS xfcgpobject OF System.Drawing.prg
 			m.lqPoints = 0h
 			m.liCount = 0
 			
-			LOCAL llIsArray
-			m.llIsArray = IIF(TYPE("taoPoints",1) = "A", .T., .F.)
-		
 		** Check precision
-			IF m.tlIsFloat OR ;
-				(llIsArray AND m.taoPoints[1].BaseName == "PointF") OR ;
-				(! llIsArray AND m.taoPoints.BaseName == "PointF")
+			IF m.tlIsFloat
 				m.loPoint = NEWOBJECT("xfcPointF",XFCCLASS_DRAWING)
 				m.lqPoints = m.loPoint.ToVarBinary(@taoPoints, @liCount)
 				This.SetStatus(xfcGdipAddPathLine2(This.Handle, @lqPoints, m.liCount))
@@ -3241,7 +3219,7 @@ DEFINE CLASS xfcGraphicsPath AS xfcgpobject OF System.Drawing.prg
 				m.lqPoints = m.loPoint.ToVarBinary(@taoPoints, @liCount)
 				This.SetStatus(xfcGdipAddPathLine2I(This.Handle, @lqPoints, m.liCount))
 			ENDIF
-		
+
 		CATCH TO loExc
 			THROW_EXCEPTION
 		ENDTRY
@@ -3368,22 +3346,17 @@ DEFINE CLASS xfcGraphicsPath AS xfcgpobject OF System.Drawing.prg
 			m.lqPoints = 0h
 			m.liCount = 0
 		
-			LOCAL llIsArray
-			m.llIsArray = IIF(TYPE("taoPoints",1) = "A", .T., .F.)
-		
 		** Check precision
-			IF m.tlIsFloat OR ;
-				(m.llIsArray AND m.taoPoints[1].BaseName == "PointF") OR ;
-				(! m.llIsArray AND m.taoPoints.BaseName == "PointF")
-		
-				m.lqPoints = m.loPoint.ToVarBinary(@m.taoPoints, @liCount)
+			IF m.tlIsFloat
+				m.loPoint = NEWOBJECT("xfcPointF",XFCCLASS_DRAWING)
+				m.lqPoints = m.loPoint.ToVarBinary(@taoPoints, @liCount)
 				This.SetStatus(xfcGdipAddPathPolygon(This.Handle, @m.lqPoints, m.liCount))
 			ELSE
 				m.loPoint = NEWOBJECT("xfcPoint",XFCCLASS_DRAWING)
-				m.lqPoints = m.loPoint.ToVarBinary(@m.taoPoints, @m.liCount)
+				m.lqPoints = m.loPoint.ToVarBinary(@taoPoints, @liCount)
 				This.SetStatus(xfcGdipAddPathPolygonI(This.Handle, @m.lqPoints, m.liCount))
 			ENDIF
-		
+
 		CATCH TO loExc
 			THROW_EXCEPTION
 		ENDTRY
@@ -3474,13 +3447,8 @@ DEFINE CLASS xfcGraphicsPath AS xfcgpobject OF System.Drawing.prg
 			m.loRects = 0h
 			m.liCount = 0
 		
-			LOCAL llIsArray
-			m.llIsArray = IIF(TYPE("taoRects",1) = "A", .T., .F.)
-		
 		** Check precision
-			IF m.tlIsFloat OR ;
-				(llIsArray AND m.taoRects(1).BaseName == "RectangleF") OR ;
-				(! llIsArray AND m.taoRects.BaseName == "RectangleF")
+			IF m.tlIsFloat
 				m.loRect = NEWOBJECT("xfcRectangleF",XFCCLASS_DRAWING)
 				m.lqRects = m.loRect.ToVarBinary(@taoRects, @liCount)
 				This.SetStatus(xfcGdipAddPathRectangles(This.Handle, @lqRects, m.liCount))
@@ -3489,7 +3457,7 @@ DEFINE CLASS xfcGraphicsPath AS xfcgpobject OF System.Drawing.prg
 				m.lqRects = m.loRect.ToVarBinary(@taoRects, @liCount)
 				This.SetStatus(xfcGdipAddPathRectanglesI(This.Handle, @lqRects, m.liCount))
 			ENDIF
-		
+
 		CATCH TO loExc
 			THROW_EXCEPTION
 		ENDTRY
