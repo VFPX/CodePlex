@@ -1910,6 +1910,13 @@ return GDIPLUS_STATUS_OK == This.gdipStatus
 
 ENDPROC
 PROCEDURE drawstringa
+*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+*!* PROCEDURE DrawStringA
+*!* 2008-05-28 - Comments by Cesar Ch
+*!*	This procedure is an exact copy of the original code from Walter Nichols in _gdiplus.vcx
+*!*	The only modification was the use of the LENC() function in the API call order
+*!*          to measure correctly double-byte characters
+*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 lparameters tcAnsiString, toFont, tvRectPoint, toStringFormat, toBrush
 #if GDIPLUS_CHECK_OBJECT
 if This.gdipHandle==0
@@ -1966,7 +1973,7 @@ declare integer GdipDrawString in gdiplus.dll ;
 This.gdipStatus = GdipDrawString( ;
 	This.gdipHandle ;
 	, strconv(m.tcAnsiString,5)	;
-	, len(m.tcAnsiString) ;
+	, LENC(m.tcAnsiString) ;
 	, iif(vartype(m.toFont)='O',toFont.GetHandle(),0) ;
 	, m.lcRect ;
 	, iif(vartype(m.toStringFormat)='O',toStringFormat.GetHandle(),0) ;
@@ -2461,6 +2468,13 @@ return GDIPLUS_STATUS_OK == This.gdipStatus
 
 ENDPROC
 PROCEDURE measurestringa
+*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+*!* PROCEDURE MeasureStringA
+*!* 2008-05-28 - Comments by Cesar Ch
+*!*	This procedure is an exact copy of the original code from Walter Nichols in _gdiplus.vcx
+*!*	The only modification was the use of the LENC() function in the API call order
+*!*          to measure correctly double-byte characters
+*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 lparameters tcAnsiString, toFont, tvLayoutArea, toStringFormat, rnCharsFitted, rnLinesFilled
 #if GDIPLUS_CHECK_OBJECT
 if This.gdipHandle==0
@@ -2523,7 +2537,7 @@ lnLinesFilled = 0
 This.gdipStatus = GdipMeasureString( ;
 	This.gdipHandle ;
 	, strconv(m.tcAnsiString,5)	;
-	, len(m.tcAnsiString) ;
+	, LENC(m.tcAnsiString) ;
 	, iif(vartype(m.toFont)='O',toFont.GetHandle(),0) ;
 	, m.lcRectF ;
 	, iif(vartype(m.toStringFormat)='O',toStringFormat.GetHandle(),0) ;
@@ -3222,7 +3236,7 @@ gdiplus.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] gpgraphics
 [START RESERVED1]
- 	 gdiplus.h–Ë/OO7 gdiplus_locs.hžÌ‚‰1[END RESERVED1]
+ 	 gdiplus.h&]†»»8 gdiplus_locs.h.^ˆ»»8[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -4930,23 +4944,26 @@ endfor
 return m.lnCount
 ENDPROC
 PROCEDURE getpropertyitem
+*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+*!* PROCEDURE GetPropertyItem
+*!* 2008-05-28 - Comments by Cesar Ch
+*!*	This procedure is an exact copy of the original code from Walter Nichols in _gdiplus.vcx
+*!*	The only modification are in retrieving values when PropertyTagType	= Byte
+*!*                           also, enables retrieval of PropertyTagUndefined
+*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 lparameters tnPropID as Integer
 
-#if GDIPLUS_CHECK_OBJECT
 if This.gdipHandle==0
 	error _GDIPLUS_NOGDIPOBJECT_LOC
-	This.gdipStatus = GDIPLUS_STATUS_GenericError
+	This.gdipStatus = 1 && GDIPLUS_STATUS_GenericError
 	return cast(null as I)
 endif
-#endif
 
-#if GDIPLUS_CHECK_PARAMS
 if !(vartype(m.tnPropID)='N')
-	This.gdipStatus = GDIPLUS_STATUS_InvalidParameter
+	This.gdipStatus = 2 && GDIPLUS_STATUS_InvalidParameter
 	error 11 && Function argument
 	return cast(null as I)
 endif
-#endif
 
 declare integer GlobalAlloc in kernel32.dll integer nFlags, integer nSize
 declare integer GlobalFree in kernel32.dll integer nHandle
@@ -4960,19 +4977,19 @@ local lnBufferSize as integer, lnBufferPtr as Integer, lnStringPtr as integer
 lnBufferSize = 0
 
 This.gdipStatus = GdipGetPropertyItemSize( This.gdipHandle, m.tnPropID, @lnBufferSize )
-if GDIPLUS_STATUS_OK != This.gdipStatus
+if 0 != This.gdipStatus
 	return null
 endif
 
 lnBufferPtr = GlobalAlloc( 0x0040, m.lnBufferSize ) && 0x40=GMEM_FIXED|GMEM_ZEROINIT
 if 0==m.lnBufferPtr
 	* Memory allocation error
-	error _GDIPLUS_MALLOCFAIL_LOC
+	error 'Memory allocation failed' && _GDIPLUS_MALLOCFAIL_LOC
 	return null
 endif
 
 This.gdipStatus = GdipGetPropertyItem( This.gdipHandle, m.tnPropID, m.lnBufferSize, m.lnBufferPtr )
-if GDIPLUS_STATUS_OK != This.gdipStatus
+if 0 != This.gdipStatus
 	GlobalFree( m.lnBufferPtr )
 	return null
 endif
@@ -4986,35 +5003,45 @@ endif
 *  12		 4		Pointer to value
 *  16 (probably)	The value itself
 local lnPropertyTagType, lnValueLen, lnValuePtr, lvReturn
-lnPropertyTagType = ctobin(sys(2600,m.lnBufferPtr+8,4),'RS')
-lnValueLen = ctobin(sys(2600,m.lnBufferPtr+4,4),'RS')
-lnValuePtr = ctobin(sys(2600,m.lnBufferPtr+12,4),'RS')
+lnPropertyTagType = bitxor(ctobin(chrtran('ABCD','DCBA',sys(2600,m.lnBufferPtr+8,4))),0x80000000)
+
+lnValueLen = bitxor(ctobin(chrtran('ABCD','DCBA',sys(2600,m.lnBufferPtr+4,4))),0x80000000)
+lnValuePtr = bitxor(ctobin(chrtran('ABCD','DCBA',sys(2600,m.lnBufferPtr+12,4))),0x80000000)
+
 do case
-case inlist(m.lnPropertyTagType,0,6,7,8)	&& nothing or undefined
+
+case inlist(m.lnPropertyTagType,0,6,8)	&& nothing
 	lvReturn = null	&& warning: this is also error value
+
+case m.lnPropertyTagType = 7   && undefined
+	&& Each component will be a byte with no associated interpretation.
+	lvReturn = TRANSFORM(STRTRAN(STRCONV( sys(2600,m.lnValuePtr,m.lnValueLen) ,6),CHR(0),""))
+
 case 1 == m.lnPropertyTagType	&& Byte
-	lvReturn = asc( sys(2600,m.lnValuePtr,1))
+	lvReturn = TRANSFORM(STRTRAN(STRCONV( sys(2600,m.lnValuePtr,m.lnValueLen) ,6),CHR(0),""))
+***	lvReturn = asc( sys(2600,m.lnValuePtr,m.lnValueLen))
+
 case 2 == m.lnPropertyTagType	&& ASCII string (_not_ unicode)
 	* trim null byte off end, but only if there! (It *should* be, but..)
 	lvReturn = strextract(sys(2600,m.lnValuePtr,m.lnValueLen),'',chr(0),1,2)
 case 3 == m.lnPropertyTagType	&& Short (16 bit)
 	lvReturn = asc(sys(2600,m.lnValuePtr,1))+256*asc(sys(2600,m.lnValuePtr+1,1))
 case 4 == m.lnPropertyTagType	&& Long (32 bit)
-	lvReturn = ctobin(sys(2600,m.lnValuePtr,4),'RS')
+	lvReturn = bitxor(ctobin(chrtran('ABCD','DCBA',sys(2600,m.lnValuePtr,4))),0x80000000)
 case 5 == m.lnPropertyTagType	&& Rational(two 32 bit)
 	* return as string
-	lvReturn = ltrim(str( ctobin(sys(2600,m.lnValuePtr,4),'RS') )) ;
+	lvReturn = ltrim(str( bitxor(ctobin(chrtran('ABCD','DCBA',sys(2600,m.lnValuePtr,4))),0x80000000) )) ;
 		+ '/' ;
-		+ ltrim(str( ctobin(sys(2600,m.lnValuePtr+4,4),'RS') ))
+		+ ltrim(str( bitxor(ctobin(chrtran('ABCD','DCBA',sys(2600,m.lnValuePtr+4,4))),0x80000000) ))
 case 9 == m.lnPropertyTagType	&& signed Long (32 bit)
-	lvReturn = ctobin(sys(2600,m.lnValuePtr,4),'RS')
+	lvReturn = bitxor(ctobin(chrtran('ABCD','DCBA',sys(2600,m.lnValuePtr,4))),0x80000000)
 	if m.lvReturn>0x7FFFFFFF
 		lvReturn = m.lvReturn - 0x100000000
 	endif
 case 10 == m.lnPropertyTagType	&& signed rational a/b
 	local lnNum, lnDen
-	lnNum = ctobin(sys(2600,m.lnValuePtr,4),'RS')
-	lnDen = ctobin(sys(2600,m.lnValuePtr+4,4),'RS')
+	lnNum = bitxor(ctobin(chrtran('ABCD','DCBA',sys(2600,m.lnValuePtr,4))),0x80000000)
+	lnDen = bitxor(ctobin(chrtran('ABCD','DCBA',sys(2600,m.lnValuePtr+4,4))),0x80000000)
 	if m.lnNum >0x7FFFFFFF
 		lnNum = m.lnNum - 0x100000000
 	endif
@@ -5022,14 +5049,15 @@ case 10 == m.lnPropertyTagType	&& signed rational a/b
 		lnDen = m.lnDen - 0x100000000
 	endif
 	lvReturn = ltrim(str(m.lnNum)) +'/'+ltrim(str(m.lnDen))
-		
+
 otherwise
 	GlobalFree( m.lnBufferPtr )
-	error _GDIPLUS_BADPROPERTYTAGTYPE_LOC
+	error 'Unknown or invalid property tag type' && _GDIPLUS_BADPROPERTYTAGTYPE_LOC
 	return null
 endcase
 	
 GlobalFree( m.lnBufferPtr )
+
 return m.lvReturn
 ENDPROC
 PROCEDURE getthumbnailimage
@@ -5361,7 +5389,7 @@ gdiplus.h[END RESERVED8]
 [UNIQUEID] RESERVED  
 [OBJNAME] gpimage
 [START RESERVED1]
- 	 gdiplus.h–Ë/OO7 gdiplus_locs.hžÌ‚‰1[END RESERVED1]
+ 	 gdiplus.h&]†»»8 gdiplus_locs.h.^ˆ»»8[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
