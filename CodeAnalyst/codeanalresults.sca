@@ -7,6 +7,8 @@ PLATFORM C(8,0),UNIQUEID C(10,0),TIMESTAMP N(10,0),CLASS M(4,0),CLASSLOC M(4,0),
 [UNIQUEID] Screen    
 [START RESERVED1]
 VERSION =   3.00[END RESERVED1]
+[START RESERVED8]
+foxref.h[END RESERVED8]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -45,6 +47,7 @@ Caption = "Code Analysis Results"
 MinHeight = 200
 MinWidth = 200
 KeyPreview = .T.
+WindowState = 0
 LockScreen = .F.
 HelpContextID = 1231100
 creftable = 
@@ -70,6 +73,8 @@ csortextracolumns =
 ocode = .F.
 cfilter = .F.
 ntotalfound = 0
+_memberdata =       83<VFPData><memberdata name="setfonts" type="method" display="SetFonts"/></VFPData>
+
 cresourceid = FOXREF
 Name = "frmCodeAnalystResults"
 [END PROPERTIES]
@@ -99,7 +104,7 @@ PROCEDURE Destroy
 THIS.SaveFormat()
 THIS.SavePosition()
 IF PEMSTATUS(_SCREEN,"_codeanal",5)
-	_SCREEN._codeanal.ldisplayForm = .T.
+	_SCREEN._analyst.ldisplayForm = .T.
 
 enDIF
 DODEFAULT()
@@ -158,6 +163,8 @@ ELSE
 	THIS.oTree.Appearance = 1  && 3d
 ENDIF
 
+
+
 lSortMostRecentFirst = .F.
 
 * Get options that were saved to resource file
@@ -176,10 +183,12 @@ ENDIF
 THIS.SortBy(THIS.cSortBy, .T.)  && setup default sorting
 THIS.ResizeForm(.T.)
 
+THIS.SetFonts()
+
 THIS.Visible = .T.
 THIS.LoadNodes()
 THIS.FillRules()
-THIS.Caption = "Code Analysis Results for "+_screen._codeanal.cMainProgram
+THIS.Caption = "Code Analysis Results"
 THIS.SetFont()
 
 BINDEVENT(THIS, "OnSortBy", THIS, "SortBy")
@@ -243,7 +252,7 @@ lcFile = GETFILE("PRG;PJX;VCX;SCX","Select file","Open",1,"Select file to analyz
 IF EMPTY(lcFile)
 	RETURN
 ENDIF
-_SCREEN._codeanal.cmainprogram = lcFile
+_SCREEN._analyst.cmainprogram = lcFile
 THIS.RefreshResults()
 ENDPROC
 PROCEDURE clearnode
@@ -425,7 +434,8 @@ ENDPROC
 PROCEDURE fillrules
 LOCAL la(1,2)
 
-SELECT DISTINCT cwarning,name FROM HOME()+"CODERULE",(THIS.ocode.cAnalysisCursor) a WHERE coderule.uniqueid=a.cwarning INTO ARRAY la
+SELECT DISTINCT cwarning,name FROM _SCREEN._analyst.cHomeDir+"CODERULE",(THIS.ocode.cAnalysisCursor) a WHERE coderule.uniqueid=a.cwarning INTO ARRAY la
+THIS.cboRules.Clear()
 THIS.cboRules.AddItem("All")
 FOR LNi = 1 TO ALEN(la,1)
 	IF NOT EMPTY(la(1))
@@ -433,6 +443,7 @@ FOR LNi = 1 TO ALEN(la,1)
 		THIS.cboRules.List(THIS.cboRules.ListCount,2)=la(lni,1)
 	ENDIF
 ENDFOR
+THIS.cboRules.ListIndex=1
 ENDPROC
 PROCEDURE getclassmethoddescription
 #include "foxref.h"
@@ -489,6 +500,40 @@ ENDIF
 
 THISFORM.MousePointer = m.nMouse
 ENDPROC
+PROCEDURE gotoreference
+LPARAMETERS tcFile
+IF PCOUNT()=1
+IF NOT EMPTY(tcFile)
+	EDITSOURCE(tcFile)
+ENDIF
+
+ELSE
+LOCAL lcFile,lnLine,lcClass,lcProc
+lnLine = VAL(THIS.lstResults.List(THIS.lstResults.ListIndex,4))
+lcFile = THIS.lstResults.List(THIS.lstResults.ListIndex,3)
+lcClass = THIS.lstResults.List(THIS.lstResults.ListIndex,5)
+lcProc =  THIS.lstResults.List(THIS.lstResults.ListIndex,6)
+IF NOT EMPTY(lcFile)
+	EDITSOURCE(lcFile,lnLine,lcClass)
+ENDIF
+ENDIF
+ENDPROC
+PROCEDURE importresults
+* Abstract:
+*   Display Export dialog.
+*
+* Parameters:
+*	None
+LOCAL lc
+lc = GETFILE("DBF","Select file:","Import")
+IF NOT EMPTY(lc)
+	SELECT (THIS.ocode.canalysiscursor)
+	APPEND FROM (lc)
+	THIS.LoadNodes()
+	THIS.FillRules()
+ENDIF
+
+ENDPROC
 PROCEDURE isitemschecked
 * Abstract:
 *   Return TRUE if any items in FoxRefCursor
@@ -542,10 +587,12 @@ THIS.oTree.Nodes.Item(tcFileType).Text = TRIM(tcFileType) +" ("+LTRIM(STR(ln))+"
 RETURN ln
 ENDPROC
 PROCEDURE loadnodes
-THISFORM.oCode = _SCREEN._codeanal
+THISFORM.oCode = _SCREEN._analyst
 ThisForm.oTree.Nodes.Clear()
 ThisForm.oTree.Nodes.Add(,,"Warnings","Warnings")
-ThisForm.oTree.Nodes.Add(,,"Errors","Errors ("+LTRIM(STR(MEMLINES(THISFORM.ocode.cError)))+")")
+IF NOT EMPTY(THIS.ocode.cError)
+	ThisForm.oTree.Nodes.Add(,,"Errors","Errors ("+LTRIM(STR(MEMLINES(THISFORM.ocode.cError)))+")")
+ENDIF
 THISFORM.oTree.Nodes.Item(1).Expanded = .T.
 LOCAL lni
 DIMENSION THIS.aFiles(1,2)
@@ -568,8 +615,8 @@ FOR lni = 1 TO ALEN(la,1)
 	ENDIF
 ENDFOR
 
-*!*	FOR lni = 1 TO ALEN(_SCREEN._codeanal.awarnings,1)
-*!*		lc = _SCREEN._codeanal.awarnings(lni,2)
+*!*	FOR lni = 1 TO ALEN(_SCREEN._analyst.awarnings,1)
+*!*		lc = _SCREEN._analyst.awarnings(lni,2)
 *!*		IF NOT EMPTY(lc)
 *!*			IF ASCAN(THIS.aFiles,lc)=0
 *!*				lcKey = SYS(2015)
@@ -651,13 +698,12 @@ IF cRefType == REFTYPE_LOG
 	* the results grid usually is
 	THIS.cCurrentSetID = cSetID
 
-	THIS.grdResults.Visible = .F.
 	IF TYPE("THIS.oLogBrowser") == 'U'
 		THIS.NewObject("oLogBrowser", "CWebBrowser", "FoxRef.vcx")
 		THIS.oLogBrowser.cFontFace = THIS.cFontFace
 		THIS.oLogBrowser.nFontSize = THIS.nFontSize + 3
 	ENDIF
-	THIS.oLogBrowser.Move(THIS.grdResults.Left, THIS.grdResults.Top, THIS.grdResults.Width, THIS.grdResults.Height)
+	THIS.oLogBrowser.Move(THIS.lstResults.Left, THIS.lstResults.Top, THIS.lstResults.Width, THIS.lstResults.Height)
 
 	SELECT Abstract ;
 	 FROM (THIS.oFoxRef.RefTable) RefTable ;
@@ -686,26 +732,26 @@ ELSE
 
 	cSortColumns = THIS.cSortColumns
 
-	IF THIS.lShowFilename AND TYPE("THIS.grdResults.colFilename") == 'O' AND !ISNULL(THIS.grdResults.colFilename)
-		THIS.nColFilenameWidth = THIS.grdResults.colFilename.Width
+	IF THIS.lShowFilename AND TYPE("THIS.lstResults.colFilename") == 'O' AND !ISNULL(THIS.lstResults.colFilename)
+		THIS.nColFilenameWidth = THIS.lstResults.colFilename.Width
 	ENDIF
 	nColWidth2 = 0
 	nColWidth3 = 0
 	nColWidth4 = 0
 	nColWidth5 = 0
 
-	IF TYPE("THIS.grdResults") == 'O' AND !ISNULL(THIS.grdResults)
-		IF THIS.grdResults.ColumnCount > 0
-			IF TYPE("THIS.grdResults.colClassMethod.Width") == 'N'
-				nColWidth2 = THIS.grdResults.colClassMethod.Width
+	IF .F. && TYPE("THIS.lstResults") == 'O' AND !ISNULL(THIS.lstResults)
+		IF THIS.lstResults.ColumnCount > 0
+			IF TYPE("THIS.lstResults.colClassMethod.Width") == 'N'
+				nColWidth2 = THIS.lstResults.colClassMethod.Width
 			ENDIF
 			
-			IF TYPE("THIS.grdResults.colCode.Width") == 'N'
-				nColWidth3 = THIS.grdResults.colCode.Width
+			IF TYPE("THIS.lstResults.colCode.Width") == 'N'
+				nColWidth3 = THIS.lstResults.colCode.Width
 			ENDIF
 
-			IF TYPE("THIS.grdResults.colMethod.Width") == 'N'
-				nColWidth4 = THIS.grdResults.colMethod.Width
+			IF TYPE("THIS.lstResults.colMethod.Width") == 'N'
+				nColWidth4 = THIS.lstResults.colMethod.Width
 			ENDIF
 
 			IF TYPE("THIS.grdResults.colLine.Width") == 'N'
@@ -713,17 +759,17 @@ ELSE
 			ENDIF
 		ENDIF
 
-		nLeftPos   = THIS.grdResults.Left
-		nTopPos    = THIS.grdResults.Top
+		nLeftPos   = THIS.lstResults.Left
+		nTopPos    = THIS.lstResults.Top
 
 		IF !lFirstTime
 			THIS.SaveFormat()
 
 			IF THIS.lShowFilename
-				THIS.nFilenameColumnOrder = THIS.grdResults.colFilename.ColumnOrder
+				THIS.nFilenameColumnOrder = THIS.lstResults.colFilename.ColumnOrder
 			ENDIF
 		ENDIF
-		THIS.RemoveObject("grdResults")
+		THIS.RemoveObject("lstResults")
 	ELSE
 		nLeftPos   = 182
 		nTopPos    = 26
@@ -957,7 +1003,7 @@ PROCEDURE options
 
 * close tables in case they select "Cleanup" and we need
 * exclusive access to them
-_SCREEN._codeanal.configure()
+_SCREEN._analyst.configure()
 
 ENDPROC
 PROCEDURE printresults
@@ -966,15 +1012,16 @@ PROCEDURE printresults
 *
 * Parameters:
 *	None
-
+SELECT (THIS.ocode.canalysiscursor)
+REPORT FORM codeanalysisresults TO PRINTER PROMPT PREVIEW FOR NOT EMPTY(cwarning)
 ENDPROC
 PROCEDURE refreshresults
-_SCREEN._codeanal.ldisplayForm = .F.
+_SCREEN._analyst.ldisplayForm = .F.
 
-IF _SCREEN._codeanal.cMainProgram = "Current Object"
-	_SCREEN._codeanal.analyze()
+IF _SCREEN._analyst.cMainProgram = "Current Object"
+	_SCREEN._analyst.analyze()
 ELSE
-	_SCREEN._codeanal.analyze(_screen._codeanal.cMainProgram)
+	_SCREEN._analyst.analyze(_SCREEN._analyst.cMainProgram)
 ENDIF
 
 THIS.LoadNodes()
@@ -1021,12 +1068,9 @@ ELSE
 ENDIF
 
 * control position left-to-right
-THIS.grdResults.Left   = THIS.shpSplitter.Left + THIS.shpSplitter.Width
-THIS.grdResults.Width  = THIS.Width - (THIS.grdResults.Left) - 1
-THIS.grdResults.Height = nBottom - THIS.grdResults.Top - 2
-THIS.lstResults.Left = THIS.grdResults.Left
-THIS.lstResults.Width = THIS.grdResults.Width
-THIS.lstResults.Height = THIS.grdResults.Height
+THIS.lstResults.Left = THIS.shpSplitter.Left + THIS.shpSplitter.Width
+THIS.lstResults.Width = THIS.Width - (THIS.lstResults.Left) - 1
+THIS.lstResults.Height = nBottom - THIS.lstResults.Top - 2
 
 THIS.oTree.Width  = THIS.shpSplitter.Left - THIS.oTree.Left
 THIS.oTree.Height = nBottom - THIS.oTree.Top - 2
@@ -1034,12 +1078,11 @@ THIS.oTree.Height = nBottom - THIS.oTree.Top - 2
 THIS.shpSplitter.Height = nBottom - THIS.shpSplitter.Top
 THIS.shpSplitterHor.Width = THIS.Width
 
-THIS.MinWidth = THIS.grdResults.Left + 20
+THIS.MinWidth = THIS.lstResults.Left + 20
 
-THIS.grdResults.Visible = .F.
 
 IF VARTYPE(THIS.oLogBrowser) == 'O'
-	THIS.oLogBrowser.Move(THIS.grdResults.Left, THIS.grdResults.Top, THIS.grdResults.Width, THIS.grdResults.Height)
+	THIS.oLogBrowser.Move(THIS.lstResults.Left, THIS.lstResults.Top, THIS.lstResults.Width, THIS.lstResults.Height)
 ENDIF
 
 THISFORM.LockScreen = lLockScreen
@@ -1221,7 +1264,7 @@ PROCEDURE setfont
 LPARAMETERS lGetFont
 LOCAL cFontFace, nFontSize, cStyle
 
-	cFontString = "Tahoma,8,N" && GETFONT(THIS.cFontFace, THIS.nFontSize, THIS.cFontStyle)
+	cFontString = _SCREEN._analyst.cFontString && "Tahoma,8,N" && GETFONT(THIS.cFontFace, THIS.nFontSize, THIS.cFontStyle)
 
 IF !EMPTY(cFontString)
 	cFontFace  = LEFT(cFontString, AT(",", cFontString) - 1)
@@ -1239,16 +1282,10 @@ THIS.oTree.Font.Size   = THIS.nFontSize
 THIS.oTree.Font.Bold   = 'B' $ THIS.cFontStyle
 THIS.oTree.Font.Italic = 'I' $ THIS.cFontStyle
 
-THIS.grdResults.SetAll("FontName", THIS.cFontFace, "Column")
-THIS.grdResults.SetAll("FontSize", THIS.nFontSize, "Column")
-THIS.grdResults.SetAll("FontBold", 'B'$THIS.cFontStyle, "Column")
-THIS.grdResults.SetAll("FontItalic", 'I'$THIS.cFontStyle, "Column")
-THIS.grdResults.RowHeight = MAX(THIS.nFontSize * 2, 16) + 2
-
-IF THIS.lShowRefsPerLine AND TYPE("THIS.grdResults.colSymbol") == 'O' AND !ISNULL(THIS.grdResults.colSymbol)
-	THIS.grdResults.colSymbol.FontName = "WingDings"
-	THIS.grdResults.colSymbol.FontSize = MAX(12, THIS.nFontSize)
-ENDIF
+THIS.lstResults.FontName = THIS.cFontFace
+THIS.lstResults.FontSize = THIS.nFontSize
+THIS.lstResults.FontBold = "B"$THIS.cFontStyle
+THIS.lstResults.FontItalic = "I"$THIS.cFontStyle
 
 THIS.oBrowser.cFontFace = THIS.cFontFace
 THIS.oBrowser.nFontSize = THIS.nFontSize + 3
@@ -1489,9 +1526,7 @@ DEFINE POPUP shortcut SHORTCUT RELATIVE FROM nRow, nCol IN WINDOW "Screen"
 DEFINE BAR 100 OF shortcut PROMPT MENU_DESCRIPTIONS_LOC
 DEFINE BAR 110 OF shortcut PROMPT MENU_ALWAYSONTOP_LOC
 DEFINE BAR 120 OF shortcut PROMPT "\-"
-DEFINE BAR 140 OF shortcut PROMPT MENU_SEARCH_LOC PICTRES _med_find
 DEFINE BAR 150 OF shortcut PROMPT MENU_REFRESH_LOC PICTURE "bitmaps\refresh.bmp"
-DEFINE BAR 160 OF shortcut PROMPT MENU_GLOBALREPLACE_LOC PICTRES _med_repl
 DEFINE BAR 170 OF shortcut PROMPT "\-"
 DEFINE BAR 180 OF shortcut PROMPT MENU_PRINT_LOC PICTRES _mfi_sysprint
 DEFINE BAR 190 OF shortcut PROMPT MENU_EXPORT_LOC PICTURE "bitmaps\export.bmp"
@@ -1507,9 +1542,7 @@ ENDIF
 
 ON SELECTION BAR 100 OF shortcut oTempFoxRef.ToggleDetails()
 ON SELECTION BAR 110 OF shortcut oTempFoxRef.ToggleAlwaysOnTop()
-ON SELECTION BAR 140 OF shortcut oTempFoxRef.Search()
 ON SELECTION BAR 150 OF shortcut oTempFoxRef.RefreshResults()
-ON SELECTION BAR 160 OF shortcut oTempFoxRef.GlobalReplace()
 ON SELECTION BAR 180 OF shortcut oTempFoxRef.PrintResults()
 ON SELECTION BAR 190 OF shortcut oTempFoxRef.ExportResults()
 ON SELECTION BAR 210 OF shortcut oTempFoxRef.Options()
@@ -1531,7 +1564,7 @@ ELSE
 	lnArea = SELECT()
 	IF NOT USED("CODERULE")
 		llClose = .T.
-		USE HOME()+"CODERULE" AGAIN SHARED IN 0
+		USE _SCREEN._analyst.cHomeDir+"CODERULE" AGAIN SHARED IN 0
 	ENDIF
 	SELECT CODERULE
 	LOCATE FOR uniqueID = THIS.lstResults.List(THIS.lstResults.ListIndex,2)
@@ -1775,22 +1808,20 @@ IF VARTYPE(oNode) == 'O'
 		CASE oNode.KEY="Errors"
 			THIS.lstResults.Clear()
 			LOCAL lni
-			FOR lni = 1 TO MEMLINES(_SCREEN._codeanal.cError)
-				THIS.lstResults.AddItem(MLINE(_SCREEN._codeanal.cError,lni))
+			FOR lni = 1 TO MEMLINES(_SCREEN._analyst.cError)
+				THIS.lstResults.AddItem(MLINE(_SCREEN._analyst.cError,lni))
 				THIS.lstResults.LIST(THIS.lstResults.LISTCOUNT,2) = ""
 			ENDFOR
 		CASE oNode.KEY="Warnings"
 			THIS.lstResults.CLEAR()
-			IF EMPTY(_SCREEN._codeanal.awarnings(1,1))
-				THIS.lstResults.ADDITEM("No warnings were found based on the rules selected.")
-			ELSE
+
 				LOCAL la(1)
 				la(1) = 0
-LOCAL lcF
-lcF = ""
-IF NOT EMPTY(THIS.cFilter)
-	lcF = " AND cwarning='"+THIS.cFilter+"'"
-ENDIF
+				LOCAL lcF
+				lcF = ""
+				IF NOT EMPTY(THIS.cFilter)
+					lcF = " AND cwarning='"+THIS.cFilter+"'"
+				ENDIF
 				SELECT COUNT(*) FROM (THIS.ocode.canalysisCursor) ;
 					WHERE NOT EMPTY(warnings) ;
 					&lcF ;
@@ -1798,8 +1829,55 @@ ENDIF
 				THIS.ntotalfound = la(1)
 
 				THIS.lstResults.ADDITEM("A total of "+LTRIM(STR(THIS.nTotalFound ))+" warnings were found.")
-			ENDIF
 			THIS.lstResults.LIST(THIS.lstResults.LISTCOUNT,2) = ""
+CASE oNode.Children>0
+	** Likely a program listing
+	lcFileType = TRIM(oNode.KEY)
+			LOCAL la(1)
+			la(1) = ""
+			LOCAL lcF
+			lcF = ""
+			IF NOT EMPTY(THIS.cFilter)
+				lcF = " AND cwarning='"+THIS.cFilter+"'"
+			ENDIF
+
+			SELECT warnings,cwarning,cprog,nline,cclass,cFunc FROM (THIS.oCode.Canalysiscursor) ;
+				WHERE cfiletype = lcFileType AND NOT EMPTY(warnings ) ;
+				&lcF ;
+				INTO ARRAY la
+			THIS.lstResults.CLEAR()
+			FOR lni = 1 TO ALEN(la,1)
+				IF NOT EMPTY(la(lni,1))
+					THIS.lstResults.ADDITEM(la(lni,1))
+					IF NOT EMPTY(la(lni,2))
+						THIS.lstResults.LIST(THIS.lstResults.LISTCOUNT,2) = la(lni,2)
+					ELSE
+						THIS.lstResults.LIST(THIS.lstResults.LISTCOUNT,2) = ""
+					ENDIF
+					THIS.lstResults.LIST(THIS.lstResults.LISTCOUNT,3) = la(lni,3)
+					THIS.lstResults.LIST(THIS.lstResults.LISTCOUNT,4) = STR(la(lni,4))
+					THIS.lstResults.LIST(THIS.lstResults.LISTCOUNT,5) = la(lni,5)
+					THIS.lstResults.LIST(THIS.lstResults.LISTCOUNT,6) = la(lni,6)
+						ENDIF
+
+			ENDFOR
+			*!*				lcFile = THIS.aFiles(ASCAN(THIS.aFiles,oNode.key)-1)
+			*!*				LOCAL lni
+			*!*				THIS.lstResults.Clear()
+			*!*				FOR lni = 1 TO ALEN(_SCREEN._analyst.awarnings,1)
+			*!*					IF EMPTY(_SCREEN._analyst.awarnings(lni,1))
+			*!*						LOOP
+			*!*					ENDIF
+			*!*					IF _SCREEN._analyst.awarnings(lni,2)=lcFile
+			*!*						THIS.lstResults.AddItem(_SCREEN._analyst.awarnings(lni,1))
+			*!*						IF NOT EMPTY(_SCREEN._analyst.awarnings(lni,3))
+			*!*						THIS.lstResults.List(THIS.lstResults.ListCount,2) = _SCREEN._analyst.awarnings(lni,3)
+			*!*						ELSE
+			*!*	 					THIS.lstResults.List(THIS.lstResults.ListCount,2) = ""
+			*!*	ENDIF
+			*!*					ENDIF
+			*!*				ENDFOR
+	
 		OTHERWISE
 			lcFile = TRIM(oNode.KEY)
 			LOCAL la(1)
@@ -1810,7 +1888,7 @@ ENDIF
 				lcF = " AND cwarning='"+THIS.cFilter+"'"
 			ENDIF
 
-			SELECT warnings,cwarning FROM (THIS.oCode.Canalysiscursor) ;
+			SELECT warnings,cwarning,cprog,nline,cclass,cFunc FROM (THIS.oCode.Canalysiscursor) ;
 				WHERE JUSTFNAME(UPPER(cprog)) = lcFile AND NOT EMPTY(warnings ) ;
 				&lcF ;
 				INTO ARRAY la
@@ -1823,20 +1901,24 @@ ENDIF
 					ELSE
 						THIS.lstResults.LIST(THIS.lstResults.LISTCOUNT,2) = ""
 					ENDIF
-				ENDIF
+					THIS.lstResults.LIST(THIS.lstResults.LISTCOUNT,3) = la(lni,3)
+					THIS.lstResults.LIST(THIS.lstResults.LISTCOUNT,4) = STR(la(lni,4))
+					THIS.lstResults.LIST(THIS.lstResults.LISTCOUNT,5) = la(lni,5)
+					THIS.lstResults.LIST(THIS.lstResults.LISTCOUNT,6) = la(lni,6)
+						ENDIF
 
 			ENDFOR
 			*!*				lcFile = THIS.aFiles(ASCAN(THIS.aFiles,oNode.key)-1)
 			*!*				LOCAL lni
 			*!*				THIS.lstResults.Clear()
-			*!*				FOR lni = 1 TO ALEN(_SCREEN._codeanal.awarnings,1)
-			*!*					IF EMPTY(_SCREEN._codeanal.awarnings(lni,1))
+			*!*				FOR lni = 1 TO ALEN(_SCREEN._analyst.awarnings,1)
+			*!*					IF EMPTY(_SCREEN._analyst.awarnings(lni,1))
 			*!*						LOOP
 			*!*					ENDIF
-			*!*					IF _SCREEN._codeanal.awarnings(lni,2)=lcFile
-			*!*						THIS.lstResults.AddItem(_SCREEN._codeanal.awarnings(lni,1))
-			*!*						IF NOT EMPTY(_SCREEN._codeanal.awarnings(lni,3))
-			*!*						THIS.lstResults.List(THIS.lstResults.ListCount,2) = _SCREEN._codeanal.awarnings(lni,3)
+			*!*					IF _SCREEN._analyst.awarnings(lni,2)=lcFile
+			*!*						THIS.lstResults.AddItem(_SCREEN._analyst.awarnings(lni,1))
+			*!*						IF NOT EMPTY(_SCREEN._analyst.awarnings(lni,3))
+			*!*						THIS.lstResults.List(THIS.lstResults.ListCount,2) = _SCREEN._analyst.awarnings(lni,3)
 			*!*						ELSE
 			*!*	 					THIS.lstResults.List(THIS.lstResults.ListCount,2) = ""
 			*!*	ENDIF
@@ -1892,6 +1974,7 @@ csortextracolumns
 ocode Pointer to Code ANalysis Object
 cfilter
 ntotalfound
+_memberdata XML Metadata for customizable properties
 *setreftable 
 *gotoreference 
 *refreshresults 
@@ -1940,6 +2023,8 @@ ntotalfound
 *analyzefile 
 *loadfiles 
 *fillrules 
+*setfonts Sets the fonts on the objects
+*importresults Allows users to restore  and review a previous set of results
 [END RESERVED3]
 
 [ RECORD]
@@ -1959,38 +2044,14 @@ FontSize = 8
 Picture = bitmaps\open.bmp
 Caption = ""
 TabIndex = 1
-ToolTipText = "Open"
-Visible = .F.
+ToolTipText = "Open a previously saved analyst result"
 SpecialEffect = 2
 ZOrderSet = 0
 Name = "cmdOpen"
 [END PROPERTIES]
 [START METHODS]
 PROCEDURE Click
-#include "foxpro.h"
-#include "foxref.h"
-LOCAL cProjectFile
-LOCAL oErr
-LOCAL lSuccess
-
-cProjectFile = GETFILE("PJX")
-IF !EMPTY(cProjectFile)
-	lSuccess = .T.
-	TRY
-		MODIFY PROJECT (cProjectFile) NOWAIT
-
-	CATCH TO oErr
-		lSuccess = .F.
-		MESSAGEBOX(oErr.Message, MB_ICONEXCLAMATION, THISFORM.Caption)
-	ENDTRY
-	IF lSuccess
-		IF THISFORM.oFoxRef.SetProject(cProjectFile)
-			THISFORM.SetRefTable(THISFORM.oFoxRef.cSetID, .F.)
-		ENDIF
-	ENDIF
-ENDIF
-
-THISFORM.Show()
+THISFORM.ImportResults()
 
 ENDPROC
 PROCEDURE GotFocus
@@ -2143,52 +2204,6 @@ ENDPROC
 
 [ RECORD]
 [PLATFORM] WINDOWS 
-[UNIQUEID] _0LS0TTC4Q
-[CLASS] cresultsallgrid
-[CLASSLOC] foxref.vcx
-[BASECLASS] grid
-[OBJNAME] grdResults
-[PARENT] frmCodeAnalystResults
-[START PROPERTIES]
-Height = 271
-Left = 182
-TabIndex = 11
-Top = 25
-Width = 545
-Name = "grdResults"
-COLFILENAME.Header1.Name = "Header1"
-COLFILENAME.Text1.Name = "Text1"
-COLFILENAME.Name = "COLFILENAME"
-colClassMethod.Header1.Name = "Header1"
-colClassMethod.Text1.Name = "Text1"
-colClassMethod.Name = "colClassMethod"
-colCode.Header1.Name = "Header1"
-colCode.Text1.Name = "Text1"
-colCode.Name = "colCode"
-colCheckbox.Header1.Alignment = 2
-colCheckbox.Header1.Name = "Header1"
-colCheckbox.Text1.Name = "Text1"
-colCheckbox.chkSelected.Alignment = 0
-colCheckbox.chkSelected.Name = "chkSelected"
-colCheckbox.Name = "colCheckbox"
-colSymbol.Header1.FontName = "Tahoma"
-colSymbol.Header1.FontCharSet = 0
-colSymbol.Header1.Caption = "#"
-colSymbol.Header1.Name = "Header1"
-colSymbol.Text1.Name = "Text1"
-colSymbol.Name = "colSymbol"
-colMethod.Header1.Name = "Header1"
-colMethod.Text1.Visible = .F.
-colMethod.Text1.Name = "Text1"
-colMethod.Name = "colMethod"
-colLine.Header1.Name = "Header1"
-colLine.Text1.Visible = .F.
-colLine.Text1.Name = "Text1"
-colLine.Name = "colLine"
-[END PROPERTIES]
-
-[ RECORD]
-[PLATFORM] WINDOWS 
 [UNIQUEID] _0IS118P55
 [CLASS] cfoxbutton
 [CLASSLOC] foxctrls.vcx
@@ -2236,10 +2251,17 @@ PROCEDURE Click
 ENDPROC
 PROCEDURE DblClick
 *** ActiveX Control Event ***
-IF !EMPTY(THISFORM.cCurrentFileID)
-	THISFORM.GotoReference()
-ENDIF
+LOCAL lcFile
+lcFile = THIS.selecteditem.Key
+LOCAL la(1)
+la(1) = ""
+SELECT DISTINCT cprog FROM (THISFORM.ocode.canalysisCursor) ;
+	WHERE JUSTFNAME(UPPER(cProg))==TRIM(lcFile) ;
+	INTO ARRAY la
+IF NOT EMPTY(la(1))
+THISFORM.GotoReference(la(1))
 
+ENDIF
 ENDPROC
 PROCEDURE Expand
 *** ActiveX Control Event ***
@@ -2325,10 +2347,10 @@ ENDIF
 ENDPROC
 [END METHODS]
 [BINSTART OLE]
-CHECKSUM=2582
+CHECKSUM=10608
 [BINEND OLE]
 [BINSTART OLE2]
-CHECKSUM=40492
+CHECKSUM=26800
 [BINEND OLE2]
 
 [ RECORD]
@@ -2407,10 +2429,10 @@ TabIndex = 12
 Name = "oBrowser"
 [END PROPERTIES]
 [BINSTART OLE]
-CHECKSUM=43928
+CHECKSUM=51552
 [BINEND OLE]
 [BINSTART OLE2]
-CHECKSUM=34400
+CHECKSUM=16181
 [BINEND OLE2]
 
 [ RECORD]
@@ -2470,7 +2492,6 @@ Caption = " \<Print"
 StatusBarText = "Print results"
 TabIndex = 6
 ToolTipText = "Print Results"
-Visible = .F.
 SpecialEffect = 2
 Name = "cmdPrint"
 [END PROPERTIES]
@@ -2528,16 +2549,21 @@ Width = 71
 Caption = " \<Options"
 StatusBarText = "Display the options dialog"
 TabIndex = 8
-ToolTipText = "Code References Options"
+ToolTipText = "Code Analyst Options"
 SpecialEffect = 2
 Name = "cmdOptions"
 [END PROPERTIES]
 [START METHODS]
 PROCEDURE Click
+LOCAL lc
+lc = _SCREEN._analyst.cFontString
 THIS.Parent.Options()
 
-
-
+IF _SCREEN._analyst.cFontString <> lc
+	** Change fonts
+	THISFORM.SetFont()
+	
+ENDIF
 ENDPROC
 [END METHODS]
 
@@ -2636,8 +2662,20 @@ Width = 547
 Name = "lstResults"
 [END PROPERTIES]
 [START METHODS]
+PROCEDURE DblClick
+THISFORM.GotoReference()
+ENDPROC
 PROCEDURE InteractiveChange
 THISFORM.ShowWarning()
+ENDPROC
+PROCEDURE MouseDown
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+
+IF .F. && Functionality not ready yet nbutton=2 AND THIS.ListIndex<>0
+	IF MESSAGEBOX("Do you want to add this issue to your Task list",4+32,"Code Analyst")=6
+	
+	ENDIF
+ENDIF
 ENDPROC
 [END METHODS]
 
@@ -2651,8 +2689,10 @@ ENDPROC
 [PARENT] frmCodeAnalystResults
 [START PROPERTIES]
 Height = 21
-Left = 542
-Top = 0
+Left = 541
+Style = 2
+ToolTipText = "Filter list of displayed warnings "
+Top = 2
 Width = 136
 Name = "cboRules"
 [END PROPERTIES]
@@ -2670,10 +2710,8 @@ ENDPROC
 Arial, 0, 9, 5, 15, 12, 32, 3, 0
 MS Sans Serif, 0, 8, 5, 13, 11, 11, 2, 0
 Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
-Wingdings, 0, 10, 12, 15, 12, 18, 3, 0
-Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
 Microsoft Sans Serif, 0, 8, 5, 13, 11, 22, 2, 0
 [END PROPERTIES]
 [START RESERVED1]
- B ..\..\..\..\..\..\program files\microsoft visual foxpro 9\foxpro.h–ü’‰1 foxref.hžý561[END RESERVED1]
+  foxref.hžai89 ..\..\..\program files\microsoft visual foxpro 9\foxpro.hŸ’‰1[END RESERVED1]
 [EOF]

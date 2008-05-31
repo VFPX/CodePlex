@@ -15,10 +15,10 @@ VERSION =   3.00[END RESERVED1]
 [BASECLASS] dataenvironment
 [OBJNAME] Dataenvironment
 [START PROPERTIES]
-Top = 0
-Left = 0
-Width = 0
-Height = 0
+Top = 220
+Left = 1
+Width = 520
+Height = 200
 DataSource = .NULL.
 Name = "Dataenvironment"
 [END PROPERTIES]
@@ -34,20 +34,45 @@ Name = "Dataenvironment"
 [BASECLASS] form
 [OBJNAME] Form1
 [START PROPERTIES]
-Height = 347
+Height = 378
 Width = 716
 DoCreate = .T.
 AutoCenter = .T.
 Caption = "Code Analyst Configuration"
+MaxButton = .F.
+MinButton = .F.
 MinHeight = 340
 WindowType = 1
 LockScreen = .F.
+_memberdata =       87<VFPData><memberdata name="resetrules" type="method" display="ResetRules"/></VFPData>
+
 Name = "Form1"
 [END PROPERTIES]
 [START METHODS]
+PROCEDURE Init
+DODEFAULT()
+GO TOP IN CODERULE
+THIS.grdrules.SetFocus()
+THIS.cboRules.ListIndex=1
+ENDPROC
 PROCEDURE addrule
-INSERT INTO (HOME()+"CODERULE") (Name,Active,uniqueid,timestamp) VALUES ("New Rule",.f.,SYS(2015),DATETIME())
+INSERT INTO (_SCREEN._analyst.cHomeDir+"CODERULE") (Name,Active,uniqueid,timestamp) VALUES ("New Rule",.f.,SYS(2015),DATETIME())
 THISFORM.Refresh()
+ENDPROC
+PROCEDURE resetrules
+IF NOT USED("_CODERULE")
+	USE _CODERULE IN 0
+ENDIF
+
+DELETE FROM _SCREEN._analyst.cHomeDir+"CODERULE"
+
+SELECT _CODERULE
+SCAN
+	SCATTER MEMVAR MEMO
+	INSERT INTO (_SCREEN._analyst.cHomeDir+"CODERULE") FROM MEMVAR
+ENDSCAN
+
+THISFORM.ShowRules()
 ENDPROC
 PROCEDURE showrules
 DO CASE
@@ -65,12 +90,15 @@ DO CASE
 		THISFORM.Refresh()
 
 ENDCASE
+GO TOP IN coderule
 RETURN
 ENDPROC
 [END METHODS]
 [START RESERVED3]
+_memberdata XML Metadata for customizable properties
 *showrules 
 *addrule 
+*resetrules 
 [END RESERVED3]
 
 [ RECORD]
@@ -92,7 +120,7 @@ Height = 24
 Left = 120
 NumberOfElements = 0
 Style = 2
-Top = 0
+Top = 5
 Width = 207
 Name = "cboRules"
 [END PROPERTIES]
@@ -107,10 +135,10 @@ ENDPROC
 [UNIQUEID] _1SZ1057RI
 [CLASS] commandbutton
 [BASECLASS] commandbutton
-[OBJNAME] Command1
+[OBJNAME] cmdUpdate
 [PARENT] Form1
 [START PROPERTIES]
-Top = 0
+Top = 4
 Left = 528
 Height = 27
 Width = 84
@@ -118,13 +146,15 @@ FontName = "Tahoma"
 FontSize = 8
 Anchor = 768
 Caption = "\<Update"
-Name = "Command1"
+Name = "cmdUpdate"
 [END PROPERTIES]
 [START METHODS]
 PROCEDURE Click
 IF PEMSTATUS(_SCREEN,"_analyst",5)
-_SCREEN._analyst.loadrules()
+	_SCREEN._analyst.loadrules()
+	_SCREEN._analyst.setprefs()
 ENDIF
+
 THISFORM.Release()
 ENDPROC
 [END METHODS]
@@ -134,10 +164,10 @@ ENDPROC
 [UNIQUEID] _1SZ1057RZ
 [CLASS] commandbutton
 [BASECLASS] commandbutton
-[OBJNAME] Command2
+[OBJNAME] cmdCancel
 [PARENT] Form1
 [START PROPERTIES]
-Top = 0
+Top = 4
 Left = 624
 Height = 27
 Width = 84
@@ -146,7 +176,7 @@ FontSize = 8
 Anchor = 768
 Cancel = .T.
 Caption = "\<Cancel"
-Name = "Command2"
+Name = "cmdCancel"
 [END PROPERTIES]
 [START METHODS]
 PROCEDURE Click
@@ -167,7 +197,7 @@ FontSize = 8
 Caption = "Filter Rules"
 Height = 17
 Left = 12
-Top = 4
+Top = 10
 Width = 100
 Name = "lblFilter"
 [END PROPERTIES]
@@ -184,10 +214,10 @@ FontName = "Tahoma"
 FontSize = 8
 Anchor = 30
 Height = 96
-Left = 13
+Left = 12
 Top = 240
 Width = 348
-ControlSource = "descript"
+ControlSource = "coderule.descript"
 Name = "edtDescript"
 [END PROPERTIES]
 
@@ -206,7 +236,7 @@ Height = 96
 Left = 372
 Top = 240
 Width = 336
-ControlSource = "script"
+ControlSource = "coderule.script"
 Name = "edtScript"
 [END PROPERTIES]
 
@@ -272,10 +302,11 @@ RecordSource = "coderule"
 RowHeight = 16
 ScrollBars = 3
 Top = 36
-Width = 684
+Width = 696
 ForeColor = 0,0,0
 BackColor = 255,255,255
 GridLineColor = 192,192,192
+HighlightStyle = 2
 Name = "grdRules"
 Column1.FontBold = .F.
 Column1.FontName = "Tahoma"
@@ -596,18 +627,18 @@ Name = "Text1"
 [UNIQUEID] _1SZ1057RI
 [CLASS] commandbutton
 [BASECLASS] commandbutton
-[OBJNAME] Command3
+[OBJNAME] cmdAdd
 [PARENT] Form1
 [START PROPERTIES]
-Top = 0
-Left = 408
+Top = 4
+Left = 435
 Height = 27
 Width = 84
 FontName = "Tahoma"
 FontSize = 8
 Anchor = 768
 Caption = "\<Add"
-Name = "Command3"
+Name = "cmdAdd"
 [END PROPERTIES]
 [START METHODS]
 PROCEDURE Click
@@ -635,8 +666,83 @@ Name = "Command4"
 [END PROPERTIES]
 [START METHODS]
 PROCEDURE Click
-MODIFY MEMO Script
+MODIFY MEMO coderule.Script
 THISFORM.Refresh()
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1XI0RR1Y3
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] cmdReset
+[PARENT] Form1
+[START PROPERTIES]
+Top = 4
+Left = 336
+Height = 27
+Width = 84
+FontName = "Tahoma"
+FontSize = 8
+Anchor = 768
+Caption = "\<Reset..."
+ToolTipText = "Reset rules to the default rules"
+Name = "cmdReset"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+THIS.Parent.ResetRules()
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2BH0YHWUO
+[CLASS] cfoxtextbox
+[CLASSLOC] foxctrls.vcx
+[BASECLASS] textbox
+[OBJNAME] txtFont
+[PARENT] Form1
+[START PROPERTIES]
+Height = 21
+Left = 12
+ReadOnly = .T.
+Top = 348
+Width = 612
+Name = "txtFont"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+DODEFAULT()
+
+THIS.Value = _SCREEN._analyst.cFontString
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2BH0YHWUP
+[CLASS] cfoxbutton
+[CLASSLOC] foxctrls.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdFont
+[PARENT] Form1
+[START PROPERTIES]
+Top = 348
+Left = 636
+Caption = "Font..."
+Name = "cmdFont"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+LOCAL lc
+lc = GETFONT()
+IF NOT EMPTY(lc)
+	THIS.PARENT.txtFont.VALUE = lc
+	_SCREEN._analyst.cFontString = lc
+ENDIF
+
 ENDPROC
 [END METHODS]
 
