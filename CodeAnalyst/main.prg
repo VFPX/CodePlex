@@ -1,23 +1,36 @@
 LPARAMETERS tcFile
+LOCAL llRunning
+llRunning = PEMSTATUS(_SCREEN,"_Analyst",5)
 
-IF NOT PEMSTATUS(_SCREEN,"_analyst",5)
-	_SCREEN.newobject("_analyst","_codeanalyzer","MAIN.PRG",HOME()+"CODEANAL.APP")
+IF NOT llRunning
+	*- Determine if it's in fact an app running. Dont rely on the app being in the HOME()
+	IF UPPER(JUSTEXT(SYS(16))) = "APP" THEN
+		_SCREEN.newobject("_Analyst","_codeAnalyzer","MAIN.PRG",SYS(16))
+	ELSE
+		_SCREEN.newobject("_analyst","_codeAnalyzer","MAIN.PRG")
+	ENDIF
 ENDIF
 
-_SCREEN._analyst.Analyze(tcFile)
+*- Check for a parameter passed. If none is passed, the analyst is just installed in the menu
+*- If the analyst was already installed, start the Analyze anyway.
+IF PCOUNT() = 1 OR llRunning THEN
+	_SCREEN._analyst.Analyze(tcFile)
+ENDIF
 
-DEFINE CLASS _codeanalyzer AS CUSTOM
+DEFINE CLASS _codeAnalyzer AS CUSTOM
 	cFile = ""
+	csetesc = ""
 	cMainProgram = ""
 	lLineRules = .F.
 	cLine = ""
-	cError = ""
 	nLine = 0
 	cFuncName = ""
 	oTherm = .NULL.
 	oObject = .NULL.
 	cObject= ""
 	cCode = ""
+	cFontString = "Tahoma,8,N"
+	cError = ""
 	cHomeDir = ""
 	cAnalysisCursor = ""
 	nFuncLines = 0
@@ -27,8 +40,107 @@ DEFINE CLASS _codeanalyzer AS CUSTOM
 	lDisplayMessage = .T.
 	lDisplayForm = .T.
 	cTable = ""
+	cClassName = ""
 
 
+	PROCEDURE SetPrefs
+		LOCAL nSelect
+		LOCAL lcRes
+		lcRes = "ANALYST"
+		LOCAL lSuccess
+		LOCAL nMemoWidth
+		LOCAL nCnt
+		LOCAL cData
+
+		_analystFontString       = THIS.cFontString
+	
+		nSelect = SELECT()
+		
+		lSuccess = .F.
+
+  		* make sure Resource file exists and is not read-only
+  		nCnt = ADIR(aFileList, SYS(2005))		
+		IF nCnt > 0 AND ATC('R', aFileList[1, 5]) == 0
+			USE (SYS(2005)) IN SELECT("FOXRESOURCE") SHARED AGAIN ALIAS FoxResource
+			IF USED("FoxResource") AND !ISREADONLY("FoxResource")
+				nMemoWidth = SET('MEMOWIDTH')
+				SET MEMOWIDTH TO 255
+
+				SELECT FoxResource
+				LOCATE FOR UPPER(ALLTRIM(type)) == "PREFW" AND UPPER(ALLTRIM(id)) == lcRes AND EMPTY(name)
+				IF !FOUND()
+					APPEND BLANK IN FoxResource
+					REPLACE ; 
+					  Type WITH "PREFW", ;
+					  ID WITH lcRes, ;
+					  ReadOnly WITH .F. ;
+					 IN FoxResource
+				ENDIF
+
+				IF !FoxResource.ReadOnly
+					SAVE TO MEMO Data ALL LIKE _analyst*
+
+					REPLACE ;
+					  Updated WITH DATE(), ;
+					  ckval WITH VAL(SYS(2007, FoxResource.Data)) ;
+					 IN FoxResource
+
+					lSuccess = .T.
+				ENDIF
+				SET MEMOWIDTH TO (nMemoWidth)
+			
+				USE IN FoxResource
+			ENDIF
+		ENDIF
+
+		SELECT (nSelect)
+		
+		RETURN lSuccess
+	
+	ENDPROC
+	
+	PROCEDURE GetPrefs
+			LOCAL nSelect
+			LOCAL lcRes
+			lcRes = "ANALYST"
+			LOCAL lSuccess
+			LOCAL nMemoWidth
+
+
+		nSelect = SELECT()
+		
+		lSuccess = .F.
+		
+		IF FILE(SYS(2005))    && resource file not found.
+			USE (SYS(2005)) IN SELECT("FOXRESOURCE") SHARED AGAIN ALIAS FoxResource
+			IF USED("FoxResource")
+				nMemoWidth = SET('MEMOWIDTH')
+				SET MEMOWIDTH TO 255
+
+				SELECT FoxResource
+				LOCATE FOR UPPER(ALLTRIM(type)) == "PREFW" ;
+		   			AND UPPER(ALLTRIM(id)) == lcRes ;
+		   			AND !DELETED()
+
+				IF FOUND() AND !EMPTY(Data) AND ckval == VAL(SYS(2007, Data)) AND EMPTY(name)
+					RESTORE FROM MEMO Data ADDITIVE
+					
+					THIS.cFontString = _Analystfontstring
+
+					lSuccess = .T.
+				ENDIF
+				
+				SET MEMOWIDTH TO (nMemoWidth)
+
+				USE IN FoxResource
+			ENDIF
+		ENDIF
+
+		SELECT (nSelect)
+		
+		RETURN lSuccess
+
+	ENDPROC
 	PROCEDURE CreateRuleTable
 
 		IF NOT FILE(THIS.cHomeDir+"CODERULE.DBF")
@@ -56,18 +168,21 @@ DEFINE CLASS _codeanalyzer AS CUSTOM
 			THIS.otherm.hide()
 			THIS.otherm.release()
 		ENDIF
+		IF NOT EMPTY(PRMBAR("_MTOOLS", 5942)) THEN
+			RELEASE BAR 5942 OF _MTOOLS
+		ENDIF
 	ENDPROC
 	
 	PROCEDURE Configure
 		LOCAL lnArea
 		lnArea = SELECT()
 		IF NOT USED("CODERULE")
-		USE HOME()+"CODERULE" IN 0
+			*- Use the cHomeDir property here... again don't rely on the HOME()
+			USE (THIS.cHomeDir+"CODERULE") IN 0
 		ENDIF
 		DO FORM ConfigureAnalyst
 		SELECT (lnArea)
 	ENDPROC
-
 	PROCEDURE AddWarning
 		LPARAMETERS tcWarning,tcType
 		IF NOT EMPTY(THIS.aWarnings(1,1))
@@ -88,8 +203,8 @@ DEFINE CLASS _codeanalyzer AS CUSTOM
 			*!* REPLACE warnings WITH warnings + tcWarning +CHR(13)+CHR(10)
 			SELECT (lnArea)
 		ENDIF
-		
 	ENDPROC
+	
 	PROCEDURE AddWarningCursor
 		LPARAMETERS tcWarning
 		
@@ -98,6 +213,7 @@ DEFINE CLASS _codeanalyzer AS CUSTOM
 		lcID = THIS.cWarningID
 		lcFile = THIS.cFile
 		lcFunc = THIS.cFuncName
+		lnLine = THIS.nLine
 		IF NOT EMPTY(THIS.cObject)
 			lcFunc = TRIM(THIS.cObject) + "."+lcFunc
 		ENDIF
@@ -106,8 +222,8 @@ DEFINE CLASS _codeanalyzer AS CUSTOM
 		ENDIF
 		lcFileType = THIS.GetFileType()
 		
-		INSERT INTO (THIS.cAnalysisCursor) (cfunc,cprog,cType,cFileType,cWarning,warnings) ;
-			VALUES (lcFunc,lcFile,lcType,lcFileType,lcID,tcWarning)
+		INSERT INTO (THIS.cAnalysisCursor) (cfunc,cprog,cType,cFileType,cWarning,nLine,warnings) ;
+			VALUES (lcFunc,lcFile,lcType,lcFileType,lcID,lnLine,tcWarning)
 		
 	ENDPROC
 	
@@ -137,10 +253,18 @@ DEFINE CLASS _codeanalyzer AS CUSTOM
 	ENDPROC
 	
 	PROCEDURE INIT
-		THIS.cHomeDir = HOME()
-
+		*- Again don't rely on the HOME(), use SYS(16) instead. Now strip class/method names to 
+		*- get the homedir for the data
+		LOCAL lcProgram
+		IF SYS(16)="PROCEDURE"
+		lcProgram = ALLTRIM(SUBSTR(SYS(16),ATC(" ",SYS(16),2)+1))
+		ELSE
+		lcProgram = ALLTRIM(STREXTRACT(SYS(16), " ", " ", 2, 2))
+		ENDIF
+		THIS.cHomeDir = JUSTPATH(lcProgram)+"\"
+	
 		IF NOT PEMSTATUS(THIS,"aCode",5)
-			THIS.ADDPROPERTY("aCode(1,3)")
+			THIS.ADDPROPERTY("aCode(1,4)")
 		ENDIF
 		IF NOT PEMSTATUS(THIS,"awarnings",5)
 			THIS.AddProperty("awarnings(1,3)")
@@ -152,12 +276,15 @@ DEFINE CLASS _codeanalyzer AS CUSTOM
 		IF NOT PEMSTATUS(THIS,"aRules",5)
 			THIS.ADDPROPERTY("aRules(1,5)")
 		ENDIF
+		THIS.GetPrefs()
 		THIS.CreateRuleTable()
 		
 		THIS.LoadRules()
+		LOCAL lcDir
+		lcDir = "DO ('"+THIS.cHomeDir +"ANALYST.APP')"
 
 		DEFINE BAR 5942 OF _MTOOLS PROMPT "Code Analyst..." AFTER  _MTL_TOOLBOX
-		ON SELECTION BAR 5942 OF _MTOOLS DO HOME()+"CODEANAL.APP"
+		ON SELECTION BAR 5942 OF _MTOOLS &lcDir 
 
 	ENDPROC
 
@@ -165,31 +292,33 @@ DEFINE CLASS _codeanalyzer AS CUSTOM
 		LOCAL lnArea
 		lnArea = SELECT()
 		SELECT 0
-		THIS.cAnalysisCursor = "_AnalysisResults" && SYS(2015)
+		THIS.cAnalysisCursor = SYS(2015)
 		CREATE CURSOR (THIS.cAnalysisCursor) (;
 			cFileType C(10),;
 			cFunc C(50),;
 			cProg C(125),;
+			cClass C(50),;
 			cType C(10),;
+			nLine N(6),;
 			cWarning C(10),;
 			Warnings M;
 			)
-		INDEX ON cFunc+cProg TAG funcProg
+		INDEX ON cFunc+cProg+cClass TAG funcProg
 		
 		SELECT (lnArea)
 		
 	ENDPROC
 	
 	PROCEDURE AddToCursor
-		LPARAMETERS tcFunc,tcProg,tcType
-		
+		LPARAMETERS tcFunc, tcProg, tcClass,tcType
+		*% Add tcClass
 		IF EMPTY(tcType)
 			tcType = JUSTEXT(tcProg)
 		ENDIF
 		IF EMPTY(tcType)
 			tcType = "Unknown"
 		ENDIF
-		IF EMPTY(THIS.cAnalysisCursor) OR NOT USED(THIS.cAnalysisCursor)
+		IF EMPTY(THIS.cAnalysisCursor)
 			THIS.BuildAnalysisCursor()
 		ENDIF
 		IF EMPTY(tcFunc)
@@ -198,18 +327,21 @@ DEFINE CLASS _codeanalyzer AS CUSTOM
 		IF EMPTY(tcProg)
 			tcProg = THIS.cFuncName
 		ENDIF
+		IF EMPTY(tcClass)
+			tcClass = This.cClassName
+		ENDIF
 		tcFunc = PADR(tcFunc,50)
 		tcProg = PADR(tcProg,125)
-		IF NOT SEEK(tcfunc+tcProg,THIS.cAnalysisCursor)
+		IF NOT SEEK(tcfunc+tcProg+tcClass,THIS.cAnalysisCursor)
 		
-		INSERT INTO (THIS.cAnalysisCursor) (cfunc,cprog,cType) ;
-			VALUES (tcFunc,tcProg,tcType)
+		INSERT INTO (THIS.cAnalysisCursor) (cfunc,cprog,cClass,cType) ;
+			VALUES (tcFunc,tcProg, tcClass, tcType)
 		ENDIF
 	ENDPROC
 	
 	PROCEDURE LoadRules
-		IF FILE(HOME()+"CODERULE.DBF")
-			SELECT NAME,TYPE,script,uniqueid FROM HOME()+"CODERULE" WHERE Active INTO ARRAY THIS.aRules
+		IF FILE(THIS.cHomeDir+"CODERULE.DBF")
+			SELECT NAME,TYPE,script,uniqueid FROM THIS.cHomeDir+"CODERULE" WHERE Active INTO ARRAY THIS.aRules
 			LOCAL lni
 			FOR lni = 1 TO ALEN(THIS.aRules,1)
 				IF EMPTY(THIS.aRules(lni,1))
@@ -225,7 +357,7 @@ DEFINE CLASS _codeanalyzer AS CUSTOM
 	ENDPROC
 
 	PROCEDURE ResetArrays
-		DIMENSION THIS.aCode(1,3)
+		DIMENSION THIS.aCode(1,4)
 		THIS.aCode(1,1) = ""
 		DIMENSION THIS.aWarnings(1,3)
 		THIS.aWarnings(1,1) = ""
@@ -236,28 +368,41 @@ DEFINE CLASS _codeanalyzer AS CUSTOM
 	
 	PROCEDURE Analyze
 		LPARAMETERS tcFile
+		TRY
 		THIS.cMessage = ""
 		THIS.cMainProgram = tcFile
+		IF NOT EMPTY(tcFile)
+			IF NOT FILE(tcFile)
+				MESSAGEBOX("File "+tcFile+" does not exist.",16,"Code Analyst")
+				RETURN
+			
+			ENDIF
+		ENDIF
 		IF ISNULL(THIS.oTherm)
-			THIS.oTherm = NEWOBJECT("cprogressform","foxref.vcx",HOME()+"CODEANAL.APP")
+			THIS.oTherm = NEWOBJECT("cprogressform","foxref.vcx",THIS.cHomeDir+"ANALYST.APP")
 			THIS.oTherm.SetMax(100)
 		ENDIF
 		LOCAL lc
 		THIS.ResetArrays()
 		IF EMPTY(tcFile)
 			IF ASELOBJ(la,1)=0
-				IF TYPE("_VFP.ActiveProject")="U"
+				** Should we use the Active project or not?
+				*!* IF TYPE("_VFP.ActiveProject")="U"
 				
 				tcFile = GETFILE("PRG;PJX;VCX;SCX","Select file","Open",1,"Select file to analyze")
+
+*!*					ELSE
+*!*						tcFile = _VFP.ActiveProject.Name  
+*!*					ENDIF
 				IF EMPTY(tcFile)
 					RETURN
-				ENDIF
-				ELSE
-					tcFile = _VFP.ActiveProject.Name  
 				ENDIF
 			ENDIF
 		ENDIF
 
+		THIS.cSetEsc = ON("ESCAPE")
+		ON ESCAPE _SCREEN._analyst.StopAnalysis()
+		
 		IF EMPTY(tcFile)
 			lc = "Current Object"
 			THIS.cFile = lc
@@ -266,7 +411,7 @@ DEFINE CLASS _codeanalyzer AS CUSTOM
 			THIS.oTherm.SetProgress(1)
 			DOEVENTS
 			THIS.oTherm.Show()
-			THIS.AddToCursor(la(1).Name,la(1).Name,"Object")
+			THIS.AddToCursor(la(1).Name,la(1).Name,'',"Object")
 			
 			THIS.AnalyzeCurrObj()
 		ELSE
@@ -279,7 +424,7 @@ DEFINE CLASS _codeanalyzer AS CUSTOM
 			THIS.oTherm.SetProgress(1)
 			DOEVENTS
 			THIS.oTherm.Show()
-			THIS.AddToCursor(lc,lc,"File")
+			THIS.AddToCursor(lc,lc,'',"File")
 			THIS.AnalFile(tcFile)
 		ENDIF
 
@@ -290,12 +435,27 @@ DEFINE CLASS _codeanalyzer AS CUSTOM
 				DO FORM codeanalresults 
 			ENDIF
 		ENDIF
+		CATCH TO loErr
+			THIS.oTherm.Hide()
+			ERROR loerr.message
+		ENDTRY
+		LOCAL lc
+		lc = THIS.cSetEsc
+		ON ESCAPE &lc
 
+
+	PROCEDURE StopAnalysis
+		LOCAL lc
+		lc = THIS.cSetEsc
+		ON ESCAPE &lc
+		THIS.oTherm.Hide()
+		CANCEL
+		
 	PROCEDURE AnalyzeCurrObj
 		LPARAMETERS tlWork
 
 		THIS.cFile = "Current Object: "+la(1).Name
-		DIMENSION THIS.aCode(1,3)
+		DIMENSION THIS.aCode(1,4)
 		THIS.aCode(1,1) = ""
 
 		THIS.analyzeObj(la(1))
@@ -339,7 +499,7 @@ DEFINE CLASS _codeanalyzer AS CUSTOM
 				ENDIF
 			ENDIF
 		ENDFOR
-		DIMENSION THIS.aCode(ln2,3)
+		DIMENSION THIS.aCode(ln2,4)
 		IF EMPTY(THIS.aCode(ln2,1))
 			THIS.aCode(ln2,1)=""
 		ENDIF
@@ -357,9 +517,10 @@ DEFINE CLASS _codeanalyzer AS CUSTOM
 		LOCAL la(1)
 		LOCAL lnMethods
 		THIS.otherm.setstatus("Object: "+toObj.Name)
+
 		lnMethods = AMEMBERS(la,toObj,1)
 
-		THIS.AddToCursor(toObj.Name,toObj.Name,"Object")
+		THIS.AddToCursor(toObj.Name,toObj.Name,'',"Object")
 		
 		IF NOT PEMSTATUS(toObj,"Name",5)
 			RETURN
@@ -368,11 +529,11 @@ DEFINE CLASS _codeanalyzer AS CUSTOM
 		FOR lni = 1 TO lnMethods
 			IF la(lni,2)="M" OR la(lni,2)="E"
 				IF PEMSTATUS(toObj,"ReadMethod",5)
-					lcContent = toObj.READMETHOD(la(lni,1))
-					IF NOT EMPTY(lcContent)
-						THIS.Add2Array(toObj.NAME+"."+la(lni,1),ALINES(laX,lcContent),@laX)
+				lcContent = toObj.READMETHOD(la(lni,1))
+				IF NOT EMPTY(lcContent)
+					THIS.Add2Array(toObj.NAME+"."+la(lni,1),ALINES(laX,lcContent),@laX)
 					*!* lcText = lcText + toobj.Name+"."+la(lni,1) + " - "+LTRIM(STR(ALINES(laX,lcCOntent)))+CHR(13)+CHR(10)
-					ENDIF
+				ENDIF
 				ENDIF
 			ENDIF
 		ENDFOR
@@ -392,10 +553,11 @@ DEFINE CLASS _codeanalyzer AS CUSTOM
 			tcFile = GETFILE("PRG")
 		ENDIF
 
-		DIMENSION THIS.aCode(1,3)
+		DIMENSION THIS.aCode(1,4)
 		THIS.aCode(1,1) = ""
 		THIS.aCode(1,2) = 0
 		THIS.aCode(1,3) = 0
+		This.aCode(1,4) = ""
 		LOCAL lni
 		IF MEMLINES(tcFile)>1
 			THIS.analstring(tcFile)
@@ -414,16 +576,19 @@ DEFINE CLASS _codeanalyzer AS CUSTOM
 		LPARAMETERS tcFile
 		THIS.cFile = tcFile
 		LOCAL lnArea
+		lnArea = SELECT()
 		LOCAL lcAlias
 		lcAlias = SYS(2015)
-		lnArea = SELECT()
 		SELECT 0
 		USE (tcFile) AGAIN SHARED ALIAS &lcAlias
 		SCAN FOR NOT EMPTY(methods)
 			THIS.cObject = TRIM(parent)+IIF(EMPTY(parent),"",".")+TRIM(objname)
+			this.cClassName = objname
 			THIS.AnalString(methods,tcFile)
 			THIS.cObject = ""
+			this.cClassName = ""
 		ENDSCAN
+		SELECT (lcAlias)
 		USE
 		SELECT (lnArea)
 	ENDPROC
@@ -431,9 +596,10 @@ DEFINE CLASS _codeanalyzer AS CUSTOM
 	PROCEDURE ScanMNX
 		LPARAMETERS tcFile
 		THIS.cFile = tcFile
+		LOCAL lnArea
+		lnArea = SELECT()
 		LOCAL lnArea,lcAlias
 		lcALias = SYS(2015)
-		lnArea = SELECT()
 		SELECT 0
 		USE (tcFile) AGAIN SHARED ALIAS &lcAlias
 		SCAN
@@ -447,6 +613,7 @@ DEFINE CLASS _codeanalyzer AS CUSTOM
 			THIS.AnalString(cleanup,tcFile + " Cleanup")
 			ENDIF
 		ENDSCAN
+		SELECT (lcAlias)
 		USE
 		SELECT (lnArea)
 	ENDPROC
@@ -454,11 +621,12 @@ DEFINE CLASS _codeanalyzer AS CUSTOM
 	PROCEDURE scanProject
 	LPARAMETERS tcFile
 		THIS.cFile = tcFile
-		LOCAL lnArea,lcFile,lcAlias
-		lcAlias = SYS(2015)
+		LOCAL lnArea,lcFile
 		lnArea = SELECT()
+		LOCAL lnArea,lcAlias
+		lcALias = SYS(2015)
 		SELECT 0
-		USE (tcFile) AGAIN SHARED ALIAS &lcALias
+		USE (tcFile) AGAIN SHARED ALIAS &lcAlias
 		SCAN FOR NOT type="H"
 			THIS.oTherm.SetProgress(RECNO()/RECCOUNT()*95)
 			lcFile = STRTRAN(name,CHR(0))
@@ -474,6 +642,7 @@ DEFINE CLASS _codeanalyzer AS CUSTOM
 		
 		THIS.oTherm.SetDescription("Analyzing "+tcFile)
 		THIS.cFile = tcFile
+
 		LOCAL lcExt
 		lcExt = UPPER(JUSTEXT(tcFile))
 		DO CASE
@@ -536,7 +705,9 @@ DEFINE CLASS _codeanalyzer AS CUSTOM
 		FOR lni = 1 TO lnTotal
 			THIS.oTherm.SetStatus("Line "+LTRIM(STR(lni))+" of "+LTRIM(STR(lnTotal)))
 			lcText = la(lni)
-			lcText = ALLTRIM(UPPER(STRTRAN(lcText,"	")))
+			*% Don't uppercase - some rules may need to be case sensitive
+			*% lcText = ALLTRIM(UPPER(STRTRAN(lcText,"	")))
+			lcText = ALLTRIM(STRTRAN(lcText,"	"))
 			IF EMPTY(lcText)
 				LOOP
 			ENDIF
@@ -562,7 +733,7 @@ DEFINE CLASS _codeanalyzer AS CUSTOM
 		ENDFOR
 		THIS.Add2Array(lcFunc,lnCount,@laX)
 		THIS.nFileLines = lnTotal
-		THIS.AddToCursor(tcName,tcName,"File")
+		THIS.AddToCursor(tcName,tcName,this.cClassName,"File")
 		THIS.ValidateFile(tcString,tcName)
 
 	ENDPROC
@@ -636,10 +807,10 @@ DEFINE CLASS _codeanalyzer AS CUSTOM
 		LPARAMETERS tcCode,tcName
 
 		THIS.cFuncName = tcName
-		THIS.oTherm.SetStatus("Function: "+tcName)
 		IF EMPTY(tcName) OR tcName="Program"
 			THIS.cFuncName = THIS.cFile
 		ENDIF
+		THIS.oTherm.SetStatus("Function: "+tcName)
 		LOCAL lni,lcFunc
 		THIS.cCode = tcCode
 		FOR lni = 1 TO ALEN(THIS.aRules,1)
@@ -664,28 +835,30 @@ DEFINE CLASS _codeanalyzer AS CUSTOM
 			ENDIF
 		ENDFOR
 
+
 	PROCEDURE AddError
 		LPARAMETERS toErr,tcRule,tcFunc
 		THIS.cError = THIS.cError + loErr.Message+" occurred on line "+LTRIM(STR(loErr.Lineno))+" ("+loErr.LineContents+") in rule "+tcRule + CHR(13)+CHR(10)
-		
+
 	PROCEDURE Add2Array
 		LPARAMETERS tcCode,tnLines,taArray
 
 		IF NOT EMPTY(THIS.aCode(1,1))
-			DIMENSION THIS.aCode(ALEN(THIS.aCode,1)+1,3)
+			DIMENSION THIS.aCode(ALEN(THIS.aCode,1)+1,4)
 		ENDIF
 		
 		THIS.cFuncName = tcCode
 		IF NOT EMPTY(THIS.cObject)
 			THIS.cFuncName = LOWER(THIS.cObject+"."+THIS.cFuncName)
 		ELSE
-		IF EMPTY(tcCode) OR tcCode="Program"
-			THIS.cFuncName = THIS.cFile
-		ENDIF
+			IF EMPTY(tcCode) OR tcCode="Program"
+				THIS.cFuncName = THIS.cFile
+			ENDIF
 		ENDIF
 
 		THIS.aCode(ALEN(THIS.aCode,1),1) = THIS.cFuncName
 		THIS.aCode(ALEN(THIS.aCode,1),2) = tnLines
+		This.aCode(ALEN(This.aCode,1),4) = This.cClassName
 		IF EMPTY(THIS.aCode(ALEN(THIS.aCode,1),1))
 			THIS.aCode(ALEN(THIS.aCode,1),1) = ""
 		ENDIF
@@ -698,7 +871,7 @@ DEFINE CLASS _codeanalyzer AS CUSTOM
 				IF ALLTRIM(STRTRAN(taArray(lni),"	"))<>"*"
 					IF NOT EMPTY(taArray(lni))
 						THIS.nLine = lni
-						THIS.AddToCursor(THIS.cFile,THIS.cFuncName,"Function")
+						THIS.AddToCursor(THIS.cFile,THIS.cFuncName,This.cClassName,"Function")
 						THIS.ValidateLine(taArray(lni))
 
 						lnReal = lnReal+1
@@ -710,7 +883,7 @@ DEFINE CLASS _codeanalyzer AS CUSTOM
 
 		THIS.aCode(ALEN(THIS.aCode,1),3) = lnReal
 		THIS.nFuncLines = tnLines
-		THIS.AddToCursor(THIS.cFile,THIS.cFuncName,"Function")
+		THIS.AddToCursor(THIS.cFile,THIS.cFuncName,This.cClassName,"Function")
 		THIS.ValidateCode(lcCode,tcCode)
 	ENDPROC
 
@@ -832,6 +1005,7 @@ DEFINE CLASS frmResults AS FORM
 	PROCEDURE command1.CLICK
 		THISFORM.RELEASE()
 	ENDPROC
+
 
 
 ENDDEFINE
