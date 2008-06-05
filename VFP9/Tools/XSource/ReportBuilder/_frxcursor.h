@@ -1,8 +1,12 @@
 *=======================================================
-* frxCursor.vcx compile constants
+* _frxCursor.vcx compile constants
 *=======================================================
 
 #include foxpro_reporting.h
+
+*=======================================================
+* (See end of file for changes for SP2)
+*=======================================================
 
 *-------------------------------------------------------
 * Magic numbers
@@ -65,6 +69,7 @@
 #define TARGET_FORCED_PAGEHEADER_LOC "Resolved as Page Header"
 #define TARGET_UNPREDICTABLE_LOC     "Indeterminate behavior"
 
+
 *-- Calculation "Reset On" combo list
 *--
 #define ENDOFREPORT_LOC		    "Report"
@@ -77,5 +82,70 @@
 
 *-- Messagebox error messages:
 *--
-#define METADATA_DOM_ERROR_LOC   "Exception occurred in frxCursor::getMetadataDomDoc()"
-#define CREATE_IC_FAILURE_LOC    "Unable to create device context. CreateIC() returned 0."
+#define METADATA_DOM_ERROR_LOC		"Exception occurred in frxCursor::getMetadataDomDoc()"
+#define CREATE_IC_FAILURE_LOC		"Unable to create device context. CreateIC() returned 0."
+
+
+*=======================================================
+* SP2 Constants & localization strings:
+*=======================================================
+
+*-- FRX object targets:
+*--
+#define TARGET_LAYOUT_ELEMENTS_LOC  "Any Report control or layout element"
+
+*-----------------------------------------------------
+* Moved from frxBuilder.h
+*-----------------------------------------------------
+#define INT_REGISTRY_TABLE		     "frxbuilder.dbf"
+#define EXT_REGISTRY_TABLE		     "reportbuilder.dbf"
+#define CONFIG_FILE_REGISTRY_TOKEN   "reportbuilder_registry"
+
+#define MAX_ATTRIBS_IN_MEMBER_XML	254
+
+*#define DEFAULT_MEMBERDATA_XML		[<?xml version = "1.0" encoding="Windows-1252" standalone="yes"?><VFPData><reportdata name="" type="R" script="" execute="" execwhen="" class="" classlib="" declass="" declasslib=""/></VFPData>]
+
+#define DEFAULT_MEMBERDATA_XML		[<VFPData><reportdata name="" type="R" script="" execute="" execwhen="" class="" classlib="" declass="" declasslib=""/></VFPData>]
+
+#define CURSOR_COLUMN_LIMIT			255
+
+#define METADATA_XML_REPLACE_LOC	"Do you want to replace the metadata with a valid default XML fragment?"
+
+#define METADATA_LOAD_ERROR_LOC		"The metadata for a report definition row (ID: " +                                  UNIQUEID + ") is invalid." + chr(13) + "Metadata instructions for this item will be ignored."  
+                                                               
+#define METADATA_CUMULATIVE_ERROR_LOC	"The metadata for some report definition rows" + chr(13) + "could not be loaded."+CHR(13) + "Some dynamic report features may be missing," + chr(13) + "or a report run may not conclude successfully." 
+
+#define METADATA_NOT_XML_ERROR_LOC		"For this object, the report layout currently contains unexpected STYLE information:" + chr(13)+chr(13) + left(STYLE,20) + chr(13)+chr(13) + "This may be a consequence of a conversion from a FoxPro DOS report." + chr(13) + "If you save your changes, this information will be replaced."+chr(13)+"(It will not affect the existing behavior of this report in FoxPro DOS.)"+chr(13)+"Do you wish to continue?"
+
+#IFNDEF DEFAULT_MBOX_TITLE_LOC                                 
+	#define DEFAULT_MBOX_TITLE_LOC    "FoxPro Reporting"
+#ENDIF
+
+#define FRXSCRIPTWRITER_GENERAL_LOC             "generated user-dynamic code"
+#define FRXSCRIPTWRITER_EVALUATECONTENTS_LOC    "for EvaluateContents method"
+#define FRXSCRIPTWRITER_ADJUSTOBJECTSIZE_LOC    "for AdjustObjectSize method"
+#define FRXSCRIPTWRITER_DYNAMICPARAMS1_LOC      "the following code translates from the standard"
+#define FRXSCRIPTWRITER_DYNAMICPARAMS2_LOC      "fxMemberDataScript.ApplyFx parameters, which are used"
+#define FRXSCRIPTWRITER_DYNAMICPARAMS3_LOC      "so you can cut and paste the CASEs below into"
+#define FRXSCRIPTWRITER_DYNAMICPARAMS4_LOC      "Memberdata standard script later if you want to"
+
+#define FRXSCRIPTWRITER_USERLABEL_LOC           "user condition: "
+#define FRXSCRIPTWRITER_DEFAULT_LOC             "default result from FRX definition"
+
+#define FRXSCRIPTWRITER_EXPRESSIONRULES_LOC     "Combinations of any 2 out of the 3 delimiter types (" +["]+ ",',[]) permitted within expressions."
+#define FRXSCRIPTWRITER_CONDITIONRULES_LOC      "Conditions are evaluated in the Current (Report) datasession."
+
+
+#define FRXSCRIPTWRITER_EVALRULES1_LOC          "Expression required for this item. "
+#define FRXSCRIPTWRITER_EVALRULES2_LOC          "Expression evaluated first in Current (Report) datasession, then in FRX datasession."
+#define FRXSCRIPTWRITER_EVALRULES3_LOC          "Additional items use literal values."
+
+#define FRXSCRIPTWRITER_ADJUSTOBJRULES1_LOC     "These items use literal values"
+#define FRXSCRIPTWRITER_ADJUSTOBJRULES2_LOC     "or expressions that evaluate to numeric values."
+#define FRXSCRIPTWRITER_ADJUSTOBJRULES3_LOC     "Expressions are evaluated in the Current (Report) datasession."
+
+
+
+
+
+

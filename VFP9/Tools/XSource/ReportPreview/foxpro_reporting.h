@@ -236,6 +236,16 @@
 #DEFINE LISTENER_PREPASS 0
 #DEFINE LISTENER_FULLPASS 1
 
+*&* Sedna -- 
+*&* CallAdjustObjectSize and 
+*&* CallEvaluateContents properties'
+*&* enumerated values, which 
+*&* determine baseclass behavior
+*&* during a report run:
+#DEFINE LISTENER_CALLDYNAMICMETHOD_CHECK_CODE  0
+#DEFINE LISTENER_CALLDYNAMICMETHOD_NEVER       1
+#DEFINE LISTENER_CALLDYNAMICMETHOD_ALWAYS      2
+
 * subset of existing FOXPRO.H used in reportoutput app and classes
 
 *-- DrawMode
@@ -414,3 +424,41 @@
 #DEFINE PRTDUP_VERTICAL   2
 #DEFINE PRTDUP_HORIZONTAL 3
 
+* -- Memberdata and Dynamic method values
+
+#DEFINE FRX_BLDR_NAMESPACE_ADVANCEDPROPS             "Microsoft.VFP.Reporting.Builder.AdvancedProperty"
+#DEFINE FRX_BLDR_NAMESPACE_EVALUATECONTENTS          "Microsoft.VFP.Reporting.Builder.EvaluateContents"
+#DEFINE FRX_BLDR_NAMESPACE_ADJUSTOBJECTSIZE          "Microsoft.VFP.Reporting.Builder.AdjustObjectSize"
+#DEFINE FRX_BLDR_NAMESPACE_ROTATE                    "Microsoft.VFP.Reporting.Builder.Rotate"
+
+#define ADVPROP_EDITMODE_GETEXPR	1
+#define ADVPROP_EDITMODE_TEXT		2
+#define ADVPROP_EDITMODE_STRING		3
+#define ADVPROP_EDITMODE_GETFILE	4
+#define ADVPROP_EDITMODE_BOOLEAN	5
+
+
+#DEFINE FRX_BLDR_MEMBERDATATYPE                      "R" 
+
+#DEFINE FRX_BLDR_ADVPROP_TITLE			 			"Document.Title"
+#DEFINE FRX_BLDR_ADVPROP_SUBJECT					"Document.Subject"
+#DEFINE FRX_BLDR_ADVPROP_AUTHOR						"Document.Author"
+#DEFINE FRX_BLDR_ADVPROP_COPYRIGHT          		"Document.Copyright"
+#DEFINE FRX_BLDR_ADVPROP_DATE               		"Document.Date"
+#DEFINE FRX_BLDR_ADVPROP_KEYWORDS					"Document.Keywords"
+#DEFINE FRX_BLDR_ADVPROP_DESCRIPTION				"Document.Description"
+
+#DEFINE FRX_BLDR_ADVPROP_HTML_CSS_FILE              "HTML.CSSFile"
+#DEFINE FRX_BLDR_ADVPROP_HTML_CSS_CLASSEXTEND       "HTML.CSSClass.ExtendFRX"
+#DEFINE FRX_BLDR_ADVPROP_HTML_CSS_CLASSOVERRIDE     "HTML.CSSClass.OverrideFRX"
+#DEFINE FRX_BLDR_ADVPROP_HTML_ITEMHREF              "HTML.Link" && for all non-TEXTAREA text, and images
+#DEFINE FRX_BLDR_ADVPROP_HTML_ITEMTITLE             "HTML.Alt-Title" && img alt, title for other controls
+#DEFINE FRX_BLDR_ADVPROP_HTML_ITEMANCHOR            "HTML.Anchor"  && this one can be bands as well as controls
+#DEFINE FRX_BLDR_ADVPROP_HTML_PAGEIMAGEHREF         "HTML.PrintablePageLink" && for all non-TEXTAREA text, and images, should be BOOLEAN type
+#DEFINE FRX_BLDR_ADVPROP_HTML_HTTPEQUIV             "HTML.Metatag.HTTP-EQUIV" && header record only, should be Text/String type
+#DEFINE FRX_BLDR_ADVPROP_HTML_TEXTAREAS_OFF         "HTML.TextAreasOff" && report global, should be boolean
+
+#DEFINE FRX_BLDR_ADVPROP_PREPROCESS_NORENDER        "ListenerRef.Preprocess.NoRenderWhen"
+#DEFINE FRX_BLDR_ADVPROP_INSTANCE_NORENDER          "ListenerRef.NoRenderWhen"
+
+#DEFINE FRX_RUNTIME_LAYOUT_DIMENSION_LIMIT           64000

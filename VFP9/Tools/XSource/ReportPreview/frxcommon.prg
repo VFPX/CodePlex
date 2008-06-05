@@ -32,9 +32,9 @@ lparameter cToken
 local retVal
 retVal = ""
 if not empty( m.cToken )
-	*iIndex = ascan(this.keys, "|"+alltrim(upper(cToken))+"|" )
-	iIndex = ascan(this.keys, "|"+alltrim(cToken)+"|", 1, alen(this.keys), 1, 7)
-	if iIndex > 0
+	*iIndex = ascan(this.keys, "|"+alltrim(upper(m.cToken))+"|" )
+	iIndex = ascan(this.keys, "|"+alltrim(m.cToken)+"|", 1, alen(this.keys), 1, 7)
+	if m.iIndex > 0
 		return this.values[m.iIndex]
 	endif
 endif
@@ -48,9 +48,9 @@ lparameters cKey, vValue
 
 local iIndex, iKeyCount
 if not empty( m.cKey )
-	*iIndex = ascan(this.keys, "|"+alltrim(upper(cKey))+"|" )
-	iIndex = ascan(this.keys, "|"+alltrim(cKey)+"|", 1, alen(this.keys), 1, 7)
-	if iIndex > 0
+	*iIndex = ascan(this.keys, "|"+alltrim(upper(m.cKey))+"|" )
+	iIndex = ascan(this.keys, "|"+alltrim(m.cKey)+"|", 1, alen(this.keys), 1, 7)
+	if m.iIndex > 0
 		this.values[m.iIndex] = m.vValue
 	else
 		iKeyCount = alen(this.keys,1)+1
@@ -71,7 +71,7 @@ function getMemo
 local iPair, cText
 cText = ""
 for iPair = 2 to alen( this.keys )
-	cText = cText + strextract(this.keys[m.iPair],"|","|") + " = " + transform(this.values[m.iPair]) + chr(13)+chr(10)
+	cText = m.cText + strextract(this.keys[m.iPair],"|","|") + " = " + transform(this.values[m.iPair]) + chr(13)+chr(10)
 endfor
 return m.cText
 endfunc
@@ -92,7 +92,7 @@ function loadMemo
 *------------------------------------------
 lparameter cText 
 
-if empty( cText )
+if empty( m.cText )
 	return .F.
 endif
 
@@ -101,14 +101,14 @@ endif
 local i, iLineCount, iKeyCount, cBuff, q, cKey, cValue
 private aTemp
 
-iLineCount = alines( aTemp, cText )
+iLineCount = alines( aTemp, m.cText )
 iKeyCount  = 0
 for i = 1 to iLineCount
 	if empty( aTemp[m.i] ) ;
 	or inlist( left( aTemp[m.i], 1 ), "[", ";", "*" )
 		* do nothing
 	else
-		iKeyCount  = iKeyCount + 1
+		iKeyCount  = m.iKeyCount + 1
 		
 		* extract the key:
 		cBuff = alltrim(aTemp[m.i])
@@ -160,12 +160,19 @@ procedure OpenResourceFile
 
 if file( set("RESOURCE",1) ) and set("RESOURCE")="ON"
 
-	THIS.currentWorkArea = select()
+	THIS.currentWorkArea = select(0)
 
 	select 0
 	use (set("RESOURCE",1)) again shared 
-	set order to 1
-	THIS.resourceWorkArea = select()
+	*-----------------------------------------------
+	* Fix for SP2: If the resource file is built-in
+	* to the Application/Exe, it may not have an 
+	* index available!
+	*-----------------------------------------------
+	if upper(key(1))="TYPE+ID+PADR(NAME,24)"
+		set order to 1
+	endif
+	THIS.resourceWorkArea = select(0)
 	
 	return .T.
 endif
@@ -182,8 +189,14 @@ procedure LoadResource
 lparameter cID, cNAME
 
 if THIS.OpenResourceFile()
-
-	if seek( padr("PREFW",12)+padr(m.cID,12) + m.cNAME )
+	*-----------------------------------------------
+	* Fix for SP2: If the resource file is built-in
+	* to the Application/Exe, it may not have an 
+	* index available! So use LOCATE instead of SEEK:
+	*-----------------------------------------------
+	* if seek( padr("PREFW",12)+padr(m.cID,12) + m.cNAME )
+	locate for TYPE+ID+PADR(NAME,24) = padr("PREFW",12)+padr(m.cID,12) + m.cNAME
+	if found()
 
 		THIS.loadMemo( DATA )	
 
@@ -219,7 +232,14 @@ if not isreadonly()
 	local cData
 	cData = THIS.getMemo()
 
-	if not seek( padr("PREFW",12) + padr(m.cID,12) + m.cNAME )
+	*-----------------------------------------------
+	* Fix for SP2: If the resource file is built-in
+	* to the Application/Exe, it may not have an 
+	* index available! So use LOCATE instead of SEEK:
+	*-----------------------------------------------
+	* if not seek( padr("PREFW",12) + padr(m.cID,12) + m.cNAME )
+	locate for TYPE+ID+PADR(NAME,24) = padr("PREFW",12) + padr(m.cID,12) + m.cNAME
+	if not found()
 
 		append blank
 		replace ;
@@ -322,7 +342,10 @@ lparameters oRef
 local iCurrentState
 iCurrentState = oRef.WindowState
 if oRef.WindowState <> 0
-	THIS.WindowState = 0
+	*----------------------------------
+	* Fixed for SP1: was "THIS." instead of ".oRef"
+	*----------------------------------
+	oRef.WindowState = 0
 endif
 
 THIS.Set(oRef.Name + ".Top", oRef.Top )
