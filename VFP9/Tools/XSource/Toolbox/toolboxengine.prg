@@ -198,7 +198,9 @@ DEFINE CLASS ToolboxEngine AS Custom
 
 	
 	FUNCTION SavePrefs()
-		LOCAL oResource AS FoxResource, cTopTool, i
+		LOCAL oResource
+		LOCAL cTopTool
+		LOCAL i
 
 		m.oResource = NEWOBJECT("FoxResource", "FoxResource.prg")
 
@@ -233,7 +235,6 @@ DEFINE CLASS ToolboxEngine AS Custom
 		m.oResource.Save("TOOLBOX")
 	
 		m.oResource = .NULL.
-		
 	ENDFUNC
 
 	

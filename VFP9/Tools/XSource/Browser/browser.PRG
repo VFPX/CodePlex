@@ -1132,7 +1132,9 @@ DO WHILE .T.
 			ENDIF
 			USE (lcKeywordsDBF) AGAIN SHARED ALIAS keywords
 			IF NOT LOWER(KEY(1))=="keyword"
+				USE (lcKeywordsDBF) AGAIN EXCLUSIVE ALIAS keywords
 				INDEX ON Keyword TAG Keyword
+				USE (lcKeywordsDBF) AGAIN SHARED ALIAS keywords
 			ENDIF
 			SET ORDER TO Keyword
 			LOCATE
@@ -4443,7 +4445,10 @@ IF lcAlias=="view_" OR lcAlias==toBrowser.cGallery OR ;
 ENDIF
 lnLastSelect=SELECT()
 SELECT (lcAlias)
-INDEX ON UPPER(Type)+IIF(EMPTY(Parent)," ",UPPER(Text)) TAG Type
+*INDEX ON UPPER(Type)+IIF(EMPTY(Parent)," ",UPPER(PADR(Text,50))) TAG Type
+*Bug 607192: make fixed length index key
+INDEX ON UPPER(Type+PADR(IIF(EMPTY(Parent),"",Text),50)) TAG Type
+
 SELECT (lnLastSelect)
 IF NOT LEFT(lcAlias,5)=="view_"
 	toBrowser.vResult=lcAlias
@@ -5652,7 +5657,7 @@ ELSE
 	lcSortTable2=LOWER(SYS(2023)+"\"+SYS(2015))
 	SORT TO (lcSortTable) ON Type
 	USE (lcSortTable) EXCLUSIVE ALIAS (lcAlias)
-	INDEX ON LOWER(Type+Text) TAG Type
+	INDEX ON LOWER(Type+PADR(Text,50)) TAG Type
 	SET FILTER TO NOT UPPER(ALLTRIM(Type))=="FOLDER" OR ;
 			EMPTY(ID) OR "!"$Parent
 	COPY TO (lcCatalog)
