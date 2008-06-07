@@ -1,4 +1,5 @@
 LPARAMETERS tcFile
+EXTERNAL ARRAY taArray
 LOCAL llRunning
 llRunning = PEMSTATUS(_SCREEN,"_Analyst",5)
 
