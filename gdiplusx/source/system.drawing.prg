@@ -1554,7 +1554,6 @@ DEFINE CLASS xfcBitmap AS xfcimage
 		
 		LOCAL lnLeft0, lnRight0, llMoved
 		LOCAL loImage, lhImage, lhBitmap
-		LOCAL llUseClient
 		LOCAL lqRect, lnLeft, lnTop, lnRight, lnBottom, lnWidth, lnHeight
 		LOCAL loForm as Form
 		
@@ -1565,9 +1564,7 @@ DEFINE CLASS xfcBitmap AS xfcimage
 		
 		LOCAL loExc AS Exception
 		TRY
-			IF PCOUNT()=2 AND tiX = -1
-				llUseClient = .T.
-			ENDIF
+			
 			DO CASE
 			CASE VARTYPE(m.tHWnd) = "O" AND m.tHWnd.BaseClass = "Form"
 				m.lnFunctionType = 2 && VFP Form
@@ -1632,11 +1629,7 @@ DEFINE CLASS xfcBitmap AS xfcimage
 		
 		   	m.lqRect = EMPTY_RECTANGLE
 		
-		    IF m.llUseCLient
-		    	m.lnStat = xfcGetClientRect(m.tHWnd, @lqRect)
-		    ELSE
-		    	m.lnStat = xfcGetWindowRect(m.tHWnd, @lqRect)
-		    ENDIF
+		    m.lnStat = xfcGetWindowRect(m.tHWnd, @lqRect)
 		   	m.lnLeft   = CTOBIN(SUBSTR(m.lqRect,  1, 4),"4rs")
 		    m.lnTop    = CTOBIN(SUBSTR(m.lqRect,  5, 4),"4rs")
 		   	m.lnRight  = CTOBIN(SUBSTR(m.lqRect,  9, 4),"4rs")
@@ -1658,11 +1651,7 @@ DEFINE CLASS xfcBitmap AS xfcimage
 			ENDIF
 		
 		    LOCAL hdc, hbSave, hdcCompat, hbm
-		    IF m.llUseCLient
-				m.hdc = xfcGetDC(m.tHWnd)
-			ELSE
-				m.hdc = xfcGetWindowDC(m.tHWnd)
-			ENDIF
+		    hdc = xfcGetWindowDC(m.tHWnd)
 		
 		    m.hdcCompat = xfcCreateCompatibleDC(hDC)
 		    m.hbm = xfcCreateCompatibleBitmap(hDC, m.lnWidth, m.lnHeight)
@@ -8810,12 +8799,15 @@ DEFINE CLASS xfcGraphics AS xfcgpobject
 	**  2007/01/15: CChalom - Coded
 	**  2007/02/02: CChalom - Tweaked to work with ReportListener
 	**  2007/04/16: CChalom - Minor fixes for small sentences
+	**  2008/06/22: CChalom - Added some tweaks to allow better drawing on reports
+	**                        Added new flag - tlJustLast - that will forcely justify the last line
 	*************************************************************************************
 		
 	LPARAMETERS tcString, ;
 					toFont as xfcFont, ;
 					toBrush as xfcBrush, ;
-					toRectangle as xfcRectangle
+					toRectangle as xfcRectangle, ;
+					tlJustLast as Boolean 
 		
 		*!ToDo: Add more error trapping
 		*!ToDo: Add new overloads
@@ -8851,11 +8843,12 @@ DEFINE CLASS xfcGraphics AS xfcgpobject
 			
 			* Obtain the Font Height to be used as Line Height
 			m.lnLineHeight = m.toFont.GetHeight(This)
-		
+	
 			* Adjust the Text String to ease detection of Carriage Returns
 			m.lcText = STRTRAN(m.tcString,CHR(13)+CHR(10), " <CR> ")
 			m.lcText = STRTRAN(m.lcText,CHR(13), " <CR> ")
-			m.lcText = m.lcText + " <CR> "
+			m.lcText = STRTRAN(m.lcText,CHR(10), " <CR> ")
+			m.lcText = m.lcText + " <LASTWORD> "
 		
 			* Ensure Measure String will bring the best measures possible
 			* Set to AntiAlias
@@ -8965,17 +8958,31 @@ DEFINE CLASS xfcGraphics AS xfcgpobject
 			m.lnCurrWord = 1
 			m.lnCurrLine = 0
 		
+		
+			LOCAL llLastLine
+			m.llLastLine = .F.
+		
 			FOR m.N = 1 TO m.lnWords
 			
 				llEndOfSentence   = .F.
 				m.lnWordsWidth  = 0
 				m.lnWordsinLine = 0
+
 		
 				FOR m.z = m.N TO m.lnWords
+			
+					lcChar = LOWER(laWords(z,1))
+					
 					IF m.laWords(z,1) = "<CR>"
 						m.llEndOfSentence = .T.
 						EXIT
 					ENDIF
+					
+					IF m.laWords(z,1) = "<LASTWORD>"
+						m.llLastLine = .T.
+						m.lnWordsWidth = m.lnWordsWidth - (m.lnSpaceWidth * m.lnWordsinLine) + m.lnSpaceWidth
+						EXIT
+					ENDIF 
 		
 					m.lnWordsWidth = m.lnWordsWidth + m.laWords(z,2) + m.lnSpaceWidth
 					IF m.lnWordsWidth > m.wImg AND z > N
@@ -8985,20 +8992,38 @@ DEFINE CLASS xfcGraphics AS xfcgpobject
 		
 					m.lnWordsinLine = m.lnWordsinLine + 1
 				ENDFOR
+
+				m.lnWordsWidth = m.lnWordsWidth - m.lnSpaceWidth
+
+
 		
-				IF m.z > m.lnWords
+				IF m.z >= m.lnWords
 					m.llEndOfSentence = .T.
+					m.llLastLine = .T.
 				ENDIF
 		
-				IF m.llEndOfSentence
-					m.lnWidthOfBetween = m.lnSpaceWidth
-				ELSE
-					m.lnWidthOfBetween = (m.wImg - m.lnWordsWidth) / (m.lnWordsinLine - 1)
-				ENDIF
-		
+				IF m.llLastLine
+					IF m.tlJustLast
+						m.lnWidthOfBetween = (m.wImg - m.lnWordsWidth) / (m.lnWordsinLine - 1)
+					ELSE 
+						m.lnWidthOfBetween = m.lnSpaceWidth
+					ENDIF 
+					
+				ELSE 
+					
+					IF m.llEndOfSentence
+						m.lnWidthOfBetween = m.lnSpaceWidth
+					ELSE
+						m.lnWidthOfBetween = (m.wImg - m.lnWordsWidth) / (m.lnWordsinLine - 1)
+					ENDIF
+							
+				ENDIF 
+
+
+
 				m.lnY = m.Y0 + (m.lnCurrLine * m.lnLineHeight)
 		
-				IF m.lnY > (m.hImg + m.Y0)
+				IF m.lnY >= (m.hImg + m.Y0 - lnLineHeight)
 					m.n = m.lnWords
 					EXIT
 				ENDIF
@@ -9011,10 +9036,11 @@ DEFINE CLASS xfcGraphics AS xfcgpobject
 						m.N = m.N + 1
 						LOOP
 					ENDIF
+					
 					IF m.lnCurrWord = m.lnWordsinLine AND NOT m.llEndOfSentence && last word in sentence
 						m.llLast = .T.
 					ENDIF
-		
+	
 					IF m.lnWordsInLine = 1
 						m.lnX = m.X0
 						m.llLast = .F.
@@ -26609,13 +26635,6 @@ FUNCTION xfcCreateCompatibleBitmap(hDC, width, Height)
 *********************************************************************
 	DECLARE Integer CreateCompatibleBitmap IN WIN32API AS xfcCreateCompatibleBitmap Integer hDC, Integer width, Integer Height
 	RETURN xfcCreateCompatibleBitmap(m.hDC, m.width, m.Height)
-ENDFUNC
-
-*********************************************************************
-FUNCTION xfcGetClientRect(hwnd, lpRect)
-*********************************************************************
-	DECLARE Long GetClientRect IN WIN32API AS xfcGetClientRect Long hwnd, String @lpRect
-	RETURN xfcGetClientRect(m.hwnd, @m.lpRect)
 ENDFUNC
 
 *********************************************************************
