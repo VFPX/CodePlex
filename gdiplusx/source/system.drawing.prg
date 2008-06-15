@@ -9004,7 +9004,7 @@ DEFINE CLASS xfcGraphics AS xfcgpobject
 		
 				IF m.llLastLine
 					IF m.tlJustLast
-						m.lnWidthOfBetween = (m.wImg - m.lnWordsWidth) / (m.lnWordsinLine - 1)
+						m.lnWidthOfBetween = (m.wImg - m.lnWordsWidth - m.lnSpaceWidth) / (m.lnWordsinLine - 1)
 					ELSE 
 						m.lnWidthOfBetween = m.lnSpaceWidth
 					ENDIF 
@@ -9014,7 +9014,7 @@ DEFINE CLASS xfcGraphics AS xfcgpobject
 					IF m.llEndOfSentence
 						m.lnWidthOfBetween = m.lnSpaceWidth
 					ELSE
-						m.lnWidthOfBetween = (m.wImg - m.lnWordsWidth) / (m.lnWordsinLine - 1)
+						m.lnWidthOfBetween = (m.wImg - m.lnWordsWidth - m.lnSpaceWidth) / (m.lnWordsinLine - 1)
 					ENDIF
 							
 				ENDIF 
@@ -9037,9 +9037,14 @@ DEFINE CLASS xfcGraphics AS xfcgpobject
 						LOOP
 					ENDIF
 					
-					IF m.lnCurrWord = m.lnWordsinLine AND NOT m.llEndOfSentence && last word in sentence
+					IF m.lnCurrWord = m.lnWordsinLine AND NOT m.llEndOfSentence
 						m.llLast = .T.
 					ENDIF
+
+					IF m.lnCurrWord = m.lnWordsinLine AND m.llLastLine AND tlJustLast
+						m.llLast = .T.
+					ENDIF
+
 	
 					IF m.lnWordsInLine = 1
 						m.lnX = m.X0
