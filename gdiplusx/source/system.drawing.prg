@@ -12860,8 +12860,8 @@ DEFINE CLASS xfcImage AS xfcgpobject
 				lhEncoderParams = m.toEncoderParams
 		
 			ELSE
-			
-				LOCAL loFormat AS xfcImageFormat
+				m.toEncoder = This._GetCodec(m.toEncoder)
+
 				LOCAL loImage AS Image
 				lqClsidEncoder = EMPTY_GUID
 				lhEncoderParams = 0
@@ -12871,21 +12871,9 @@ DEFINE CLASS xfcImage AS xfcgpobject
 					m.toEncoder = This.RawFormat
 				ENDIF
 			
-				DO CASE
-			** ImageFormat was specified
-				CASE VARTYPE(m.toEncoder) = "O" AND m.toEncoder.BaseName = "ImageFormat"
-					m.loFormat = m.toEncoder
-					m.toEncoder = m.loFormat.FindEncoder()
-					IF ISNULL(m.toEncoder)
-						m.loFormat = CREATEOBJECT("xfcImageFormat")
-						m.toEncoder = m.loFormat.Png.FindEncoder()
-					ENDIF
+				IF VARTYPE(m.toEncoder) = "O" AND m.toEncoder.BaseName = "ImageCodecInfo"
 					lqClsidEncoder = m.toEncoder.Clsid.ToByteArray()
-		
-			** ImageCodecInfo was specified
-				CASE VARTYPE(m.toEncoder) = "O" AND m.toEncoder.BaseName = "ImageCodecInfo"
-					lqClsidEncoder = m.toEncoder.Clsid.ToByteArray()
-				ENDCASE
+				ENDIF
 			
 				IF VARTYPE(m.toEncoderParams) = "O" AND m.toEncoderParams.BaseName = "EncoderParameters"
 					lhEncoderParams = toEncoderParams.ToMemoryHandle()
@@ -13580,7 +13568,41 @@ DEFINE CLASS xfcImage AS xfcgpobject
 		RETURN NULL
 	ENDFUNC
 
+	*********************************************************************
+	PROTECTED FUNCTION _GetCodec
+	*********************************************************************
+	LPARAMETERS m.toEncoder
+		
+		LOCAL loFormat AS xfcImageFormat
+		LOCAL lcMime
+		
+		TRY 
+		** MIME format was specified
+			IF VARTYPE(m.toEncoder) = "C"
+				m.lcMime = m.toEncoder
+				m.toEncoder = NEWOBJECT("xfcImageFormat", XFCCLASS_IMAGING, "", m.lcMime)
+			ENDIF
+			
+			DO CASE
+		** ImageFormat was specified
+			CASE VARTYPE(m.toEncoder) = "O" AND m.toEncoder.BaseName = "ImageFormat"
+				m.loFormat = m.toEncoder
+				m.toEncoder = m.loFormat.FindEncoder()
+				IF ISNULL(m.toEncoder)
+					m.loFormat = NEWOBJECT("xfcImageFormat", XFCCLASS_IMAGING)
+					m.toEncoder = m.loFormat.Png.FindEncoder()
+				ENDIF
+				
+		** ImageCodecInfo was specified
+			CASE VARTYPE(m.toEncoder) = "O" AND m.toEncoder.BaseName = "ImageCodecInfo"
+			ENDCASE
+		CATCH
+		ENDTRY
 
+		RETURN m.toEncoder
+	
+	ENDFUNC
+	
 	*********************************************************************
 	FUNCTION Save
 	*********************************************************************
@@ -13620,32 +13642,22 @@ DEFINE CLASS xfcImage AS xfcgpobject
 		LOCAL loExc AS Exception
 		TRY
 		
-			LOCAL loFormat AS xfcImageFormat
-			LOCAL lqClsidEncoder, lhEncoderParams
+			LOCAL lqClsidEncoder, lhEncoderParamsm
 			LOCAL loImage AS Image
-			lqClsidEncoder = EMPTY_GUID
-			lhEncoderParams = 0
+			m.lqClsidEncoder = EMPTY_GUID
+			m.lhEncoderParams = 0
+			
 			
 			IF PCOUNT() = 1		&& No ImageFormat or ImageCodecInfo specified
 			** Use RawFormat as default
 				m.toEncoder = This.RawFormat
 			ENDIF
 			
-			DO CASE
-		** ImageFormat was specified
-			CASE VARTYPE(m.toEncoder) = "O" AND m.toEncoder.BaseName = "ImageFormat"
-				m.loFormat = m.toEncoder
-				m.toEncoder = m.loFormat.FindEncoder()
-				IF ISNULL(m.toEncoder)
-					m.loFormat = NEWOBJECT("xfcImageFormat", XFCCLASS_IMAGING)
-					m.toEncoder = m.loFormat.Png.FindEncoder()
-				ENDIF
+			m.toEncoder = This._GetCodec(m.toEncoder)
+			
+			IF VARTYPE(m.toEncoder) = "O" AND m.toEncoder.BaseName = "ImageCodecInfo"
 				lqClsidEncoder = m.toEncoder.Clsid.ToByteArray()
-				
-		** ImageCodecInfo was specified
-			CASE VARTYPE(m.toEncoder) = "O" AND m.toEncoder.BaseName = "ImageCodecInfo"
-				lqClsidEncoder = m.toEncoder.Clsid.ToByteArray()
-			ENDCASE
+			ENDIF
 			
 			IF VARTYPE(m.toEncoderParams) = "O" AND m.toEncoderParams.BaseName = "EncoderParameters"
 				lhEncoderParams = toEncoderParams.ToMemoryHandle()
