@@ -6697,6 +6697,7 @@ DEFINE CLASS xfcImageFormat AS xfcDrawingBase OF System.Drawing.prg
 	LPARAMETERS toGuid AS xfcGuid
 		
 		*!ToDo: Test this function
+		LOCAL lcMime
 		
 		LOCAL loExc AS Exception
 		TRY
@@ -6705,7 +6706,30 @@ DEFINE CLASS xfcImageFormat AS xfcDrawingBase OF System.Drawing.prg
 			DO CASE
 			CASE VARTYPE(toGuid) = "O"
 				This.Guid = m.toGuid
-			CASE INLIST(VARTYPE(toGuid), "C","Q")
+			CASE INLIST(VARTYPE(toGuid), "C","Q") AND LEFT(toGuid,5) <> "image"
+				This.Guid = NEWOBJECT("xfcGuid", XFCCLASS_SYSTEM, "", toGuid)
+			CASE VARTYPE(toGuid)="C" AND LEFT(toGuid,5) == "image"
+				m.lcMime = m.toGuid
+				DO CASE
+				CASE m.lcMime = "image/bmp"
+					m.toGuid = ImageFormatBMP
+				CASE m.lcMime = "image/tiff"
+					m.toGuid = ImageFormatTIFF 
+				CASE m.lcMime = "image/jpeg"
+					m.toGuid = ImageFormatJPEG 
+				CASE m.lcMime = "image/png"
+					m.toGuid = ImageFormatPNG 
+				CASE m.lcMime = "image/gif"
+					m.toGuid = ImageFormatGIF 
+				CASE m.lcMime = "image/x-emf"
+					m.toGuid = ImageFormatEMF
+				CASE m.lcMime = "image/x-wmf"
+					m.toGuid = ImageFormatWMF
+				CASE m.lcMime = "image/x-icon"
+					m.toGuid = ImageFormatIcon
+				OTHERWISE
+*					m.toGuid = ImageFormatEXIF
+				ENDCASE
 				This.Guid = NEWOBJECT("xfcGuid", XFCCLASS_SYSTEM, "", toGuid)
 			OTHERWISE
 				This.Guid = NEWOBJECT("xfcGuid", XFCCLASS_SYSTEM, "")
@@ -6863,10 +6887,8 @@ DEFINE CLASS xfcImageFormat AS xfcDrawingBase OF System.Drawing.prg
 
 
 	*********************************************************************
-	FUNCTION findencoder
+	FUNCTION FindEncoder
 	*********************************************************************
-		
-		
 		LOCAL loInfoCol, loInfo AS xfcImageCodecInfo
 		LOCAL loImgCodecInfo AS xfcImageCodecInfo
 		LOCAL loEncoder AS xfcImageCodecInfo
@@ -7391,13 +7413,37 @@ DEFINE CLASS xfcMetafile AS xfcimage OF System.Drawing.prg
 				m.liDeleteEmf = IIF(m.thDCRef, 0, 1)
 				m.lnFunctionType = 2
 			
+		** Handles 8,14,15,16,22,23,24,30,31,36,37
+		** toStream AS xfcStream [, tiReferenceHdc AS IntPtr] [, tiType AS EnumEmfType] [, tcDescription]
+		** toStream AS xfcStream [, tiReferenceHdc AS IntPtr] [, toFrameRect AS xfcRectangle] [, tiFrameUnit AS EnumMetafileFrameUnit] [, tiType AS EnumEmfType] [, tcDescription]
+			CASE LEFT(lcVarType, 2) == "ON"
+				m.liStream = m.tcFileName.Handle
+				IF VARTYPE(m.toFrameRect)="N"
+					IF VARTYPE(m.tiFrameUnit) = "C"
+						m.tcDescription = m.tiFrameUnit
+						m.tiFrameUnit = 0
+					ENDIF
+					m.tiType = m.toFrameRect
+					m.toFrameRect = NULL
+				ENDIF
+				IF VARTYPE(m.toFrameRect)="O" AND m.toFrameRect.BaseName=="Rectangle"
+					m.lnFunctionType = 11	&& Integer
+				ELSE
+					m.lnFunctionType = 10	&& Float
+				ENDIF
+				m.lqFrameRect = IIF(ISNULL(m.toFrameRect),EMPTY_RECTANGLE, m.toFrameRect.ToVarBinary())
+				m.thDCRef = EVL(m.thDCRef, 0)
+				m.tiType = EVL(m.tiType, EmfTypeEmfPlusDual)
+				m.tiFrameUnit = EVL(m.tiFrameUnit, MetafileFrameUnitGdi)
+				m.tcDescription = EVL(m.tcDescription, "")
+				
+		** Unhandled overloads: 1,7,13
 			*! ToDo:	
-		** Unhandled overloads: 1,7,8,13,14,15,16,22,23,24,30,31,36,37
 			OTHERWISE
 		
 			ENDCASE
 			
-			IF INLIST(m.lnFunctionType, 6,7,8,9) AND m.thDCRef = 0
+			IF INLIST(m.lnFunctionType, 6,7,8,9,10,11) AND m.thDCRef = 0
 				m.thDCRef = xfcGetDC(0)
 				m.llReleaseDC = .T.
 			ENDIF
@@ -7427,8 +7473,13 @@ DEFINE CLASS xfcMetafile AS xfcimage OF System.Drawing.prg
 			CASE m.lnFunctionType = 5
 				This.SetStatus(xfcGdipCreateMetafileFromStream(m.liStream, @lhMetafile))
 		
-		*	CASE m.lnFunctionType = 10
-		*		This.SetStatus(GdipRecordMetafileStream(new GPStream(stream), new HandleRef(null, referenceHdc), (int) type, NativeMethods.NullHandleRef, 7, description, out ptr1)
+			CASE m.lnFunctionType = 10
+				This.SetStatus(xfcGdipRecordMetafileStream(m.liStream, m.thDCRef, ;
+							m.tiType, m.lqFrameRect, m.tiFrameUnit, STRCONV(m.tcDescription+0h00,5), @lhMetafile))
+							
+			CASE m.lnFunctionType = 11
+				This.SetStatus(xfcGdipRecordMetafileStreamI(m.liStream, m.thDCRef, ;
+							m.tiType, m.lqFrameRect, m.tiFrameUnit, STRCONV(m.tcDescription+0h00,5), @lhMetafile))
 			ENDCASE
 			
 			IF m.llReleaseDC
@@ -7523,11 +7574,75 @@ DEFINE CLASS xfcMetafile AS xfcimage OF System.Drawing.prg
 		
 		LOCAL loExc AS Exception
 		TRY
-			LOCAL loMetafileHeader, lhMetafileHeader, lqHeader
+			LOCAL loMetafileHeader, lhMetafileHeader, lqHeader, lhPtr
 			m.lhMetafileHeader = 0
 			m.loMetafileHeader = NULL
 			LOCAL lnFunctionType
 			m.lnFunctionType = 0
+			
+*!*				m.lhPtr = xfcLocalAlloc(0x00, m.tiSize)	
+
+*!*				OTHERWISE
+*!*					This.SetStatus(xfcGdipGetMetafileHeaderFromMetafile(This.Handle, @lqHeader))
+*!*					
+*!*				ENDCASE
+*!*				
+*!*				m.lnType = CTOBIN(SYS(2600,m.lhPtr,1),"4rs")
+*!*				
+*!*				DO CASE
+*!*				CASE m.lnType = MetafileTypeWmf
+*!*				CASE m.lnType = MetafileTypeWmfPlaceable
+*!*				ENDCASE
+
+*!*				
+*!*				
+*!*	public MetafileHeader GetMetafileHeader()
+*!*	{
+*!*	*!*	    MetafileHeader header;
+*!*	*!*	    IntPtr ptr = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(MetafileHeaderEmf)));
+*!*	*!*	    try
+*!*	*!*	    {
+*!*	*!*	        int status = SafeNativeMethods.Gdip.GdipGetMetafileHeaderFromMetafile(new HandleRef(this, base.nativeImage), ptr);
+*!*	*!*	        if (status != 0)
+*!*	*!*	        {
+*!*	*!*	            throw SafeNativeMethods.Gdip.StatusException(status);
+*!*	*!*	        }
+*!*	*!*	        int[] destination = new int[1];
+*!*	*!*	        Marshal.Copy(ptr, destination, 0, 1);
+*!*	*!*	        MetafileType type = (MetafileType) destination[0];
+*!*	        header = new MetafileHeader();
+*!*	        switch (type)
+*!*	        {
+*!*	            case MetafileType.Wmf:
+*!*	            case MetafileType.WmfPlaceable:
+*!*	                header.wmf = (MetafileHeaderWmf) UnsafeNativeMethods.PtrToStructure(ptr, typeof(MetafileHeaderWmf));
+*!*	                header.emf = null;
+*!*	                return header;
+*!*	        }
+*!*	        header.wmf = null;
+*!*	        header.emf = (MetafileHeaderEmf) UnsafeNativeMethods.PtrToStructure(ptr, typeof(MetafileHeaderEmf));
+*!*	    }
+*!*	    finally
+*!*	    {
+*!*	        Marshal.FreeHGlobal(ptr);
+*!*	    }
+*!*	    return header;
+*!*	}
+
+*!*				
+*!*				
+*!*				
+*!*				
+*!*				
+*!*				
+			
+			
+			
+			
+			
+			
+			
+			
 			
 			m.lqHeader = EMPTY_METAFILEHEADER
 			
@@ -7594,6 +7709,88 @@ DEFINE CLASS xfcMetafile AS xfcimage OF System.Drawing.prg
 		ENDTRY
 		
 		RETURN NULL
+	ENDFUNC
+	
+	
+	*********************************************************************
+	FUNCTION Save
+	*********************************************************************
+	** Method: xfcMetafile.Save
+	**
+	** Saves the current Metafile.
+	**
+	** History:
+	**  2008/09/20: BDurban - Created
+	*********************************************************************
+	LPARAMETERS tcFilename ;
+				, toEncoder AS xfcImageCodecInfo, toEncoderParams AS xfcEncoderParameters
+		
+		LOCAL loFormat AS xfcImageFormat
+		LOCAL loEMF AS xfcImageFormat
+		LOCAL loImg AS xfcMetaFile
+		LOCAL loMFHeader AS xfcMetafileHeader
+		LOCAL loGfx AS xfcGraphics
+		LOCAL loExc AS Exception
+		LOCAL leReturn, llEmf, lcMime
+		
+		m.leReturn = NULL
+		
+		TRY 
+			
+			** MIME specified
+			IF VARTYPE(m.toEncoder) = "C"
+				m.lcMime = m.toEncoder
+				m.toEncoder = CREATEOBJECT("xfcImageFormat",m.lcMime)
+			ENDIF
+				
+			DO CASE
+			** No Format Specified
+			CASE VARTYPE(m.toEncoder) = "L" OR PCOUNT() < 1
+				m.llEmf = .T.
+			** ImageFormat was specified
+			CASE VARTYPE(m.toEncoder) = "O" AND m.toEncoder.BaseName = "ImageFormat"
+				m.loFormat = m.toEncoder
+				m.loEMF = CREATEOBJECT("xfcImageFormat", NEWOBJECT("xfcGuid", XFCCLASS_SYSTEM, "", ImageFormatEMF))
+				IF m.loFormat.Equals(m.loEMF)
+					m.llEmf = .T.
+				ENDIF
+			ENDCASE
+			
+			IF m.llEmf
+				m.loMFHeader = This.GetMetafileHeader()
+				m.loImg = This.New(tcFileName, 0, m.loMFHeader.Bounds, ;
+							MetafileFrameUnitPoint, m.loMFHeader.Type, "")
+				m.loGfx = NEWOBJECT("xfcGraphics", XFCCLASS_DRAWING, "")
+				m.loGfx = m.loGfx.FromImage(m.loImg)
+				m.loGfx.DrawImage(This, 0, 0)
+			ELSE
+				m.leReturn = DODEFAULT(m.tcFileName, m.toEncoder, m.toEncoderParams)
+			ENDIF
+				
+		CATCH TO loExc
+			THROW_EXCEPTION 
+		FINALLY
+			m.loGfx = NULL
+			m.loImg = NULL
+			m.loMFHeader = NULL
+			m.loEMF = NULL
+			m.loFormat = NULL
+		ENDTRY
+		
+		RETURN m.leReturn
+	ENDFUNC			
+
+	*********************************************************************
+	FUNCTION GetPictureVal
+	*********************************************************************
+	LPARAMETERS toEncoder AS xfcImageCodecInfo, toEncoderParams AS xfcEncoderParameters
+
+		LOCAL loStream AS xfcMemoryStream
+		
+		m.loStream = NEWOBJECT("xfcMemoryStream",XFCCLASS_SYSTEM,"")
+		This.Save(m.loStream, m.toEncoder, m.toEncoderParams)
+		RETURN m.loStream.GetBuffer() 
+	
 	ENDFUNC
 	
 	
@@ -7798,7 +7995,7 @@ DEFINE CLASS xfcMetafileHeader AS xfcDrawingBase OF System.Drawing.prg
 			m.lnY =      CTOBIN(SUBSTR(This._binary,29,4),"4rs")
 			m.lnWidth =  CTOBIN(SUBSTR(This._binary,33,4),"4rs")
 			m.lnHeight = CTOBIN(SUBSTR(This._binary,37,4),"4rs")
-			m.loRectangle = NEWOBJECT("xfcRectangle", m.lnX, m.lnY, m.lnWidth, m.lnHeight)
+			m.loRectangle = NEWOBJECT("xfcRectangle", XFCCLASS_DRAWING, "", m.lnX, m.lnY, m.lnWidth, m.lnHeight)
 		CATCH TO loExc
 			THROW_EXCEPTION
 		ENDTRY
@@ -8204,15 +8401,12 @@ DEFINE CLASS xfcMetafileHeader AS xfcDrawingBase OF System.Drawing.prg
 		
 		*!ToDo: Test this function
 		
-		LOCAL loMetaHeader, lhMetaHeader
-		m.lhMetaHeader = 0
+		LOCAL loMetaHeader
 		m.loMetaHeader = NULL
 		
 		LOCAL loExc AS Exception
 		TRY
-			m.lhMetaHeader = CTOBIN(SUBSTR(This._binary,41,4),"4rs")
-			m.loMetaHeader = CREATEOBJECT("xfcMetaHeader")
-			m.loMetaHeader.Handle = m.lhMetaHeader
+			m.loMetaHeader = CREATEOBJECT("xfcMetaHeader", SUBSTR(This._binary,41,18))
 		CATCH TO loExc
 			THROW_EXCEPTION
 		ENDTRY
@@ -8288,6 +8482,22 @@ DEFINE CLASS xfcMetaHeader AS xfcDrawingBase OF System.Drawing.prg
 	** Parameters:
 	**  [None]
 	*********************************************************************
+	LPARAMETERS tqData
+	
+		LOCAL loExc AS Exception
+	
+		TRY 
+			This.Type         = CTOBIN(SUBSTR(m.tqData,1,2),"2rs")
+			This.HeaderSize   = CTOBIN(SUBSTR(m.tqData,3,2),"2rs")
+			This.Version      = CTOBIN(SUBSTR(m.tqData,5,2),"2rs")
+			This.Size         = CTOBIN(SUBSTR(m.tqData,7,4),"4rs")
+			This.NoObjects    = CTOBIN(SUBSTR(m.tqData,11,2),"2rs")
+			This.MaxRecord    = CTOBIN(SUBSTR(m.tqData,13,4),"4rs")
+			This.NoParameters = CTOBIN(SUBSTR(m.tqData,17,2),"2rs")
+		CATCH TO loExc
+			THROW_EXCEPTION
+		ENDTRY
+		
 	ENDFUNC
 
 
@@ -8439,6 +8649,25 @@ DEFINE CLASS xfcMetaHeader AS xfcDrawingBase OF System.Drawing.prg
 	ENDFUNC
 
 
+	*********************************************************************
+	FUNCTION New
+	*********************************************************************
+	LPARAMETERS tqData
+		
+		LOCAL loMetaHeader AS xfcMetaHeader
+		
+		LOCAL loExc AS Exception
+		TRY
+			m.loMetaHeader = CREATEOBJECT(This.Class, m.tqData)
+		CATCH TO loExc
+			THROW_EXCEPTION
+		ENDTRY
+		
+		RETURN m.loMetaHeader
+		
+	ENDFUNC
+	
+	
 	*********************************************************************
 	FUNCTION ToVarbinary
 	*********************************************************************
@@ -9737,6 +9966,20 @@ FUNCTION xfcGdipRecordMetafileI(referenceHdc, etype, frameRect, frameUnit, descr
 *********************************************************************
 	DECLARE Long GdipRecordMetafileI IN GDIPLUS.DLL AS xfcGdipRecordMetafileI Long referenceHdc, Long etype, String frameRect, Long frameUnit, String description, Long @metafile
 	RETURN xfcGdipRecordMetafileI(m.referenceHdc, m.etype, m.frameRect, m.frameUnit, m.description, @m.metafile)
+ENDFUNC
+
+*********************************************************************
+FUNCTION xfcGdipRecordMetafileStream(Stream, referenceHdc, etype, frameRect, frameUnit, description, metafile)
+*********************************************************************
+	DECLARE Long GdipRecordMetafileStream IN GDIPLUS.DLL AS xfcGdipRecordMetafileStream Long Stream, Long referenceHdc, Long etype, String frameRect, Long frameUnit, String description, Long @metafile
+	RETURN xfcGdipRecordMetafileStream(m.Stream, m.referenceHdc, m.etype, m.frameRect, m.frameUnit, m.description, @m.metafile)
+ENDFUNC
+
+*********************************************************************
+FUNCTION xfcGdipRecordMetafileStreamI(Stream, referenceHdc, etype, frameRect, frameUnit, description, metafile)
+*********************************************************************
+	DECLARE Long GdipRecordMetafileStreamI IN GDIPLUS.DLL AS xfcGdipRecordMetafileStreamI Long Stream, Long referenceHdc, Long etype, String frameRect, Long frameUnit, String description, Long @metafile
+	RETURN xfcGdipRecordMetafileStreamI(m.Stream, m.referenceHdc, m.etype, m.frameRect, m.frameUnit, m.description, @m.metafile)
 ENDFUNC
 
 *********************************************************************
