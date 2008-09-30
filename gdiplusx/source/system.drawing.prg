@@ -15730,6 +15730,7 @@ DEFINE CLASS xfcPen AS xfcgpobject
 	**  2006/03/07: Auto Generated
 	**	2006/05/08: BDurban - Coded
 	**  2006/08/01: BDurban - Added support for NULLS
+	**  2008/09/30: BDurban/CChalom - Passing a zero to "SetCustom...Cap" creates a GDI+ error. Ignoring NULLs for now
 	*********************************************************************
 	LPARAMETERS toCustomLineCap AS xfcCustomLineCap
 		
@@ -15737,12 +15738,16 @@ DEFINE CLASS xfcPen AS xfcgpobject
 		
 		LOCAL loExc AS Exception
 		TRY
+			IF ISNULL(m.toCustomLineCap)
+				EXIT
+			ENDIF
+			
 			IF This._immutable
 				ERROR "Changes cannot be made to Pen because permissions are not valid."
 			ENDIF
 		
 			LOCAL lhLineCap
-			m.lhLineCap = IIF(ISNULL(m.toCustomLineCap), 0, m.toCustomLineCap.Handle)
+			m.lhLineCap = m.toCustomLineCap.Handle
 			This.SetStatus(xfcGdipSetPenCustomEndCap(This.Handle, m.lhLineCap))
 		CATCH TO loExc
 			THROW_EXCEPTION
@@ -15799,6 +15804,7 @@ DEFINE CLASS xfcPen AS xfcgpobject
 	**  2006/03/07: Auto Generated
 	**	2006/05/08: BDurban - Coded
 	**  2006/08/01: BDurban - Added support for NULL
+	**  2008/09/30: BDurban/CChalom - Passing a zero to "SetCustom...Cap" creates a GDI+ error. Ignoring NULLs for now
 	*********************************************************************
 	LPARAMETERS toCustomLineCap AS xfcCustomLineCap
 		
@@ -15806,12 +15812,16 @@ DEFINE CLASS xfcPen AS xfcgpobject
 		
 		LOCAL loExc AS Exception
 		TRY
+			IF ISNULL(m.toCustomLineCap)
+				EXIT
+			ENDIF
+			
 			IF This._immutable
 				ERROR "Changes cannot be made to Pen because permissions are not valid."
 			ENDIF
 		
 			LOCAL lhLineCap
-			m.lhLineCap = IIF(ISNULL(m.toCustomLineCap), 0, m.toCustomLineCap.Handle)
+			m.lhLineCap = m.toCustomLineCap.Handle
 			This.SetStatus(xfcGdipSetPenCustomStartCap(This.Handle, m.lhLineCap))
 		CATCH TO loExc
 			THROW_EXCEPTION

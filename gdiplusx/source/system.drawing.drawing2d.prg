@@ -2116,13 +2116,16 @@ DEFINE CLASS xfcCustomLineCap AS xfcgpobject OF System.Drawing.prg
 	** History:
 	**  2006/03/07: Auto Generated
 	**	2006/05/06: BDurban - Coded
+	**	2008/09/30: BDurban/CChalom - Check to make sure we have a valid handle
 	*********************************************************************
 		
 		*!ToDo: Test this function
 		
 		LOCAL loExc AS Exception
 		TRY
-		This.SetStatus(xfcGdipDeleteCustomLineCap(This.Handle))
+		IF This.Handle <> 0
+			This.SetStatus(xfcGdipDeleteCustomLineCap(This.Handle))
+		ENDIF
 		CATCH TO loExc
 			THROW_EXCEPTION
 		ENDTRY
