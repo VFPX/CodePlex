@@ -16943,7 +16943,7 @@ DEFINE CLASS xfcPens AS xfcdrawingbase
 	WhiteSmoke = .NULL.	&& A system defined Pen object with a width of 1
 	Yellow = .NULL.	&& A system defined Pen object with a width of 1
 	YellowGreen = .NULL.	&& A system defined Pen object with a width of 1
- 
+
 	*********************************************************************
 	FUNCTION Init
 	*********************************************************************
@@ -26511,7 +26511,6 @@ ENDDEFINE
 #ENDIF
 *************************************************************************
 *************************************************************************
-
 
 #IFDEF USECLASS_XFCBITMAP
 *********************************************************************
