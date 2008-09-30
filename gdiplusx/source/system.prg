@@ -1,16 +1,55 @@
 #INCLUDE System.h
 
-LPARAMETER toObject
+LPARAMETER toObject, tnMinVersion
 
-IF PCOUNT() = 0
+LOCAL lnDataSession, loSystem, loExc AS Exception
+
+IF VARTYPE(m.toObject) = "N"
+	m.tnMinVersion = m.toObject
+	m.toObject = NULL
+ENDIF
+
+IF VARTYPE(m.toObject) <> "O"
 	m.toObject = _SCREEN
 ENDIF
 
-IF VARTYPE(m.toObject) = "O"
-	IF VARTYPE(m.toObject.System) <> "O"
+IF VARTYPE(m.tnMinVersion) <> "N"
+	m.tnMinVersion = 0.00
+ENDIF
+
+m.lnDataSession = 1
+
+TRY 
+	IF (m.toObject == _SCREEN) AND SET("DataSession") <> 1
+		m.lnDataSession = SET("DataSession")
+		SET DATASESSION TO 1
+	ENDIF
+
+	IF VARTYPE(m.toObject.System) = "O"
+		IF VARTYPE(m.toObject.System.Version)<>"N" OR m.toObject.System.Version < m.tnMinVersion
+			m.loSystem = CREATEOBJECT("xfcSystem")
+			IF m.loSystem.Version >= m.tnMinVersion
+				m.toObject.System = m.loSystem
+			ENDIF
+		ENDIF
+	ELSE
 		ADDPROPERTY(m.toObject,"System",CREATEOBJECT("xfcSystem"))
 	ENDIF
-ENDIF
+	IF m.toObject.System.Version < m.tnMinVersion
+		ERROR "The application is requesting a newer version of the System.APP / GDIPlusX library."+CHR(13) ;
+			+ " - Current version: "+ALLTRIM(STR(m.toObject.System.Version,6,2))+CHR(13) ;
+			+ " - Requested version: "+ALLTRIM(STR(m.tnMinVersion,6,2))+CHR(13) ;
+			+ " Download the latest version from http://www.codeplex.com/VFPX"
+	ENDIF			
+
+CATCH TO m.loExc
+	THROW 
+FINALLY
+	IF m.lnDataSession <> 1
+		SET DATASESSION TO (m.lnDataSession)
+	ENDIF
+ENDTRY
+	
 
 *************************************************************************
 *************************************************************************
@@ -26,6 +65,7 @@ DEFINE CLASS xfcSystem AS xfcNamespace
 	
 	*********************************************************************
 	Drawing = .NULL.
+	Version = 1.2
 	*********************************************************************
 	FUNCTION Drawing_ACCESS
 	*********************************************************************
