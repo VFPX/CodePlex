@@ -2,12 +2,20 @@
 
 LPARAMETER toObject, tnMinVersion
 
-LOCAL lnDataSession, loSystem, loExc AS Exception
+LOCAL loSystem, loExc AS Exception, lcCommand
 
-IF VARTYPE(m.toObject) = "N"
+DO CASE
+CASE VARTYPE(m.toObject) = "N"
 	m.tnMinVersion = m.toObject
 	m.toObject = NULL
-ENDIF
+CASE VARTYPE(m.toObject) = "C"
+	m.lcCommand = ALLTRIM(UPPER(m.toObject))
+	DO CASE
+	CASE m.lcCommand == "FOXCODE"
+		AddFoxCode()
+	ENDCASE
+	RETURN
+ENDCASE
 
 IF VARTYPE(m.toObject) <> "O"
 	m.toObject = _SCREEN
@@ -17,23 +25,16 @@ IF VARTYPE(m.tnMinVersion) <> "N"
 	m.tnMinVersion = 0.00
 ENDIF
 
-m.lnDataSession = 1
-
 TRY 
-	IF (m.toObject == _SCREEN) AND SET("DataSession") <> 1
-		m.lnDataSession = SET("DataSession")
-		SET DATASESSION TO 1
-	ENDIF
-
 	IF VARTYPE(m.toObject.System) = "O"
 		IF VARTYPE(m.toObject.System.Version)<>"N" OR m.toObject.System.Version < m.tnMinVersion
-			m.loSystem = CREATEOBJECT("xfcSystem")
+			m.loSystem = GetXfcSystemObject()
 			IF m.loSystem.Version >= m.tnMinVersion
 				m.toObject.System = m.loSystem
 			ENDIF
 		ENDIF
 	ELSE
-		ADDPROPERTY(m.toObject,"System",CREATEOBJECT("xfcSystem"))
+		ADDPROPERTY(m.toObject,"System",GetXfcSystemObject())
 	ENDIF
 	IF m.toObject.System.Version < m.tnMinVersion
 		ERROR "The application is requesting a newer version of the System.APP / GDIPlusX library."+CHR(13) ;
@@ -45,9 +46,6 @@ TRY
 CATCH TO m.loExc
 	THROW 
 FINALLY
-	IF m.lnDataSession <> 1
-		SET DATASESSION TO (m.lnDataSession)
-	ENDIF
 ENDTRY
 	
 
@@ -635,6 +633,16 @@ DEFINE CLASS xfcObject AS Custom
 	ENDFUNC
 
 
+	#IFDEF USE_MEMBERDATA
+	*********************************************************************
+	FUNCTION Help
+	*********************************************************************
+		LOCAL lcURL
+		lcURL = [http://msdn.microsoft.com/en-us/library/]+JUSTSTEM(This.ClassLibrary)+"."+This.BaseName+[.aspx]
+		xfcShellExecute(0,"open",lcURL,"","",0)
+	ENDFUNC
+	#ENDIF
+
 	*********************************************************************
 	FUNCTION Equals
 	*********************************************************************
@@ -895,4 +903,94 @@ ENDDEFINE
 
 
 
+*************************************************************************
+FUNCTION AddFoxCode(tlRemove)
+*************************************************************************
+#IFDEF USE_MEMBERDATA
+	LOCAL lnSelect, loExc AS Exception, lcFoxCode, lcSystemFoxCode
+	LOCAL loData AS Object
+	
+	TRY 
+		m.lnSelect = SELECT()
+		m.lcFoxCode = SYS(2015)
+		m.lcSystemFoxCode = SYS(2015)
+		SELECT 0
+		USE (_FOXCODE) AGAIN SHARED ALIAS (m.lcFoxCode)
+		SELECT * FROM (m.lcFoxCode) ;
+			WHERE .f. ;
+			INTO CURSOR (m.lcSystemFoxCode)	READWRITE
+		XMLTOCURSOR("systemfoxcode.xml",m.lcSystemFoxCode,512+8192)
+		
+		SELECT (m.lcSystemFoxCode)
+		SCAN
+			SCATTER MEMO NAME m.loData
+			SELECT (m.lcFoxCode)
+			LOCATE FOR uniqueid = m.loData.uniqueid
+			IF FOUND()
+				IF NOT save AND timestamp <= m.loData.timestamp
+					GATHER MEMO NAME m.loData
+				ENDIF
+			ELSE
+				INSERT INTO (m.lcFoxCode) FROM NAME m.loData
+			ENDIF
+		ENDSCAN
+	CATCH TO loExc
+		THROW
+	FINALLY
+		USE IN SELECT(m.lcFoxCode)
+		USE IN SELECT(m.lcSystemFoxCode)
+		SELECT (m.lnSelect)
+	ENDTRY
+	RETURN
+#ELSE
+	ERROR "FoxCode feature not implemented in the Lean version of SYSTEM.APP"
+#ENDIF
+ENDFUNC
 
+
+*************************************************************************
+FUNCTION xfcShellExecute(hwnd,lpOperation,lpFile,lpParameters,lpDirectory,nShowCmd)
+	DECLARE Long ShellExecute IN shell32 AS xfcShellExecute Long, String, String, String, String, Long
+	RETURN xfcShellExecute(m.hwnd,m.lpOperation,m.lpFile,m.lpParameters,m.lpDirectory,m.nShowCmd)
+ENDFUNC
+
+
+
+*************************************************************************
+FUNCTION GetXfcSystemObject()
+	LOCAL loObject, loDefault
+	
+	IF SET("Datasession") <> 1
+		m.loDefault = CREATEOBJECT("DefaultSession")
+		m.loObject = loDefault.Eval([CREATEOBJECT("xfcSystem")])
+		m.loDefault = NULL
+	ELSE
+		m.loObject = CREATEOBJECT("xfcSystem")
+	ENDIF
+	RETURN m.loObject
+ENDFUNC
+
+*************************************************************************
+*************************************************************************
+*************************************************************************
+DEFINE CLASS DefaultSession AS Session
+
+PROCEDURE DoCmd(tcCommand)
+	IF NOT EMPTY(m.tcCommand)
+		SET DATASESSION TO 1
+		&m.tcCommand
+		SET DATASESSION TO (This.DataSessionId)
+	ENDIF
+ENDPROC
+
+PROCEDURE Eval(tcCommand)
+	LOCAL leResult
+	IF NOT EMPTY(m.tcCommand)
+		SET DATASESSION TO 1
+		m.leResult = EVALUATE(m.tcCommand)
+		SET DATASESSION TO (This.DataSessionId)
+	ENDIF
+	RETURN m.leResult
+ENDPROC
+
+ENDDEFINE
