@@ -2615,12 +2615,12 @@ Try
 					8
 
 	* Determine where to position the context menu
-	lnColumn = Mcol("Screen", 0)	&& current mouse position
+	lnColumn = Wlcol("FoxTabs")	&& toolbar column
 	Do Case
 		Case This.DockPosition = 0	&& Top
 			lnRow = 0
 		Case This.DockPosition = 3	&& Bottom
-			lnRow = (lnPixelHeight - lnMenuHeight) * (lnFoxelHeight / lnPixelHeight)
+			lnRow = Wlrow("FoxTabs") - (lnMenuHeight * (lnFoxelHeight / lnPixelHeight))
 		Case This.DockPosition = -1	&& Undocked
 			lnRow = (This.Top - lnMenuHeight) * (lnFoxelHeight / lnPixelHeight)
 		Otherwise
