@@ -1518,6 +1518,7 @@ Left = 47
 Name = "chkIncludeSolutionFiles"
 TabIndex = 2
 Top = 52
+Visible = .F.
 Width = 116
 [END PROPERTIES]
 
@@ -2022,7 +2023,9 @@ PROCEDURE definemrumenu
 Local lcMruFileTypeList As String, lcMruFileType As String, lnMruBar As Integer, lbMenuDefined As Boolean 
 
 * Define Mru file types allowed
-lcMruFileTypeList = [Solution,Project,Class,Program,Form,Database,Table]
+*JAL: Solution explorer currently not available, so removed from menu for now
+*JAL*	lcMruFileTypeList = [Solution,Project,Class,Program,Form,Database,Table]
+lcMruFileTypeList = [Project,Class,Program,Form,Database,Table]
 
 For lnMruBar = 1 To GetWordCount(lcMruFileTypeList, ",")
 
