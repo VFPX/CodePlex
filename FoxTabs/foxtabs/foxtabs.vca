@@ -262,6 +262,7 @@ Try
 	lcWindowName = Chrtran(This.FoxTab.WindowName, "*", "")
 
 	* Calculate scale factor
+	Activate Screen	&& make sure using SCREEN for menu position
 	_Screen.ScaleMode = 0
 	lnFoxelWidth = _Screen.Width  
 	lnFoxelHeight = _Screen.Height 
@@ -284,7 +285,7 @@ Try
 		Case oFoxTabsToolbar.DockPosition = 0	&& Top
 			lnRow = 0
 		Case oFoxTabsToolbar.DockPosition = 3	&& Bottom
-			lnRow = (lnPixelHeight - lnMenuHeight) * (lnFoxelHeight / lnPixelHeight)
+			lnRow = Wlrow("FoxTabs") - (lnMenuHeight * (lnFoxelHeight / lnPixelHeight))
 		Case oFoxTabsToolbar.DockPosition = -1	&& Undocked
 			lnRow = (This.Parent.Top - lnMenuHeight) * (lnFoxelHeight / lnPixelHeight)
 		Otherwise
@@ -292,7 +293,7 @@ Try
 	EndCase 
 
 	* Define context menu
-	Define Popup foxtabContextMenu ShortCut Relative From lnRow, lnColumn In Screen
+	Define Popup foxtabContextMenu ShortCut Relative From lnRow, lnColumn && In Screen
 	Define Bar 1 Of foxtabContextMenu Prompt "Save" 
 	Define Bar 2 Of foxtabContextMenu Prompt "Close" 
 	Define Bar 3 Of foxtabContextMenu Prompt "\-" 
@@ -780,6 +781,8 @@ With ThisForm.oOptionPages.MRU.oMRU As Container
 
 EndWith 
 
+* Save configuration
+oFoxTabs.Configuration.SaveConfig()
 ENDPROC
 [END METHODS]
 [START RESERVED1]
@@ -2346,7 +2349,7 @@ Try
 					
 		Otherwise
 			* Issue a modify file command
-			lcModifyCommand = [Modify File "] + lpcFileName + [" ]
+			lcModifyCommand = [Modify File "] + lpcFileName + [" NoWait ]
 			
 	EndCase 
 	
@@ -2460,6 +2463,8 @@ Activate Window (lpcWindowName)
 
 * Now call the Close menu item
 Sys(1500, "_MFI_CLOSE", "_MFILE")
+*JAL: Not sure why using menu call above, but Release Window in case menu not available
+Release Windows (lpcWindowName)
 
 * CJB 06 Sep2 006 - to force the resize of the toolbar
 this.Resize()
@@ -2559,13 +2564,17 @@ lcDockPosition = This.Parent.Configuration("AppSettings.DockPosition").Value
 
 * Dock the toolbar
 Do Case
-	Case lcDockPosition = "Top" And This.DockPosition # 0
-		* Set a large y coordinate so we position the toolbar at the bottom of 
-		* 	any other toolbars
-		This.Dock(0, 0, 1000)	
+	Case lcDockPosition = "Top" 
+		If This.DockPosition # 0
+			* Set a large y coordinate so we position the toolbar at the bottom of 
+			* 	any other toolbars
+			This.Dock(0, 0, 1000)	
+		EndIf 
 
-	Case lcDockPosition = "Bottom" And This.DockPosition # 3
-		This.Dock(3)		
+	Case lcDockPosition = "Bottom"
+ 		If This.DockPosition # 3
+	 		This.Dock(3)		
+	 	EndIf 
 
 	Otherwise
 		If  This.DockPosition # 3
@@ -2588,6 +2597,7 @@ Try
 	oFoxTabsToolbar = This
 
 	* Calculate scale factor
+	Activate Screen	&& make sure using SCREEN for menu position
 	_Screen.ScaleMode = 0
 	lnFoxelWidth = _Screen.Width  
 	lnFoxelHeight = _Screen.Height 
