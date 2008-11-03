@@ -2329,19 +2329,21 @@ Try
 			lcModifyCommand = [Modify Database "] + lpcFileName + [" NoWait ]
 			
 		Case "DBF" $ lcFileType
-			* Open the table in the default data session
-			Select 0
 			
 			* Check if we are modifying the table or browsing
 			If This.Parent.Configuration("AppSettings.OnTableSelection").Value = "Modify"
 				* Modify table structure
 				Text To lcModifyCommand TextMerge Noshow PreText 1+2+4
+					* Open the table in the default data session
+					Select 0
 					Use "<<lpcFileName>>" Exclusive
 					Modify Structure				
 				EndText
 			Else
 				* Browse table
 				Text To lcModifyCommand TextMerge Noshow PreText 1+2+4
+					* Open the table in the default data session
+					Select 0
 					Use "<<lpcFileName>>" Again Shared
 					Browse Last Nowait Save
 				EndText
@@ -2353,9 +2355,14 @@ Try
 			
 	EndCase 
 	
+	* Open file in previous datasession
+	Set Datasession To (oFoxTabs.PrevDataSession)
+	
 	* Execute the modify command
 	ExecScript(lcModifyCommand)
-	
+
+	Set Datasession To (oFoxTabs.DataSession.DataSessionID)
+
 Catch To oException
 	* Set exception header details and throw to caller
 	oException.UserValue = "Exception caught while opening the selected most recently used file: " + Transform(lpcFileName)
