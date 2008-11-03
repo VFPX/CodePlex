@@ -10,6 +10,7 @@ oFoxTabs = NewObject("FoxTabsApplication")
 
 * Call the main method to process windows and user events
 oFoxTabs.Main()
+Set Datasession To (oFoxTabs.PrevDataSession)
 
 * All done
 Return
@@ -19,10 +20,22 @@ Define Class FoxTabsApplication As Custom
 	Version		= "0.5.0 Beta"
 	ConfigFile 	= ""
 	LogFile		= ""
+	PrevDataSession = .f.
+	DataSession = .f.
 	
 	Function Main()
 
 		Local lcConfigFile As String
+		
+		* Create Private DataSession so we can SET TALK OFF
+		* Otherwise, TALK is very noisy
+		This.PrevDataSession = Set("Datasession")		
+		This.DataSession = CreateObject("Session")
+		This.DataSession.Name = "FoxTabs"
+		Set Datasession To (This.DataSession.DataSessionID)
+		Set Talk Off
+		Set Exclusive Off
+		Set Deleted On		
 		
 		* Determine the name and path of the configuration and log file
 		*	This will be the full path and name of the calling application
