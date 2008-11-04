@@ -1,0 +1,1114 @@
+SCCTEXT Version 4.0.0.2
+PLATFORM C(8,0),UNIQUEID C(10,0),TIMESTAMP N(10,0),CLASS M(4,0),CLASSLOC M(4,0),BASECLASS M(4,0),OBJNAME M(4,0),PARENT M(4,0),PROPERTIES M(4,0),PROTECTED M(4,0),METHODS M(4,0),OBJCODE M(4,0),OLE M(4,0),OLE2 M(4,0),RESERVED1 M(4,0),RESERVED2 M(4,0),RESERVED3 M(4,0),RESERVED4 M(4,0),RESERVED5 M(4,0),RESERVED6 M(4,0),RESERVED7 M(4,0),RESERVED8 M(4,0),USER M(4,0)
+1252
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] Class     
+[START RESERVED1]
+VERSION =   3.00[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _18P175SL0
+[CLASS] baseform
+[CLASSLOC] basecontrols.vcx
+[BASECLASS] form
+[OBJNAME] newpropertydialog
+[START PROPERTIES]
+Height = 341
+Width = 402
+DoCreate = .T.
+Caption = "New Property"
+MinHeight = 341
+MinWidth = 402
+oobject = .NULL.
+lmethod = .F.
+opositions = .NULL.
+cobject = 
+_memberdata =      860<VFPData><memberdata name="addmembertoobject" type="method" display="AddMemberToObject"/><memberdata name="clearform" type="method" display="ClearForm"/><memberdata name="laddcr" type="property" display="lAddCR"/><memberdata name="lclass" type="property" display="lClass"/><memberdata name="lmethod" type="property" display="lMethod"/><memberdata name="oobject" type="property" display="oObject"/><memberdata name="updatememberdata" type="method" display="UpdateMemberData"/><memberdata name="adjustform" type="method" display="AdjustForm"/><memberdata name="opositions" type="property" display="oPositions"/><memberdata name="ladjustedforclass" type="property" display="lAdjustedForClass"/><memberdata name="ladjustedformethod" type="property" display="lAdjustedForMethod"/><memberdata name="cobject" type="property" display="cObject"/></VFPData>
+cfoxuserid = NEWPROPDLG
+cfoxusername = NewPropertyDialog
+Name = "newpropertydialog"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Activate
+local laObject[1], ;
+	loObject
+
+* Get a reference to the selected object. If there isn't one, bug out.
+
+if aselobj(laObject, 1) = 0
+	This.Release()
+	return .F.
+endif aselobj(laObject, 1) = 0
+with This
+
+* Determine whether we're being used from the Class or Form Designer.
+
+	aselobj(laObject, 3)
+	.cObject = laObject[1, 2]
+	.lClass  = lower(justext(.cObject)) = 'vcx'
+
+* Make sure it's the form or class itself that we're working with, regardless
+* of what's selected.
+
+	.oObject = FindTopMostParent(laObject[1], .lClass)
+
+* Adjust the form appropriately.
+
+	.AdjustForm()
+endwith
+
+ENDPROC
+PROCEDURE Init
+lparameters tlMethod, ;
+	tlClass
+local loPersist, ;
+	loControl
+with This
+	dodefault()
+
+* Use the MemberData Editor setting about adding a CR after each item.
+
+	loPersist = newobject('FoxResource', 'FoxResource.prg')
+	loPersist.Load('MEMBERDATAED', 'MemberDataEditor')
+	.lAddCR = nvl(loPersist.Get('lAddCR'), .lAddCR)
+
+* Save the tlMethod and tlClass parameters.
+
+	.lMethod = tlMethod
+	.lClass  = tlClass
+
+* Create a collection of original object positions.
+
+	.oPositions = createobject('Collection')
+	for each loControl in .Objects
+		.oPositions.Add(loControl.Top, loControl.Name + '.Top')
+	next loControl
+	.oPositions.Add(.edtDescription.Height, 'edtDescription.Height')
+	.oPositions.Add(.chkFavorites.Left,     'chkFavorites.Left')
+
+* Declare the MessageBeep function.
+
+	declare integer MessageBeep in Win32API integer wType
+endwith
+
+ENDPROC
+PROCEDURE Show
+* Restore the Dockable setting if we're not being invoked modally. We have to
+* do it here because the form becomes visible as soon as Dockable is set to 1,
+* so we don't want this done earlier.
+
+Lparameters tnStyle
+Local lnTop, lnLeft
+Try
+	With This
+		If Vartype(tnStyle) <> 'N' Or tnStyle <> 1
+			lnTop     = .Top
+			lnLeft    = .Left
+			.Dockable = Nvl(.oPersist.Get('Dockable'), 1)
+			.Top      = lnTop
+			.Left     = lnLeft
+		Endif Vartype(tnStyle) <> 'N' ...
+	Endwith
+	DoDefault(tnStyle)
+Catch To loerr
+	Messagebox( loerr.Message + Chr(13)+Chr(10) + loerr.LineContents )
+Endtry
+
+ENDPROC
+PROCEDURE addmembertoobject
+local lcName, ;
+	lcType, ;
+	lnVisibility, ;
+	llAccess, ;
+	llAssign, ;
+	llFavorites, ;
+	lcDefault, ;
+	lcDescription, ;
+	llUseToggle, ;
+	llReturn, ;
+	luDefault, ;
+	lcCode, ;
+	lcProgram, ;
+	lcScript, ;
+	lcScriptFile, ;
+	loException as Exception
+with This
+
+* Get the values to use for the new member.
+
+	lcName        = .txtName.Value
+	lcType        = iif(.lMethod, 'method', 'property')
+	lnVisibility  = .cboVisibility.ListIndex
+	llAccess      = .chkAccess.Value
+	llAssign      = .chkAssign.Value
+	llFavorites   = .chkFavorites.Value
+	lcDefault     = .edtDefault.Value
+	lcDescription = .edtDescription.Value
+	llUseToggle   = .chkUseToggleEditor.Value
+	llReturn      = .T.
+	do case
+
+* If the member already exists, display a warning. This should be handled in
+* txtName.Valid, but just in case.
+
+		case pemstatus(.oObject, lcName, 5)
+			messagebox(strtran(ccLOC_MEMBER_EXISTS, '<Insert1>', lcName), ;
+				MB_OK + MB_ICONEXCLAMATION, .Caption)
+			.txtName.SetFocus()
+			llReturn = .F.
+
+* Add the method. There seems to be a bug in VFP: the WriteMethod call gives an
+* OLE error if used with an OLEControl object even though PEMSTATUS() reports
+* that the method exists. Even weirder is that appending a space to the name
+* seems to fix the problem.
+
+		case .lMethod
+			try
+				.oObject.WriteMethod(lcName, '', .T., lnVisibility, ;
+					lcDescription)
+			catch to loException
+				.oObject.WriteMethod(lcName + ' ', '', .T., lnVisibility, ;
+					lcDescription)
+			endtry
+
+* Add the property, and access and/or assign methods as necessary. Convert the
+* default value to the correct data type.
+
+		otherwise
+			if not empty(lcDefault) and (inlist(lcDefault, '.F.', '.T.') or ;
+				transform(val(lcDefault)) = lcDefault)
+				luDefault = evaluate(lcDefault)
+			else
+				luDefault = lcDefault
+			endif not empty(lcDefault) ...
+			.oObject.AddProperty(lcName, luDefault, lnVisibility, ;
+				lcDescription)
+			if llAccess
+				lcCode = strtran(ccACCESS_CODE, '<Insert1>', lcName) + chr(13)
+				.oObject.WriteMethod(lcName + '_Access', lcCode, .T.)
+			endif llAccess
+			if llAssign
+				lcCode = strtran(ccASSIGN_CODE, '<Insert1>', lcName) + chr(13)
+				.oObject.WriteMethod(lcName + '_Assign', lcCode, .T.)
+			endif llAssign
+	endcase
+
+* Create the appropriate script if this is a property.
+
+	lcScript = ''
+	if not .lMethod and llUseToggle
+		lcProgram = sys(16)
+		lcProgram = justpath(substr(lcProgram, at(' ', lcProgram, 2) + 1))
+		lcProgram = addbs(lcProgram) + 'PropertyEditor.app'
+		lcProgram = iif(' ' $ lcProgram, "'" + lcProgram + "'", lcProgram)
+		lcScript  = 'do ' + lcProgram + " with 'Toggle', '" + lcName + "'"
+	endif not .lMethod ...
+
+* If this member should go on the Favorites tab or its name wasn't entered in
+* lower case or there's a script, let's update the Member Data for the object.
+
+	if llReturn and (llFavorites or lower(lcName) <> lcName or ;
+		not empty(lcScript))
+		.UpdateMemberData(lcName, llFavorites, lcType, lcScript)
+		if llAccess
+			.UpdateMemberData(lcName + '_Access', llFavorites, 'method')
+		endif llAccess
+		if llAssign
+			.UpdateMemberData(lcName + '_Assign', llFavorites, 'method')
+		endif llAssign
+	endif llReturn ...
+
+* If everything was successful and we have a script to execute, do so.
+
+	lcScriptFile = forcepath('NewPropertyDialogScript.prg', home(7))
+	if file(lcScriptFile)
+		try
+			do (lcScriptFile) with .lClass, .lMethod, lcName, lnVisibility, ;
+				llAccess, llAssign, llFavorites, lcDefault, lcDescription, ;
+				.oObject
+		catch to loException
+			messagebox('Script file: NewPropertyDialogScript.prg' + ccCRLF + ;
+				'Location: ' + displaypath(home(7), 80) + ccCRLF + ;
+				'Error: ' + transform(loException.ErrorNo) + ccCRLF + ;
+				'Message: ' + loException.Message + ccCRLF + ;
+				'Line: ' + transform(loException.LineNo) + ccCRLF + ;
+				'Code: ' + loException.LineContents, ;
+				MB_OK + MB_ICONEXCLAMATION, 'Script Failure')
+		endtry
+	endif file(lcScriptFile)
+endwith
+return llReturn
+
+ENDPROC
+PROCEDURE adjustform
+local lnAnchor, ;
+	lnAdjust, ;
+	lnI, ;
+	lcProperty, ;
+	lnValue, ;
+	lcCaption
+with This
+
+* Set the Anchor property of edtDescription so its Top doesn't change while we
+* manually size the form.
+
+	lnAnchor = .edtDescription.Anchor
+	.edtDescription.Anchor = 10
+	do case
+
+* If we're being called from the Form Designer and we haven't already done so,
+* hide the Visibility combo and adjust the positions of the other controls.
+
+		case not .lClass and not .lAdjustedForClass
+			.lblVisibility.Visible = .F.
+			.cboVisibility.Visible = .F.
+			store .lblVisibility.Top to .chkAccess.Top, .chkAssign.Top, ;
+				.chkFavorites.Top
+			lnAdjust = .lblDefault.Top - .cmdClose.Top - .cmdClose.Height/2
+			.lblDefault.Top         = .lblDefault.Top         - lnAdjust
+			.edtDefault.Top         = .edtDefault.Top         - lnAdjust
+			.chkUseToggleEditor.Top = .chkUseToggleEditor.Top - lnAdjust
+			.lblDescription.Top     = .lblDescription.Top     - lnAdjust
+			.edtDescription.Top     = .edtDescription.Top     - lnAdjust
+			.edtDescription.Height  = .edtDescription.Height  + lnAdjust
+			.lAdjustedForClass      = .T.
+
+* If we're being called from the Class Designer and we previously adjusted the
+* form, undo the adjustments.
+
+		case .lClass and .lAdjustedForClass
+			.lblVisibility.Visible = .T.
+			.cboVisibility.Visible = .T.
+			for lnI = 1 to .oPositions.Count
+				lcProperty = .oPositions.GetKey(lnI)
+				lnValue    = .oPositions.Item(lnI)
+				store lnValue to ('.' + lcProperty)
+			next lnI
+			.lAdjustedForClass = .F.
+	endcase
+
+* If this is the "New Method" dialog, adjust the dialog accordingly.
+
+	do case
+		case .lMethod and not .lAdjustedForMethod
+			.chkAccess.Visible          = .F.
+			.chkAssign.Visible          = .F.
+			.lblDefault.Visible         = .F.
+			.edtDefault.Visible         = .F.
+			.chkUseToggleEditor.Visible = .F.
+			lnAdjust                    = .lblDescription.Top - .lblDefault.Top
+			.lblDescription.Top         = .lblDefault.Top
+			.edtDescription.Top         = .edtDefault.Top
+			.edtDescription.Height      = .edtDescription.Height + lnAdjust
+			.lAdjustedForMethod         = .T.
+		case not .lMethod and .lAdjustedForMethod
+			.chkAccess.Visible          = .T.
+			.chkAssign.Visible          = .T.
+			.lblDefault.Visible         = .T.
+			.edtDefault.Visible         = .T.
+			.chkUseToggleEditor.Visible = .T.
+			lnAdjust                    = .oPositions.Item('lblDescription.Top') - ;
+				.oPositions.Item('lblDefault.Top')
+			.lblDescription.Top         = .lblDescription.Top + lnAdjust
+			.edtDescription.Top         = .edtDescription.Top + lnAdjust
+			.edtDescription.Height      = .edtDescription.Height - lnAdjust
+			.lAdjustedForMethod         = .F.
+	endcase
+
+* Restore the anchor for edtDescription.
+
+	.edtDescription.Anchor = lnAnchor
+
+* Set the caption: include the class/form and VCX/SCX name in the Caption.
+
+	lcCaption = iif(.lMethod, ccLOC_CAP_NEW_METHOD, ccLOC_CAP_NEW_PROPERTY)
+	.Caption  = lcCaption + ' - ' + iif(.lClass, .oObject.Name + ' (', '') + ;
+		justfname(.cObject) + iif(.lClass, ')', '')
+endwith
+
+ENDPROC
+PROCEDURE clearform
+* Clear the controls so the form is ready for a new member.
+
+with This
+	store '' to .txtName.Value, .edtDefault.Value, .edtDescription.Value
+	store .F. to .chkAccess.Value, .chkAssign.Value, .chkFavorites.Value
+	.RefreshForm()
+	.cboVisibility.ListIndex = 1
+	.txtName.SetFocus()
+endwith
+
+ENDPROC
+PROCEDURE restoresettings
+* I'm not sure why this is necessary, but without it, edtDescription isn't
+* resized when the form's size is restored.
+
+local lnHeight, ;
+	lnWidth
+lnHeight = This.Height
+lnWidth  = This.Width
+dodefault()
+This.edtDescription.Height = This.edtDescription.Height + This.Height - lnHeight
+This.edtDescription.Width  = This.edtDescription.Width  + This.Width  - lnWidth
+
+ENDPROC
+PROCEDURE savesettings
+* In addition to the usual settings, persist Dockable.
+
+with This
+	.oPersist.Set('Dockable', .Dockable)
+	dodefault()
+endwith
+
+ENDPROC
+PROCEDURE updatememberdata
+lparameters tcName, ;
+	tlFavorites, ;
+	tcType, ;
+	tcScript
+local loXML as msxml2.DOMDocument, ;
+	llOK, ;
+	lcName, ;
+	lnPos, ;
+	loNode as msxml2.IXMLDOMElement, ;
+	loRoot as msxml2.IXMLDOMElement, ;
+	lcMemberData
+with This
+
+* Create the _MemberData property if necessary.
+
+	if not pemstatus(.oObject, '_MemberData', 5)
+		.oObject.AddProperty('_MemberData', '')
+	endif not pemstatus(.oObject, '_MemberData', 5)
+
+* Create an XML DOM object and load the existing MemberData (if there is any).
+
+	loXML = createobject(ccXML_DOM_CLASS)
+	loXML.async = .F.
+	llOK = .T.
+	if not empty(.oObject._MemberData) and ;
+		not loXML.loadXML(.oObject._MemberData)
+		messagebox(ccLOC_INVALID_XML, MB_OK + MB_ICONEXCLAMATION, .Caption)
+		llOK = .F.
+	endif not empty(.oObject._MemberData) ...
+
+* If everything is OK, try to find an existing node for the new member in the
+* XML (in case the member was previously added and then removed). If it wasn't
+* found, add a node. Strip off the index if this is an array property.
+
+	if llOK
+		lcName = tcName
+		lnPos  = at('[', lcName)
+		if lnPos > 0
+			lcName = left(lcName, lnPos - 1)
+		else
+			lnPos = at('(', lcName)
+			if lnPos > 0
+				lcName = left(lcName, lnPos - 1)
+			endif lnPos > 0
+		endif lnPos > 0
+		loNode = loXML.selectSingleNode('//' + ccMEMBER_DATA_XML_ELEMENT + ;
+			'[@name = "' + lower(lcName) + '"]')
+		if vartype(loNode) <> 'O'
+			loNode = loXML.createElement(ccMEMBER_DATA_XML_ELEMENT)
+		endif vartype(loNode) <> 'O'
+
+* Update the member data.
+
+		loNode.setAttribute('name',    lower(lcName))
+		loNode.setAttribute('type',    tcType)
+		loNode.setAttribute('display', lcName)
+		if tlFavorites
+			loNode.setAttribute('favorites', ccXML_TRUE)
+		endif tlFavorites
+		if not empty(tcScript)
+			loNode.setAttribute('script', tcScript)
+		endif not empty(tcScript)
+
+* Get the root node of the MemberData XML. If it doesn't exist, create it.
+
+		loRoot = loXML.selectSingleNode('/' + ccXML_ROOT_NODE)
+		if vartype(loRoot) <> 'O'
+			loRoot = loXML.createElement(ccXML_ROOT_NODE)
+			loXML.appendChild(loRoot)
+		endif vartype(loRoot) <> 'O'
+
+* Add the new node to the root node and add line breaks if desired.
+
+		loRoot.appendChild(loNode)
+		lcMemberData = loXML.xml
+		if .lAddCR
+			lcMemberData = strtran(lcMemberData, '>' + ccCRLF, '>')
+			lcMemberData = strtran(lcMemberData, '>' + ccCR, '>')
+			lcMemberData = strtran(lcMemberData, '>' + ccLF, '>')
+			lcMemberData = strtran(lcMemberData, '>' + ccTAB, '>')
+			lcMemberData = strtran(lcMemberData, '>', '>' + ccCR)
+		endif .lAddCR
+
+* Put the XML into _MemberData as long as it doesn't exceed the maximum length.
+
+		if len(lcMemberData) >= cnMAX_MEMBER_DATA_SIZE
+			messagebox(ccLOC_STRING_TOO_LONG, MB_OK + MB_ICONEXCLAMATION, ;
+				.Caption)
+			llReturn = .F.
+		else
+			.oObject._MemberData = lcMemberData
+		endif len(lcMemberData) >= cnMAX_MEMBER_DATA_SIZE
+	endif llOK
+endwith
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+19[END RESERVED2]
+[START RESERVED3]
+oobject A reference to the object we're adding members for
+lmethod .T. if we're adding methods
+lclass .T. if we've been launched from the Class menu or .F. if it was from the Form menu
+laddcr .T. to add a carriage return after each element in the member data XML
+opositions A collection of object positions
+ladjustedforclass .T. if the form has been adjusted based on Form vs. Class Designer
+ladjustedformethod .T. if the form has been adjusted based on Property vs. Method
+cobject The name of the object we're adding members for
+*addmembertoobject Adds the property or method to the object
+*updatememberdata Updates _MemberData (adding that property if necessary) for the new member
+*clearform Clears the controls so the form is ready for a new member
+*adjustform Adjusts the form based on the dialog and edited object types
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+newpropertydialog.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _18P175SL0
+[CLASS] baselabel
+[CLASSLOC] basecontrols.vcx
+[BASECLASS] label
+[OBJNAME] lblname
+[PARENT] newpropertydialog
+[START PROPERTIES]
+Caption = "\<Name"
+Left = 6
+Top = 29
+TabIndex = 1
+Name = "lblname"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+* Set the caption to a localized string.
+
+This.Caption = ccLOC_CAP_NAME
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _18P17KAII
+[CLASS] basetextbox
+[CLASSLOC] basecontrols.vcx
+[BASECLASS] textbox
+[OBJNAME] txtName
+[PARENT] newpropertydialog
+[START PROPERTIES]
+Anchor = 10
+Format = "T"
+Height = 22
+Left = 61
+MaxLength = 254
+TabIndex = 2
+Top = 25
+Width = 227
+Name = "txtName"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE InteractiveChange
+* Refresh the buttons so they're enabled properly.
+
+Thisform.RefreshForm()
+
+ENDPROC
+PROCEDURE KeyPress
+* Disallow illegal characters.
+
+lparameters tnKeyCode, ;
+	tnShiftAltCtrl
+local lcChar
+if between(tnKeyCode, asc(' '), asc('z'))
+	lcChar = chr(tnKeyCode)
+	if not (isalpha(lcChar) or (isdigit(lcChar) and len(This.Value) >= 1) or ;
+		inlist(lcChar, '_', '[', ']', '(', ')', ','))
+		MessageBeep(MB_ICONSTOP)
+		wait window ccLOC_INVALID_CHAR nowait
+		nodefault
+	endif not (isalpha(lcChar) ...
+endif between(tnKeyCode, asc(' '), asc('z'))
+
+ENDPROC
+PROCEDURE Valid
+local lcName, ;
+	luReturn, ;
+	lcFirst, ;
+	lcSecond
+with Thisform
+	lcName = This.Value
+	do case
+
+* If the user is cancelling, do nothing.
+
+		case lastkey() = 27
+			luReturn = .T.
+
+* If the member already exists, display a warning.
+
+		case pemstatus(.oObject, lcName, 5)
+			messagebox(strtran(ccLOC_MEMBER_EXISTS, '<Insert1>', lcName), ;
+				MB_OK + MB_ICONEXCLAMATION, .Caption)
+			luReturn = 0
+
+* Assign a default value based on the data type of the property (if we can
+* determine it).
+
+		otherwise
+			lcFirst  = left(lcName, 1)
+			lcSecond = substr(lcName, 2, 1)
+			do case
+				case .lMethod or not empty(.edtDefault.Value) or ;
+					not islower(lcFirst) or not isupper(lcSecond)
+				case lcFirst = 'l'
+					.edtDefault.Value = '.F.'
+				case inlist(lcFirst, 'n', 'i', 'b', 'y')
+					.edtDefault.Value = '0'
+				case lcFirst = 'd'
+					.edtDefault.Value = '{}'
+				case lcFirst = 't'
+					.edtDefault.Value = '{:/}'
+				case lcFirst = 'o'
+					.edtDefault.Value = '.NULL.'
+			endcase
+			luReturn = .T.
+	endcase
+endwith
+return luReturn
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _18P175SL0
+[CLASS] baselabel
+[CLASSLOC] basecontrols.vcx
+[BASECLASS] label
+[OBJNAME] lblVisibility
+[PARENT] newpropertydialog
+[START PROPERTIES]
+Caption = "\<Visibility"
+Left = 6
+Top = 59
+TabIndex = 3
+Name = "lblVisibility"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+* Set the caption to a localized string.
+
+This.Caption = ccLOC_CAP_VISIBILITY
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _18P17KAIJ
+[CLASS] basecombobox
+[CLASSLOC] basecontrols.vcx
+[BASECLASS] combobox
+[OBJNAME] cboVisibility
+[PARENT] newpropertydialog
+[START PROPERTIES]
+RowSourceType = 1
+RowSource = "Public,Protected,Hidden"
+Left = 61
+TabIndex = 4
+Top = 55
+Name = "cboVisibility"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+* Set the default visibility to "Public".
+
+This.ListIndex = 1
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _18P175SL0
+[CLASS] basecheckbox
+[CLASSLOC] basecontrols.vcx
+[BASECLASS] checkbox
+[OBJNAME] chkAccess
+[PARENT] newpropertydialog
+[START PROPERTIES]
+Top = 87
+Left = 100
+Alignment = 0
+Caption = "Acce\<ss Method"
+TabIndex = 5
+Name = "chkAccess"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+* Set the caption to a localized string.
+
+This.Caption = ccLOC_CAP_ACCESS
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _18P17KAIY
+[CLASS] basecheckbox
+[CLASSLOC] basecontrols.vcx
+[BASECLASS] checkbox
+[OBJNAME] chkAssign
+[PARENT] newpropertydialog
+[START PROPERTIES]
+Top = 87
+Left = 200
+Alignment = 0
+Caption = "Assign \<Method"
+TabIndex = 6
+Name = "chkAssign"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+* Set the caption to a localized string.
+
+This.Caption = ccLOC_CAP_ASSIGN
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _18P175SL0
+[CLASS] baselabel
+[CLASSLOC] basecontrols.vcx
+[BASECLASS] label
+[OBJNAME] lblDefault
+[PARENT] newpropertydialog
+[START PROPERTIES]
+Caption = "Defaul\<t/Initial Value"
+Left = 6
+Top = 115
+TabIndex = 8
+Name = "lblDefault"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+* Set the caption to a localized string.
+
+This.Caption = ccLOC_CAP_DEFAULT
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] RESERVED  
+[CLASS] baseeditbox
+[CLASSLOC] basecontrols.vcx
+[BASECLASS] editbox
+[OBJNAME] edtDefault
+[PARENT] newpropertydialog
+[START PROPERTIES]
+Anchor = 10
+Height = 47
+Left = 6
+MaxLength = 252
+TabIndex = 9
+Top = 135
+Width = 390
+Name = "edtDefault"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE KeyPress
+* Don't allow a CR.
+
+lparameters tnKeyCode, ;
+	tnShiftAltCtrl
+if tnKeyCode = 13
+	MessageBeep(MB_ICONSTOP)
+	nodefault
+else
+	dodefault(tnKeyCode, tnShiftAltCtrl)
+endif tnKeyCode = 13
+
+ENDPROC
+PROCEDURE Refresh
+* This is disabled if we're adding an array property.
+
+This.Enabled = not '[' $ Thisform.txtName.Value and ;
+	not '(' $ Thisform.txtName.Value
+
+ENDPROC
+PROCEDURE anychange
+* Refresh chkUseToggleEditor.
+
+Thisform.chkUseToggleEditor.Refresh()
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _18P17KAJE
+[CLASS] baselabel
+[CLASSLOC] basecontrols.vcx
+[BASECLASS] label
+[OBJNAME] lblDescription
+[PARENT] newpropertydialog
+[START PROPERTIES]
+Caption = "\<Description"
+Left = 6
+Top = 195
+TabIndex = 11
+Name = "lblDescription"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+* Set the caption to a localized string.
+
+This.Caption = ccLOC_CAP_DESCRIPTION
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _18P17KAJF
+[CLASS] baseeditbox
+[CLASSLOC] basecontrols.vcx
+[BASECLASS] editbox
+[OBJNAME] edtDescription
+[PARENT] newpropertydialog
+[START PROPERTIES]
+Anchor = 15
+Height = 112
+Left = 6
+MaxLength = 252
+TabIndex = 12
+Top = 215
+Width = 390
+IntegralHeight = .F.
+Name = "edtDescription"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE KeyPress
+* Don't allow a CR.
+
+lparameters tnKeyCode, ;
+	tnShiftAltCtrl
+if tnKeyCode = 13
+	MessageBeep(MB_ICONSTOP)
+	nodefault
+else
+	dodefault(tnKeyCode, tnShiftAltCtrl)
+endif tnKeyCode = 13
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _18P175SL0
+[CLASS] basecheckbox
+[CLASSLOC] basecontrols.vcx
+[BASECLASS] checkbox
+[OBJNAME] chkFavorites
+[PARENT] newpropertydialog
+[START PROPERTIES]
+Top = 87
+Left = 6
+Alignment = 0
+Caption = "\<Favorites"
+TabIndex = 7
+Name = "chkFavorites"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+* Set the caption to a localized string.
+
+This.Caption = ccLOC_CAP_FAVORITES
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _18P17KAJH
+[CLASS] basecommandbutton
+[CLASSLOC] basecontrols.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdAdd
+[PARENT] newpropertydialog
+[START PROPERTIES]
+Top = 25
+Left = 320
+Anchor = 8
+Caption = "Add"
+Default = .T.
+TabIndex = 15
+Name = "cmdAdd"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+* Try to add the member to the object. If we succeeded, clear the form so the
+* user can enter another one.
+
+with Thisform
+	if .AddMemberToObject()
+		.ClearForm()
+	endif .AddMemberToObject()
+endwith
+
+ENDPROC
+PROCEDURE Init
+* Set the caption to a localized string.
+
+This.Caption = ccLOC_CAP_ADD
+
+ENDPROC
+PROCEDURE Refresh
+* This button is only enabled if a name was entered.
+
+This.Enabled = not empty(Thisform.txtName.Value)
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _18P17KAJT
+[CLASS] basecommandbutton
+[CLASSLOC] basecontrols.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdAddClose
+[PARENT] newpropertydialog
+[START PROPERTIES]
+Top = 54
+Left = 320
+Anchor = 8
+Caption = "Add & Close"
+TabIndex = 16
+Name = "cmdAddClose"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+* Add the member to the object and, if it succeeded, close the form.
+
+if Thisform.AddMemberToObject()
+	Thisform.Release()
+endif Thisform.AddMemberToObject()
+
+ENDPROC
+PROCEDURE Init
+* Set the caption to a localized string.
+
+This.Caption = ccLOC_CAP_ADD_CLOSE
+
+ENDPROC
+PROCEDURE Refresh
+* This button is only enabled if a name was entered.
+
+This.Enabled = not empty(Thisform.txtName.Value)
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _18P17KAJU
+[CLASS] basecommandbutton
+[CLASSLOC] basecontrols.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdClose
+[PARENT] newpropertydialog
+[START PROPERTIES]
+Top = 83
+Left = 320
+Anchor = 8
+Cancel = .T.
+Caption = "Close"
+TabIndex = 17
+Name = "cmdClose"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+* Close the form.
+
+Thisform.Release()
+
+ENDPROC
+PROCEDURE Init
+* Set the caption to a localized string.
+
+This.Caption = ccLOC_CAP_CLOSE
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1C40Y1KKO
+[CLASS] baseoptiongroup
+[CLASSLOC] basecontrols.vcx
+[BASECLASS] optiongroup
+[OBJNAME] opgType
+[PARENT] newpropertydialog
+[START PROPERTIES]
+Height = 19
+Left = 130
+Top = 0
+Width = 129
+TabIndex = 14
+Name = "opgType"
+baseoptionbutton1.Caption = "\<Property"
+baseoptionbutton1.Left = 5
+baseoptionbutton1.Top = 5
+baseoptionbutton1.Name = "baseoptionbutton1"
+baseoptionbutton2.Caption = "M\<ethod"
+baseoptionbutton2.Left = 70
+baseoptionbutton2.Top = 5
+baseoptionbutton2.Name = "baseoptionbutton2"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE InteractiveChange
+Thisform.lMethod = This.Value = 2
+Thisform.AdjustForm()
+
+ENDPROC
+PROCEDURE Refresh
+This.Value = iif(Thisform.lMethod, 2, 1)
+
+ENDPROC
+PROCEDURE baseoptionbutton1.Init
+* Set the caption to a localized string.
+
+This.Caption = ccLOC_CAP_PROPERTY
+ENDPROC
+PROCEDURE baseoptionbutton2.Init
+* Set the caption to a localized string.
+
+This.Caption = ccLOC_CAP_METHOD
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1C40YJEN1
+[CLASS] baselabel
+[CLASSLOC] basecontrols.vcx
+[BASECLASS] label
+[OBJNAME] lblType
+[PARENT] newpropertydialog
+[START PROPERTIES]
+Caption = "Member type:"
+Left = 61
+Top = 5
+TabIndex = 13
+Name = "lblType"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+* Set the caption to a localized string.
+
+This.Caption = ccLOC_CAP_MEMBER_TYPE
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1SU0YKLW4
+[CLASS] basecheckbox
+[CLASSLOC] basecontrols.vcx
+[BASECLASS] checkbox
+[OBJNAME] chkUseToggleEditor
+[PARENT] newpropertydialog
+[START PROPERTIES]
+Top = 114
+Left = 116
+Alignment = 0
+Caption = "\<Use toggle editor"
+TabIndex = 10
+Name = "chkUseToggleEditor"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+* Set the caption to a localized string.
+
+This.Caption = ccLOC_CAP_USE_TOGGLE_EDITOR
+
+ENDPROC
+PROCEDURE Refresh
+* Enabled this control if the default value is logical.
+
+This.Enabled = inlist(Thisform.edtDefault.Value, '.T.', '.F.')
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2I10Y2ZLK
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] lblVersion
+[PARENT] newpropertydialog
+[START PROPERTIES]
+AutoSize = .F.
+FontName = "Verdana"
+FontSize = 6
+Anchor = 14
+Alignment = 1
+Caption = "Version 1.00 - Oct. 28, 2008"
+Height = 12
+Left = 6
+Top = 330
+Width = 389
+Name = "lblVersion"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+Local lcSys16
+
+* extra directory path
+lcSys16 = Sys(16)
+lcSys16 = Substr (lcSys16, 1 + At (" ", lcSys16, 2))
+lcSys16 = JustPath (lcSys16)
+
+This.Caption = lcSys16
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] newpropertydialog
+[START PROPERTIES]
+Tahoma, 0, 8, 5, 13, 11, 23, 2, 0
+[END PROPERTIES]
+[START RESERVED1]
+  newpropertydialog.hN¿º|é0 newpropertydialogenglish.hVÀY~c96 ..\..\program files\microsoft visual foxpro 9\foxpro.h^Á‚‰1[END RESERVED1]
+[EOF]
