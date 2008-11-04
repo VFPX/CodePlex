@@ -471,7 +471,7 @@ BackStyle = 0
 Caption = "Desktop"
 FontName = "Tahoma"
 FontSize = 8
-ForeColor = 128,128,128
+ForeColor = 0,0,0
 Height = 15
 Left = 18
 MousePointer = 15
@@ -635,6 +635,7 @@ Text To lcDefaultSettings NoShow
 	<IncludeClassFiles>true</IncludeClassFiles>
 	<IncludeProgramFiles>true</IncludeProgramFiles>
 	<IncludeFormFiles>true</IncludeFormFiles>
+	<IncludeReportFiles>true</IncludeReportFiles>
 	<IncludeDatabaseFiles>true</IncludeDatabaseFiles>
 	<IncludeTableFiles>true</IncludeTableFiles>
 	<OnTableSelection>browse</OnTableSelection>
@@ -717,6 +718,7 @@ With ThisForm.oOptionPages.MRU.oMRU As Container
 	.chkIncludeClassFiles.Value 	= ( oFoxTabs.Configuration("AppSettings.IncludeClassFiles").Value = "true" )
 	.chkIncludeProgramFiles.Value 	= ( oFoxTabs.Configuration("AppSettings.IncludeProgramFiles").Value = "true" )
 	.chkIncludeFormFiles.Value 		= ( oFoxTabs.Configuration("AppSettings.IncludeFormFiles").Value = "true" )
+	.chkIncludeReportFiles.Value 	= ( oFoxTabs.Configuration("AppSettings.IncludeReportFiles").Value = "true" )
 	.chkIncludeDatabaseFiles.Value 	= ( oFoxTabs.Configuration("AppSettings.IncludeDatabaseFiles").Value = "true" )
 	.chkIncludeTableFiles.Value 	= ( oFoxTabs.Configuration("AppSettings.IncludeTableFiles").Value = "true" )
 
@@ -773,6 +775,7 @@ With ThisForm.oOptionPages.MRU.oMRU As Container
 	oFoxTabs.Configuration("AppSettings.IncludeClassFiles").Value = Iif(Empty(.chkIncludeClassFiles.Value), "false", "true")
 	oFoxTabs.Configuration("AppSettings.IncludeProgramFiles").Value = Iif(Empty(.chkIncludeProgramFiles.Value), "false", "true")
 	oFoxTabs.Configuration("AppSettings.IncludeFormFiles").Value = Iif(Empty(.chkIncludeFormFiles.Value), "false", "true")
+	oFoxTabs.Configuration("AppSettings.IncludeReportFiles").Value = Iif(Empty(.chkIncludeReportFiles.Value), "false", "true")
 	oFoxTabs.Configuration("AppSettings.IncludeDatabaseFiles").Value = Iif(Empty(.chkIncludeDatabaseFiles.Value), "false", "true")
 	oFoxTabs.Configuration("AppSettings.IncludeTableFiles").Value = Iif(Empty(.chkIncludeTableFiles.Value), "false", "true")
 
@@ -788,7 +791,7 @@ ENDPROC
 [START RESERVED1]
 Class[END RESERVED1]
 [START RESERVED2]
-43[END RESERVED2]
+44[END RESERVED2]
 [START RESERVED3]
 *bindconfigsettings 
 *showoption Shows the specified options container
@@ -1409,8 +1412,8 @@ FontSize = 8
 Height = 15
 Left = 47
 Name = "chkIncludeClassFiles"
-TabIndex = 4
-Top = 104
+TabIndex = 3
+Top = 78
 Width = 103
 [END PROPERTIES]
 
@@ -1438,7 +1441,7 @@ Width = 124
 
 [ RECORD]
 [PLATFORM] WINDOWS 
-[UNIQUEID] _1NB1DVI2X
+[UNIQUEID] _1MB19JZ6L
 [CLASS] checkbox
 [BASECLASS] checkbox
 [OBJNAME] chkIncludeFormFiles
@@ -1453,8 +1456,8 @@ FontSize = 8
 Height = 15
 Left = 47
 Name = "chkIncludeFormFiles"
-TabIndex = 6
-Top = 156
+TabIndex = 5
+Top = 130
 Width = 102
 [END PROPERTIES]
 
@@ -1475,8 +1478,8 @@ FontSize = 8
 Height = 15
 Left = 47
 Name = "chkIncludeProgramFiles"
-TabIndex = 5
-Top = 130
+TabIndex = 4
+Top = 104
 Width = 118
 [END PROPERTIES]
 
@@ -1497,9 +1500,31 @@ FontSize = 8
 Height = 15
 Left = 47
 Name = "chkIncludeProjectFiles"
-TabIndex = 3
-Top = 78
+TabIndex = 2
+Top = 52
 Width = 112
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2I31D2R5R
+[CLASS] checkbox
+[BASECLASS] checkbox
+[OBJNAME] chkIncludeReportFiles
+[PARENT] foxtabsoptions.oOptionPages.MRU.oMRU
+[START PROPERTIES]
+Alignment = 0
+AutoSize = .T.
+BackStyle = 0
+Caption = "Include Report files"
+FontName = "Tahoma"
+FontSize = 8
+Height = 15
+Left = 47
+Name = "chkIncludeReportFiles"
+TabIndex = 6
+Top = 156
+Width = 111
 [END PROPERTIES]
 
 [ RECORD]
@@ -1517,9 +1542,9 @@ Caption = "Include Solution files"
 FontName = "Tahoma"
 FontSize = 8
 Height = 15
-Left = 47
+Left = 204
 Name = "chkIncludeSolutionFiles"
-TabIndex = 2
+TabIndex = 11
 Top = 52
 Visible = .F.
 Width = 116
@@ -1635,7 +1660,7 @@ ForeColor = 127,157,185
 Height = 15
 Left = 10
 Name = "Label4"
-TabIndex = 11
+TabIndex = 12
 Top = 3
 Width = 99
 [END PROPERTIES]
@@ -2028,7 +2053,7 @@ Local lcMruFileTypeList As String, lcMruFileType As String, lnMruBar As Integer,
 * Define Mru file types allowed
 *JAL: Solution explorer currently not available, so removed from menu for now
 *JAL*	lcMruFileTypeList = [Solution,Project,Class,Program,Form,Database,Table]
-lcMruFileTypeList = [Project,Class,Program,Form,Database,Table]
+lcMruFileTypeList = [Project,Class,Program,Form,Report,Database,Table]
 
 For lnMruBar = 1 To GetWordCount(lcMruFileTypeList, ",")
 
@@ -2220,6 +2245,9 @@ Do Case
 	Case lpcMruFileType = "Form"
 		lcMruId = "MRUH"
 	
+	Case lpcMruFileType = "Report"
+		lcMruId = "MRUG"
+	
 	Case lpcMruFileType = "Table"
 		lcMruId = "MRUS"
 	
@@ -2321,8 +2349,12 @@ Try
 			lcModifyCommand = [Modify Command "] + lpcFileName + [" NoWait Save ]
 			
 		Case "SCX" $ lcFileType
-			* Modify project file
+			* Modify form file
 			lcModifyCommand = [Modify Form "] + lpcFileName + [" NoWait Save ]
+			
+		Case "FRX" $ lcFileType
+			* Modify report file
+			lcModifyCommand = [Modify Report "] + lpcFileName + [" NoWait Save ]
 			
 		Case "DBC" $ lcFileType
 			* Modify database file
