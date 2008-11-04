@@ -1,0 +1,2873 @@
+SCCTEXT Version 4.0.0.2
+PLATFORM C(8,0),UNIQUEID C(10,0),TIMESTAMP N(10,0),CLASS M(4,0),CLASSLOC M(4,0),BASECLASS M(4,0),OBJNAME M(4,0),PARENT M(4,0),PROPERTIES M(4,0),PROTECTED M(4,0),METHODS M(4,0),OBJCODE M(4,0),OLE M(4,0),OLE2 M(4,0),RESERVED1 M(4,0),RESERVED2 M(4,0),RESERVED3 M(4,0),RESERVED4 M(4,0),RESERVED5 M(4,0),RESERVED6 M(4,0),RESERVED7 M(4,0),RESERVED8 M(4,0),USER M(4,0)
+1252
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] Class     
+[START RESERVED1]
+VERSION =   3.00[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _18P175SL0
+[CLASS] baseform
+[CLASSLOC] basecontrols.vcx
+[BASECLASS] form
+[OBJNAME] neweditpropertydialog
+[START PROPERTIES]
+Height = 379
+Width = 700
+DoCreate = .T.
+Caption = "Edit Property/Method"
+MinHeight = 376
+MinWidth = 700
+KeyPreview = .T.
+BindControls = .F.
+oobject = .NULL.
+lmethod = .F.
+opositions = .NULL.
+cpem = 
+lfirsttime = .T.
+onewproperty = .NULL.
+coriginalname = 
+omemberdataengine = .NULL.
+oxml = .NULL.
+coriginalvisibility = 
+csearchstring = 
+nkeytime = 0
+cmemberssortorder = +CName
+npropertiesselection = 3
+ninheritedselection = 5
+version = Version 1.03b - Nov. 2, 2008
+_memberdata =     3951<VFPData>
+	<memberdata name="addmembertoobject" type="method" display="AddMemberToObject"/>
+	<memberdata name="clearform" type="method" display="ClearForm"/>
+	<memberdata name="laddcr" type="property" display="lAddCR"/>
+	<memberdata name="lclass" type="property" display="lClass"/>
+	<memberdata name="lmethod" type="property" display="lMethod"/>
+	<memberdata name="oobject" type="property" display="oObject"/>
+	<memberdata name="updatememberdata" type="method" display="UpdateMemberData"/>
+	<memberdata name="adjustform" type="method" display="AdjustForm"/>
+	<memberdata name="opositions" type="property" display="oPositions"/>
+	<memberdata name="ladjustedforclass" type="property" display="lAdjustedForClass"/>
+	<memberdata name="ladjustedformethod" type="property" display="lAdjustedForMethod"/>
+	<memberdata name="editmember" type="method" display="editMember"/>
+	<memberdata name="removemember" type="method" display="removeMember"/>
+	<memberdata name="cpem" type="property" display="cPEM"/>
+	<memberdata name="omemberdatacollection" type="property" display="oMemberDataCollection"/>
+	<memberdata name="lfirsttime" type="property" display="lFirstTime"/>
+	<memberdata name="onewproperty" type="property" display="oNewProperty"/>
+	<memberdata name="lcoriginalname" type="property" display="lcOriginalName"/>
+	<memberdata name="addassign" type="method" display="addAssign"/>
+	<memberdata name="addaccess" type="method" display="addAccess"/>
+	<memberdata name="removeassign" type="method" display="removeAssign"/>
+	<memberdata name="removeaccess" type="method" display="removeAccess"/>
+	<memberdata name="isinfavorites" type="method" display="isInFavorites"/>
+	<memberdata name="resetgrid" type="method" display="resetGrid"/>
+	<memberdata name="omemberdataengine" type="property" display="oMemberDataEngine"/>
+	<memberdata name="oxml" type="property" display="oXML"/>
+	<memberdata name="add2favorites" type="method" display="add2Favorites"/>
+	<memberdata name="removefromfavorites" type="method" display="removeFromFavorites"/>
+	<memberdata name="removememberdata" type="method" display="removeMemberData"/>
+	<memberdata name="creatememberdatanode" type="method" display="createMemberDataNode"/>
+	<memberdata name="checkmemberdata" type="method" display="checkMemberData"/>
+	<memberdata name="noriginalvisibility" type="property" display="nOriginalVisibility"/>
+	<memberdata name="coriginalvisibility" type="property" display="cOriginalVisibility"/>
+	<memberdata name="csearchstring" type="property" display="cSearchString"/>
+	<memberdata name="nkeytime" type="property" display="nKeyTime"/>
+	<memberdata name="setproperties" type="method" display="setProperties"/><memberdata name="resortgrid" type="method" display="ReSortGrid"/><memberdata name="memberssortorder" type="property" display="MembersSortOrder"/><memberdata name="sortgrid" type="method" display="SortGrid"/><memberdata name="propertiesselection" type="property" display="PropertiesSelection"/><memberdata name="nativeselection" type="property" display="NativeSelection"/><memberdata name="inheritedselection" type="property" display="InheritedSelection"/><memberdata name="setfilter" type="method" display="SetFilter"/><memberdata name="setfontsize" type="method" display="SetFontSize"/><memberdata name="version" type="property" display="Version"/><memberdata name="addnew" type="method" display="AddNew"/><memberdata name="validatename" type="method" display="ValidateName"/><memberdata name="justpem" type="method" display="JustPEM"/><memberdata name="ninheritedselection" type="property" display="nInheritedSelection"/><memberdata name="npropertiesselection" type="property" display="nPropertiesSelection"/><memberdata name="cmemberssortorder" type="property" display="cMembersSortOrder"/><memberdata name="showeditcontextmenu" type="method" display="ShowEditContextMenu"/><memberdata name="str2val" type="method" display="Str2Val"/></VFPData>
+
+cfoxuserid = NEWEDITPROPDLG
+cfoxusername = NewEditPropertyDialog
+Name = "neweditpropertydialog"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Activate
+Local lcCaption, loMemberDataEngine, laObject[1], loObject, lcAppName, loerr
+
+If Aselobj(laObject, 1) = 0
+	This.oNewProperty = .Null.
+	This.Release()
+	Return .F.
+Endif && Aselobj(laObject, 1) = 0
+Try
+	If This.lFirstTime
+		This.lFirstTime = .F.
+		With This
+			DoDefault()
+
+			* Get a reference to the selected object. If there isn't one, bug out.
+
+			*** JimNelson 10/31/2008: fixed the caption
+***		    lcCaption = IIF(.lMethod, [Edit Method], [Edit Property])
+			lcCaption = ccLOC_CAP_TITLE && [Edit Properties/Methods]
+
+			Aselobj(laObject, 3)
+			.lClass = Lower( Justext( laObject[ 2 ] ) ) == 'vcx'
+
+			* Determine whether we're being used from the Class or Form Designer. Adjust
+			* the form appropriately.
+			.AdjustForm()
+
+			* Make sure it's the form or class itself that we're working with, regardless
+			* of what's selected.
+			.oObject = FindTopMostParent(laObject[1], .lClass)
+
+			***********************************************************************
+			*** Changed By.: Marcia G. Akins on 01 January 2007
+			*** Reason.....: Populate the grid and select the appropriate property or method
+			***********************************************************************
+			Thisform.oMemberDataEngine = Newobject( [MemberDataEngine], [MemberDataEngine.PRG] )
+			With Thisform.oMemberDataEngine
+				.oObject = This.oObject
+				.SetupEngine()
+				.CreateMemberDataCollection()
+			Endwith
+			With Thisform
+				Select csrMembers
+				****************************************************************
+				* Modified 10/25/2008 by Jim Nelson
+				* Index for sort in .cMembersSortOrder; Set filter based on selection criteria
+***			     INDEX ON cName TAG cName
+***			     LOCATE FOR LOWER( ALLTRIM( cName ) ) == LOWER( ALLTRIM( .cPEM ) )
+***			     if not found()
+***			     	locate
+***			     endif not found()
+
+				.SetFilter()
+
+				If Not Empty(.cPEM)
+					Locate For Thisform.JustPem(cName, .T.) == Thisform.JustPem( .cPEM, .T. )
+					If Not Found()
+						* if not found, assume filters are wrong; reset them to 'All'
+						.nInheritedSelection = 5
+						.nPropertiesSelection = 3
+						.SetFilter()
+						Locate For Thisform.JustPem(cName, .T.) == Thisform.JustPem( .cPEM, .T. )
+						If Not Found()
+							Locate
+						Endif Not Found()
+					Endif Not Found()
+				Endif
+				*** JimNelson 10/25/2008: end of new code
+
+				.grdMembers.SetFocus()
+				***********************************************************************
+				*** Changed By.: Marcia G. Akins on 14 January 2007
+				*** Reason.....: Make sure that if we are changing the name that we can find this
+				*** ...........: property or method to remove it befor e re-adding it
+				***********************************************************************
+				.cOriginalName  = Alltrim( csrMembers.cName )
+				*** DougHennig 05/23/2007: Update cOriginalVisibility (added this property too)
+				.cOriginalVisibility = csrMembers.Visibility
+			Endwith
+			Thisform.BindControls = .T.
+
+			* Include the class/form and VCX/SCX name in the Caption.
+			.Caption = lcCaption + ' - ' + Iif(.lClass, .oObject.Name + ' (', '') + Justfname(laObject[1, 2]) + Iif(.lClass, ')', '')
+
+			***********************************************************************
+			*** Changed By.: Marcia G. Akins on 15 January 2007
+			*** Reason.....: Made the parser a persistant object for performance reasons
+			***********************************************************************
+			.oXML = Createobject(ccXML_DOM_CLASS)
+			.oXML.Async = .F.
+		Endwith
+	Endif
+Catch To loerr
+	Messagebox( loerr.Message + Chr(13)+Chr(10) + loerr.LineContents )
+Endtry
+
+ENDPROC
+PROCEDURE Destroy
+  This.oNewProperty = .NULL.
+  DODEFAULT()
+ENDPROC
+PROCEDURE Init
+Lparameters tlMethod, tcPEM
+Local loPersist, loerr, loControl, lcColumnWidths, lcColumnOrder, laColumnWidths(1), laColumnOrder(1)
+Try
+	With This
+
+		DoDefault()
+
+		***********************************************************************
+		*** Changed By.: Marcia G. Akins on 05 January 2007
+		*** Reason.....: Save the current PEM
+		***********************************************************************
+		Thisform.cPEM = tcPEM
+		* Use the MemberData Editor setting about adding a CR after each item.
+
+		loPersist = Newobject('FoxResource', 'FoxResource.prg')
+		loPersist.Load('MEMBERDATAED', 'MemberDataEditor')
+		.lAddCR = Nvl(loPersist.Get('lAddCR'), .lAddCR)
+
+		****************************************************************
+		* Modified 10/25/2008 by Jim Nelson
+		* Restores saved sort order and filter criteria
+		.cMembersSortOrder 		= Nvl(.oPersist.Get('SortOrder'), .cMembersSortOrder )
+		.nPropertiesSelection 	= Nvl(.oPersist.Get('Properties'), .nPropertiesSelection )
+		.nInheritedSelection 	= Nvl(.oPersist.Get('Inherited'), .nInheritedSelection )
+
+		* Set FontSize for grid and textbox, and editboxes
+		.SetFontSize (Nvl(.oPersist.Get('FontSize'), 8 ))
+
+		lcColumnWidths	= Nvl (.oPersist.Get('ColumnWidths'), [])
+		Alines (laColumnWidths, lcColumnWidths, 5, " ")
+		lcColumnOrder 	= Nvl (.oPersist.Get('ColumnOrder'), [])
+		Alines (laColumnOrder, lcColumnOrder, 5, " ")
+
+		* restore grid column widths and order
+		Local loColumn, lnI
+		For lnI = 1 To .grdMembers.ColumnCount
+			loColumn = .grdMembers.Columns(lnI)
+
+			If lnI <= Alen (laColumnWidths) And "C" = Vartype (laColumnWidths(lnI)) And "N" = Vartype (Val (laColumnWidths(lnI)))
+				loColumn.Width = Val (laColumnWidths(lnI))
+			Endif
+
+			If lnI <= Alen (laColumnOrder) And "C" = Vartype (laColumnOrder(lnI)) And "N" = Vartype (Val (laColumnOrder(lnI)))
+				loColumn.ColumnOrder = Val (laColumnOrder(lnI))
+			Endif
+		Endfor
+
+		* Save the tlMethod parameters.
+		.lMethod 	= tlMethod
+		.cPEM		= tcPEM
+
+		****************************************************************
+		* Modified 10/30/2008 by Jim Nelson
+		* Moving objects around eliminated
+
+		*!*		.oPositions = Createobject('Collection')
+		*!*		For Each loControl In .Objects
+		*!*			.oPositions.Add(loControl.Top, loControl.Name + '.Top')
+		*!*		Next loControl
+		*!*		.oPositions.Add(.edtDescription.Height, 'edtDescription.Height')
+		*!*		.oPositions.Add(.chkFavorites.Left,     'chkFavorites.Left')
+
+		* Declare the MessageBeep function.
+
+		Declare Integer MessageBeep In Win32API Integer wType
+	Endwith
+Catch To loerr
+	Messagebox( loerr.Message + Chr(13)+Chr(10) + loerr.LineContents )
+Endtry
+
+ENDPROC
+PROCEDURE KeyPress
+*** DougHennig 11/03/2008: set KeyPreview to .T. and added this code to close on Esc
+lparameters tnKeyCode, ;
+	tnShiftAltCtrl
+if tnKeyCode = 27
+	Thisform.Release()
+endif tnKeyCode = 27
+
+ENDPROC
+PROCEDURE Show
+* Restore the Dockable setting if we're not being invoked modally. We have to
+* do it here because the form becomes visible as soon as Dockable is set to 1,
+* so we don't want this done earlier.
+
+Lparameters tnStyle
+Local lnTop, lnLeft
+Try
+	With This
+		If Vartype(tnStyle) <> 'N' Or tnStyle <> 1
+			lnTop     = .Top
+			lnLeft    = .Left
+			.Dockable = Nvl(.oPersist.Get('Dockable'), 1)
+			.Top      = lnTop
+			.Left     = lnLeft
+		Endif Vartype(tnStyle) <> 'N' ...
+	Endwith
+	DoDefault(tnStyle)
+Catch To loerr
+	Messagebox( loerr.Message + Chr(13)+Chr(10) + loerr.LineContents )
+Endtry
+
+ENDPROC
+PROCEDURE add2favorites
+LOCAL loNode
+
+*** Get the node for the member (if it exists).
+loNode = This.oXML.selectSingleNode('//' + ccMEMBER_DATA_XML_ELEMENT +;
+       '[@name = "' + LOWER( ALLTRIM( csrMembers.cName ) ) + '"]')
+
+*** If it doesn't exist, we'll have to create it.
+IF VARTYPE(loNode) <> 'O'
+  loNode = Thisform.createMemberDataNode()
+ENDIF
+
+*** Set the favorites attribute to True and update the _Memberdata property of
+*** the object.
+loNode.setAttribute('favorites', ccXML_TRUE)
+Thisform.oObject._MemberData = This.oXML.XML
+
+ENDPROC
+PROCEDURE addaccess
+LPARAMETERS tcProperty, tcCode
+LOCAL lcCode, lnRecNo, lcAccess
+IF NOT EMPTY( tcCode )
+  lcCode = tcCode
+ELSE
+  lcCode = STRTRAN( ccACCESS_CODE, '<Insert1>', tcProperty ) + Chr(13)
+ENDIF
+
+If Lower (tcProperty) # tcProperty
+	lcName = tcProperty + '_Access'
+Else
+	lcName = tcProperty + '_access'
+EndIf
+
+Thisform.oObject.WriteMethod (lcName, lcCode, .T.)
+*** Now Add a record to the cursor for the access method
+lnRecNo = RECNO( [csrMembers] )
+INSERT INTO csrMembers( cName, cType, Visibility ) VALUES ( lcName, [M], [Public] )
+GO lnRecNo IN csrmembers
+Thisform.grdMembers.Refresh()
+ENDPROC
+PROCEDURE addassign
+LPARAMETERS tcProperty, tcCode
+LOCAL lcCode, lnRecNo, lcName
+IF NOT EMPTY( tcCode )
+  lcCode = tcCode
+ELSE
+  lcCode = STRTRAN( ccASSIGN_CODE, '<Insert1>', tcProperty ) + Chr(13)
+ENDIF
+
+If Lower (tcProperty) # tcProperty
+	lcName = tcProperty + '_Assign'
+Else
+	lcName = tcProperty + '_assign'
+EndIf
+
+Thisform.oObject.WriteMethod(lcName, lcCode, .T.)
+*** Now Add a record to the cursor for the access method
+lnRecNo = RECNO( [csrMembers] )
+INSERT INTO csrMembers( cName, cType, Visibility ) VALUES ( lcName, [M], [Public] )
+GO lnRecNo IN csrmembers
+Thisform.grdMembers.Refresh()
+ENDPROC
+PROCEDURE addnew
+*** JimNelson 10/31/2008: moved this code from cmdAdd.Click to this new method
+
+Lparameters lbMethod
+
+LOCAL lcApp, lcDir
+***********************************************************************
+*** Changed By.: Marcia G. Akins on 14 January 2007
+*** Reason.....: Try to instantiate the new add property dialog
+***********************************************************************
+*** DougHennig 11/19/2007: assume NewPropertyDialog.APP is in the same folder as this APP
+*lcApp = ADDBS( HOME( 2 ) ) + [solution\europa\NewProp\NewPropertyDialog.APP]
+lcDir = sys(16)
+lcDir = addbs(justpath(substr(lcDir, at(' ', lcDir, 2) + 1)))
+lcApp = lcDir + 'NewPropertyDialog.APP'
+*** DougHennig 11/19/2007: end of new code
+
+WITH Thisform
+  IF VARTYPE( .oNewProperty ) # [O]
+      .oNewProperty = NEWOBJECT('NewPropertyDialog', 'NewProperty.vcx', ;
+    '&lcApp', lbMethod, ;
+    .lClass )
+    *** Now make sure that our grid of properies and methods gets updated whenever
+    *** a new property or method is added in the new property form (it is modeless)
+    BINDEVENT( .oNewProperty, [AddMemberToObject], Thisform, [ResetGrid], 1 )
+  ENDIF
+  .oNewProperty.SHOW()
+  .oObject = .oNewProperty.oObject
+ENDWITH
+
+ENDPROC
+PROCEDURE adjustform
+Local lnAnchor, loObj, 	lnAdjust, loerr
+
+****************************************************************
+* Modified 10/25/2008 by Jim Nelson
+* Removed changes to .Left property for chkFavorites (so it doesn't hop around)
+Try
+	With This
+		****************************************************************
+		* Modified 10/30/2008 by Jim Nelson
+		* Do not change positions based on property vs method; do not change anchors
+
+		*** reset all the anchors so things do not resize and move around
+		*!*	Thisform.SetAll( [Anchor],  0 )
+		Do Case
+
+				* If we're being called from the Form Designer and we haven't already done so,
+				* hide the Visibility combo and adjust the positions of the other controls.
+
+			Case Not .lClass And Not .lAdjustedForClass
+				.cboVisibility.Enabled = .F.
+				*!*		lnAdjust = .cboVisibility.Height
+				*!*		Store .lblVisibility.Top To .chkAccess.Top, .chkAssign.Top, ;
+				*!*			.chkFavorites.Top
+				*!*		.lblDefault.Top        = .lblDefault.Top     - lnAdjust
+				*!*		.edtDefault.Top        = .edtDefault.Top     - lnAdjust
+				*!*		.lblDescription.Top    = .lblDescription.Top - lnAdjust
+				*!*		.edtDescription.Top    = .edtDescription.Top - lnAdjust
+				*!*		.edtDescription.Height = .edtDescription.Height + lnAdjust
+				.lAdjustedForClass     = .T.
+
+				* If we're being called from the Class Designer and we previously adjusted the
+				* form, undo the adjustments.
+
+			Case .lClass And .lAdjustedForClass
+				.cboVisibility.Enabled = .T.
+				*!*		For lnI = 1 To .oPositions.Count
+				*!*			lcProperty = .oPositions.GetKey(lnI)
+				*!*			lnValue    = .oPositions.Item(lnI)
+				*!*			Store lnValue To ('.' + lcProperty)
+				*!*		Next lnI
+				.lAdjustedForClass = .F.
+		Endcase
+
+		* If this is the "New Method" dialog, adjust the dialog accordingly.
+
+		Do Case
+			Case .lMethod And Not .lAdjustedForMethod
+				.chkAccess.Enabled     = .F.
+				.chkAssign.Enabled     = .F.
+				.edtDefault.Enabled    = .F.
+				*!*		lnAdjust               = .lblDescription.Top - .lblDefault.Top
+				*!*		.lblDescription.Top    = .lblDefault.Top
+				*!*		.edtDescription.Top    = .edtDefault.Top
+				*!*		.edtDescription.Height = .edtDescription.Height + lnAdjust
+				.lAdjustedForMethod    = .T.
+			Case Not .lMethod And .lAdjustedForMethod
+				.chkAccess.Enabled     = .T.
+				.chkAssign.Enabled     = .T.
+				.edtDefault.Enabled    = .T.
+				*!*		lnAdjust               = .oPositions.Item('lblDescription.Top') - ;
+				*!*			.oPositions.Item('lblDefault.Top')
+				*!*		.lblDescription.Top    = .lblDescription.Top + lnAdjust
+				*!*		.edtDescription.Top    = .edtDescription.Top + lnAdjust
+				*!*		.edtDescription.Height = .edtDescription.Height - lnAdjust
+				.lAdjustedForMethod    = .F.
+		Endcase
+
+		* Restore the anchors
+		*!*	For Each loObj In Thisform.Objects FoxObject
+		*!*		If Pemstatus( loObj, [Anchor], 5 ) And Pemstatus( loObj, [nOldAnchor], 5 )
+		*!*			loObj.Anchor = loObj.nOldAnchor
+		*!*		Endif
+		*!*	Endfor
+	Endwith
+Catch To loerr
+	Messagebox( loerr.Message + Chr(13)+Chr(10) + loerr.LineContents )
+Endtry
+
+ENDPROC
+PROCEDURE checkmemberdata
+WITH Thisform
+    IF csrMembers.lFavorites AND NOT .isInFavorites()
+      IF NOT PEMSTATUS( .oObject, [_MemberData], 5 )
+        .oObject.AddProperty('_MemberData', '')
+      ENDIF
+      .Add2Favorites()
+    ELSE
+      IF NOT csrMembers.lFavorites AND .isInFavorites()
+        .RemoveFromFavorites()
+      ENDIF
+    ENDIF
+    IF NOT( LOWER( ALLTRIM( csrMembers.cName ) ) == ALLTRIM( csrMembers.cName ) )
+      IF NOT PEMSTATUS( .oObject, [_MemberData], 5 )
+        .oObject.AddProperty('_MemberData', '')
+      ENDIF
+      .UpdateMemberData()
+    ENDIF
+ENDWITH
+
+ENDPROC
+PROCEDURE clearform
+* Clear the controls so the form is ready for a new member.
+
+with This
+	store '' to .txtName.Value, .edtDefault.Value, .edtDescription.Value
+	store .F. to .chkAccess.Value, .chkAssign.Value, .chkFavorites.Value
+	.RefreshForm()
+	.cboVisibility.ListIndex = 1
+	.txtName.SetFocus()
+endwith
+
+ENDPROC
+PROCEDURE creatememberdatanode
+LOCAL loNode, loRoot, lcType, lcName, lnPos, loErr
+
+TRY
+  *** Create a MemberData node for this member.
+  loNode = This.oXML.createElement(ccMEMBER_DATA_XML_ELEMENT)
+  *** Add a node for the new member to the XML. Strip off the
+  *** index if this is an array property.
+  lcType = IIF( csrMembers.cType == [P], [property], [method] )
+  lcName = LOWER( ALLTRIM( csrMembers.cName ) )
+  lnPos  = AT('[', lcName)
+  IF lnPos > 0
+    lcName = LEFT(lcName, lnPos - 1)
+  ELSE
+    lnPos = AT('(', lcName)
+    IF lnPos > 0
+      lcName = LEFT(lcName, lnPos - 1)
+    ENDIF
+  ENDIF
+  loNode.setAttribute('name', lcName)
+  loNode.setAttribute('type',  lcType)
+
+  *** Get the root node of the MemberData XML. If it doesn't exist, create it.
+  loRoot = This.oXML.selectSingleNode('/' + ccXML_ROOT_NODE)
+  IF VARTYPE(loRoot) <> 'O'
+    loRoot = This.oXML.createElement(ccXML_ROOT_NODE)
+    This.oXML.appendChild( loRoot )
+  ENDIF
+
+  *** Add the new node to the root.
+  loRoot.appendChild(loNode)
+CATCH TO loErr
+  MESSAGEBOX( loErr.Message + CHR( 13 ) + CHR( 10 ) + loErr.LineContents )
+ENDTRY
+RETURN loNode
+
+ENDPROC
+PROCEDURE editmember
+Local lcName, ;
+	lnVisibility, ;
+	llAccess, ;
+	llAssign, ;
+	llFavorites, ;
+	lcDefault, ;
+	lcDescription, ;
+	llReturn, ;
+	lcCode, ;
+	lcScriptFile, ;
+	loException As Exception, ;
+	lcAccessCode, ;
+	lcAssignCode, ;
+	llOK, ;
+	lnRecNo, ;
+	lcAccess, ;
+	lcAssign
+
+With Thisform
+
+	* Get the values to use for the member.
+	*** DougHennig 11/19/2007: Only change the case of first letter of the name if we're supposed to
+	*    lcName        = ALLTRIM( LOWER( Left( .txtName.Value, 1 ) ) + SUBSTR( .txtName.Value, 2 ) )
+	If clLOWER_CASE_FIRST_LETTER
+		lcName = Alltrim( Lower( Left( .txtName.Value, 1 ) ) + Substr( .txtName.Value, 2 ) )
+	Else
+		lcName = Alltrim(.txtName.Value)
+	Endif clLOWER_CASE_FIRST_LETTER
+	*** DougHennig 11/19/2007: end of code
+
+	Replace cName With lcName In csrMembers
+	.txtName.Refresh()
+
+	lnVisibility  = .cboVisibility.ListIndex
+	llAccess      = .chkAccess.Value
+	llAssign      = .chkAssign.Value
+	llFavorites   = .chkFavorites.Value
+	lcDefault     = Alltrim( .edtDefault.Value )
+	lcDescription = Alltrim( .edtDescription.Value )
+	llReturn      = .T.
+	lcAccessCode = []
+	lcAssignCode = []
+
+	Do Case
+
+			* Edit the method.
+		Case .lMethod
+			lcCode = .oObject.ReadMethod( .cOriginalName )
+
+			***********************************************************************
+			*** Changed By.: Marcia G. Akins on 14 January 2007
+			*** Reason.....: if we have changed the name of the method, deleted the original first
+			***********************************************************************
+			*** DougHennig 05/23/2007: call RemoveMember if the visibility is being changed to Public
+			*** 	since WriteMethod doesn't handle that
+			***      IF NOT( LOWER( ALLTRIM( lcName ) ) == LOWER( ALLTRIM( .cOriginalName ) ) )
+			If Not( Lower( Alltrim( lcName ) ) == Lower( Alltrim( .cOriginalName ) ) ) Or ;
+					(csrMembers.Visibility = 'Public' And .cOriginalVisibility <> 'Public')
+				.removeMember(  .cOriginalName, .T. )
+				.oObject.WriteMethod(lcName, lcCode, .T., lnVisibility, lcDescription)
+				.cOriginalName = lcName
+			Else
+				.oObject.WriteMethod(lcName, lcCode, .F., lnVisibility, lcDescription)
+			Endif
+
+			* Edit the property, and access and/or assign methods as necessary.
+		Otherwise
+			***********************************************************************
+			*** Changed By.: Marcia G. Akins on 14 January 2007
+			*** Reason.....: if we have changed the name of the property, delete the original first
+			***********************************************************************
+			*** DougHennig 05/23/2007: call RemoveMember if the visibility is being changed to Public
+			*** 	since AddProperty doesn't handle that
+			***      IF NOT( LOWER( ALLTRIM( lcName ) ) == LOWER( ALLTRIM( .cOriginalName ) ) )
+			If Not( Lower( Alltrim( lcName ) ) == Lower( Alltrim( .cOriginalName ) ) ) Or ;
+					(csrMembers.Visibility = 'Public' And .cOriginalVisibility <> 'Public')
+				.removeMember(  .cOriginalName, .T. )
+			Endif
+			Try
+				.oObject.AddProperty(lcName, lcDefault, lnVisibility, lcDescription )
+			Catch To loException
+			Endtry
+			.cOriginalName = lcName
+			If llAccess
+				***********************************************************************
+				*** Changed By.: Marcia G. Akins on 14 January 2007
+				*** Reason.....: If the Access method does not exist, create it
+				***********************************************************************
+				If Not Pemstatus( .oObject, lcName + '_Access', 5 )
+					.AddAccess( lcName, lcAccessCode )
+				Endif
+			Else
+				***********************************************************************
+				*** Changed By.: Marcia G. Akins on 14 January 2007
+				*** Reason.....: Remove the access method if the box is unchecked
+				***********************************************************************
+				If Pemstatus( .oObject, lcName + '_Access', 5 )
+					.RemoveAccessAssign( lcName + '_Access' )
+				Endif
+			Endif llAccess
+			If llAssign
+				***********************************************************************
+				*** Changed By.: Marcia G. Akins on 14 January 2007
+				*** Reason.....: If the Assign method does not exist, create it
+				***********************************************************************
+				If Not Pemstatus( .oObject, lcName + '_Assign', 5 )
+					.addAssign( lcName, lcAssignCode  )
+				Endif
+			Else
+				***********************************************************************
+				*** Changed By.: Marcia G. Akins on 14 January 2007
+				*** Reason.....: Remove the assign method if the box is unchecked
+				***********************************************************************
+				If Pemstatus( .oObject, lcName + '_Assign', 5 )
+					.RemoveAccessAssign( lcName + '_Assign' )
+				Endif
+			Endif llAssign
+	Endcase
+
+	* If this member should go on the Favorites tab or its name wasn't entered in
+	* lower case, let's update the Member Data for the object.
+	* load the existing MemberData (if there is any).
+	If Pemstatus( .oObject, [_MemberData], 5 )
+		If Not Empty(.oObject._MemberData) And ;
+				NOT .oXML.LoadXML(.oObject._MemberData)
+			Messagebox(ccLOC_INVALID_XML, MB_OK + MB_ICONEXCLAMATION, .Caption)
+			Return
+		Endif
+	Endif
+	***********************************************************************
+	*** Changed By.: Marcia G. Akins on 15 January 2007
+	*** Reason.....: But first we have to see if it is already in favorites or already
+	*** ...........: has member data - we only need to add it if there has been a change
+	***********************************************************************
+	.CheckMemberData()
+	lnRecNo = Recno( [csrMembers] )
+	Thisform.LockScreen = .T.
+	lcAccess = Lower( Alltrim( csrMembers.cName ) ) + [_access]
+	lcAssign = Lower( Alltrim( csrMembers.cName ) ) + [_assign]
+	If llAccess
+		Select csrMembers
+		Locate For Lower( Alltrim( cName ) ) == lcAccess
+		If Found()
+			.CheckMemberData()
+		Endif
+	Endif
+	If llAssign
+		Select csrMembers
+		Locate For Lower( Alltrim( cName ) ) == lcAssign
+		If Found()
+			.CheckMemberData()
+		Endif
+	Endif
+	Go lnRecNo In csrMembers
+	Thisform.LockScreen = .F.
+
+	* If everything was successful and we have a script to execute, do so.
+
+	lcScriptFile = Forcepath('NewEditPropertyDialogScript.prg', Home(7))
+	If File(lcScriptFile)
+		Try
+			Do (lcScriptFile) With .lClass, .lMethod, lcName, lnVisibility, ;
+				llAccess, llAssign, llFavorites, lcDefault, lcDescription, ;
+				.oObject
+		Catch To loException
+			Messagebox('Script file: NewEditPropertyDialogScript.prg' + ccCRLF + ;
+				'Location: ' + Displaypath(Home(7), 80) + ccCRLF + ;
+				'Error: ' + Transform(loException.ErrorNo) + ccCRLF + ;
+				'Message: ' + loException.Message + ccCRLF + ;
+				'Line: ' + Transform(loException.Lineno) + ccCRLF + ;
+				'Code: ' + loException.LineContents, ;
+				MB_OK + MB_ICONEXCLAMATION, 'Script Failure')
+		Endtry
+	Endif File(lcScriptFile)
+	*** DougHennig 05/23/2007: refresh the grid so removed Assign and Access members disappear
+	.grdMembers.Refresh()
+Endwith
+Return
+
+ENDPROC
+PROCEDURE isinfavorites
+LOCAL loNode, llFavorites, lcFavorites
+
+lcFavorites = [False]
+*** Get the node for the member (if it exists) from the member data
+loNode = This.oXML.selectSingleNode('//' + ccMEMBER_DATA_XML_ELEMENT + '[@name = "' + ;
+               LOWER( ALLTRIM( csrMembers.cName ) ) + '"]')
+
+IF VARTYPE( loNode ) = [O]
+  lcFavorites  = NVL( loNode.getAttribute('favorites'), [False] )
+ENDIF
+llFavorites = LOWER( ALLTRIM( lcFavorites ) ) == [true]
+RETURN llFavorites
+ENDPROC
+PROCEDURE justpem
+Lparameters tcPEM, tblowercase
+
+Local lcPem
+lcPem = Trim (tcPEM)
+
+Do Case
+	Case '[' $ lcPem
+		lcPem = Left (lcPem, At ('[', lcPem) - 1)
+	Case '(' $ lcPem
+		lcPem = Left (lcPem, At ('(', lcPem) - 1)
+	Otherwise
+		lcPem = lcPem
+Endcase
+
+Return Iif (tblowercase, Lower (lcPem), lcPem)
+
+
+ENDPROC
+PROCEDURE removeaccessassign
+LPARAMETERS tcMethod
+LOCAL lnRecNo
+WITH Thisform
+  lnRecNo = RECNO( [csrMembers] )
+  REMOVEPROPERTY( .oObject, tcMethod )
+  SELECT csrMembers
+  LOCATE FOR LOWER( ALLTRIM( cName ) ) == LOWER( ALLTRIM( tcMethod ) )
+  IF FOUND()
+*** DougHennig 05/23/2007: pass tcMethod to RemoveMemberData
+***    .removeMemberData()
+    .removeMemberData(tcMethod)
+    DELETE
+  ENDIF
+  GO lnRecNo IN csrMembers
+ENDWITH
+ENDPROC
+PROCEDURE removefromfavorites
+LOCAL loNode, lcDisplay, lcOverride, lcScript
+
+*** Get the node for the member (if it exists).
+loNode = This.oXML.selectSingleNode('//' + ccMEMBER_DATA_XML_ELEMENT +;
+       '[@name = "' + LOWER( ALLTRIM( csrMembers.cName ) ) + '"]')
+
+*** If there is no display, override or script attribute, just delete the member data for this member
+*** Set the favorites attribute to True and update the _Memberdata property of
+*** the object.
+lcDisplay = NVL(loNode.getAttribute('display'), [] )
+lcOverride  = NVL(loNode.getAttribute('override'), [])
+lcScript  = NVL(loNode.getAttribute('script'), [] )
+IF EMPTY( lcDisplay ) AND EMPTY( lcOverride ) AND EMPTY( lcScript )
+  Thisform.removeMemberData( ALLTRIM( csrMembers.cName ) )
+ELSE
+*** DougHennig 08/15/2007: remove the attribute rather than setting it to False so uses fewer characters in the XML
+***  loNode.setAttribute('favorites', ccXML_FALSE)
+  loNode.removeAttribute('favorites')
+  Thisform.oObject._MemberData = This.oXML.XML
+ENDIF
+ENDPROC
+PROCEDURE removemember
+LPARAMETERS tcName, tlNoDelete
+
+LOCAL lcMethod, lcCode, lnVisibility
+
+*** DougHennig 08/15/2007: load the member data or else removing a member doesn't update its member data
+IF PEMSTATUS( This.oObject, [_MemberData], 5 )
+  IF NOT EMPTY(This.oObject._MemberData) AND ;
+    NOT This.oXML.loadXML(This.oObject._MemberData)
+    MESSAGEBOX(ccLOC_INVALID_XML, MB_OK + MB_ICONEXCLAMATION, This.Caption)
+    RETURN
+  ENDIF
+ENDIF
+
+*** First remove access and/or
+*** assign methods if we are removing a property
+***********************************************************************
+*** Changed By.: Marcia G. Akins on 14 January 2007
+*** Reason.....: We have to kludge this so that the class and form designers actually see a change
+***********************************************************************
+lnVisibility = Thisform.cboVisibility.ListIndex
+*** DougHennig 11/26/2007: added the TRY structure
+try
+	IF This.lMethod
+	  lcCode = Thisform.oObject.ReadMethod( ALLTRIM( tcName ) )
+	  Thisform.oObject.WriteMethod( ALLTRIM( tcName ), lcCode, .F., lnVisibility, ALLTRIM( csrMembers.descrip ) )
+	ELSE
+	  Thisform.oObject.AddProperty( ALLTRIM( tcName ), ALLTRIM( Thisform.edtDefault.Value ), lnVisibility, ALLTRIM( csrMembers.descrip ) )
+	ENDIF
+catch
+endtry
+
+IF csrMembers.lAccess
+  Thisform.RemoveAccessAssign( ALLTRIM( tcName ) + [_access] )
+ENDIF
+IF csrMembers.lAssign
+  Thisform.RemoveAccessAssign( ALLTRIM( tcName ) + [_assign] )
+ENDIF
+*** Now see if we have member data to get rid of
+*** And finally remove the property or method itself
+*** After removing any member data
+Thisform.removeMemberData( tcName )
+REMOVEPROPERTY( Thisform.oObject, ALLTRIM( tcName ) )
+***********************************************************************
+*** Changed By.: Marcia G. Akins on 05 February 2007
+*** Reason.....: If we are merely renaming a property or method,
+*** ...........: we do not want to delete the record from the grid
+***********************************************************************
+IF NOT tlNoDelete
+  DELETE IN csrMembers
+  SKIP IN csrMembers
+  IF EOF( [csrMembers] )
+    GO BOTTOM IN csrMembers
+  ENDIF
+  ***********************************************************************
+  *** Changed By.: Marcia G. Akins on 20 November 2007
+  *** Reason.....: And reset the properies for the thing that is now selected in the grid
+  ***********************************************************************
+  Thisform.grdMembers.SetFocus()
+  Thisform.setProperties()
+ENDIF
+ENDPROC
+PROCEDURE removememberdata
+LPARAMETERS tcName
+LOCAL loRoot, loNode
+WITH Thisform
+  *** Get the node for the member (if it exists).
+  loNode = .oXML.selectSingleNode('//' + ccMEMBER_DATA_XML_ELEMENT +;
+         '[@name = "' + LOWER( ALLTRIM( tcName ) ) + '"]')
+
+  IF VARTYPE( loNode ) = [O]
+    *** Get a reference to the root node
+    loRoot = .oXML.selectSingleNode('/' + ccXML_ROOT_NODE)
+    *** Remove the node for this property
+
+    loRoot.RemoveChild( loNode )
+    *** now see if we have any nodes for any properties
+    *** and if we don't, just remove the _memberdata property
+    IF loRoot.HasChildNodes
+      Thisform.oObject._MemberData = .oXML.XML
+    ELSE
+*** DougHennig 08/15/2007: blank _MemberData rather than removing it
+***      REMOVEPROPERTY( .oObject, [_MemberData] )
+		.oObject._MemberData = ''
+    ENDIF
+  ENDIF
+ENDWITH
+ENDPROC
+PROCEDURE resetgrid
+Local laObject[ 1 ], lcXML
+With Thisform
+	Set DataSession To .DataSessionId
+	*** Kludge so we can "see" anything that got added
+	*** in the New property/method dialog
+
+	****************************************************************
+	* Modified 10/25/2008 by Jim Nelson
+	* No longer resets record source; uses saved index sort
+	*
+	* old code
+	*!*		.grdMembers.RecordSource = []
+	*!*		*** Now try to rebuild the cursor
+	*!*		With .oMemberDataEngine
+	*!*			.oObject = This.oObject
+	*!*			.SetupEngine()
+	*!*			.CreateMemberDataCollection()
+	*!*		Endwith
+	*!*		Select csrMembers
+	*!*		Index On cName Tag cName
+	*!*		Locate For Lower( Alltrim( cName ) ) == Lower( Alltrim( .cPEM ) )
+	*!*		.grdMembers.RecordSource = [csrMembers]
+
+	* new code
+	With .oMemberDataEngine
+		.oObject = This.oObject
+		.SetupEngine()
+		.CreateMemberDataCollection()
+	Endwith
+	Select csrMembers
+	.SetFilter()
+	Locate For Lower( Alltrim( cName ) ) == Lower( Alltrim( .cPEM ) )
+	If Not Found()
+		Locate
+	Endif
+	****************************************************************
+
+	.grdMembers.SetFocus()
+	.setProperties()
+Endwith
+
+ENDPROC
+PROCEDURE restoresettings
+* I'm not sure why this is necessary, but without it, edtDescription isn't
+* resized when the form's size is restored.
+
+local lnHeight, ;
+	lnWidth
+lnHeight = This.Height
+lnWidth  = This.Width
+dodefault()
+This.edtDescription.Height = This.edtDescription.Height + This.Height - lnHeight
+This.edtDescription.Width  = This.edtDescription.Width  + This.Width  - lnWidth
+
+ENDPROC
+PROCEDURE savesettings
+* In addition to the usual settings, persist Dockable.
+Local loColumn, lnI, lcColumnWidths, lcColumnOrder
+With This
+	.oPersist.Set('Dockable', 	.Dockable)
+	****************************************************************
+	* Modified 10/25/2008 by Jim Nelson
+	* Save additional settings
+	.oPersist.Set('SortOrder', 	.cMembersSortOrder )
+
+	lcColumnWidths 	= []
+	lcColumnOrder 	= []
+	For lnI = 1 To .grdMembers.ColumnCount
+		loColumn = .grdMembers.Columns(lnI)
+		lcColumnWidths 	= lcColumnWidths + ' ' + Transform (loColumn.Width )
+		lcColumnOrder 	= lcColumnOrder  + ' ' + Transform (loColumn.ColumnOrder )
+	Endfor
+	.oPersist.Set('ColumnWidths', Trim (lcColumnWidths))
+	.oPersist.Set('ColumnOrder' , Trim (lcColumnOrder))
+
+	DoDefault()
+Endwith
+
+ENDPROC
+PROCEDURE setfilter
+Local lcFilter, lcIndex, lnRecno
+
+****************************************************************
+* Created 10/25/2008 by Jim Nelson
+* Sets filter on grid based on filter settings .nPropertiesSelection and .nInheritedSelection
+
+lcFilter1 = Icase(Thisform.nPropertiesSelection = 1, [cType = 'P'] 	;
+	, Thisform.nPropertiesSelection = 2, [cType = 'M']				;
+	, [])
+lcFilter2 = Icase(Thisform.nInheritedSelection = 1, [lNative] 				;
+	, Thisform.nInheritedSelection = 2, [(not lNative)] 						;
+	, Thisform.nInheritedSelection = 3, [(lInherited and not lNative)] 		;
+	, Thisform.nInheritedSelection = 4, [((not lInherited) and not lNative)] ;
+	, [])
+
+Select csrMembers
+lnRecNo = Recno( [csrMembers] )
+
+Delete Tag All
+Set Filter To
+
+lcIndex = .cMembersSortOrder
+Index On &lcIndex Tag cName
+
+Do Case
+	Case Empty(lcFilter1) And Empty(lcFilter2)
+		Set Filter To
+	Case Empty(lcFilter1)
+		Set Filter To &lcFilter2
+	Case Empty(lcFilter2)
+		Set Filter To &lcFilter1
+	Otherwise
+		Set Filter To &lcFilter1 And &lcFilter2
+Endcase
+
+Locate for Recno() = lnRecno
+If not Found()
+	Locate
+EndIf
+
+Thisform.setProperties()
+
+
+ENDPROC
+PROCEDURE setfontsize
+Lparameters tnNewFontSize
+
+With This
+	.SetAll("FontSize", tnNewFontSize, "Grid")
+	.SetAll("FontSize", tnNewFontSize, "basetextbox")
+	.SetAll("FontSize", tnNewFontSize, "baseeditbox")
+Endwith
+
+ENDPROC
+PROCEDURE setproperties
+***********************************************************************
+*** Changed By.: Marcia G. Akins on 14 January 2007
+*** Reason.....: Make sure that if we are changing the name that we can find this
+*** ...........: property or method to remove it befor e re-adding it
+***********************************************************************
+Thisform.cOriginalName  = ALLTRIM( csrMembers.cName )
+*** DougHennig 05/23/2007: Update cOriginalVisibility (added this property too)
+Thisform.cOriginalVisibility = csrMembers.Visibility
+Thisform.Refresh()
+Thisform.AdjustForm()
+ENDPROC
+PROCEDURE showeditcontextmenu
+*!* ShowEditContextMenu()
+
+Local lnx, lny, lnRow, lnCol, lcFontStyle
+
+Declare Integer GetCursorPos In win32api As apiGetCursorPos_pemeditor;
+	String  @lpPoint
+
+Declare Integer ScreenToClient In win32api As apiScreenToClient_pemeditor ;
+	Integer nhWnd, ;
+	String  @lpPoint
+
+m.lcPoint = 0h0000000000000000
+
+apiGetCursorPos_pemeditor(@m.lcPoint)
+apiScreenToClient_pemeditor(_Screen.HWnd, @m.lcPoint)
+
+m.lnx = CToBin(Substr(m.lcPoint, 1, 4), "4rs")
+m.lny = CToBin(Substr(m.lcPoint, 5, 4), "4rs")
+
+m.lcFontStyle = ""
+
+If _Screen.FontBold = .T. Then
+	m.lcFontStyle = m.lcFontStyle + "B"
+Endif
+
+If _Screen.FontItalic = .T. Then
+	m.lcFontStyle = m.lcFontStyle + "I"
+Endif
+
+m.lnCol = m.lnx/Fontmetric(6, _Screen.FontName, _Screen.FontSize, m.lcFontStyle)
+m.lnRow = m.lny/Fontmetric(1, _Screen.FontName, _Screen.FontSize, m.lcFontStyle)
+
+Define Popup EditContextMenu shortcut Relative From m.lnRow, m.lnCol
+
+Define Bar _Med_undo Of EditContextMenu Prompt "\<Undo" ;
+	Skip For Skpbar("_MEDIT", _Med_undo) ;
+	PictRes _Med_undo ;
+	Message "Undoes the last command or action"
+
+Define Bar _Med_cut Of EditContextMenu Prompt "Cu\<t" ;
+	Skip For Skpbar("_MEDIT", _Med_cut) ;
+	PictRes _Med_cut ;
+	Message "Removes the selection and places it onto the Clipboard"
+
+Define Bar _Med_copy Of EditContextMenu Prompt "\<Copy" ;
+	Skip For Skpbar("_MEDIT", _Med_copy) ;
+	PictRes _Med_copy ;
+	Message "Copies the selection onto the Clipboard"
+
+Define Bar _Med_paste Of EditContextMenu Prompt "\<Paste" ;
+	Skip For Skpbar("_MEDIT", _Med_paste) ;
+	PictRes _Med_paste ;
+	Message "Pastes the contents of the Clipboard"
+
+Define Bar _Med_clear Of EditContextMenu Prompt "Cle\<ar" ;
+	Skip For Skpbar("_MEDIT", _Med_clear) ;
+	PictRes _Med_clear ;
+	Message "Removes the selection and does not place it onto the Clipboard"
+
+Define Bar 6 Of EditContextMenu Prompt "\-"
+
+Define Bar _Med_slcta Of EditContextMenu Prompt "Se\<lect All" ;
+	Skip For Skpbar("_MEDIT", _Med_slcta) ;
+	PictRes _Med_slcta ;
+	Message "Selects all text or items in the current window"
+
+Activate Popup EditContextMenu
+
+Release Popups EditContextMenu
+
+ENDPROC
+PROCEDURE sortgrid
+Lparameters lcMainSortField, lcAltSortField
+
+****************************************************************
+* Created 10/25/2008 by Jim Nelson
+* Invoked by click on header of any column
+* Updates .cMembersSortOrder with new sort criteria
+* First parameter is the "normal" sort order for the column being sorted on
+* Second is the alternate (if any) to cause reverse sorting if grid
+* is already sorted on the main column.
+	
+Local lcSortField
+
+With This
+	If Pcount() = 2 And .cMembersSortOrder = "+" + lcMainSortField
+		lcSortField = lcAltSortField
+	Else
+		lcSortField = lcMainSortField
+	Endif
+
+	.cMembersSortOrder = "+" + lcSortField + Strtran( .cMembersSortOrder, "+" + lcMainSortField, "")
+
+	.SetFilter()
+
+	Locate
+	.grdMembers.SetFocus()
+
+Endwith
+
+ENDPROC
+PROCEDURE str2val
+LPARAMETERS tcStr
+LOCAL luRetVal
+
+DO CASE
+  CASE INLIST( UPPER( ALLTRIM( tcStr ) ), [.T.], [.F.] )
+    IF tcStr = [.T.]
+      luRetVal = .T.
+    ELSE
+      luRetVal = .F.
+    ENDIF
+  CASE ( CHRTRAN( tcStr, CHRTRAN( tcStr, [0123456789], [] ), [] ) ) = tcStr
+    luRetVal = INT( VAL( tcStr ) )
+  OTHERWISE
+    luRetVal = tcStr
+ENDCASE
+
+RETURN luRetVal
+ENDPROC
+PROCEDURE updatememberdata
+LOCAL loNode, lcName, lnPos, loErr
+
+TRY
+  WITH Thisform
+
+    *** Get the node for the member (if it exists).
+    loNode = .oXML.selectSingleNode('//memberdata[@name = "' + LOWER( ALLTRIM( csrMembers.cName ) ) + '"]')
+
+    *** If it doesn't exist, we'll have to create it.
+    IF VARTYPE(loNode) <> 'O'
+      loNode = .createMemberDataNode()
+    ENDIF
+
+    lcName = ALLTRIM( csrMembers.cName )
+    lnPos  = AT('[', lcName)
+    IF lnPos > 0
+      lcName = LEFT(lcName, lnPos - 1)
+    ELSE
+      lnPos = AT('(', lcName)
+      IF lnPos > 0
+        lcName = LEFT(lcName, lnPos - 1)
+      ENDIF
+    ENDIF
+
+    loNode.setAttribute('display', lcName)
+
+    *** put the XML into _MemberData as long as it doesn't exceed the maximum length.
+
+  	IF LEN(ALLTRIM( .oXML.XML ) ) >= cnMAX_MEMBER_DATA_SIZE
+  		MESSAGEBOX(ccLOC_STRING_TOO_LONG, MB_OK + MB_ICONEXCLAMATION, ;
+  			.Caption)
+  	ELSE
+  		.oObject._MemberData = .oXML.XML
+  	ENDIF
+  ENDWITH
+CATCH TO loErr
+  MESSAGEBOX( loErr.Message + CHR( 13 ) + CHR( 10 ) + loErr.LineContents )
+ENDTRY
+
+ENDPROC
+PROCEDURE validatename
+Lparameters tcName
+
+Return Alltrim (tcName) && blank means failure
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+39[END RESERVED2]
+[START RESERVED3]
+oobject A reference to the object we're adding members for
+lmethod .T. if we're adding methods
+lclass .T. if we've been launched from the Class menu or .F. if it was from the Form menu
+laddcr .T. to add a carriage return after each element in the member data XML
+opositions A collection of object positions
+ladjustedforclass .T. if the form has been adjusted based on Form vs. Class Designer
+ladjustedformethod .T. if the form has been adjusted based on Property vs. Method
+cpem Name of the property or method that was selected in the property sheet
+lfirsttime Initalized as true and set to false the first time th eform is activated
+onewproperty Object Reference to the New Add Propertty/Method dialog
+coriginalname Used to save the original name of the property or method so that if we edit it, we can find the one whose name we are editing
+omemberdataengine Object reference to the member data engine
+oxml Object refrence to the XML parser object
+coriginalvisibility The original visiibility of the selected member
+csearchstring The string to search for using incremental search
+nkeytime The time between keypresses for incremental search
+cmemberssortorder
+npropertiesselection
+nnativeselection
+ninheritedselection
+version
+*updatememberdata Updates _MemberData (adding that property if necessary) for the new member
+*clearform Clears the controls so the form is ready for a new member
+*adjustform Adjusts the form based on the dialog and edited object types
+*editmember Called to save the new values for the property or method
+*removemember Called to delete the property or method
+*addassign Adds an assign method for the property
+*addaccess Adds an access method for the property
+*removeaccessassign Removes the access and/or assign methods for the property
+*isinfavorites Returns true if the property or method is currently in favorite
+*resetgrid Rebuilds the grid's recordSource after a new property or method has been added using the new add property/method dialog
+*add2favorites Ass the name implies
+*removefromfavorites Should be fairly obvious...
+*removememberdata When we remove the member
+*creatememberdatanode 
+*checkmemberdata Checks to see if we need to update member data
+*setproperties Set the form properties for the item currently selected in the grid
+*resortgrid 
+*sortgrid 
+*setfilter 
+*setfontsize 
+*addnew 
+*validatename Validates a PEM name (that is, that the name could be the name of a PEM)
+*justpem Returns simply the trimmed name of the PEM (removes dimensions of Arrays)
+*showeditcontextmenu 
+*str2val 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+[START RESERVED8]
+neweditpropertydialog.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _20I0V45W7
+[CLASS] baselabel
+[CLASSLOC] basecontrols.vcx
+[BASECLASS] label
+[OBJNAME] lblname
+[PARENT] neweditpropertydialog
+[START PROPERTIES]
+FontSize = 8
+Anchor = 8
+Caption = "\<Name:"
+Height = 15
+Left = 400
+Top = 60
+Width = 33
+TabIndex = 4
+Name = "lblname"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+* Set the caption to a localized string.
+
+This.Caption = ccLOC_CAP_NAME
+This.AddProperty( [nOldAnchor], This.Anchor )
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _18P17KAII
+[CLASS] basetextbox
+[CLASSLOC] basecontrols.vcx
+[BASECLASS] textbox
+[OBJNAME] txtName
+[PARENT] neweditpropertydialog
+[START PROPERTIES]
+FontSize = 8
+Anchor = 8
+ControlSource = "csrMembers.cName"
+Format = "T"
+Height = 23
+Left = 455
+TabIndex = 5
+Top = 56
+Width = 231
+Name = "txtName"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+This.AddProperty( [nOldAnchor], This.Anchor )
+ENDPROC
+PROCEDURE KeyPress
+* Disallow illegal characters.
+
+lparameters tnKeyCode, ;
+	tnShiftAltCtrl
+local lcChar
+if between(tnKeyCode, asc(' '), asc('z'))
+	lcChar = chr(tnKeyCode)
+	if not (isalpha(lcChar) or (isdigit(lcChar) and len(This.Value) >= 1) or ;
+		inlist(lcChar, '_', '[', ']', '(', ')', ','))
+		MessageBeep(MB_ICONSTOP)
+		wait window ccLOC_INVALID_CHAR nowait
+		nodefault
+	endif not (isalpha(lcChar) ...
+endif between(tnKeyCode, asc(' '), asc('z'))
+
+ENDPROC
+PROCEDURE Refresh
+This.Enabled = NOT csrMembers.lNative AND NOT csrMembers.lInherited
+ENDPROC
+PROCEDURE RightClick
+Thisform.ShowEditContextMenu()
+ENDPROC
+PROCEDURE Valid
+Local lcName, 	;
+	luReturn, 	;
+	lcFirst, 	;
+	lcSecond, 	;
+	lnRecNo,	;
+	lbFound
+
+If Vartype( Thisform.oObject ) = [O]
+	With Thisform
+
+		lcName = Thisform.ValidateName (This.Value )
+
+		luReturn = .T.
+		Do Case
+
+			Case Empty (lcName)
+				Messagebox("Name cannot be blank", ;
+					MB_OK + MB_ICONEXCLAMATION, .Caption)
+				luReturn = 0
+
+				* If the user is cancelling, do nothing.
+			Case Lastkey() = 27
+
+				* If the member already exists, display a warning.
+				***********************************************************************
+				*** Changed By.: Marcia G. Akins on 14 January 2007
+				*** Reason.....: Only is we are changing the name of this property or method to one that already exists
+				***********************************************************************
+			Case Pemstatus(.oObject, lcName, 5)
+
+				If Not ( Thisform.JustPEM( csrMembers.cName, .T. ) == Thisform.JustPEM( Thisform.cOriginalName, .T.))
+					Select csrMembers
+					lnRecNo = Recno( [csrMembers] )
+
+					Assert .f.
+					* careful to remove filter, as new name might match ANY record in grid
+					lcFilter = Filter()
+					Set Filter To
+					Locate For Recno( [csrMembers]  ) # lnRecNo	;
+						and Thisform.JustPEM( csrMembers.cName, .T. ) == Thisform.JustPEM(lcName, .T.)
+					lbFound = Found()
+					Set Filter To &lcFilter
+
+					If lbFound
+						Messagebox(Strtran(ccLOC_MEMBER_EXISTS, '<Insert1>', lcName), ;
+							MB_OK + MB_ICONEXCLAMATION, .Caption)
+						luReturn = 0
+					Endif
+					Go lnRecNo In  csrMembers
+
+
+				Endif
+		Endcase
+	Endwith
+Endif
+
+Return luReturn
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _18P175SL0
+[CLASS] baselabel
+[CLASSLOC] basecontrols.vcx
+[BASECLASS] label
+[OBJNAME] lblVisibility
+[PARENT] neweditpropertydialog
+[START PROPERTIES]
+FontSize = 8
+Anchor = 8
+Caption = "\<Visibility:"
+Height = 15
+Left = 400
+Top = 87
+Width = 43
+TabIndex = 6
+Name = "lblVisibility"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+* Set the caption to a localized string.
+
+This.Caption = ccLOC_CAP_VISIBILITY
+This.AddProperty( [nOldAnchor], This.Anchor )
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _18P17KAIJ
+[CLASS] basecombobox
+[CLASSLOC] basecontrols.vcx
+[BASECLASS] combobox
+[OBJNAME] cboVisibility
+[PARENT] neweditpropertydialog
+[START PROPERTIES]
+FontSize = 8
+Anchor = 8
+RowSourceType = 0
+ControlSource = "csrMembers.Visibility"
+Left = 455
+TabIndex = 7
+Top = 83
+Name = "cboVisibility"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+WITH This
+  .AddItem( [Public] )
+  .AddItem( [Protected] )
+  .AddItem( [Hidden] )
+ENDWITH
+This.AddProperty( [nOldAnchor], This.Anchor )
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _18P175SL0
+[CLASS] basecheckbox
+[CLASSLOC] basecontrols.vcx
+[BASECLASS] checkbox
+[OBJNAME] chkAccess
+[PARENT] neweditpropertydialog
+[START PROPERTIES]
+Top = 112
+Left = 485
+FontSize = 8
+Anchor = 8
+Alignment = 0
+Caption = "Acce\<ss Method"
+ControlSource = "csrMembers.lAccess"
+TabIndex = 9
+lupdatecontrolsourceonchange = .T.
+Name = "chkAccess"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+* Set the caption to a localized string.
+
+This.Caption = ccLOC_CAP_ACCESS
+This.AddProperty( [nOldAnchor], This.Anchor )
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _18P17KAIY
+[CLASS] basecheckbox
+[CLASSLOC] basecontrols.vcx
+[BASECLASS] checkbox
+[OBJNAME] chkAssign
+[PARENT] neweditpropertydialog
+[START PROPERTIES]
+Top = 112
+Left = 596
+FontSize = 8
+Anchor = 8
+Alignment = 0
+Caption = "Assign \<Method"
+ControlSource = "csrMembers.lAssign"
+TabIndex = 10
+lupdatecontrolsourceonchange = .T.
+Name = "chkAssign"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+* Set the caption to a localized string.
+
+This.Caption = ccLOC_CAP_ASSIGN
+This.AddProperty( [nOldAnchor], This.Anchor )
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _18P175SL0
+[CLASS] baselabel
+[CLASSLOC] basecontrols.vcx
+[BASECLASS] label
+[OBJNAME] lblDefault
+[PARENT] neweditpropertydialog
+[START PROPERTIES]
+FontSize = 8
+Anchor = 8
+Caption = "Defau\<lt/Initial Value"
+Left = 400
+Top = 134
+TabIndex = 11
+Name = "lblDefault"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+* Set the caption to a localized string.
+
+This.Caption = ccLOC_CAP_DEFAULT
+This.AddProperty( [nOldAnchor], This.Anchor )
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] RESERVED  
+[CLASS] baseeditbox
+[CLASSLOC] basecontrols.vcx
+[BASECLASS] editbox
+[OBJNAME] edtDefault
+[PARENT] neweditpropertydialog
+[START PROPERTIES]
+FontSize = 8
+Anchor = 73
+Height = 47
+Left = 400
+TabIndex = 12
+Top = 150
+Width = 289
+IntegralHeight = .F.
+Name = "edtDefault"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+This.AddProperty( [nOldAnchor], This.Anchor )
+ENDPROC
+PROCEDURE KeyPress
+* Don't allow a CR.
+
+lparameters tnKeyCode, ;
+	tnShiftAltCtrl
+if tnKeyCode = 13
+	MessageBeep(MB_ICONSTOP)
+	nodefault
+else
+	dodefault(tnKeyCode, tnShiftAltCtrl)
+endif tnKeyCode = 13
+
+ENDPROC
+PROCEDURE Refresh
+Local lcValue
+
+This.Value		= ''
+This.Enabled 	= .F.
+
+If csrMembers.cType == [P]
+
+	****************************************************************
+	* Modified 10/30/2008 by Jim Nelson
+	* Use Try/Catch in case the property is an object or control
+
+	Try
+		lcValue = Transform( Evaluate( [Thisform.oObject.] + Alltrim( csrMembers.cName ) ) )
+		*** This is disabled if we're adding an array property.
+
+		If "O" # Vartype(lcValue)
+			This.Value		= lcValue
+			This.Enabled 	= .T.
+		Else
+			This.Value		= ''
+			This.Enabled 	= .F.
+		Endif
+
+	Catch
+
+	Endtry
+
+Endif
+
+ENDPROC
+PROCEDURE RightClick
+Thisform.ShowEditContextMenu()
+ENDPROC
+PROCEDURE Valid
+*** DougHennig 11/03/2008: Adjusted LOCAL statement to variables used in this method
+***LOCAL lcMember, lcName
+Local luVal, lnVisibility, lcCode
+
+*** DougHennig 05/23/2007: Commented out this line (moved inside WITH)
+***lnVisibility  = .cboVisibility.ListIndex
+*** Update the property's value
+
+*** JimNelson 10/31/2008: due to filters, there may not be any current record
+If Recno() > Reccount()
+	Return
+Endif
+*** JimNelson 10/31/2008: end of new code
+
+*** JimNelson 10/31/2008: for some native properties, not all values entered are valid
+luVal = Thisform.Str2Val( ALLTRIM( This.Value ) )
+
+With Thisform
+	*** DougHennig 05/23/2007: Put assignment to lnVisibility inside WITH
+	lnVisibility  = .cboVisibility.ListIndex
+	If .lMethod
+		lcCode = .oObject.ReadMethod( Alltrim( .cOriginalName ) )
+		Thisform.oObject.WriteMethod( Alltrim( .cOriginalName ), lcCode, .F., lnVisibility, Alltrim( csrMembers.Descrip ) )
+	Else
+***		Thisform.oObject.AddProperty( ALLTRIM( .cOriginalName ), ALLTRIM( This.Value ), lnVisibility, ALLTRIM( csrMembers.descrip ) )
+*** JimNelson 10/31/2008: for some native properties, not all values entered are valid
+		Try && for some native properties, not all values entered are valid
+			Thisform.oObject.AddProperty( Alltrim( .cOriginalName ), luVal, lnVisibility, Alltrim( csrMembers.Descrip ) )
+		Catch
+		
+		EndTry
+*** JimNelson 10/31/2008: end of new code
+	Endif
+Endwith
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _18P17KAJE
+[CLASS] baselabel
+[CLASSLOC] basecontrols.vcx
+[BASECLASS] label
+[OBJNAME] lblDescription
+[PARENT] neweditpropertydialog
+[START PROPERTIES]
+FontSize = 8
+Anchor = 24
+Caption = "\<Description"
+Left = 400
+Top = 201
+TabIndex = 13
+Name = "lblDescription"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+* Set the caption to a localized string.
+
+This.Caption = ccLOC_CAP_DESCRIPTION
+This.AddProperty( [nOldAnchor], This.Anchor )
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _18P17KAJF
+[CLASS] baseeditbox
+[CLASSLOC] basecontrols.vcx
+[BASECLASS] editbox
+[OBJNAME] edtDescription
+[PARENT] neweditpropertydialog
+[START PROPERTIES]
+FontSize = 8
+Anchor = 28
+Height = 73
+Left = 400
+TabIndex = 14
+Top = 217
+Width = 289
+ControlSource = "csrMembers.descrip"
+IntegralHeight = .F.
+Name = "edtDescription"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+This.AddProperty( [nOldAnchor], This.Anchor )
+ENDPROC
+PROCEDURE KeyPress
+* Don't allow a CR.
+
+lparameters tnKeyCode, ;
+	tnShiftAltCtrl
+if tnKeyCode = 13
+	MessageBeep(MB_ICONSTOP)
+	nodefault
+else
+	dodefault(tnKeyCode, tnShiftAltCtrl)
+endif tnKeyCode = 13
+
+ENDPROC
+PROCEDURE Refresh
+This.Enabled = NOT csrMembers.lNative AND NOT csrMembers.lInherited
+ENDPROC
+PROCEDURE RightClick
+Thisform.ShowEditContextMenu()
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _18P17KAJG
+[CLASS] basecheckbox
+[CLASSLOC] basecontrols.vcx
+[BASECLASS] checkbox
+[OBJNAME] chkFavorites
+[PARENT] neweditpropertydialog
+[START PROPERTIES]
+Top = 112
+Left = 400
+FontSize = 8
+Anchor = 8
+Alignment = 0
+Caption = "\<Favorites"
+ControlSource = "csrMembers.lFavorites"
+TabIndex = 8
+lupdatecontrolsourceonchange = .T.
+Name = "chkFavorites"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+* Set the caption to a localized string.
+
+This.Caption = ccLOC_CAP_FAVORITES
+This.AddProperty( [nOldAnchor], This.Anchor )
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _20I0V45W7
+[CLASS] basecommandbutton
+[CLASSLOC] basecontrols.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdAddProperty
+[PARENT] neweditpropertydialog
+[START PROPERTIES]
+AutoSize = .F.
+Top = 351
+Left = 12
+Height = 23
+Width = 97
+FontSize = 8
+Anchor = 4
+Caption = "New Property"
+Default = .F.
+TabIndex = 18
+Name = "cmdAddProperty"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+ThisForm.AddNew(.F.)
+ENDPROC
+PROCEDURE Init
+This.AddProperty( [nOldAnchor], This.Anchor )
+This.Caption = ccLOC_CAP_NEW_PROPERTY
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _20I0V45W7
+[CLASS] basecommandbutton
+[CLASSLOC] basecontrols.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdApply
+[PARENT] neweditpropertydialog
+[START PROPERTIES]
+AutoSize = .F.
+Top = 5
+Left = 500
+Height = 23
+Width = 60
+FontSize = 8
+Anchor = 8
+Caption = "Apply"
+TabIndex = 21
+Name = "cmdApply"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+* Save the changes to the member
+Thisform.editMember()
+
+ENDPROC
+PROCEDURE Init
+This.AddProperty( [nOldAnchor], This.Anchor )
+This.Caption = ccLOC_CAP_APPLY
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _20I0V45W7
+[CLASS] baseoptiongroup
+[CLASSLOC] basecontrols.vcx
+[BASECLASS] optiongroup
+[OBJNAME] opgType
+[PARENT] neweditpropertydialog
+[START PROPERTIES]
+Anchor = 8
+Height = 25
+Left = 449
+Top = 31
+Width = 146
+TabIndex = 3
+Name = "opgType"
+baseoptionbutton1.FontSize = 8
+baseoptionbutton1.Caption = "\<Property"
+baseoptionbutton1.Left = 5
+baseoptionbutton1.Top = 5
+baseoptionbutton1.Name = "baseoptionbutton1"
+baseoptionbutton2.FontSize = 8
+baseoptionbutton2.Caption = "M\<ethod"
+baseoptionbutton2.Left = 78
+baseoptionbutton2.Top = 5
+baseoptionbutton2.Name = "baseoptionbutton2"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+This.AddProperty( [nOldAnchor], This.Anchor )
+ENDPROC
+PROCEDURE InteractiveChange
+LOCAL lnRecNo
+***********************************************************************
+*** Changed By.: Marcia G. Akins on 13 May 2007
+*** Reason.....: If we are here, it means that we mistakenly added a property
+*** ...........: when we meant to add a method or vice versa
+***********************************************************************
+*** Get the values to use for the member.
+*** and save the current position in the grid
+lnRecNo = RECNO( [csrMembers] )
+WITH Thisform
+  lcName        = ALLTRIM( LOWER( Left( .txtName.Value, 1 ) ) + SUBSTR( .txtName.Value, 2 ) )
+  lnVisibility  = .cboVisibility.ListIndex
+  lcDefault     = ALLTRIM( .edtDefault.Value )
+  lcDescription = ALLTRIM( .edtDescription.Value )
+
+  *** Now remove the thing we are changing
+  *** but do not delete the record from the grid
+  .removeMember(  lcName, .T. )
+  GO lnRecNo IN csrMembers
+  IF this.Value = 2
+    .oObject.WriteMethod( lcName, [], .T., lnVisibility, lcDescription)
+    REPLACE cType WITH [M] IN csrMembers
+  ELSE
+    .oObject.AddProperty(lcName, lcDefault, lnVisibility, lcDescription )
+    REPLACE cType WITH [P] IN csrMembers
+  ENDIF
+  .lMethod = This.Value = 2
+  .AdjustForm()
+ENDWITH
+ENDPROC
+PROCEDURE Refresh
+This.Value = Iif(csrMembers.cType =[M], 2, 1)
+Thisform.lMethod = ( This.Value = 2 )
+This.Enabled = Not csrMembers.lNative And Not csrMembers.lInherited
+
+****************************************************************
+* Modified 10/25/2008 by Jim Nelson
+* If disabled, only show the button matching the current value
+This.Buttons(1).Visible = This.Enabled Or This.Value = 1
+This.Buttons(2).Visible = This.Enabled Or This.Value = 2
+
+ENDPROC
+PROCEDURE baseoptionbutton1.Init
+* Set the caption to a localized string.
+
+This.Caption = ccLOC_CAP_PROPERTY
+ENDPROC
+PROCEDURE baseoptionbutton2.Init
+* Set the caption to a localized string.
+
+This.Caption = ccLOC_CAP_METHOD
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _20I0VMGW5
+[CLASS] baselabel
+[CLASSLOC] basecontrols.vcx
+[BASECLASS] label
+[OBJNAME] lblType
+[PARENT] neweditpropertydialog
+[START PROPERTIES]
+FontSize = 8
+Anchor = 8
+Caption = "Type:"
+Height = 15
+Left = 400
+Top = 36
+Width = 30
+TabIndex = 2
+Name = "lblType"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+* Set the caption to a localized string.
+
+This.Caption = ccLOC_CAP_MEMBER_TYPE
+This.AddProperty( [nOldAnchor], This.Anchor )
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1ZE0Q1WYM
+[CLASS] grid
+[BASECLASS] grid
+[OBJNAME] grdMembers
+[PARENT] neweditpropertydialog
+[START PROPERTIES]
+ColumnCount = 7
+FontName = "Tahoma"
+FontSize = 9
+Anchor = 15
+DeleteMark = .F.
+GridLines = 0
+Height = 338
+Left = 7
+Panel = 1
+RecordMark = .F.
+RecordSource = "csrMembers"
+RecordSourceType = 1
+RowHeight = 17
+SplitBar = .F.
+TabIndex = 1
+Top = 6
+Width = 378
+HighlightStyle = 2
+AllowCellSelection = .F.
+Name = "grdMembers"
+Column1.FontName = "Tahoma"
+Column1.FontSize = 9
+Column1.ControlSource = "csrMembers.cName"
+Column1.Width = 157
+Column1.Name = "Column1"
+Column2.FontName = "Tahoma"
+Column2.FontSize = 9
+Column2.Alignment = 2
+Column2.ColumnOrder = 3
+Column2.ControlSource = "IIF(csrMembers.cType = 'P', 'Property', 'Method')"
+Column2.Width = 70
+Column2.Name = "Column2"
+Column3.FontName = "Tahoma"
+Column3.FontSize = 9
+Column3.Alignment = 2
+Column3.ColumnOrder = 6
+Column3.ControlSource = "IIF(csrMembers.lAccess,'Yes', '')"
+Column3.Width = 50
+Column3.Name = "Column3"
+Column4.FontName = "Tahoma"
+Column4.FontSize = 9
+Column4.Alignment = 2
+Column4.ColumnOrder = 7
+Column4.ControlSource = "IIF(csrMembers.lAssign,'Yes', '')"
+Column4.Width = 45
+Column4.Name = "Column4"
+Column5.FontName = "Tahoma"
+Column5.FontSize = 9
+Column5.Alignment = 2
+Column5.ControlSource = "IIF(csrMembers.Visibility # 'Public', csrMembers.Visibility, '')"
+Column5.Width = 60
+Column5.Name = "Column5"
+Column6.FontName = "Tahoma"
+Column6.FontSize = 9
+Column6.Alignment = 2
+Column6.ColumnOrder = 2
+Column6.ControlSource = "Icase(csrMembers.lNative,'Native', csrMembers.lInherited,'Inherited', 'Custom')"
+Column6.Width = 60
+Column6.Name = "Column6"
+Column7.FontName = "Tahoma"
+Column7.FontSize = 9
+Column7.Alignment = 2
+Column7.ColumnOrder = 4
+Column7.ControlSource = "IIF(csrMembers.lFavorites,'Yes', '')"
+Column7.Width = 55
+Column7.Name = "Column7"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE AfterRowColChange
+LPARAMETERS nColIndex
+Thisform.SetProperties()
+ENDPROC
+PROCEDURE BeforeRowColChange
+LPARAMETERS nColIndex
+***********************************************************************
+*** Changed By.: Marcia G. Akins on 05 July 2008
+*** Reason.....: When all else fails, try a bigger hammer!
+***********************************************************************
+*** DougHennig 07/07/2008: commented this out because it prevents scrolling the grid and clicking another item; the wrong
+*** PEM is selected in that case.
+*Thisform.cmdSaveClose.SetFocus()
+*RAISEEVENT( Thisform.cmdSaveClose, 'Click' )
+
+ENDPROC
+PROCEDURE Init
+LOCAL lnBgColor, lnFgColor
+DECLARE INTEGER GetSysColor IN "user32" INTEGER nIndex
+lnBgColor = GetSysColor( 13 )
+lnFgColor = GetSysColor( 14 )
+
+*** Setup grid highlighing. We do not want a 50% gradient
+WITH This
+  .HighlightBackColor = lnBgColor
+  .HighlightForeColor = lnFgColor
+
+	.Columns(1).Header1.Caption = ccLOC_CAP_ColHdrName
+	.Columns(2).Header1.Caption = ccLOC_CAP_ColHdrType		
+	.Columns(3).Header1.Caption = ccLOC_CAP_ColHdrAccess		
+	.Columns(4).Header1.Caption = ccLOC_CAP_ColHdrAssign		
+	.Columns(5).Header1.Caption = ccLOC_CAP_ColHdrVisibility	
+	.Columns(6).Header1.Caption = ccLOC_CAP_ColHdrHierarchy	
+	.Columns(7).Header1.Caption = ccLOC_CAP_ColHdrFavorite	
+
+ENDWITH
+
+***********************************************************************
+*** Changed By.: Marcia G. Akins on 08 January 2007
+*** Reason.....: Add a property to save the anchor value
+***********************************************************************
+This.AddProperty( [nOldAnchor], This.Anchor )
+
+
+ENDPROC
+PROCEDURE KeyPress
+*** DougHennig 05/23/2007: added this code and cSearchString and nKeyTime properties to
+***		support incremental searching
+lparameters tnKeyCode, ;
+	tnShiftAltCtrl
+local lnRecno
+with Thisform
+	do case
+
+* If we have a character keystroke, do an incremental search.
+
+		case between(tnKeyCode, asc(' '), 127)
+
+* Save some other things and set them the way we want.
+
+			lnRecno = recno()
+
+* If the user pressed BackSpace, delete the last character from the search
+* string (if there is one).
+
+			do case
+				case tnKeyCode = 127 and len(.cSearchString) > 0
+					.cSearchString = left(.cSearchString, len(.cSearchString) ;
+						- 1)
+
+* If the user is entering characters within the "double click" time period,
+* add them to the search string.
+
+				case seconds() - .nKeyTime <= _dblclick
+					.cSearchString = .cSearchString + chr(tnKeyCode)
+
+* The search string is just the characters entered.
+
+				otherwise
+					.cSearchString = chr(tnKeyCode)
+			endcase
+			.nKeyTime = seconds()
+
+* Look for the search string: if we can't find it, try seeking on the
+* UPPER() function.
+
+			locate for upper(cName) = upper(.cSearchString)
+			if not found()
+				go lnRecno
+			endif not found()
+
+* Refresh the column.
+
+			This.Refresh()
+			nodefault
+
+* If the user pressed Home, move to the first record.
+
+		case tnKeyCode = 1
+			go top
+			This.Refresh()
+			nodefault
+
+* If the user pressed End, move to the last record.
+
+		case tnKeyCode = 6
+			go bottom
+			This.Refresh()
+			nodefault
+	endcase
+endwith
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1ZI0XA8VX
+[CLASS] header
+[BASECLASS] header
+[OBJNAME] Header1
+[PARENT] neweditpropertydialog.grdMembers.Column1
+[START PROPERTIES]
+FontName = "Tahoma"
+FontSize = 9
+Caption = "Name"
+Name = "Header1"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+thisform.SortGrid( [CName])
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1ZI0XA8VY
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] Text1
+[PARENT] neweditpropertydialog.grdMembers.Column1
+[START PROPERTIES]
+FontName = "Tahoma"
+FontSize = 9
+BorderStyle = 0
+ControlSource = "csrMembers.cName"
+Margin = 0
+ForeColor = 0,0,0
+BackColor = 255,255,255
+Name = "Text1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1ZI0XA8VZ
+[CLASS] header
+[BASECLASS] header
+[OBJNAME] Header1
+[PARENT] neweditpropertydialog.grdMembers.Column2
+[START PROPERTIES]
+FontName = "Tahoma"
+FontSize = 9
+Alignment = 2
+Caption = "Type"
+Name = "Header1"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+thisform.SortGrid( [IIF(CType = 'M', 'A', 'B')], [IIF(CType = 'P', 'A', 'B')])
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1ZI0XA8W0
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] Text1
+[PARENT] neweditpropertydialog.grdMembers.Column2
+[START PROPERTIES]
+FontName = "Tahoma"
+FontSize = 9
+Alignment = 2
+BorderStyle = 0
+Margin = 0
+ForeColor = 0,0,0
+BackColor = 255,255,255
+Name = "Text1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2HR1C1YQ1
+[CLASS] header
+[BASECLASS] header
+[OBJNAME] Header1
+[PARENT] neweditpropertydialog.grdMembers.Column3
+[START PROPERTIES]
+FontSize = 9
+Alignment = 2
+Caption = "Access"
+Name = "Header1"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+thisform.SortGrid( [IIF(lAccess, 'A', 'B')], [IIF(lAccess, 'B', 'A')])
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2HR1C1YQ2
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] Text1
+[PARENT] neweditpropertydialog.grdMembers.Column3
+[START PROPERTIES]
+FontName = "Tahoma"
+FontSize = 9
+Alignment = 2
+BorderStyle = 0
+Margin = 0
+ForeColor = 0,0,0
+BackColor = 255,255,255
+Name = "Text1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2HR1CK5PK
+[CLASS] header
+[BASECLASS] header
+[OBJNAME] Header1
+[PARENT] neweditpropertydialog.grdMembers.Column4
+[START PROPERTIES]
+FontSize = 9
+Alignment = 2
+Caption = "Assign"
+Name = "Header1"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+thisform.SortGrid( [IIF(lAssign, 'A', 'B')], [IIF(lAssign, 'B', 'A')])
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2HR1CK5PL
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] Text1
+[PARENT] neweditpropertydialog.grdMembers.Column4
+[START PROPERTIES]
+FontName = "Tahoma"
+FontSize = 9
+Alignment = 2
+BorderStyle = 0
+Margin = 0
+ForeColor = 0,0,0
+BackColor = 255,255,255
+Name = "Text1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2HR1COWCE
+[CLASS] header
+[BASECLASS] header
+[OBJNAME] Header1
+[PARENT] neweditpropertydialog.grdMembers.Column5
+[START PROPERTIES]
+FontSize = 9
+Alignment = 2
+Caption = "Visibility"
+Name = "Header1"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+thisform.SortGrid( [Visibility])
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2HR1COWCF
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] Text1
+[PARENT] neweditpropertydialog.grdMembers.Column5
+[START PROPERTIES]
+FontName = "Tahoma"
+FontSize = 9
+Alignment = 2
+BorderStyle = 0
+Margin = 0
+ForeColor = 0,0,0
+BackColor = 255,255,255
+Name = "Text1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2HR1CY7P1
+[CLASS] header
+[BASECLASS] header
+[OBJNAME] Header1
+[PARENT] neweditpropertydialog.grdMembers.Column6
+[START PROPERTIES]
+FontSize = 9
+Alignment = 2
+Caption = "Hierarchy"
+Name = "Header1"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+thisform.SortGrid( [Icase(csrMembers.lNative,'C', csrMembers.lInherited,'B', 'A')], [Icase(csrMembers.lNative,'A', csrMembers.lInherited,'B', 'C')])
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2HR1CY7P2
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] Text1
+[PARENT] neweditpropertydialog.grdMembers.Column6
+[START PROPERTIES]
+FontName = "Tahoma"
+FontSize = 9
+Alignment = 2
+BorderStyle = 0
+Margin = 0
+ForeColor = 0,0,0
+BackColor = 255,255,255
+Name = "Text1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2HR1CY7P5
+[CLASS] header
+[BASECLASS] header
+[OBJNAME] Header1
+[PARENT] neweditpropertydialog.grdMembers.Column7
+[START PROPERTIES]
+FontSize = 9
+Alignment = 2
+Caption = "Favorite"
+Name = "Header1"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+thisform.SortGrid( [IIF(lFavorites, 'A', 'B')], [IIF(lFavorites, 'B', 'A')])
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2HR1CY7P6
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] Text1
+[PARENT] neweditpropertydialog.grdMembers.Column7
+[START PROPERTIES]
+FontName = "Tahoma"
+FontSize = 9
+Alignment = 2
+BorderStyle = 0
+Margin = 0
+ForeColor = 0,0,0
+BackColor = 255,255,255
+Name = "Text1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1ZE0Q1WYN
+[CLASS] basecommandbutton
+[CLASSLOC] basecontrols.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdRemove
+[PARENT] neweditpropertydialog
+[START PROPERTIES]
+AutoSize = .F.
+Top = 5
+Left = 625
+Height = 23
+Width = 68
+FontSize = 8
+Anchor = 8
+Caption = "Remove"
+TabIndex = 23
+Name = "cmdRemove"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+Thisform.removeMember( ALLTRIM( csrMembers.cName ) )
+ENDPROC
+PROCEDURE Init
+This.AddProperty( [nOldAnchor], This.Anchor )
+This.Caption = ccLOC_CAP_REMOVE
+ENDPROC
+PROCEDURE Refresh
+This.Enabled = NOT csrMembers.lNative AND NOT csrMembers.lInherited
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2HS006XIP
+[CLASS] baselabel
+[CLASSLOC] basecontrols.vcx
+[BASECLASS] label
+[OBJNAME] lblFilters
+[PARENT] neweditpropertydialog
+[START PROPERTIES]
+Anchor = 12
+Caption = "Filters:"
+Left = 400
+Top = 302
+Width = 35
+TabIndex = 15
+Name = "lblFilters"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+This.AddProperty( [nOldAnchor], This.Anchor )
+This.Caption = ccLOC_CAP_FILTERS
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2I10BNVL8
+[CLASS] baselabel
+[CLASSLOC] basecontrols.vcx
+[BASECLASS] label
+[OBJNAME] lblVersion
+[PARENT] neweditpropertydialog
+[START PROPERTIES]
+AutoSize = .F.
+FontName = "Verdana"
+FontSize = 6
+Anchor = 14
+Alignment = 1
+Caption = "Version 1.00 - Oct. 28, 2008"
+Height = 12
+Left = 390
+Top = 368
+Width = 305
+TabIndex = 24
+Name = "lblVersion"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+Local lcSys16
+
+* extra directory path
+lcSys16 = Sys(16)
+lcSys16 = Substr (lcSys16, 1 + At (" ", lcSys16, 2))
+lcSys16 = JustPath (lcSys16)
+
+This.Caption = lcSys16 + "  " + Thisform.Version
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _20I0V45W7
+[CLASS] basecommandbutton
+[CLASSLOC] basecontrols.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdAddMethod
+[PARENT] neweditpropertydialog
+[START PROPERTIES]
+AutoSize = .F.
+Top = 351
+Left = 127
+Height = 23
+Width = 91
+FontSize = 8
+Anchor = 4
+Caption = "New Method"
+TabIndex = 19
+Name = "cmdAddMethod"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+ThisForm.AddNew(.T.)
+This.Caption = ccLOC_CAP_NEW_METHOD
+ENDPROC
+PROCEDURE Init
+This.AddProperty( [nOldAnchor], This.Anchor )
+This.Caption = ccLOC_CAP_NEW_METHOD	
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2I30AI3SP
+[CLASS] basecommandbutton
+[CLASSLOC] basecontrols.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdRevert
+[PARENT] neweditpropertydialog
+[START PROPERTIES]
+AutoSize = .F.
+Top = 5
+Left = 560
+Height = 23
+Width = 64
+FontSize = 8
+Anchor = 8
+Caption = "Revert"
+Enabled = .F.
+TabIndex = 22
+Name = "cmdRevert"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+* Save the changes to the member
+Thisform.editMember()
+
+ENDPROC
+PROCEDURE Init
+This.AddProperty( [nOldAnchor], This.Anchor )
+This.Caption = ccLOC_CAP_REVERT
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2I30AI3SR
+[CLASS] basecommandbutton
+[CLASSLOC] basecontrols.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdPreferences
+[PARENT] neweditpropertydialog
+[START PROPERTIES]
+AutoSize = .F.
+Top = 351
+Left = 246
+Height = 23
+Width = 98
+FontSize = 8
+Anchor = 4
+Caption = "Preferences"
+Enabled = .F.
+TabIndex = 20
+Name = "cmdPreferences"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+ThisForm.AddNew(.T.)
+ENDPROC
+PROCEDURE Init
+This.AddProperty( [nOldAnchor], This.Anchor )
+This.Caption = ccLOC_CAP_PREFERENCES
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2I40WUW3H
+[CLASS] baseoptiongroup
+[CLASSLOC] basecontrols.vcx
+[BASECLASS] optiongroup
+[OBJNAME] opgFilterType
+[PARENT] neweditpropertydialog
+[START PROPERTIES]
+ButtonCount = 3
+Anchor = 12
+BorderStyle = 1
+ControlSource = "Thisform.nPropertiesSelection"
+Height = 25
+Left = 450
+Top = 297
+Width = 210
+TabIndex = 16
+Name = "opgFilterType"
+baseoptionbutton1.Caption = "P\<roperties"
+baseoptionbutton1.Left = 5
+baseoptionbutton1.Top = 5
+baseoptionbutton1.Name = "baseoptionbutton1"
+baseoptionbutton2.Caption = "Met\<hods"
+baseoptionbutton2.Left = 80
+baseoptionbutton2.Top = 5
+baseoptionbutton2.Name = "baseoptionbutton2"
+Baseoptionbutton3.Caption = "\<Both"
+Baseoptionbutton3.Left = 150
+Baseoptionbutton3.Top = 5
+Baseoptionbutton3.Name = "Baseoptionbutton3"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+This.AddProperty( [nOldAnchor], This.Anchor )
+ENDPROC
+PROCEDURE Valid
+With Thisform
+	.oPersist.Set('Properties', .nPropertiesSelection )
+	.SetFilter()
+	.grdMembers.SetFocus()
+EndWith
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2I40WUW3K
+[CLASS] baseoptiongroup
+[CLASSLOC] basecontrols.vcx
+[BASECLASS] optiongroup
+[OBJNAME] opgFilterInherited
+[PARENT] neweditpropertydialog
+[START PROPERTIES]
+ButtonCount = 5
+Anchor = 12
+BorderStyle = 1
+ControlSource = "Thisform.nInheritedSelection"
+Height = 47
+Left = 450
+Top = 321
+Width = 210
+TabIndex = 17
+Name = "opgFilterInherited"
+baseoptionbutton1.Caption = "Na\<tive"
+baseoptionbutton1.Left = 5
+baseoptionbutton1.Top = 5
+baseoptionbutton1.Name = "baseoptionbutton1"
+baseoptionbutton2.Caption = "N\<on-native"
+baseoptionbutton2.Left = 80
+baseoptionbutton2.Top = 5
+baseoptionbutton2.Name = "baseoptionbutton2"
+Baseoptionbutton3.Caption = "\<Inherited"
+Baseoptionbutton3.Left = 5
+Baseoptionbutton3.Top = 25
+Baseoptionbutton3.Name = "Baseoptionbutton3"
+Baseoptionbutton4.Caption = "\<Custom"
+Baseoptionbutton4.Left = 80
+Baseoptionbutton4.Top = 25
+Baseoptionbutton4.Name = "Baseoptionbutton4"
+Baseoptionbutton5.Caption = "\<All"
+Baseoptionbutton5.Left = 160
+Baseoptionbutton5.Top = 25
+Baseoptionbutton5.Name = "Baseoptionbutton5"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+This.AddProperty( [nOldAnchor], This.Anchor )
+ENDPROC
+PROCEDURE Valid
+With Thisform
+	.oPersist.Set('Inherited', 	.nInheritedSelection )
+	.SetFilter()
+	.grdMembers.SetFocus()
+EndWith
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] neweditpropertydialog
+[START PROPERTIES]
+Tahoma, 0, 8, 5, 13, 11, 23, 2, 0
+Tahoma, 0, 9, 5, 14, 12, 25, 2, 0
+Arial, 0, 9, 5, 15, 12, 32, 3, 0
+[END PROPERTIES]
+[START RESERVED1]
+  neweditpropertydialog.hnüÚVb9 neweditpropertydialogenglish.hvý#|c96 ..\..\program files\microsoft visual foxpro 9\foxpro.h~þ‚‰1[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _20I0V45W7
+[CLASS] baseform
+[CLASSLOC] basecontrols.vcx
+[BASECLASS] form
+[OBJNAME] newzoom
+[START PROPERTIES]
+Height = 256
+Width = 477
+DoCreate = .T.
+Caption = "Zoom"
+MinHeight = 140
+MinWidth = 260
+cpem = 
+oobject = .NULL.
+cfoxuserid = NEWZOOM
+cfoxusername = NewZoom
+_memberdata =     1256<VFPData>
+	<memberdata name="cfoxuserid" type="property" display="cFoxUserID" favorites="True"/>
+	<memberdata name="cfoxusername" type="property" display="cFoxUserName" favorites="True"/>
+	<memberdata name="lpersistsizeposition" type="property" display="lPersistSizePosition" favorites="True"/>
+	<memberdata name="lsavesettings" type="property" display="lSaveSettings" favorites="True"/>
+	<memberdata name="opersist" type="property" display="oPersist"/>
+	<memberdata name="refreshform" type="method" display="RefreshForm"/>
+	<memberdata name="restoresettings" type="method" display="RestoreSettings" favorites="True"/>
+	<memberdata name="savesettings" type="method" display="SaveSettings" favorites="True"/>
+	<memberdata name="cpem" type="property" display="cPEM"/><memberdata name="lfirsttime" type="property" display="lFirstTime"/><memberdata name="updateproperty" type="method" display="updateProperty"/><memberdata name="oobject" type="property" display="oObject"/><memberdata name="opositions" type="property" display="oPositions"/><memberdata name="str2vall" type="method" display="str2Vall"/><memberdata name="str2val" type="method" display="str2Val"/><memberdata name="updateoneobject" type="method" display="updateOneObject"/></VFPData>
+
+lpersistsizeposition = .F.
+lsavesettings = .F.
+Name = "newzoom"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Activate
+LOCAL loerr, loObject, lcValue, laObject[ 1 ]
+
+IF ASELOBJ(laObject, 1) = 0
+  THIS.Release()
+  Return .F.
+ELSE
+  loObject = laObject[1]
+ENDIF && Aselobj(laObject, 1) = 0
+
+*** Get a reference to the currently selected object
+IF ASELOBJ(laObject) = 0
+  Thisform.oObject = FindTopMostParent( loObject, .F. )
+ELSE
+  Thisform.oObject = laObject[ 1 ]
+ENDIF
+lcValue = TRANSFORM( EVALUATE( [Thisform.oObject .] + Thisform.cPEM ) )
+Thisform.edtZoom.Value = lcValue
+ENDPROC
+PROCEDURE Init
+LPARAMETERS toObject, tcPEM
+LOCAL loPersist, loerr, loControl
+
+TRY
+  WITH Thisform
+    ***********************************************************************
+    *** Changed By.: Marcia G. Akins on 05 January 2007
+    *** Reason.....: Save the current PEM
+    ***********************************************************************
+    .cPEM = tcPEM
+    .oObject = toObject
+    .Caption = [ZOOM: ] + tcPEM
+  ENDWITH
+CATCH to loerr
+  MESSAGEBOX( loerr.message + CHR(13)+CHR(10) + loerr.linecontents )
+ENDTRY
+
+ENDPROC
+PROCEDURE str2val
+LPARAMETERS tcStr
+LOCAL luRetVal
+
+DO CASE
+  CASE INLIST( UPPER( ALLTRIM( tcStr ) ), [.T.], [.F.] )
+    IF tcStr = [.T.]
+      luRetVal = .T.
+    ELSE
+      luRetVal = .F.
+    ENDIF
+  CASE ( CHRTRAN( tcStr, CHRTRAN( tcStr, [0123456789], [] ), [] ) ) = tcStr
+    luRetVal = INT( VAL( tcStr ) )
+  OTHERWISE
+    luRetVal = tcStr
+ENDCASE
+
+RETURN luRetVal
+ENDPROC
+PROCEDURE updateoneobject
+LPARAMETERS toObject
+LOCAL laMembers[ 1 ], lnRow, lnVisibility, lcDescrip, luVal
+AMEMBERS(laMembers, toObject, 1, 'PHG#')
+lnRow = ASCAN( laMembers, Thisform.cPEM, 1, -1, 1, 15 )
+lnVisibility = ICASE( [G] $ laMembers[lnRow, 3], 1, [P] $ laMembers[lnRow, 3], 2, 3 )
+AMEMBERS( laMembers, toObject, 3 )
+lnRow = ASCAN( laMembers, Thisform.cPEM, 1, -1, 1, 15 )
+lcDescrip = ALLTRIM( laMembers[ lnRow, 4 ] )
+*** Try to convert the character string to the correct data type
+luVal = Thisform.Str2Val( ALLTRIM( Thisform.edtZoom.Value ) )
+toObject.AddProperty( Thisform.cPEM, luVal, lnVisibility, lcDescrip  )
+
+ENDPROC
+PROCEDURE updateproperty
+LOCAL lnVisibility, lnRow, lcDescrip, lnSelected, laSelected[ 1 ], lnI,  laMembers[ 1 ], luVal
+
+***********************************************************************
+*** Changed By.: Marcia G. Akins on 13 May 2007
+*** Reason.....: Update this property for all the objects selected
+***********************************************************************
+WITH Thisform
+  lnSelected = ASELOBJ( laSelected )
+  IF lnSelected > 0
+    FOR lnI = 1 TO lnSelected
+      .updateOneObject( laSelected[ lnI ] )
+    ENDFOR
+  ELSE
+      .updateOneObject( .oObject )
+  ENDIF
+ENDWITH
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+4[END RESERVED2]
+[START RESERVED3]
+cpem a Property to save the PEM passed to the form in its init
+oobject Object reference to the thing open in the designer
+*updateproperty 
+*str2val Attempt to convert the character string in the zoom window to the appropriate data type
+*updateoneobject Called from updateProperty to update the property for all selected objects
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _20I0VMGW5
+[CLASS] baseeditbox
+[CLASSLOC] basecontrols.vcx
+[BASECLASS] editbox
+[OBJNAME] edtZoom
+[PARENT] newzoom
+[START PROPERTIES]
+Anchor = 15
+Height = 177
+Left = 13
+Top = 15
+Width = 444
+Name = "edtZoom"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _20I0VMGW6
+[CLASS] basecommandbutton
+[CLASSLOC] basecontrols.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdOK
+[PARENT] newzoom
+[START PROPERTIES]
+Top = 212
+Left = 159
+Anchor = 132
+Caption = "\<OK"
+Default = .T.
+Name = "cmdOK"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+Thisform.updateProperty()
+Thisform.Release()
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _20I0VMGW7
+[CLASS] basecommandbutton
+[CLASSLOC] basecontrols.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdCancel
+[PARENT] newzoom
+[START PROPERTIES]
+Top = 212
+Left = 242
+Anchor = 36
+Caption = "\<Cancel"
+Name = "cmdCancel"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+Thisform.Release()
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] newzoom
+[START PROPERTIES]
+Tahoma, 0, 8, 5, 13, 11, 23, 2, 0
+[END PROPERTIES]
+[EOF]
