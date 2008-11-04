@@ -24,4 +24,15 @@ AutoIncrement=.F.
 [OLEServers]
 [OLEServersEnd]
 [ProjectFiles]
+ 817143158,V,basecontrols.vcx,.F.,.F.,1252,,,
+ 817186998,P,foxresource.prg,.F.,.F.,1252,,,
+ 819887663,P,findtopmostparent.prg,.F.,.F.,1252,,,
+ 908156955,V,neweditproperty.vcx,.F.,.F.,1252,,,
+ 908156966,T,neweditpropertydialog.h,.F.,.F.,1252,,,
+ 908156967,T,neweditpropertydialogenglish.h,.F.,.F.,1252,,,
+ 908420791,P,memberdataengine.prg,.F.,.F.,1252,,,
+ 908420823,T,memberdataeditor.h,.F.,.F.,1252,,,
+ 908420841,T,memberdataeditorenglish.h,.F.,.F.,1252,,,
+ 909082248,P,neweditprop.prg,.F.,.T.,1252,,,
+ 917337520,P,reset2default.prg,.F.,.F.,1252,,,
 [EOF]
