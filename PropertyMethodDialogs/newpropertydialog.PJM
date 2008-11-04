@@ -24,4 +24,8 @@ AutoIncrement=.F.
 [OLEServers]
 [OLEServersEnd]
 [ProjectFiles]
+ 817144071,V,newproperty.vcx,.F.,.F.,1252,,,
+ 817147923,P,newpropertydialogstart.prg,.F.,.T.,1252,,,
+ 817385849,T,newpropertydialog.h,.F.,.F.,1252,,,
+ 817385858,T,newpropertydialogenglish.h,.F.,.F.,1252,,,
 [EOF]
