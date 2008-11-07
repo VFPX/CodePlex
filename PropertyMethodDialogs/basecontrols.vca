@@ -369,6 +369,20 @@ PROCEDURE anychange
 * Abstract method.
 
 ENDPROC
+PROCEDURE enabled_access
+*To do: Modify this routine for the Access method
+RETURN THIS.Enabled
+ENDPROC
+PROCEDURE enabled_assign
+LPARAMETERS vNewVal
+*To do: Modify this routine for the Assign method
+THIS.Enabled = m.vNewVal
+
+Local loButton
+For each loButton in this.Buttons
+	loButton.Enabled = m.vNewVal
+EndFor
+ENDPROC
 PROCEDURE updatecontrolsource
 local lnPos, ;
 	lcAlias, ;
@@ -397,6 +411,8 @@ _memberdata XML Metadata for customizable properties
 lupdatecontrolsourceonchange .T. if UpdateControlSource should be called from InteractiveChange
 *anychange Called from both InteractiveChange and ProgrammaticChange to consolidate handling any changes
 *updatecontrolsource Updates the ControlSource with the new value
+*enabled_access 
+*enabled_assign 
 [END RESERVED3]
 [START RESERVED6]
 Pixels[END RESERVED6]
@@ -406,7 +422,7 @@ Pixels[END RESERVED6]
 [UNIQUEID] RESERVED  
 [OBJNAME] baseoptiongroup
 [START PROPERTIES]
-Tahoma, 0, 8, 5, 13, 11, 23, 2, 0
+Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
 [END PROPERTIES]
 
 [ RECORD]
@@ -1263,4 +1279,162 @@ Pixels[END RESERVED6]
 [PLATFORM] COMMENT 
 [UNIQUEID] RESERVED  
 [OBJNAME] baseshape
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2I50R1EAC
+[CLASS] basecombobox
+[CLASSLOC] basecontrols.vcx
+[BASECLASS] combobox
+[OBJNAME] hightlightercombobox
+[START PROPERTIES]
+FontSize = 9
+ControlSource = "Thisform.oCallingForm.aGridHighlighting ( This.nRow, 1)"
+nrow = 0
+_memberdata =      493<VFPData>
+	<memberdata name="aitems" type="property" display="aItems"/>
+	<memberdata name="anychange" type="method" display="AnyChange" favorites="True"/>
+	<memberdata name="updatecontrolsource" type="method" display="UpdateControlSource"/>
+	<memberdata name="lupdatecontrolsourceonchange" type="property" display="lUpdateControlSourceOnChange"/>
+	<memberdata name="nrow" type="property" display="nRow"/><memberdata name="sethighlights" type="method" display="SetHighlights"/></VFPData>
+
+Name = "hightlighercombobox"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+WITH This
+  .AddItem( [None] )
+  .AddItem( [ForeColor] )
+  .AddItem( [BackColor] )
+  .AddItem( [Bold] )
+  .AddItem( [Italic] )
+ENDWITH
+
+ENDPROC
+PROCEDURE Refresh
+This.SetHighlights()
+
+ENDPROC
+PROCEDURE Valid
+thisform.SaveHighLightSettings()
+
+With Thisform.oCallingForm
+	.SetGridHighlighting()
+	.grdMembers.Refresh()
+Endwith
+
+This.SetHighlights()
+This.Parent.cntColors.Refresh()
+ENDPROC
+PROCEDURE sethighlights
+Local lcValue
+
+With This
+	.ForeColor = Rgb(0,0,0)
+	.BackColor = Rgb(255,255,255)
+	.FontBold = .F.
+	.FontItalic = .F.
+	
+	lcValue = Thisform.oCallingForm.aGridHighlighting ( This.nRow, 1)
+
+	Do Case
+		Case lcValue = 'ForeColor'
+			This.ForeColor = Val (Thisform.oCallingForm.aGridHighlighting ( This.nRow, 2))
+		Case lcValue = 'BackColor'
+			This.BackColor = Val (Thisform.oCallingForm.aGridHighlighting ( This.nRow, 2))
+		Case lcValue = 'Bold'
+			This.FontBold = .T.
+		Case lcValue = 'BackColor'
+			This.ForeItalic = .T.
+	EndCase
+		
+Endwith
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+nrow
+*sethighlights 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] hightlighercombobox
+[START PROPERTIES]
+Tahoma, 0, 9, 5, 14, 12, 23, 2, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2I512QQQH
+[CLASS] basecommandbutton
+[CLASSLOC] basecontrols.vcx
+[BASECLASS] commandbutton
+[OBJNAME] highlightercommandbutton
+[START PROPERTIES]
+Height = 23
+Width = 32
+Picture = color2_16x16.bmp
+Caption = ""
+nrow = 0
+_memberdata =       77<VFPData><memberdata name="nrow" type="property" display="nRow"/></VFPData>
+
+Name = "highlightercommandbutton"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+Local lnColor, lnNewColor
+
+lnColor = Val (Thisform.oCallingForm.aGridHighlighting ( This.nRow, 2))
+lnNewColor = GetColor (lnColor)
+
+If lnColor < 0
+	Return
+EndIf
+
+Thisform.oCallingForm.aGridHighlighting ( This.nRow, 2) = Transform (lnNewColor)
+
+****************************************************************
+
+thisform.SaveHighLightSettings()
+
+With Thisform.oCallingForm
+	.SetGridHighlighting()
+	.grdMembers.Refresh()
+EndWith
+
+Thisform.Refresh()
+
+
+
+ENDPROC
+PROCEDURE Refresh
+This.Visible = InList ( Thisform.oCallingForm.aGridHighlighting ( This.nRow, 1), "ForeColor", "BackColor")
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+nrow
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] highlightercommandbutton
+[START PROPERTIES]
+Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+[END PROPERTIES]
 [EOF]
