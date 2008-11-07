@@ -4,8 +4,6 @@
 * classes in the Class Designer. So, we need to be careful about finding the
 * top-most parent object.
 
-*!* calloatti testing check out
-
 lparameters toObject, ;
 	tlClass
 local llClass, ;
