@@ -44,6 +44,10 @@
 #define ccLOC_CAP_ColHdrHierarchy		'Hierarchy'
 #define ccLOC_CAP_ColHdrFavorite		'Favorite'
 
+#define ccLOC_CAP_PREFERENCES			'Preferences'
+#define ccLOC_CAP_REMOVALPROMPT			'Prompt before removing PEMs?'
+#define ccLOC_CAP_FONTSIZE				'Font Size:'
+#define ccLOC_CAP_GRIDHIGHLIGHTING		'Grid Highlighting:'
 
 * Messages
 
