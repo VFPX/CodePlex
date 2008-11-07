@@ -25,3 +25,8 @@
 	* tab
 
 #define clLOWER_CASE_FIRST_LETTER		.F.
+
+#define cnDEFAULT_COLORS				[None, 16711680, None, 255, Bold, 0, None, 0, None, 0]
+
+#define cnSAMPLE_COLORS					[ForeColor, 16711680, ForeColor, 255, Bold, 0, ForeColor, 0, BackColor, 14737632]
+
