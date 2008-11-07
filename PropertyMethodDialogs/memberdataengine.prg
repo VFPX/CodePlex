@@ -251,6 +251,7 @@ Define Class MemberDataEngine As Custom
 					Visibility 	C( 10 )		, ;
 					lNative 	L			, ;
 					lInherited 	L			, ;
+					lNonDefaul  L			, ;
 					lFavorites 	L			, ;
 					lChanged	L			, ;
 					lRemoved	L			, ;
@@ -447,6 +448,10 @@ Define Class MemberDataEngine As Custom
 						***              llAccess = PEMSTATUS( This.oObject, [cName] + [_Access], 5 )
 						llAssign = Pemstatus( This.oObject, lcName + [_Assign], 5 )
 						llAccess = Pemstatus( This.oObject, lcName + [_Access], 5 )
+						*** JRN - 11/03/2008 -- attempt to capture which PEMs are non-default
+						*** it appears, however, that this merely records which are changed from their baseclass
+						llNonDefault = Sys(1269, This.oObject, lcName, 0)
+						
 						llFavorites = Not Empty( loPEMMemberData.Favorites ) Or Not Empty( loGlobalMemberData.Favorites )
 						lcTypeAbbrev = Upper( Left( This.aObjectMembers[lnI, 2], 1 ) )
 						lcVisibility = Icase( [G] $This.aObjectMembers[lnI, 3], [Public], [P] $This.aObjectMembers[lnI, 3], [Protected], [Hidden] )
@@ -459,8 +464,8 @@ Define Class MemberDataEngine As Custom
 						If Not llOK2Add
 							Loop
 						Endif
-						Insert Into csrMembers ( cName, lNative, lInherited, cType, lAccess, lAssign, lFavorites, Visibility, Descrip ) ;
-							VALUES ( Iif( Not Empty( lcDisplay ), lcDisplay, lcName ), llNative, llInherited2, lcTypeAbbrev, llAccess, llAssign, llFavorites, lcVisibility, lcDescription  )
+						Insert Into csrMembers ( cName, lNative, lInherited, cType, lAccess, lAssign, lFavorites, Visibility, lNonDefaul, Descrip ) ;
+							VALUES ( Iif( Not Empty( lcDisplay ), lcDisplay, lcName ), llNative, llInherited2, lcTypeAbbrev, llAccess, llAssign, llFavorites, lcVisibility, llNonDefault, lcDescription  )
 						***********************************************************************
 						* Add the PEM object to the collection. Due to a bug in AMEMBERS() that
 						* sometimes includes the same PEM more than once in the array, we'll trap for
