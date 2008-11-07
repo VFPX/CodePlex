@@ -22,6 +22,7 @@ DoCreate = .T.
 Caption = "Edit Property/Method"
 MinHeight = 376
 MinWidth = 700
+Enabled = .T.
 KeyPreview = .T.
 BindControls = .F.
 oobject = .NULL.
@@ -39,8 +40,9 @@ nkeytime = 0
 cmemberssortorder = +CName
 npropertiesselection = 3
 ninheritedselection = 5
-version = Version 1.03b - Nov. 2, 2008
-_memberdata =     3951<VFPData>
+version = Version 1.07 - Nov. 7, 2008
+omember = .NULL.
+_memberdata =     4547<VFPData>
 	<memberdata name="addmembertoobject" type="method" display="AddMemberToObject"/>
 	<memberdata name="clearform" type="method" display="ClearForm"/>
 	<memberdata name="laddcr" type="property" display="lAddCR"/>
@@ -76,7 +78,7 @@ _memberdata = 
 	<memberdata name="coriginalvisibility" type="property" display="cOriginalVisibility"/>
 	<memberdata name="csearchstring" type="property" display="cSearchString"/>
 	<memberdata name="nkeytime" type="property" display="nKeyTime"/>
-	<memberdata name="setproperties" type="method" display="setProperties"/><memberdata name="resortgrid" type="method" display="ReSortGrid"/><memberdata name="memberssortorder" type="property" display="MembersSortOrder"/><memberdata name="sortgrid" type="method" display="SortGrid"/><memberdata name="propertiesselection" type="property" display="PropertiesSelection"/><memberdata name="nativeselection" type="property" display="NativeSelection"/><memberdata name="inheritedselection" type="property" display="InheritedSelection"/><memberdata name="setfilter" type="method" display="SetFilter"/><memberdata name="setfontsize" type="method" display="SetFontSize"/><memberdata name="version" type="property" display="Version"/><memberdata name="addnew" type="method" display="AddNew"/><memberdata name="validatename" type="method" display="ValidateName"/><memberdata name="justpem" type="method" display="JustPEM"/><memberdata name="ninheritedselection" type="property" display="nInheritedSelection"/><memberdata name="npropertiesselection" type="property" display="nPropertiesSelection"/><memberdata name="cmemberssortorder" type="property" display="cMembersSortOrder"/><memberdata name="showeditcontextmenu" type="method" display="ShowEditContextMenu"/><memberdata name="str2val" type="method" display="Str2Val"/></VFPData>
+	<memberdata name="setproperties" type="method" display="setProperties"/><memberdata name="resortgrid" type="method" display="ReSortGrid"/><memberdata name="memberssortorder" type="property" display="MembersSortOrder"/><memberdata name="sortgrid" type="method" display="SortGrid"/><memberdata name="propertiesselection" type="property" display="PropertiesSelection"/><memberdata name="nativeselection" type="property" display="NativeSelection"/><memberdata name="inheritedselection" type="property" display="InheritedSelection"/><memberdata name="setfilter" type="method" display="SetFilter"/><memberdata name="setfontsize" type="method" display="SetFontSize"/><memberdata name="version" type="property" display="Version"/><memberdata name="addnew" type="method" display="AddNew"/><memberdata name="validatename" type="method" display="ValidateName"/><memberdata name="justpem" type="method" display="JustPEM"/><memberdata name="ninheritedselection" type="property" display="nInheritedSelection"/><memberdata name="npropertiesselection" type="property" display="nPropertiesSelection"/><memberdata name="cmemberssortorder" type="property" display="cMembersSortOrder"/><memberdata name="showeditcontextmenu" type="method" display="ShowEditContextMenu"/><memberdata name="str2val" type="method" display="Str2Val"/><memberdata name="omember" type="property" display="oMember"/><memberdata name="applychanges" type="method" display="ApplyChanges"/><memberdata name="revertchanges" type="method" display="RevertChanges"/><memberdata name="scattercursor" type="method" display="ScatterCursor"/><memberdata name="memberchanged" type="method" display="MemberChanged"/><memberdata name="ngridhighlighting" type="property" display="nGridHighlighting"/><memberdata name="setgridhighlighting" type="method" display="SetGridHighlighting"/><memberdata name="agridhighlighting" type="property" display="aGridHighlighting"/></VFPData>
 
 cfoxuserid = NEWEDITPROPDLG
 cfoxusername = NewEditPropertyDialog
@@ -100,15 +102,16 @@ Try
 			* Get a reference to the selected object. If there isn't one, bug out.
 
 			*** JimNelson 10/31/2008: fixed the caption
-***		    lcCaption = IIF(.lMethod, [Edit Method], [Edit Property])
+			***		    lcCaption = IIF(.lMethod, [Edit Method], [Edit Property])
 			lcCaption = ccLOC_CAP_TITLE && [Edit Properties/Methods]
 
 			Aselobj(laObject, 3)
 			.lClass = Lower( Justext( laObject[ 2 ] ) ) == 'vcx'
 
+			*** JRN - 11/03/2008 AdjustForm called later from within .SetProperties
 			* Determine whether we're being used from the Class or Form Designer. Adjust
 			* the form appropriately.
-			.AdjustForm()
+			*   .AdjustForm()
 
 			* Make sure it's the form or class itself that we're working with, regardless
 			* of what's selected.
@@ -124,20 +127,26 @@ Try
 				.SetupEngine()
 				.CreateMemberDataCollection()
 			Endwith
+
 			With Thisform
+				*** JRN 11/04/2008 : sets Dynamic highlighting on grid
+				Thisform.SetGridHighlighting ()
+				
 				Select csrMembers
 				****************************************************************
 				* Modified 10/25/2008 by Jim Nelson
 				* Index for sort in .cMembersSortOrder; Set filter based on selection criteria
-***			     INDEX ON cName TAG cName
-***			     LOCATE FOR LOWER( ALLTRIM( cName ) ) == LOWER( ALLTRIM( .cPEM ) )
-***			     if not found()
-***			     	locate
-***			     endif not found()
+				***			     INDEX ON cName TAG cName
+				***			     LOCATE FOR LOWER( ALLTRIM( cName ) ) == LOWER( ALLTRIM( .cPEM ) )
+				***			     if not found()
+				***			     	locate
+				***			     endif not found()
 
 				.SetFilter()
-
-				If Not Empty(.cPEM)
+				*** JRN 11/03/2008 -- Locate needed for empty
+				If Empty(.cPEM)
+					Locate
+				Else
 					Locate For Thisform.JustPem(cName, .T.) == Thisform.JustPem( .cPEM, .T. )
 					If Not Found()
 						* if not found, assume filters are wrong; reset them to 'All'
@@ -153,14 +162,22 @@ Try
 				*** JimNelson 10/25/2008: end of new code
 
 				.grdMembers.SetFocus()
+
+				*** JN - 11/03/2008
+				* fill in Thisform.oMember from cursor csrMembers
+				.ScatterCursor()
+
 				***********************************************************************
 				*** Changed By.: Marcia G. Akins on 14 January 2007
 				*** Reason.....: Make sure that if we are changing the name that we can find this
 				*** ...........: property or method to remove it befor e re-adding it
 				***********************************************************************
-				.cOriginalName  = Alltrim( csrMembers.cName )
+				*** JRN 11/03/2008 - commented out, done by .SetProperties
+				* .cOriginalName  = Alltrim( csrMembers.cName )
 				*** DougHennig 05/23/2007: Update cOriginalVisibility (added this property too)
-				.cOriginalVisibility = csrMembers.Visibility
+				* .cOriginalVisibility = csrMembers.Visibility
+				.SetProperties()
+
 			Endwith
 			Thisform.BindControls = .T.
 
@@ -181,8 +198,14 @@ Endtry
 
 ENDPROC
 PROCEDURE Destroy
-  This.oNewProperty = .NULL.
-  DODEFAULT()
+If "O" = Vartype (_NewEditPropertyPreferences)
+	_NewEditPropertyPreferences.Release
+	_NewEditPropertyPreferences = .Null.
+Endif
+
+This.oNewProperty = .Null.
+DoDefault()
+
 ENDPROC
 PROCEDURE Init
 Lparameters tlMethod, tcPEM
@@ -211,7 +234,7 @@ Try
 		.nInheritedSelection 	= Nvl(.oPersist.Get('Inherited'), .nInheritedSelection )
 
 		* Set FontSize for grid and textbox, and editboxes
-		.SetFontSize (Nvl(.oPersist.Get('FontSize'), 8 ))
+		.SetFont (Nvl(.oPersist.Get('FontName'), 'Tahoma' ), Nvl(.oPersist.Get('FontSize'), 8 ))
 
 		lcColumnWidths	= Nvl (.oPersist.Get('ColumnWidths'), [])
 		Alines (laColumnWidths, lcColumnWidths, 5, " ")
@@ -230,8 +253,8 @@ Try
 			If lnI <= Alen (laColumnOrder) And "C" = Vartype (laColumnOrder(lnI)) And "N" = Vartype (Val (laColumnOrder(lnI)))
 				loColumn.ColumnOrder = Val (laColumnOrder(lnI))
 			Endif
-		Endfor
-
+		EndFor
+		
 		* Save the tlMethod parameters.
 		.lMethod 	= tlMethod
 		.cPEM		= tcPEM
@@ -309,6 +332,10 @@ ENDPROC
 PROCEDURE addaccess
 LPARAMETERS tcProperty, tcCode
 LOCAL lcCode, lnRecNo, lcAccess
+
+*** JRN 11/03/2008 - correction to PEM name for arrays
+tcProperty = ThisForm.JustPEM (tcProperty)
+
 IF NOT EMPTY( tcCode )
   lcCode = tcCode
 ELSE
@@ -331,6 +358,10 @@ ENDPROC
 PROCEDURE addassign
 LPARAMETERS tcProperty, tcCode
 LOCAL lcCode, lnRecNo, lcName
+
+*** JRN 11/03/2008 - correction to PEM name for arrays
+tcProperty = ThisForm.JustPEM (tcProperty)
+
 IF NOT EMPTY( tcCode )
   lcCode = tcCode
 ELSE
@@ -382,6 +413,11 @@ ENDWITH
 
 ENDPROC
 PROCEDURE adjustform
+*** JRN - 11/03/2008 -- entirely obsolete
+
+Return
+
+
 Local lnAnchor, loObj, 	lnAdjust, loerr
 
 ****************************************************************
@@ -459,6 +495,99 @@ Try
 Catch To loerr
 	Messagebox( loerr.Message + Chr(13)+Chr(10) + loerr.LineContents )
 Endtry
+
+ENDPROC
+PROCEDURE applychanges
+*** JRN - 11/03/2008 -- Save the changes to the member from the object thisform.oMember
+
+*** JimNelson 10/31/2008: due to filters, there may not be any current record
+If Recno() > Reccount()
+	Return
+Endif
+
+****************************************************************
+* Change type to Property or Method
+* Previously was opgType.InteractiveChange
+* Delayed until now so it only occurs when change are actually applied
+
+If Thisform.oMember.cType # csrMembers.cType
+
+	Local lnRecNo
+	***********************************************************************
+	*** Changed By.: Marcia G. Akins on 13 May 2007
+	*** Reason.....: If we are here, it means that we mistakenly added a property
+	*** ...........: when we meant to add a method or vice versa
+	***********************************************************************
+	*** Get the values to use for the member.
+	*** and save the current position in the grid
+
+	lnRecNo = Recno( [csrMembers] )
+	With Thisform
+		lcName        = Thisform.JustPEM(Thisform.oMember.cName, .T.)
+		lnVisibility  = .cboVisibility.ListIndex
+		lcDefault     = Alltrim( .edtDefault.Value )
+		lcDescription = Alltrim( .edtDescription.Value )
+
+		*** Now remove the thing we are changing
+		*** but do not delete the record from the grid
+		.removeMember(  lcName, .T. )
+		Go lnRecNo In csrMembers
+		If Thisform.oMember.cType = 'M'
+			.oObject.WriteMethod( lcName, [], .T., lnVisibility, lcDescription)
+			Replace cType With [M] In csrMembers
+			.lMethod = .T.
+		Else
+			.oObject.AddProperty(lcName, lcDefault, lnVisibility, lcDescription )
+			Replace cType With [P] In csrMembers
+			.lMethod = .F.
+		Endif
+		.AdjustForm()
+	Endwith
+
+Endif
+
+****************************************************************
+*  Change to default value?
+*  Previously was in .edtDefault.Valid
+
+If Thisform.oMember.cType = 'P' and Thisform.oMember.DefaultChanged
+
+	*** DougHennig 11/03/2008: Adjusted LOCAL statement to variables used in this method
+	***LOCAL lcMember, lcName
+	Local luVal, lnVisibility, lcCode
+
+	*** DougHennig 05/23/2007: Commented out this line (moved inside WITH)
+	***lnVisibility  = .cboVisibility.ListIndex
+	*** Update the property's value
+
+	*** JimNelson 10/31/2008: for some native properties, not all values entered are valid
+	luVal = Thisform.Str2Val( Alltrim( This.edtDefault.Value ) )
+
+	With Thisform
+		*** DougHennig 05/23/2007: Put assignment to lnVisibility inside WITH
+		lnVisibility  = .cboVisibility.ListIndex
+		If .lMethod
+			lcCode = .oObject.ReadMethod( Alltrim( .cOriginalName ) )
+			Thisform.oObject.WriteMethod( Alltrim( .cOriginalName ), lcCode, .F., lnVisibility, Alltrim( .edtDescription.Value ) )
+		Else
+			***		Thisform.oObject.AddProperty( ALLTRIM( .cOriginalName ), ALLTRIM( This.Value ), lnVisibility, ALLTRIM( csrMembers.descrip ) )
+			*** JimNelson 10/31/2008: for some native properties, not all values entered are valid
+			Try && for some native properties, not all values entered are valid
+				Thisform.oObject.AddProperty( Alltrim( .cOriginalName ), luVal, lnVisibility, Alltrim( .edtDescription.Value ) )
+			Catch
+
+			Endtry
+			*** JimNelson 10/31/2008: end of new code
+		Endif
+	Endwith
+
+Endif
+
+****************************************************************
+
+Gather Name Thisform.oMember Memo
+
+Thisform.editMember() && this does actual updating
 
 ENDPROC
 PROCEDURE checkmemberdata
@@ -745,6 +874,35 @@ Return Iif (tblowercase, Lower (lcPem), lcPem)
 
 
 ENDPROC
+PROCEDURE memberchanged
+*** JN 11/04/2008 - Record that there has been some change to the current member
+* and enable / disable appropriate controls
+Lparameters tbChanged
+
+Local lbChanged
+
+With Thisform
+
+	If Pcount() = 0
+		lbChanged = .T.
+	Else
+		lbChanged = tbChanged
+	EndIf
+	
+	.oMember.InteractiveChanged = lbChanged
+
+	.cmdApply.Enabled 		= lbChanged
+	.cmdRevert.Enabled 		= lbChanged
+
+	.grdMembers.Enabled 	= Not lbChanged
+	.cmdAddProperty.Enabled = Not lbChanged
+	.cmdAddMethod.Enabled 	= Not lbChanged
+	.opgFilterInherited.Enabled = Not lbChanged
+	.opgFilterType.Enabled 	= Not lbChanged
+	
+Endwith
+
+ENDPROC
 PROCEDURE removeaccessassign
 LPARAMETERS tcMethod
 LOCAL lnRecNo
@@ -928,11 +1086,21 @@ This.edtDescription.Height = This.edtDescription.Height + This.Height - lnHeight
 This.edtDescription.Width  = This.edtDescription.Width  + This.Width  - lnWidth
 
 ENDPROC
+PROCEDURE revertchanges
+*** JN - 11/03/2008
+* fill in Thisform.oMember from cursor csrMembers (cancelling previous changes, if any)
+With Thisform
+	.ScatterCursor()
+	.Refresh()
+Endwith
+
+
+ENDPROC
 PROCEDURE savesettings
 * In addition to the usual settings, persist Dockable.
 Local loColumn, lnI, lcColumnWidths, lcColumnOrder
 With This
-	.oPersist.Set('Dockable', 	.Dockable)
+	.oPersist.Set('Dockable', .Dockable)
 	****************************************************************
 	* Modified 10/25/2008 by Jim Nelson
 	* Save additional settings
@@ -952,6 +1120,17 @@ With This
 Endwith
 
 ENDPROC
+PROCEDURE scattercursor
+*** JN 11/04/2008 -- scatter current record from crsMembers into our data object .oMember
+*  and cause appropriate controls to be enabled / disabled
+With Thisform
+	Scatter Name .oMember Memo
+	AddProperty (.oMember, "InteractiveChanged", .F.)
+	AddProperty (.oMember, "DefaultChanged", .F.)
+	.MemberChanged(.F.)
+Endwith
+
+ENDPROC
 PROCEDURE setfilter
 Local lcFilter, lcIndex, lnRecno
 
@@ -960,7 +1139,7 @@ Local lcFilter, lcIndex, lnRecno
 * Sets filter on grid based on filter settings .nPropertiesSelection and .nInheritedSelection
 
 lcFilter1 = Icase(Thisform.nPropertiesSelection = 1, [cType = 'P'] 	;
-	, Thisform.nPropertiesSelection = 2, [cType = 'M']				;
+	, Thisform.nPropertiesSelection = 2, [cType # 'P']				;
 	, [])
 lcFilter2 = Icase(Thisform.nInheritedSelection = 1, [lNative] 				;
 	, Thisform.nInheritedSelection = 2, [(not lNative)] 						;
@@ -997,27 +1176,100 @@ Thisform.setProperties()
 
 
 ENDPROC
-PROCEDURE setfontsize
-Lparameters tnNewFontSize
+PROCEDURE setfont
+Lparameters tnNewFontName, tnNewFontSize
 
 With This
+	.SetAll("FontName", tnNewFontName, "Grid")
+	.SetAll("FontName", tnNewFontName, "basetextbox")
+	.SetAll("FontName", tnNewFontName, "baseeditbox")
+
 	.SetAll("FontSize", tnNewFontSize, "Grid")
 	.SetAll("FontSize", tnNewFontSize, "basetextbox")
 	.SetAll("FontSize", tnNewFontSize, "baseeditbox")
 Endwith
 
 ENDPROC
+PROCEDURE setgridhighlighting
+*** JRN 11/04/2008 : Sets the various .DynamicFont??? based on user preferences
+
+Local lcType, lnColor, lcField, lcBold, lnRow, lcForeColor, lcBackColor, lcItalic, lcStrikeThru
+Local lcColor, lcDynForeColor, lcDynBackColor
+
+Store [] To lcBold, lcItalic, lcStrikeThru
+lcForeColor = '!This.Enabled, Rgb(128, 128, 128), ' && if disabled, all gray
+lcBackColor = '!This.Enabled, Rgb(212, 208, 200), ' && if disabled, all gray
+
+*** JRN 11/04/2008 : restore grid highlighting parameters (this as default??)
+lcGridHighLights	= Nvl (Thisform.oPersist.Get('GridHighLights'), cnDEFAULT_COLORS)
+Alines (Thisform.aGridHighlighting, lcGridHighLights, 5, ",")
+Dimension Thisform.aGridHighlighting(5,2)
+
+For lnRow = 1 to Alen (Thisform.aGridHighlighting, 1)
+
+	lcType 	= Thisform.aGridHighlighting (lnRow,1)
+	lcColor = Thisform.aGridHighlighting (lnRow,2)
+
+	lcField = Icase (									;
+		lnRow = 1, "csrMembers.cType = 'P'",			;
+		lnRow = 2, "csrMembers.cType # 'P'",			;
+		lnRow = 3, "(Not csrMembers.lInherited)",			;
+		lnRow = 4, "(csrMembers.lInherited and not csrMembers.lNative)",	;
+		lnRow = 5, "csrMembers.lNative",				;
+		'' )
+
+	Do Case
+		Case lcType = 'ForeColor'
+			lcForeColor = lcForeColor + lcField + "," + Transform (lcColor) + ","
+		Case lcType = 'BackColor'
+			lcBackColor = lcBackColor + lcField + "," + Transform (lcColor) + ","
+		Case lcType = 'Bold'
+			lcBold = Iif(Empty (lcBold), '', lcBold + " and ") + lcField
+		Case lcType = 'Italic'
+			lcItalic = Iif(Empty (lcItalic), '', lcItalic + " and ") + lcField
+		Case lcType = 'StrikeThru'
+			lcStrikeThru = Iif(Empty (lcStrikeThru), '', lcStrikeThru + " and ") + lcField
+
+	Endcase
+
+Next lnI
+
+With This.grdMembers
+	lcDynForeColor = Iif (Empty (lcForeColor) , [], "ICase (" + lcForeColor + Transform (Thisform.grdMembers.ForeColor) + ")")
+	.SetAll("DynamicForeColor", lcDynForeColor, "Column")
+
+	lcDynBackColor = Iif (Empty (lcBackColor), [], "ICase (" + lcBackColor + Transform (Thisform.grdMembers.BackColor) + ")")
+	.SetAll("DynamicBackColor", lcDynBackColor, "Column")
+
+	.SetAll("DynamicFontBold", lcBold, "Column")
+	.SetAll("DynamicFontItalic", lcItalic, "Column")
+	.SetAll("DynamicFontStrikethru", lcStrikeThru, "Column")
+
+Endwith
+
+
+ENDPROC
 PROCEDURE setproperties
 ***********************************************************************
 *** Changed By.: Marcia G. Akins on 14 January 2007
 *** Reason.....: Make sure that if we are changing the name that we can find this
-*** ...........: property or method to remove it befor e re-adding it
+*** ...........: property or method to remove it before re-adding it
 ***********************************************************************
-Thisform.cOriginalName  = ALLTRIM( csrMembers.cName )
-*** DougHennig 05/23/2007: Update cOriginalVisibility (added this property too)
-Thisform.cOriginalVisibility = csrMembers.Visibility
-Thisform.Refresh()
-Thisform.AdjustForm()
+
+*** JN - 11/03/2008
+* fill in Thisform.oMember from cursor csrMembers
+
+With Thisform
+	.ScatterCursor()
+
+	.cOriginalName  = Alltrim( csrMembers.cName )
+	*** DougHennig 05/23/2007: Update cOriginalVisibility (added this property too)
+	.cOriginalVisibility = csrMembers.Visibility
+	.AdjustForm()
+	.Refresh()
+
+Endwith
+
 ENDPROC
 PROCEDURE showeditcontextmenu
 *!* ShowEditContextMenu()
@@ -1111,7 +1363,7 @@ With This
 		lcSortField = lcMainSortField
 	Endif
 
-	.cMembersSortOrder = "+" + lcSortField + Strtran( .cMembersSortOrder, "+" + lcMainSortField, "")
+	.cMembersSortOrder = "+" + lcSortField + Strtran( .cMembersSortOrder, "+" + lcSortField, "")
 
 	.SetFilter()
 
@@ -1184,7 +1436,50 @@ ENDPROC
 PROCEDURE validatename
 Lparameters tcName
 
-Return Alltrim (tcName) && blank means failure
+Local lcName, lnFirst, lcChar, lnNLines, laLines(1), lnI, lnJ, lcText
+
+lcName = Alltrim (tcName)
+
+lnFirst = Min (								;
+	Evl (At ('(', lcName), 1000)			;
+	,Evl (At ('[', lcName), 1000)			;
+	,Evl (At (',', lcName), 1000)			;
+	,Evl (At (']', lcName), 1000)			;
+	,Evl (At (')', lcName), 1000)			;
+	)
+
+If lnFirst <= Len (lcName)
+
+	lcChar = Substr (lcName , lnFirst, 1)
+
+	* Match at end?
+	If Right (lcName, 1) # Icase ( lcChar = '(', ')',  lcChar = '[', ']', Chr(13))
+		Return ''
+	Endif
+
+	lnNLines = Alines (laLines, Substr(lcName, lnFirst + 1, Len(lcName) - lnFirst - 1), 1, ',')
+	* check that each dimension is all numeric
+	If Between (lnNLines,1,2)
+		For lnI = 1 To lnNLines
+			lcText = laLines(lnI)
+			If Val(lcText) # 0
+				For lnJ = 1 To Len (lcText)
+					If Not Isdigit (Substr (lcText, lnJ, 1))
+						Return ''
+					Endif
+				Endfor lnJ
+			Else
+				Return ''
+			Endif
+		Endfor lnI
+	Else
+		Return ''
+	Endif
+
+Endif
+
+Return lcName
+
 ENDPROC
 [END METHODS]
 [START RESERVED1]
@@ -1213,6 +1508,7 @@ npropertiesselection
 nnativeselection
 ninheritedselection
 version
+omember
 *updatememberdata Updates _MemberData (adding that property if necessary) for the new member
 *clearform Clears the controls so the form is ready for a new member
 *adjustform Adjusts the form based on the dialog and edited object types
@@ -1232,12 +1528,18 @@ version
 *resortgrid 
 *sortgrid 
 *setfilter 
-*setfontsize 
+*setfont 
 *addnew 
 *validatename Validates a PEM name (that is, that the name could be the name of a PEM)
 *justpem Returns simply the trimmed name of the PEM (removes dimensions of Arrays)
 *showeditcontextmenu 
 *str2val 
+*applychanges 
+*revertchanges 
+*scattercursor 
+*memberchanged 
+*setgridhighlighting 
+^agridhighlighting[5,2] 
 [END RESERVED3]
 [START RESERVED6]
 Pixels[END RESERVED6]
@@ -1268,7 +1570,7 @@ PROCEDURE Init
 * Set the caption to a localized string.
 
 This.Caption = ccLOC_CAP_NAME
-This.AddProperty( [nOldAnchor], This.Anchor )
+
 ENDPROC
 [END METHODS]
 
@@ -1283,9 +1585,9 @@ ENDPROC
 [START PROPERTIES]
 FontSize = 8
 Anchor = 8
-ControlSource = "csrMembers.cName"
+ControlSource = "ThisForm.oMember.cName"
 Format = "T"
-Height = 23
+Height = 26
 Left = 455
 TabIndex = 5
 Top = 56
@@ -1293,8 +1595,9 @@ Width = 231
 Name = "txtName"
 [END PROPERTIES]
 [START METHODS]
-PROCEDURE Init
-This.AddProperty( [nOldAnchor], This.Anchor )
+PROCEDURE InteractiveChange
+Thisform.MemberChanged()
+DoDefault()
 ENDPROC
 PROCEDURE KeyPress
 * Disallow illegal characters.
@@ -1314,7 +1617,7 @@ endif between(tnKeyCode, asc(' '), asc('z'))
 
 ENDPROC
 PROCEDURE Refresh
-This.Enabled = NOT csrMembers.lNative AND NOT csrMembers.lInherited
+This.Enabled = NOT Thisform.oMember.lNative AND NOT Thisform.oMember.lInherited
 ENDPROC
 PROCEDURE RightClick
 Thisform.ShowEditContextMenu()
@@ -1335,6 +1638,11 @@ If Vartype( Thisform.oObject ) = [O]
 		luReturn = .T.
 		Do Case
 
+			Case Empty (lcName) and not Empty (This.Value)
+				Messagebox("Not a valid name (possibly bad array)", ;
+					MB_OK + MB_ICONEXCLAMATION, .Caption)
+				luReturn = 0
+
 			Case Empty (lcName)
 				Messagebox("Name cannot be blank", ;
 					MB_OK + MB_ICONEXCLAMATION, .Caption)
@@ -1354,7 +1662,6 @@ If Vartype( Thisform.oObject ) = [O]
 					Select csrMembers
 					lnRecNo = Recno( [csrMembers] )
 
-					Assert .f.
 					* careful to remove filter, as new name might match ANY record in grid
 					lcFilter = Filter()
 					Set Filter To
@@ -1395,7 +1702,7 @@ Anchor = 8
 Caption = "\<Visibility:"
 Height = 15
 Left = 400
-Top = 87
+Top = 91
 Width = 43
 TabIndex = 6
 Name = "lblVisibility"
@@ -1405,7 +1712,7 @@ PROCEDURE Init
 * Set the caption to a localized string.
 
 This.Caption = ccLOC_CAP_VISIBILITY
-This.AddProperty( [nOldAnchor], This.Anchor )
+
 ENDPROC
 [END METHODS]
 
@@ -1421,10 +1728,10 @@ ENDPROC
 FontSize = 8
 Anchor = 8
 RowSourceType = 0
-ControlSource = "csrMembers.Visibility"
+ControlSource = "ThisForm.oMember.Visibility"
 Left = 455
 TabIndex = 7
-Top = 83
+Top = 87
 Name = "cboVisibility"
 [END PROPERTIES]
 [START METHODS]
@@ -1434,7 +1741,14 @@ WITH This
   .AddItem( [Protected] )
   .AddItem( [Hidden] )
 ENDWITH
-This.AddProperty( [nOldAnchor], This.Anchor )
+
+ENDPROC
+PROCEDURE InteractiveChange
+Thisform.MemberChanged()
+DoDefault()
+ENDPROC
+PROCEDURE Refresh
+This.Enabled = thisform.lClass
 ENDPROC
 [END METHODS]
 
@@ -1453,9 +1767,9 @@ FontSize = 8
 Anchor = 8
 Alignment = 0
 Caption = "Acce\<ss Method"
-ControlSource = "csrMembers.lAccess"
+ControlSource = "ThisForm.oMember.lAccess"
 TabIndex = 9
-lupdatecontrolsourceonchange = .T.
+lupdatecontrolsourceonchange = .F.
 Name = "chkAccess"
 [END PROPERTIES]
 [START METHODS]
@@ -1463,7 +1777,14 @@ PROCEDURE Init
 * Set the caption to a localized string.
 
 This.Caption = ccLOC_CAP_ACCESS
-This.AddProperty( [nOldAnchor], This.Anchor )
+
+ENDPROC
+PROCEDURE InteractiveChange
+Thisform.MemberChanged()
+DoDefault()
+ENDPROC
+PROCEDURE Refresh
+This.enabled = Thisform.oMember.cType = 'P'
 ENDPROC
 [END METHODS]
 
@@ -1482,9 +1803,9 @@ FontSize = 8
 Anchor = 8
 Alignment = 0
 Caption = "Assign \<Method"
-ControlSource = "csrMembers.lAssign"
+ControlSource = "ThisForm.oMember.lAssign"
 TabIndex = 10
-lupdatecontrolsourceonchange = .T.
+lupdatecontrolsourceonchange = .F.
 Name = "chkAssign"
 [END PROPERTIES]
 [START METHODS]
@@ -1492,7 +1813,14 @@ PROCEDURE Init
 * Set the caption to a localized string.
 
 This.Caption = ccLOC_CAP_ASSIGN
-This.AddProperty( [nOldAnchor], This.Anchor )
+
+ENDPROC
+PROCEDURE InteractiveChange
+Thisform.MemberChanged()
+DoDefault()
+ENDPROC
+PROCEDURE Refresh
+This.enabled = Thisform.oMember.cType = 'P'
 ENDPROC
 [END METHODS]
 
@@ -1518,7 +1846,7 @@ PROCEDURE Init
 * Set the caption to a localized string.
 
 This.Caption = ccLOC_CAP_DEFAULT
-This.AddProperty( [nOldAnchor], This.Anchor )
+
 ENDPROC
 [END METHODS]
 
@@ -1542,8 +1870,10 @@ IntegralHeight = .F.
 Name = "edtDefault"
 [END PROPERTIES]
 [START METHODS]
-PROCEDURE Init
-This.AddProperty( [nOldAnchor], This.Anchor )
+PROCEDURE InteractiveChange
+ThisForm.oMember.DefaultChanged = .T.
+Thisform.MemberChanged()
+DoDefault()
 ENDPROC
 PROCEDURE KeyPress
 * Don't allow a CR.
@@ -1593,6 +1923,10 @@ PROCEDURE RightClick
 Thisform.ShowEditContextMenu()
 ENDPROC
 PROCEDURE Valid
+*** JRN 11/03/2008: Moved this code into .ApplyChanges
+Return
+
+
 *** DougHennig 11/03/2008: Adjusted LOCAL statement to variables used in this method
 ***LOCAL lcMember, lcName
 Local luVal, lnVisibility, lcCode
@@ -1653,7 +1987,6 @@ PROCEDURE Init
 * Set the caption to a localized string.
 
 This.Caption = ccLOC_CAP_DESCRIPTION
-This.AddProperty( [nOldAnchor], This.Anchor )
 
 ENDPROC
 [END METHODS]
@@ -1674,13 +2007,14 @@ Left = 400
 TabIndex = 14
 Top = 217
 Width = 289
-ControlSource = "csrMembers.descrip"
+ControlSource = "ThisForm.oMember.descrip"
 IntegralHeight = .F.
 Name = "edtDescription"
 [END PROPERTIES]
 [START METHODS]
-PROCEDURE Init
-This.AddProperty( [nOldAnchor], This.Anchor )
+PROCEDURE InteractiveChange
+Thisform.MemberChanged()
+DoDefault()
 ENDPROC
 PROCEDURE KeyPress
 * Don't allow a CR.
@@ -1696,7 +2030,7 @@ endif tnKeyCode = 13
 
 ENDPROC
 PROCEDURE Refresh
-This.Enabled = NOT csrMembers.lNative AND NOT csrMembers.lInherited
+This.Enabled = NOT Thisform.oMember.lNative AND NOT Thisform.oMember.lInherited
 ENDPROC
 PROCEDURE RightClick
 Thisform.ShowEditContextMenu()
@@ -1718,9 +2052,9 @@ FontSize = 8
 Anchor = 8
 Alignment = 0
 Caption = "\<Favorites"
-ControlSource = "csrMembers.lFavorites"
+ControlSource = "ThisForm.oMember.lFavorites"
 TabIndex = 8
-lupdatecontrolsourceonchange = .T.
+lupdatecontrolsourceonchange = .F.
 Name = "chkFavorites"
 [END PROPERTIES]
 [START METHODS]
@@ -1728,7 +2062,11 @@ PROCEDURE Init
 * Set the caption to a localized string.
 
 This.Caption = ccLOC_CAP_FAVORITES
-This.AddProperty( [nOldAnchor], This.Anchor )
+
+ENDPROC
+PROCEDURE InteractiveChange
+Thisform.MemberChanged()
+DoDefault()
 ENDPROC
 [END METHODS]
 
@@ -1758,7 +2096,6 @@ PROCEDURE Click
 ThisForm.AddNew(.F.)
 ENDPROC
 PROCEDURE Init
-This.AddProperty( [nOldAnchor], This.Anchor )
 This.Caption = ccLOC_CAP_NEW_PROPERTY
 ENDPROC
 [END METHODS]
@@ -1785,12 +2122,32 @@ Name = "cmdApply"
 [END PROPERTIES]
 [START METHODS]
 PROCEDURE Click
-* Save the changes to the member
-Thisform.editMember()
+Local lcPrompt, lnResult, lcPemName
+
+lcPemName = Thisform.JustPEM (Thisform.oMember.cName)
+
+If csrMembers.lAccess And Not Thisform.oMember.lAccess
+	lcPrompt = 'Remove Method ' + lcPemName + "_access"		;
+		+ Chr(13) + "from Property " + lcPemName + '?'
+	lnResult = Messagebox (lcPrompt, 4 + 32, "Edit Property/Method")
+	If lnResult = 7
+		Return
+	Endif
+Endif
+
+If csrMembers.lAssign And Not Thisform.oMember.lAssign
+	lcPrompt = 'Remove Method ' + lcPemName + "_assign"		;
+		+ Chr(13) + "from Property " + lcPemName + '?'
+	lnResult = Messagebox (lcPrompt, 4 + 32, "Edit Property/Method")
+	If lnResult = 7
+		Return
+	Endif
+Endif
+
+Thisform.ApplyChanges()
 
 ENDPROC
 PROCEDURE Init
-This.AddProperty( [nOldAnchor], This.Anchor )
 This.Caption = ccLOC_CAP_APPLY
 ENDPROC
 [END METHODS]
@@ -1823,10 +2180,12 @@ baseoptionbutton2.Top = 5
 baseoptionbutton2.Name = "baseoptionbutton2"
 [END PROPERTIES]
 [START METHODS]
-PROCEDURE Init
-This.AddProperty( [nOldAnchor], This.Anchor )
-ENDPROC
 PROCEDURE InteractiveChange
+Thisform.MemberChanged()
+Return
+
+*** JRN - 11/03/2008 -- following code all moved to .ApplyChanges
+
 LOCAL lnRecNo
 ***********************************************************************
 *** Changed By.: Marcia G. Akins on 13 May 2007
@@ -1858,15 +2217,21 @@ WITH Thisform
 ENDWITH
 ENDPROC
 PROCEDURE Refresh
-This.Value = Iif(csrMembers.cType =[M], 2, 1)
+This.Value = Iif(Thisform.oMember.cType = [P], 1, 2)
 Thisform.lMethod = ( This.Value = 2 )
-This.Enabled = Not csrMembers.lNative And Not csrMembers.lInherited
+This.Enabled = Not Thisform.oMember.lNative And Not Thisform.oMember.lInherited
 
 ****************************************************************
 * Modified 10/25/2008 by Jim Nelson
 * If disabled, only show the button matching the current value
 This.Buttons(1).Visible = This.Enabled Or This.Value = 1
 This.Buttons(2).Visible = This.Enabled Or This.Value = 2
+
+ENDPROC
+PROCEDURE Valid
+Thisform.oMember.cType = IIF(this.Value = 1, 'P', 'M')
+
+Thisform.Refresh()
 
 ENDPROC
 PROCEDURE baseoptionbutton1.Init
@@ -1905,7 +2270,7 @@ PROCEDURE Init
 * Set the caption to a localized string.
 
 This.Caption = ccLOC_CAP_MEMBER_TYPE
-This.AddProperty( [nOldAnchor], This.Anchor )
+
 ENDPROC
 [END METHODS]
 
@@ -1990,7 +2355,9 @@ LPARAMETERS nColIndex
 Thisform.SetProperties()
 ENDPROC
 PROCEDURE BeforeRowColChange
-LPARAMETERS nColIndex
+*** JN 11/04/2008 determine what to do with unposted changes, if any, when the row changes.
+
+Lparameters nColIndex
 ***********************************************************************
 *** Changed By.: Marcia G. Akins on 05 July 2008
 *** Reason.....: When all else fails, try a bigger hammer!
@@ -2000,33 +2367,45 @@ LPARAMETERS nColIndex
 *Thisform.cmdSaveClose.SetFocus()
 *RAISEEVENT( Thisform.cmdSaveClose, 'Click' )
 
+*!*	If Not Thisform.oMember.InteractiveChanged
+*!*		Return
+*!*	Endif
+
+*!*	xxx = Messagebox ("Apply", 3, "apply")
+*!*	Do Case
+*!*		Case xxx = 2
+*!*			Nodefault
+*!*		Case xxx = 6
+*!*			Thisform.ApplyChanges()
+*!*			Nodefault
+*!*	Endcase
+
 ENDPROC
 PROCEDURE Init
-LOCAL lnBgColor, lnFgColor
-DECLARE INTEGER GetSysColor IN "user32" INTEGER nIndex
+Local lnBgColor, lnFgColor
+Declare Integer GetSysColor In "user32" Integer nIndex
 lnBgColor = GetSysColor( 13 )
 lnFgColor = GetSysColor( 14 )
 
 *** Setup grid highlighing. We do not want a 50% gradient
-WITH This
-  .HighlightBackColor = lnBgColor
-  .HighlightForeColor = lnFgColor
+With This
+	.HighlightBackColor = lnBgColor
+	.HighlightForeColor = lnFgColor
 
 	.Columns(1).Header1.Caption = ccLOC_CAP_ColHdrName
-	.Columns(2).Header1.Caption = ccLOC_CAP_ColHdrType		
-	.Columns(3).Header1.Caption = ccLOC_CAP_ColHdrAccess		
-	.Columns(4).Header1.Caption = ccLOC_CAP_ColHdrAssign		
-	.Columns(5).Header1.Caption = ccLOC_CAP_ColHdrVisibility	
-	.Columns(6).Header1.Caption = ccLOC_CAP_ColHdrHierarchy	
-	.Columns(7).Header1.Caption = ccLOC_CAP_ColHdrFavorite	
+	.Columns(2).Header1.Caption = ccLOC_CAP_ColHdrType
+	.Columns(3).Header1.Caption = ccLOC_CAP_ColHdrAccess
+	.Columns(4).Header1.Caption = ccLOC_CAP_ColHdrAssign
+	.Columns(5).Header1.Caption = ccLOC_CAP_ColHdrVisibility
+	.Columns(6).Header1.Caption = ccLOC_CAP_ColHdrHierarchy
+	.Columns(7).Header1.Caption = ccLOC_CAP_ColHdrFavorite
 
-ENDWITH
+Endwith
 
 ***********************************************************************
 *** Changed By.: Marcia G. Akins on 08 January 2007
 *** Reason.....: Add a property to save the anchor value
 ***********************************************************************
-This.AddProperty( [nOldAnchor], This.Anchor )
 
 
 ENDPROC
@@ -2154,7 +2533,7 @@ Name = "Header1"
 [END PROPERTIES]
 [START METHODS]
 PROCEDURE Click
-thisform.SortGrid( [IIF(CType = 'M', 'A', 'B')], [IIF(CType = 'P', 'A', 'B')])
+thisform.SortGrid( [IIF(CType # 'P', 'A', 'B')], [IIF(CType = 'P', 'A', 'B')])
 
 ENDPROC
 [END METHODS]
@@ -2389,10 +2768,20 @@ Name = "cmdRemove"
 [END PROPERTIES]
 [START METHODS]
 PROCEDURE Click
-Thisform.removeMember( ALLTRIM( csrMembers.cName ) )
+Local lnMsgBox, lcPEM
+
+lcPEM = Thisform.JustPem( csrMembers.cName )
+
+If Nvl (Thisform.oPersist.Get('PromptOnRemoval'), .T.)
+	lnMsgBox = MessageBox ("Remove " + lcPem + "?", 4+32, "Remove " + lcPem + "?")
+	If lnMsgBox = 7
+		Return
+	EndIf
+EndIf
+
+Thisform.removeMember( Thisform.JustPem( csrMembers.cName ) )
 ENDPROC
 PROCEDURE Init
-This.AddProperty( [nOldAnchor], This.Anchor )
 This.Caption = ccLOC_CAP_REMOVE
 ENDPROC
 PROCEDURE Refresh
@@ -2419,7 +2808,6 @@ Name = "lblFilters"
 [END PROPERTIES]
 [START METHODS]
 PROCEDURE Init
-This.AddProperty( [nOldAnchor], This.Anchor )
 This.Caption = ccLOC_CAP_FILTERS
 ENDPROC
 [END METHODS]
@@ -2485,7 +2873,6 @@ ThisForm.AddNew(.T.)
 This.Caption = ccLOC_CAP_NEW_METHOD
 ENDPROC
 PROCEDURE Init
-This.AddProperty( [nOldAnchor], This.Anchor )
 This.Caption = ccLOC_CAP_NEW_METHOD	
 ENDPROC
 [END METHODS]
@@ -2507,18 +2894,14 @@ Width = 64
 FontSize = 8
 Anchor = 8
 Caption = "Revert"
-Enabled = .F.
 TabIndex = 22
 Name = "cmdRevert"
 [END PROPERTIES]
 [START METHODS]
 PROCEDURE Click
-* Save the changes to the member
-Thisform.editMember()
-
+Thisform.RevertChanges()
 ENDPROC
 PROCEDURE Init
-This.AddProperty( [nOldAnchor], This.Anchor )
 This.Caption = ccLOC_CAP_REVERT
 ENDPROC
 [END METHODS]
@@ -2540,16 +2923,28 @@ Width = 98
 FontSize = 8
 Anchor = 4
 Caption = "Preferences"
-Enabled = .F.
 TabIndex = 20
 Name = "cmdPreferences"
 [END PROPERTIES]
 [START METHODS]
 PROCEDURE Click
-ThisForm.AddNew(.T.)
+If "O" = Vartype (_NewEditPropertyPreferences)
+
+	_NewEditPropertyPreferences.Show()
+
+Else
+	Release _NewEditPropertyPreferences
+	Public _NewEditPropertyPreferences
+
+	Do Form NewEditPropertyPreferences 				;
+		With Thisform.Left + ThisForm.Width, Thisform.Top + ThisForm.Height	;
+		name _NewEditPropertyPreferences
+
+Endif
+
+
 ENDPROC
 PROCEDURE Init
-This.AddProperty( [nOldAnchor], This.Anchor )
 This.Caption = ccLOC_CAP_PREFERENCES
 ENDPROC
 [END METHODS]
@@ -2587,9 +2982,6 @@ Baseoptionbutton3.Top = 5
 Baseoptionbutton3.Name = "Baseoptionbutton3"
 [END PROPERTIES]
 [START METHODS]
-PROCEDURE Init
-This.AddProperty( [nOldAnchor], This.Anchor )
-ENDPROC
 PROCEDURE Valid
 With Thisform
 	.oPersist.Set('Properties', .nPropertiesSelection )
@@ -2640,9 +3032,6 @@ Baseoptionbutton5.Top = 25
 Baseoptionbutton5.Name = "Baseoptionbutton5"
 [END PROPERTIES]
 [START METHODS]
-PROCEDURE Init
-This.AddProperty( [nOldAnchor], This.Anchor )
-ENDPROC
 PROCEDURE Valid
 With Thisform
 	.oPersist.Set('Inherited', 	.nInheritedSelection )
@@ -2657,12 +3046,12 @@ ENDPROC
 [UNIQUEID] RESERVED  
 [OBJNAME] neweditpropertydialog
 [START PROPERTIES]
-Tahoma, 0, 8, 5, 13, 11, 23, 2, 0
-Tahoma, 0, 9, 5, 14, 12, 25, 2, 0
+Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+Tahoma, 0, 9, 5, 14, 12, 23, 2, 0
 Arial, 0, 9, 5, 15, 12, 32, 3, 0
 [END PROPERTIES]
 [START RESERVED1]
-  neweditpropertydialog.hnüÚVb9 neweditpropertydialogenglish.hvý#|c96 ..\..\program files\microsoft visual foxpro 9\foxpro.h~þ‚‰1[END RESERVED1]
+  neweditpropertydialog.h~™5d9 neweditpropertydialogenglish.h†š{d99 ..\..\..\program files\microsoft visual foxpro 9\foxpro.hŽ›‚‰1[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
