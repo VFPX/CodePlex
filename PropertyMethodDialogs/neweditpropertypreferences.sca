@@ -1,0 +1,691 @@
+SCCTEXT Version 4.0.0.2
+PLATFORM C(8,0),UNIQUEID C(10,0),TIMESTAMP N(10,0),CLASS M(4,0),CLASSLOC M(4,0),BASECLASS M(4,0),OBJNAME M(4,0),PARENT M(4,0),PROPERTIES M(4,0),PROTECTED M(4,0),METHODS M(4,0),OBJCODE M(4,0),OLE M(4,0),OLE2 M(4,0),RESERVED1 M(4,0),RESERVED2 M(4,0),RESERVED3 M(4,0),RESERVED4 M(4,0),RESERVED5 M(4,0),RESERVED6 M(4,0),RESERVED7 M(4,0),RESERVED8 M(4,0),USER M(4,0)
+1252
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] Screen    
+[START RESERVED1]
+VERSION =   3.00[END RESERVED1]
+[START RESERVED8]
+neweditpropertydialog.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2I50FLRMJ
+[CLASS] dataenvironment
+[BASECLASS] dataenvironment
+[OBJNAME] Dataenvironment
+[START PROPERTIES]
+Top = 0
+Left = 0
+Width = 0
+Height = 0
+DataSource = .NULL.
+Name = "Dataenvironment"
+[END PROPERTIES]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED4]
+2[END RESERVED4]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2I50FLRN0
+[CLASS] baseform
+[CLASSLOC] basecontrols.vcx
+[BASECLASS] form
+[OBJNAME] Prefs
+[START PROPERTIES]
+Height = 280
+Width = 365
+DoCreate = .T.
+BorderStyle = 2
+Caption = "Preferences"
+ocallingform = .NULL.
+nleft = 0
+ntop = 0
+_memberdata =     1004<VFPData>
+	<memberdata name="cfoxuserid" type="property" display="cFoxUserID" favorites="True"/>
+	<memberdata name="cfoxusername" type="property" display="cFoxUserName" favorites="True"/>
+	<memberdata name="lpersistsizeposition" type="property" display="lPersistSizePosition" favorites="True"/>
+	<memberdata name="lsavesettings" type="property" display="lSaveSettings" favorites="True"/>
+	<memberdata name="opersist" type="property" display="oPersist"/>
+	<memberdata name="refreshform" type="method" display="RefreshForm"/>
+	<memberdata name="restoresettings" type="method" display="RestoreSettings" favorites="True"/>
+	<memberdata name="savesettings" type="method" display="SaveSettings" favorites="True"/>
+	<memberdata name="ocallingform" type="property" display="oCallingForm"/><memberdata name="nleft" type="property" display="nLeft"/><memberdata name="ntop" type="property" display="nTop"/><memberdata name="savehighlightsettings" type="method" display="SaveHighlightSettings"/></VFPData>
+
+lpersistsizeposition = .F.
+lsavesettings = .F.
+cfoxusername = EditPMPreferences
+cfoxuserid = EDITPMPREFERENCES
+Name = "Prefs"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Destroy
+This.oCallingForm = .Null.
+DoDefault()
+
+ENDPROC
+PROCEDURE Init
+Lparameters lnLeft, lnTop
+
+* Parameters are approximate left and top of Preferences commandbutton
+
+With This
+	.nLeft 	= lnLeft
+	.nTop 	= lnTop
+	.Top	= -1000
+	.Caption = ccLOC_CAP_PREFERENCES
+	.Refresh()
+Endwith
+
+ENDPROC
+PROCEDURE Load
+DoDefault()
+Thisform.oCallingForm = _Screen.ActiveForm
+
+ENDPROC
+PROCEDURE Show
+* Restore the Dockable setting if we're not being invoked modally. We have to
+* do it here because the form becomes visible as soon as Dockable is set to 1,
+* so we don't want this done earlier.
+
+Lparameters tnStyle
+Local lnTop, lnLeft
+Try
+	With This
+		If Vartype(tnStyle) <> 'N' Or tnStyle <> 1
+			lnTop     = .nTop
+			lnLeft    = .nLeft
+			.Dockable = 1 && Nvl(.oPersist.Get('Dockable'), 1)
+			* placement here tries to align the form immediately above the Preferences commandbutton
+			.Top      = lnTop - (this.Height + 20)
+			.Left     = lnLeft - (This.Width + 20)
+		Endif Vartype(tnStyle) <> 'N' ...
+	Endwith
+	DoDefault(tnStyle)
+Catch To loerr
+	Messagebox( loerr.Message + Chr(13)+Chr(10) + loerr.LineContents )
+Endtry
+
+ENDPROC
+PROCEDURE savehighlightsettings
+Lparameters lcSetting
+
+Local lnI
+
+If Empty (lcSetting)
+	lcSetting = ''
+	For lnI = 1 To Alen (Thisform.oCallingForm.aGridHighlighting)
+		lcSetting = Iif(Empty(lcSetting), '', lcSetting + ', ') + Transform (Thisform.oCallingForm.aGridHighlighting(lnI))
+	Next lnI
+Endif
+
+Thisform.oCallingForm.oPersist.Set('GridHighLights', lcSetting)
+
+ENDPROC
+[END METHODS]
+[START RESERVED3]
+ocallingform
+nleft
+ntop
+*savehighlightsettings 
+[END RESERVED3]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2I50FLRMJ
+[CLASS] basecommandbutton
+[CLASSLOC] basecontrols.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdOK
+[PARENT] Prefs
+[START PROPERTIES]
+Top = 247
+Left = 156
+FontSize = 9
+Anchor = 132
+Caption = "\<OK"
+Default = .F.
+Name = "cmdOK"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+Thisform.Release()
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2I50FLRN8
+[CLASS] basecheckbox
+[CLASSLOC] basecontrols.vcx
+[BASECLASS] checkbox
+[OBJNAME] chkRemovalPrompt
+[PARENT] Prefs
+[START PROPERTIES]
+Top = 9
+Left = 90
+FontSize = 9
+Alignment = 0
+Caption = "Prompt before removing PEMs"
+TabIndex = 9
+lupdatecontrolsourceonchange = .F.
+Name = "chkRemovalPrompt"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+* Set the caption to a localized string.
+
+This.Caption = ccLOC_CAP_REMOVALPROMPT
+
+ENDPROC
+PROCEDURE Refresh
+This.Value = Nvl (Thisform.oCallingForm.oPersist.Get('PromptOnRemoval'), .T.)
+
+ENDPROC
+PROCEDURE Valid
+Thisform.oCallingForm.oPersist.Set('PromptOnRemoval', this.Value)
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2I50S6RB5
+[CLASS] basecontainer
+[CLASSLOC] basecontrols.vcx
+[BASECLASS] container
+[OBJNAME] cntHighlights
+[PARENT] Prefs
+[START PROPERTIES]
+Top = 84
+Left = 12
+Width = 339
+Height = 154
+BorderWidth = 1
+Name = "cntHighlights"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2I50S6RB6
+[CLASS] hightlightercombobox
+[CLASSLOC] basecontrols.vcx
+[BASECLASS] combobox
+[OBJNAME] cboHighlightProperties
+[PARENT] Prefs.cntHighlights
+[START PROPERTIES]
+Height = 22
+Left = 92
+Top = 6
+Width = 103
+nrow = 1
+Name = "cboHighlightProperties"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2I50S6RB8
+[CLASS] baselabel
+[CLASSLOC] basecontrols.vcx
+[BASECLASS] label
+[OBJNAME] lblPropeties
+[PARENT] Prefs.cntHighlights
+[START PROPERTIES]
+AutoSize = .F.
+FontSize = 9
+Anchor = 8
+Caption = "Font Size: "
+Height = 16
+Left = 12
+Top = 10
+Width = 74
+TabIndex = 4
+Name = "lblPropeties"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+* Set the caption to a localized string.
+
+This.Caption = Strtran (ccLOC_CAP_PROPERTIES, '\<', '')
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2I50S6RB9
+[CLASS] hightlightercombobox
+[CLASSLOC] basecontrols.vcx
+[BASECLASS] combobox
+[OBJNAME] cboHighlightMethods
+[PARENT] Prefs.cntHighlights
+[START PROPERTIES]
+Height = 22
+Left = 92
+Top = 30
+Width = 103
+nrow = 2
+Name = "cboHighlightMethods"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2I50S6RBA
+[CLASS] baselabel
+[CLASSLOC] basecontrols.vcx
+[BASECLASS] label
+[OBJNAME] lblMethods
+[PARENT] Prefs.cntHighlights
+[START PROPERTIES]
+AutoSize = .F.
+FontSize = 9
+Anchor = 8
+Caption = "Font Size: "
+Height = 16
+Left = 12
+Top = 34
+Width = 74
+TabIndex = 4
+Name = "lblMethods"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+* Set the caption to a localized string.
+
+This.Caption = Strtran (ccLOC_CAP_Methods, '\<', '')
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2I50S6RBB
+[CLASS] hightlightercombobox
+[CLASSLOC] basecontrols.vcx
+[BASECLASS] combobox
+[OBJNAME] cboHighlightCustom
+[PARENT] Prefs.cntHighlights
+[START PROPERTIES]
+Height = 22
+Left = 92
+Top = 74
+Width = 103
+nrow = 3
+Name = "cboHighlightCustom"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2I50S6RBC
+[CLASS] baselabel
+[CLASSLOC] basecontrols.vcx
+[BASECLASS] label
+[OBJNAME] lblCustom
+[PARENT] Prefs.cntHighlights
+[START PROPERTIES]
+AutoSize = .F.
+FontSize = 9
+Anchor = 8
+Caption = "Font Size: "
+Height = 16
+Left = 12
+Top = 78
+Width = 74
+TabIndex = 4
+Name = "lblCustom"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+* Set the caption to a localized string.
+
+This.Caption = Strtran (ccLOC_CAP_CUSTOM, '\<', '')
+
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2I50FLRMJ
+[CLASS] hightlightercombobox
+[CLASSLOC] basecontrols.vcx
+[BASECLASS] combobox
+[OBJNAME] cboHighlightInherited
+[PARENT] Prefs.cntHighlights
+[START PROPERTIES]
+Height = 22
+Left = 92
+Top = 98
+Width = 103
+nrow = 4
+Name = "cboHighlightInherited"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2I50FLRN0
+[CLASS] baselabel
+[CLASSLOC] basecontrols.vcx
+[BASECLASS] label
+[OBJNAME] lblInherited
+[PARENT] Prefs.cntHighlights
+[START PROPERTIES]
+AutoSize = .F.
+FontSize = 9
+Anchor = 8
+Caption = "Font Size: "
+Height = 16
+Left = 12
+Top = 102
+Width = 74
+TabIndex = 4
+Name = "lblInherited"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+* Set the caption to a localized string.
+
+This.Caption = Strtran (ccLOC_CAP_INHERITED, '\<', '')
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2I50S6RBE
+[CLASS] hightlightercombobox
+[CLASSLOC] basecontrols.vcx
+[BASECLASS] combobox
+[OBJNAME] cboHighlightNative
+[PARENT] Prefs.cntHighlights
+[START PROPERTIES]
+Height = 22
+Left = 92
+Top = 122
+Width = 103
+nrow = 5
+Name = "cboHighlightNative"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2I50S6RBF
+[CLASS] baselabel
+[CLASSLOC] basecontrols.vcx
+[BASECLASS] label
+[OBJNAME] lblNative
+[PARENT] Prefs.cntHighlights
+[START PROPERTIES]
+AutoSize = .F.
+FontSize = 9
+Anchor = 8
+Caption = "Font Size: "
+Height = 16
+Left = 12
+Top = 126
+Width = 74
+TabIndex = 4
+Name = "lblNative"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+* Set the caption to a localized string.
+
+This.Caption = Strtran (ccLOC_CAP_NATIVE, '\<', '')
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2I50XGEQS
+[CLASS] basecommandbutton
+[CLASSLOC] basecontrols.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdDefault
+[PARENT] Prefs.cntHighlights
+[START PROPERTIES]
+Top = 30
+Left = 252
+Height = 23
+Width = 75
+FontSize = 9
+Anchor = 132
+Caption = "Default"
+Default = .F.
+Name = "cmdDefault"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+thisform.SaveHighLightSettings(cnDEFAULT_COLORS)
+
+With Thisform.oCallingForm
+	.SetGridHighlighting()
+	.grdMembers.Refresh()
+EndWith
+
+thisform.Refresh()
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2I50XGEQT
+[CLASS] basecommandbutton
+[CLASSLOC] basecontrols.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdSample
+[PARENT] Prefs.cntHighlights
+[START PROPERTIES]
+Top = 66
+Left = 252
+Height = 23
+Width = 75
+FontSize = 9
+Anchor = 132
+Caption = "Sample"
+Default = .T.
+Name = "cmdSample"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+thisform.SaveHighLightSettings(cnSAMPLE_COLORS)
+
+With Thisform.oCallingForm
+	.SetGridHighlighting()
+	.grdMembers.Refresh()
+Endwith
+
+thisform.Refresh()
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2I70J14DO
+[CLASS] basecontainer
+[CLASSLOC] basecontrols.vcx
+[BASECLASS] container
+[OBJNAME] cntColors
+[PARENT] Prefs.cntHighlights
+[START PROPERTIES]
+Top = 0
+Left = 198
+Width = 45
+Height = 148
+Name = "cntColors"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2I70J14DP
+[CLASS] highlightercommandbutton
+[CLASSLOC] basecontrols.vcx
+[BASECLASS] commandbutton
+[OBJNAME] Highlightercommandbutton1
+[PARENT] Prefs.cntHighlights.cntColors
+[START PROPERTIES]
+Top = 6
+Left = 8
+Height = 23
+Picture = color2_16x16.bmp
+nrow = 1
+Name = "Highlightercommandbutton1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2I70J14DQ
+[CLASS] highlightercommandbutton
+[CLASSLOC] basecontrols.vcx
+[BASECLASS] commandbutton
+[OBJNAME] Highlightercommandbutton2
+[PARENT] Prefs.cntHighlights.cntColors
+[START PROPERTIES]
+Top = 30
+Left = 8
+Height = 23
+nrow = 2
+Name = "Highlightercommandbutton2"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2I70J14DR
+[CLASS] highlightercommandbutton
+[CLASSLOC] basecontrols.vcx
+[BASECLASS] commandbutton
+[OBJNAME] Highlightercommandbutton3
+[PARENT] Prefs.cntHighlights.cntColors
+[START PROPERTIES]
+Top = 74
+Left = 8
+Height = 23
+nrow = 3
+Name = "Highlightercommandbutton3"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2I70J14DS
+[CLASS] highlightercommandbutton
+[CLASSLOC] basecontrols.vcx
+[BASECLASS] commandbutton
+[OBJNAME] Highlightercommandbutton4
+[PARENT] Prefs.cntHighlights.cntColors
+[START PROPERTIES]
+Top = 98
+Left = 8
+Height = 23
+nrow = 4
+Name = "Highlightercommandbutton4"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2I70J14DT
+[CLASS] highlightercommandbutton
+[CLASSLOC] basecontrols.vcx
+[BASECLASS] commandbutton
+[OBJNAME] Highlightercommandbutton5
+[PARENT] Prefs.cntHighlights.cntColors
+[START PROPERTIES]
+Top = 122
+Left = 8
+Height = 23
+nrow = 5
+Name = "Highlightercommandbutton5"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2I50S6RBG
+[CLASS] baselabel
+[CLASSLOC] basecontrols.vcx
+[BASECLASS] label
+[OBJNAME] lblHighlighting
+[PARENT] Prefs
+[START PROPERTIES]
+AutoSize = .F.
+FontBold = .T.
+FontSize = 9
+Anchor = 8
+Alignment = 2
+Caption = "Grid Highlighting:"
+Height = 16
+Left = 18
+Top = 66
+Width = 330
+TabIndex = 4
+Name = "lblHighlighting"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+* Set the caption to a localized string.
+
+This.Caption = ccLOC_CAP_GRIDHIGHLIGHTING
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2I70VUBY3
+[CLASS] basecommandbutton
+[CLASSLOC] basecontrols.vcx
+[BASECLASS] commandbutton
+[OBJNAME] CmtGetFont
+[PARENT] Prefs
+[START PROPERTIES]
+Top = 36
+Left = 114
+Height = 23
+Width = 129
+FontSize = 9
+Anchor = 132
+Caption = "Set Font for Grid"
+Default = .F.
+Name = "CmtGetFont"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+Local lcFont, laLines(1), lcFontName, lcFontSize
+
+With Thisform.oCallingForm
+	lcFont = Getfont (Nvl(.oPersist.Get('FontName'), 'Tahoma' ), Nvl(.oPersist.Get('FontSize'), 8 ))
+EndWith
+
+If Empty (lcFont)
+	Return
+Endif
+
+Alines (laLines, lcFont, 5, ',')
+lcFontName 	= laLines(1)
+lcFontSize 	= Val (laLines(2))
+
+With Thisform.oCallingForm
+	.oPersist.Set('FontName', lcFontName)
+	.oPersist.Set('FontSize', lcFontSize)
+	.SetFont (lcFontName, lcFontSize)
+Endwith
+
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[START PROPERTIES]
+Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+Tahoma, 0, 9, 5, 14, 12, 23, 2, 0
+[END PROPERTIES]
+[START RESERVED1]
+  neweditpropertydialog.hÎÓ5d9 neweditpropertydialogenglish.hÖÔ{d9E ..\..\..\..\..\..\..\program files\microsoft visual foxpro 9\foxpro.hÞÕr‰1[END RESERVED1]
+[EOF]
