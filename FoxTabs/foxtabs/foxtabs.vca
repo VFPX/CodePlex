@@ -1899,12 +1899,15 @@ Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
 [BASECLASS] toolbar
 [OBJNAME] foxtabstoolbar
 [START PROPERTIES]
+
 Caption = "FoxTabs"
-Height = 32
+Height = 62
 Left = 0
 Name = "foxtabstoolbar"
 Top = 0
 Width = 110
+_memberdata =       93<VFPData><memberdata name="otabtoremove" type="property" display="oTabToRemove"/></VFPData>
+otabtoremove = .NULL.
 [END PROPERTIES]
 [START METHODS]
 PROCEDURE AfterDock
@@ -2517,6 +2520,17 @@ Lparameters oFoxTab As Object
 Local oFoxTabControl As Object
 Local lnControl As Integer 
 
+* Delay removal of tab because of timing issues with error reporting
+* See http://www.codeplex.com/VFPX/WorkItem/View.aspx?WorkItemId=19330
+If Vartype(oFoxTab) = "O"
+	This.oTabToRemove = oFoxTab
+	This.tmrRemoveFoxTab.Interval = 100
+	Return 
+Else 
+	oFoxTab = This.oTabToRemove
+	This.oTabToRemove = NULL
+EndIf 
+
 * Locate the FoxTab control
 For Each oFoxTabControl In This.Controls
 	If Lower(oFoxTabControl.Class) = "foxtabcontrol" ;
@@ -2775,7 +2789,7 @@ ENDPROC
 [START RESERVED1]
 Class[END RESERVED1]
 [START RESERVED2]
-5[END RESERVED2]
+6[END RESERVED2]
 [START RESERVED3]
 *activatewindow Activate the window with the specified name
 *addfoxtab Event handler for the FoxTabsManager AddFoxTab event
@@ -2798,6 +2812,8 @@ Class[END RESERVED1]
 *showcontextmenu Display the FoxTabToolbar context menu
 *showlastfoxtab Set the most recent hidden FoxTab control visible
 *showoptionsdialog Displays the FoxTabs options dialog
+_memberdata XML Metadata for customizable properties
+otabtoremove FoxTab to remove.
 [END RESERVED3]
 [START RESERVED6]
 Pixels[END RESERVED6]
@@ -2819,7 +2835,7 @@ Name = "cmdOptions"
 PicturePosition = 12
 SpecialEffect = 2
 ToolTipText = "Options"
-Top = 3
+Top = 11
 Width = 16
 [END PROPERTIES]
 [START METHODS]
@@ -2842,7 +2858,7 @@ ENDPROC
 Anchor = 10
 Left = 33
 Name = "foxtabDesktop"
-Top = 3
+Top = 11
 imgBody.Name = "imgBody"
 imgRight1.Name = "imgRight1"
 imgRight2.Name = "imgRight2"
@@ -2921,9 +2937,30 @@ Left = 20
 Name = "imgLeft"
 Picture = images\tabstyles\tabimage.left.gif
 Stretch = 2
-Top = 3
+Top = 11
 Width = 13
 [END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2I912EDK3
+[CLASS] timer
+[BASECLASS] timer
+[OBJNAME] tmrRemoveFoxTab
+[PARENT] foxtabstoolbar
+[START PROPERTIES]
+Height = 23
+Left = 5
+Name = "tmrRemoveFoxTab"
+Top = 36
+Width = 23
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Timer
+This.Interval = 0
+This.Parent.RemoveFoxTab()
+ENDPROC
+[END METHODS]
 
 [ RECORD]
 [PLATFORM] COMMENT 
