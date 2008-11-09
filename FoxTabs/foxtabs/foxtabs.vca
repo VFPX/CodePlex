@@ -2523,12 +2523,19 @@ Local lnControl As Integer
 * Delay removal of tab because of timing issues with error reporting
 * See http://www.codeplex.com/VFPX/WorkItem/View.aspx?WorkItemId=19330
 If Vartype(oFoxTab) = "O"
+	* If tab already in the queue to be removed (from selecting Close All), remove it now
+	If Vartype(This.oTabToRemove) = "O" and !IsNull(This.oTabToRemove)
+		This.RemoveFoxTab()
+	EndIf 
 	This.oTabToRemove = oFoxTab
 	This.tmrRemoveFoxTab.Interval = 100
 	Return 
 Else 
 	oFoxTab = This.oTabToRemove
 	This.oTabToRemove = NULL
+EndIf 
+If Vartype(oFoxTab) <> "O" or IsNull(oFoxTab)
+	Return
 EndIf 
 
 * Locate the FoxTab control
