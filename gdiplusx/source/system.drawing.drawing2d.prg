@@ -7491,10 +7491,10 @@ DEFINE CLASS xfcPathGradientBrush AS xfcbrush OF System.Drawing.prg
 		TRY
 			IF VARTYPE(toPointF) = "O"
 				DO CASE
-				CASE m.toPointF.BaseName = "xfcPointF"
-					This.SetStatus(xfcGdipSetPathGradientCenterPoint(This.Handle, m.toPoint.ToVarBinary()))
-				CASE m.toPointF.BaseName = "xfcPoint"
-					This.SetStatus(xfcGdipSetPathGradientCenterPointI(This.Handle, m.toPoint.ToVarBinary()))
+				CASE m.toPointF.BaseName = "PointF"
+					This.SetStatus(xfcGdipSetPathGradientCenterPoint(This.Handle, m.toPointF.ToVarBinary()))
+				CASE m.toPointF.BaseName = "Point"
+					This.SetStatus(xfcGdipSetPathGradientCenterPointI(This.Handle, m.toPointF.ToVarBinary()))
 				OTHERWISE
 					*!ToDo: Error handling?
 				ENDCASE
