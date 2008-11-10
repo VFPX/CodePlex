@@ -13,7 +13,7 @@
 #define ccLOC_CAP_ACCESS				'Acce\<ss Method' 
 #define ccLOC_CAP_ASSIGN				'Assign \<Method' 
 #define ccLOC_CAP_FAVORITES				'\<Favorites'
-#define ccLOC_CAP_DEFAULT				'Defau\<lt/Initial Value'
+#define ccLOC_CAP_DEFAULT_VALUE			'Defau\<lt/Initial Value'
 #define ccLOC_CAP_DESCRIPTION			'\<Description'
 #define ccLOC_CAP_MEMBER_TYPE			'Type:'
 #define ccLOC_CAP_PROPERTY				'\<Property'
