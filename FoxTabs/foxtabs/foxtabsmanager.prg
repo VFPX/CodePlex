@@ -642,8 +642,18 @@ Define Class FoxTabsEventHandler As Custom
 					* eg we are in the middle of a compile and VFP has totally shelled out to a 
 					* different memory space which can't even recognise our parent
 					* so just let it fall through with out trying to bind to the events
-				 	
+				
 				Case Msg = WM_CREATE
+				
+					*JAL* VFP crashes if bound to WM_CREATE when Call Stack window is opened manually after 
+					*	a program is suspended. This code temporarily unbinds WM_CREATE and turns it back on 
+					*	in the WM_ACTIVATE event below.
+					* See http://www.codeplex.com/VFPX/WorkItem/View.aspx?WorkItemId=19307
+					If Lower(This.Parent.GetWindowTitle(hWnd)) =  "call stack" and Program(0) <> "FOXTABS"
+						UnBindEvents(0, WM_CREATE)
+						BindEvent(0, WM_ACTIVATE, This, "WMEventHandler")
+					EndIf 
+				
 					* Raise the window create event
 					RaiseEvent(This, "WindowCreateEvent", hWnd)
 					
@@ -651,6 +661,11 @@ Define Class FoxTabsEventHandler As Custom
 					BindEvent(hWnd, WM_SHOWWINDOW, This, "WMEventHandler", 4)
 					BindEvent(hWnd, WM_SETTEXT, This, "WMEventHandler", 4)
 				
+				Case Msg = WM_ACTIVATE
+					* Rebind CM_CREATE event after unbound above
+					UnBindEvents(0, WM_ACTIVATE)
+					BindEvent(0, WM_CREATE, This, "WMEventHandler")	
+
 				Case Msg = WM_SHOWWINDOW
 					If wParam # 0
 						* Raise the window show event
