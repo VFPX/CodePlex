@@ -26,7 +26,8 @@ oobject = .NULL.
 lmethod = .F.
 opositions = .NULL.
 cobject = 
-_memberdata =      860<VFPData><memberdata name="addmembertoobject" type="method" display="AddMemberToObject"/><memberdata name="clearform" type="method" display="ClearForm"/><memberdata name="laddcr" type="property" display="lAddCR"/><memberdata name="lclass" type="property" display="lClass"/><memberdata name="lmethod" type="property" display="lMethod"/><memberdata name="oobject" type="property" display="oObject"/><memberdata name="updatememberdata" type="method" display="UpdateMemberData"/><memberdata name="adjustform" type="method" display="AdjustForm"/><memberdata name="opositions" type="property" display="oPositions"/><memberdata name="ladjustedforclass" type="property" display="lAdjustedForClass"/><memberdata name="ladjustedformethod" type="property" display="lAdjustedForMethod"/><memberdata name="cobject" type="property" display="cObject"/></VFPData>
+version = Version 2.0 - Nov. 10, 2008
+_memberdata =      923<VFPData><memberdata name="addmembertoobject" type="method" display="AddMemberToObject"/><memberdata name="clearform" type="method" display="ClearForm"/><memberdata name="laddcr" type="property" display="lAddCR"/><memberdata name="lclass" type="property" display="lClass"/><memberdata name="lmethod" type="property" display="lMethod"/><memberdata name="oobject" type="property" display="oObject"/><memberdata name="updatememberdata" type="method" display="UpdateMemberData"/><memberdata name="adjustform" type="method" display="AdjustForm"/><memberdata name="opositions" type="property" display="oPositions"/><memberdata name="ladjustedforclass" type="property" display="lAdjustedForClass"/><memberdata name="ladjustedformethod" type="property" display="lAdjustedForMethod"/><memberdata name="cobject" type="property" display="cObject"/><memberdata name="version" type="property" display="Version"/></VFPData>
 cfoxuserid = NEWPROPDLG
 cfoxusername = NewPropertyDialog
 Name = "newpropertydialog"
@@ -487,6 +488,7 @@ opositions A collection of object positions
 ladjustedforclass .T. if the form has been adjusted based on Form vs. Class Designer
 ladjustedformethod .T. if the form has been adjusted based on Property vs. Method
 cobject The name of the object we're adding members for
+version The version number
 *addmembertoobject Adds the property or method to the object
 *updatememberdata Updates _MemberData (adding that property if necessary) for the new member
 *clearform Clears the controls so the form is ready for a new member
@@ -1110,7 +1112,9 @@ lcSys16 = Sys(16)
 lcSys16 = Substr (lcSys16, 1 + At (" ", lcSys16, 2))
 lcSys16 = JustPath (lcSys16)
 
-This.Caption = lcSys16
+*** DougHennig 11/10/2008: show the version number too
+***This.Caption = lcSys16
+This.Caption = lcSys16 + "  " + Thisform.Version
 ENDPROC
 [END METHODS]
 
@@ -1122,5 +1126,5 @@ ENDPROC
 Tahoma, 0, 8, 5, 13, 11, 23, 2, 0
 [END PROPERTIES]
 [START RESERVED1]
-  newpropertydialog.h–®º|é0 newpropertydialogenglish.hž¯Y~c99 ..\..\..\program files\microsoft visual foxpro 9\foxpro.h¦°‚‰1[END RESERVED1]
+  newpropertydialog.h¦bº|é0 newpropertydialogenglish.h®cY~c99 ..\..\..\program files\microsoft visual foxpro 9\foxpro.h¶d‚‰1[END RESERVED1]
 [EOF]
