@@ -184,61 +184,73 @@ with This
 			else
 				luDefault = lcDefault
 			endif not empty(lcDefault) ...
-			.oObject.AddProperty(lcName, luDefault, lnVisibility, ;
-				lcDescription)
-			if llAccess
-				lcCode = strtran(ccACCESS_CODE, '<Insert1>', lcName) + chr(13)
-				.oObject.WriteMethod(lcName + '_Access', lcCode, .T.)
-			endif llAccess
-			if llAssign
-				lcCode = strtran(ccASSIGN_CODE, '<Insert1>', lcName) + chr(13)
-				.oObject.WriteMethod(lcName + '_Assign', lcCode, .T.)
-			endif llAssign
+*** DougHennig 11/10/2008: use TRY in case we have an invalid name
+			try
+				.oObject.AddProperty(lcName, luDefault, lnVisibility, ;
+					lcDescription)
+				if llAccess
+					lcCode = strtran(ccACCESS_CODE, '<Insert1>', lcName) + chr(13)
+					.oObject.WriteMethod(lcName + '_Access', lcCode, .T.)
+				endif llAccess
+				if llAssign
+					lcCode = strtran(ccASSIGN_CODE, '<Insert1>', lcName) + chr(13)
+					.oObject.WriteMethod(lcName + '_Assign', lcCode, .T.)
+				endif llAssign
+			catch to loException when loException.ErrorNo = 1470
+				messagebox(lcName + ' is not a valid property name.')
+				llReturn = .F.
+			catch to loException
+				messagebox(loException.Message)
+				llReturn = .F.
+			endtry
 	endcase
 
 * Create the appropriate script if this is a property.
 
-	lcScript = ''
-	if not .lMethod and llUseToggle
-		lcProgram = sys(16)
-		lcProgram = justpath(substr(lcProgram, at(' ', lcProgram, 2) + 1))
-		lcProgram = addbs(lcProgram) + 'PropertyEditor.app'
-		lcProgram = iif(' ' $ lcProgram, "'" + lcProgram + "'", lcProgram)
-		lcScript  = 'do ' + lcProgram + " with 'Toggle', '" + lcName + "'"
-	endif not .lMethod ...
+*** DougHennig 11/10/2008: only carry on if everything worked by adding IF llReturn
+	if llReturn
+		lcScript = ''
+		if not .lMethod and llUseToggle
+			lcProgram = sys(16)
+			lcProgram = justpath(substr(lcProgram, at(' ', lcProgram, 2) + 1))
+			lcProgram = addbs(lcProgram) + 'PropertyEditor.app'
+			lcProgram = iif(' ' $ lcProgram, "'" + lcProgram + "'", lcProgram)
+			lcScript  = 'do ' + lcProgram + " with 'Toggle', '" + lcName + "'"
+		endif not .lMethod ...
 
 * If this member should go on the Favorites tab or its name wasn't entered in
 * lower case or there's a script, let's update the Member Data for the object.
 
-	if llReturn and (llFavorites or lower(lcName) <> lcName or ;
-		not empty(lcScript))
-		.UpdateMemberData(lcName, llFavorites, lcType, lcScript)
-		if llAccess
-			.UpdateMemberData(lcName + '_Access', llFavorites, 'method')
-		endif llAccess
-		if llAssign
-			.UpdateMemberData(lcName + '_Assign', llFavorites, 'method')
-		endif llAssign
-	endif llReturn ...
+		if llFavorites or lower(lcName) <> lcName or ;
+			not empty(lcScript)
+			.UpdateMemberData(lcName, llFavorites, lcType, lcScript)
+			if llAccess
+				.UpdateMemberData(lcName + '_Access', llFavorites, 'method')
+			endif llAccess
+			if llAssign
+				.UpdateMemberData(lcName + '_Assign', llFavorites, 'method')
+			endif llAssign
+		endif llFavorites ...
 
 * If everything was successful and we have a script to execute, do so.
 
-	lcScriptFile = forcepath('NewPropertyDialogScript.prg', home(7))
-	if file(lcScriptFile)
-		try
-			do (lcScriptFile) with .lClass, .lMethod, lcName, lnVisibility, ;
-				llAccess, llAssign, llFavorites, lcDefault, lcDescription, ;
-				.oObject
-		catch to loException
-			messagebox('Script file: NewPropertyDialogScript.prg' + ccCRLF + ;
-				'Location: ' + displaypath(home(7), 80) + ccCRLF + ;
-				'Error: ' + transform(loException.ErrorNo) + ccCRLF + ;
-				'Message: ' + loException.Message + ccCRLF + ;
-				'Line: ' + transform(loException.LineNo) + ccCRLF + ;
-				'Code: ' + loException.LineContents, ;
-				MB_OK + MB_ICONEXCLAMATION, 'Script Failure')
-		endtry
-	endif file(lcScriptFile)
+		lcScriptFile = forcepath('NewPropertyDialogScript.prg', home(7))
+		if file(lcScriptFile)
+			try
+				do (lcScriptFile) with .lClass, .lMethod, lcName, lnVisibility, ;
+					llAccess, llAssign, llFavorites, lcDefault, lcDescription, ;
+					.oObject
+			catch to loException
+				messagebox('Script file: NewPropertyDialogScript.prg' + ccCRLF + ;
+					'Location: ' + displaypath(home(7), 80) + ccCRLF + ;
+					'Error: ' + transform(loException.ErrorNo) + ccCRLF + ;
+					'Message: ' + loException.Message + ccCRLF + ;
+					'Line: ' + transform(loException.LineNo) + ccCRLF + ;
+					'Code: ' + loException.LineContents, ;
+					MB_OK + MB_ICONEXCLAMATION, 'Script Failure')
+			endtry
+		endif file(lcScriptFile)
+	endif llReturn
 endwith
 return llReturn
 
@@ -1107,8 +1119,8 @@ ENDPROC
 [UNIQUEID] RESERVED  
 [OBJNAME] newpropertydialog
 [START PROPERTIES]
-Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+Tahoma, 0, 8, 5, 13, 11, 23, 2, 0
 [END PROPERTIES]
 [START RESERVED1]
-  newpropertydialog.h~™º|é0 newpropertydialogenglish.h†šY~c99 ..\..\..\program files\microsoft visual foxpro 9\foxpro.hŽ›‚‰1[END RESERVED1]
+  newpropertydialog.h–®º|é0 newpropertydialogenglish.hž¯Y~c99 ..\..\..\program files\microsoft visual foxpro 9\foxpro.h¦°‚‰1[END RESERVED1]
 [EOF]
