@@ -40,7 +40,7 @@ nkeytime = 0
 cmemberssortorder = +CName
 npropertiesselection = 3
 ninheritedselection = 5
-version = Version 1.07 - Nov. 7, 2008
+version = Version 2.0 - Nov. 10, 2008
 omember = .NULL.
 _memberdata =     4547<VFPData>
 	<memberdata name="addmembertoobject" type="method" display="AddMemberToObject"/>
@@ -3090,7 +3090,7 @@ Tahoma, 0, 9, 5, 14, 12, 25, 2, 0
 Arial, 0, 9, 5, 15, 12, 32, 3, 0
 [END PROPERTIES]
 [START RESERVED1]
-  neweditpropertydialog.hét5Åd9 neweditpropertydialogenglish.hñuCZj99 ..\..\..\program files\microsoft visual foxpro 9\foxpro.hûvÇâ1[END RESERVED1]
+  neweditpropertydialog.hNö5Åd9 neweditpropertydialogenglish.hVõCZj99 ..\..\..\program files\microsoft visual foxpro 9\foxpro.h^úÇâ1[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
