@@ -1851,7 +1851,7 @@ Name = "lblDefault"
 PROCEDURE Init
 * Set the caption to a localized string.
 
-This.Caption = ccLOC_CAP_DEFAULT
+This.Caption = ccLOC_CAP_DEFAULT_VALUE
 
 ENDPROC
 [END METHODS]
@@ -3090,7 +3090,7 @@ Tahoma, 0, 9, 5, 14, 12, 25, 2, 0
 Arial, 0, 9, 5, 15, 12, 32, 3, 0
 [END PROPERTIES]
 [START RESERVED1]
-  neweditpropertydialog.hÊ5Åd9 neweditpropertydialogenglish.hÓœXj99 ..\..\..\program files\microsoft visual foxpro 9\foxpro.hˆÇâ1[END RESERVED1]
+  neweditpropertydialog.hét5Åd9 neweditpropertydialogenglish.hñuCZj99 ..\..\..\program files\microsoft visual foxpro 9\foxpro.hûvÇâ1[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
