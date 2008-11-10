@@ -2876,10 +2876,11 @@ Name = "cmdAddMethod"
 [START METHODS]
 PROCEDURE Click
 ThisForm.AddNew(.T.)
-This.Caption = ccLOC_CAP_NEW_METHOD
+
 ENDPROC
 PROCEDURE Init
 This.Caption = ccLOC_CAP_NEW_METHOD	
+
 ENDPROC
 [END METHODS]
 
@@ -2988,12 +2989,24 @@ Baseoptionbutton3.Top = 5
 Baseoptionbutton3.Name = "Baseoptionbutton3"
 [END PROPERTIES]
 [START METHODS]
+PROCEDURE Baseoptionbutton3.Init
+This.Caption = ccLOC_CAP_BOTH
+
+ENDPROC
 PROCEDURE Valid
 With Thisform
 	.oPersist.Set('Properties', .nPropertiesSelection )
 	.SetFilter()
 	.grdMembers.SetFocus()
 EndWith
+ENDPROC
+PROCEDURE baseoptionbutton1.Init
+This.Caption = ccLOC_CAP_PROPERTIES
+
+ENDPROC
+PROCEDURE baseoptionbutton2.Init
+This.Caption = ccLOC_CAP_METHODS
+
 ENDPROC
 [END METHODS]
 
@@ -3038,12 +3051,32 @@ Baseoptionbutton5.Top = 25
 Baseoptionbutton5.Name = "Baseoptionbutton5"
 [END PROPERTIES]
 [START METHODS]
+PROCEDURE Baseoptionbutton3.Init
+This.Caption = ccLOC_CAP_INHERITED
+
+ENDPROC
+PROCEDURE Baseoptionbutton4.Init
+This.Caption = ccLOC_CAP_CUSTOM
+
+ENDPROC
+PROCEDURE Baseoptionbutton5.Init
+This.Caption = ccLOC_CAP_ALL
+
+ENDPROC
 PROCEDURE Valid
 With Thisform
 	.oPersist.Set('Inherited', 	.nInheritedSelection )
 	.SetFilter()
 	.grdMembers.SetFocus()
 EndWith
+ENDPROC
+PROCEDURE baseoptionbutton1.Init
+This.Caption = ccLOC_CAP_NATIVE
+
+ENDPROC
+PROCEDURE baseoptionbutton2.Init
+This.Caption = ccLOC_CAP_NON_NATIVE
+
 ENDPROC
 [END METHODS]
 
@@ -3057,7 +3090,7 @@ Tahoma, 0, 9, 5, 14, 12, 25, 2, 0
 Arial, 0, 9, 5, 15, 12, 32, 3, 0
 [END PROPERTIES]
 [START RESERVED1]
-  neweditpropertydialog.h&@5Åd9 neweditpropertydialogenglish.h.A{d99 ..\..\..\program files\microsoft visual foxpro 9\foxpro.h6BÇâ1[END RESERVED1]
+  neweditpropertydialog.hÊ5Åd9 neweditpropertydialogenglish.hÓœXj99 ..\..\..\program files\microsoft visual foxpro 9\foxpro.hˆÇâ1[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
