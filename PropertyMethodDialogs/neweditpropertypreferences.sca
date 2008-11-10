@@ -155,6 +155,10 @@ Name = "cmdOK"
 PROCEDURE Click
 Thisform.Release()
 ENDPROC
+PROCEDURE Init
+This.Caption = ccLOC_CAP_OK
+
+ENDPROC
 [END METHODS]
 
 [ RECORD]
@@ -471,6 +475,10 @@ EndWith
 thisform.Refresh()
 
 ENDPROC
+PROCEDURE Init
+This.Caption = ccLOC_CAP_DEFAULT
+
+ENDPROC
 [END METHODS]
 
 [ RECORD]
@@ -502,6 +510,10 @@ With Thisform.oCallingForm
 Endwith
 
 thisform.Refresh()
+
+ENDPROC
+PROCEDURE Init
+This.Caption = ccLOC_CAP_SAMPLE
 
 ENDPROC
 [END METHODS]
@@ -677,15 +689,19 @@ Endwith
 
 
 ENDPROC
+PROCEDURE Init
+This.Caption = ccLOC_CAP_SET_FONT_FOR_GRID
+
+ENDPROC
 [END METHODS]
 
 [ RECORD]
 [PLATFORM] COMMENT 
 [UNIQUEID] RESERVED  
 [START PROPERTIES]
-Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
-Tahoma, 0, 9, 5, 14, 12, 23, 2, 0
+Tahoma, 0, 8, 5, 13, 11, 23, 2, 0
+Tahoma, 0, 9, 5, 14, 12, 25, 2, 0
 [END PROPERTIES]
 [START RESERVED1]
-  neweditpropertydialog.hŒ”5Åd9 neweditpropertydialogenglish.h÷‘{d9E ..\..\..\..\..\..\..\program files\microsoft visual foxpro 9\foxpro.hﬁ’râ1[END RESERVED1]
+  neweditpropertydialog.h¶N5Åd9 neweditpropertydialogenglish.hÆOœXj99 ..\..\..\program files\microsoft visual foxpro 9\foxpro.h∂PÇâ1[END RESERVED1]
 [EOF]
