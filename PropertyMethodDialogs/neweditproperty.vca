@@ -587,7 +587,13 @@ Endif
 
 Gather Name Thisform.oMember Memo
 
-Thisform.editMember() && this does actual updating
+*** JimNelson 11/08/2008: after saving the changes, refresh the grid
+***Thisform.editMember() && this does actual updating
+With Thisform
+    .editMember() && this does actual updating
+    .ScatterCursor()
+    .Refresh()
+Endwith
 
 ENDPROC
 PROCEDURE checkmemberdata
@@ -3046,12 +3052,12 @@ ENDPROC
 [UNIQUEID] RESERVED  
 [OBJNAME] neweditpropertydialog
 [START PROPERTIES]
-Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
-Tahoma, 0, 9, 5, 14, 12, 23, 2, 0
+Tahoma, 0, 8, 5, 13, 11, 23, 2, 0
+Tahoma, 0, 9, 5, 14, 12, 25, 2, 0
 Arial, 0, 9, 5, 15, 12, 32, 3, 0
 [END PROPERTIES]
 [START RESERVED1]
-  neweditpropertydialog.h~ô5Åd9 neweditpropertydialogenglish.hÜö{d99 ..\..\..\program files\microsoft visual foxpro 9\foxpro.héõÇâ1[END RESERVED1]
+  neweditpropertydialog.h&@5Åd9 neweditpropertydialogenglish.h.A{d99 ..\..\..\program files\microsoft visual foxpro 9\foxpro.h6BÇâ1[END RESERVED1]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
