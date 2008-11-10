@@ -48,6 +48,10 @@
 #define ccLOC_CAP_REMOVALPROMPT			'Prompt before removing PEMs?'
 #define ccLOC_CAP_FONTSIZE				'Font Size:'
 #define ccLOC_CAP_GRIDHIGHLIGHTING		'Grid Highlighting:'
+#define ccLOC_CAP_SET_FONT_FOR_GRID		'Set Font for Grid'
+#define ccLOC_CAP_DEFAULT				'Default'
+#define ccLOC_CAP_SAMPLE				'Sample'
+#define ccLOC_CAP_OK					'OK'
 
 * Messages
 
