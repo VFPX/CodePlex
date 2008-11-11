@@ -278,8 +278,9 @@ Try
 
 	* Determine where to position the context menu. Ensure that the menu is shown
 	*	above the current FoxTab. 
-	lnColumn = Max(Mcol("Screen", 0), This.Left * (lnFoxelWidth / lnPixelWidth))
-	lnColumn = Min(lnColumn, (This.Left + This.Width) * (lnFoxelWidth / lnPixelWidth))
+*JAL*		lnColumn = Max(Mcol("Screen", 0), This.Left * (lnFoxelWidth / lnPixelWidth))
+*JAL*		lnColumn = Min(lnColumn, (This.Left + This.Width) * (lnFoxelWidth / lnPixelWidth))
+	lnColumn = Wlcol("FoxTabs") + (Mcol("FoxTabs", 3) * (lnFoxelWidth / lnPixelWidth))
 
 	Do Case
 		Case oFoxTabsToolbar.DockPosition = 0	&& Top
@@ -1903,6 +1904,7 @@ Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
 Caption = "FoxTabs"
 Height = 62
 Left = 0
+Movable = .F.
 Name = "foxtabstoolbar"
 Top = 0
 Width = 110
@@ -1927,6 +1929,10 @@ For Each oFoxTabControl In This.Controls
 Next 
 
 
+ENDPROC
+PROCEDURE DblClick
+* Don't allow toolbar to be undocked with double-click
+NoDefault 
 ENDPROC
 PROCEDURE Init
 
