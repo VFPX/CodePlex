@@ -2895,12 +2895,22 @@ ENDPROC
 PROCEDURE setactive
 * The desktop tab is a special case as it is not assigned to any IDE window.
 * When the user clicks on this tab we need to hide all windows in the IDE
+* If windows are already hidden, show them all
 
-* Hide all windows
-Hide Window All
+Activate Window Screen 
+If Empty(Wontop())
+	Show Window All
+	Activate Window Screen 
+	If !Empty(Wontop())
+		Activate Window (Wontop()) Top 
+	EndIf 
+Else 
+	* Hide all windows
+	Hide Window All
+	* Set focus to this tab
+	This.SetFocus()
+EndIf 
 
-* Set focus to this tab
-This.SetFocus()
 
 ENDPROC
 [END METHODS]
