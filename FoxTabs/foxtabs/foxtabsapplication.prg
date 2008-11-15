@@ -25,7 +25,7 @@ Define Class FoxTabsApplication As Custom
 	
 	Function Main()
 
-		Local lcConfigFile As String
+		Local lcConfigFile As String, lcWonTop
 		
 		* Create Private DataSession so we can SET TALK OFF
 		* Otherwise, TALK is very noisy
@@ -62,6 +62,14 @@ Define Class FoxTabsApplication As Custom
 
 		* Show the toolbar
 		This.FoxTabsToolbar.Visible = .T.
+
+		* Reactivate top window and make sure tab highlighted
+		Activate Window screen
+		lcWontop = Wontop()
+		If !Empty(lcWontop)
+			Hide Window (lcWonTop)
+			Activate Window (lcWonTop) TOP
+		EndIf 
 	
 	EndFunc 
 	
