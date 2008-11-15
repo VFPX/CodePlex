@@ -74,7 +74,7 @@ Define Class FoxTabsManager As Custom
 				This.loadWindows(lnChildHWnd)
 
 			EndDo
-		
+	
 		Catch To oException
 			* Raise error event
 			RaiseEvent(This.Parent, "LogError", oException, "Exception caught while loading existing IDE windows.")
@@ -153,14 +153,20 @@ Define Class FoxTabsManager As Custom
 			lcWindowTitle = Nvl(This.getWindowTitle(hWnd), "")
 
 			* Check the window title exclusion conditions
-
+*JAL*				lbReturn = Application.hWnd # hWnd ;					&& Ignore the main FoxPro window
+*JAL*							And This.Parent.FoxTabsToolbar.hWnd # hWnd ;	&& Ignore foxtabs toolbar
+*JAL*							And Not Empty(lcWindowTitle) ;				&& Ignore windows with no titles
+*JAL*							And Not InList(Lower(lcWindowTitle), "compile", "command", "properties", "document view", "data session", "debugger", "watch", "locals", "trace", "call stack", "debug output", "parentclass browser") ;
+*JAL*							And Not InList(Lower(lcWindowTitle), "expression builder", "expression builder options") ;
+*JAL*							And Ascan(laToolbars,lcWindowTitle,-1,-1,1,7) = 0
+						
+			*JAL* Now allow tracking of IDE windows except debugger
 			lbReturn = Application.hWnd # hWnd ;					&& Ignore the main FoxPro window
 						And This.Parent.FoxTabsToolbar.hWnd # hWnd ;	&& Ignore foxtabs toolbar
 						And Not Empty(lcWindowTitle) ;				&& Ignore windows with no titles
-						And Not InList(Lower(lcWindowTitle), "compile", "command", "properties", "document view", "data session", "debugger", "watch", "locals", "trace", "call stack", "debug output", "parentclass browser") ;
+						And Not InList(Lower(lcWindowTitle), "compile", "debugger", "watch", "locals", "trace", "call stack", "debug output", "parentclass browser") ;
 						And Not InList(Lower(lcWindowTitle), "expression builder", "expression builder options") ;
 						And Ascan(laToolbars,lcWindowTitle,-1,-1,1,7) = 0
-						
 			*Wait window nowait Transform(lcWindowTitle)			
 
 			* Gather the hWnd of this windows parent
@@ -675,9 +681,9 @@ Define Class FoxTabsEventHandler As Custom
 					* Unbind to the this event as we do not require it any more
 					UnBindEvents(hWnd, WM_SHOWWINDOW)
 					
-				Case Msg = WM_SETFOCUS 
+				Case Msg = WM_SETFOCUS or Msg = WM_WINDOWPOSCHANGED
 					* Raise the window set focus event
-					* RaiseEvent(This, "WindowSetFocusEvent", hWnd)
+					RaiseEvent(This, "WindowSetFocusEvent", hWnd)
 
 				Case Msg = WM_SETTEXT
 					* Raise the window set text event
@@ -717,7 +723,11 @@ Define Class FoxTabsEventHandler As Custom
 		* Setup event bindings for this window
 		BindEvent(hWnd, WM_DESTROY, This, "WMEventHandler", 4)
 		BindEvent(hWnd, WM_SETTEXT, This, "WMEventHandler", 4)
-		*BindEvent(hWnd, WM_SETFOCUS, This, "WMEventHandler", 4)
+		BindEvent(hWnd, WM_SETFOCUS, This, "WMEventHandler", 4)
+		* Some IDE Windows don't have WM_SETFOCUS event, so use WM_WINDOWPOSCHANGED instead
+		If InList(Lower(This.Parent.GetWindowTitle(hWnd)), "project manager", "properties")
+			BindEvent(hWnd, WM_WINDOWPOSCHANGED, This, "WMEventHandler", 4)
+		EndIf 
 
 	EndFunc 
 	
