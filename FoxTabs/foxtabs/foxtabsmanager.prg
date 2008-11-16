@@ -605,6 +605,7 @@ Define Class FoxTabsEventHandler As Custom
 	* Define class properties
 	
 	PrevWndFunc	= 0
+	LastHWnd = 0
 	
 	* _____________________________________________________________
 	*
@@ -681,9 +682,13 @@ Define Class FoxTabsEventHandler As Custom
 					* Unbind to the this event as we do not require it any more
 					UnBindEvents(hWnd, WM_SHOWWINDOW)
 					
-				Case Msg = WM_SETFOCUS or Msg = WM_WINDOWPOSCHANGED
-					* Raise the window set focus event
-					RaiseEvent(This, "WindowSetFocusEvent", hWnd)
+				Case InList(Msg, WM_SETFOCUS, WM_WINDOWPOSCHANGED, WM_CHILDACTIVATE)
+					* Raise the window set focus event 
+					* Only raise when window is different than last time, to avoid flicker in toolbar
+					If hWnd <> This.LastHWnd
+						This.LastHWnd = hWnd			
+						RaiseEvent(This, "WindowSetFocusEvent", hWnd)
+					EndIf 
 
 				Case Msg = WM_SETTEXT
 					* Raise the window set text event
@@ -724,8 +729,8 @@ Define Class FoxTabsEventHandler As Custom
 		BindEvent(hWnd, WM_DESTROY, This, "WMEventHandler", 4)
 		BindEvent(hWnd, WM_SETTEXT, This, "WMEventHandler", 4)
 		BindEvent(hWnd, WM_SETFOCUS, This, "WMEventHandler", 4)
-		* Some IDE Windows don't have WM_SETFOCUS event, so use WM_WINDOWPOSCHANGED instead
-		If InList(Lower(This.Parent.GetWindowTitle(hWnd)), "project manager", "properties")
+		* Some IDE Windows don't have WM_SETFOCUS event, so use other events
+		If InList(Lower(This.Parent.GetWindowTitle(hWnd)), "project manager", "properties", "class designer", "form designer")
 			BindEvent(hWnd, WM_WINDOWPOSCHANGED, This, "WMEventHandler", 4)
 		EndIf 
 
