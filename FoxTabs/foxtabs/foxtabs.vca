@@ -43,6 +43,9 @@ EndIf
 * Set the orientation of the images
 This.setImageOrientation()
 
+* Set window label font
+This.SetFont()
+
 ENDPROC
 PROCEDURE SetFocus
 * Reset isActive properties for all other tab controls
@@ -126,6 +129,21 @@ Catch To oException
 EndTry
 
 ENDPROC
+PROCEDURE setfont
+* Set window label font
+Local lcFont As String, lnFontColour As Integer 
+
+* Gather the default font settings
+lcFont = oFoxTabs.Configuration("AppSettings.Font").Value
+If Not Empty(lcFont)
+	* Set the default font
+	This.lblWindowName.FontName = GetWordNum(lcFont, 1, ",")
+	This.lblWindowName.FontSize = Val(GetWordNum(lcFont, 2, ","))
+	This.lblWindowName.FontBold = "B" $ GetWordNum(lcFont, 3, ",")
+	This.lblWindowName.FontItalic = "I" $ GetWordNum(lcFont, 3, ",")	
+EndIf
+
+ENDPROC
 PROCEDURE seticon
 * Set the associated icon
 
@@ -190,6 +208,11 @@ PROCEDURE setwindowname
 
 Local lcCaption As String, lnMaxChars As Integer 
 
+* Don't update Desktop caption
+If Lower(This.Name) == "foxtabdesktop"
+	Return 
+EndIf 
+
 * Check if we are using full titles for the FoxTab caption
 If ( oFoxTabs.Configuration("AppSettings.ShowFullName").Value = "true" )
 	* Use Windows name
@@ -220,6 +243,9 @@ Else
 					
 	EndCase 
 EndIf
+
+* Display full window title in tooltip
+This.lblWindowName.ToolTipText = Trim(This.FoxTab.WindowName)
 
 * Check the maximum FoxTab caption size
 lnMaxChars = Val(oFoxTabs.Configuration("AppSettings.MaxChars").Value)
@@ -347,6 +373,7 @@ Class[END RESERVED1]
 *isactive_assign 
 *resizetab Resizes the tab control
 *setactive Activates the assigned window
+*setfont Sets the window label font.
 *seticon sets the tab icon corresponding to the type of file in the window.
 *setimageorientation Orientates the controls images relate to the docked position.
 *setwindowname Sets the window label caption
@@ -501,22 +528,6 @@ Catch To oException
 	RaiseEvent(This.Parent.Parent.Parent, "LogError", oException, "Exception caught closing " + Transform(lcWindowName))
 
 EndTry	
-
-ENDPROC
-PROCEDURE Init
-
-Local lcFont As String, lnFontColour As Integer 
-
-* Gather the default font settings
-lcFont = oFoxTabs.Configuration("AppSettings.Font").Value
-If Not Empty(lcFont)
-	* Set the default font
-	This.FontName = GetWordNum(lcFont, 1, ",")
-	This.FontSize = Val(GetWordNum(lcFont, 2, ","))
-	This.FontBold = "B" $ GetWordNum(lcFont, 3, ",")
-	This.FontItalic = "I" $ GetWordNum(lcFont, 3, ",")	
-EndIf
-
 
 ENDPROC
 PROCEDURE MouseEnter
@@ -787,6 +798,7 @@ EndWith
 
 * Save configuration
 oFoxTabs.Configuration.SaveConfig()
+oFoxTabs.FoxTabsToolbar.RefreshTabs()
 ENDPROC
 [END METHODS]
 [START RESERVED1]
@@ -924,6 +936,7 @@ Name = "cboDock"
 NumberOfElements = 0
 RowSource = "Top,Bottom"
 RowSourceType = 1
+Style = 2
 TabIndex = 1
 Top = 23
 Width = 185
@@ -1902,12 +1915,12 @@ Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
 [START PROPERTIES]
 
 Caption = "FoxTabs"
-Height = 62
+Height = 32
 Left = 0
 Movable = .F.
 Name = "foxtabstoolbar"
 Top = 0
-Width = 110
+Width = 132
 _memberdata =       93<VFPData><memberdata name="otabtoremove" type="property" display="oTabToRemove"/></VFPData>
 otabtoremove = .NULL.
 [END PROPERTIES]
@@ -2472,6 +2485,16 @@ PROCEDURE refreshtabs
 
 * Refresh the row of FoxTabs
 oFoxTabs.FoxTabsManager.RefreshWindows(Application.hWnd)
+
+* Update each FoxTab control 
+For Each oFoxTabControl In This.Controls
+	If Lower(oFoxTabControl.Class) = "foxtabcontrol"
+		oFoxTabControl.SetFont()
+		oFoxTabControl.SetWindowName()
+		oFoxTabControl.ResizeTab()
+	EndIf
+Next 
+
 ENDPROC
 PROCEDURE releasewindow
 Lparameters lpcWindowName As String
@@ -2848,7 +2871,7 @@ Name = "cmdOptions"
 PicturePosition = 12
 SpecialEffect = 2
 ToolTipText = "Options"
-Top = 11
+Top = 3
 Width = 16
 [END PROPERTIES]
 [START METHODS]
@@ -2871,7 +2894,7 @@ ENDPROC
 Anchor = 10
 Left = 33
 Name = "foxtabDesktop"
-Top = 11
+Top = 3
 imgBody.Name = "imgBody"
 imgRight1.Name = "imgRight1"
 imgRight2.Name = "imgRight2"
@@ -2960,7 +2983,7 @@ Left = 20
 Name = "imgLeft"
 Picture = images\tabstyles\tabimage.left.gif
 Stretch = 2
-Top = 11
+Top = 3
 Width = 13
 [END PROPERTIES]
 
@@ -2973,9 +2996,9 @@ Width = 13
 [PARENT] foxtabstoolbar
 [START PROPERTIES]
 Height = 23
-Left = 5
+Left = 104
 Name = "tmrRemoveFoxTab"
-Top = 36
+Top = 3
 Width = 23
 [END PROPERTIES]
 [START METHODS]
