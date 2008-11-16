@@ -1,6 +1,36 @@
-If Directory("c:\documents and settings\cb\my documents\visual foxpro projects\foxtabs\foxtabs\" )
-	Set Default To "c:\documents and settings\cb\my documents\visual foxpro projects\foxtabs\foxtabs\" 
-EndIf
+Lparameters lcOptions
+
+* Add to Tools menu (code taken from Data Explorer)
+If !Empty(m.lcOptions) and Lower(m.lcOptions) == "-m"  && add to menu
+	Local nLevel, cAppName, nBar
+	m.nLevel = 1
+	DO WHILE !EMPTY(SYS(16, m.nLevel))
+		IF EMPTY(m.cAppName) OR ATC(".app", SYS(16, m.nLevel)) > 0
+			m.cAppName = SYS(16, m.nLevel)
+		ENDIF
+		m.nLevel = m.nLevel + 1
+	ENDDO
+	IF FILE(m.cAppName)
+		m.nBar = 0
+		FOR m.i = 1 TO CNTBAR("_MTOOLS")
+			IF PRMBAR("_MTOOLS", GETBAR("_MTOOLS", m.i)) == STRTRAN("\<FoxTabs", '\<', '')
+				m.nBar = GETBAR("_MTOOLS", m.i)
+				EXIT
+			ENDIF
+		ENDFOR
+		IF m.nBar == 0
+			m.nBar = CNTBAR("_MTOOLS") + 1
+		ENDIF
+		
+		m.cAppName = [DO LOCFILE("] + m.cAppName + [", "APP")]
+		DEFINE BAR m.nBar OF _mtools AFTER _mtl_references ;
+		 PROMPT "\<FoxTabs" ;
+		 MESSAGE "Runs FoxTabs"
+		ON SELECTION BAR m.nBar OF _mtools &cAppName
+	ENDIF
+
+	RETURN
+EndIf 
 
 * FoxTabs Application
 Public oFoxTabs As FoxTabsApplication
@@ -17,7 +47,7 @@ Return
 
 Define Class FoxTabsApplication As Custom
 
-	Version		= "0.7.0 Beta"
+	Version		= "0.8.0 Beta"
 	ConfigFile 	= ""
 	LogFile		= ""
 	PrevDataSession = .f.
@@ -68,6 +98,7 @@ Define Class FoxTabsApplication As Custom
 		lcWontop = Wontop()
 		If !Empty(lcWontop)
 			Hide Window (lcWonTop)
+			Show Window (lcWonTop)
 			Activate Window (lcWonTop) TOP
 		EndIf 
 	
