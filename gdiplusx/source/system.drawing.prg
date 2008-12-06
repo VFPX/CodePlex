@@ -18331,6 +18331,7 @@ DEFINE CLASS xfcRectangle AS xfcdrawingbase
 	** History:
 	**  2006/03/07: Auto Generated
 	**	2006/05/08: BDurban - Coded
+	**  2008/12/06: BBout - Fixed typoes in tiWidth (tnWidth) 
 	**
 	** .NET Help ********************************************************
 	** http://msdn2.microsoft.com/en-us/library/System.Drawing.Rectangle.Contains%28vs.80%29.aspx
@@ -18352,24 +18353,24 @@ DEFINE CLASS xfcRectangle AS xfcdrawingbase
 			LOCAL llValue
 			m.llValue = .F.
 			
-			m.tnWidth = EVL(m.tnWidth, 0)
-			m.tnHeight = EVL(m.tnHeight, 0)
+			m.tiWidth = EVL(m.tiWidth, 0)
+			m.tiHeight = EVL(m.tiHeight, 0)
 		
 			DO CASE
 			CASE VARTYPE(m.tiX) = "O" AND INLIST(m.tnX.BaseName, "RectangleF", "Rectangle")
 				m.loRect = m.tiX
-				m.loRect.GetExtent(@tnX, @tnY, @tnWidth, @tnHeight)
-			CASE VARTYPE(m.tiX) = "O" AND INLIST(m.tnX.BaseName, "RectangleF", "Rectangle")
-				m.tnHeight = 0
-				m.tnWidth = 0
+				m.loRect.GetExtent(@tnX, @tnY, @tiWidth, @tiHeight)
+			CASE VARTYPE(m.tiX) = "O" AND INLIST(m.tnX.BaseName, "PointF", "Point")
+				m.tiHeight = 0
+				m.tiWidth = 0
 				m.loPoint = m.tiX
-				m.loPoint.GetExtent(@tnX, @tnY)
+				m.loPoint.GetExtent(@tiX, @tiY)
 			ENDCASE
 			
-			m.llValue = (m.tiX>=This.X ;
-						AND m.tiY>=This.Y ;
-						AND m.tiX+m.tiWidth<=This.X+This.Width ;
-						AND m.tiY+m.tiHeight<=This.Y+This.Height)
+			m.llValue = (m.tiX >= This.X ;
+						AND m.tiY >= This.Y ;
+						AND m.tiX + m.tiWidth <= This.X + This.Width ;
+						AND m.tiY + m.tiHeight <= This.Y + This.Height)
 			
 		CATCH TO loExc
 			THROW_EXCEPTION
