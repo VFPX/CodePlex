@@ -18332,6 +18332,7 @@ DEFINE CLASS xfcRectangle AS xfcdrawingbase
 	**  2006/03/07: Auto Generated
 	**	2006/05/08: BDurban - Coded
 	**  2008/12/06: BBout - Fixed typoes in tiWidth (tnWidth) 
+	**       Accepts xfcRectangles differently from the .NET version
 	**
 	** .NET Help ********************************************************
 	** http://msdn2.microsoft.com/en-us/library/System.Drawing.Rectangle.Contains%28vs.80%29.aspx
