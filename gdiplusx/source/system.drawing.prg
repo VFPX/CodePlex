@@ -18362,10 +18362,10 @@ DEFINE CLASS xfcRectangle AS xfcdrawingbase
 			m.tiHeight = EVL(m.tiHeight, 0)
 		
 			DO CASE
-			CASE VARTYPE(m.tiX) = "O" AND INLIST(m.tnX.BaseName, "RectangleF", "Rectangle")
+			CASE VARTYPE(m.tiX) = "O" AND INLIST(m.tiX.BaseName, "RectangleF", "Rectangle")
 				m.loRect = m.tiX
 				m.loRect.GetExtent(@tiX, @tiY, @tiWidth, @tiHeight)
-			CASE VARTYPE(m.tiX) = "O" AND INLIST(m.tnX.BaseName, "RectangleF", "Rectangle")
+			CASE VARTYPE(m.tiX) = "O" AND INLIST(m.tiX.BaseName, "RectangleF", "Rectangle")
 				m.tiHeight = 0
 				m.tiWidth = 0
 				m.loPoint = m.tiX
