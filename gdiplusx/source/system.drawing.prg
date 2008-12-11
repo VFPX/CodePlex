@@ -14776,9 +14776,13 @@ DEFINE CLASS _xfcknowncolortable AS xfcdrawingbase
 
 	*********************************************************************
 	PROTECTED FUNCTION _initcolornametable
+	** 20081210 : CChalom - fixed, checking for "SET COMPATIBLE"
 	*********************************************************************
 		
-		
+			LOCAL lcSetCompatible
+			m.lcSetCompatible = SET("Compatible")
+			SET COMPATIBLE OFF
+				
 			LOCAL laColorNameTable[0xaf]
 			m.laColorNameTable = ""
 			m.laColorNameTable[0x01] = "ActiveBorder"
@@ -14958,6 +14962,8 @@ DEFINE CLASS _xfcknowncolortable AS xfcdrawingbase
 			
 			DIMENSION This._ColorNameTable[ALEN(m.laColorNameTable)]
 			ACOPY(m.laColorNameTable, This._ColorNameTable)
+
+			SET COMPATIBLE &lcSetCompatible.
 		
 		RETURN
 	ENDFUNC
@@ -18331,8 +18337,6 @@ DEFINE CLASS xfcRectangle AS xfcdrawingbase
 	** History:
 	**  2006/03/07: Auto Generated
 	**	2006/05/08: BDurban - Coded
-	**  2008/12/06: BBout - Fixed typoes in tiWidth (tnWidth) 
-	**       Accepts xfcRectangles differently from the .NET version
 	**
 	** .NET Help ********************************************************
 	** http://msdn2.microsoft.com/en-us/library/System.Drawing.Rectangle.Contains%28vs.80%29.aspx
@@ -18360,8 +18364,8 @@ DEFINE CLASS xfcRectangle AS xfcdrawingbase
 			DO CASE
 			CASE VARTYPE(m.tiX) = "O" AND INLIST(m.tnX.BaseName, "RectangleF", "Rectangle")
 				m.loRect = m.tiX
-				m.loRect.GetExtent(@tnX, @tnY, @tiWidth, @tiHeight)
-			CASE VARTYPE(m.tiX) = "O" AND INLIST(m.tnX.BaseName, "PointF", "Point")
+				m.loRect.GetExtent(@tiX, @tiY, @tiWidth, @tiHeight)
+			CASE VARTYPE(m.tiX) = "O" AND INLIST(m.tnX.BaseName, "RectangleF", "Rectangle")
 				m.tiHeight = 0
 				m.tiWidth = 0
 				m.loPoint = m.tiX
@@ -18370,7 +18374,7 @@ DEFINE CLASS xfcRectangle AS xfcdrawingbase
 			
 			m.llValue = (m.tiX >= This.X ;
 						AND m.tiY >= This.Y ;
-						AND m.tiX + m.tiWidth <= This.X + This.Width ;
+						AND m.tiX + m.tiWidth  <= This.X + This.Width ;
 						AND m.tiY + m.tiHeight <= This.Y + This.Height)
 			
 		CATCH TO loExc
