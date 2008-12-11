@@ -18337,6 +18337,7 @@ DEFINE CLASS xfcRectangle AS xfcdrawingbase
 	** History:
 	**  2006/03/07: Auto Generated
 	**	2006/05/08: BDurban - Coded
+	**  2008/12/10: BBout - Fixed
 	**
 	** .NET Help ********************************************************
 	** http://msdn2.microsoft.com/en-us/library/System.Drawing.Rectangle.Contains%28vs.80%29.aspx
@@ -18365,7 +18366,7 @@ DEFINE CLASS xfcRectangle AS xfcdrawingbase
 			CASE VARTYPE(m.tiX) = "O" AND INLIST(m.tiX.BaseName, "RectangleF", "Rectangle")
 				m.loRect = m.tiX
 				m.loRect.GetExtent(@tiX, @tiY, @tiWidth, @tiHeight)
-			CASE VARTYPE(m.tiX) = "O" AND INLIST(m.tiX.BaseName, "RectangleF", "Rectangle")
+			CASE VARTYPE(m.tiX) = "O" AND INLIST(m.tiX.BaseName, "PointF", "Point")
 				m.tiHeight = 0
 				m.tiWidth = 0
 				m.loPoint = m.tiX
