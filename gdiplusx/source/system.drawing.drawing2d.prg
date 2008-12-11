@@ -5843,6 +5843,7 @@ DEFINE CLASS xfcLinearGradientBrush AS xfcbrush OF System.Drawing.prg
 	** History:
 	**  2006/03/07: Auto Generated
 	**	2006/03/28:	BDurban - Coded
+	**  2008/12/10: CChalom - Fixed  
 	**
 	** .NET Help ********************************************************
 	** http://msdn2.microsoft.com/en-us/library/System.Drawing.Drawing2D.LinearGradientBrush.ScaleTransform%28vs.80%29.aspx
@@ -5859,7 +5860,7 @@ DEFINE CLASS xfcLinearGradientBrush AS xfcbrush OF System.Drawing.prg
 		LOCAL loExc AS Exception
 		TRY
 			m.tiOrder = EVL(m.tiOrder, MatrixOrderPrepend)
-			This.SetStatus(xfcGdipScaleLineTransform(m.lhBrush, m.tnSx, m.tnSy, m.tiOrder))
+			This.SetStatus(xfcGdipScaleLineTransform(This.Handle, m.tnSx, m.tnSy, m.tiOrder)) 			
 		CATCH TO loExc
 			THROW_EXCEPTION
 		ENDTRY
@@ -6195,7 +6196,7 @@ DEFINE CLASS xfcMatrix AS xfcgpobject OF System.Drawing.prg
 			CASE VARTYPE(m.tnM11)+VARTYPE(m.tnM12)+VARTYPE(m.tnM21)+VARTYPE(m.tnM22) == "NNNN"
 				This.SetStatus(xfcGdipCreateMatrix2(m.tnM11, m.tnM12, m.tnM21, m.tnM22, m.tnDx, m.tnDy, @lhMatrix))
 				
-			CASE VARTYPE(m.tnM11) = "O" AND m.tnM11.ClassName = "RectangleF" AND TYPE("m.tnM12[1]") = "O"
+			CASE VARTYPE(m.tnM11) = "O" AND m.tnM11.BaseName = "RectangleF" AND TYPE("m.tnM12[1]") = "O"
 				m.loRect = m.tnM11
 				m.loPoint = NEWOBJECT("xfcPointF", XFCCLASS_DRAWING)
 				m.lqPoints = m.loPoint.ToVarBinary(@tnM12, @liCount)
@@ -6203,7 +6204,7 @@ DEFINE CLASS xfcMatrix AS xfcgpobject OF System.Drawing.prg
 					This.SetStatus(xfcGdipCreateMatrix3(m.loRect.ToVarBinary(), m.lqPoints, @lhMatrix))
 				ENDIF
 				
-			CASE VARTYPE(m.tnM11) = "O" AND m.tnM11.ClassName = "Rectangle" AND TYPE("m.tnM12[1]") = "O"
+			CASE VARTYPE(m.tnM11) = "O" AND m.tnM11.BaseName = "Rectangle" AND TYPE("m.tnM12[1]") = "O"
 				m.loRect = m.tnM11
 				m.loPoint = NEWOBJECT("xfcPoint", XFCCLASS_DRAWING)
 				m.lqPoints = m.loPoint.ToVarBinary(@tnM12, @liCount)
@@ -7482,6 +7483,7 @@ DEFINE CLASS xfcPathGradientBrush AS xfcbrush OF System.Drawing.prg
 	** History:
 	**  2006/03/07: Auto Generated
 	**	2006/05/10: BDurban - Coded
+	**  2008/12/10: BBout/CChalom - Fixed
 	*********************************************************************
 	LPARAMETERS toPointF AS xfcPointF
 		
@@ -7974,12 +7976,13 @@ DEFINE CLASS xfcPathGradientBrush AS xfcbrush OF System.Drawing.prg
 	**  2006/03/07: Auto Generated
 	**	2006/06/09: BDurban - Coded
 	**	2006/10/29: BDurban - Fixed to handle no index being specified
+	**  2008/12/10: CBoyd/BBout - Fixed allowing color arrays
 	*********************************************************************
 	LPARAMETERS toColor AS xfcColor, tiIndex
 		
 		*!ToDo: Test this function
 		LOCAL loColor AS xfcColor
-		LOCAL liCount, lqColors
+		LOCAL liCount, liCount2, lqColors
 		
 		LOCAL loExc AS Exception
 		TRY
@@ -7991,7 +7994,8 @@ DEFINE CLASS xfcPathGradientBrush AS xfcbrush OF System.Drawing.prg
 					*! ToDo ERROR
 				ELSE
 					m.lqColors = REPLICATE(0h00000000,liCount)
-					This.SetStatus(xfcGdipGetPathGradientSurroundColorsWithCount(This.Handle, @lqColors, @liCount))
+					m.liCount2 = 0
+					This.SetStatus(xfcGdipGetPathGradientSurroundColorsWithCount(This.Handle, @lqColors, @liCount2))
 					IF ISNULL(m.tiIndex)
 						m.lqColors = REPLICATE(BINTOC(toColor.ARGB,"4rs"),m.liCount)
 					ELSE
@@ -7999,7 +8003,15 @@ DEFINE CLASS xfcPathGradientBrush AS xfcbrush OF System.Drawing.prg
 					ENDIF
 					This.SetStatus(xfcGdipSetPathGradientSurroundColorsWithCount(This.Handle, @lqColors, @liCount))
 				ENDIF
-			ENDIF	
+			ELSE
+				* added by BAB to cater for a colour array / a Color Array has been passed
+				IF VARTYPE(m.toColor) = "C"
+					m.liCount = 0
+					This.SetStatus(xfcGdipGetPathGradientSurroundColorCount(This.Handle, @liCount))
+					This.SetStatus(xfcGdipSetPathGradientSurroundColorsWithCount(This.Handle, @toColor, @liCount))
+				ENDIF
+			ENDIF
+
 		CATCH TO loExc
 			THROW_EXCEPTION
 		ENDTRY
@@ -9577,9 +9589,9 @@ ENDFUNC
 *********************************************************************
 FUNCTION xfcGdipSetPathGradientPresetBlend(brush, blend, positions, Count)
 *********************************************************************
-	DECLARE Long GdipSetPathGradientPresetBlend IN GDIPLUS.DLL AS xfcGdipSetPathGradientPresetBlend Long brush, Long @blend, Single @positions, Long Count
+	DECLARE Long GdipSetPathGradientPresetBlend IN GDIPLUS.DLL AS xfcGdipSetPathGradientPresetBlend Long brush, STRING @blend, STRING @positions, Long Count
 	RETURN xfcGdipSetPathGradientPresetBlend(m.brush, @m.blend, @m.positions, m.Count)
-ENDFUNC
+ENDFUNC 
 
 *********************************************************************
 FUNCTION xfcGdipSetPathGradientSigmaBlend(brush, Focus, sscale)
