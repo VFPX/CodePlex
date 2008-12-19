@@ -1,4 +1,4 @@
-SccTextX Version 1.0.0.1
+SCCTEXT Version 4.0.0.2
 PLATFORM C(8,0),UNIQUEID C(10,0),TIMESTAMP N(10,0),CLASS M(4,0),CLASSLOC M(4,0),BASECLASS M(4,0),OBJNAME M(4,0),PARENT M(4,0),PROPERTIES M(4,0),PROTECTED M(4,0),METHODS M(4,0),OBJCODE M(4,0),OLE M(4,0),OLE2 M(4,0),RESERVED1 M(4,0),RESERVED2 M(4,0),RESERVED3 M(4,0),RESERVED4 M(4,0),RESERVED5 M(4,0),RESERVED6 M(4,0),RESERVED7 M(4,0),RESERVED8 M(4,0),USER M(4,0)
 1252
 
@@ -17,12 +17,12 @@ foxref.h[END RESERVED8]
 [BASECLASS] dataenvironment
 [OBJNAME] Dataenvironment
 [START PROPERTIES]
-DataSource = .NULL.
-Height = 200
-Left = 1
-Name = "Dataenvironment"
 Top = 220
+Left = 1
 Width = 520
+Height = 200
+DataSource = .NULL.
+Name = "Dataenvironment"
 [END PROPERTIES]
 [START RESERVED2]
 1[END RESERVED2]
@@ -37,46 +37,46 @@ Width = 520
 [BASECLASS] form
 [OBJNAME] frmCodeAnalystResults
 [START PROPERTIES]
-
-Caption = "Code Analysis Results"
-DoCreate = .T.
-Height = 383
-HelpContextID = 1231100
-KeyPreview = .T.
+Top = 4
 Left = 15
-LockScreen = .F.
+Height = 383
+Width = 729
+DoCreate = .T.
+ShowTips = .T.
+Caption = "Code Analysis Results"
 MinHeight = 200
 MinWidth = 200
-Name = "frmCodeAnalystResults"
-ShowTips = .T.
-Top = 4
-Width = 729
+KeyPreview = .T.
 WindowState = 0
-_memberdata =       83<VFPData><memberdata name="setfonts" type="method" display="SetFonts"/></VFPData>
-ccurrentfileid = 
-ccurrentreftype = 
-ccurrentsetid = 
-cevent = 
-cfilter = .F.
+LockScreen = .F.
+HelpContextID = 1231100
+creftable = 
+cprojectfile = 
+nfontsize = 8
 cfontface = Tahoma
 cfontstyle = N
-cprojectfile = 
-creftable = 
-cresourceid = FOXREF
-csortby = FILENAME
+cevent = 
+ccurrentsetid = 
 csortcolumns = 
-csortextracolumns = 
-lshowcolumnabstract = .T.
-lshowcolumnsymbol = .T.
-lshowfilename = .T.
-ncolfilenamewidth = 0
-nfilecnt = 0
-nfilenamecolumnorder = 3
-nfontsize = 8
-nrefcnt = 0
-ntotalfound = 0
-ocode = .F.
+ccurrentfileid = 
 ofoxref = .NULL.
+ncolfilenamewidth = 0
+csortby = FILENAME
+lshowcolumnsymbol = .T.
+lshowcolumnabstract = .T.
+lshowfilename = .T.
+nfilenamecolumnorder = 3
+nrefcnt = 0
+nfilecnt = 0
+ccurrentreftype = 
+csortextracolumns = 
+ocode = .F.
+cfilter = .F.
+ntotalfound = 0
+_memberdata =       83<VFPData><memberdata name="setfonts" type="method" display="SetFonts"/></VFPData>
+
+cresourceid = FOXREF
+Name = "frmCodeAnalystResults"
 [END PROPERTIES]
 [START METHODS]
 PROCEDURE Activate
@@ -339,7 +339,7 @@ ENDIF
 ENDPROC
 PROCEDURE deselectall
 * Abstract:
-*   Remove checkmarks from all matches 
+*   Remove checkmarks from all matches
 *	in the current set.
 *
 * Parameters:
@@ -507,6 +507,10 @@ IF NOT EMPTY(tcFile)
 ENDIF
 
 ELSE
+IF ISNULL(THIS.otree.selecteditem)
+THIS.otree.selecteditem = THIS.otree.Nodes(2)
+THIS.otree.nodeclick(THIS.otree.selectedItem)
+ELSE
 LOCAL lcFile,lnLine,lcClass,lcProc
 lnLine = VAL(THIS.lstResults.List(THIS.lstResults.ListIndex,4))
 lcFile = THIS.lstResults.List(THIS.lstResults.ListIndex,3)
@@ -514,6 +518,7 @@ lcClass = THIS.lstResults.List(THIS.lstResults.ListIndex,5)
 lcProc =  THIS.lstResults.List(THIS.lstResults.ListIndex,6)
 IF NOT EMPTY(lcFile)
 	EDITSOURCE(lcFile,lnLine,lcClass)
+ENDIF
 ENDIF
 ENDIF
 ENDPROC
@@ -672,7 +677,7 @@ LOCAL ARRAY aFileCnt[1]
 nSelect = SELECT()
 
 nMouse = THIS.MousePointer
-THIS.MousePointer = MOUSE_HOURGLASS 
+THIS.MousePointer = MOUSE_HOURGLASS
 
 lLockScreen = THIS.LockScreen
 THIS.LockScreen = .T.
@@ -711,7 +716,7 @@ IF cRefType == REFTYPE_LOG
 	  RefType == REFTYPE_LOG AND ;
 	  !RefTable.Inactive ;
 	 INTO CURSOR FoxCodeCursor
-	IF _TALLY > 0 
+	IF _TALLY > 0
 		cHTML = THIS.oLogBrowser.GetFontTag() + STRTRAN(FoxCodeCursor.Abstract, CHR(13) + CHR(10), "<br>") + [</font>]
 	ELSE
 		cHTML = ''
@@ -791,12 +796,12 @@ ELSE
 
 
 	* The GROUP BY clause in the below queries ensures that we
-	* only include a result once even if it occurs more than once 
+	* only include a result once even if it occurs more than once
 	* on a particular line
 
-	LOCAL lnSaveSYS3099 
-	lnSaveSYS3099=SYS(3099) 
-	SYS(3099, 70) 
+	LOCAL lnSaveSYS3099
+	lnSaveSYS3099=SYS(3099)
+	SYS(3099, 70)
 
 
 	IF !EMPTY(cSetID)
@@ -874,7 +879,7 @@ ELSE
 		THIS.nFileCnt = 1
 	ENDIF
 
-	SYS(3099, lnSaveSYS3099) 
+	SYS(3099, lnSaveSYS3099)
 
 
 
@@ -977,7 +982,7 @@ PROCEDURE onsortby
 * and we used BindEvents to hook into it.
 * We can't call SortBy() directly because we need to
 * destroy and re-create the grid, and we can't do that
-* if an event associated with the grid is still in the 
+* if an event associated with the grid is still in the
 * call stack.
 LPARAMETERS cColumn
 
@@ -1016,6 +1021,8 @@ REPORT FORM codeanalysisresults TO PRINTER PROMPT PREVIEW FOR NOT EMPTY(cwarning
 ENDPROC
 PROCEDURE refreshresults
 _SCREEN._analyst.ldisplayForm = .F.
+
+_SCREEN._analyst.reset()
 
 IF _SCREEN._analyst.cMainProgram = "Current Object"
 	_SCREEN._analyst.analyze()
@@ -1232,7 +1239,7 @@ ENDIF
 ENDPROC
 PROCEDURE selectall
 * Abstract:
-*   Put checkmarks next to all matches 
+*   Put checkmarks next to all matches
 *	in the current set.
 *
 * Parameters:
@@ -1504,7 +1511,7 @@ PROCEDURE showhelp
 * Parameters:
 *	None
 
-HELP ID THISFORM.HelpContextID 
+HELP ID THISFORM.HelpContextID
 
 ENDPROC
 PROCEDURE showrightclickmenu
@@ -1945,198 +1952,86 @@ ENDIF
 ENDPROC
 [END METHODS]
 [START RESERVED3]
-*analyzefile 
-*clearnode 
-*clearresults 
-*collapseall 
-*copyreference Copy reference to clipboard.
-*cvtdatetime 
-*deselectall 
-*expandall 
-*expandnode 
-*exportresults 
-*fillrules 
-*getclassmethoddescription 
-*gettempalias 
-*gotodefinition 
-*gotoreference 
-*importresults Allows users to restore  and review a previous set of results
-*isitemschecked 
-*loadfiles 
-*loadnodes 
-*loadresults 
-*onsortby 
-*openfile 
-*options 
-*printresults 
-*refreshresults 
-*resizeform 
-*resultsrightclickmenu 
-*saveformat 
-*saveposition 
-*selectall 
-*setfont 
-*setfonts Sets the fonts on the objects
-*setreftable 
-*showdetail 
-*showhelp 
-*showrightclickmenu 
-*showwarning 
-*sortby 
-*striptabs 
-*switchpanes 
-*synctree 
-*togglealwaysontop 
-*togglecolumn 
-*toggledetails 
-*togglesortmostrecent 
-*treerightclickmenu 
-*updatecheckmarks 
-*updatecontrols 
-*updategrid 
-^afiles[1,1] 
-_memberdata XML Metadata for customizable properties
-ccurrentfileid
-ccurrentreftype
-ccurrentsetid
-cevent
-cfilter
+creftable
+cprojectfile
+nfontsize
 cfontface
 cfontstyle
-cprojectfile
-creftable
-csortby
+cevent
+ccurrentsetid
 csortcolumns
-csortextracolumns
-linevent
-lnonodeclick
-lpopupset
-lshowcolumnabstract
-lshowcolumnsymbol
-lshowdistinctmethodline Show method/line separate from class name.
-lshowfilename
-lshowrefsperline
-ncolfilenamewidth
-nfilecnt
-nfilenamecolumnorder
-nfontsize
-nrefcnt
-ntotalfound
-ocode Pointer to Code ANalysis Object
+ccurrentfileid
 ofoxref
+lnonodeclick
+linevent
+ncolfilenamewidth
+lpopupset
+csortby
+lshowcolumnsymbol
+lshowcolumnabstract
+lshowfilename
+nfilenamecolumnorder
+nrefcnt
+nfilecnt
+lshowrefsperline
+ccurrentreftype
+lshowdistinctmethodline Show method/line separate from class name.
+csortextracolumns
+ocode Pointer to Code ANalysis Object
+cfilter
+ntotalfound
+_memberdata XML Metadata for customizable properties
+*setreftable 
+*gotoreference 
+*refreshresults 
+*resizeform 
+*loadresults 
+*showdetail 
+*setfont 
+*copyreference Copy reference to clipboard.
+*striptabs 
+*showrightclickmenu 
+*sortby 
+*updatecontrols 
+*updatecheckmarks 
+*gotodefinition 
+*exportresults 
+*printresults 
+*options 
+*selectall 
+*clearresults 
+*deselectall 
+*isitemschecked 
+*showhelp 
+*getclassmethoddescription 
+*resultsrightclickmenu 
+*togglealwaysontop 
+*toggledetails 
+*treerightclickmenu 
+*togglecolumn 
+*saveformat 
+*switchpanes 
+*synctree 
+*cvtdatetime 
+*saveposition 
+*onsortby 
+*clearnode 
+*updategrid 
+*gettempalias 
+*expandnode 
+*expandall 
+*collapseall 
+*togglesortmostrecent 
+*loadnodes 
+^afiles[1,1] 
+*showwarning 
+*openfile 
+*analyzefile 
+*loadfiles 
+*fillrules 
+*setfonts Sets the fonts on the objects
+*importresults Allows users to restore  and review a previous set of results
 [END RESERVED3]
-
-[ RECORD]
-[PLATFORM] WINDOWS 
-[UNIQUEID] _1TD111SH6
-[CLASS] cfoxcombo
-[CLASSLOC] foxctrls.vcx
-[BASECLASS] combobox
-[OBJNAME] cboRules
-[PARENT] frmCodeAnalystResults
-[START PROPERTIES]
-Height = 21
-Left = 541
-Name = "cboRules"
-Style = 2
-ToolTipText = "Filter list of displayed warnings "
-Top = 2
-Width = 136
-[END PROPERTIES]
-[START METHODS]
-PROCEDURE InteractiveChange
-THISFORM.cFilter = THIS.List(THIS.ListIndex,2)
-THISFORM.LoadNodes()
-ENDPROC
-[END METHODS]
-
-[ RECORD]
-[PLATFORM] WINDOWS 
-[UNIQUEID] _0IS118P55
-[CLASS] cfoxbutton
-[CLASSLOC] foxctrls.vcx
-[BASECLASS] commandbutton
-[OBJNAME] cmdExport
-[PARENT] frmCodeAnalystResults
-[START PROPERTIES]
-Caption = " \<Export"
-Height = 22
-Left = 322
-Name = "cmdExport"
-SpecialEffect = 2
-StatusBarText = "Export results"
-TabIndex = 7
-ToolTipText = "Export Results"
-Top = 1
-Width = 71
-[END PROPERTIES]
-[START METHODS]
-PROCEDURE Click
-THIS.Parent.ExportResults()
-
-
-
-ENDPROC
-[END METHODS]
-
-[ RECORD]
-[PLATFORM] WINDOWS 
-[UNIQUEID] _0JA0YSG4V
-[CLASS] cfoxbutton
-[CLASSLOC] foxctrls.vcx
-[BASECLASS] commandbutton
-[OBJNAME] cmdFind
-[PARENT] frmCodeAnalystResults
-[START PROPERTIES]
-Caption = "\<Analyze..."
-Height = 22
-Left = 48
-Name = "cmdFind"
-SpecialEffect = 2
-StatusBarText = "Perform a new analysis"
-TabIndex = 3
-ToolTipText = "New Analysis"
-Top = 1
-Width = 57
-[END PROPERTIES]
-[START METHODS]
-PROCEDURE Click
-THIS.Parent.AnalyzeFile()
-
-
-ENDPROC
-[END METHODS]
-
-[ RECORD]
-[PLATFORM] WINDOWS 
-[UNIQUEID] _0IS118P55
-[CLASS] cfoxbutton
-[CLASSLOC] foxctrls.vcx
-[BASECLASS] commandbutton
-[OBJNAME] cmdHelp
-[PARENT] frmCodeAnalystResults
-[START PROPERTIES]
-Caption = " \<Help"
-Height = 22
-Left = 466
-Name = "cmdHelp"
-SpecialEffect = 2
-StatusBarText = "Code References Help"
-TabIndex = 9
-ToolTipText = "Code References Help"
-Top = 1
-Visible = .F.
-Width = 71
-[END PROPERTIES]
-[START METHODS]
-PROCEDURE Click
-THIS.Parent.ShowHelp()
-
-
-
-
-ENDPROC
-[END METHODS]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -2146,19 +2041,19 @@ ENDPROC
 [OBJNAME] cmdOpen
 [PARENT] frmCodeAnalystResults
 [START PROPERTIES]
-Caption = ""
+Top = 1
+Left = 3
+Height = 22
+Width = 22
 FontName = "MS Sans Serif"
 FontSize = 8
-Height = 22
-Left = 3
-Name = "cmdOpen"
 Picture = bitmaps\open.bmp
-SpecialEffect = 2
+Caption = ""
 TabIndex = 1
 ToolTipText = "Open a previously saved analyst result"
-Top = 1
-Width = 22
+SpecialEffect = 2
 ZOrderSet = 0
+Name = "cmdOpen"
 [END PROPERTIES]
 [START METHODS]
 PROCEDURE Click
@@ -2212,17 +2107,17 @@ ENDPROC
 [OBJNAME] cmdOpenDropdown
 [PARENT] frmCodeAnalystResults
 [START PROPERTIES]
-Caption = ""
-Height = 22
-Left = 25
-Name = "cmdOpenDropdown"
-Picture = bitmaps\downarrow.bmp
-SpecialEffect = 2
-TabIndex = 2
 Top = 1
-Visible = .F.
+Left = 25
+Height = 22
 Width = 14
+Picture = bitmaps\downarrow.bmp
+Caption = ""
+TabIndex = 2
+Visible = .F.
+SpecialEffect = 2
 ZOrderSet = 1
+Name = "cmdOpenDropdown"
 [END PROPERTIES]
 [START METHODS]
 PROCEDURE Click
@@ -2319,82 +2214,19 @@ ENDPROC
 [CLASS] cfoxbutton
 [CLASSLOC] foxctrls.vcx
 [BASECLASS] commandbutton
-[OBJNAME] cmdOptions
-[PARENT] frmCodeAnalystResults
-[START PROPERTIES]
-Caption = " \<Options"
-Height = 22
-Left = 394
-Name = "cmdOptions"
-SpecialEffect = 2
-StatusBarText = "Display the options dialog"
-TabIndex = 8
-ToolTipText = "Code Analyst Options"
-Top = 1
-Width = 71
-[END PROPERTIES]
-[START METHODS]
-PROCEDURE Click
-LOCAL lc
-lc = _SCREEN._analyst.cFontString
-THIS.Parent.Options()
-
-IF _SCREEN._analyst.cFontString <> lc
-	** Change fonts
-	THISFORM.SetFont()
-	
-ENDIF
-ENDPROC
-[END METHODS]
-
-[ RECORD]
-[PLATFORM] WINDOWS 
-[UNIQUEID] _0IS118P55
-[CLASS] cfoxbutton
-[CLASSLOC] foxctrls.vcx
-[BASECLASS] commandbutton
-[OBJNAME] cmdPrint
-[PARENT] frmCodeAnalystResults
-[START PROPERTIES]
-Caption = " \<Print"
-Height = 22
-Left = 250
-Name = "cmdPrint"
-SpecialEffect = 2
-StatusBarText = "Print results"
-TabIndex = 6
-ToolTipText = "Print Results"
-Top = 1
-Width = 71
-[END PROPERTIES]
-[START METHODS]
-PROCEDURE Click
-THIS.Parent.PrintResults()
-
-
-
-ENDPROC
-[END METHODS]
-
-[ RECORD]
-[PLATFORM] WINDOWS 
-[UNIQUEID] _0IS118P55
-[CLASS] cfoxbutton
-[CLASSLOC] foxctrls.vcx
-[BASECLASS] commandbutton
 [OBJNAME] cmdRefresh
 [PARENT] frmCodeAnalystResults
 [START PROPERTIES]
-Caption = " Re\<fresh"
-Height = 22
+Top = 1
 Left = 106
-Name = "cmdRefresh"
-SpecialEffect = 2
+Height = 22
+Width = 71
+Caption = " Re\<fresh"
 StatusBarText = "Refresh the currently selected result set"
 TabIndex = 4
 ToolTipText = "Refresh"
-Top = 1
-Width = 71
+SpecialEffect = 2
+Name = "cmdRefresh"
 [END PROPERTIES]
 [START METHODS]
 PROCEDURE Click
@@ -2405,75 +2237,18 @@ ENDPROC
 
 [ RECORD]
 [PLATFORM] WINDOWS 
-[UNIQUEID] _1T00GUAY8
-[CLASS] listbox
-[BASECLASS] listbox
-[OBJNAME] lstResults
-[PARENT] frmCodeAnalystResults
-[START PROPERTIES]
-FontName = "Tahoma"
-FontSize = 8
-Height = 272
-Left = 180
-Name = "lstResults"
-Top = 24
-Width = 547
-[END PROPERTIES]
-[START METHODS]
-PROCEDURE DblClick
-THISFORM.GotoReference()
-ENDPROC
-PROCEDURE InteractiveChange
-THISFORM.ShowWarning()
-ENDPROC
-PROCEDURE MouseDown
-LPARAMETERS nButton, nShift, nXCoord, nYCoord
-
-IF .F. && Functionality not ready yet nbutton=2 AND THIS.ListIndex<>0
-	IF MESSAGEBOX("Do you want to add this issue to your Task list",4+32,"Code Analyst")=6
-	
-	ENDIF
-ENDIF
-ENDPROC
-[END METHODS]
-
-[ RECORD]
-[PLATFORM] WINDOWS 
-[UNIQUEID] _0IS118P55
-[CLASS] cwebbrowser
-[CLASSLOC] foxref.vcx
-[BASECLASS] olecontrol
-[OBJNAME] oBrowser
-[PARENT] frmCodeAnalystResults
-[START PROPERTIES]
-Height = 83
-Left = 2
-Name = "oBrowser"
-TabIndex = 12
-Top = 299
-Width = 725
-[END PROPERTIES]
-[BINSTART OLE]
-CHECKSUM=28724
-[BINEND OLE]
-[BINSTART OLE2]
-CHECKSUM=34400
-[BINEND OLE2]
-
-[ RECORD]
-[PLATFORM] WINDOWS 
 [UNIQUEID] _0IS118P55
 [CLASS] olecontrol
 [BASECLASS] olecontrol
 [OBJNAME] oTree
 [PARENT] frmCodeAnalystResults
 [START PROPERTIES]
-Height = 271
-Left = 2
-Name = "oTree"
-TabIndex = 10
 Top = 25
+Left = 2
+Height = 271
 Width = 172
+TabIndex = 10
+Name = "oTree"
 [END PROPERTIES]
 [START METHODS]
 PROCEDURE Click
@@ -2578,27 +2353,39 @@ ENDIF
 ENDPROC
 [END METHODS]
 [BINSTART OLE]
-CHECKSUM=17032
+CHECKSUM=41539
 [BINEND OLE]
 [BINSTART OLE2]
-CHECKSUM=40492
+CHECKSUM=5108
 [BINEND OLE2]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
-[UNIQUEID] _0M0139DMW
-[CLASS] shape
-[BASECLASS] shape
-[OBJNAME] Shape1
+[UNIQUEID] _0JA0YSG4V
+[CLASS] cfoxbutton
+[CLASSLOC] foxctrls.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdFind
 [PARENT] frmCodeAnalystResults
 [START PROPERTIES]
-Height = 20
-Left = 43
-Name = "Shape1"
-SpecialEffect = 0
-Top = 2
-Width = 2
+Top = 1
+Left = 48
+Height = 22
+Width = 57
+Caption = "\<Analyze..."
+StatusBarText = "Perform a new analysis"
+TabIndex = 3
+ToolTipText = "New Analysis"
+SpecialEffect = 2
+Name = "cmdFind"
 [END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+THIS.Parent.AnalyzeFile()
+
+
+ENDPROC
+[END METHODS]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -2608,14 +2395,14 @@ Width = 2
 [OBJNAME] shpSplitter
 [PARENT] frmCodeAnalystResults
 [START PROPERTIES]
+Top = 25
+Left = 176
+Height = 287
+Width = 4
 BackStyle = 0
 BorderStyle = 0
-Height = 287
-Left = 176
 MousePointer = 9
 Name = "shpSplitter"
-Top = 25
-Width = 4
 [END PROPERTIES]
 [START METHODS]
 PROCEDURE MouseMove
@@ -2634,33 +2421,25 @@ ENDPROC
 [ RECORD]
 [PLATFORM] WINDOWS 
 [UNIQUEID] _0IS118P55
-[CLASS] shape
-[BASECLASS] shape
-[OBJNAME] shpSplitterHor
+[CLASS] cwebbrowser
+[CLASSLOC] foxref.vcx
+[BASECLASS] olecontrol
+[OBJNAME] oBrowser
 [PARENT] frmCodeAnalystResults
 [START PROPERTIES]
-BackStyle = 0
-BorderStyle = 0
-Height = 4
+Top = 299
 Left = 2
-MousePointer = 7
-Name = "shpSplitterHor"
-Top = 295
-Width = 726
+Height = 83
+Width = 725
+TabIndex = 12
+Name = "oBrowser"
 [END PROPERTIES]
-[START METHODS]
-PROCEDURE MouseMove
-LPARAMETERS nButton, nShift, nXCoord, nYCoord
-
-IF nButton == 1
-	IF BETWEEN(nYCoord, 100, THIS.Parent.Height - 20)
-		THIS.Top = nYCoord
-		THIS.Parent.ResizeForm(.T.)
-	ENDIF	
-ENDIF
-
-ENDPROC
-[END METHODS]
+[BINSTART OLE]
+CHECKSUM=42289
+[BINEND OLE]
+[BINSTART OLE2]
+CHECKSUM=63254
+[BINEND OLE2]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -2670,13 +2449,13 @@ ENDPROC
 [OBJNAME] tmrEvent
 [PARENT] frmCodeAnalystResults
 [START PROPERTIES]
-Enabled = .F.
-Height = 23
-Interval = 5
-Left = 672
-Name = "tmrEvent"
 Top = 0
+Left = 672
+Height = 23
 Width = 23
+Enabled = .F.
+Interval = 5
+Name = "tmrEvent"
 [END PROPERTIES]
 [START METHODS]
 PROCEDURE Timer
@@ -2703,12 +2482,244 @@ ENDPROC
 [END METHODS]
 
 [ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0IS118P55
+[CLASS] cfoxbutton
+[CLASSLOC] foxctrls.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdPrint
+[PARENT] frmCodeAnalystResults
+[START PROPERTIES]
+Top = 1
+Left = 250
+Height = 22
+Width = 71
+Caption = " \<Print"
+StatusBarText = "Print results"
+TabIndex = 6
+ToolTipText = "Print Results"
+SpecialEffect = 2
+Name = "cmdPrint"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+THIS.Parent.PrintResults()
+
+
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0IS118P55
+[CLASS] cfoxbutton
+[CLASSLOC] foxctrls.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdExport
+[PARENT] frmCodeAnalystResults
+[START PROPERTIES]
+Top = 1
+Left = 322
+Height = 22
+Width = 71
+Caption = " \<Export"
+StatusBarText = "Export results"
+TabIndex = 7
+ToolTipText = "Export Results"
+SpecialEffect = 2
+Name = "cmdExport"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+THIS.Parent.ExportResults()
+
+
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0IS118P55
+[CLASS] cfoxbutton
+[CLASSLOC] foxctrls.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdOptions
+[PARENT] frmCodeAnalystResults
+[START PROPERTIES]
+Top = 1
+Left = 394
+Height = 22
+Width = 71
+Caption = " \<Options"
+StatusBarText = "Display the options dialog"
+TabIndex = 8
+ToolTipText = "Code Analyst Options"
+SpecialEffect = 2
+Name = "cmdOptions"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+LOCAL lc
+lc = _SCREEN._analyst.cFontString
+THIS.Parent.Options()
+
+IF _SCREEN._analyst.cFontString <> lc
+	** Change fonts
+	THISFORM.SetFont()
+	
+ENDIF
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0IS118P55
+[CLASS] cfoxbutton
+[CLASSLOC] foxctrls.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdHelp
+[PARENT] frmCodeAnalystResults
+[START PROPERTIES]
+Top = 1
+Left = 466
+Height = 22
+Width = 71
+Caption = " \<Help"
+StatusBarText = "Code References Help"
+TabIndex = 9
+ToolTipText = "Code References Help"
+Visible = .F.
+SpecialEffect = 2
+Name = "cmdHelp"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+THIS.Parent.ShowHelp()
+
+
+
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0M0139DMW
+[CLASS] shape
+[BASECLASS] shape
+[OBJNAME] Shape1
+[PARENT] frmCodeAnalystResults
+[START PROPERTIES]
+Top = 2
+Left = 43
+Height = 20
+Width = 2
+SpecialEffect = 0
+Name = "Shape1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0IS118P55
+[CLASS] shape
+[BASECLASS] shape
+[OBJNAME] shpSplitterHor
+[PARENT] frmCodeAnalystResults
+[START PROPERTIES]
+Top = 295
+Left = 2
+Height = 4
+Width = 726
+BackStyle = 0
+BorderStyle = 0
+MousePointer = 7
+Name = "shpSplitterHor"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE MouseMove
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+
+IF nButton == 1
+	IF BETWEEN(nYCoord, 100, THIS.Parent.Height - 20)
+		THIS.Top = nYCoord
+		THIS.Parent.ResizeForm(.T.)
+	ENDIF	
+ENDIF
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1T00GUAY8
+[CLASS] listbox
+[BASECLASS] listbox
+[OBJNAME] lstResults
+[PARENT] frmCodeAnalystResults
+[START PROPERTIES]
+FontName = "Tahoma"
+FontSize = 8
+Height = 272
+Left = 180
+Top = 24
+Width = 547
+Name = "lstResults"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE DblClick
+
+THISFORM.GotoReference()
+ENDPROC
+PROCEDURE InteractiveChange
+
+THISFORM.ShowWarning()
+ENDPROC
+PROCEDURE MouseDown
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+
+IF .F. && Functionality not ready yet nbutton=2 AND THIS.ListIndex<>0
+	IF MESSAGEBOX("Do you want to add this issue to your Task list",4+32,"Code Analyst")=6
+	
+	ENDIF
+ENDIF
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1TD111SH6
+[CLASS] cfoxcombo
+[CLASSLOC] foxctrls.vcx
+[BASECLASS] combobox
+[OBJNAME] cboRules
+[PARENT] frmCodeAnalystResults
+[START PROPERTIES]
+Height = 21
+Left = 541
+Style = 2
+ToolTipText = "Filter list of displayed warnings "
+Top = 2
+Width = 136
+Name = "cboRules"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE InteractiveChange
+THISFORM.cFilter = THIS.List(THIS.ListIndex,2)
+THISFORM.LoadNodes()
+ENDPROC
+[END METHODS]
+
+[ RECORD]
 [PLATFORM] COMMENT 
 [UNIQUEID] RESERVED  
 [START PROPERTIES]
 Arial, 0, 9, 5, 15, 12, 32, 3, 0
 MS Sans Serif, 0, 8, 5, 13, 11, 11, 2, 0
-Microsoft Sans Serif, 0, 8, 5, 13, 11, 22, 2, 0
-Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+Tahoma, 0, 8, 5, 13, 11, 23, 2, 0
+Microsoft Sans Serif, 0, 8, 5, 13, 11, 23, 2, 0
 [END PROPERTIES]
+[START RESERVED1]
+  foxref.h񈕱6 ..\..\program files\microsoft visual foxpro 9\foxpro.h堵妷1[END RESERVED1]
 [EOF]

@@ -510,146 +510,8 @@ DEFINE CLASS FoxRef AS Session
 
 	* Global Replace on all checked files in current RefTable
 	FUNCTION GlobalReplace(cReplaceText)
-		LOCAL nSelect
-		LOCAL i
-		LOCAL j
-		LOCAL nReplaceCnt
-		LOCAL nRefCnt
-		LOCAL nFileCnt
-		LOCAL cDescription
-		LOCAL cOriginalText
-		LOCAL cModifiedText
-		LOCAL cOriginalHTML
-		LOCAL cModifiedHTML
-		LOCAL nUpdateCnt
-		LOCAL cFilename
-		LOCAL nSaveSYS3099 
-		LOCAL nReplaceIndex
-		LOCAL nLastPos
-		LOCAL ARRAY aReplaceFiles[1]
-		LOCAL ARRAY aRefList[1]
-		LOCAL ARRAY aReplaceList[1]
-		
-		m.nSelect = SELECT()
-		
-		THIS.ClearErrors()
-
-		THIS.ActivityLog = ''
-		
-		m.nUpdateCnt = 0
-
-		* we must replace in reverse order
-		* for example, by line # descending, then by column descending
-
-		IF !USED("RefFile")
-			USE (THIS.FileTable) ALIAS RefFile IN 0 SHARED AGAIN
-		ENDIF
-
-		* process by file so we can check to make sure
-		* the file hasn't changed between when we did
-		* our search and now
-		SELECT DISTINCT ;
-		  RefTable.FileID, ;
-		  RefTable.TimeStamp, ;
-		  FileTable.UniqueID, ;
-		  PADR(FileTable.Folder, 240) AS SortFolder, ;
-		  FileTable.Filename ;
-		 FROM (THIS.RefTable) RefTable INNER JOIN (THIS.FileTable) FileTable ON RefTable.FileID == FileTable.UniqueID ;
-		 WHERE Checked AND !Inactive ;
-		 ORDER BY SortFolder, Filename ;
-		 INTO ARRAY aReplaceFiles
-		m.nFileCnt = _TALLY
-		FOR m.i = 1 TO nFileCnt
-			IF SEEK(aReplaceFiles[m.i, 3], "RefFile", "UniqueID")
-				m.cFilename = ADDBS(RTRIM(RefFile.Folder)) + RTRIM(RefFile.Filename)
-
-				IF FILE(m.cFilename)
-					IF FDATE(m.cFilename, 1) == aReplaceFiles[m.i, 2] && check timestamp on file
-						* this groups replacements into ones that occur on the same line
-
-						m.nSaveSYS3099 = SYS(3099) 
-						SYS(3099, 70) 
-
-						SELECT RefID ;
-						 FROM (THIS.RefTable) ;
-						 WHERE FileID == aReplaceFiles[m.i, 1] AND Checked AND !Inactive ;
-						 GROUP BY RefID ;
-						 ORDER BY ColPos DESCEND ;
-						 INTO ARRAY aRefList
-						m.nRefCnt = _TALLY
-						
-						SYS(3099, m.nSaveSYS3099)
-
-						FOR m.j = 1 TO m.nRefCnt
-							SELECT UniqueID, Abstract, ColPos, MatchLen, ClassName, ProcName, ProcLineNo, FindType  ;
-							 FROM (THIS.RefTable) ;
-							 WHERE RefID == aRefList[m.j, 1] ;
-							 ORDER BY ColPos DESCEND ;
-							 INTO ARRAY aReplaceList
-							m.nReplaceCnt = _TALLY
-
-							IF m.nReplaceCnt > 0
-								* get the original and the modified text so we
-								* can show it in our confirmation dialog
-								m.cOriginalText = aReplaceList[1, 2]
-								m.cModifiedText = m.cOriginalText
-								
-								m.cOriginalHTML = m.cOriginalText
-								m.cModifiedHTML = m.cModifiedText
-								FOR m.nReplaceIndex = 1 TO m.nReplaceCnt
-									m.nLastPos = aReplaceList[m.nReplaceIndex, 3] + aReplaceList[m.nReplaceIndex, 4]
-									m.cOriginalHTML = LEFTC(m.cOriginalHTML, aReplaceList[m.nReplaceIndex, 3] - 1) + [<font color="blue">] + SUBSTRC(m.cOriginalHTML, aReplaceList[m.nReplaceIndex, 3], aReplaceList[m.nReplaceIndex, 4]) + [</font>] + ;
-									 IIF(m.nLastPos > LENC(m.cOriginalHTML), '', SUBSTRC(m.cOriginalHTML, m.nLastPos))
-									m.cModifiedHTML = LEFTC(m.cModifiedHTML, aReplaceList[m.nReplaceIndex, 3] - 1) + [<font color="blue">] + IIF(THIS.PreserveCase, THIS.SetCasePreservation(SUBSTRC(m.cModifiedHTML, aReplaceList[m.nReplaceIndex, 3], aReplaceList[m.nReplaceIndex, 4]), m.cReplaceText), m.cReplaceText) + [</font>] + ;
-									 IIF(m.nLastPos > LENC(m.cModifiedHTML), '', SUBSTRC(m.cModifiedHTML, m.nLastPos))
-								ENDFOR
-	 
-								* this is the description of the filename, class.method we're replacing on
-								m.cDescription = m.cFilename + ", " + ;
-								  IIF(EMPTY(aReplaceList[1, 5]) AND EMPTY(aReplaceList[1, 6]), '', ;
-								  aReplaceList[1, 5] + IIF(EMPTY(aReplaceList[1, 5]) OR EMPTY(aReplaceList[1, 6]), '', '.') + aReplaceList[1, 6]) + ;
-								  IIF(aReplaceList[1, 7] == 0, '', IIF(EMPTY(aReplaceList[1,5] + aReplaceList[1,6]), '', ", ") + LTRIM(STR(aReplaceList[1, 7], 8, 0)))
-
-								IF THIS.ConfirmReplace
-		 							DO FORM FoxRefReplaceConfirm WITH m.cDescription, m.cOriginalHTML, m.cModifiedHTML TO m.lDoReplace
-									IF ISNULL(m.lDoReplace)
-										EXIT
-									ENDIF
-								ELSE
-									m.lDoReplace = .T.
-								ENDIF
-
-								IF m.lDoReplace
-									THIS.AddLog(LOG_PREFIX + m.cDescription + ':')
-									THIS.AddLog(LOG_PREFIX + m.cOriginalHTML + " -> " + m.cModifiedHTML)
-
-									IF THIS.ReplaceFile(aRefList[m.j, 1], m.cReplaceText)
-										m.nUpdateCnt = m.nUpdateCnt + 1
-									ENDIF
-								ELSE
-									THIS.AddLog(LOG_PREFIX + m.cDescription + ": " + REPLACE_SKIPPED)
-								ENDIF
-								THIS.AddLog()
-							ENDIF
-						ENDFOR
-					ELSE
-						* timestamps don't match
-						THIS.AddError(m.cFilename + ": " + ERROR_FILEMODIFIED_LOC)
-						THIS.AddLog(LOG_PREFIX + m.cFilename + ": " + ERROR_FILEMODIFIED_LOC)
-					ENDIF
-				ELSE
-					* file not found
-					THIS.AddError(m.cFilename + ": " + ERROR_FILENOTFOUND_LOC)
-					THIS.AddLog(LOG_PREFIX + m.cFilename + ": " + ERROR_FILENOTFOUND_LOC)
-				ENDIF
-			ENDIF
-		ENDFOR
-		
-		THIS.SaveLog(m.cReplaceText)
-		
-		SELECT (m.nSelect)
-		
-		RETURN m.nUpdateCnt > 0
+		** Not required in code analyst
+		RETURN 0
 	ENDFUNC
 
 	* take the original text, determine the case,
@@ -1640,57 +1502,9 @@ DEFINE CLASS FoxRef AS Session
 
 
 	FUNCTION Search(cPattern, lShowDialog)
-		LOCAL lSuccess
-		LOCAL i
-		LOCAL nCnt
-
-		IF VARTYPE(cPattern) <> 'C' OR EMPTY(cPattern)
-			lShowDialog = .T.
-			cPattern = ''
-		ENDIF
-
-		lSuccess = .T.
-		IF lShowDialog		
-			DO FORM FoxRefFind WITH THIS, cPattern
-		ELSE
-			THIS.lRefreshMode = .F.
-			THIS.ClearErrors()
-			IF THIS.SetProject(.NULL., THIS.OverwritePrior)
-				IF THIS.ProjectFile == PROJECT_GLOBAL OR EMPTY(THIS.ProjectFile)
-					lSuccess = THIS.FolderSearch(cPattern)
-				ELSE
-					lSuccess = THIS.ProjectSearch(cPattern)
-				ENDIF
-
-				* Search for files that weren't necessarily in the
-				* project, but were referenced by certain files in the project
-				* (for example, a Table within a DBC)
-				IF m.lSuccess AND !THIS.lCancel
-					m.nCnt = THIS.oSearchCollection.Count
-					FOR m.i = 1 TO m.nCnt
-						m.lSuccess = THIS.FileSearch(THIS.oSearchCollection.Item(m.i), cPattern)
-						IF !m.lSuccess
-							EXIT
-						ENDIF
-					ENDFOR
-				ENDIF
-				THIS.oSearchCollection.Remove(-1)
-
-				* after we're all done, do definitions for files 
-				* that were #included
-				IF lSuccess
-					m.nCnt = THIS.oFileCollection.Count
-					FOR m.i = 1 TO m.nCnt
-						THIS.FileSearch(THIS.oFileCollection.Item(m.i), '')
-					ENDFOR
-				ENDIF
-				THIS.oFileCollection.Remove(-1)
-				THIS.oProcessedCollection.Remove(-1)
-
-			ENDIF
-		ENDIF
+		** No search
 		
-		RETURN lSuccess
+		RETURN .F.
 	ENDFUNC
 
 
@@ -2416,21 +2230,7 @@ DEFINE CLASS FoxRef AS Session
 
 	* -- Show the Results form
 	FUNCTION ShowResults()
-		LOCAL i
-
-		* first see if there is an open Results window for this
-		* project and display that if there is
-		FOR i = 1 TO _SCREEN.FormCount
-			IF PEMSTATUS(_SCREEN.Forms(i), "oFoxRef", 5) AND ;
-			   UPPER(_SCREEN.Forms(i).Name) == "FRMFOXREFRESULTS" AND ;
-			   TYPE("_SCREEN.Forms(i).oFoxRef") == 'O' AND !ISNULL(_SCREEN.Forms(i).oFoxRef) AND UPPER(_SCREEN.Forms(i).oFoxRef.ProjectFile) == THIS.ProjectFile
-				_SCREEN.Forms(i).SetRefTable(THIS.cSetID)
-				_SCREEN.Forms(i).Show()
-				RETURN
-			ENDIF
-		ENDFOR
-		
-		DO FORM FoxRefResults WITH THIS
+	** Not required
 	ENDFUNC
 
 	* goto a definition
@@ -2673,66 +2473,6 @@ DEFINE CLASS FoxRef AS Session
 
 		SELECT (m.nSelect)
 	ENDFUNC
-
-	* -- Highlight symbol given it's line # (assume it's open and active)
-	PROCEDURE HighlightSymbol(cSymbol, nLineNo, nColPos)
-		LOCAL nWindowHandle
-		LOCAL nRetCode
-		LOCAL cLine
-		LOCAL nStartPos
-		LOCAL nEndPos
-		LOCAL lLibraryOpen
-		LOCAL cFoxToolsLibrary
-		LOCAL lSuccess
-		LOCAL ARRAY aEdEnv[25]
-
-		m.lSuccess = .F.
-
-		IF m.nLineNo <= 0
-			RETURN
-		ENDIF
-
-		* special case for jumping to a specific line # in the open window
-		IF ATCC("FOXTOOLS.FLL", SET("LIBRARY")) == 0
-			m.lLibraryOpen = .F.
-			m.cFoxtoolsLibrary = SYS(2004) + "FOXTOOLS.FLL"
-			IF FILE(m.cFoxtoolsLibrary)
-				TRY
-					SET LIBRARY TO (m.cFoxToolsLibrary) ADDITIVE
-					m.lSuccess = .T.
-				CATCH
-				ENDTRY
-			ENDIF
-		ELSE
-			m.lLibraryOpen = .T.
-			m.lSuccess = .T.
-		ENDIF
-
-		IF m.lSuccess
-			m.nWindowHandle = _wontop()
-			m.nRetCode = _edgetenv(m.nWindowHandle, @aEdEnv)
-
-			IF m.nRetCode == 1
-				IF aEdEnv[EDENV_LENGTH] > 0
-					m.nStartPos = _EdGetLPos(m.nWindowHandle, m.nLineNo - 1)
-					m.nEndPos   = _EdGetLPos(m.nWindowHandle, m.nLineNo)
-
-					IF VARTYPE(m.nColPos) <> 'N' OR m.nColPos <= 0
-						m.cLine = _EdGetStr(m.nWindowHandle, m.nStartPos, m.nEndPos - 1)
-						m.nColPos = ATCC(m.cSymbol, m.cLine)
-					ENDIF
-					IF m.nColPos > 0
-						_EdSelect(m.nWindowHandle, m.nStartPos + m.nColPos - 1, m.nStartPos + m.nColPos - 1 + LENC(m.cSymbol))
-						_EdSToPos(m.nWindowHandle, m.nStartPos, .F.)
-					ENDIF
-				ENDIF
-			ENDIF
-
-			IF !m.lLibraryOpen AND ATCC(m.cFoxToolsLibrary, SET("LIBRARY")) > 0
-				RELEASE LIBRARY (m.cFoxToolsLibrary)
-			ENDIF
-		ENDIF
-	ENDPROC
 
 
 	* -- Set focus to the control where the reference was found
@@ -3118,7 +2858,7 @@ DEFINE CLASS FoxRef AS Session
 		OTHERWISE
 			* more than one match found, so display a cursor of
 			* the available matches.
-			DO FORM FoxRefGotoDef WITH THIS, cGotoSymbol
+			*!* DO FORM FoxRefGotoDef WITH THIS, cGotoSymbol
 			m.lSuccess = .T.
 		ENDCASE
 
