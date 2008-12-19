@@ -44,6 +44,18 @@ DEFINE CLASS _codeAnalyzer AS CUSTOM
 	cClassName = ""
 
 
+	PROCEDURE Reset
+	IF NOT EMPTY(THIS.cAnalysisCursor)
+		IF USED(THIS.cAnalysisCursor)
+		LOCAL lc
+		lc = SET("SAFETY")
+		SET SAFETY OFF
+		ZAP IN (THIS.cAnalysisCursor)	
+		SET SAFETY &lc
+		ENDIF
+ENDIF
+	ENDPROC
+	
 	PROCEDURE SetPrefs
 		LOCAL nSelect
 		LOCAL lcRes
