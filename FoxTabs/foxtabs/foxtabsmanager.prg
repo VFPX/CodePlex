@@ -636,6 +636,14 @@ Define Class FoxTabsEventHandler As Custom
 
 		lnReturn = 0
 
+		* In some scenarios, the hWnd and/or Msg variables do not exist.
+		* I don't see how that's possible, given that they are defined above, but it happens.
+		* See http://www.codeplex.com/VFPX/WorkItem/View.aspx?WorkItemId=20989 for an example.
+		* My hope is that this code will prevent other scenarios that cause C5s.
+		If Type("hWnd") <> "N" or Type("Msg") <> "N"
+			Return 0
+		EndIf 
+
 		Try
 			* Handle each windows message case
 			Do Case	
@@ -674,6 +682,7 @@ Define Class FoxTabsEventHandler As Custom
 					BindEvent(0, WM_CREATE, This, "WMEventHandler")	
 
 				Case Msg = WM_SHOWWINDOW
+
 					If wParam # 0
 						* Raise the window show event
 						RaiseEvent(This, "WindowShowEvent", hWnd)
