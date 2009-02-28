@@ -1,4 +1,4 @@
-SCCTEXT Version 4.0.0.2
+SccTextX Version 1.0.0.1
 PLATFORM C(8,0),UNIQUEID C(10,0),TIMESTAMP N(10,0),CLASS M(4,0),CLASSLOC M(4,0),BASECLASS M(4,0),OBJNAME M(4,0),PARENT M(4,0),PROPERTIES M(4,0),PROTECTED M(4,0),METHODS M(4,0),OBJCODE M(4,0),OLE M(4,0),OLE2 M(4,0),RESERVED1 M(4,0),RESERVED2 M(4,0),RESERVED3 M(4,0),RESERVED4 M(4,0),RESERVED5 M(4,0),RESERVED6 M(4,0),RESERVED7 M(4,0),RESERVED8 M(4,0),USER M(4,0)
 1252
 
@@ -16,14 +16,14 @@ VERSION =   3.00[END RESERVED1]
 [OBJNAME] foxtabcontrol
 [START PROPERTIES]
 Anchor = 15
-Width = 72
-Height = 26
 BackStyle = 0
 BorderWidth = 0
+Height = 26
+Name = "foxtabcontrol"
+Width = 72
+foxtab = Null
 isactive = .F.
 tabstyle = 1
-foxtab = Null
-Name = "foxtabcontrol"
 [END PROPERTIES]
 [START METHODS]
 PROCEDURE Destroy
@@ -33,7 +33,7 @@ If Type("This.FoxTab") = "O"
 EndIf
 ENDPROC
 PROCEDURE Init
-Lparameters lpnTabStyle As Integer
+Lparameters lpnTabStyle As Integer 
 
 * Set the tab style if passed
 If Not Empty(lpnTabStyle)
@@ -62,20 +62,20 @@ Lparameters oFoxTab As Object
 This.FoxTab = oFoxTab
 ENDPROC
 PROCEDURE isactive_assign
-Lparameters lpbIsActive As Boolean
+Lparameters lpbIsActive As Boolean 
 
 * Check if active status has changed first. This is to prevent excessive screen flicker
 If This.isActive = lpbIsActive
 	Return
-EndIf
+EndIf 
 
-If lpbIsActive
+If lpbIsActive 
 	* Set the FoxTab got focus settings
 	This.lblWindowName.ForeColor = Val(oFoxTabs.Configuration("AppSettings.ActiveFontColour").Value)
 Else
 	* Reset the FoxTab settings
 	This.lblWindowName.ResetToDefault("ForeColor")
-EndIf
+EndIf 
 
 * Set the class property
 This.isActive = lpbIsActive
@@ -99,10 +99,16 @@ This.Height = lnLabelHeight + 11
 ENDPROC
 PROCEDURE setactive
 
-Local oException As Exception
+Local oException As Exception 
 Local lcWindowName As String
 
 Try
+
+	* If modal form is active, don't switch windows
+	If Type("_screen.ActiveForm.WindowType") = "N" and _screen.ActiveForm.WindowType = 1
+		Return 
+	EndIf 
+
 	* We need to remove the * character appended when changes have been made to the file
 	lcWindowName = Chrtran(This.FoxTab.WindowName, "*", "")
 
@@ -111,7 +117,7 @@ Try
 
 	* Check the Fox window exists
 	If Not Wexist(lcWindowName)
-		Error "Window, " + Transform(lcWindowName) + ", does not exist."
+		Error "Window, " + Transform(lcWindowName) + ", does not exist." 
 	EndIf
 
 	* Activate the assigned window
@@ -133,7 +139,7 @@ EndTry
 ENDPROC
 PROCEDURE setfont
 * Set window label font
-Local lcFont As String, lnFontColour As Integer
+Local lcFont As String, lnFontColour As Integer 
 
 * Gather the default font settings
 lcFont = oFoxTabs.Configuration("AppSettings.Font").Value
@@ -186,12 +192,12 @@ ENDPROC
 PROCEDURE setimageorientation
 * Orientate the controls images relate to the dock position
 
-Local lnRotation As Integer
+Local lnRotation As Integer 
 
 * First check the dock position is known
 If Type("This.Parent") # "O"
 	Return
-EndIf
+EndIf 
 
 * Determine the amount of rotation relate to the dock position required
 lnRotation = ICase( This.Parent.DockPosition = 0, 6, ;		&& top
@@ -200,20 +206,20 @@ lnRotation = ICase( This.Parent.DockPosition = 0, 6, ;		&& top
 					This.Parent.DockPosition = 3, 0, 0 )	&& bottom
 										
 * Rotate the images relate
-This.imgBody.RotateFlip		= lnRotation
-This.imgRight1.RotateFlip	= lnRotation
-This.imgRight2.RotateFlip	= lnRotation
+This.imgBody.RotateFlip		= lnRotation 
+This.imgRight1.RotateFlip	= lnRotation 
+This.imgRight2.RotateFlip	= lnRotation 
 
 
 ENDPROC
 PROCEDURE setwindowname
 
-Local lcCaption As String, lnMaxChars As Integer
+Local lcCaption As String, lnMaxChars As Integer 
 
 * Don't update Desktop caption
 If Lower(This.Name) == "foxtabdesktop"
-	Return
-EndIf
+	Return 
+EndIf 
 
 * Check if we are using full titles for the FoxTab caption
 If ( oFoxTabs.Configuration("AppSettings.ShowFullName").Value = "true" )
@@ -243,7 +249,7 @@ Else
 			* Default to Windows name
 			lcCaption = Trim(This.FoxTab.WindowName)
 					
-	EndCase
+	EndCase 
 EndIf
 
 * Display full window title in tooltip
@@ -251,18 +257,18 @@ This.lblWindowName.ToolTipText = Trim(This.FoxTab.WindowName)
 
 * Check the maximum FoxTab caption size
 lnMaxChars = Val(oFoxTabs.Configuration("AppSettings.MaxChars").Value)
-If Len(lcCaption) > lnMaxChars
+If Len(lcCaption) > lnMaxChars 
 	* Truncate short name
 	lcCaption = Left(lcCaption, lnMaxChars - 3) + Iif("*" $ lcCaption, "..*", "...")	&& make sure we include the "modified" character
-EndIf
+EndIf 
 
 * Only set the caption when the value changes. This obviously prevents screen flicker
 If This.lblWindowName.Caption == Alltrim(lcCaption)
 	Return
-EndIf
+EndIf 
 
 * Set the label controls caption property
-This.lblWindowName.Caption = lcCaption
+This.lblWindowName.Caption = lcCaption 
 
 * Set the tool tip text to the full Windows name
 This.ToolTipText = This.FoxTab.WindowName
@@ -292,20 +298,20 @@ Try
 	* Calculate scale factor
 	Activate Screen	&& make sure using SCREEN for menu position
 	_Screen.ScaleMode = 0
-	lnFoxelWidth = _Screen.Width
-	lnFoxelHeight = _Screen.Height
+	lnFoxelWidth = _Screen.Width  
+	lnFoxelHeight = _Screen.Height 
 	_Screen.ScaleMode = 3
-	lnPixelWidth = _Screen.Width
-	lnPixelHeight = _Screen.Height
+	lnPixelWidth = _Screen.Width  
+	lnPixelHeight = _Screen.Height 
 
 	* Menu height is calculated as follows
 	*	19 pixels per bar 				+
-	*	6  pixels per horizontal line 	+
+	*	6  pixels per horizontal line 	+ 
 	*	8  for the top and bottom margins
 	lnMenuHeight = 	(19 * 4) + 6 + 8
 
 	* Determine where to position the context menu. Ensure that the menu is shown
-	*	above the current FoxTab.
+	*	above the current FoxTab. 
 *JAL*		lnColumn = Max(Mcol("Screen", 0), This.Left * (lnFoxelWidth / lnPixelWidth))
 *JAL*		lnColumn = Min(lnColumn, (This.Left + This.Width) * (lnFoxelWidth / lnPixelWidth))
 	lnColumn = Wlcol("FoxTabs") + (Mcol("FoxTabs", 3) * (lnFoxelWidth / lnPixelWidth))
@@ -319,15 +325,15 @@ Try
 			lnRow = (This.Parent.Top - lnMenuHeight) * (lnFoxelHeight / lnPixelHeight)
 		Otherwise
 			lnRow = Mrow("Screen", 0) * (lnFoxelHeight / lnPixelHeight)
-	EndCase
+	EndCase 
 
 	* Define context menu
 	Define Popup foxtabContextMenu ShortCut Relative From lnRow, lnColumn && In Screen
-	Define Bar 1 Of foxtabContextMenu Prompt "Save"
-	Define Bar 2 Of foxtabContextMenu Prompt "Close"
-	Define Bar 3 Of foxtabContextMenu Prompt "\-"
-	Define Bar 4 Of foxtabContextMenu Prompt "Save All"
-	Define Bar 5 Of foxtabContextMenu Prompt "Close All"
+	Define Bar 1 Of foxtabContextMenu Prompt "Save" 
+	Define Bar 2 Of foxtabContextMenu Prompt "Close" 
+	Define Bar 3 Of foxtabContextMenu Prompt "\-" 
+	Define Bar 4 Of foxtabContextMenu Prompt "Save All" 
+	Define Bar 5 Of foxtabContextMenu Prompt "Close All" 
 
 	* Bind delegates
 	On Selection Bar 1 Of foxtabContextMenu oFoxTabsToolbar.SaveWindow(lcWindowName)
@@ -336,7 +342,7 @@ Try
 	On Selection Bar 5 Of foxtabContextMenu oFoxTabsToolbar.ReleaseWindow("ALL")
 
 	* Show menu
-	Activate Popup foxtabContextMenu
+	Activate Popup foxtabContextMenu 
 
 Catch To oException
 	* Raise error event on FoxTabs application class
@@ -346,7 +352,7 @@ EndTry
 
 ENDPROC
 PROCEDURE tabstyle_assign
-Lparameters lpnTabStyle As Integer
+Lparameters lpnTabStyle As Integer 
 
 * Check if tab style has changed first. This is to prevent excessive screen flicker
 If This.tabStyle = lpnTabStyle
@@ -363,7 +369,7 @@ This.setImageOrientation()
 * Set class property
 This.tabStyle = lpnTabStyle
 
-Return
+Return 
 ENDPROC
 [END METHODS]
 [START RESERVED1]
@@ -371,19 +377,19 @@ Class[END RESERVED1]
 [START RESERVED2]
 5[END RESERVED2]
 [START RESERVED3]
-isactive Indicates whether the tab control is the active window
-tabstyle Indicates what style of tab to display. 1 = first tab, 2 = middle tab, 3 = last tab
-foxtab Reference to the FoxTab object for the window
-*setactive Activates the assigned window
-*tabstyle_assign 
-*seticon sets the tab icon corresponding to the type of file in the window.
+*foxtab_assign 
 *isactive_assign 
 *resizetab Resizes the tab control
-*setwindowname Sets the window label caption
-*foxtab_assign 
-*setimageorientation Orientates the controls images relate to the docked position.
-*showcontextmenu Displays the FoxTab control's context menu.
+*setactive Activates the assigned window
 *setfont Sets the window label font.
+*seticon sets the tab icon corresponding to the type of file in the window.
+*setimageorientation Orientates the controls images relate to the docked position.
+*setwindowname Sets the window label caption
+*showcontextmenu Displays the FoxTab control's context menu.
+*tabstyle_assign 
+foxtab Reference to the FoxTab object for the window
+isactive Indicates whether the tab control is the active window
+tabstyle Indicates what style of tab to display. 1 = first tab, 2 = middle tab, 3 = last tab
 [END RESERVED3]
 [START RESERVED6]
 Pixels[END RESERVED6]
@@ -397,14 +403,14 @@ Pixels[END RESERVED6]
 [PARENT] foxtabcontrol
 [START PROPERTIES]
 Anchor = 15
-Picture = images\tabstyles\tabimage.body.gif
-Stretch = 2
 BackStyle = 0
 Height = 26
 Left = 0
+Name = "imgBody"
+Picture = images\tabstyles\tabimage.body.gif
+Stretch = 2
 Top = 0
 Width = 60
-Name = "imgBody"
 [END PROPERTIES]
 [START METHODS]
 PROCEDURE Click
@@ -443,7 +449,7 @@ LPARAMETERS nButton, nShift, nXCoord, nYCoord
 * Reset the font colour
 If Not This.Parent.IsActive
 	This.Parent.lblWindowName.ResetToDefault("ForeColor")
-EndIf
+EndIf 
 
 ENDPROC
 [END METHODS]
@@ -457,15 +463,15 @@ ENDPROC
 [PARENT] foxtabcontrol
 [START PROPERTIES]
 Anchor = 13
-Picture = images\tabstyles\tabimage.right.1.gif
-Stretch = 2
 BackStyle = 0
 Height = 26
 Left = 60
+Name = "imgRight1"
+Picture = images\tabstyles\tabimage.right.1.gif
+Stretch = 2
 Top = 0
 Visible = .F.
 Width = 14
-Name = "imgRight1"
 [END PROPERTIES]
 
 [ RECORD]
@@ -477,14 +483,14 @@ Name = "imgRight1"
 [PARENT] foxtabcontrol
 [START PROPERTIES]
 Anchor = 13
-Picture = images\tabstyles\tabimage.right.2.gif
-Stretch = 2
 BackStyle = 0
 Height = 26
 Left = 60
+Name = "imgRight2"
+Picture = images\tabstyles\tabimage.right.2.gif
+Stretch = 2
 Top = 0
 Width = 14
-Name = "imgRight2"
 [END PROPERTIES]
 
 [ RECORD]
@@ -495,19 +501,19 @@ Name = "imgRight2"
 [OBJNAME] lblWindowName
 [PARENT] foxtabcontrol
 [START PROPERTIES]
-AutoSize = .T.
-FontName = "Tahoma"
-FontSize = 8
 Anchor = 2
+AutoSize = .T.
 BackStyle = 0
 Caption = "Desktop"
+FontName = "Tahoma"
+FontSize = 8
+ForeColor = 0,0,0
 Height = 15
 Left = 18
 MousePointer = 15
+Name = "lblWindowName"
 Top = 5
 Width = 41
-ForeColor = 0,0,0
-Name = "lblWindowName"
 [END PROPERTIES]
 [START METHODS]
 PROCEDURE Click
@@ -516,6 +522,11 @@ This.Parent.SetActive()
 ENDPROC
 PROCEDURE DblClick
 * Optionally close the Window if double-clicking on it
+
+* If modal form is active, return
+If Type("_screen.ActiveForm.WindowType") = "N" and _screen.ActiveForm.WindowType = 1
+	Return 
+EndIf 
 
 Try
 	oFoxTabsToolbar = This.Parent.Parent
@@ -545,10 +556,15 @@ Lparameters nButton, nShift, nXCoord, nYCoord
 * Reset the font colour
 If Not This.Parent.IsActive
 	This.Parent.lblWindowName.ResetToDefault("ForeColor")
-EndIf
+EndIf 
 
 ENDPROC
 PROCEDURE RightClick
+* If modal form is active, don't show menu
+If Type("_screen.ActiveForm.WindowType") = "N" and _screen.ActiveForm.WindowType = 1
+	Return 
+EndIf 
+
 * Display the FoxTab control's context menu
 This.Parent.ShowContextMenu()
 
@@ -562,22 +578,133 @@ ENDPROC
 
 [ RECORD]
 [PLATFORM] WINDOWS 
+[UNIQUEID] _1MB19JZ6L
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] foxtabicon
+[START PROPERTIES]
+BackStyle = 0
+Height = 16
+Name = "foxtabicon"
+Width = 16
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+* Tracey P suggestion
+This.Parent.SetActive()
+ENDPROC
+PROCEDURE DblClick
+* Optionally close the Window if double-clicking on it
+
+Try
+	oFoxTabsToolbar = This.Parent.Parent
+
+	* We need to remove the * character appended when changes have been made to the file
+	lcWindowName = Chrtran(This.Parent.FoxTab.WindowName, "*", "")
+
+	oFoxTabsToolbar.ReleaseWindow(lcWindowName)
+
+Catch To oException
+	* Raise error event on FoxTabs application class
+	RaiseEvent(This.Parent.Parent.Parent, "LogError", oException, "Exception caught closing " + Transform(lcWindowName))
+
+EndTry	
+
+ENDPROC
+PROCEDURE RightClick
+* Display the FoxTab control's context menu
+This.Parent.ShowContextMenu()
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] foxtabicon
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1ME0VWJXL
+[CLASS] configurationblock
+[CLASSLOC] ..\applicationblocks\configuration\configurationblock.vcx
+[BASECLASS] collection
+[OBJNAME] foxtabsconfig
+[START PROPERTIES]
+Name = "foxtabsconfig"
+checkappsettingsversion = .T.
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE getdefaultsettings
+Lparameters lpcSection As String
+
+Local lcDefaultSettings As String
+
+* Handle AppSettings section only
+If lpcSection # "AppSettings"
+	Return DoDefault(lpcSection)
+EndIf 
+
+* Define default application settings
+Text To lcDefaultSettings NoShow 
+	<DockPosition>Bottom</DockPosition>
+	<Font>Tahoma,8,N</Font>
+	<ActiveFontColour>33023</ActiveFontColour>
+	<MaxNumTabs>10</MaxNumTabs>
+	<ShowFullName>false</ShowFullName>
+	<MaxChars>30</MaxChars>
+	<ShowRecentFiles>true</ShowRecentFiles>
+	<IncludeSolutionFiles>true</IncludeSolutionFiles>
+	<IncludeProjectFiles>true</IncludeProjectFiles>
+	<IncludeClassFiles>true</IncludeClassFiles>
+	<IncludeProgramFiles>true</IncludeProgramFiles>
+	<IncludeFormFiles>true</IncludeFormFiles>
+	<IncludeReportFiles>true</IncludeReportFiles>
+	<IncludeDatabaseFiles>true</IncludeDatabaseFiles>
+	<IncludeTableFiles>true</IncludeTableFiles>
+	<OnTableSelection>browse</OnTableSelection>
+EndText 
+
+* Return default xml string
+Return lcDefaultSettings 
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] foxtabsconfig
+
+[ RECORD]
+[PLATFORM] WINDOWS 
 [UNIQUEID] _1LD0Z8KMD
 [CLASS] form
 [BASECLASS] form
 [OBJNAME] foxtabsoptions
 [START PROPERTIES]
-Height = 350
-Width = 450
-DoCreate = .T.
 AutoCenter = .T.
 BorderStyle = 2
 Caption = "Options"
 ControlBox = .F.
+DoCreate = .T.
 FontName = "Microsoft Sans Serif"
 FontSize = 7
-WindowType = 1
+Height = 350
 Name = "foxtabsoptions"
+Width = 450
+WindowType = 1
 [END PROPERTIES]
 [START METHODS]
 PROCEDURE Init
@@ -628,7 +755,7 @@ With ThisForm.oOptionPages.MRU.oMRU As Container
 	* On table selection
 	.cboTableSelection.Value = Proper(oFoxTabs.Configuration("AppSettings.OnTableSelection").Value)
 
-EndWith
+EndWith 
 
 ENDPROC
 PROCEDURE showoption
@@ -642,7 +769,7 @@ Do Case
 	Case lpcOptionClass = "MRU"
 		ThisForm.oOptionPages.ActivePage = 2
 
-EndCase
+EndCase 
 
 * Refresh the container
 ThisForm.Refresh
@@ -685,7 +812,7 @@ With ThisForm.oOptionPages.MRU.oMRU As Container
 	* On table selection
 	oFoxTabs.Configuration("AppSettings.OnTableSelection").Value = Proper(.cboTableSelection.Value)
 
-EndWith
+EndWith 
 
 * Save configuration
 oFoxTabs.Configuration.SaveConfig()
@@ -697,30 +824,38 @@ Class[END RESERVED1]
 [START RESERVED2]
 44[END RESERVED2]
 [START RESERVED3]
+*bindconfigsettings 
 *showoption Shows the specified options container
 *updateconfigsettings Updates changes to the configuration settings.
-*bindconfigsettings 
 [END RESERVED3]
 [START RESERVED6]
 Pixels[END RESERVED6]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
-[UNIQUEID] _1MB1F4G99
-[CLASS] shape
-[BASECLASS] shape
-[OBJNAME] Shape2
+[UNIQUEID] _1LD0ZUJ91
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] cmdCancel
 [PARENT] foxtabsoptions
 [START PROPERTIES]
-Top = 5
-Left = 5
-Height = 340
-Width = 80
-Curvature = 5
-BackColor = 255,255,255
-BorderColor = 127,157,185
-Name = "Shape2"
+Caption = "Cancel"
+FontName = "Tahoma"
+FontSize = 8
+Height = 23
+Left = 359
+Name = "cmdCancel"
+TabIndex = 5
+Top = 320
+Width = 85
 [END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+* Release the options form
+ThisForm.Release
+
+ENDPROC
+[END METHODS]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -730,15 +865,15 @@ Name = "Shape2"
 [OBJNAME] cmdOk
 [PARENT] foxtabsoptions
 [START PROPERTIES]
-Top = 320
-Left = 271
-Height = 23
-Width = 85
+Caption = "OK"
 FontName = "Tahoma"
 FontSize = 8
-Caption = "OK"
-TabIndex = 4
+Height = 23
+Left = 271
 Name = "cmdOk"
+TabIndex = 4
+Top = 320
+Width = 85
 [END PROPERTIES]
 [START METHODS]
 PROCEDURE Click
@@ -753,29 +888,832 @@ ENDPROC
 
 [ RECORD]
 [PLATFORM] WINDOWS 
+[UNIQUEID] _1NB1DVHWE
+[CLASS] pageframe
+[BASECLASS] pageframe
+[OBJNAME] oOptionPages
+[PARENT] foxtabsoptions
+[START PROPERTIES]
+ActivePage = 1
+BorderWidth = 0
+ErasePage = .T.
+Height = 310
+Left = 90
+Name = "oOptionPages"
+Page1.BackStyle = 0
+Page1.Caption = "General"
+Page1.FontName = "Microsoft Sans Serif"
+Page1.FontSize = 7
+Page1.Name = "General"
+Page2.BackStyle = 0
+Page2.Caption = "MRU"
+Page2.FontName = "Microsoft Sans Serif"
+Page2.FontSize = 7
+Page2.Name = "MRU"
+PageCount = 2
+SpecialEffect = 2
+TabIndex = 3
+Tabs = .F.
+Themes = .F.
+Top = 5
+Width = 355
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1MB19JZ6L
+[CLASS] container
+[BASECLASS] container
+[OBJNAME] oGeneral
+[PARENT] foxtabsoptions.oOptionPages.General
+[START PROPERTIES]
+BackStyle = 0
+BorderWidth = 0
+Height = 305
+Name = "oGeneral"
+TabIndex = 1
+Width = 355
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1LD0Z8KMD
+[CLASS] combobox
+[BASECLASS] combobox
+[OBJNAME] cboDock
+[PARENT] foxtabsoptions.oOptionPages.General.oGeneral
+[START PROPERTIES]
+ColumnCount = 0
+ColumnWidths = ""
+FirstElement = 1
+FontName = "Tahoma"
+FontSize = 8
+Height = 22
+Left = 119
+Name = "cboDock"
+NumberOfElements = 0
+RowSource = "Top,Bottom"
+RowSourceType = 1
+Style = 2
+TabIndex = 1
+Top = 23
+Width = 185
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1LD0ZUJ91
+[CLASS] checkbox
+[BASECLASS] checkbox
+[OBJNAME] chkFullname
+[PARENT] foxtabsoptions.oOptionPages.General.oGeneral
+[START PROPERTIES]
+Alignment = 0
+AutoSize = .T.
+BackStyle = 0
+Caption = "Show the window's full title as the FoxTab caption"
+FontName = "Tahoma"
+FontSize = 8
+Height = 15
+Left = 50
+Name = "chkFullname"
+TabIndex = 6
+Top = 181
+Width = 257
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
 [UNIQUEID] _1LD0ZUJ91
 [CLASS] commandbutton
 [BASECLASS] commandbutton
-[OBJNAME] cmdCancel
-[PARENT] foxtabsoptions
+[OBJNAME] cmdGetColour
+[PARENT] foxtabsoptions.oOptionPages.General.oGeneral
 [START PROPERTIES]
-Top = 320
-Left = 359
-Height = 23
-Width = 85
+AutoSize = .F.
+Caption = "..."
 FontName = "Tahoma"
 FontSize = 8
-Caption = "Cancel"
-TabIndex = 5
-Name = "cmdCancel"
+Height = 23
+Left = 284
+Name = "cmdGetColour"
+TabIndex = 3
+ToolTipText = "Colour picker"
+Top = 75
+Width = 20
 [END PROPERTIES]
 [START METHODS]
 PROCEDURE Click
-* Release the options form
-ThisForm.Release
+
+Local lnFontColour As Integer 
+
+lnFontColour  = GetColor(This.parent.txtFontColour.ForeColor)
+
+* Set the font colour
+If lnFontColour # -1
+	This.parent.txtFontColour.ForeColor = lnFontColour
+EndIf 
+
 
 ENDPROC
 [END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1LD0ZUJ91
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] cmdGetFont
+[PARENT] foxtabsoptions.oOptionPages.General.oGeneral
+[START PROPERTIES]
+AutoSize = .F.
+Caption = "..."
+FontName = "Tahoma"
+FontSize = 8
+Height = 23
+Left = 284
+Name = "cmdGetFont"
+TabIndex = 2
+ToolTipText = "Font picker"
+Top = 49
+Width = 20
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+
+Local lcFont As String
+
+* Get the font
+If Empty(This.Parent.txtFont.Value)
+	lcFont = GetFont()
+Else
+	* Pass current value as default to GetFont()
+	lcFont = GetFont(	GetWordNum(This.Parent.txtFont.Value, 1, ","), ;
+						Val(GetWordNum(This.Parent.txtFont.Value, 2, ",")), ;
+						GetWordNum(This.Parent.txtFont.Value, 2, ",")	)
+EndIf 
+
+* Check if user selected a font or hit cancel
+If Empty(lcFont)
+	Return
+EndIf
+
+* Update the associated textbox
+This.Parent.txtFont.Value = lcFont
+This.Parent.txtFont.Valid()
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] RESERVED  
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label1
+[PARENT] foxtabsoptions.oOptionPages.General.oGeneral
+[START PROPERTIES]
+AutoSize = .T.
+BackStyle = 0
+Caption = "Show FoxTabs at"
+FontName = "Tahoma"
+FontSize = 8
+Height = 15
+Left = 28
+Name = "Label1"
+TabIndex = 9
+Top = 27
+Width = 85
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1MB1F4G99
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label2
+[PARENT] foxtabsoptions.oOptionPages.General.oGeneral
+[START PROPERTIES]
+AutoSize = .T.
+BackStyle = 0
+Caption = "Maximum number of visible FoxTabs "
+FontName = "Tahoma"
+FontSize = 8
+Height = 15
+Left = 28
+Name = "Label2"
+TabIndex = 11
+Top = 129
+Width = 177
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1LD0Z8KMD
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label3
+[PARENT] foxtabsoptions.oOptionPages.General.oGeneral
+[START PROPERTIES]
+AutoSize = .T.
+BackStyle = 0
+Caption = "Font"
+FontName = "Tahoma"
+FontSize = 8
+Height = 15
+Left = 28
+Name = "Label3"
+TabIndex = 13
+Top = 53
+Width = 24
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1LD0Z8KMD
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label4
+[PARENT] foxtabsoptions.oOptionPages.General.oGeneral
+[START PROPERTIES]
+AutoSize = .T.
+Caption = " Appearance "
+FontName = "Tahoma"
+FontSize = 8
+ForeColor = 127,157,185
+Height = 15
+Left = 10
+Name = "Label4"
+TabIndex = 14
+Top = 3
+Width = 66
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1MC01BDG9
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label5
+[PARENT] foxtabsoptions.oOptionPages.General.oGeneral
+[START PROPERTIES]
+AutoSize = .T.
+Caption = " Tabs "
+FontName = "Tahoma"
+FontSize = 8
+ForeColor = 127,157,185
+Height = 15
+Left = 10
+Name = "Label5"
+TabIndex = 15
+Top = 109
+Width = 31
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1MB19JZ6L
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label6
+[PARENT] foxtabsoptions.oOptionPages.General.oGeneral
+[START PROPERTIES]
+AutoSize = .T.
+BackStyle = 0
+Caption = "Active font colour"
+FontName = "Tahoma"
+FontSize = 8
+Height = 15
+Left = 28
+Name = "Label6"
+TabIndex = 16
+Top = 79
+Width = 87
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1MB19JZ6L
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label7
+[PARENT] foxtabsoptions.oOptionPages.General.oGeneral
+[START PROPERTIES]
+AutoSize = .T.
+BackStyle = 0
+Caption = "Truncate FoxTab caption if more than "
+FontName = "Tahoma"
+FontSize = 8
+Height = 15
+Left = 28
+Name = "Label7"
+TabIndex = 10
+Top = 155
+Width = 186
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1MB19JZ6L
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label8
+[PARENT] foxtabsoptions.oOptionPages.General.oGeneral
+[START PROPERTIES]
+BackStyle = 0
+Caption = " characters"
+FontName = "Tahoma"
+FontSize = 8
+Height = 15
+Left = 257
+Name = "Label8"
+TabIndex = 12
+Top = 155
+Width = 55
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1ME0VWJXL
+[CLASS] shape
+[BASECLASS] shape
+[OBJNAME] Shape1
+[PARENT] foxtabsoptions.oOptionPages.General.oGeneral
+[START PROPERTIES]
+BackStyle = 0
+Curvature = 5
+Height = 95
+Left = 2
+Name = "Shape1"
+Style = 3
+Top = 10
+Width = 350
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] RESERVED  
+[CLASS] shape
+[BASECLASS] shape
+[OBJNAME] Shape2
+[PARENT] foxtabsoptions.oOptionPages.General.oGeneral
+[START PROPERTIES]
+BackStyle = 0
+Curvature = 5
+Height = 100
+Left = 2
+Name = "Shape2"
+Style = 3
+Top = 116
+Width = 350
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] RESERVED  
+[CLASS] spinner
+[BASECLASS] spinner
+[OBJNAME] spnMaxChars
+[PARENT] foxtabsoptions.oOptionPages.General.oGeneral
+[START PROPERTIES]
+FontName = "Tahoma"
+FontSize = 8
+Height = 24
+KeyboardHighValue = 50
+KeyboardLowValue = 1
+Left = 214
+Name = "spnMaxChars"
+SpinnerHighValue =  50.00
+SpinnerLowValue =   1.00
+TabIndex = 5
+Top = 150
+Width = 40
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1L60XN392
+[CLASS] spinner
+[BASECLASS] spinner
+[OBJNAME] spnMaxNumber
+[PARENT] foxtabsoptions.oOptionPages.General.oGeneral
+[START PROPERTIES]
+FontName = "Tahoma"
+FontSize = 8
+Height = 24
+KeyboardHighValue = 20
+KeyboardLowValue = 1
+Left = 214
+Name = "spnMaxNumber"
+SpinnerHighValue =  20.00
+SpinnerLowValue =   1.00
+TabIndex = 4
+Top = 124
+Width = 40
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1L60XN392
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] txtFont
+[PARENT] foxtabsoptions.oOptionPages.General.oGeneral
+[START PROPERTIES]
+FontName = "Tahoma"
+FontSize = 8
+Height = 22
+Left = 119
+Name = "txtFont"
+ReadOnly = .T.
+TabIndex = 7
+Top = 49
+Width = 163
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Valid
+
+* Check for an empty font setting
+If Empty(This.Value)
+	Return
+EndIf
+
+* Update the appearance of the texbox
+This.FontName = GetWordNum(This.Value, 1, ",")
+This.FontSize = Val(GetWordNum(This.Value, 2, ","))
+This.FontBold = "B" $ GetWordNum(This.Value, 3, ",")
+This.FontItalic = "I" $ GetWordNum(This.Value, 3, ",")	
+
+* Set the active fore colour text as well
+This.Parent.txtFontColour.Value = This.Value
+
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1MB19JZ6L
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] txtFontColour
+[PARENT] foxtabsoptions.oOptionPages.General.oGeneral
+[START PROPERTIES]
+FontName = "Tahoma"
+FontSize = 8
+Height = 22
+Left = 119
+Name = "txtFontColour"
+ReadOnly = .T.
+TabIndex = 8
+Top = 75
+Width = 163
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Valid
+
+* Check for an empty font setting
+If Empty(This.Value)
+	Return
+EndIf
+
+* Update the appearance of the texbox
+This.FontName = GetWordNum(This.Value, 1, ",")
+This.FontSize = Val(GetWordNum(This.Value, 2, ","))
+This.FontBold = "B" $ GetWordNum(This.Value, 3, ",")
+This.FontItalic = "I" $ GetWordNum(This.Value, 3, ",")	
+
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1NB1DVI0R
+[CLASS] container
+[BASECLASS] container
+[OBJNAME] oMRU
+[PARENT] foxtabsoptions.oOptionPages.MRU
+[START PROPERTIES]
+BackStyle = 0
+BorderWidth = 0
+Height = 305
+Name = "oMRU"
+TabIndex = 2
+Width = 355
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1NB1DVI17
+[CLASS] combobox
+[BASECLASS] combobox
+[OBJNAME] cboTableSelection
+[PARENT] foxtabsoptions.oOptionPages.MRU.oMRU
+[START PROPERTIES]
+ColumnCount = 0
+ColumnWidths = ""
+FirstElement = 1
+FontName = "Tahoma"
+FontSize = 8
+Height = 22
+Left = 75
+Name = "cboTableSelection"
+NumberOfElements = 0
+RowSource = "Modify,Browse"
+RowSourceType = 1
+TabIndex = 9
+Top = 229
+Width = 80
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] RESERVED  
+[CLASS] checkbox
+[BASECLASS] checkbox
+[OBJNAME] chkIncludeClassFiles
+[PARENT] foxtabsoptions.oOptionPages.MRU.oMRU
+[START PROPERTIES]
+Alignment = 0
+AutoSize = .T.
+BackStyle = 0
+Caption = "Include Class files"
+FontName = "Tahoma"
+FontSize = 8
+Height = 15
+Left = 47
+Name = "chkIncludeClassFiles"
+TabIndex = 3
+Top = 78
+Width = 103
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1NB1DVI2Y
+[CLASS] checkbox
+[BASECLASS] checkbox
+[OBJNAME] chkIncludeDatabaseFiles
+[PARENT] foxtabsoptions.oOptionPages.MRU.oMRU
+[START PROPERTIES]
+Alignment = 0
+AutoSize = .T.
+BackStyle = 0
+Caption = "Include Database files"
+FontName = "Tahoma"
+FontSize = 8
+Height = 15
+Left = 47
+Name = "chkIncludeDatabaseFiles"
+TabIndex = 7
+Top = 182
+Width = 124
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1MB19JZ6L
+[CLASS] checkbox
+[BASECLASS] checkbox
+[OBJNAME] chkIncludeFormFiles
+[PARENT] foxtabsoptions.oOptionPages.MRU.oMRU
+[START PROPERTIES]
+Alignment = 0
+AutoSize = .T.
+BackStyle = 0
+Caption = "Include Form files"
+FontName = "Tahoma"
+FontSize = 8
+Height = 15
+Left = 47
+Name = "chkIncludeFormFiles"
+TabIndex = 5
+Top = 130
+Width = 102
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1ME0VWJXL
+[CLASS] checkbox
+[BASECLASS] checkbox
+[OBJNAME] chkIncludeProgramFiles
+[PARENT] foxtabsoptions.oOptionPages.MRU.oMRU
+[START PROPERTIES]
+Alignment = 0
+AutoSize = .T.
+BackStyle = 0
+Caption = "Include Program files"
+FontName = "Tahoma"
+FontSize = 8
+Height = 15
+Left = 47
+Name = "chkIncludeProgramFiles"
+TabIndex = 4
+Top = 104
+Width = 118
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1MB19JZ6L
+[CLASS] checkbox
+[BASECLASS] checkbox
+[OBJNAME] chkIncludeProjectFiles
+[PARENT] foxtabsoptions.oOptionPages.MRU.oMRU
+[START PROPERTIES]
+Alignment = 0
+AutoSize = .T.
+BackStyle = 0
+Caption = "Include Project files"
+FontName = "Tahoma"
+FontSize = 8
+Height = 15
+Left = 47
+Name = "chkIncludeProjectFiles"
+TabIndex = 2
+Top = 52
+Width = 112
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2I31D2R5R
+[CLASS] checkbox
+[BASECLASS] checkbox
+[OBJNAME] chkIncludeReportFiles
+[PARENT] foxtabsoptions.oOptionPages.MRU.oMRU
+[START PROPERTIES]
+Alignment = 0
+AutoSize = .T.
+BackStyle = 0
+Caption = "Include Report files"
+FontName = "Tahoma"
+FontSize = 8
+Height = 15
+Left = 47
+Name = "chkIncludeReportFiles"
+TabIndex = 6
+Top = 156
+Width = 111
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1NB1DVI3D
+[CLASS] checkbox
+[BASECLASS] checkbox
+[OBJNAME] chkIncludeSolutionFiles
+[PARENT] foxtabsoptions.oOptionPages.MRU.oMRU
+[START PROPERTIES]
+Alignment = 0
+AutoSize = .T.
+BackStyle = 0
+Caption = "Include Solution files"
+FontName = "Tahoma"
+FontSize = 8
+Height = 15
+Left = 204
+Name = "chkIncludeSolutionFiles"
+TabIndex = 11
+Top = 52
+Visible = .F.
+Width = 116
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1NB1DVI3C
+[CLASS] checkbox
+[BASECLASS] checkbox
+[OBJNAME] chkIncludeTableFiles
+[PARENT] foxtabsoptions.oOptionPages.MRU.oMRU
+[START PROPERTIES]
+Alignment = 0
+AutoSize = .T.
+BackStyle = 0
+Caption = "Include Table files"
+FontName = "Tahoma"
+FontSize = 8
+Height = 15
+Left = 47
+Name = "chkIncludeTableFiles"
+TabIndex = 8
+Top = 208
+Width = 104
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1MB19JZ6L
+[CLASS] checkbox
+[BASECLASS] checkbox
+[OBJNAME] chkShowRecent
+[PARENT] foxtabsoptions.oOptionPages.MRU.oMRU
+[START PROPERTIES]
+Alignment = 0
+AutoSize = .T.
+BackStyle = 0
+Caption = "Show recent files as menu item"
+FontName = "Tahoma"
+FontSize = 8
+Height = 15
+Left = 28
+Name = "chkShowRecent"
+TabIndex = 1
+Top = 27
+Width = 166
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE InteractiveChange
+DoDefault()
+
+* Toggle the state of the inclusion settings
+This.ProgrammaticChange()
+ENDPROC
+PROCEDURE ProgrammaticChange
+DoDefault()
+
+* Toggle the enabled state of the inclusion settings
+With This.Parent As Container
+
+	* File inclusions
+	.chkIncludeSolutionFiles.Enabled = This.Value
+	.chkIncludeProjectFiles.Enabled = This.Value
+	.chkIncludeClassFiles.Enabled = This.Value
+	.chkIncludeProgramFiles.Enabled = This.Value
+	.chkIncludeFormFiles.Enabled = This.Value
+	.chkIncludeDatabaseFiles.Enabled = This.Value
+	.chkIncludeTableFiles.Enabled = This.Value
+
+	* On table selection
+	.cboTableSelection.Enabled = This.Value
+
+EndWith 
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1NB1DVI16
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label1
+[PARENT] foxtabsoptions.oOptionPages.MRU.oMRU
+[START PROPERTIES]
+AutoSize = .T.
+BackStyle = 0
+Caption = "when selecting tables"
+FontName = "Tahoma"
+FontSize = 8
+Height = 15
+Left = 160
+Name = "Label1"
+TabIndex = 10
+Top = 233
+Width = 105
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1NB1DVI1M
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label4
+[PARENT] foxtabsoptions.oOptionPages.MRU.oMRU
+[START PROPERTIES]
+AutoSize = .T.
+Caption = " Most recently used "
+FontName = "Tahoma"
+FontSize = 8
+ForeColor = 127,157,185
+Height = 15
+Left = 10
+Name = "Label4"
+TabIndex = 12
+Top = 3
+Width = 99
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1NB1DVI0S
+[CLASS] shape
+[BASECLASS] shape
+[OBJNAME] Shape1
+[PARENT] foxtabsoptions.oOptionPages.MRU.oMRU
+[START PROPERTIES]
+BackStyle = 0
+Curvature = 5
+Height = 260
+Left = 2
+Name = "Shape1"
+Style = 3
+Top = 10
+Width = 350
+[END PROPERTIES]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -785,16 +1723,16 @@ ENDPROC
 [OBJNAME] optGeneral
 [PARENT] foxtabsoptions
 [START PROPERTIES]
-Top = 6
-Left = 6
-Width = 78
-Height = 50
-BorderWidth = 0
-MousePointer = 15
-TabIndex = 1
 BackColor = 255,255,255
 BorderColor = 49,106,197
+BorderWidth = 0
+Height = 50
+Left = 6
+MousePointer = 15
 Name = "optGeneral"
+TabIndex = 1
+Top = 6
+Width = 78
 [END PROPERTIES]
 [START METHODS]
 PROCEDURE Click
@@ -826,13 +1764,13 @@ ENDPROC
 [OBJNAME] imgOptionGroup
 [PARENT] foxtabsoptions.optGeneral
 [START PROPERTIES]
-Picture = images\window_gear.png
 Height = 32
 Left = 23
 MousePointer = 15
+Name = "imgOptionGroup"
+Picture = images\window_gear.png
 Top = 5
 Width = 32
-Name = "imgOptionGroup"
 [END PROPERTIES]
 [START METHODS]
 PROCEDURE Click
@@ -850,16 +1788,16 @@ ENDPROC
 [PARENT] foxtabsoptions.optGeneral
 [START PROPERTIES]
 AutoSize = .T.
-FontName = "Tahoma"
-FontSize = 8
 BackStyle = 0
 Caption = "General"
+FontName = "Tahoma"
+FontSize = 8
 Height = 15
 Left = 19
 MousePointer = 15
+Name = "lblOptionGroup"
 Top = 35
 Width = 39
-Name = "lblOptionGroup"
 [END PROPERTIES]
 [START METHODS]
 PROCEDURE Click
@@ -876,16 +1814,16 @@ ENDPROC
 [OBJNAME] optMRU
 [PARENT] foxtabsoptions
 [START PROPERTIES]
-Top = 60
-Left = 6
-Width = 78
-Height = 50
-BorderWidth = 0
-MousePointer = 15
-TabIndex = 2
 BackColor = 255,255,255
 BorderColor = 49,106,197
+BorderWidth = 0
+Height = 50
+Left = 6
+MousePointer = 15
 Name = "optMRU"
+TabIndex = 2
+Top = 60
+Width = 78
 [END PROPERTIES]
 [START METHODS]
 PROCEDURE Click
@@ -917,13 +1855,13 @@ ENDPROC
 [OBJNAME] imgOptionGroup
 [PARENT] foxtabsoptions.optMRU
 [START PROPERTIES]
-Picture = images\folder_time.png
 Height = 32
 Left = 23
 MousePointer = 15
+Name = "imgOptionGroup"
+Picture = images\folder_time.png
 Top = 5
 Width = 32
-Name = "imgOptionGroup"
 [END PROPERTIES]
 [START METHODS]
 PROCEDURE Click
@@ -941,16 +1879,16 @@ ENDPROC
 [PARENT] foxtabsoptions.optMRU
 [START PROPERTIES]
 AutoSize = .T.
-FontName = "Tahoma"
-FontSize = 8
 BackStyle = 0
 Caption = "Recent files"
+FontName = "Tahoma"
+FontSize = 8
 Height = 15
 Left = 10
 MousePointer = 15
+Name = "lblOptionGroup"
 Top = 35
 Width = 58
-Name = "lblOptionGroup"
 [END PROPERTIES]
 [START METHODS]
 PROCEDURE Click
@@ -961,831 +1899,20 @@ ENDPROC
 
 [ RECORD]
 [PLATFORM] WINDOWS 
-[UNIQUEID] _1NB1DVHWE
-[CLASS] pageframe
-[BASECLASS] pageframe
-[OBJNAME] oOptionPages
-[PARENT] foxtabsoptions
-[START PROPERTIES]
-ErasePage = .T.
-PageCount = 2
-ActivePage = 1
-BorderWidth = 0
-Top = 5
-Left = 90
-Width = 355
-Height = 310
-SpecialEffect = 2
-Tabs = .F.
-TabIndex = 3
-Themes = .F.
-Name = "oOptionPages"
-Page1.FontName = "Microsoft Sans Serif"
-Page1.FontSize = 7
-Page1.Caption = "General"
-Page1.BackStyle = 0
-Page1.Name = "General"
-Page2.FontName = "Microsoft Sans Serif"
-Page2.FontSize = 7
-Page2.Caption = "MRU"
-Page2.BackStyle = 0
-Page2.Name = "MRU"
-[END PROPERTIES]
-
-[ RECORD]
-[PLATFORM] WINDOWS 
-[UNIQUEID] _1MB19JZ6L
-[CLASS] container
-[BASECLASS] container
-[OBJNAME] oGeneral
-[PARENT] foxtabsoptions.oOptionPages.General
-[START PROPERTIES]
-Width = 355
-Height = 305
-BackStyle = 0
-BorderWidth = 0
-TabIndex = 1
-Name = "oGeneral"
-[END PROPERTIES]
-
-[ RECORD]
-[PLATFORM] WINDOWS 
-[UNIQUEID] RESERVED  
+[UNIQUEID] _1MB1F4G99
 [CLASS] shape
 [BASECLASS] shape
 [OBJNAME] Shape2
-[PARENT] foxtabsoptions.oOptionPages.General.oGeneral
+[PARENT] foxtabsoptions
 [START PROPERTIES]
-Top = 116
-Left = 2
-Height = 100
-Width = 350
-BackStyle = 0
+BackColor = 255,255,255
+BorderColor = 127,157,185
 Curvature = 5
-Style = 3
+Height = 340
+Left = 5
 Name = "Shape2"
-[END PROPERTIES]
-
-[ RECORD]
-[PLATFORM] WINDOWS 
-[UNIQUEID] _1ME0VWJXL
-[CLASS] shape
-[BASECLASS] shape
-[OBJNAME] Shape1
-[PARENT] foxtabsoptions.oOptionPages.General.oGeneral
-[START PROPERTIES]
-Top = 10
-Left = 2
-Height = 95
-Width = 350
-BackStyle = 0
-Curvature = 5
-Style = 3
-Name = "Shape1"
-[END PROPERTIES]
-
-[ RECORD]
-[PLATFORM] WINDOWS 
-[UNIQUEID] RESERVED  
-[CLASS] label
-[BASECLASS] label
-[OBJNAME] Label1
-[PARENT] foxtabsoptions.oOptionPages.General.oGeneral
-[START PROPERTIES]
-AutoSize = .T.
-FontName = "Tahoma"
-FontSize = 8
-BackStyle = 0
-Caption = "Show FoxTabs at"
-Height = 15
-Left = 28
-Top = 27
-Width = 85
-TabIndex = 9
-Name = "Label1"
-[END PROPERTIES]
-
-[ RECORD]
-[PLATFORM] WINDOWS 
-[UNIQUEID] _1LD0Z8KMD
-[CLASS] combobox
-[BASECLASS] combobox
-[OBJNAME] cboDock
-[PARENT] foxtabsoptions.oOptionPages.General.oGeneral
-[START PROPERTIES]
-FontName = "Tahoma"
-FontSize = 8
-ColumnCount = 0
-ColumnWidths = ""
-RowSourceType = 1
-RowSource = "Top,Bottom"
-FirstElement = 1
-Height = 22
-Left = 119
-NumberOfElements = 0
-Style = 2
-TabIndex = 1
-Top = 23
-Width = 185
-Name = "cboDock"
-[END PROPERTIES]
-
-[ RECORD]
-[PLATFORM] WINDOWS 
-[UNIQUEID] _1MB1F4G99
-[CLASS] label
-[BASECLASS] label
-[OBJNAME] Label2
-[PARENT] foxtabsoptions.oOptionPages.General.oGeneral
-[START PROPERTIES]
-AutoSize = .T.
-FontName = "Tahoma"
-FontSize = 8
-BackStyle = 0
-Caption = "Maximum number of visible FoxTabs "
-Height = 15
-Left = 28
-Top = 129
-Width = 177
-TabIndex = 11
-Name = "Label2"
-[END PROPERTIES]
-
-[ RECORD]
-[PLATFORM] WINDOWS 
-[UNIQUEID] _1L60XN392
-[CLASS] spinner
-[BASECLASS] spinner
-[OBJNAME] spnMaxNumber
-[PARENT] foxtabsoptions.oOptionPages.General.oGeneral
-[START PROPERTIES]
-FontName = "Tahoma"
-FontSize = 8
-Height = 24
-KeyboardHighValue = 20
-KeyboardLowValue = 1
-Left = 214
-SpinnerHighValue =  20.00
-SpinnerLowValue =   1.00
-TabIndex = 4
-Top = 124
-Width = 40
-Name = "spnMaxNumber"
-[END PROPERTIES]
-
-[ RECORD]
-[PLATFORM] WINDOWS 
-[UNIQUEID] _1LD0ZUJ91
-[CLASS] checkbox
-[BASECLASS] checkbox
-[OBJNAME] chkFullname
-[PARENT] foxtabsoptions.oOptionPages.General.oGeneral
-[START PROPERTIES]
-Top = 181
-Left = 50
-Height = 15
-Width = 257
-FontName = "Tahoma"
-FontSize = 8
-AutoSize = .T.
-Alignment = 0
-BackStyle = 0
-Caption = "Show the window's full title as the FoxTab caption"
-TabIndex = 6
-Name = "chkFullname"
-[END PROPERTIES]
-
-[ RECORD]
-[PLATFORM] WINDOWS 
-[UNIQUEID] _1LD0Z8KMD
-[CLASS] label
-[BASECLASS] label
-[OBJNAME] Label3
-[PARENT] foxtabsoptions.oOptionPages.General.oGeneral
-[START PROPERTIES]
-AutoSize = .T.
-FontName = "Tahoma"
-FontSize = 8
-BackStyle = 0
-Caption = "Font"
-Height = 15
-Left = 28
-Top = 53
-Width = 24
-TabIndex = 13
-Name = "Label3"
-[END PROPERTIES]
-
-[ RECORD]
-[PLATFORM] WINDOWS 
-[UNIQUEID] _1L60XN392
-[CLASS] textbox
-[BASECLASS] textbox
-[OBJNAME] txtFont
-[PARENT] foxtabsoptions.oOptionPages.General.oGeneral
-[START PROPERTIES]
-FontName = "Tahoma"
-FontSize = 8
-Height = 22
-Left = 119
-ReadOnly = .T.
-TabIndex = 7
-Top = 49
-Width = 163
-Name = "txtFont"
-[END PROPERTIES]
-[START METHODS]
-PROCEDURE Valid
-
-* Check for an empty font setting
-If Empty(This.Value)
-	Return
-EndIf
-
-* Update the appearance of the texbox
-This.FontName = GetWordNum(This.Value, 1, ",")
-This.FontSize = Val(GetWordNum(This.Value, 2, ","))
-This.FontBold = "B" $ GetWordNum(This.Value, 3, ",")
-This.FontItalic = "I" $ GetWordNum(This.Value, 3, ",")	
-
-* Set the active fore colour text as well
-This.Parent.txtFontColour.Value = This.Value
-
-
-ENDPROC
-[END METHODS]
-
-[ RECORD]
-[PLATFORM] WINDOWS 
-[UNIQUEID] _1LD0ZUJ91
-[CLASS] commandbutton
-[BASECLASS] commandbutton
-[OBJNAME] cmdGetFont
-[PARENT] foxtabsoptions.oOptionPages.General.oGeneral
-[START PROPERTIES]
-AutoSize = .F.
-Top = 49
-Left = 284
-Height = 23
-Width = 20
-FontName = "Tahoma"
-FontSize = 8
-Caption = "..."
-TabIndex = 2
-ToolTipText = "Font picker"
-Name = "cmdGetFont"
-[END PROPERTIES]
-[START METHODS]
-PROCEDURE Click
-
-Local lcFont As String
-
-* Get the font
-If Empty(This.Parent.txtFont.Value)
-	lcFont = GetFont()
-Else
-	* Pass current value as default to GetFont()
-	lcFont = GetFont(	GetWordNum(This.Parent.txtFont.Value, 1, ","), ;
-						Val(GetWordNum(This.Parent.txtFont.Value, 2, ",")), ;
-						GetWordNum(This.Parent.txtFont.Value, 2, ",")	)
-EndIf
-
-* Check if user selected a font or hit cancel
-If Empty(lcFont)
-	Return
-EndIf
-
-* Update the associated textbox
-This.Parent.txtFont.Value = lcFont
-This.Parent.txtFont.Valid()
-
-ENDPROC
-[END METHODS]
-
-[ RECORD]
-[PLATFORM] WINDOWS 
-[UNIQUEID] _1LD0Z8KMD
-[CLASS] label
-[BASECLASS] label
-[OBJNAME] Label4
-[PARENT] foxtabsoptions.oOptionPages.General.oGeneral
-[START PROPERTIES]
-AutoSize = .T.
-FontName = "Tahoma"
-FontSize = 8
-Caption = " Appearance "
-Height = 15
-Left = 10
-Top = 3
-Width = 66
-TabIndex = 14
-ForeColor = 127,157,185
-Name = "Label4"
-[END PROPERTIES]
-
-[ RECORD]
-[PLATFORM] WINDOWS 
-[UNIQUEID] _1MC01BDG9
-[CLASS] label
-[BASECLASS] label
-[OBJNAME] Label5
-[PARENT] foxtabsoptions.oOptionPages.General.oGeneral
-[START PROPERTIES]
-AutoSize = .T.
-FontName = "Tahoma"
-FontSize = 8
-Caption = " Tabs "
-Height = 15
-Left = 10
-Top = 109
-Width = 31
-TabIndex = 15
-ForeColor = 127,157,185
-Name = "Label5"
-[END PROPERTIES]
-
-[ RECORD]
-[PLATFORM] WINDOWS 
-[UNIQUEID] _1MB19JZ6L
-[CLASS] label
-[BASECLASS] label
-[OBJNAME] Label6
-[PARENT] foxtabsoptions.oOptionPages.General.oGeneral
-[START PROPERTIES]
-AutoSize = .T.
-FontName = "Tahoma"
-FontSize = 8
-BackStyle = 0
-Caption = "Active font colour"
-Height = 15
-Left = 28
-Top = 79
-Width = 87
-TabIndex = 16
-Name = "Label6"
-[END PROPERTIES]
-
-[ RECORD]
-[PLATFORM] WINDOWS 
-[UNIQUEID] _1MB19JZ6L
-[CLASS] textbox
-[BASECLASS] textbox
-[OBJNAME] txtFontColour
-[PARENT] foxtabsoptions.oOptionPages.General.oGeneral
-[START PROPERTIES]
-FontName = "Tahoma"
-FontSize = 8
-Height = 22
-Left = 119
-ReadOnly = .T.
-TabIndex = 8
-Top = 75
-Width = 163
-Name = "txtFontColour"
-[END PROPERTIES]
-[START METHODS]
-PROCEDURE Valid
-
-* Check for an empty font setting
-If Empty(This.Value)
-	Return
-EndIf
-
-* Update the appearance of the texbox
-This.FontName = GetWordNum(This.Value, 1, ",")
-This.FontSize = Val(GetWordNum(This.Value, 2, ","))
-This.FontBold = "B" $ GetWordNum(This.Value, 3, ",")
-This.FontItalic = "I" $ GetWordNum(This.Value, 3, ",")	
-
-
-ENDPROC
-[END METHODS]
-
-[ RECORD]
-[PLATFORM] WINDOWS 
-[UNIQUEID] _1LD0ZUJ91
-[CLASS] commandbutton
-[BASECLASS] commandbutton
-[OBJNAME] cmdGetColour
-[PARENT] foxtabsoptions.oOptionPages.General.oGeneral
-[START PROPERTIES]
-AutoSize = .F.
-Top = 75
-Left = 284
-Height = 23
-Width = 20
-FontName = "Tahoma"
-FontSize = 8
-Caption = "..."
-TabIndex = 3
-ToolTipText = "Colour picker"
-Name = "cmdGetColour"
-[END PROPERTIES]
-[START METHODS]
-PROCEDURE Click
-
-Local lnFontColour As Integer
-
-lnFontColour  = GetColor(This.parent.txtFontColour.ForeColor)
-
-* Set the font colour
-If lnFontColour # -1
-	This.parent.txtFontColour.ForeColor = lnFontColour
-EndIf
-
-
-ENDPROC
-[END METHODS]
-
-[ RECORD]
-[PLATFORM] WINDOWS 
-[UNIQUEID] _1MB19JZ6L
-[CLASS] label
-[BASECLASS] label
-[OBJNAME] Label7
-[PARENT] foxtabsoptions.oOptionPages.General.oGeneral
-[START PROPERTIES]
-AutoSize = .T.
-FontName = "Tahoma"
-FontSize = 8
-BackStyle = 0
-Caption = "Truncate FoxTab caption if more than "
-Height = 15
-Left = 28
-Top = 155
-Width = 186
-TabIndex = 10
-Name = "Label7"
-[END PROPERTIES]
-
-[ RECORD]
-[PLATFORM] WINDOWS 
-[UNIQUEID] RESERVED  
-[CLASS] spinner
-[BASECLASS] spinner
-[OBJNAME] spnMaxChars
-[PARENT] foxtabsoptions.oOptionPages.General.oGeneral
-[START PROPERTIES]
-FontName = "Tahoma"
-FontSize = 8
-Height = 24
-KeyboardHighValue = 50
-KeyboardLowValue = 1
-Left = 214
-SpinnerHighValue =  50.00
-SpinnerLowValue =   1.00
-TabIndex = 5
-Top = 150
-Width = 40
-Name = "spnMaxChars"
-[END PROPERTIES]
-
-[ RECORD]
-[PLATFORM] WINDOWS 
-[UNIQUEID] _1MB19JZ6L
-[CLASS] label
-[BASECLASS] label
-[OBJNAME] Label8
-[PARENT] foxtabsoptions.oOptionPages.General.oGeneral
-[START PROPERTIES]
-FontName = "Tahoma"
-FontSize = 8
-BackStyle = 0
-Caption = " characters"
-Height = 15
-Left = 257
-Top = 155
-Width = 55
-TabIndex = 12
-Name = "Label8"
-[END PROPERTIES]
-
-[ RECORD]
-[PLATFORM] WINDOWS 
-[UNIQUEID] _1NB1DVI0R
-[CLASS] container
-[BASECLASS] container
-[OBJNAME] oMRU
-[PARENT] foxtabsoptions.oOptionPages.MRU
-[START PROPERTIES]
-Width = 355
-Height = 305
-BackStyle = 0
-BorderWidth = 0
-TabIndex = 2
-Name = "oMRU"
-[END PROPERTIES]
-
-[ RECORD]
-[PLATFORM] WINDOWS 
-[UNIQUEID] _1NB1DVI0S
-[CLASS] shape
-[BASECLASS] shape
-[OBJNAME] Shape1
-[PARENT] foxtabsoptions.oOptionPages.MRU.oMRU
-[START PROPERTIES]
-Top = 10
-Left = 2
-Height = 260
-Width = 350
-BackStyle = 0
-Curvature = 5
-Style = 3
-Name = "Shape1"
-[END PROPERTIES]
-
-[ RECORD]
-[PLATFORM] WINDOWS 
-[UNIQUEID] _1NB1DVI16
-[CLASS] label
-[BASECLASS] label
-[OBJNAME] Label1
-[PARENT] foxtabsoptions.oOptionPages.MRU.oMRU
-[START PROPERTIES]
-AutoSize = .T.
-FontName = "Tahoma"
-FontSize = 8
-BackStyle = 0
-Caption = "when selecting tables"
-Height = 15
-Left = 160
-Top = 233
-Width = 105
-TabIndex = 10
-Name = "Label1"
-[END PROPERTIES]
-
-[ RECORD]
-[PLATFORM] WINDOWS 
-[UNIQUEID] _1NB1DVI17
-[CLASS] combobox
-[BASECLASS] combobox
-[OBJNAME] cboTableSelection
-[PARENT] foxtabsoptions.oOptionPages.MRU.oMRU
-[START PROPERTIES]
-FontName = "Tahoma"
-FontSize = 8
-ColumnCount = 0
-ColumnWidths = ""
-RowSourceType = 1
-RowSource = "Modify,Browse"
-FirstElement = 1
-Height = 22
-Left = 75
-NumberOfElements = 0
-TabIndex = 9
-Top = 229
+Top = 5
 Width = 80
-Name = "cboTableSelection"
-[END PROPERTIES]
-
-[ RECORD]
-[PLATFORM] WINDOWS 
-[UNIQUEID] _1MB19JZ6L
-[CLASS] checkbox
-[BASECLASS] checkbox
-[OBJNAME] chkShowRecent
-[PARENT] foxtabsoptions.oOptionPages.MRU.oMRU
-[START PROPERTIES]
-Top = 27
-Left = 28
-Height = 15
-Width = 166
-FontName = "Tahoma"
-FontSize = 8
-AutoSize = .T.
-Alignment = 0
-BackStyle = 0
-Caption = "Show recent files as menu item"
-TabIndex = 1
-Name = "chkShowRecent"
-[END PROPERTIES]
-[START METHODS]
-PROCEDURE InteractiveChange
-DoDefault()
-
-* Toggle the state of the inclusion settings
-This.ProgrammaticChange()
-ENDPROC
-PROCEDURE ProgrammaticChange
-DoDefault()
-
-* Toggle the enabled state of the inclusion settings
-With This.Parent As Container
-
-	* File inclusions
-	.chkIncludeSolutionFiles.Enabled = This.Value
-	.chkIncludeProjectFiles.Enabled = This.Value
-	.chkIncludeClassFiles.Enabled = This.Value
-	.chkIncludeProgramFiles.Enabled = This.Value
-	.chkIncludeFormFiles.Enabled = This.Value
-	.chkIncludeDatabaseFiles.Enabled = This.Value
-	.chkIncludeTableFiles.Enabled = This.Value
-
-	* On table selection
-	.cboTableSelection.Enabled = This.Value
-
-EndWith
-
-ENDPROC
-[END METHODS]
-
-[ RECORD]
-[PLATFORM] WINDOWS 
-[UNIQUEID] _1NB1DVI1M
-[CLASS] label
-[BASECLASS] label
-[OBJNAME] Label4
-[PARENT] foxtabsoptions.oOptionPages.MRU.oMRU
-[START PROPERTIES]
-AutoSize = .T.
-FontName = "Tahoma"
-FontSize = 8
-Caption = " Most recently used "
-Height = 15
-Left = 10
-Top = 3
-Width = 99
-TabIndex = 12
-ForeColor = 127,157,185
-Name = "Label4"
-[END PROPERTIES]
-
-[ RECORD]
-[PLATFORM] WINDOWS 
-[UNIQUEID] _1MB19JZ6L
-[CLASS] checkbox
-[BASECLASS] checkbox
-[OBJNAME] chkIncludeProjectFiles
-[PARENT] foxtabsoptions.oOptionPages.MRU.oMRU
-[START PROPERTIES]
-Top = 52
-Left = 47
-Height = 15
-Width = 112
-FontName = "Tahoma"
-FontSize = 8
-AutoSize = .T.
-Alignment = 0
-BackStyle = 0
-Caption = "Include Project files"
-TabIndex = 2
-Name = "chkIncludeProjectFiles"
-[END PROPERTIES]
-
-[ RECORD]
-[PLATFORM] WINDOWS 
-[UNIQUEID] RESERVED  
-[CLASS] checkbox
-[BASECLASS] checkbox
-[OBJNAME] chkIncludeClassFiles
-[PARENT] foxtabsoptions.oOptionPages.MRU.oMRU
-[START PROPERTIES]
-Top = 78
-Left = 47
-Height = 15
-Width = 103
-FontName = "Tahoma"
-FontSize = 8
-AutoSize = .T.
-Alignment = 0
-BackStyle = 0
-Caption = "Include Class files"
-TabIndex = 3
-Name = "chkIncludeClassFiles"
-[END PROPERTIES]
-
-[ RECORD]
-[PLATFORM] WINDOWS 
-[UNIQUEID] _1ME0VWJXL
-[CLASS] checkbox
-[BASECLASS] checkbox
-[OBJNAME] chkIncludeProgramFiles
-[PARENT] foxtabsoptions.oOptionPages.MRU.oMRU
-[START PROPERTIES]
-Top = 104
-Left = 47
-Height = 15
-Width = 118
-FontName = "Tahoma"
-FontSize = 8
-AutoSize = .T.
-Alignment = 0
-BackStyle = 0
-Caption = "Include Program files"
-TabIndex = 4
-Name = "chkIncludeProgramFiles"
-[END PROPERTIES]
-
-[ RECORD]
-[PLATFORM] WINDOWS 
-[UNIQUEID] _1MB19JZ6L
-[CLASS] checkbox
-[BASECLASS] checkbox
-[OBJNAME] chkIncludeFormFiles
-[PARENT] foxtabsoptions.oOptionPages.MRU.oMRU
-[START PROPERTIES]
-Top = 130
-Left = 47
-Height = 15
-Width = 102
-FontName = "Tahoma"
-FontSize = 8
-AutoSize = .T.
-Alignment = 0
-BackStyle = 0
-Caption = "Include Form files"
-TabIndex = 5
-Name = "chkIncludeFormFiles"
-[END PROPERTIES]
-
-[ RECORD]
-[PLATFORM] WINDOWS 
-[UNIQUEID] _1NB1DVI2Y
-[CLASS] checkbox
-[BASECLASS] checkbox
-[OBJNAME] chkIncludeDatabaseFiles
-[PARENT] foxtabsoptions.oOptionPages.MRU.oMRU
-[START PROPERTIES]
-Top = 182
-Left = 47
-Height = 15
-Width = 124
-FontName = "Tahoma"
-FontSize = 8
-AutoSize = .T.
-Alignment = 0
-BackStyle = 0
-Caption = "Include Database files"
-TabIndex = 7
-Name = "chkIncludeDatabaseFiles"
-[END PROPERTIES]
-
-[ RECORD]
-[PLATFORM] WINDOWS 
-[UNIQUEID] _1NB1DVI3C
-[CLASS] checkbox
-[BASECLASS] checkbox
-[OBJNAME] chkIncludeTableFiles
-[PARENT] foxtabsoptions.oOptionPages.MRU.oMRU
-[START PROPERTIES]
-Top = 208
-Left = 47
-Height = 15
-Width = 104
-FontName = "Tahoma"
-FontSize = 8
-AutoSize = .T.
-Alignment = 0
-BackStyle = 0
-Caption = "Include Table files"
-TabIndex = 8
-Name = "chkIncludeTableFiles"
-[END PROPERTIES]
-
-[ RECORD]
-[PLATFORM] WINDOWS 
-[UNIQUEID] _1NB1DVI3D
-[CLASS] checkbox
-[BASECLASS] checkbox
-[OBJNAME] chkIncludeSolutionFiles
-[PARENT] foxtabsoptions.oOptionPages.MRU.oMRU
-[START PROPERTIES]
-Top = 52
-Left = 204
-Height = 15
-Width = 116
-FontName = "Tahoma"
-FontSize = 8
-AutoSize = .T.
-Alignment = 0
-BackStyle = 0
-Caption = "Include Solution files"
-TabIndex = 11
-Visible = .F.
-Name = "chkIncludeSolutionFiles"
-[END PROPERTIES]
-
-[ RECORD]
-[PLATFORM] WINDOWS 
-[UNIQUEID] _2I31D2R5R
-[CLASS] checkbox
-[BASECLASS] checkbox
-[OBJNAME] chkIncludeReportFiles
-[PARENT] foxtabsoptions.oOptionPages.MRU.oMRU
-[START PROPERTIES]
-Top = 156
-Left = 47
-Height = 15
-Width = 111
-FontName = "Tahoma"
-FontSize = 8
-AutoSize = .T.
-Alignment = 0
-BackStyle = 0
-Caption = "Include Report files"
-TabIndex = 6
-Name = "chkIncludeReportFiles"
 [END PROPERTIES]
 
 [ RECORD]
@@ -1804,16 +1931,16 @@ Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
 [BASECLASS] toolbar
 [OBJNAME] foxtabstoolbar
 [START PROPERTIES]
+
 Caption = "FoxTabs"
 Height = 32
 Left = 0
 Movable = .F.
+Name = "foxtabstoolbar"
 Top = 0
 Width = 132
-otabtoremove = .NULL.
 _memberdata =       93<VFPData><memberdata name="otabtoremove" type="property" display="oTabToRemove"/></VFPData>
-
-Name = "foxtabstoolbar"
+otabtoremove = .NULL.
 [END PROPERTIES]
 [START METHODS]
 PROCEDURE AfterDock
@@ -1825,18 +1952,18 @@ Local oFoxTabControl As Object
 This.cmdOptions.Caption = Iif(This.DockPosition = 3, "5", "6")
 This.imgLeft.RotateFlip = Iif(This.DockPosition = 3, 0, 6)
 
-* Update each FoxTab control
+* Update each FoxTab control 
 For Each oFoxTabControl In This.Controls
 	If Lower(oFoxTabControl.Class) = "foxtabcontrol"
 		oFoxTabControl.SetImageOrientation()
 	EndIf
-Next
+Next 
 
 
 ENDPROC
 PROCEDURE DblClick
 * Don't allow toolbar to be undocked with double-click
-NoDefault
+NoDefault 
 ENDPROC
 PROCEDURE Init
 
@@ -1869,15 +1996,15 @@ Try
 			If Not oFoxTabControl.Visible
 				This.HideFirstFoxTab()
 				oFoxTabControl.Visible = .T.
-			EndIf
+			EndIf 
 			
 			* Activate the window
 			oFoxTabControl.SetActive()
 
 			* All done
 			Exit
-		EndIf
-	Next
+		EndIf 
+	Next 
 
 Catch To oException
 	* Set exception header details and throw to caller
@@ -1888,7 +2015,7 @@ Finally
 	* Lock the screen
 	This.LockScreen = .F.
 
-EndTry
+EndTry 
 ENDPROC
 PROCEDURE addfoxtab
 * Add a new FoxTab control to the toolbar
@@ -1901,7 +2028,7 @@ Try
 	* Perform the checks to determine if its ok to add a new tab control
 	If Not This.OkToAddFoxTab(oFoxTab)
 		Exit
-	EndIf
+	EndIf 
 
 	* Lock the screen
 	This.LockScreen = .T.
@@ -1910,8 +2037,8 @@ Try
 	For Each oFoxTabControl In This.Controls
 		If Lower(oFoxTabControl.Class) = "foxtabcontrol"
 			oFoxTabControl.TabStyle = 2
-		EndIf
-	Next
+		EndIf 
+	Next 
 
 	* Create a unqiue name for the new control
 	lcControlName = Sys(2015)
@@ -1939,7 +2066,7 @@ Finally
 	* Lock the screen
 	This.LockScreen = .F.
 
-EndTry
+EndTry 
 ENDPROC
 PROCEDURE controlexists
 Lparameters lpcHWnd As String
@@ -1954,14 +2081,14 @@ For Each oFoxTabControl In This.Controls
 		
 		Return .T.
 	EndIf
-Next
+Next 
 
 Return .F.
 ENDPROC
 PROCEDURE definemrumenu
 * Define the most recently used files menu
 
-Local lcMruFileTypeList As String, lcMruFileType As String, lnMruBar As Integer, lbMenuDefined As Boolean
+Local lcMruFileTypeList As String, lcMruFileType As String, lnMruBar As Integer, lbMenuDefined As Boolean 
 
 * Define Mru file types allowed
 *JAL: Solution explorer currently not available, so removed from menu for now
@@ -2005,7 +2132,7 @@ PROCEDURE definemrusubmenu
 * Define the Mru submenu for the given file type
 Lparameters lpcMruFileType As String
 
-Local oResource As Object, oFoxTabsToolbar As Toolbar
+Local oResource As Object, oFoxTabsToolbar As Toolbar 
 Local lcSubmenuName As String, lcMruId As String, lnMruBar As Integer, lcResourceData As String, lcBuffer As String, lcMruData As String, lcMruFile As String, lcMruPrompt As String, lbMenuDefined As Boolean
 
 * Obtain a reference to the toolbar for ease of use with the popup menu
@@ -2060,7 +2187,7 @@ If Not Empty(Nvl(lcResourceData,""))
 			* Bind delegate
 			On Selection Bar (lnMruBar) Of (lcSubmenuName) oFoxTabsToolbar.ModifyFile(Prompt())
 
-		*EndIf
+		*EndIf 
 						
 	Next
 	
@@ -2123,7 +2250,7 @@ Do Case
 		      EndIf
 		      lcFoxWin = Wchild("",1)
 		EndFor
-		
+		 
 		* Unknown
 		If Empty(lcWindowName)
 		      lcWindowName = lpcFoxWindowName
@@ -2167,7 +2294,7 @@ Do Case
 	Case lpcMruFileType = "Database"
 		lcMruId = "MRUK"
 	
-	Otherwise
+	Otherwise 
 		lcMruId = ""
 		
 EndCase
@@ -2194,7 +2321,7 @@ Try
 			If Not oFoxTabControl.Visible
 				This.HideFirstFoxTab()
 				oFoxTabControl.Visible = .T.
-			EndIf
+			EndIf 
 
 			* Set the focus to this control
 			oFoxTabControl.SetFocus()
@@ -2202,8 +2329,8 @@ Try
 			* All done. Exit For Each loop
 			Exit
 
-		EndIf
-	Next
+		EndIf 
+	Next 
 
 Catch To oException
 	Throw oException
@@ -2212,7 +2339,7 @@ Finally
 	* Lock the screen
 	This.LockScreen = .F.
 
-EndTry
+EndTry 
 ENDPROC
 PROCEDURE hidefirstfoxtab
 
@@ -2226,17 +2353,17 @@ For lnControl = 1 To This.ControlCount
 		And Lower(oFoxTabControl.Name) # "foxtabdesktop" ;
 		And oFoxTabControl.Visible
 		
-		* Hide the FoxTab control
+		* Hide the FoxTab control 
 		oFoxTabControl.Visible = .F.
 		Exit
 	EndIf 			
-Next
+Next 
 
 ENDPROC
 PROCEDURE modifyfile
 Lparameters lpcFileName As String
 
-Local oException As Exception
+Local oException As Exception 
 Local lcFileType As String, lcModifyCommand As String
 
 Try
@@ -2298,7 +2425,7 @@ Try
 			* Issue a modify file command
 			lcModifyCommand = [Modify File "] + lpcFileName + [" NoWait ]
 			
-	EndCase
+	EndCase 
 	
 	* Open file in previous datasession
 	Set Datasession To (oFoxTabs.PrevDataSession)
@@ -2327,13 +2454,13 @@ Local lnMaxFoxTabs As Integer
 If This.ControlExists(oFoxTab.hWnd)
 	* Not interested
 	Return .F.
-EndIf
+EndIf 
 
 * Check if the maximum allowable FoxTabs have already been reached
 If oFoxTabs.FoxTabsManager.FoxTabs.Count > Val(oFoxTabs.Configuration("AppSettings.MaxNumTabs").Value)
 	* Hide the first visible FoxTab control
 	This.HideFirstFoxTab()
-EndIf
+EndIf 
 
 * Otherwise all checks have been met
 Return .T.
@@ -2360,8 +2487,8 @@ Try
 			* All done. Exit For Each loop
 			Exit
 
-		EndIf
-	Next
+		EndIf 
+	Next 
 
 Catch To oException
 	Throw oException
@@ -2370,21 +2497,21 @@ Finally
 	* Lock the screen
 	This.LockScreen = .F.
 
-EndTry
+EndTry 
 ENDPROC
 PROCEDURE refreshtabs
 
 * Refresh the row of FoxTabs
 oFoxTabs.FoxTabsManager.RefreshWindows(Application.hWnd)
 
-* Update each FoxTab control
+* Update each FoxTab control 
 For Each oFoxTabControl In This.Controls
 	If Lower(oFoxTabControl.Class) = "foxtabcontrol"
 		oFoxTabControl.SetFont()
 		oFoxTabControl.SetWindowName()
 		oFoxTabControl.ResizeTab()
 	EndIf
-Next
+Next 
 
 ENDPROC
 PROCEDURE releasewindow
@@ -2402,7 +2529,7 @@ If lpcWindowName = "ALL"
 		If Not Empty(lpcWindowName)
 			* Recursion call
 			This.ReleaseWindow(lpcWindowName)
-		EndIf
+		EndIf 
 	EndDo
 
 	Return
@@ -2414,7 +2541,7 @@ lpcWindowName = This.GetFoxWindowName(lpcWindowName)
 
 * Check the Fox window exists
 If Not Wexist(lpcWindowName)
-	Return
+	Return 
 EndIf
 
 * Switched to calling the Close menu item as VFP Release Windows function
@@ -2438,7 +2565,7 @@ PROCEDURE removefoxtab
 Lparameters oFoxTab As Object
 
 Local oFoxTabControl As Object
-Local lnControl As Integer
+Local lnControl As Integer 
 
 * Delay removal of tab because of timing issues with error reporting
 * See http://www.codeplex.com/VFPX/WorkItem/View.aspx?WorkItemId=19330
@@ -2446,17 +2573,17 @@ If Vartype(oFoxTab) = "O"
 	* If tab already in the queue to be removed (from selecting Close All), remove it now
 	If Vartype(This.oTabToRemove) = "O" and !IsNull(This.oTabToRemove)
 		This.RemoveFoxTab()
-	EndIf
+	EndIf 
 	This.oTabToRemove = oFoxTab
 	This.tmrRemoveFoxTab.Interval = 100
-	Return
-Else
+	Return 
+Else 
 	oFoxTab = This.oTabToRemove
 	This.oTabToRemove = NULL
-EndIf
+EndIf 
 If Vartype(oFoxTab) <> "O" or IsNull(oFoxTab)
 	Return
-EndIf
+EndIf 
 
 * Locate the FoxTab control
 For Each oFoxTabControl In This.Controls
@@ -2471,8 +2598,8 @@ For Each oFoxTabControl In This.Controls
 			
 		* All done		
 		Exit
-	EndIf
-Next
+	EndIf 
+Next 
 
 * Show the most recent hidden FoxTab control
 This.ShowLastFoxTab()
@@ -2485,7 +2612,7 @@ For lnControl = This.ControlCount To 1 Step -1
 		* All done. Exit For Each loop
 		Exit
 	EndIf 			
-Next
+Next 
 
 ENDPROC
 PROCEDURE savewindow
@@ -2501,7 +2628,7 @@ If lpcWindowName = "ALL"
 		If Not Empty(lpcWindowName)
 			* Recursion call
 			This.SaveWindow(lpcWindowName)
-		EndIf
+		EndIf 
 	Next 	
 
 	Return
@@ -2513,7 +2640,7 @@ lpcWindowName = This.GetFoxWindowName(lpcWindowName)
 
 * Check the Fox window exists
 If Not Wexist(lpcWindowName)
-	Return
+	Return 
 EndIf
 
 * First activate the window
@@ -2528,7 +2655,7 @@ Return
 
 ENDPROC
 PROCEDURE setbindings
-* Setup bindings to the FoxTabs Manager
+* Setup bindings to the FoxTabs Manager 
 BindEvent(oFoxTabs.FoxTabsManager, "AddFoxTabEvent", This, "AddFoxTab")
 BindEvent(oFoxTabs.FoxTabsManager, "RemoveFoxTabEvent", This, "RemoveFoxTab")
 BindEvent(oFoxTabs.FoxTabsManager, "GotFocusEvent", This, "GotFocus")
@@ -2544,23 +2671,23 @@ lcDockPosition = This.Parent.Configuration("AppSettings.DockPosition").Value
 
 * Dock the toolbar
 Do Case
-	Case lcDockPosition = "Top"
+	Case lcDockPosition = "Top" 
 		If This.DockPosition # 0
-			* Set a large y coordinate so we position the toolbar at the bottom of
+			* Set a large y coordinate so we position the toolbar at the bottom of 
 			* 	any other toolbars
 			This.Dock(0, 0, 1000)	
-		EndIf
+		EndIf 
 
 	Case lcDockPosition = "Bottom"
  		If This.DockPosition # 3
 	 		This.Dock(3)		
-	 	EndIf
+	 	EndIf 
 
 	Otherwise
 		If  This.DockPosition # 3
 			* Default to bottom ('cause I prefer it there!)
 			This.Dock(3)
-		EndIf
+		EndIf 
 		
 EndCase
 
@@ -2569,8 +2696,8 @@ PROCEDURE showcontextmenu
 * Display the FoxTabs context menu
 
 Local oException As Exception, oFoxTabsToolbar As Toolbar, oFoxTab As Object
-Local lnRow As Integer, lnColumn As Integer, lnFoxelWidth As Integer, lnPixelWidth As Integer, lnFoxelHeight As Integer, lnPixelHeight As Integer, lnMenuHeight As Integer
-Local lnFoxTabCount As Integer, lnFoxTab As Integer, lbShowRecentFiles As Boolean, lnMenuBars As Integer
+Local lnRow As Integer, lnColumn As Integer, lnFoxelWidth As Integer, lnPixelWidth As Integer, lnFoxelHeight As Integer, lnPixelHeight As Integer, lnMenuHeight As Integer 
+Local lnFoxTabCount As Integer, lnFoxTab As Integer, lbShowRecentFiles As Boolean, lnMenuBars As Integer 
 
 Try
 	* Obtain a reference to the toolbar for ease of use with the popup menu
@@ -2579,11 +2706,11 @@ Try
 	* Calculate scale factor
 	Activate Screen	&& make sure using SCREEN for menu position
 	_Screen.ScaleMode = 0
-	lnFoxelWidth = _Screen.Width
-	lnFoxelHeight = _Screen.Height
+	lnFoxelWidth = _Screen.Width  
+	lnFoxelHeight = _Screen.Height 
 	_Screen.ScaleMode = 3
-	lnPixelWidth = _Screen.Width
-	lnPixelHeight = _Screen.Height
+	lnPixelWidth = _Screen.Width  
+	lnPixelHeight = _Screen.Height 
 
 	* Gather the number of FoxTabs
 	lnFoxTabCount = This.Parent.FoxTabsManager.FoxTabs.Count
@@ -2593,7 +2720,7 @@ Try
 
 	* Menu height is calculated as follows
 	*	19 pixels per bar 				+
-	*	6  pixels per horizontal line 	+
+	*	6  pixels per horizontal line 	+ 
 	*	8  for the top and bottom margins
 
 	* Gather number of menu items and hr's
@@ -2618,14 +2745,14 @@ Try
 			lnRow = (This.Top - lnMenuHeight) * (lnFoxelHeight / lnPixelHeight)
 		Otherwise
 			lnRow = Mrow("Screen", 0) * (lnFoxelHeight / lnPixelHeight)
-	EndCase
+	EndCase 
 
 	* Define context menu
 	*	Note: There is never a OO menu class when you need one?
-	Define Popup foxtabContextMenu ShortCut Relative From lnRow, lnColumn
+	Define Popup foxtabContextMenu ShortCut Relative From lnRow, lnColumn 
 
 	* Add each FoxTab to window list
-	For lnFoxTab = 1 To lnFoxTabCount
+	For lnFoxTab = 1 To lnFoxTabCount 
 		* Obtain a reference to the FoxTab
 		oFoxTab = This.Parent.FoxTabsManager.FoxTabs.Item(lnFoxTab)
 		* Add window menu item
@@ -2634,29 +2761,29 @@ Try
 
 	* Define static context menu items
 	If lnFoxTabCount > 0
-		Define Bar (lnFoxTabCount+1) Of foxtabContextMenu Prompt "\-"
+		Define Bar (lnFoxTabCount+1) Of foxtabContextMenu Prompt "\-" 
 	EndIf
 
-	Define Bar (lnFoxTabCount+2) Of foxtabContextMenu Prompt "Close All"
-	Define Bar (lnFoxTabCount+3) Of foxtabContextMenu Prompt "Save All"
-	Define Bar (lnFoxTabCount+4) Of foxtabContextMenu Prompt "\-"
+	Define Bar (lnFoxTabCount+2) Of foxtabContextMenu Prompt "Close All" 
+	Define Bar (lnFoxTabCount+3) Of foxtabContextMenu Prompt "Save All" 
+	Define Bar (lnFoxTabCount+4) Of foxtabContextMenu Prompt "\-" 
 
 	* Are we showing the recent files sub menu
 	If lbShowRecentFiles
 
 		* Define menu item
-		Define Bar (lnFoxTabCount+5) Of foxtabContextMenu Prompt "Recent files"
-		Define Bar (lnFoxTabCount+6) Of foxtabContextMenu Prompt "\-"
+		Define Bar (lnFoxTabCount+5) Of foxtabContextMenu Prompt "Recent files" 
+		Define Bar (lnFoxTabCount+6) Of foxtabContextMenu Prompt "\-" 
 
 		* Define MRU popup menu
 		This.DefineMRUMenu()
 		
-	EndIf
+	EndIf 
 
-	Define Bar (lnFoxTabCount+7) Of foxtabContextMenu Prompt "Options"
-	Define Bar (lnFoxTabCount+8) Of foxtabContextMenu Prompt "Refresh"
-	Define Bar (lnFoxTabCount+9) Of foxtabContextMenu Prompt "\-"
-	Define Bar (lnFoxTabCount+10) Of foxtabContextMenu Prompt "Exit"
+	Define Bar (lnFoxTabCount+7) Of foxtabContextMenu Prompt "Options" 
+	Define Bar (lnFoxTabCount+8) Of foxtabContextMenu Prompt "Refresh" 
+	Define Bar (lnFoxTabCount+9) Of foxtabContextMenu Prompt "\-" 
+	Define Bar (lnFoxTabCount+10) Of foxtabContextMenu Prompt "Exit" 
 
 	* Bind event handlers
 	On Selection Bar (lnFoxTabCount+2) Of foxtabContextMenu oFoxTabsToolbar.ReleaseWindow("ALL")
@@ -2665,7 +2792,7 @@ Try
 	* Are we showing the recent files sub menu
 	If lbShowRecentFiles
 		On Bar (lnFoxTabCount+5) Of foxtabContextMenu Activate Popup foxtabMRUMenu
-	EndIf
+	EndIf 
 	
 	On Selection Bar (lnFoxTabCount+7) Of foxtabContextMenu oFoxTabsToolbar.ShowOptionsDialog()
 	On Selection Bar (lnFoxTabCount+8) Of foxtabContextMenu oFoxTabsToolbar.RefreshTabs()
@@ -2673,7 +2800,7 @@ Try
 	On Selection Popup foxtabContextMenu oFoxTabsToolbar.ActivateWindow(Prompt())
 
 	* Show menu
-	Activate Popup foxtabContextMenu
+	Activate Popup foxtabContextMenu 
 
 Catch To oException
 	* Raise error event on FoxTabs application class
@@ -2686,7 +2813,7 @@ PROCEDURE showlastfoxtab
 * Set the most recent hidden FoxTab control visible
 
 Local oFoxTabControl As Object
-Local lnControl As Integer
+Local lnControl As Integer 
 
 * Loop through FoxTab controls from most recent first
 For lnControl = This.ControlCount To 1 Step -1		
@@ -2699,7 +2826,7 @@ For lnControl = This.ControlCount To 1 Step -1
 		* All done. Exit For Each loop
 		Exit
 	EndIf 			
-Next
+Next 
 ENDPROC
 PROCEDURE showoptionsdialog
 
@@ -2718,29 +2845,29 @@ Class[END RESERVED1]
 [START RESERVED2]
 6[END RESERVED2]
 [START RESERVED3]
-otabtoremove FoxTab to remove.
-_memberdata XML Metadata for customizable properties
-*showoptionsdialog Displays the FoxTabs options dialog
-*addfoxtab Event handler for the FoxTabsManager AddFoxTab event
-*removefoxtab Event handler for the FoxTabsManager RemoveFoxTab event
-*gotfocus Event handler for the FoxTabsManager GotFocus event
-*onchange Event handler for the FoxTabsManager OnChange event
-*setbindings Setup event bindings to the FoxTabs manager.
-*controlexists Returns true if a FoxTab control exists for the given windows handle.
-*releasewindow Releases the specified IDE window. Pass "ALL" to release all IDE windows.
-*oktoaddfoxtab Returns true if it is ok to add the new FoxTab control. Otherwise false.
 *activatewindow Activate the window with the specified name
-*showlastfoxtab Set the most recent hidden FoxTab control visible
-*hidefirstfoxtab Hides the first visible FoxTab control
-*getfoxwindowname Returns the window name used by Windows messaging from the window name used by VFP
-*savewindow Saves one or all of the active windows
-*setdockposition Docks the toolbar according to the application setting DockPosition.
-*showcontextmenu Display the FoxTabToolbar context menu
+*addfoxtab Event handler for the FoxTabsManager AddFoxTab event
+*controlexists Returns true if a FoxTab control exists for the given windows handle.
 *definemrumenu Defines the most recently used files popup menu
 *definemrusubmenu Defines the most recently used submenu for the given file type.
+*getfoxwindowname Returns the window name used by Windows messaging from the window name used by VFP
 *getmruid Returns the Mru id for the given file type.
+*gotfocus Event handler for the FoxTabsManager GotFocus event
+*hidefirstfoxtab Hides the first visible FoxTab control
 *modifyfile Executes the MODIFY statement for the given file
+*oktoaddfoxtab Returns true if it is ok to add the new FoxTab control. Otherwise false.
+*onchange Event handler for the FoxTabsManager OnChange event
 *refreshtabs Force a refresh of the row of tabs
+*releasewindow Releases the specified IDE window. Pass "ALL" to release all IDE windows.
+*removefoxtab Event handler for the FoxTabsManager RemoveFoxTab event
+*savewindow Saves one or all of the active windows
+*setbindings Setup event bindings to the FoxTabs manager.
+*setdockposition Docks the toolbar according to the application setting DockPosition.
+*showcontextmenu Display the FoxTabToolbar context menu
+*showlastfoxtab Set the most recent hidden FoxTab control visible
+*showoptionsdialog Displays the FoxTabs options dialog
+_memberdata XML Metadata for customizable properties
+otabtoremove FoxTab to remove.
 [END RESERVED3]
 [START RESERVED6]
 Pixels[END RESERVED6]
@@ -2753,17 +2880,17 @@ Pixels[END RESERVED6]
 [OBJNAME] cmdOptions
 [PARENT] foxtabstoolbar
 [START PROPERTIES]
-Top = 3
-Left = 5
-Height = 22
-Width = 16
+Caption = "5"
 FontName = "Webdings"
 FontSize = 8
-Caption = "5"
-ToolTipText = "Options"
-SpecialEffect = 2
-PicturePosition = 12
+Height = 22
+Left = 5
 Name = "cmdOptions"
+PicturePosition = 12
+SpecialEffect = 2
+ToolTipText = "Options"
+Top = 3
+Width = 16
 [END PROPERTIES]
 [START METHODS]
 PROCEDURE Click
@@ -2775,25 +2902,6 @@ ENDPROC
 
 [ RECORD]
 [PLATFORM] WINDOWS 
-[UNIQUEID] _1LL1EAV6U
-[CLASS] image
-[BASECLASS] image
-[OBJNAME] imgLeft
-[PARENT] foxtabstoolbar
-[START PROPERTIES]
-Anchor = 2
-Picture = images\tabstyles\tabimage.left.gif
-Stretch = 2
-BackStyle = 0
-Height = 26
-Left = 20
-Top = 3
-Width = 13
-Name = "imgLeft"
-[END PROPERTIES]
-
-[ RECORD]
-[PLATFORM] WINDOWS 
 [UNIQUEID] _1LL1EAV6V
 [CLASS] foxtabcontrol
 [CLASSLOC] foxtabs.vcx
@@ -2801,9 +2909,9 @@ Name = "imgLeft"
 [OBJNAME] foxtabDesktop
 [PARENT] foxtabstoolbar
 [START PROPERTIES]
-Top = 3
 Left = 33
 Name = "foxtabDesktop"
+Top = 3
 imgBody.Name = "imgBody"
 imgRight1.Name = "imgRight1"
 imgRight2.Name = "imgRight2"
@@ -2832,26 +2940,31 @@ This.Parent.imgLeft.Height = This.Height
 ENDPROC
 PROCEDURE lblWindowName.RightClick
 * Prevent FoxTab context menu from displaying on the desktop tab
-NoDefault
+NoDefault 
 ENDPROC
 PROCEDURE setactive
 * The desktop tab is a special case as it is not assigned to any IDE window.
 * When the user clicks on this tab we need to hide all windows in the IDE
 * If windows are already hidden, show them all
 
-Activate Window Screen
+* If modal form is active, do nothing
+If Type("_screen.ActiveForm.WindowType") = "N" and _screen.ActiveForm.WindowType = 1
+	Return 
+EndIf 
+
+Activate Window Screen 
 If Empty(Wontop())
 	Show Window All
-	Activate Window Screen
+	Activate Window Screen 
 	If !Empty(Wontop())
-		Activate Window (Wontop()) Top
-	EndIf
-Else
+		Activate Window (Wontop()) Top 
+	EndIf 
+Else 
 	* Hide all windows
 	Hide Window All
 	* Set focus to this tab
 	This.SetFocus()
-EndIf
+EndIf 
 
 
 ENDPROC
@@ -2867,19 +2980,38 @@ ENDPROC
 [PARENT] foxtabstoolbar.foxtabDesktop
 [START PROPERTIES]
 Anchor = 514
-Picture = images\icons\desktop.png
 Height = 16
 Left = 0
+Name = "imgIcon"
+Picture = images\icons\desktop.png
 Top = 4
 Width = 16
-Name = "imgIcon"
 [END PROPERTIES]
 [START METHODS]
 PROCEDURE RightClick
 * Prevent FoxTab context menu from displaying on the desktop tab
-NoDefault
+NoDefault 
 ENDPROC
 [END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1LL1EAV6U
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] imgLeft
+[PARENT] foxtabstoolbar
+[START PROPERTIES]
+Anchor = 2
+BackStyle = 0
+Height = 26
+Left = 20
+Name = "imgLeft"
+Picture = images\tabstyles\tabimage.left.gif
+Stretch = 2
+Top = 3
+Width = 13
+[END PROPERTIES]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -2889,11 +3021,11 @@ ENDPROC
 [OBJNAME] tmrRemoveFoxTab
 [PARENT] foxtabstoolbar
 [START PROPERTIES]
-Top = 3
-Left = 104
 Height = 23
-Width = 23
+Left = 104
 Name = "tmrRemoveFoxTab"
+Top = 3
+Width = 23
 [END PROPERTIES]
 [START METHODS]
 PROCEDURE Timer
@@ -2909,115 +3041,4 @@ ENDPROC
 [START PROPERTIES]
 Webdings, 0, 8, 11, 17, 13, 44, 4, 0
 [END PROPERTIES]
-
-[ RECORD]
-[PLATFORM] WINDOWS 
-[UNIQUEID] _1MB19JZ6L
-[CLASS] image
-[BASECLASS] image
-[OBJNAME] foxtabicon
-[START PROPERTIES]
-BackStyle = 0
-Height = 16
-Width = 16
-Name = "foxtabicon"
-[END PROPERTIES]
-[START METHODS]
-PROCEDURE Click
-* Tracey P suggestion
-This.Parent.SetActive()
-ENDPROC
-PROCEDURE DblClick
-* Optionally close the Window if double-clicking on it
-
-Try
-	oFoxTabsToolbar = This.Parent.Parent
-
-	* We need to remove the * character appended when changes have been made to the file
-	lcWindowName = Chrtran(This.Parent.FoxTab.WindowName, "*", "")
-
-	oFoxTabsToolbar.ReleaseWindow(lcWindowName)
-
-Catch To oException
-	* Raise error event on FoxTabs application class
-	RaiseEvent(This.Parent.Parent.Parent, "LogError", oException, "Exception caught closing " + Transform(lcWindowName))
-
-EndTry	
-
-ENDPROC
-PROCEDURE RightClick
-* Display the FoxTab control's context menu
-This.Parent.ShowContextMenu()
-
-ENDPROC
-[END METHODS]
-[START RESERVED1]
-Class[END RESERVED1]
-[START RESERVED2]
-1[END RESERVED2]
-[START RESERVED6]
-Pixels[END RESERVED6]
-
-[ RECORD]
-[PLATFORM] COMMENT 
-[UNIQUEID] RESERVED  
-[OBJNAME] foxtabicon
-
-[ RECORD]
-[PLATFORM] WINDOWS 
-[UNIQUEID] _1ME0VWJXL
-[CLASS] configurationblock
-[CLASSLOC] ..\applicationblocks\configuration\configurationblock.vcx
-[BASECLASS] collection
-[OBJNAME] foxtabsconfig
-[START PROPERTIES]
-checkappsettingsversion = .T.
-Name = "foxtabsconfig"
-[END PROPERTIES]
-[START METHODS]
-PROCEDURE getdefaultsettings
-Lparameters lpcSection As String
-
-Local lcDefaultSettings As String
-
-* Handle AppSettings section only
-If lpcSection # "AppSettings"
-	Return DoDefault(lpcSection)
-EndIf
-
-* Define default application settings
-Text To lcDefaultSettings NoShow
-	<DockPosition>Bottom</DockPosition>
-	<Font>Tahoma,8,N</Font>
-	<ActiveFontColour>33023</ActiveFontColour>
-	<MaxNumTabs>10</MaxNumTabs>
-	<ShowFullName>false</ShowFullName>
-	<MaxChars>30</MaxChars>
-	<ShowRecentFiles>true</ShowRecentFiles>
-	<IncludeSolutionFiles>true</IncludeSolutionFiles>
-	<IncludeProjectFiles>true</IncludeProjectFiles>
-	<IncludeClassFiles>true</IncludeClassFiles>
-	<IncludeProgramFiles>true</IncludeProgramFiles>
-	<IncludeFormFiles>true</IncludeFormFiles>
-	<IncludeReportFiles>true</IncludeReportFiles>
-	<IncludeDatabaseFiles>true</IncludeDatabaseFiles>
-	<IncludeTableFiles>true</IncludeTableFiles>
-	<OnTableSelection>browse</OnTableSelection>
-EndText
-
-* Return default xml string
-Return lcDefaultSettings
-ENDPROC
-[END METHODS]
-[START RESERVED1]
-Class[END RESERVED1]
-[START RESERVED2]
-1[END RESERVED2]
-[START RESERVED6]
-Pixels[END RESERVED6]
-
-[ RECORD]
-[PLATFORM] COMMENT 
-[UNIQUEID] RESERVED  
-[OBJNAME] foxtabsconfig
 [EOF]
