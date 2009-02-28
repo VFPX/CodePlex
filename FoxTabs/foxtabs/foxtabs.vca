@@ -102,12 +102,12 @@ PROCEDURE setactive
 Local oException As Exception 
 Local lcWindowName As String
 
-Try
+* If modal form is active, don't switch windows
+If Type("_screen.ActiveForm.WindowType") = "N" and _screen.ActiveForm.WindowType = 1
+	Return 
+EndIf 
 
-	* If modal form is active, don't switch windows
-	If Type("_screen.ActiveForm.WindowType") = "N" and _screen.ActiveForm.WindowType = 1
-		Return 
-	EndIf 
+Try
 
 	* We need to remove the * character appended when changes have been made to the file
 	lcWindowName = Chrtran(This.FoxTab.WindowName, "*", "")
