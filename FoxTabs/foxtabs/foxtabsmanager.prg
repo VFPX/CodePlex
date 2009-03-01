@@ -423,6 +423,18 @@ Define Class FoxTabsManager As Custom
 
 		EndTry
 
+	EndFunc 
+	
+	* Remove all bindings
+	* Pause function when user wants to avoid any interaction while testing their app
+	Function RemoveBindings()
+
+		Do while Type("This.FoxTabs[1]") = "O"
+			This.WindowDestroy(Val(This.FoxTabs[1].hWnd))
+		EndDo 
+		
+		UnBindEvents(0)
+		
 	EndFunc 	
 
 	* _____________________________________________________________
@@ -630,7 +642,6 @@ Define Class FoxTabsEventHandler As Custom
 		
 	Function WMEventHandler(hWnd As Integer, Msg As Integer, wParam As Integer, lParam As Integer)
 
-		
 		Local oException As Exception 
 		Local lnReturn As Integer
 
