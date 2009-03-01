@@ -1938,8 +1938,9 @@ Left = 0
 Movable = .F.
 Name = "foxtabstoolbar"
 Top = 0
-Width = 132
+Width = 148
 _memberdata =       93<VFPData><memberdata name="otabtoremove" type="property" display="oTabToRemove"/></VFPData>
+lpaused = .F.
 otabtoremove = .NULL.
 [END PROPERTIES]
 [START METHODS]
@@ -2499,6 +2500,24 @@ Finally
 
 EndTry 
 ENDPROC
+PROCEDURE pauseresume
+* Pause/Resume window event tracking
+
+If !This.lPaused
+	* Pause tracking
+	This.lPaused = .t.
+	oFoxTabs.FoxTabsManager.RemoveBindings()
+	This.cmdPause.Caption = "4"	&& WebDings Play Button
+	This.cmdPause.ToolTipText = "Resume"
+Else
+	* Resume tracking
+	This.lPaused = .f.
+	oFoxTabs.FoxTabsManager.SetBindings()
+	This.RefreshTabs()
+	This.cmdPause.Caption = ";"	&& WebDings Pause Button
+	This.cmdPause.ToolTipText = "Pause"
+EndIf 
+ENDPROC
 PROCEDURE refreshtabs
 
 * Refresh the row of FoxTabs
@@ -2843,7 +2862,7 @@ ENDPROC
 [START RESERVED1]
 Class[END RESERVED1]
 [START RESERVED2]
-6[END RESERVED2]
+7[END RESERVED2]
 [START RESERVED3]
 *activatewindow Activate the window with the specified name
 *addfoxtab Event handler for the FoxTabsManager AddFoxTab event
@@ -2857,6 +2876,7 @@ Class[END RESERVED1]
 *modifyfile Executes the MODIFY statement for the given file
 *oktoaddfoxtab Returns true if it is ok to add the new FoxTab control. Otherwise false.
 *onchange Event handler for the FoxTabsManager OnChange event
+*pauseresume Pause/Resume window event tracking.
 *refreshtabs Force a refresh of the row of tabs
 *releasewindow Releases the specified IDE window. Pass "ALL" to release all IDE windows.
 *removefoxtab Event handler for the FoxTabsManager RemoveFoxTab event
@@ -2867,6 +2887,7 @@ Class[END RESERVED1]
 *showlastfoxtab Set the most recent hidden FoxTab control visible
 *showoptionsdialog Displays the FoxTabs options dialog
 _memberdata XML Metadata for customizable properties
+lpaused Is .T. when event tracking is paused.
 otabtoremove FoxTab to remove.
 [END RESERVED3]
 [START RESERVED6]
@@ -2874,7 +2895,7 @@ Pixels[END RESERVED6]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
-[UNIQUEID] _1LD0Z8KMD
+[UNIQUEID] _1MB19JZ6L
 [CLASS] commandbutton
 [BASECLASS] commandbutton
 [OBJNAME] cmdOptions
@@ -2902,6 +2923,34 @@ ENDPROC
 
 [ RECORD]
 [PLATFORM] WINDOWS 
+[UNIQUEID] _2LE10ZJ9X
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] cmdPause
+[PARENT] foxtabstoolbar
+[START PROPERTIES]
+Caption = ";"
+FontName = "Webdings"
+FontSize = 8
+Height = 22
+Left = 21
+Name = "cmdPause"
+PicturePosition = 12
+SpecialEffect = 2
+ToolTipText = "Pause"
+Top = 3
+Width = 16
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+* Pause/Resume window event tracking.
+This.Parent.PauseResume()
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
 [UNIQUEID] _1LL1EAV6V
 [CLASS] foxtabcontrol
 [CLASSLOC] foxtabs.vcx
@@ -2909,7 +2958,7 @@ ENDPROC
 [OBJNAME] foxtabDesktop
 [PARENT] foxtabstoolbar
 [START PROPERTIES]
-Left = 33
+Left = 49
 Name = "foxtabDesktop"
 Top = 3
 imgBody.Name = "imgBody"
@@ -3005,7 +3054,7 @@ ENDPROC
 Anchor = 2
 BackStyle = 0
 Height = 26
-Left = 20
+Left = 36
 Name = "imgLeft"
 Picture = images\tabstyles\tabimage.left.gif
 Stretch = 2
@@ -3022,7 +3071,7 @@ Width = 13
 [PARENT] foxtabstoolbar
 [START PROPERTIES]
 Height = 23
-Left = 104
+Left = 120
 Name = "tmrRemoveFoxTab"
 Top = 3
 Width = 23
