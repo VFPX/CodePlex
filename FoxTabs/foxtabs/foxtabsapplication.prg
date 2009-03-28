@@ -47,7 +47,7 @@ Return
 
 Define Class FoxTabsApplication As Custom
 
-	Version		= "0.9.0 Beta"
+	Version		= "0.9.1 Beta"
 	ConfigFile 	= ""
 	LogFile		= ""
 	PrevDataSession = .f.
