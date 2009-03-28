@@ -123,6 +123,11 @@ Try
 	* Activate the assigned window
 	Show Window (lcWindowName)	&& make sure visible
 	Activate Window (lcWindowName) Top
+	
+	* Restore window if minimized
+	If Wminimum(lcWindowName)
+		Zoom WINDOW (lcWindowName) Normal
+	EndIf 
 
 	* Reset isActive properties for all other tab controls
 	This.Parent.SetAll("isActive", .F., "foxtabcontrol")
@@ -2170,6 +2175,9 @@ If Not Empty(Nvl(lcResourceData,""))
 		
 		* Format the menu prompt so class libraries read correctly
 		lcMruPrompt = Iif(lpcMruFileType = "Class", GetWordNum(lcMruData, 2, "|") + [ of "] + lcMruFile + ["], lcMruFile )
+		
+		* Format UNC paths (thanks chj124)
+		lcMruPrompt = IIF(LEFT(lcMruPrompt,2) == '\\', '\','') + lcMruPrompt
 
 		* Check file still exists
 		*If File(lcMruFile)
