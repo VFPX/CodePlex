@@ -51,6 +51,8 @@ successor = (NULL)
 [END PROPERTIES]
 [START PROTECTED]
 adjustreportpagesinfo
+createfrxobject
+destroyfrxobject
 drivingalias
 fillruncollector
 frxheaderrecno
@@ -105,6 +107,9 @@ IF NOT ISNULL(THIS.Successor)
       
    ENDWITH
 ENDIF
+
+This.DestroyFRXObject()
+
 IF NOT THIS.IsSuccessor
    NODEFAULT
    DODEFAULT()
@@ -129,6 +134,8 @@ THIS.setFRXRunStartupConditions()
 THIS.getFRXStartupInfo()
 
 THIS.resetDataSession()
+
+This.CreateFRXObject()
 
 IF NOT THIS.IsSuccessor
    THIS.sharedPageHeight = THIS.GetPageHeight()
@@ -545,6 +552,88 @@ ELSE
 ENDIF   
 
 ENDPROC
+PROCEDURE createfrxobject
+LOCAL loFRX AS Collection, lnDataSession, loData AS Object
+
+IF This.FRXDataSession > 0
+	m.lnDataSession = SET("Datasession")
+	m.loFRX = CREATEOBJECT("Collection")
+	SET DATASESSION TO (This.FRXDataSession)
+	IF USED("frx")
+		SELECT ("frx")
+		SCAN
+			SCATTER MEMO NAME loData
+			SET DATASESSION TO (m.lnDataSession)
+			IF NOT EMPTY(m.loData.style)
+				ADDPROPERTY(m.loData,"memberdata",This.CreateMemberDataObject(m.loData.style))
+			ELSE
+				ADDPROPERTY(m.loData,"memberdata",NULL)
+			ENDIF
+			ADDPROPERTY(m.loData,"objProp",NULL)
+			m.loFRX.Add(m.loData)
+			SET DATASESSION TO (This.FRXDataSession)
+		ENDSCAN
+		SET DATASESSION TO (m.lnDataSession)
+		ADDPROPERTY(This, "oFRX", m.loFRX)
+		
+		BINDEVENT(This, "EvaluateContents", This, "OnEvaluateContents")
+		BINDEVENT(This, "AdjustObjectSize", This, "OnAdjustObjectSize")
+	ENDIF
+ENDIF
+
+RETURN
+
+ENDPROC
+PROCEDURE creatememberdataobject
+LPARAMETERS lcStyle
+
+LOCAL loXML AS MSXML2.DOMDocument
+LOCAL loAllReportData AS MSXML2.IXMLDOMNodeList
+LOCAL loReportData AS MSXML2.IXMLDOMElement
+LOCAL loAttr AS MSXML2.IXMLDOMAttribute
+LOCAL loData AS Object, lcName, lcValue, lcKey
+LOCAL loMemberData AS Collection
+
+m.loMemberData = NULL
+
+m.loXML = CREATEOBJECT("MSXML2.DOMDocument")
+IF m.loXML.loadXML(m.lcStyle)
+	m.loAllReportData = m.loXML.selectNodes("//reportdata")
+	IF m.loAllReportData.length > 0
+		m.loMemberData = CREATEOBJECT("Collection")
+		FOR EACH m.loReportData IN m.loAllReportData
+			IF NOT ISNULL(m.loReportData.attributes)
+				m.loData = CREATEOBJECT("Empty")
+				m.lcKey = ""
+				FOR EACH m.loAttr IN m.loReportData.attributes
+					m.lcName = m.loAttr.nodeName
+					m.lcValue = m.loAttr.text
+					IF LOWER(m.lcName) == "name"
+						m.lcKey = EVL(m.lcKey, m.lcValue)
+					ENDIF
+					ADDPROPERTY(m.loData,m.lcName,m.lcValue)
+				ENDFOR
+				m.lcKey = EVL(m.lcKey, SYS(2015))
+				IF m.loMemberData.GetKey(m.lcKey) > 0
+					m.lcKey = SYS(2015)
+				ENDIF
+				m.loMemberData.Add(m.loData, m.lcKey)
+			ENDIF
+		ENDFOR
+	ENDIF
+ENDIF
+
+RETURN m.loMemberData
+
+ENDPROC
+PROCEDURE destroyfrxobject
+
+TRY 
+	This.oFRX.Remove(-1)
+	This.oFRX = NULL
+CATCH
+ENDTRY
+ENDPROC
 PROCEDURE getfrxstartupinfo
 THIS.SetFRXDataSession()
 IF USED("FRX")
@@ -604,6 +693,16 @@ IF THIS.SupportsListenerType(m.vNewVal) AND ;
    THIS.ListenerType = m.vNewVal
 ENDIF
 
+ENDPROC
+PROCEDURE onadjustobjectsize
+LPARAMETERS lnFRXRecNo, loObjProp
+
+This.oFRX.Item(lnFRXRecNo).ObjProp = loObjProp
+ENDPROC
+PROCEDURE onevaluatecontents
+LPARAMETERS lnFRXRecNo, loObjProp
+
+This.oFRX.Item(lnFRXRecNo).ObjProp = loObjProp
 ENDPROC
 PROCEDURE outputtype_assign
 LPARAMETERS m.vNewVal
@@ -1160,6 +1259,9 @@ Class[END RESERVED1]
 *appname_assign 
 *clearerrors Resets the class's error status.
 *commandclausesfile_assign 
+*createfrxobject 
+*creatememberdataobject 
+*destroyfrxobject 
 *fillruncollector Abstract method to set up up runCollector object with contents at whatever point is appropriate in a given implementation.
 *getfrxstartupinfo Provides a hook for gathering FRX information during BeforeReport method processing.
 *getlasterrormessage Provides information about the last error that occurred.
@@ -1168,6 +1270,8 @@ Class[END RESERVED1]
 *issuccessor_assign 
 *lignoreerrors_assign 
 *listenertype_assign 
+*onadjustobjectsize 
+*onevaluatecontents 
 *outputtype_assign 
 *pagelimit_assign 
 *pagelimitinsiderange_assign 
@@ -1836,6 +1940,11 @@ NODEFAULT
 ENDPROC
 PROCEDURE EvaluateContents
 LPARAMETERS m.nFRXRecno, m.oObjProperties
+
+IF EMPTY(This.oFRX(m.nFRXRecNo).style)
+	RETURN
+ENDIF
+
 THIS.sendFX(PROGRAM(),m.nFRXRecno, m.oObjProperties)
 NODEFAULT
 IF (NOT ISNULL(THIS.Successor))
@@ -1878,6 +1987,13 @@ LPARAMETERS m.nFRXRecno, m.nLeft, m.nTop, m.nWidth, m.nHeight, ;
 
 LOCAL m.liDefaultBehavior,m.llNeedGFXs, m.lnState
        
+IF EMPTY(This.oFRX(m.nFRXRecNo).style)
+   NODEFAULT
+   DODEFAULT( m.nFRXRecno, m.nLeft, m.nTop, m.nWidth, m.nHeight, ;
+                m.nObjectContinuationType, m.cContentsToBeRendered, m.GDIPlusImage)
+   RETURN 
+ENDIF
+          
 m.llNeedGFXs = (NOT THIS.IsSuccessor) AND THIS.GFXs.Count > 0 AND ;
                THIS.NeedGFXs(PROGRAM(),m.nFRXRecno, m.nLeft, m.nTop, m.nWidth, m.nHeight, ;
                m.nObjectContinuationType, m.cContentsToBeRendered, m.GDIPlusImage)
@@ -1890,7 +2006,7 @@ IF m.llNeedGFXs
    * but we'll do it again here.
    THIS.FFCGraphics.Save(@m.lnState)
 ENDIF
-          
+
 m.liDefaultBehavior = ;
     THIS.sendFX(PROGRAM(),m.nFRXRecNo,;
                 @m.nLeft,@m.nTop,@m.nWidth,@m.nHeight,;
@@ -3170,7 +3286,6 @@ IF (NOT EOF(THIS.scriptAlias))
 ENDIF   
 
 
-
 ENDPROC
 PROCEDURE removescriptonfailure_assign
 LPARAMETERS vNewVal
@@ -3391,6 +3506,7 @@ frxbandrecno = (0)
 includeseconds = .T.
 initstatustext = ("")
 isrunning = .F.
+nlastupdate = 0
 onescapecommand = ("")
 percentdone = (0)
 persistbetweenruns = .F.
@@ -3419,6 +3535,7 @@ frxbandrecno
 getparentwindowref
 getreportscopedriver
 isrunning
+nlastupdate
 onescapecommand
 percentdone
 popuserfeedbackglobalsets
@@ -3473,7 +3590,7 @@ IF VARTYPE(m.toListener) = "O" && AND ;
          IF THIS.isRunning AND TYPE("m.toListener.CommandClauses.RecordTotal") = "N"
             THIS.CurrentRecord = m.toListener.CommandClauses.RecordTotal
          ENDIF   
-         THIS.UpdateStatus(m.toListener) 
+         THIS.UpdateStatus(m.toListener, .T.) 
       ENDIF
       THIS.designatedDriver = ""
       THIS.drivingAlias = ""
@@ -4062,6 +4179,7 @@ IF THIS.isRunning AND ;
             ENDIF
          ENDIF
          THIS.updateStatus(m.toListener)
+
        CATCH TO err
           #IF OUTPUTCLASS_DEBUGGING 
               SUSPEND
@@ -4227,7 +4345,8 @@ IF VARTYPE(m.vNewVal) = "N"
 ENDIF 
 ENDPROC
 PROCEDURE updatestatus
-LPARAMETERS m.toListener
+LPARAMETERS m.toListener, m.tlForce
+
 IF VARTYPE(m.toListener) = "O" AND THIS.isRunning
    LOCAL m.liRecTotal, m.lnNewPercent, m.llShow
    m.liRecTotal = m.toListener.CommandClauses.RecordTotal 
@@ -4247,10 +4366,15 @@ IF VARTYPE(m.toListener) = "O" AND THIS.isRunning
       m.llShow = .T.         
    ENDIF   
    IF m.llShow
-      THIS.DoStatus(m.toListener, ;
+   
+      IF ABS(This.nLastUpdate-SECONDS()) > 0.3 OR m.tlForce
+         THIS.DoStatus(m.toListener, ;
                     IIF(m.toListener.CurrentPass = LISTENER_PREPASS  AND m.toListener.TwoPassProcess,;
                      THIS.PrepassStatusText, ;
                      THIS.RunStatusText) )
+         This.nLastUpdate = SECONDS()
+      ENDIF
+      
    ENDIF                     
 ENDIF   
 
@@ -4299,6 +4423,7 @@ frxbandrecno Holds the RECNO() of the band-describing record in the FRX table th
 includeseconds Indicates whether the default user feedback message should include timing data.
 initstatustext Provides the user message shown when user feedback first appears.
 isrunning Indicates whether a report run is in progress.
+nlastupdate
 onescapecommand Saves the user's previous ON ESCAPE command, if any, for restoration after the report run.
 percentdone Calculation of the ratio between the number of records, or pages, already generated to the number of records, or pages, in the total report.
 persistbetweenruns Allows the therm window to continue to exist (maintaining its end-of-run contents) after the run of the report.  It may potentially show up on the automatic _MWINDOW list if this is turned on.
@@ -5298,33 +5423,47 @@ IF m.tcMethodToken == "RENDER" AND ;
    NOT ISNULL(m.toListener.FFCGraphics)
             
    TRY
-      m.liSession = SET("DATASESSION")
-      IF m.toListener.FRXDataSession > -1
-         SET DATASESSION TO m.toListener.FRXDataSession
-      ENDIF         
-      m.liSelect = SELECT(0)
-      IF USED(m.toListener.MemberDataAlias) 
-         SELECT (m.toListener.MemberDataAlias)
-         m.liFRXRecno =  m.toListener.getFRXRecno(m.tcMethodToken,m.tP1, m.tP2)
-         LOCATE FOR FrxRecno = m.liFRXRecno AND ;
-                    Type = FRX_BLDR_MEMBERDATATYPE AND ;
-                    Name == FRX_BLDR_NAMESPACE_ROTATE AND ;
-                    NOT EMPTY(Execute)  
-                    
-         IF FOUND() AND NOT EMPTY(INT(VAL(Execute))) 
-            m.liAngle = INT(VAL(Execute))
-            m.toListener.FFCGraphics.TranslateTransform(tP2, tP3)
-            m.toListener.FFCGraphics.RotateTransform(m.liAngle)
-            m.liReturn = OUTPUTFX_BASERENDER_RENDER_BEFORE_RESTORE 
-            m.toListener.FFCGraphics.TranslateTransform(-tP2, -tP3)
-         ENDIF
-      ENDIF
+*!*	      m.liSession = SET("DATASESSION")
+*!*	      IF m.toListener.FRXDataSession > -1
+*!*	         SET DATASESSION TO m.toListener.FRXDataSession
+*!*	      ENDIF         
+*!*	      m.liSelect = SELECT(0)
+*!*	      IF USED(m.toListener.MemberDataAlias) 
+*!*	         SELECT (m.toListener.MemberDataAlias)
+*!*	         m.liFRXRecno =  m.toListener.getFRXRecno(m.tcMethodToken,m.tP1, m.tP2)
+*!*	         LOCATE FOR FrxRecno = m.liFRXRecno AND ;
+*!*	                    Type = FRX_BLDR_MEMBERDATATYPE AND ;
+*!*	                    Name == FRX_BLDR_NAMESPACE_ROTATE AND ;
+*!*	                    NOT EMPTY(Execute)  
+*!*	                    
+*!*	         IF FOUND() AND NOT EMPTY(INT(VAL(Execute))) 
+*!*	            m.liAngle = INT(VAL(Execute))
+*!*	            m.toListener.FFCGraphics.TranslateTransform(tP2, tP3)
+*!*	            m.toListener.FFCGraphics.RotateTransform(m.liAngle)
+*!*	            m.liReturn = OUTPUTFX_BASERENDER_RENDER_BEFORE_RESTORE 
+*!*	            m.toListener.FFCGraphics.TranslateTransform(-tP2, -tP3)
+*!*	         ENDIF
+*!*	      ENDIF
+      m.loData = m.toListener.oFRX(m.tP1)
+      IF NOT ISNULL(m.loData.MemberData)
+         IF m.loData.MemberData.GetKey(FRX_BLDR_NAMESPACE_ROTATE) > 0
+            m.loMemberData = m.loData.MemberData(FRX_BLDR_NAMESPACE_ROTATE)
+	        m.liAngle = INT(VAL(m.loMemberData.execute))
+	        IF m.liAngle <> 0
+	           m.toListener.FFCGraphics.TranslateTransform(tP2, tP3)
+	           m.toListener.FFCGraphics.RotateTransform(m.liAngle)
+	           m.liReturn = OUTPUTFX_BASERENDER_RENDER_BEFORE_RESTORE 
+	           m.toListener.FFCGraphics.TranslateTransform(-tP2, -tP3)
+	        ENDIF
+	     ENDIF
+	  ENDIF 
+      
    CATCH TO err
       * could expose the error but won't,
       * we'll just swallow it
    FINALLY
-       SELECT (m.liSelect)
-       SET DATASESSION TO (m.liSession)
+*!*	       SELECT (m.liSelect)
+*!*	       SET DATASESSION TO (m.liSession)
    ENDTRY            
    
 ENDIF   
