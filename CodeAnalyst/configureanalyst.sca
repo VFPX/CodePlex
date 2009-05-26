@@ -51,6 +51,10 @@ Name = "Form1"
 [START METHODS]
 PROCEDURE Init
 DODEFAULT()
+LOCAL la(1)
+IF AGETFILEVERSION(la,HOME()+"ANALYST.APP")>0
+	THIS.Caption = "Code Analyst Configuration (version "+la(4)+")"
+ENDIF
 GO TOP IN CODERULE
 THIS.grdrules.SetFocus()
 THIS.cboRules.ListIndex=1
@@ -212,7 +216,7 @@ Name = "lblFilter"
 [START PROPERTIES]
 FontName = "Tahoma"
 FontSize = 8
-Anchor = 30
+Anchor = 20
 Height = 96
 Left = 12
 Top = 240
@@ -250,7 +254,7 @@ Name = "edtScript"
 [START PROPERTIES]
 FontName = "Tahoma"
 FontSize = 8
-Anchor = 18
+Anchor = 514
 Caption = "Description"
 Height = 17
 Left = 12
@@ -269,7 +273,7 @@ Name = "Label1"
 [START PROPERTIES]
 FontName = "Tahoma"
 FontSize = 8
-Anchor = 18
+Anchor = 514
 Caption = "Script"
 Height = 17
 Left = 372
@@ -660,7 +664,7 @@ Height = 22
 Width = 84
 FontName = "Tahoma"
 FontSize = 8
-Anchor = 18
+Anchor = 768
 Caption = "\<Edit..."
 Name = "Command4"
 [END PROPERTIES]
@@ -705,6 +709,7 @@ ENDPROC
 [OBJNAME] txtFont
 [PARENT] Form1
 [START PROPERTIES]
+Anchor = 30
 Height = 21
 Left = 12
 ReadOnly = .T.
@@ -731,6 +736,7 @@ ENDPROC
 [START PROPERTIES]
 Top = 348
 Left = 636
+Anchor = 768
 Caption = "Font..."
 Name = "cmdFont"
 [END PROPERTIES]
@@ -751,6 +757,6 @@ ENDPROC
 [UNIQUEID] RESERVED  
 [START PROPERTIES]
 Arial, 0, 9, 5, 15, 12, 32, 3, 0
-Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+Tahoma, 0, 8, 5, 13, 11, 23, 2, 0
 [END PROPERTIES]
 [EOF]

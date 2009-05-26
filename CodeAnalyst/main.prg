@@ -1,4 +1,10 @@
-LPARAMETERS tcFile
+LPARAMETERS tcFile,tlSilent
+
+IF PCOUNT()=1
+	tlSilent = .F.
+ENDIF
+
+
 EXTERNAL ARRAY taArray
 LOCAL llRunning
 llRunning = PEMSTATUS(_SCREEN,"_Analyst",5)
@@ -10,13 +16,18 @@ IF NOT llRunning
 	ELSE
 		_SCREEN.NEWOBJECT("_analyst","_codeAnalyzer","MAIN.PRG")
 	ENDIF
+	llRunning = .T.
 ENDIF
-
+IF tlSilent
+	_SCREEN._Analyst.lProjectRun = .T.
+ENDIF
 *- Check for a parameter passed. If none is passed, the analyst is just installed in the menu
 *- If the analyst was already installed, start the Analyze anyway.
+
 IF PCOUNT() = 1 OR llRunning THEN
-	_SCREEN._analyst.Analyze(tcFile)
+	_SCREEN._Analyst.Analyze(tcFile)
 ENDIF
+
 
 DEFINE CLASS _codeAnalyzer AS CUSTOM
 	cFile = ""
@@ -40,22 +51,23 @@ DEFINE CLASS _codeAnalyzer AS CUSTOM
 	cMessage = ""
 	lDisplayMessage = .T.
 	lDisplayForm = .T.
+	lProjectRun = .F.
 	cTable = ""
 	cClassName = ""
 
 
-	PROCEDURE Reset
-	IF NOT EMPTY(THIS.cAnalysisCursor)
-		IF USED(THIS.cAnalysisCursor)
-		LOCAL lc
-		lc = SET("SAFETY")
-		SET SAFETY OFF
-		ZAP IN (THIS.cAnalysisCursor)	
-		SET SAFETY &lc
+	PROCEDURE RESET
+		IF NOT EMPTY(THIS.cAnalysisCursor)
+			IF USED(THIS.cAnalysisCursor)
+				LOCAL lc
+				lc = SET("SAFETY")
+				SET SAFETY OFF
+				ZAP IN (THIS.cAnalysisCursor)
+				SET SAFETY &lc
+			ENDIF
 		ENDIF
-ENDIF
 	ENDPROC
-	
+
 	PROCEDURE SetPrefs
 		LOCAL nSelect
 		LOCAL lcRes
@@ -91,7 +103,7 @@ ENDIF
 				ENDIF
 
 				IF !FoxResource.READONLY
-					SAVE TO MEMO DATA ALL LIKE _analyst*
+					SAVE TO MEMO DATA ALL LIKE _Analyst*
 
 					REPLACE ;
 						UPDATED WITH DATE(), ;
@@ -328,7 +340,14 @@ ENDIF
 			cWarning C(10),;
 			warnings M;
 			)
+
+		LOCAL lc
+		lc = SET("COLLATE", "TO")
+		SET COLLATE TO "MACHINE"
+
 		INDEX ON cfunc+cprog+cClass TAG funcProg
+
+		SET COLLATE TO (lc)
 
 		SELECT (lnArea)
 
@@ -393,40 +412,40 @@ ENDIF
 
 	PROCEDURE Analyze
 		LPARAMETERS tcFile
-			THIS.cMessage = ""
-			THIS.cMainProgram = tcFile
-			IF NOT EMPTY(tcFile)
-				IF NOT FILE(tcFile)
-					MESSAGEBOX("File "+tcFile+" does not exist.",16,"Code Analyst")
+		THIS.cMessage = ""
+		THIS.cMainProgram = tcFile
+		IF NOT EMPTY(tcFile)
+			IF NOT FILE(tcFile)
+				MESSAGEBOX("File "+tcFile+" does not exist.",16,"Code Analyst")
+				RETURN
+
+			ENDIF
+		ENDIF
+		IF ISNULL(THIS.oTherm)
+			THIS.oTherm = NEWOBJECT("cprogressform","foxref.vcx",THIS.cHomeDir+"ANALYST.APP")
+			THIS.oTherm.SetMax(100)
+		ENDIF
+		LOCAL lc
+		THIS.ResetArrays()
+		IF EMPTY(tcFile)
+			IF ASELOBJ(la,1)=0
+				** Should we use the Active project or not?
+				*!* IF TYPE("_VFP.ActiveProject")="U"
+
+				tcFile = GETFILE("PRG;PJX;VCX;SCX","Select file","Open",0,"Select file to analyze")
+
+				*!*					ELSE
+				*!*						tcFile = _VFP.ActiveProject.Name
+				*!*					ENDIF
+				IF EMPTY(tcFile)
 					RETURN
-
 				ENDIF
 			ENDIF
-			IF ISNULL(THIS.oTherm)
-				THIS.oTherm = NEWOBJECT("cprogressform","foxref.vcx",THIS.cHomeDir+"ANALYST.APP")
-				THIS.oTherm.SetMax(100)
-			ENDIF
-			LOCAL lc
-			THIS.ResetArrays()
-			IF EMPTY(tcFile)
-				IF ASELOBJ(la,1)=0
-					** Should we use the Active project or not?
-					*!* IF TYPE("_VFP.ActiveProject")="U"
-
-					tcFile = GETFILE("PRG;PJX;VCX;SCX","Select file","Open",1,"Select file to analyze")
-
-					*!*					ELSE
-					*!*						tcFile = _VFP.ActiveProject.Name
-					*!*					ENDIF
-					IF EMPTY(tcFile)
-						RETURN
-					ENDIF
-				ENDIF
-			ENDIF
+		ENDIF
 
 		TRY
 			THIS.csetesc = ON("ESCAPE")
-			ON ESCAPE _SCREEN._analyst.StopAnalysis()
+			ON ESCAPE _SCREEN._Analyst.StopAnalysis()
 
 			IF EMPTY(tcFile)
 				lc = "Current Object"
@@ -455,13 +474,15 @@ ENDIF
 
 			THIS.oTherm.HIDE()
 			IF THIS.lDisplayForm
-				IF NOT WEXIST("frmCodeAnalResults")
-					SELECT 0
-					DO FORM codeanalresults
+				IF NOT THIS.lProjectRun OR RECCOUNT(THIS.cAnalysisCursor)>0
+					IF NOT WEXIST("frmCodeAnalResults")
+						SELECT 0
+						DO FORM codeanalresults
+					ENDIF
 				ENDIF
 			ENDIF
 		CATCH TO loErr
-			IF NOT ISNULL(THIS.otherm)
+			IF NOT ISNULL(THIS.oTherm)
 				THIS.oTherm.HIDE()
 			ENDIF
 			ERROR loErr.MESSAGE
@@ -1000,14 +1021,14 @@ DEFINE CLASS frmResults AS FORM
 
 		LOCAL lni,llTitle
 		llTitle = .F.
-		FOR lni =1 TO ALEN(_SCREEN._analyst.aWarnings,1)
+		FOR lni =1 TO ALEN(_SCREEN._Analyst.aWarnings,1)
 			WITH THIS.list1
-				IF NOT EMPTY(_SCREEN._analyst.aWarnings(lni,1))
+				IF NOT EMPTY(_SCREEN._Analyst.aWarnings(lni,1))
 					IF NOT llTitle
 						.ADDITEM("*** Warnings ***")
 						llTitle = .T.
 					ENDIF
-					.ADDITEM(_SCREEN._analyst.aWarnings(lni,1))
+					.ADDITEM(_SCREEN._Analyst.aWarnings(lni,1))
 				ENDIF
 			ENDWITH
 		ENDFOR
