@@ -44,6 +44,8 @@ DEFINE CLASS _codeAnalyzer AS CUSTOM
 	cFontString = "Tahoma,8,N"
 	cError = ""
 	cHomeDir = ""
+	cRuleDir = ""
+	cResetFile = ""
 	cAnalysisCursor = ""
 	nFuncLines = 0
 	cWarningID = ""
@@ -51,6 +53,7 @@ DEFINE CLASS _codeAnalyzer AS CUSTOM
 	cMessage = ""
 	lDisplayMessage = .T.
 	lDisplayForm = .T.
+	lUseDefaultDir = .T.
 	lProjectRun = .F.
 	cTable = ""
 	cClassName = ""
@@ -77,7 +80,13 @@ DEFINE CLASS _codeAnalyzer AS CUSTOM
 		LOCAL nCnt
 		LOCAL cData
 
-		_analystFontString       = THIS.cFontString
+		_AnalystResetXML = THIS.cResetFile
+		_AnalystFontString       = THIS.cFontString
+		_Analysthomedir          = THIS.cHomeDir
+		_AnalystRuledir          = THIS.cRuleDir
+		IF THIS.lUseDefaultDir
+			_AnalystRuleDir = ""
+		ENDIF
 
 		nSelect = SELECT()
 
@@ -103,6 +112,7 @@ DEFINE CLASS _codeAnalyzer AS CUSTOM
 				ENDIF
 
 				IF !FoxResource.READONLY
+
 					SAVE TO MEMO DATA ALL LIKE _Analyst*
 
 					REPLACE ;
@@ -151,6 +161,39 @@ DEFINE CLASS _codeAnalyzer AS CUSTOM
 					RESTORE FROM MEMO DATA ADDITIVE
 
 					THIS.cFontString = _analystFontString
+					IF TYPE("_ANALYSTRuleDIR")="C"
+					IF NOT EMPTY(_analystRuleDir)
+						THIS.lUseDefaultDir = .F.
+						THIS.cRuleDir = _analystRuledir
+					ELSE
+						THIS.lUseDefaultDir = .T.
+						THIS.cRuleDir = CURDIR()
+					ENDIF
+					ELSE
+						THIS.lUseDefaultDir = .T.
+						THIS.cRuleDir = CURDIR()
+					ENDIF
+					IF TYPE("_ANALYSTHomeDIR")="C"
+					IF NOT EMPTY(_analystHomeDir)
+					ELSE
+						THIS.cHomeDir = CURDIR()
+					ENDIF
+					ELSE
+						THIS.cHomeDir = CURDIR()
+					ENDIF
+					
+
+
+					IF TYPE("_AnalystResetXML")="C"
+					IF NOT EMPTY(_AnalystResetXML)
+						THIS.cResetFile = _AnalystResetXML 
+					ELSE
+						THIS.cResetFile = ""
+					ENDIF
+					ELSE
+						THIS.cResetFile = ""
+					ENDIF
+
 
 					lSuccess = .T.
 				ENDIF
@@ -168,11 +211,11 @@ DEFINE CLASS _codeAnalyzer AS CUSTOM
 	ENDPROC
 	PROCEDURE CreateRuleTable
 
-		IF NOT FILE(THIS.cHomeDir+"CODERULE.DBF")
+		IF NOT FILE(THIS.cRuleDir+"CODERULE.DBF")
 			LOCAL lnArea
 			lnArea = SELECT()
 			SELECT 0
-			CREATE TABLE (THIS.cHomeDir+"CODERULE.DBF") (;
+			CREATE TABLE (THIS.cRuleDir+"CODERULE.DBF") (;
 				TYPE C(1),;
 				NAME C(30),;
 				ACTIVE L,;
@@ -192,7 +235,7 @@ DEFINE CLASS _codeAnalyzer AS CUSTOM
 			SELECT _CODERULE
 			SCAN
 				SCATTER MEMVAR MEMO
-				INSERT INTO (THIS.cHomeDir+"CODERULE") FROM MEMVAR
+				INSERT INTO (THIS.cRuleDir+"CODERULE") FROM MEMVAR
 			ENDSCAN
 			USE IN SELECT("_CODERULE")
 
@@ -215,7 +258,7 @@ DEFINE CLASS _codeAnalyzer AS CUSTOM
 		lnArea = SELECT()
 		IF NOT USED("CODERULE")
 			*- Use the cHomeDir property here... again don't rely on the HOME()
-			USE (THIS.cHomeDir+"CODERULE") IN 0
+			USE (THIS.cRuleDir+"CODERULE") IN 0
 		ENDIF
 		DO FORM ConfigureAnalyst
 		SELECT (lnArea)
@@ -362,8 +405,12 @@ DEFINE CLASS _codeAnalyzer AS CUSTOM
 		IF EMPTY(tcType)
 			tcType = "Unknown"
 		ENDIF
-		IF EMPTY(THIS.cAnalysisCursor)
+		IF EMPTY(THIS.cAnalysisCursor) 
 			THIS.BuildAnalysisCursor()
+		ELSE
+IF NOT USED(THIS.cAnalysisCursor)
+			THIS.BuildAnalysisCursor()
+ENDIF
 		ENDIF
 		IF EMPTY(tcFunc)
 			tcFunc = THIS.cFile
@@ -384,8 +431,9 @@ DEFINE CLASS _codeAnalyzer AS CUSTOM
 	ENDPROC
 
 	PROCEDURE LoadRules
-		IF FILE(THIS.cHomeDir+"CODERULE.DBF")
-			SELECT NAME,TYPE,Script,UniqueID FROM THIS.cHomeDir+"CODERULE" WHERE ACTIVE INTO ARRAY THIS.aRules
+
+		IF FILE(THIS.cRuleDir+"CODERULE.DBF")
+			SELECT NAME,TYPE,Script,UniqueID FROM THIS.cRuleDir+"CODERULE" WHERE ACTIVE INTO ARRAY THIS.aRules
 			LOCAL lni
 			FOR lni = 1 TO ALEN(THIS.aRules,1)
 				IF EMPTY(THIS.aRules(lni,1))
@@ -485,7 +533,8 @@ DEFINE CLASS _codeAnalyzer AS CUSTOM
 			IF NOT ISNULL(THIS.oTherm)
 				THIS.oTherm.HIDE()
 			ENDIF
-			ERROR loErr.MESSAGE
+			
+			ERROR loErr.MESSAGE+ " on line " + TRANSFORM(loErr.Lineno)+" of "+loErr.Procedure 
 		ENDTRY
 		LOCAL lc
 		lc = THIS.csetesc

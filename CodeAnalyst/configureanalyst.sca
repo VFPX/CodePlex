@@ -34,7 +34,7 @@ Name = "Dataenvironment"
 [BASECLASS] form
 [OBJNAME] Form1
 [START PROPERTIES]
-Height = 378
+Height = 425
 Width = 716
 DoCreate = .T.
 AutoCenter = .T.
@@ -60,25 +60,64 @@ THIS.grdrules.SetFocus()
 THIS.cboRules.ListIndex=1
 ENDPROC
 PROCEDURE addrule
-INSERT INTO (_SCREEN._analyst.cHomeDir+"CODERULE") (Name,Active,uniqueid,timestamp) VALUES ("New Rule",.f.,SYS(2015),DATETIME())
+INSERT INTO (_SCREEN._analyst.cRuleDir+"CODERULE") (Name,Active,uniqueid,timestamp) VALUES ("New Rule",.f.,SYS(2015),DATETIME())
 THISFORM.Refresh()
 ENDPROC
 PROCEDURE resetrules
-IF NOT USED("_CODERULE")
-	USE _CODERULE IN 0
-ENDIF
 
-DELETE FROM _SCREEN._analyst.cHomeDir+"CODERULE"
+LOCAL lcXMLFile
+LOCAL llCont
+llCont = .T.
+IF NOT EMPTY(THIS.txtXMLFile.Value) AND THIS.txtXMLFile.Value <> "(internal)"
+	IF "http"$LOWER(THIS.txtXMLFile.Value)
+		LOCAL lo as MSXML2.DomDocument
+		lo = CREATEOBJECT("MSXML.DomDocument")
+		IF lo.load(TRIM(THIS.txtXMLFile.Value))
+			lcXMLFile = lo.xml
+		ENDIF
+	ELSE
+		lcXMLFile = FILETOSTR(THIS.txtXMLFile.Value)
+	ENDIF
+	IF USED("_CODERULE")
+		USE IN _CODERULE
+	ENDIF
+	IF EMPTY(lcXMLFile)
+		USE _CODERULE IN 0	
+	ELSE
+	TRY
+		XMLTOCURSOR(lcXMLFile,"_CODERULE")
+		IF NOT (TYPE("_CODERULE.NAME")="C" AND TYPE("_SCREEN.SCRIPT")="M")
+			USE IN _CODERULE
+			** Invalid file
+			llCont = .F.
+			MESSAGEBOX("Invalid CodeRule file. Please ensure the reset file is in a valid CodeRule XML format.",16,"Code Analyst")
+		ENDIF
+	CATCH
+		USE _CODERULE IN 0	
+	ENDTRY
+	ENDIF
+ELSE
+	IF NOT USED("_CODERULE")
+		USE _CODERULE IN 0
+	ENDIF
+
+ENDIF
+IF llCont
+IF MESSAGEBOX("Are you sure you want to clear out existing rules and restore a different set of rules?",4+32)=6
+DELETE FROM _SCREEN._analyst.cRuleDir+"CODERULE"
 
 SELECT _CODERULE
 SCAN
 	SCATTER MEMVAR MEMO
-	INSERT INTO (_SCREEN._analyst.cHomeDir+"CODERULE") FROM MEMVAR
+	INSERT INTO (_SCREEN._analyst.cRuleDir+"CODERULE") FROM MEMVAR
 ENDSCAN
 
 THISFORM.ShowRules()
+ENDIF
+ENDIF
 ENDPROC
 PROCEDURE showrules
+SET DELETED ON
 DO CASE
 	CASE THIS.cboRules.Value="Line"
 		SET FILTER TO type="L" IN CODERULE
@@ -702,14 +741,14 @@ ENDPROC
 
 [ RECORD]
 [PLATFORM] WINDOWS 
-[UNIQUEID] _2BH0YHWUO
+[UNIQUEID] _1SZ1057RI
 [CLASS] cfoxtextbox
 [CLASSLOC] foxctrls.vcx
 [BASECLASS] textbox
 [OBJNAME] txtFont
 [PARENT] Form1
 [START PROPERTIES]
-Anchor = 30
+Anchor = 514
 Height = 21
 Left = 12
 ReadOnly = .T.
@@ -727,7 +766,7 @@ ENDPROC
 
 [ RECORD]
 [PLATFORM] WINDOWS 
-[UNIQUEID] _2BH0YHWUP
+[UNIQUEID] _1SZ1057RK
 [CLASS] cfoxbutton
 [CLASSLOC] foxctrls.vcx
 [BASECLASS] commandbutton
@@ -749,6 +788,164 @@ IF NOT EMPTY(lc)
 	_SCREEN._analyst.cFontString = lc
 ENDIF
 
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1SZ1057RI
+[CLASS] cfoxtextbox
+[CLASSLOC] foxctrls.vcx
+[BASECLASS] textbox
+[OBJNAME] txtRuleDir
+[PARENT] Form1
+[START PROPERTIES]
+Anchor = 514
+Height = 21
+Left = 300
+ReadOnly = .T.
+Top = 372
+Width = 324
+Name = "txtRuleDir"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+DODEFAULT()
+IF EMPTY(_SCREEN._analyst.cRuleDir) OR _SCREEN._analyst.lUseDefaultDir
+	THIS.Value = "(current project directory)"
+ELSE
+	THIS.Value = _SCREEN._analyst.cRuleDir
+ENDIF
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1SZ1057RI
+[CLASS] cfoxbutton
+[CLASSLOC] foxctrls.vcx
+[BASECLASS] commandbutton
+[OBJNAME] cmdDir
+[PARENT] Form1
+[START PROPERTIES]
+Top = 372
+Left = 636
+Anchor = 768
+Caption = "Choose..."
+Name = "cmdDir"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+LOCAL lc
+lc = _SCREEN._analyst.cRuledir
+lc = GETDIR(lc,"Location of CodeRule table","Specify location for rules (cancel to use startup folder)")
+IF NOT EMPTY(lc)
+	_SCREEN._analyst.cRuleDir = lc
+	THIS.Parent.txtRuleDir.Value = lc
+	_SCREEN._analyst.lUseDefaultDir = .F.
+	IF NOT FILE(lc+"\CODERULE.DBF")
+		SELECT * FROM CODERULE INTO TABLE (lc+"\coderule")
+	ENDIF
+ELSE
+	_SCREEN._analyst.cRuleDir = ""
+	_SCREEN._analyst.lUseDefaultDir = .T.
+ENDIF
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1SZ1057RK
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label3
+[PARENT] Form1
+[START PROPERTIES]
+FontName = "Tahoma"
+FontSize = 8
+Anchor = 514
+Caption = "Location for Code Rule file (leave blank for current)"
+Height = 17
+Left = 15
+Top = 376
+Width = 261
+Name = "Label3"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2PH0UP6FG
+[CLASS] cfoxtextbox
+[CLASSLOC] foxctrls.vcx
+[BASECLASS] textbox
+[OBJNAME] txtXMLFile
+[PARENT] Form1
+[START PROPERTIES]
+Anchor = 514
+Height = 21
+Left = 300
+ReadOnly = .F.
+Top = 397
+Width = 324
+Name = "txtXMLFile"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+DODEFAULT()
+IF EMPTY(_SCREEN._analyst.cResetFile)
+	THIS.Value = "(internal)"
+ELSE
+	THIS.Value = _SCREEN._analyst.cResetFile
+ENDIF
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2PH0UP6FH
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label4
+[PARENT] Form1
+[START PROPERTIES]
+FontName = "Tahoma"
+FontSize = 8
+Anchor = 514
+Caption = "Reset/Load rules from XML file:"
+Height = 17
+Left = 15
+Top = 401
+Width = 261
+Name = "Label4"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2PH0UP6FI
+[CLASS] cfoxbutton
+[CLASSLOC] foxctrls.vcx
+[BASECLASS] commandbutton
+[OBJNAME] Cfoxbutton1
+[PARENT] Form1
+[START PROPERTIES]
+Top = 396
+Left = 636
+Anchor = 768
+Caption = "Choose..."
+Name = "Cfoxbutton1"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+LOCAL lc
+lc = GETFILE("XML","CodeRule File:","Load",0,"Select XML CodeRule file")
+IF NOT EMPTY(lc)
+	THIS.Parent.txtXMLFile.Value = lc
+	_SCREEN._Analyst.cResetFile = lc
+ELSE
+	THIS.Parent.txtXMLFile.Value = "(internal)"
+	_SCREEN._Analyst.cResetFile = ""
+ENDIF
 ENDPROC
 [END METHODS]
 
