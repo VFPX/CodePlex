@@ -1,0 +1,379 @@
+<?xml version = "1.0" encoding="Windows-1252" standalone="yes"?>
+<VFPData>
+	<xsd:schema id="VFPData" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+		<xsd:element name="VFPData" msdata:IsDataSet="true">
+			<xsd:complexType>
+				<xsd:choice maxOccurs="unbounded">
+					<xsd:element name="class" minOccurs="0" maxOccurs="unbounded">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="platform">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="8"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="uniqueid">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="10"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="class">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="classloc">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="baseclass">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="objname">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="parent">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="properties">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="protected">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="methods">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="ole">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:base64Binary">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="ole2">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="reserved1">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="reserved2">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="reserved3">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="reserved4">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="reserved5">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="reserved6">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="reserved7">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="reserved8">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="user">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+							</xsd:sequence>
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:choice>
+				<xsd:anyAttribute namespace="http://www.w3.org/XML/1998/namespace" processContents="lax"/>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:schema>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid>_RUJ11W1LV</uniqueid>
+		<class><![CDATA[projecthook]]></class>
+		<classloc/>
+		<baseclass><![CDATA[projecthook]]></baseclass>
+		<objname><![CDATA[cvfepjxhook]]></objname>
+		<parent/>
+		<properties><![CDATA[Height = 22
+Width = 23
+coldgenmenu = 
+cholddir = 
+coldinclude = 
+Name = "cvfepjxhook"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE AfterBuild
+*==============================================================================
+* Method:			AfterBuild
+* Purpose:			Reset the _GENMENU and _INCLUDE variables if they were
+*					changed.
+* Author:			F1 Technologies
+* Parameters:		
+* Returns:			
+*==============================================================================
+LPARAMETERS ;
+	nError
+
+IF NOT EMPTY(This.cOldGenMenu) AND FILE(This.cOldGenMenu)
+	_GENMENU = This.cOldGenMenu
+ENDIF	
+
+IF NOT EMPTY(This.cOldInclude) AND FILE(This.cOldInclude)
+	_INCLUDE = This.cOldInclude
+ENDIF	
+
+CD (This.cHoldDir)	
+ENDPROC
+PROCEDURE BeforeBuild
+*==============================================================================
+* Method:			BeforeBuild
+* Purpose:			Make sure that _GENMENU is set to GenMenuX.prg or .fxp.
+* Author:			F1 Technologies
+* Parameters:		
+* Returns:			
+*==============================================================================
+LPARAMETERS ;
+	cOutputName, ;
+	nBuildAction, ;
+	lRebuildAll, ;
+	lShowErrors, ;
+	lBuildNewGuids
+
+LOCAL ;
+	llReturn, ;
+	lcHomeDir
+
+llReturn = This.SetGenMenuX() AND This.SetInclude()
+
+IF llReturn
+	This.cHoldDir = SYS(5) + CURDIR()
+	lcHomeDir = Application.ActiveProject.HomeDir
+	CD (lcHomeDir)
+ENDIF	
+	
+RETURN llReturn
+
+ENDPROC
+PROCEDURE setgenmenux
+*==============================================================================
+* Method:			SetGenMenuX
+* Purpose:			Sets _GENMENU to GenMenuX if necessary.
+* Author:			F1 Technologies
+* Parameters:		
+* Returns:			Logical, True if _GENMENU could be set, otherwise false.
+* Modifications:
+* 03/05/2002		Changed VFE.EXE references to VFE.APP.
+*==============================================================================
+LOCAL ;
+	llReturn, ;
+	lcGenMenu, ;
+	lcGenXMenu, ;
+	lcFile
+	
+llReturn = .T.
+lcGenMenu = _GENMENU
+lcGenXMenu = ""
+lcFile = ""
+
+IF EMPTY(lcGenMenu) OR NOT UPPER(ALLTRIM(JUSTFNAME(lcGenMenu))) = "GENMENUX.PRG"
+	DO CASE
+	CASE VARTYPE(oVFE) = "O"
+		lcGenXMenu = ADDBS(oVFE.cVFEDir) + "TOOLS\GENMENUX\GENMENUX.PRG"
+	CASE NOT EMPTY(_ASSIST) AND "VFE.APP"$UPPER(_ASSIST)
+		lcGenXMenu = ADDBS(LEFT(_ASSIST,RAT("\",_ASSIST))) + "TOOLS\GENMENUX\GENMENUX.PRG"
+	ENDCASE
+
+	IF EMPTY(lcGenXMenu) OR NOT FILE(lcGenXMenu)
+		lcFile = GETFILE("PRG", "GenMenuX")
+		lcGenXMenu = lcFile
+	ENDIF
+	
+	IF NOT EMPTY(lcGenXMenu) AND ;
+		UPPER(ALLTRIM(JUSTFNAME(lcGenXMenu))) = "GENMENUX.PRG" AND ;
+		FILE(lcGenXMenu)
+		
+		This.cOldGenMenu = lcGenMenu
+		_GENMENU = lcGenXMenu
+	ELSE
+		=MESSAGEBOX( ;
+			"This project requires GenMenuX to build. GenMenuX was not found. Therefore, the project cannot be built", ;
+			64, ;
+			"Visual FoxExpress" )
+		llReturn = .F.	
+	ENDIF	
+		
+ENDIF
+
+RETURN llReturn
+ENDPROC
+PROCEDURE setinclude
+*==============================================================================
+* Method:			SetInclude
+* Purpose:			Sets _INCLUDE to VFE.H if necessary.
+* Author:			F1 Technologies
+* Parameters:		
+* Returns:			Logical, True if _INCLUDE could be set, otherwise false.
+* Modifications:
+* 03/05/2002		Changed VFE.EXE references to VFE.APP.
+*==============================================================================
+LOCAL ;
+	llReturn, ;
+	lcInclude, ;
+	lcNewInclude, ;
+	lcFile
+	
+llReturn = .T.
+lcInclude = _INCLUDE
+lcNewInclude = ""
+lcFile = ""
+
+IF EMPTY(lcInclude) OR NOT UPPER(ALLTRIM(JUSTFNAME(lcInclude))) = "VFE.H"
+
+	DO CASE
+	CASE VARTYPE(oVFE) = "O"
+		lcNewInclude = ADDBS(oVFE.cVFEDir) + "VFEFRAME\INCLUDE\VFE.H"
+	CASE NOT EMPTY(_ASSIST) AND "VFE.APP"$UPPER(_ASSIST)
+		lcNewInclude = ADDBS(LEFT(_ASSIST,RAT("\",_ASSIST))) + "VFEFRAME\INCLUDE\VFE.H"
+	ENDCASE
+
+	IF EMPTY(lcNewInclude) OR NOT FILE(lcNewInclude)
+		lcFile = GETFILE("H", "VFE")
+		lcNewInclude = lcFile
+	ENDIF
+	
+	IF NOT EMPTY(lcNewInclude) AND ;
+		UPPER(ALLTRIM(JUSTFNAME(lcNewInclude))) = "VFE.H" AND ;
+		FILE(lcNewInclude)
+		
+		This.cOldInclude = lcInclude
+		_INCLUDE = lcNewInclude
+	ELSE
+		=MESSAGEBOX( ;
+			"This project requires the include file VFE.H to build. VFE.H was not found. Therefore, the project cannot be built", ;
+			64, ;
+			"Visual FoxExpress" )
+		llReturn = .F.	
+	ENDIF	
+		
+ENDIF
+
+RETURN llReturn
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1><![CDATA[Class]]></reserved1>
+		<reserved2><![CDATA[1]]></reserved2>
+		<reserved3><![CDATA[coldgenmenu The genmenu program before it was changed to GenMenuX.
+cholddir The current directory before build. 
+coldinclude The value of _INCLUDE before it was changed to VFE.H
+*setgenmenux Sets _GENMENU to GenMenuX if necessary.
+*setinclude Sets _Include to VFE.H if necessary.
+]]></reserved3>
+		<reserved4/>
+		<reserved5/>
+		<reserved6><![CDATA[Pixels]]></reserved6>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+	</class>
+	<class>
+		<platform>COMMENT</platform>
+		<uniqueid>RESERVED</uniqueid>
+		<class/>
+		<classloc/>
+		<baseclass/>
+		<objname><![CDATA[cvfepjxhook]]></objname>
+		<parent/>
+		<properties/>
+		<protected/>
+		<methods/>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+	</class>
+</VFPData>

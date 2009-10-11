@@ -1,0 +1,1411 @@
+<?xml version = "1.0" encoding="Windows-1252" standalone="yes"?>
+<VFPData>
+	<xsd:schema id="VFPData" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+		<xsd:element name="VFPData" msdata:IsDataSet="true">
+			<xsd:complexType>
+				<xsd:choice maxOccurs="unbounded">
+					<xsd:element name="class" minOccurs="0" maxOccurs="unbounded">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="platform">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="8"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="uniqueid">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="10"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="class">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="classloc">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="baseclass">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="objname">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="parent">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="properties">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="protected">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="methods">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="ole">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:base64Binary">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="ole2">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="reserved1">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="reserved2">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="reserved3">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="reserved4">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="reserved5">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="reserved6">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="reserved7">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="reserved8">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="user">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+							</xsd:sequence>
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:choice>
+				<xsd:anyAttribute namespace="http://www.w3.org/XML/1998/namespace" processContents="lax"/>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:schema>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid>_RSA0WSWO4</uniqueid>
+		<class><![CDATA[projecthook]]></class>
+		<classloc/>
+		<baseclass><![CDATA[projecthook]]></baseclass>
+		<objname><![CDATA[cpjxhookx]]></objname>
+		<parent/>
+		<properties><![CDATA[Height = 53
+Width = 120
+cselectform = cVFESelectHooksForm
+cselectformlibrary = (JustPath(This.ClassLibrary)+"\cVFEPJXHooks.vcx")
+lalwaysproceed = .T.
+chookalias = 
+oproject = .NULL.
+otimer = .NULL.
+ohooks = .NULL.
+Name = "cpjxhookx"
+]]></properties>
+		<protected><![CDATA[addhooks
+createhookobjects
+addhook2collection
+createglobalhook
+calledfromthisclass
+removehookobjects
+checkhooks
+]]></protected>
+		<methods><![CDATA[PROCEDURE Activate
+*==============================================================================
+* Method:			Activate
+* Purpose:			Calls the Activate event of all registered project hooks.
+*					Unlike the other methods that drill down to the collected
+*					hooks, this one always calls the activate of each hook. 
+*					Issuing a NODEFAULT from this event does not do anything so
+*					there is no need to check for logical return values.
+* Author:			F1 Technologies
+* Parameters:		None
+* Returns:			None
+* Added:			02/07/2002
+* Modifications:
+* 	10/08/2009		Modified to use a VFP collection rather than an array 
+*					based "collection like" object.
+*==============================================================================
+LOCAL ;
+	loHook
+	
+IF This.oHooks.Count > 0
+
+	FOR EACH loHook IN This.oHooks
+
+		IF VARTYPE(loHook) = T_OBJECT AND ;
+			PEMSTATUS(loHook, "Activate", 5)
+			
+			loHook.Activate()
+		ENDIF
+
+	ENDFOR
+
+ENDIF
+
+RETURN		
+ENDPROC
+PROCEDURE addhook2collection
+*==============================================================================
+* Method:			AddHook2Collection
+* Purpose:			Adds the object reference to the hooks collection.
+* Author:			F1 Technologies
+* Parameters:		toHook, An object reference to the hook object that was
+*					just created by CreateHookObjects.
+* Returns:			
+* Modifications:
+* 	10/08/2009		Modified to use a VFP collection rather than an array 
+*					based "collection like" object.
+*==============================================================================
+LPARAMETERS ;
+	toHook
+
+LOCAL ;
+	lnHookCount
+	
+IF PCOUNT() = 0 OR ;
+	VARTYPE(toHook) <> T_OBJECT
+	
+	RETURN
+ENDIF
+
+This.oHooks.Add(toHook)
+ENDPROC
+PROCEDURE addhooks
+*==============================================================================
+* Method:			AddHooks
+* Purpose:			Calls the form to add project hooks to the PJXHooks table.
+* Author:			F1 Technologies
+* Parameters:		tcPjxName, The name of the currently managed project.
+* Returns:			
+*==============================================================================
+LPARAMETERS ;
+	tcPjxName
+
+LOCAL ;
+	lcPjxName, ;
+	loForm 
+	
+IF NOT USED(This.cHookAlias)
+	RETURN
+ENDIF
+		
+lcPjxName = ""
+		
+IF PCOUNT() = 0 OR ;
+	VARTYPE(tcPjxName) <> T_CHARACTER OR ;
+	EMPTY(tcPjxName) 
+	
+	IF TYPE("This.oProject.Name") = T_CHARACTER
+		lcPjxName = JUSTSTEM(This.oProject.Name)
+	ENDIF	
+
+ELSE
+	lcPjxName = tcPjxName
+ENDIF	
+
+IF EMPTY(lcPjxName)
+	RETURN
+ENDIF
+	
+
+* The functionality for selected and adding the hooks is inside
+* of the cSelectForm so that it can easily be replaced entirely if necessary.
+loForm = NEWOBJECT(This.cSelectForm, This.cSelectFormLibrary, "", lcPjxName, This)
+
+IF TYPE("loForm.Name") = T_CHARACTER
+	loForm.Show(1)
+ENDIF	
+ENDPROC
+PROCEDURE AfterBuild
+*==============================================================================
+* Method:			AfterBuild
+* Purpose:			Calls the AfterBuild event of all registered project 
+*					hooks. This method issues a NODEFAULT if one of the project
+*					hooks return false and This.lAlwaysProceed is also false.
+* Author:			F1 Technologies
+* Parameters:		Consult your Visual FoxPro 6.0 documentation on the 
+*					AfterBuild Event.
+* Returns:			
+* Modifications:
+* 	10/08/2009		Modified to use a VFP collection rather than an array 
+*					based "collection like" object.
+*==============================================================================
+LPARAMETERS ;
+	tnError
+
+LOCAL ;
+	loHook, ;
+	llReturn
+	
+llReturn = .T.
+
+IF This.oHooks.Count > 0
+
+	FOR EACH loHook IN This.oHooks
+		
+		* If the method does not exist or returns .F. and lAlwaysProceed is .F do not 
+		* continue.
+		DO CASE
+		CASE VARTYPE(loHook) <> T_OBJECT AND NOT This.lAlwaysProceed 
+			llReturn = .F.
+			EXIT
+		CASE VARTYPE(loHook) <> T_OBJECT AND This.lAlwaysProceed 
+			LOOP
+		CASE NOT PEMSTATUS(loHook, "AfterBuild", 5) AND NOT This.lAlwaysProceed 
+			llReturn = .F.
+			EXIT
+		CASE NOT PEMSTATUS(loHook, "AfterBuild", 5) AND This.lAlwaysProceed 
+			LOOP
+		CASE NOT loHook.AfterBuild(tnError) AND NOT This.lAlwaysProceed 
+			llReturn = .F.
+			EXIT
+		ENDCASE	
+
+	ENDFOR
+
+ELSE
+	llReturn = This.lAlwaysProceed	
+ENDIF
+
+IF NOT llReturn
+	NODEFAULT
+ENDIF
+
+RETURN		
+ENDPROC
+PROCEDURE BeforeBuild
+*==============================================================================
+* Method:			BeforeBuild
+* Purpose:			Calls the BeforeBuild event of all registered project 
+*					hooks. This method issues a NODEFAULT if one of the project
+*					hooks return false and This.lAlwaysProceed is also false.
+* Author:			F1 Technologies
+* Parameters:		Consult your Visual FoxPro 6.0 documentation on the 
+*					BeforeBuild Event.
+* Returns:			
+* Modifications:
+* 	10/08/2009		Modified to use a VFP collection rather than an array 
+*					based "collection like" object.
+*==============================================================================
+LPARAMETERS ;
+	tcOutputName, ;
+	tnBuildAction, ;
+	tlRebuildAll, ;
+	tlShowErrors, ;
+	tlBuildNewGuids
+	
+LOCAL ;
+	loHook, ;
+	llReturn
+	
+llReturn = .T.
+
+IF This.oHooks.Count > 0
+
+	FOR EACH loHook IN This.oHooks
+		* If the method does not exist or returns .F. and lAlwaysProceed is .F do not 
+		* continue.
+		DO CASE
+		CASE VARTYPE(loHook) <> T_OBJECT AND NOT This.lAlwaysProceed 
+			llReturn = .F.
+			EXIT
+		CASE VARTYPE(loHook) <> T_OBJECT AND This.lAlwaysProceed 
+			LOOP
+		CASE NOT PEMSTATUS(loHook, "BeforeBuild", 5) AND NOT This.lAlwaysProceed 
+			llReturn = .F.
+			EXIT
+		CASE NOT PEMSTATUS(loHook, "BeforeBuild", 5) AND This.lAlwaysProceed 	
+			LOOP
+		CASE NOT loHook.BeforeBuild(tcOutputName, tnBuildAction, tlRebuildAll, tlShowErrors, tlBuildNewGuids) AND NOT ;
+			This.lAlwaysProceed 
+			
+			llReturn = .F.
+			EXIT
+		ENDCASE	
+
+	ENDFOR
+
+ELSE
+	llReturn = This.lAlwaysProceed	
+ENDIF
+
+IF NOT llReturn
+	NODEFAULT
+ENDIF
+
+RETURN		
+ENDPROC
+PROCEDURE calledfromthisclass
+*==============================================================================
+* Method:			CalledFromThisClass
+* Purpose:			Determines if a method was called from another method 
+*					inside of this class.
+* Author:			F1 Technologies
+* Parameters:		
+* Returns:			Logical, True if a method was called from another method
+*					inside of this class.
+*==============================================================================
+LOCAL ;
+	lnLevel, ;
+	lcProgram, ;
+	laClass[1], ;
+	llReturn
+	
+lnLevel = PROGRAM(-1)
+lcProgram = IIF(lnLevel > 2, UPPER(PROGRAM(lnLevel - 2)), "")
+lcProgram = LEFT(lcProgram, AT(".", lcProgram) -1 )
+
+IF NOT EMPTY(lcProgram)
+	ACLASS(laClass, This)
+	llReturn = ASCAN(laClass, lcProgram) > 0
+ENDIF
+	
+RETURN llReturn
+
+ENDPROC
+PROCEDURE checkhooks
+*==============================================================================
+* Method:			CheckHooks
+* Purpose:			Scans through the hooks array and destroys any objects that 
+*					are no longer in the hooks table.
+* Author:			F1 Technologies
+* Parameters:		tcPjxName, The name of the project currently being managed.
+* Returns:			
+* Modifications:
+* 	10/08/2009		Modified to use a VFP collection rather than an array 
+*					based "collection like" object.
+*==============================================================================
+LPARAMETERS ;
+	tcPjxName
+	
+LOCAL ;
+	lcPjxName, ;
+	lnHoldRecno, ;
+	lnCounter, ;
+	lcThisName, ;
+	lcThisLib
+	
+lcPjxName = UPPER(ALLTRIM(tcPjxName))
+lnHoldRecno = RECNO()
+lnDeleted = 0
+lnCounter = 1	
+
+DO WHILE lnCounter <= This.oHooks.Count
+	loHook = This.oHooks.Item(lnCounter)
+	
+	IF VARTYPE(loHook) = T_OBJECT
+		lcThisName = UPPER(ALLTRIM(loHook.Name))
+		lcThisLib = UPPER(ALLTRIM(loHook.ClassLibrary))
+
+		SELECT (This.cHookAlias)
+		LOCATE FOR UPPER(ALLTRIM(cPjxName)) == ALLTRIM(lcPjxName) AND ;
+			UPPER(ALLTRIM(mHookName)) == lcThisName AND ;
+			UPPER(ALLTRIM(FULLPATH(mHookLib, ADDBS(This.oProject.HomeDir)))) == lcThisLib AND ;
+			NOT DELETED()
+			
+		loHook = .NULL.
+
+		IF NOT FOUND()	
+			This.oHooks.Remove(lnCounter)
+		ELSE
+			lnCounter = lnCounter + 1 			
+		ENDIF
+
+	ENDIF
+					
+ENDDO
+
+IF BETWEEN(lnHoldRecno, 1, RECCOUNT())
+	GO lnHoldRecno
+ENDIF	
+ENDPROC
+PROCEDURE chookalias_assign
+*==============================================================================
+* Method:			cHookAlias_Assign
+* Purpose:			Allow the cHookAlias property to be changed only from 
+*					inside of this class but to be visible from outside of the
+*					class.
+* Author:			F1 Technologies
+* Parameters:		tcNewAlias, The new value for the property.
+* Returns:			
+*==============================================================================
+LPARAMETERS ;
+	tcNewAlias
+
+* We want to be able to see the value of this property from other places
+* but only set it from inside of this class. Therefore, making it protected
+* is not an option. 
+IF This.CalledFromThisClass()
+	This.cHookAlias = tcNewAlias	
+ELSE
+	ERROR ERROR_PROPERTY_IS_READONLY
+ENDIF	
+
+
+	
+
+ENDPROC
+PROCEDURE cleanup
+*==============================================================================
+* Method:			Cleanup
+* Purpose:			Cleans up the project hook environment.
+* Author:			F1 Technologies
+* Parameters:		
+* Returns:			
+*==============================================================================
+This.RemoveHookObjects()
+
+IF USED(This.cHookAlias)
+	USE IN (This.cHookAlias)
+	This.cHookAlias = ""
+ENDIF
+
+IF This.lUseGlobalHookVariable
+	This.lUseGlobalHookVariable = .F.
+ENDIF
+	
+This.oProject = .NULL.
+
+
+ENDPROC
+PROCEDURE copyright
+*==============================================================================
+* Class:			cPjxHookX
+* Author:			F1 Technologies
+*					With help from Doug Hennig, Stonefield Systems Group, Inc.
+* Copyright:		Released into Public Domain by F1 Technologies.
+*==============================================================================
+
+ENDPROC
+PROCEDURE createglobalhook
+*==============================================================================
+* Method:			CreateGlobalHook
+* Purpose:			Creates the memory variable _oPJXHook and assigns an object 
+*					reference to it. This method also instantiates a timer to 
+*					detect when the project has closed.
+* Author:			F1 Technologies
+* Parameters:		
+* Returns:			
+*==============================================================================
+IF TYPE("_oPJXHook") = T_UNDEFINED
+	PUBLIC _oPJXHook
+ENDIF
+
+_oPJXHook = This
+
+This.oTimer = NEWOBJECT("cPjxTimer", This.ClassLibrary)
+	
+ENDPROC
+PROCEDURE createhookobjects
+*==============================================================================
+* Method:			CreateHookObjects
+* Purpose:			Creates the hook objects and adds the object reference to 
+*					the property array aHooks.
+* Author:			F1 Technologies
+* Parameters:		tcPjxName, The name of the currently managed project.
+* Returns:			
+* Modifications:
+* 	10/08/2009		Modified to use a VFP collection rather than an array 
+*					based "collection like" object.
+*==============================================================================
+LPARAMETERS ;
+	tcPjxName
+
+LOCAL ;
+	lnSelect, ;
+	lnHoldRecno, ;
+	loCurrentHook, ;
+	lcPjxName, ;
+	lcHookVCX
+			
+IF PCOUNT() = 0 OR ;
+	VARTYPE(tcPjxName) <> T_CHARACTER OR ;
+	EMPTY(tcPjxName) OR ;
+	NOT USED(This.cHookAlias)
+	
+	RETURN
+
+ENDIF	
+
+lnSelect = SELECT()
+SELECT (This.cHookAlias)
+lnHoldRecno = RECNO()
+loCurrentHook = .NULL.
+lcPjxName = UPPER(ALLTRIM(tcPjxName))
+
+* Scan through the Hooks Collection ans removes any items that are no longer in the hooks table.
+This.CheckHooks(tcPjxName)
+
+* Add All New Hooks to the Hooks array and create the objects.
+SCAN WHILE UPPER(ALLTRIM(cPjxName)) == lcPjxName
+
+	IF NOT DELETED()	
+		
+		lcHookVCX = FULLPATH(ALLTRIM(mHookLib), ADDBS(This.oProject.HomeDir))
+		IF NOT This.IsHook(ALLTRIM(mHookName), lcHookVCX) AND FILE(lcHookVCX)
+
+			loCurrentHook = NEWOBJECT(ALLTRIM(mHookName), lcHookVCX)
+		
+			IF VARTYPE(loCurrentHook) = T_OBJECT
+				This.AddHook2Collection(loCurrentHook)
+			ENDIF
+		
+		ENDIF
+		
+	ENDIF	
+	
+ENDSCAN
+
+IF BETWEEN(lnHoldRecno, 1, RECCOUNT())
+	GO lnHoldRecno
+ENDIF	
+
+SELECT (lnSelect)
+ENDPROC
+PROCEDURE createhooktable
+*==============================================================================
+* Method:			CreateHookTable
+* Purpose:			Create the project hooks and any necessary indexes.
+* Author:			F1 Technologies
+* Parameters:		The name and path to the project hooks table.
+* Returns:			
+*==============================================================================
+LPARAMETERS ;
+	tcHooksTable
+
+LOCAL ;
+	lcAlias, ;
+	lcCollate
+	
+IF PCOUNT() = 0 OR ;
+	VARTYPE(tcHooksTable) <> T_CHARACTER OR ;
+	EMPTY(tcHooksTable)
+	
+	RETURN
+ENDIF
+
+lcAlias = JUSTSTEM(tcHooksTable)
+	
+* Note, the cPjxName field is defined at 238 characters so that we can create an
+* index on this field and the order field.	
+CREATE TABLE (tcHooksTable) FREE ;
+	(cPjxName C(238), ;
+		mHookName M NOCPTRANS, ;
+		mHookLib M NOCPTRANS, ;
+		nOrder N (2) )
+
+lcCollate = SET("COLLATE")
+SET COLLATE TO "MACHINE"
+		
+INDEX ON UPPER(cPjxName + STR(nOrder,2)) TAG cPjxName FOR NOT DELETED()
+
+IF NOT EMPTY(lcCollate)
+	SET COLLATE TO lcCollate
+ENDIF
+
+* The hooks table is opened exclusively when created 
+* so we will close it and reopen it SHARED.
+IF USED(lcAlias)
+	USE IN (lcAlias)
+ENDIF
+
+This.OpenHookTable(tcHooksTable)
+
+RETURN
+ENDPROC
+PROCEDURE Deactivate
+*==============================================================================
+* Method:			Deactivate
+* Purpose:			Calls the Deactivate event of all registered project hooks.
+*					Unlike the other methods that drill down to the collected
+*					hooks, this one always calls the activate of each hook. 
+*					Issuing a NODEFAULT from this event does not do anything so
+*					there is no need to check for logical return values.
+* Author:			F1 Technologies
+* Parameters:		None
+* Returns:			None
+* Added:			02/07/2002
+* Modifications:
+* 	10/08/2009		Modified to use a VFP collection rather than an array 
+*					based "collection like" object.
+*==============================================================================
+LOCAL ;
+	loHook AS Object 
+	
+IF This.oHooks.Count > 0
+
+	FOR EACH loHook IN This.oHooks
+		IF VARTYPE(loHook) = T_OBJECT AND ;
+			PEMSTATUS(loHook, "Deactivate", 5)
+			
+			loHook.Deactivate()
+		ENDIF
+
+	ENDFOR
+
+ENDIF
+
+RETURN		
+ENDPROC
+PROCEDURE Destroy
+*==============================================================================
+* Method:			Destroy
+* Purpose:			Cleanup the environment before destroying this object.
+* Author:			F1 Technologies
+* Parameters:		
+* Returns:			
+*==============================================================================
+This.Cleanup()
+
+ENDPROC
+PROCEDURE gethooks
+*==============================================================================
+* Method:			GetHooks
+* Purpose:			Looks at the hooks table and instantiates each hook.
+* Author:			F1 Technologies
+* Parameters:		tcPjxName, The name of the currently managed project.
+*					tlShowForm, Parameter to indicate whether or not the Add
+*					hooks form should be shown regardless if if there project
+*					hooks have already been added.	
+* Returns:			
+* Modifications:
+* 	10/08/2009		Modified to use a VFP collection rather than an array 
+*					based "collection like" object.
+*==============================================================================
+LPARAMETERS ;
+	tcPjxName, ;
+	tlShowForm
+
+LOCAL ;
+	lcPjxName, ;
+	llHasRecords
+		
+IF NOT USED(This.cHookAlias)
+	RETURN
+ENDIF
+
+lcPjxName = ""
+
+IF PCOUNT() = 0 OR ;
+	VARTYPE(tcPjxName) <> T_CHARACTER OR ;
+	EMPTY(tcPjxName) 
+	
+	IF TYPE("This.oProject.Name") = T_CHARACTER
+		lcPjxName = JUSTSTEM(This.oProject.Name)
+	ENDIF	
+
+ELSE
+	lcPjxName = tcPjxName
+ENDIF	
+
+IF EMPTY(lcPjxName)
+	RETURN
+ENDIF
+
+llHasRecords = INDEXSEEK(UPPER(lcPjxName), .F., This.cHookAlias, "cPjxName")
+
+IF NOT llHasRecords OR tlShowForm
+	This.AddHooks(lcPjxName)
+ENDIF
+
+* We have to seek again so that we are sitting on the first hook to be instantiated.
+IF INDEXSEEK(UPPER(lcPjxName), .T., This.cHookAlias, "cPjxName")
+	This.CreateHookObjects(lcPjxName)
+ELSE
+	This.RemoveHookObjects()
+ENDIF	
+
+
+
+ENDPROC
+PROCEDURE Init
+*==============================================================================
+* Method:			Init
+* Purpose:			Setup a working environment for ProjectHookX by 
+*					instantiating all of the registered project hooks for the
+*					currently managed project.
+* Author:			F1 Technologies
+* Parameters:		
+* Returns:	
+* Modifications:
+* 	10/08/2009		Modified to use a VFP collection rather than an array 
+*					based "collection like" object.
+*==============================================================================
+LOCAL ;
+	lcHomeDir, ;
+	lcPjxName, ;
+	lcHooksTable
+
+IF TYPE("Application.ActiveProject.Name") <> T_CHARACTER
+	=MESSAGEBOX( ;
+		NO_PJX_ACTIVE_LOC, ;
+		MB_OK + MB_ICONINFORMATION, ;
+		_Screen.Caption)
+	RETURN .F.
+ENDIF
+
+This.oProject = Application.ActiveProject	
+lcHomeDir = ADDBS(This.oProject.HomeDir)
+lcPjxName = JUSTSTEM(This.oProject.Name)
+lcHooksTable = lcHomeDir + "PJXHooks.dbf"
+This.oHooks = CREATEOBJECT('collection')
+
+IF NOT FILE(lcHooksTable)
+	This.CreateHookTable(lcHooksTable)
+ELSE
+	This.OpenHookTable(lcHooksTable)
+ENDIF
+
+IF This.lHooksTableOpen
+	This.GetHooks(lcPjxName,.F.)
+ENDIF
+
+IF This.oHooks.Count = 0 AND NOT This.lAlwaysProceed
+	This.Cleanup()
+	RETURN .F.
+ENDIF	
+
+IF This.lUseGlobalHookVariable
+	This.CreateGlobalHook()
+ENDIF	
+
+ENDPROC
+PROCEDURE ishook
+*==============================================================================
+* Method:			IsHook
+* Purpose:			Checks hooks array to make sure that the hook is not 
+*					already instantiated.
+* Author:			F1 Technologies
+* Parameters:		tcHookName, The name of the project hook class.
+*					tcHookLib, The class library where tcHookName is located.
+* Returns:			Logical, True if the class has already been instantiated,
+*					otherwise false.
+* Modifications:
+* 	10/08/2009		Modified to use a VFP collection rather than an array 
+*					based "collection like" object.
+*==============================================================================
+LPARAMETERS ;
+	tcHookName, ;
+	tcHookLib
+	
+LOCAL ;
+	llIsHook, ;
+	lcHookName, ;
+	lcHookLib, ;
+	lcThisName, ;
+	lcThisLib
+	
+llIsHook = .F.		
+
+IF PCOUNT() < 2 OR ;
+	NOT VARTYPE(tcHookName) = T_CHARACTER OR ;
+	NOT VARTYPE(tcHookLib) = T_CHARACTER OR ;
+	EMPTY(tcHookName) OR ;
+	EMPTY(tcHookLib)
+	
+	RETURN llIsHook
+ENDIF	
+		
+lcHookName = UPPER(ALLTRIM(tcHookName))
+lcHookLib = UPPER(ALLTRIM(tcHookLib))	
+
+FOR EACH loHook IN This.oHooks
+
+	IF VARTYPE(loHook) = T_OBJECT
+		lcThisName = UPPER(ALLTRIM(loHook.Name))
+		lcThisLib = UPPER(ALLTRIM(loHook.ClassLibrary))
+
+		IF lcThisName == lcHookName and lcThisLib == lcHookLib
+			llIsHook = .T.
+			EXIT
+		ENDIF
+		
+	ENDIF
+			
+ENDFOR
+
+RETURN llIsHook
+ENDPROC
+PROCEDURE lhookstableopen_access
+*==============================================================================
+* Method:			lHooksTableOpen_Access
+* Purpose:			Access method for the lHooksTableOpen property. This
+*					method determines the value based on whether or not the
+*					project hooks table is open when the property is referenced.
+* Author:			F1 Technologies
+* Parameters:		
+* Returns:			Logical, True if the table is open, otherwise false.
+*==============================================================================
+RETURN USED(This.cHookAlias)
+
+ENDPROC
+PROCEDURE lhookstableopen_assign
+*==============================================================================
+* Method:			lHooksTableOpen_Assign
+* Purpose:			To prohibit changing the value of the lHooksTableOpen
+*					property.
+* Author:			F1 Technologies
+* Parameters:		tuNewVal, The new value for the property.
+* Returns:			
+*==============================================================================
+LPARAMETERS ;
+	tuNewVal
+
+ERROR ERROR_PROPERTY_IS_READONLY
+
+ENDPROC
+PROCEDURE luseglobalhookvariable_assign
+*==============================================================================
+* Method:			lUseGlobalHookVariable_Assign
+* Purpose:			When the value of this property changes, the global hook
+*					variable, _oPJXHook is either defined or released depending
+*					on the new value.
+* Author:			F1 Technologies
+* Parameters:		tuNewVal, The new value for the property.
+* Returns:			
+*==============================================================================
+LPARAMETERS ;
+	tuNewVal
+
+IF TYPE("tuNewVal") = T_LOGICAL
+	This.lUseGlobalHookVariable = tuNewVal
+
+	IF NOT This.lUseGlobalHookVariable AND TYPE("_oPJXHook") <> T_UNDEFINED
+		RELEASE _oPJXHook 
+		This.oTimer = .NULL.
+	ENDIF
+	
+	IF This.lUseGlobalHookVariable AND TYPE("_oPJXHook") = T_UNDEFINED
+		This.CreateGlobalHook()
+	ENDIF	
+
+ENDIF
+ENDPROC
+PROCEDURE openhooktable
+*==============================================================================
+* Method:			OpenHookTable
+* Purpose:			Open the table that contains the project hooks being used
+*					for a project.
+* Author:			F1 Technologies
+* Parameters:		tcHooksTable, the name and path to the project hooks table.
+* Returns:			
+*==============================================================================
+LPARAMETERS ;
+	tcHooksTable
+
+LOCAL ;
+	lcAlias
+	
+IF PCOUNT() = 0 OR ;
+	VARTYPE(tcHooksTable) <> T_CHARACTER OR ;
+	EMPTY(tcHooksTable)
+	
+	RETURN
+ENDIF
+
+lcAlias = JUSTSTEM(tcHooksTable)
+	
+IF FILE(tcHooksTable) AND NOT USED(lcAlias)
+	USE (tcHooksTable) ALIAS (lcAlias) SHARED IN 0
+ENDIF		
+
+IF USED(lcAlias)
+	This.cHookAlias = lcAlias
+ENDIF
+	
+RETURN
+ENDPROC
+PROCEDURE otimer_assign
+*==============================================================================
+* Method:			oTimer_Assign
+* Purpose:			Allow the oTimer property to be changed only from 
+*					inside of this class but to be visible from outside of the
+*					class.
+* Author:			F1 Technologies
+* Parameters:		toTimer, The new value for the property.
+* Returns:			
+*==============================================================================
+LPARAMETERS ;
+	toTimer
+
+* We want to be able to see the value of this property from other places
+* but only set it from inside of this class. Therefore, making it protected
+* is not an option. 
+IF This.CalledFromThisClass()
+	This.oTimer = toTimer
+ELSE
+	ERROR ERROR_PROPERTY_IS_READONLY
+ENDIF	
+
+ENDPROC
+PROCEDURE QueryAddFile
+*==============================================================================
+* Method:			QueryAddFile
+* Purpose:			Calls the QueryAddFile event of all registered project 
+*					hooks. This method issues a NODEFAULT if one of the project
+*					hooks return false and This.lAlwaysProceed is also false.
+* Author:			F1 Technologies
+* Parameters:		Consult your Visual FoxPro 6.0 documentation on the 
+*					QueryAddFile Event.
+* Returns:			
+* Modifications:
+* 	10/08/2009		Modified to use a VFP collection rather than an array 
+*					based "collection like" object.
+*==============================================================================
+LPARAMETERS ;
+	tcFileName
+
+LOCAL ;
+	loHook, ;
+	llReturn
+	
+llReturn = .T.
+
+IF This.oHooks.Count > 0
+
+	FOR EACH loHook IN This.oHooks
+		* If the method does not exist or returns .F. and lAlwaysProceed is .F do not 
+		* continue.
+		DO CASE
+		CASE VARTYPE(loHook) <> T_OBJECT AND NOT This.lAlwaysProceed 
+			llReturn = .F.
+			EXIT
+		CASE VARTYPE(loHook) <> T_OBJECT AND This.lAlwaysProceed 
+			LOOP
+		CASE NOT PEMSTATUS(loHook, "QueryAddFile", 5) AND NOT This.lAlwaysProceed 
+			llReturn = .F.
+			EXIT
+		CASE NOT PEMSTATUS(loHook, "QueryAddFile", 5) AND This.lAlwaysProceed 	
+			LOOP
+		CASE NOT loHook.QueryAddFile(tcFileName) AND NOT This.lAlwaysProceed 
+			llReturn = .F.
+			EXIT
+		ENDCASE
+
+	ENDFOR
+
+ELSE
+	llReturn = This.lAlwaysProceed	
+ENDIF
+
+IF NOT llReturn
+	NODEFAULT
+ENDIF
+
+RETURN		
+ENDPROC
+PROCEDURE QueryModifyFile
+*==============================================================================
+* Method:			QueryModifyFile
+* Purpose:			Calls the QueryModifyFile event of all registered project 
+*					hooks. This method issues a NODEFAULT if one of the project
+*					hooks return false and This.lAlwaysProceed is also false.
+* Author:			F1 Technologies
+* Parameters:		Consult your Visual FoxPro 6.0 documentation on the 
+*					QueryModifyFile Event.
+* Returns:			
+* Modifications:
+* 	10/08/2009		Modified to use a VFP collection rather than an array 
+*					based "collection like" object.
+*==============================================================================
+LPARAMETERS ;
+	toFile, ;
+	tcClassName
+
+LOCAL ;
+	loHook, ;
+	llReturn
+	
+llReturn = .T.
+
+IF This.oHooks.Count > 0
+
+	FOR EACH loHook IN This.oHooks
+		* If the method does not exist or returns .F. and lAlwaysProceed is .F do not 
+		* continue.
+		DO CASE
+		CASE VARTYPE(loHook) <> T_OBJECT AND NOT This.lAlwaysProceed 
+			llReturn = .F.
+			EXIT
+		CASE VARTYPE(loHook) <> T_OBJECT AND This.lAlwaysProceed 
+			LOOP
+		CASE NOT PEMSTATUS(loHook, "QueryModifyFile", 5) AND NOT This.lAlwaysProceed 
+			llReturn = .F.
+			EXIT
+		CASE NOT PEMSTATUS(loHook, "QueryModifyFile", 5) AND This.lAlwaysProceed 
+			LOOP
+		CASE NOT loHook.QueryModifyFile(toFile, tcClassName) AND NOT This.lAlwaysProceed
+			llReturn = .F.
+			EXIT
+		ENDCASE	
+
+	ENDFOR
+
+ELSE
+	llReturn = This.lAlwaysProceed	
+ENDIF
+
+IF NOT llReturn
+	NODEFAULT
+ENDIF
+
+RETURN		
+ENDPROC
+PROCEDURE QueryNewFile
+*==============================================================================
+* Method:			QueryNewFile
+* Purpose:			Calls the QueryNewFile event of all registered project 
+*					hooks. This method issues a NODEFAULT if one of the project
+*					hooks return false and This.lAlwaysProceed is also false.
+* Author:			F1 Technologies
+* Parameters:		Consult your Visual FoxPro 6.0 documentation on the 
+*					QueryNewFile Event.
+* Returns:		
+* Modifications:
+* 	10/08/2009		Modified to use a VFP collection rather than an array 
+*					based "collection like" object.	
+*==============================================================================
+LPARAMETERS ;
+	tcFileType
+
+LOCAL ;
+	loHook, ;
+	llReturn
+	
+llReturn = .T.
+
+IF This.oHooks.Count > 0
+
+	FOR EACH loHook IN This.oHooks
+		* If the method does not exist or returns .F. and lAlwaysProceed is .F do not 
+		* continue.
+		DO CASE
+		CASE VARTYPE(loHook) <> T_OBJECT AND NOT This.lAlwaysProceed 
+			llReturn = .F.
+			EXIT
+		CASE VARTYPE(loHook) <> T_OBJECT AND This.lAlwaysProceed 
+			LOOP
+		CASE NOT PEMSTATUS(loHook, "QueryNewFile", 5) AND NOT This.lAlwaysProceed 
+			llReturn = .F.
+			EXIT
+		CASE NOT PEMSTATUS(loHook, "QueryNewFile", 5) AND This.lAlwaysProceed 	
+			LOOP
+		CASE NOT loHook.QueryNewFile(tcFileType) AND NOT This.lAlwaysProceed 
+			llReturn = .F.
+			EXIT
+		ENDCASE
+
+	ENDFOR
+
+ELSE
+	llReturn = This.lAlwaysProceed	
+ENDIF
+
+IF NOT llReturn
+	NODEFAULT
+ENDIF
+
+RETURN		
+ENDPROC
+PROCEDURE QueryRemoveFile
+*==============================================================================
+* Method:			QueryRemoveFile
+* Purpose:			Calls the QueryRemoveFile event of all registered project 
+*					hooks. This method issues a NODEFAULT if one of the project
+*					hooks return false and This.lAlwaysProceed is also false.
+* Author:			F1 Technologies
+* Parameters:		Consult your Visual FoxPro 6.0 documentation on the 
+*					QueryRemoveFile Event.
+* Returns:			
+* Modifications:
+* 	10/08/2009		Modified to use a VFP collection rather than an array 
+*					based "collection like" object.
+*==============================================================================
+LPARAMETERS ;
+	toFile, ;
+	tcClassName, ;
+	tlDeleteFile
+
+LOCAL ;
+	loHook, ;
+	llReturn
+	
+llReturn = .T.
+
+IF This.oHooks.Count > 0
+
+	FOR EACH loHook IN This.oHooks
+		* If the method does not exist or returns .F. and lAlwaysProceed is .F do not 
+		* continue.
+		DO CASE
+		CASE VARTYPE(loHook) <> T_OBJECT AND NOT This.lAlwaysProceed 
+			llReturn = .F.
+			EXIT
+		CASE VARTYPE(loHook) <> T_OBJECT AND This.lAlwaysProceed 
+			LOOP
+		CASE NOT PEMSTATUS(loHook, "QueryRemoveFile", 5) AND NOT This.lAlwaysProceed 
+			llReturn = .F.
+			EXIT
+		CASE NOT PEMSTATUS(loHook, "QueryRemoveFile", 5) AND This.lAlwaysProceed 
+			LOOP
+		CASE NOT loHook.QueryRemoveFile(toFile, tcClassName, tlDeleteFile) AND NOT This.lAlwaysProceed 
+			llReturn = .F.
+			EXIT
+		ENDCASE	
+
+	ENDFOR
+
+ELSE
+	llReturn = This.lAlwaysProceed	
+ENDIF
+
+IF NOT llReturn
+	NODEFAULT
+ENDIF
+
+RETURN		
+ENDPROC
+PROCEDURE QueryRunFile
+*==============================================================================
+* Method:			QueryRunFile
+* Purpose:			Calls the QueryRunFile event of all registered project 
+*					hooks. This method issues a NODEFAULT if one of the project
+*					hooks return false and This.lAlwaysProceed is also false.
+* Author:			F1 Technologies
+* Parameters:		Consult your Visual FoxPro 6.0 documentation on the 
+*					QueryRunFile Event.
+* Returns:			
+* Modifications:
+* 	10/08/2009		Modified to use a VFP collection rather than an array 
+*					based "collection like" object.
+*==============================================================================
+LPARAMETERS ;
+	toFile
+
+LOCAL ;
+	loHook, ;
+	llReturn
+	
+llReturn = .T.
+
+IF This.oHooks.Count > 0
+
+	FOR EACH loHook IN This.oHooks
+		* If the method does not exist or returns .F. and lAlwaysProceed is .F do not 
+		* continue.
+		DO CASE
+		CASE VARTYPE(loHook) <> T_OBJECT AND NOT This.lAlwaysProceed 
+			llReturn = .F.
+			EXIT
+		CASE VARTYPE(loHook) <> T_OBJECT AND This.lAlwaysProceed 
+			LOOP
+		CASE NOT PEMSTATUS(loHook, "QueryRunFile", 5) AND NOT This.lAlwaysProceed 
+			llReturn = .F.
+			EXIT
+		CASE NOT PEMSTATUS(loHook, "QueryRunFile", 5) AND This.lAlwaysProceed 
+			LOOP
+		CASE NOT loHook.QueryRunFile(toFile) AND NOT This.lAlwaysProceed 
+			llReturn = .F.
+			EXIT
+		ENDCASE
+
+	ENDFOR
+
+ELSE
+	llReturn = This.lAlwaysProceed	
+ENDIF
+
+IF NOT llReturn
+	NODEFAULT
+ENDIF
+
+RETURN		
+ENDPROC
+PROCEDURE release
+*==============================================================================
+* Method:			Release
+* Purpose:			To bring all classes in line with VFP's native Release 
+*					method.
+* Author:			F1 Technologies
+* Parameters:		
+* Returns:			
+*==============================================================================
+RELEASE This
+ENDPROC
+PROCEDURE removehookobjects
+*==============================================================================
+* Method:			RemoveHookObjects
+* Purpose:			Removes all instances of hook objects by setting the 
+*					element in the aHooks property array to .NULL.
+* Author:			F1 Technologies
+* Parameters:		
+* Returns:			
+* Modifications:
+* 	10/08/2009		Modified to use a VFP collection rather than an array 
+*					based "collection like" object.
+*==============================================================================
+IF This.oHooks.Count > 0	
+	This.oHooks.Remove(-1)
+ENDIF
+
+	
+ENDPROC
+PROCEDURE selecthooks
+*==============================================================================
+* Method:			SelectHooks
+* Purpose:			Brings up the AddHooks form so that new hooks can be 
+*					added or existing ones removed. This method is to simplify 
+*					this process. It used to be that you had to call GetHooks 
+*					with the proper parameters.
+* Author:			F1 Technologies
+* Parameters:		
+* Returns:			
+*==============================================================================
+This.GetHooks("", .T.)
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1><![CDATA[Class]]></reserved1>
+		<reserved2><![CDATA[1]]></reserved2>
+		<reserved3><![CDATA[cselectform The name of the form used by the SelectHooks method. Default is frmSelectHooks.
+cselectformlibrary The class library where cSelectForm is located. The default is this class, PJXHookX.vcx.
+lalwaysproceed A logical property which determines if the failure of one hooked hook event determines the failure of all others. 
+lhookstableopen Used to determine if the CreateHooksTable or OpenHooksTabe methods were able to open the Project Hooks Table successfully.
+chookalias The alias that the project hook is opened under. This value is determined when the table is opened and should not be changed.
+oproject An object reference to the current project.
+luseglobalhookvariable Determines whether the variable _oPJXHook is created with an object reference to this object. When this property is .T., a timer has to be instantiated in order to release the variable when the project is closed.
+otimer An object reference to the timer that checks to see if the project has been closed.
+ohooks The collection of hooks.
+*openhooktable Opens the project hook table located in a project's home directory.
+*createhooktable Creates the project hooks table in the project's home directory.
+*gethooks Looks at the hooks table and instantiates each hook.
+*addhooks Adds project hooks to the PJXHooks table.
+*createhookobjects Acutally creates the hook objects and adds the object reference to the array aHooks.
+*addhook2collection Adds the object reference to the hooks collection.
+*cleanup Cleans up the project hook environment.
+*createglobalhook Creates the memory variable _oPJXHook and assigns an object reference to it. This method also instantiates a timer to detect when the project has closed.
+*release To bring all classes in line with VFP's native Release method.
+*copyright Contains the standard copyright notice.
+*lhookstableopen_access Access method for lHooksTableOpen property.
+*lhookstableopen_assign Assign method for lHooksTableOpen property.
+*luseglobalhookvariable_assign Assign method for lUseGlobalHookVariable property.
+*chookalias_assign Assign method for the cHookAlias property.
+*calledfromthisclass Determines if a method was called from another method inside of this class.
+*otimer_assign Assign method for the oTimer property.
+*removehookobjects Removes all instances of hook objects.
+*ishook Checks hooks array to make sure that the hook is not already instantiated.
+*checkhooks Scans through the hooks array and removes any items that are no longer in the hooks table.
+*selecthooks Brings up the AddHooks form so that new hooks can be added or existing ones removed. This method is to simplify this process. It used to be that you had to call GetHooks with the proper parameters.
+]]></reserved3>
+		<reserved4/>
+		<reserved5/>
+		<reserved6><![CDATA[Pixels]]></reserved6>
+		<reserved7><![CDATA[Public domain project hook class. This class allows you to chain together multiple project hooks for a single project.]]></reserved7>
+		<reserved8><![CDATA[pjxhookx.h]]></reserved8>
+		<user/>
+	</class>
+	<class>
+		<platform>COMMENT</platform>
+		<uniqueid>RESERVED</uniqueid>
+		<class/>
+		<classloc/>
+		<baseclass/>
+		<objname><![CDATA[cpjxhookx]]></objname>
+		<parent/>
+		<properties/>
+		<protected/>
+		<methods/>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+	</class>
+</VFPData>
