@@ -1,0 +1,830 @@
+<?xml version = "1.0" encoding="Windows-1252" standalone="yes"?>
+<VFPData>
+	<xsd:schema id="VFPData" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+		<xsd:element name="VFPData" msdata:IsDataSet="true">
+			<xsd:complexType>
+				<xsd:choice maxOccurs="unbounded">
+					<xsd:element name="class" minOccurs="0" maxOccurs="unbounded">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="platform">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="8"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="uniqueid">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="10"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="class">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="classloc">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="baseclass">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="objname">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="parent">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="properties">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="protected">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="methods">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="ole">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:base64Binary">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="ole2">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="reserved1">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="reserved2">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="reserved3">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="reserved4">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="reserved5">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="reserved6">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="reserved7">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="reserved8">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="user">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+							</xsd:sequence>
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:choice>
+				<xsd:anyAttribute namespace="http://www.w3.org/XML/1998/namespace" processContents="lax"/>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:schema>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid>_RSD0T3S1E</uniqueid>
+		<class><![CDATA[form]]></class>
+		<classloc/>
+		<baseclass><![CDATA[form]]></baseclass>
+		<objname><![CDATA[frmselecthooks]]></objname>
+		<parent/>
+		<properties><![CDATA[Height = 188
+Width = 549
+DoCreate = .T.
+AutoCenter = .T.
+Caption = "Select Project Hooks"
+WindowType = 1
+oproject = .NULL.
+Name = "frmselecthooks"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE checkclass
+*==============================================================================
+* Method:			CheckClass
+* Purpose:			Checks to make sure that the selected class is not 
+*					cPjxHookX or a subclass of it.
+* Author:			F1 Technologies
+* Parameters:		tcClass, The class to be checked.
+*					tcLibrary, The class library where tcClass resides.
+* Returns:			Logical, True if the class is cPjxHookX or a subclass of 
+*					it.
+*==============================================================================
+LPARAMETERS ;
+	tcClass, ;
+	tcLibrary
+	
+LOCAL ;
+	llReturn, ;
+	lcClass, ;
+	lnClasses, ;
+	laClasses[1], ;
+	lnFoundClass, ;
+	lcPath
+	
+llReturn = .F.
+lcClass = UPPER(ALLTRIM(tcClass))
+
+IF lcClass == "CPJXHOOKX" AND UPPER(ALLTRIM(tcLibrary)) == UPPER(ALLTRIM(This.ClassLibrary))
+	llReturn = .T.
+	RETURN llReturn
+ENDIF
+	
+lnClasses = AVCXCLASSES(laClasses, tcLibrary)
+lnFoundClass = This.FindClass(@laClasses, lcClass)
+
+DO CASE
+CASE lnFoundClass = 0
+	llReturn = .F.
+CASE UPPER(ALLTRIM(laClasses[lnFoundClass, 3])) == "CPJXHOOKX"
+*	The parent class is cPjxHookX
+	llReturn = .T.
+CASE laClasses[lnFoundClass, 2] ==	laClasses[lnFoundClass, 3] 
+*	Parent class is a base class
+	llReturn = .F.
+OTHERWISE
+*	Check the parent class and parent class library.
+	lcPath = JUSTPATH(tcLibrary)
+	llReturn = This.CheckClass(laClasses[lnFoundClass, 3], FULLPATH(laClasses[lnFoundClass,4], tcLibrary))
+ENDCASE
+
+RETURN llReturn	
+
+ENDPROC
+PROCEDURE copyright
+*==============================================================================
+* Class:			frmSelectHooks
+* Author:			F1 Technologies
+* Copyright:		Released into Public Domain by F1 Technologies.
+*==============================================================================
+
+ENDPROC
+PROCEDURE Destroy
+*==============================================================================
+* Method:			Destroy
+* Purpose:			Resets Multilocks and the buffer mode of the Project
+*					Hooks table.
+* Author:			F1 Technologies
+* Parameters:		
+* Returns:			
+*==============================================================================
+LOCAL ;
+	lnSelect
+	
+lnSelect = SELECT()
+SELECT (ThisForm.cHookAlias)	
+
+IF NOT This.nOldBuffer = CURSORGETPROP("Buffering")
+	=CURSORSETPROP("Buffering", This.nOldBuffer)
+ENDIF	
+
+IF NOT This.cOldMultiLocks = SET("MULTILOCKS")
+	lcOldMultiLocks = This.cOldMultiLocks
+	SET MULTILOCKS &lcOldMultiLocks
+ENDIF
+
+This.oProject = .NULL.
+SELECT (lnSelect)
+ENDPROC
+PROCEDURE findclass
+*==============================================================================
+* Method:			FindClass
+* Purpose:			Finds a class name in an array and returns the row number. 
+*					The array is created with AVCXClasses.
+* Author:			F1 Technologies
+* Parameters:		taClasses, An array created with AVCXCLASSES.
+*					tcClass, The class that we are looking for in AVCXCLASSES.
+* Returns:			Numeric, the row number of the class in the array.
+*==============================================================================
+LPARAMETERS ;
+	taClasses, ;
+	tcClass
+
+LOCAL ;
+	lnReturn, ;
+	lnI
+
+lnReturn = 0
+	
+FOR lnI = 1 TO ALEN(taClasses, 1)	
+
+	IF UPPER(ALLTRIM(taClasses[lnI, 1])) == tcClass
+		lnReturn = lnI
+		EXIT
+	ENDIF	
+	
+ENDFOR
+
+RETURN lnReturn	
+
+
+ENDPROC
+PROCEDURE Init
+*==============================================================================
+* Method:			Init
+* Purpose:			Set up the form for adding and removing of project hook
+*					classes.
+* Author:			F1 Technologies
+* Parameters:		tcPjxName, The name of the currently managed project.
+*					toCalling, An object reference to the object that called
+*					this form.
+* Returns:			
+*==============================================================================
+LPARAMETERS ;
+	tcPjxName, ;
+	toCalling
+
+LOCAL ;
+	lnSelect,  ;
+	lcHoldOrder, ;
+	lnHoldRecno, ;
+	lnCounter
+
+IF PCOUNT() < 2 OR ;
+	VARTYPE(tcPjxName) <> T_CHARACTER OR ;
+	EMPTY(tcPjxName) OR ;
+	VARTYPE(toCalling) <> T_OBJECT OR ;
+	TYPE("toCalling.cHookAlias") <> T_CHARACTER OR ;
+	TYPE("toCalling.lHooksTableOpen") <> T_LOGICAL OR ;
+	NOT toCalling.lHooksTableOpen
+
+	=MESSAGEBOX( ;
+		INVALID_CALL_TO_SELECTHOOKS, ;
+		MB_OK + MB_ICONINFORMATION, ;
+		_Screen.Caption)
+	RETURN .F.
+ENDIF
+
+tcPjxName = UPPER(tcPjxName)
+This.cHookAlias = toCalling.cHookAlias	 
+This.oProject = toCalling.oProject
+lnSelect = SELECT()
+SELECT (This.cHookAlias)
+ThisForm.SetBuffer()
+lcHoldOrder = ORDER()
+lnHoldRecno = RECNO()
+SET ORDER TO TAG cPjxName
+
+IF SEEK(tcPjxName)
+
+	lnCounter = 1
+
+	SCAN WHILE UPPER(cPjxName) = tcPjxName
+		
+		WITH This.lstHooks
+			.AddListItem(ALLTRIM(mHookName), lnCounter, 1)
+			.AddListItem(ALLTRIM(mHookLib), lnCounter, 2)		
+		ENDWITH
+			
+		lnCounter = lnCounter + 1
+		
+	ENDSCAN
+
+ENDIF	
+
+SET ORDER TO TAG (lcHoldOrder)
+
+IF BETWEEN(lnHoldRecno, 1, RECCOUNT())
+	GO lnHoldRecno
+ENDIF
+
+SELECT (lnSelect)
+This.Caption = This.Caption + FOR_LOC + ALLTRIM(tcPjxName)
+This.cPjxName = tcPjxName
+
+ENDPROC
+PROCEDURE relpath
+*==============================================================================
+* Method:			RelPath
+* Purpose:			Returns a filename or directory name relative to another
+*					directory.
+* Author:			F1 Technologies
+* Parameters:		tcFileName, character, name of file
+*					tcHomeDir, character, name of directory.
+* Returns:			Character, The name of the file/directory relative to 
+*					the other directory.
+*==============================================================================
+LPARAMETERS ;
+	tcFileName, ;
+	tcHomeDir
+	
+LOCAL ;
+	lcTempPath, ;
+	lcTempFile
+
+tcHomeDir = UPPER(ALLTRIM(ADDBS(JUSTPATH(tcHomeDir))))
+
+* Put the path and file in two separate vars to work around a FoxPro bug.	
+lcTempFile = UPPER(JUSTFNAME(tcFileName))
+
+IF "\"$tcFileName
+	lcTempPath = UPPER(ADDBS(JUSTPATH(tcFileName)))
+*	lcTempPath = UPPER(LEFT(tcFileName,RAT("\",tcFileName)))
+ELSE
+	lcTempPath = ""
+ENDIF
+	
+lcTempPath = ADDBS(lcTempPath)
+
+RETURN SYS(2014, lcTempPath, tcHomeDir) + lcTempFile
+
+
+ENDPROC
+PROCEDURE setbuffer
+*==============================================================================
+* Method:			SetBuffer
+* Purpose:			Sets the buffer mode for the Project Hooks table to 
+*					optimistic table buffering and sets multilocks on if
+*					necessary.
+* Author:			F1 Technologies
+* Parameters:		
+* Returns:			
+*==============================================================================
+LOCAL ;
+	lnSelect
+	
+lnSelect = SELECT()
+SELECT (ThisForm.cHookAlias)
+This.nOldBuffer = CURSORGETPROP("Buffering")
+This.cOldMultiLocks = SET("MULTILOCKS")
+
+IF NOT This.cOldMultiLocks = "ON"
+	SET MULTILOCKS ON
+ENDIF
+
+IF NOT This.nOldBuffer = DB_BUFOPTTABLE
+	=CURSORSETPROP("Buffering", DB_BUFOPTTABLE)
+ENDIF	
+
+SELECT (lnSelect)
+ENDPROC
+PROCEDURE setorders
+*==============================================================================
+* Method:			SetOrders
+* Purpose:			Sets the nOrder field in the Project Hooks table to be
+*					the same as the order in which the project hooks are 
+*					listed.
+* Author:			F1 Technologies
+* Parameters:		
+* Returns:			
+*==============================================================================
+LOCAL ;
+	lnCounter, ;
+	lnSelect
+
+lnSelect = SELECT()
+SELECT (ThisForm.cHookAlias)
+
+WITH ThisForm.lstHooks
+	
+	FOR lnCounter = 1 TO .ListCount
+		LOCATE FOR ALLTRIM(cPjxName) == ALLTRIM(ThisForm.cPjxName) AND ;
+			UPPER(ALLTRIM(mHookName)) == UPPER(ALLTRIM(.List(lnCounter, 1))) AND ;
+			UPPER(ALLTRIM(mHookLib)) == UPPER(ALLTRIM(.List(lnCounter, 2)))			
+
+		IF FOUND() AND NOT nOrder = lnCounter
+			REPLACE nOrder WITH lnCounter
+		ENDIF	
+
+	ENDFOR	
+	
+ENDWITH
+
+SELECT (lnSelect)
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1><![CDATA[Class]]></reserved1>
+		<reserved2><![CDATA[6]]></reserved2>
+		<reserved3><![CDATA[coldmultilocks The previous setting of multilocks.
+noldbuffer The previous buffering mode for the Project Hooks table.
+cpjxname The name of the currently active project.
+chookalias The Alias the the Project Hooks Table is opened under.
+oproject An object reference to the current project.
+*setbuffer Sets the buffer mode for the Project Hooks table.
+*setorders Sets the Order Field of the Project Hooks table to be the order of the items displayed in the list.
+*copyright Contains the standard copyright notice.
+*checkclass Checks to make sure that the selected class is not a subclass of cPjxHookX.
+*findclass Finds a class name in an array and returns the row number. The array is created with AVCXClasses.
+*relpath Returns the relative path to a file from another directory.
+]]></reserved3>
+		<reserved4/>
+		<reserved5/>
+		<reserved6><![CDATA[Pixels]]></reserved6>
+		<reserved7><![CDATA[A form used by ProjectHookX to select the project hooks that should be used with a particular project.]]></reserved7>
+		<reserved8><![CDATA[pjxhookx.h]]></reserved8>
+		<user/>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid>_RSD0TZHCF</uniqueid>
+		<class><![CDATA[listbox]]></class>
+		<classloc/>
+		<baseclass><![CDATA[listbox]]></baseclass>
+		<objname><![CDATA[lstHooks]]></objname>
+		<parent><![CDATA[frmselecthooks]]></parent>
+		<properties><![CDATA[Anchor = 15
+ColumnCount = 2
+ColumnWidths = "200,200"
+Height = 176
+Left = 8
+MoverBars = .T.
+Top = 4
+Width = 440
+Name = "lstHooks"
+]]></properties>
+		<protected/>
+		<methods/>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid>_RSD10ENS1</uniqueid>
+		<class><![CDATA[commandbutton]]></class>
+		<classloc/>
+		<baseclass><![CDATA[commandbutton]]></baseclass>
+		<objname><![CDATA[cmdAddHook]]></objname>
+		<parent><![CDATA[frmselecthooks]]></parent>
+		<properties><![CDATA[Top = 4
+Left = 460
+Height = 27
+Width = 84
+Anchor = 9
+Caption = "\<Add Hook..."
+Name = "cmdAddHook"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Click
+*==============================================================================
+* Method:			Click
+* Purpose:			Select and add a project hook class. This method also makes 
+*					sure that the project hook has not already been selected 
+*					and that it is not derived from cPjxHookX.
+* Author:			F1 Technologies
+* Parameters:		
+* Returns:			
+*==============================================================================
+LOCAL ;
+	lnSelect, ;
+	laClass[1,2], ;
+	lnNextRow
+
+lnSelect = SELECT()
+SELECT (ThisForm.cHookAlias)
+	
+IF AGETCLASS(laClass)
+	* Make sure that the selected class is not a subclass of cPjxHookX.
+	IF NOT ThisForm.CheckClass(laClass[2], laClass[1])
+
+		LOCATE FOR ALLTRIM(cPjxName) == ALLTRIM(ThisForm.cPjxName) AND ;
+			UPPER(ALLTRIM(mHookName)) == UPPER(ALLTRIM(laClass[2])) AND ;
+			UPPER(ALLTRIM(mHookLib)) == UPPER(ALLTRIM(laClass[1])) AND ;
+			NOT DELETED()		
+		
+		IF NOT FOUND()
+		
+			WITH ThisForm.lstHooks
+				lnNextRow = .IndexToItemID(.ListCount) + 1
+				.AddListItem(laClass[2], lnNextRow, 1)
+				.AddListItem(laClass[1], lnNextRow, 2)	
+				.SelectedId(lnNextRow) = .T.
+				.SetFocus()		
+			ENDWITH
+			
+			INSERT INTO (ThisForm.cHookAlias) ;
+				(cPjxName, mHookName, mHookLib, nOrder) ;
+			VALUES ;
+				(ThisForm.cPjxName, laClass[2], ThisForm.RelPath(laClass[1], ThisForm.oProject.Name), lnNextRow )
+		
+		ELSE
+			=MESSAGEBOX(DUPLICATE_HOOK_CLASS_LOC, MB_OK + MB_ICONINFORMATION)
+		ENDIF
+	
+	ELSE
+		=MESSAGEBOX(SUBCLASS_HOOK_CLASS_LOC, MB_OK + MB_ICONINFORMATION)
+	ENDIF
+		
+ENDIF	
+
+SELECT (lnSelect)
+ThisForm.Refresh()
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid>_RSD10ENSW</uniqueid>
+		<class><![CDATA[commandbutton]]></class>
+		<classloc/>
+		<baseclass><![CDATA[commandbutton]]></baseclass>
+		<objname><![CDATA[cmdRemoveHook]]></objname>
+		<parent><![CDATA[frmselecthooks]]></parent>
+		<properties><![CDATA[Top = 33
+Left = 460
+Height = 27
+Width = 84
+Anchor = 9
+Caption = "\<Remove Hook"
+Name = "cmdRemoveHook"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Click
+*==============================================================================
+* Method:			Click
+* Purpose:			Remove a Project Hook entry from the Project Hooks table
+*					as well as the list.
+* Author:			F1 Technologies
+* Parameters:		
+* Returns:			
+*==============================================================================
+LOCAL ;
+	lnSelect
+
+lnSelect = SELECT()
+SELECT (ThisForm.cHookAlias)
+	
+WITH ThisForm.lstHooks
+	
+	IF NOT EMPTY(.ListItemId)
+		LOCATE FOR ALLTRIM(cPjxName) == ALLTRIM(ThisForm.cPjxName) AND ;
+			UPPER(ALLTRIM(mHookName)) == UPPER(ALLTRIM(.ListItem(.ListItemId,1))) AND ;
+			UPPER(ALLTRIM(mHookLib)) == UPPER(ALLTRIM(.ListItem(.ListItemId,2)))		
+
+		IF FOUND()
+			DELETE NEXT 1
+		ENDIF
+			
+		.RemoveListItem(.ListItemId)
+
+	ENDIF	
+	
+ENDWITH
+
+SELECT (lnSelect)
+ThisForm.Refresh()
+ENDPROC
+PROCEDURE Refresh
+*==============================================================================
+* Method:			Refresh
+* Purpose:			Only enable the remove button when there are entries in
+*					the list of project hooks.
+* Author:			F1 Technologies
+* Parameters:		
+* Returns:			
+*==============================================================================
+This.Enabled = ThisForm.lstHooks.ListCount > 0
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid>_RSD10ENTS</uniqueid>
+		<class><![CDATA[commandbutton]]></class>
+		<classloc/>
+		<baseclass><![CDATA[commandbutton]]></baseclass>
+		<objname><![CDATA[cmdOK]]></objname>
+		<parent><![CDATA[frmselecthooks]]></parent>
+		<properties><![CDATA[Top = 124
+Left = 460
+Height = 27
+Width = 84
+Anchor = 12
+Caption = "OK"
+Default = .T.
+Name = "cmdOK"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Click
+*==============================================================================
+* Method:			Click
+* Purpose:			Saves the buffered changes to the Project Hooks table and 
+*					closes the form.
+* Author:			F1 Technologies
+* Parameters:		
+* Returns:			
+*==============================================================================
+LOCAL ;
+	lnSelect, ;
+	laError[1]
+
+lnSelect = SELECT()
+SELECT (ThisForm.cHookAlias)
+ThisForm.SetOrders()
+
+IF NOT TABLEUPDATE(1)
+	IF AERROR(laError) > 0
+		=MESSAGEBOX(UNABLE_TO_SAVE_CHANGES_LOC + CHR(13) + ;
+				ERROR_NUMBER_LOC + ALLTRIM(STR(laError[1,1])) + CR + ;
+				ERROR_MESSAGE_LOC + laError[1,2], ;
+			MB_OK+ MB_ICONINFORMATION)
+	ELSE
+		=MESSAGEBOX(UNABLE_TO_SAVE_CHANGES_LOC, MB_OK + MB_ICONINFORMATION)
+	ENDIF			
+	
+	SELECT (lnSelect)
+ELSE
+	SELECT (lnSelect)
+	Thisform.Release()
+ENDIF
+
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid>_RSD10ENVB</uniqueid>
+		<class><![CDATA[commandbutton]]></class>
+		<classloc/>
+		<baseclass><![CDATA[commandbutton]]></baseclass>
+		<objname><![CDATA[cmdCancel]]></objname>
+		<parent><![CDATA[frmselecthooks]]></parent>
+		<properties><![CDATA[Top = 153
+Left = 460
+Height = 27
+Width = 84
+Anchor = 12
+Cancel = .T.
+Caption = "Cancel"
+Name = "cmdCancel"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Click
+*==============================================================================
+* Method:			Click
+* Purpose:			Reverts the buffered changes to the Project Hooks table and 
+*					closes the form.
+* Author:			F1 Technologies
+* Parameters:		
+* Returns:			
+*==============================================================================
+LOCAL ;
+	lnSelect
+	
+lnSelect = SELECT()
+SELECT (ThisForm.cHookAlias)
+=TABLEREVERT(.T.)
+SELECT (lnSelect)
+Thisform.Release()
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+	</class>
+	<class>
+		<platform>COMMENT</platform>
+		<uniqueid>RESERVED</uniqueid>
+		<class/>
+		<classloc/>
+		<baseclass/>
+		<objname><![CDATA[frmselecthooks]]></objname>
+		<parent/>
+		<properties/>
+		<protected/>
+		<methods/>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+	</class>
+</VFPData>
