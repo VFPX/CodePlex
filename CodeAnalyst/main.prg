@@ -24,15 +24,19 @@ ENDIF
 *- Check for a parameter passed. If none is passed, the analyst is just installed in the menu
 *- If the analyst was already installed, start the Analyze anyway.
 
+IF PCOUNT()>0 AND UPPER(tcFile)="-CONFIG"
+	_SCREEN._Analyst.Configure()
+ELSE
 IF PCOUNT() = 1 OR llRunning THEN
 	_SCREEN._Analyst.Analyze(tcFile)
 ENDIF
-
+ENDIF
 
 DEFINE CLASS _codeAnalyzer AS CUSTOM
 	cFile = ""
 	csetesc = ""
 	cMainProgram = ""
+	cHomeDir = ""
 	lLineRules = .F.
 	cLine = ""
 	nLine = 0
@@ -461,6 +465,8 @@ ENDIF
 	PROCEDURE Analyze
 		LPARAMETERS tcFile
 		THIS.cMessage = ""
+		LOCAL lcDir
+		lcDir = CURDIR()
 		THIS.cMainProgram = tcFile
 		IF NOT EMPTY(tcFile)
 			IF NOT FILE(tcFile)
@@ -485,16 +491,24 @@ ENDIF
 				*!*					ELSE
 				*!*						tcFile = _VFP.ActiveProject.Name
 				*!*					ENDIF
-				IF EMPTY(tcFile)
+				IF EMPTY(tcFile)				
 					RETURN
 				ENDIF
+				SET DEFAULT TO (STRTRAN(tcFile,JUSTFNAME(tcFile)))
+				THIS.cHomeDir = (STRTRAN(tcFile,JUSTFNAME(tcFile)))
+				
+
 			ENDIF
+		ELSE
+			SET DEFAULT TO (STRTRAN(tcFile,JUSTFNAME(tcFile)))		
+			THIS.cHomeDir = (STRTRAN(tcFile,JUSTFNAME(tcFile)))
 		ENDIF
 
 		TRY
 			THIS.csetesc = ON("ESCAPE")
 			ON ESCAPE _SCREEN._Analyst.StopAnalysis()
 
+			THIS.PreValidate()
 			IF EMPTY(tcFile)
 				lc = "Current Object"
 				THIS.cFile = lc
@@ -523,9 +537,14 @@ ENDIF
 			THIS.oTherm.HIDE()
 			IF THIS.lDisplayForm
 				IF NOT THIS.lProjectRun OR RECCOUNT(THIS.cAnalysisCursor)>0
-					IF NOT WEXIST("frmCodeAnalResults")
+					IF NOT PEMSTATUS(_SCREEN,"_analysisform",5)
+						_SCREEN.AddProperty("_analysisform",.NULL.)					
+					ENDIF
+					IF ISNULL(_SCREEN._Analysisform)
 						SELECT 0
-						DO FORM codeanalresults
+						DO FORM codeanalresults NAME _SCREEN._analysisform
+					ELSE
+						_SCREEN._analysisform.refresh()
 					ENDIF
 				ENDIF
 			ENDIF
@@ -536,6 +555,8 @@ ENDIF
 			
 			ERROR loErr.MESSAGE+ " on line " + TRANSFORM(loErr.Lineno)+" of "+loErr.Procedure 
 		ENDTRY
+		THIS.PostValidate()
+		SET DEFAULT TO (lcDir)
 		LOCAL lc
 		lc = THIS.csetesc
 		ON ESCAPE &lc
@@ -921,6 +942,60 @@ ENDIF
 
 			ENDIF
 			IF THIS.aRules(lni,2)="M"
+				lcRule = THIS.aRules(lni,1)
+				lcFunc = THIS.aRules(lni,3)
+				TRY
+					EXECSCRIPT(lcFunc)
+				CATCH TO loErr
+					THIS.AddError(loErr,lcRule,lcFunc)
+					THIS.aRules(lni,1) = ""
+				ENDTRY
+			ENDIF
+		ENDFOR
+
+
+	PROCEDURE PreValidate
+
+		THIS.oTherm.setstatus("Pre Analysis Rules")
+		LOCAL lni,lcFunc
+		FOR lni = 1 TO ALEN(THIS.aRules,1)
+			IF EMPTY(THIS.aRules(lni,1))
+				LOOP
+			ENDIF
+			IF ALEN(THIS.aRules,2)>3
+				THIS.cWarningID = THIS.aRules(lni,4)
+			ELSE
+				THIS.cWarningID = ""
+
+			ENDIF
+			IF THIS.aRules(lni,2)="I"
+				lcRule = THIS.aRules(lni,1)
+				lcFunc = THIS.aRules(lni,3)
+				TRY
+					EXECSCRIPT(lcFunc)
+				CATCH TO loErr
+					THIS.AddError(loErr,lcRule,lcFunc)
+					THIS.aRules(lni,1) = ""
+				ENDTRY
+			ENDIF
+		ENDFOR
+
+
+	PROCEDURE PostValidate
+
+		THIS.oTherm.setstatus("Post Analysis Rules")
+		LOCAL lni,lcFunc
+		FOR lni = 1 TO ALEN(THIS.aRules,1)
+			IF EMPTY(THIS.aRules(lni,1))
+				LOOP
+			ENDIF
+			IF ALEN(THIS.aRules,2)>3
+				THIS.cWarningID = THIS.aRules(lni,4)
+			ELSE
+				THIS.cWarningID = ""
+
+			ENDIF
+			IF THIS.aRules(lni,2)="P"
 				lcRule = THIS.aRules(lni,1)
 				lcFunc = THIS.aRules(lni,3)
 				TRY
