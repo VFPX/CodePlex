@@ -1,0 +1,697 @@
+SCCTEXT Version 4.0.0.2
+PLATFORM C(8,0),UNIQUEID C(10,0),TIMESTAMP N(10,0),CLASS M(4,0),CLASSLOC M(4,0),BASECLASS M(4,0),OBJNAME M(4,0),PARENT M(4,0),PROPERTIES M(4,0),PROTECTED M(4,0),METHODS M(4,0),OBJCODE M(4,0),OLE M(4,0),OLE2 M(4,0),RESERVED1 M(4,0),RESERVED2 M(4,0),RESERVED3 M(4,0),RESERVED4 M(4,0),RESERVED5 M(4,0),RESERVED6 M(4,0),RESERVED7 M(4,0),RESERVED8 M(4,0),USER M(4,0)
+1252
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] Class     
+[START RESERVED1]
+VERSION =   3.00[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0Z20MMT0A
+[CLASS] container
+[BASECLASS] container
+[OBJNAME] linklisteditor
+[START PROPERTIES]
+BackStyle = 0
+Height = 169
+Name = "linklisteditor"
+Width = 263
+l_xhalfpixel = .F.
+l_yhalfpixel = .F.
+n_oldheight = 169
+n_oldwidth = 263
+s_standardpicture = 
+useitemcollection = .T.
+useitemobjects = .T.
+[END PROPERTIES]
+[START PROTECTED]
+l_xhalfpixel^
+l_yhalfpixel^
+n_oldheight^
+n_oldwidth^
+[END PROTECTED]
+[START METHODS]
+PROCEDURE Init
+*-- (c) Copyright 2009 Holden Data Systems
+*-- All rights reserverd.
+
+this.BorderWidth = 0 && no border
+IF this.UseItemCollection
+	this.AddObject( "Items", "Collection" )
+ELSE
+	this.AddProperty( "Items[1]" )
+	this.AddProperty( "ArrayIsEmpty", .T. )
+ENDIF
+this.Resize()
+ENDPROC
+PROCEDURE Resize
+LOCAL a,b,c, cx,cy, cxHalf, cyHalf
+
+cx = this.Width - this.n_OldWidth
+cy = this.Height - this.n_OldHeight
+this.n_OldWidth = this.Width
+this.n_OldHeight = this.Height
+IF cx == 0 AND cy == 0
+	RETURN
+ENDIF
+cxHalf = FLOOR( (cx + IIF( this.l_xHalfPixel, 1, 0 )) / 2 )
+cyHalf = FLOOR( (cy + IIF( this.l_yHalfPixel, 1, 0 )) / 2 )
+this.l_xHalfPixel = ((cxHalf * 2) != cx)
+this.l_yHalfPixel = ((cyHalf * 2) != cy)
+
+WITH this.o_ExcludeList
+	.Move( .Left, .Top, .Width + cxHalf, .Height + cy )
+ENDWITH
+WITH this.o_IncludeList
+	.Move( .Left + cxHalf, .Top, .Width + (cx - cxHalf), .Height + cy )
+ENDWITH
+this.o_IncludeCaption.Left = this.o_IncludeCaption.Left + cxHalf
+WITH this.b_IncSelected
+	.Move( .Left + cxHalf, .Top + cyHalf )
+ENDWITH
+WITH this.b_IncAll
+	.Move( .Left + cxHalf, .Top + cyHalf )
+ENDWITH
+WITH this.b_ExcSelected
+	.Move( .Left + cxHalf, .Top + cyHalf )
+ENDWITH
+WITH this.b_ExcAll
+	.Move( .Left + cxHalf, .Top + cyHalf )
+ENDWITH
+
+ENDPROC
+PROCEDURE add
+LPARAMETERS sText, sKey, lIncluded
+LOCAL a,b,c, oList, oBtn, oItem, nCnt
+
+* IF PCOUNT() < 2
+IF PARAMETERS() < 2
+	sKey = sText
+ENDIF
+*-- see if the KEY is already in the ITEMS collection
+IF this.UseItemCollection OR this.UseItemObjects
+	nCnt = IIF( this.UseItemCollection, this.Items.Count, ;
+				IIF( this.ArrayIsEmpty, 0, ALEN( this.Items ) ) )
+	FOR a = 1 TO nCnt
+		IF this.Items[a].Key == sKey
+			RETURN
+		ENDIF
+	ENDFOR
+	nCnt = nCnt + 1
+*!*	IF VERSION(5) >= 800
+*!*		oItem = CREATEOBJECT( "empty" )
+*!*		ADDPROPERTY( oItem, "Key", sKey )
+*!*		ADDPROPERTY( oItem, "Text", sText )
+*!*		ADDPROPERTY( oItem, "Selected", lIncluded )
+*!*		ADDPROPERTY( oItem, "ItemID", nCnt+1 )
+*!*	ELSE
+		oItem = CREATEOBJECT( "custom" )
+		oItem.AddProperty( "Key", sKey )
+		oItem.AddProperty( "Text", sText )
+		oItem.AddProperty( "Selected", lIncluded )
+		oItem.AddProperty( "ItemID", nCnt )
+*!*	ENDIF
+	IF this.UseItemCollection
+		this.Items.Add( oItem, sKey )
+	ELSE
+		DIMENSION this.Items[nCnt]
+		this.Items[nCnt] = oItem
+		this.ArrayIsEmpty = .F.
+	ENDIF
+ELSE
+	IF !this.ArrayIsEmpty AND ASCAN( this.Items, sKey, 1, ALEN( this.Items, 1 ), 1, 15 ) > 0
+		RETURN
+	ENDIF
+	nCnt = IIF( this.ArrayIsEmpty, 1, ALEN( this.Items, 1 ) + 1 )
+	DIMENSION this.Items[nCnt,4]
+	this.Items[nCnt,1] = sKey
+	this.Items[nCnt,2] = sText
+	this.Items[nCnt,3] = lIncluded
+	this.Items[nCnt,4] = nCnt && ItemID
+	this.ArrayIsEmpty = .F.
+ENDIF
+oList = IIF( lIncluded, this.o_IncludeList, this.o_ExcludeList )
+oBtn = IIF( lIncluded, this.b_ExcAll, this.b_IncAll )
+* WAIT WINDOW "Adding #" + TRANSFORM( nCnt ) + ": " + sText
+oList.AddListItem( sText, nCnt )
+IF !EMPTY( this.s_StandardPicture )
+	*oList.Picture[oItem.Index] = this.s_StandardPicture
+	oList.Picture = this.s_StandardPicture
+ENDIF
+oBtn.Enabled = .T.
+
+ENDPROC
+PROCEDURE calcitemlistindex
+LPARAMETERS nItemID
+LOCAL i, oItem, lIsIncluded, nResult
+
+nResult = 1
+IF this.UseItemCollection OR this.UseItemObjects
+	lIsIncluded = this.Items[nItemID].Selected
+	FOR i = 1 TO nItemID - 1
+		nResult = nResult + IIF( this.Items[i].Selected == lIsIncluded, 1, 0 )
+	ENDFOR
+ELSE
+	lIsIncluded = this.Items[nItemID,3]
+	FOR i = 1 TO nItemID - 1
+		nResult = nResult + IIF( this.Items[i,3] == lIsIncluded, 1, 0 )
+	ENDFOR
+ENDIF
+RETURN nResult
+
+ENDPROC
+PROCEDURE clear
+IF this.UseItemCollection
+	IF PEMSTATUS( this, "Items", 5 )
+		this.RemoveObject( "Items" )
+	ENDIF
+	this.AddObject( "Items", "Collection" )
+ELSE
+	IF !this.ArrayIsEmpty
+		this.ArrayIsEmpty = .T.
+		IF this.UseItemObjects
+			DIMENSION this.Items[1]
+			this.Items = NULL
+		ELSE
+			DIMENSION this.Items[1,4]
+			this.Items = .F.
+		ENDIF
+	ENDIF
+ENDIF
+this.o_ExcludeList.Clear()
+this.o_IncludeList.Clear()
+STORE .F. TO this.b_IncSelected.Enabled, this.b_IncAll.Enabled, ;
+			 this.b_ExcSelected.Enabled, this.b_ExcAll.Enabled
+
+ENDPROC
+PROCEDURE enablebuttons
+LOCAL i,b
+
+this.b_IncAll.Enabled = (this.o_ExcludeList.ListCount > 0)
+this.b_ExcAll.Enabled = (this.o_IncludeList.ListCount > 0)
+b = .F.
+FOR i = 1 TO this.o_ExcludeList.ListCount
+	IF this.o_ExcludeList.Selected(i)
+		b = .T.
+		EXIT
+	ENDIF
+ENDFOR
+this.b_IncSelected.Enabled = b
+b = .F.
+FOR i = 1 TO this.o_IncludeList.ListCount
+	IF this.o_IncludeList.Selected(i)
+		b = .T.
+		EXIT
+	ENDIF
+ENDFOR
+this.b_ExcSelected.Enabled = b
+
+ENDPROC
+PROCEDURE getselecteditems
+LPARAMETERS aSelItems
+LOCAL i, nCnt, oResult, nResult, lUseArray
+
+* lUseArray = (PCOUNT() == 1)
+lUseArray = (PARAMETERS() == 1)
+IF !lUseArray
+	oResult = CREATEOBJECT( "collection" )
+ENDIF
+nResult = 0
+IF this.UseItemCollection OR this.UseItemObjects
+	nCnt = IIF( this.UseItemCollection, this.Items.Count, ;
+				IIF( this.ArrayIsEmpty, 0, ALEN( this.Items ) ) )
+	FOR i = 1 TO nCnt
+		IF this.Items[i].Selected
+			nResult = nResult + 1
+			IF lUseArray
+				DIMENSION aSelItems[nResult]
+				aSelItems[nResult] = this.Items[i].Key
+			ELSE
+				oResult.Add( this.Items[i].Key )
+			ENDIF
+		ENDIF
+	ENDFOR
+ELSE
+	nCnt = IIF( this.ArrayIsEmpty, 0, ALEN( this.Items, 1 ) )
+	FOR i = 1 TO nCnt
+		IF this.Items[i,3]
+			nResult = nResult + 1
+			IF lUseArray
+				DIMENSION aSelItems[nResult]
+				aSelItems[nResult] = this.Items[i,1]
+			ELSE
+				oResult.Add( this.Items[i].Key )
+			ENDIF
+		ENDIF
+	ENDFOR
+ENDIF
+RETURN IIF( lUseArray, nResult, oResult )
+
+ENDPROC
+PROCEDURE getunselecteditems
+LPARAMETERS aUnselItems
+LOCAL i, nCnt, oResult, nResult, lUseArray
+
+* lUseArray = (PCOUNT() == 1)
+lUseArray = (PARAMETERS() == 1)
+IF !lUseArray
+	oResult = CREATEOBJECT( "collection" )
+ENDIF
+nResult = 0
+IF this.UseItemCollection OR this.UseItemObjects
+	nCnt = IIF( this.UseItemCollection, this.Items.Count, ;
+				IIF( this.ArrayIsEmpty, 0, ALEN( this.Items ) ) )
+	FOR i = 1 TO nCnt
+		IF !this.Items[i].Selected
+			nResult = nResult + 1
+			IF lUseArray
+				DIMENSION aUnselItems[nResult]
+				aUnselItems[nResult] = this.Items[i].Key
+			ELSE
+				oResult.Add( this.Items[i].Key )
+			ENDIF
+		ENDIF
+	ENDFOR
+ELSE
+	nCnt = IIF( this.ArrayIsEmpty, 0, ALEN( this.Items, 1 ) )
+	FOR i = 1 TO nCnt
+		IF !this.Items[i,3]
+			nResult = nResult + 1
+			IF lUseArray
+				DIMENSION aUnselItems[nResult]
+				aUnselItems[nResult] = this.Items[i,1]
+			ELSE
+				oResult.Add( this.Items[i].Key )
+			ENDIF
+		ENDIF
+	ENDFOR
+ENDIF
+RETURN IIF( lUseArray, nResult, oResult )
+
+ENDPROC
+PROCEDURE reloadlistboxes
+LOCAL i, bInc, oList, sText
+
+this.o_IncludeList.Clear()
+this.o_ExcludeList.Clear()
+nItemCnt = IIF( this.UseItemCollection, this.Items.Count, ALEN( this.Items, 1 ) )
+FOR i = 1 TO nItemCnt
+	bInc = IIF( this.UseItemCollection OR this.UseItemObjects, ;
+				this.Items[i].Selected, this.Items[i,3] )
+	sText = IIF( this.UseItemCollection OR this.UseItemObjects, ;
+				 this.Items[i].Text, this.Items[i,2] )
+	oList = IIF( bInc, this.o_IncludeList, this.o_ExcludeList )
+	oList.AddListItem( sText, i )
+	IF !EMPTY( this.s_StandardPicture )
+		oList.Picture = this.s_StandardPicture
+	ENDIF
+ENDFOR
+this.EnableButtons()
+thisform.Refresh()
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+9[END RESERVED2]
+[START RESERVED3]
+*add Adds a new member to a Collection.
+*aftermoveitem
+*calcitemlistindex
+*clear Clears the contents of a ComboBox or ListBox control.
+*enablebuttons
+*getselecteditems
+*getunselecteditems
+*interactivechange Occurs when the user changes the value of a control using the keyboard or the mouse.
+*reloadlistboxes
+*remove Removes an existing member from a Collection.
+l_xhalfpixel
+l_yhalfpixel
+n_oldheight
+n_oldwidth
+s_standardpicture
+useitemcollection
+useitemobjects
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0Z20MUMPS
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] b_ExcAll
+[PARENT] linklisteditor
+[START PROPERTIES]
+Caption = ""
+Height = 27
+Left = 118
+Name = "b_ExcAll"
+Picture = images\left2.bmp
+TabIndex = 6
+Top = 126
+Width = 27
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+LPARAMETERS lOnlySelected, lInclude
+LOCAL a,b,c, nCnt, oList, sText, nItemID
+LOCAL ARRAY aTemp[1]
+
+oList = IIF( lInclude, this.Parent.o_ExcludeList, this.Parent.o_IncludeList )
+nCnt = 0
+DIMENSION aTemp[oList.ListCount]
+FOR a = 1 TO oList.ListCount
+	IF !lOnlySelected OR oList.Selected[a]
+		nCnt = nCnt + 1
+		aTemp[nCnt] = oList.IndexToItemID[a]
+	ENDIF
+ENDFOR
+IF nCnt > 0
+	DIMENSION aTemp[nCnt]
+	FOR a = 1 TO nCnt
+		oList.RemoveItem( oList.ItemIDToIndex( aTemp[a] ) )
+	ENDFOR
+	oList = IIF( lInclude, this.Parent.o_IncludeList, this.Parent.o_ExcludeList )
+	FOR a = 1 TO nCnt
+		b = aTemp[a]
+		IF this.Parent.UseItemCollection OR this.Parent.UseItemObjects
+			this.Parent.Items[b].Selected = lInclude
+			sText = this.Parent.Items[b].Text
+			nItemID = this.Parent.Items[b].ItemID
+		ELSE
+			this.Parent.Items[b,3] = lInclude
+			sText = this.Parent.Items[b,2]
+			nItemID = this.Parent.Items[b,4]
+		ENDIF
+		oList.AddListItem( sText, nItemID )
+		IF PEMSTATUS( oList, "MoveItem", 5 )
+			oList.MoveItem( oList.NewIndex, this.Parent.CalcItemListIndex( nItemID ) - oList.NewIndex )
+		ENDIF
+	ENDFOR
+	IF !EMPTY( this.Parent.s_StandardPicture )
+		oList.Picture = this.Parent.s_StandardPicture
+	ENDIF
+ENDIF
+this.Parent.b_IncAll.Enabled = (this.Parent.o_ExcludeList.ListCount > 0)
+this.Parent.b_ExcAll.Enabled = (this.Parent.o_IncludeList.ListCount > 0)
+this.Parent.o_ExcludeList.When()
+this.Parent.o_IncludeList.When()
+IF nCnt > 0
+	this.Parent.InteractiveChange()
+ENDIF
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0Z20MUMPR
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] b_ExcSelected
+[PARENT] linklisteditor
+[START PROPERTIES]
+Caption = ""
+Height = 27
+Left = 118
+Name = "b_ExcSelected"
+Picture = images\left1.bmp
+TabIndex = 5
+Top = 97
+Width = 27
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+this.Parent.b_ExcAll.Click( .T. )
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0Z10Q4F55
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] b_IncAll
+[PARENT] linklisteditor
+[START PROPERTIES]
+Caption = ""
+Height = 27
+Left = 118
+Name = "b_IncAll"
+Picture = images\right2.bmp
+TabIndex = 3
+Top = 58
+Width = 27
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+LPARAMETERS lOnlySelected
+
+this.Parent.b_ExcAll.Click( lOnlySelected, .T. )
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0Z10Q94JO
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] b_IncSelected
+[PARENT] linklisteditor
+[START PROPERTIES]
+Caption = ""
+Height = 27
+Left = 118
+Name = "b_IncSelected"
+Picture = images\right1.bmp
+TabIndex = 2
+Top = 29
+Width = 27
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+this.Parent.b_IncAll.Click( .T. )
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0Z10Q94JO
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] o_ExcludeCaption
+[PARENT] linklisteditor
+[START PROPERTIES]
+AutoSize = .T.
+BackStyle = 0
+Caption = "Excluded"
+FontName = "Tahoma"
+FontSize = 8
+Height = 15
+Left = 1
+Name = "o_ExcludeCaption"
+TabIndex = 7
+Top = 2
+Width = 45
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0Z20QBMFD
+[CLASS] listbox
+[BASECLASS] listbox
+[OBJNAME] o_ExcludeList
+[PARENT] linklisteditor
+[START PROPERTIES]
+ColumnCount = 1
+FontName = "Tahoma"
+FontSize = 8
+Height = 154
+Left = 0
+MultiSelect = .T.
+Name = "o_ExcludeList"
+TabIndex = 1
+Top = 15
+Width = 110
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE DblClick
+this.Parent.b_IncSelected.Click()
+ENDPROC
+PROCEDURE When
+LOCAL a,b,c, lAnySel
+
+lAnySel = .F.
+FOR a = 1 TO this.ListCount
+	IF this.Selected[a]
+		lAnySel = .T.
+		EXIT
+	ENDIF
+ENDFOR
+this.Parent.b_IncSelected.Enabled = lAnySel
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0Z20MYPHM
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] o_IncludeCaption
+[PARENT] linklisteditor
+[START PROPERTIES]
+AutoSize = .T.
+BackStyle = 0
+Caption = "Included"
+FontName = "Tahoma"
+FontSize = 8
+Height = 15
+Left = 154
+Name = "o_IncludeCaption"
+TabIndex = 8
+Top = 2
+Width = 43
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _0Z20MUMPT
+[CLASS] listbox
+[BASECLASS] listbox
+[OBJNAME] o_IncludeList
+[PARENT] linklisteditor
+[START PROPERTIES]
+ColumnCount = 1
+FontName = "Tahoma"
+FontSize = 8
+Height = 154
+Left = 153
+MultiSelect = .T.
+Name = "o_IncludeList"
+TabIndex = 4
+Top = 15
+Width = 110
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE DblClick
+this.Parent.b_ExcSelected.Click()
+ENDPROC
+PROCEDURE MouseUp
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+LOCAL i, nFromIndex, nShift, nVector, nItemCnt, nToIndex
+
+IF !PEMSTATUS( this.Parent, "o_MoveItemInfo", 5 ) OR ISNULL( this.Parent.o_MoveItemInfo )
+	RETURN
+ENDIF
+nFromIndex = this.Parent.o_MoveItemInfo.Index
+nShift = this.Parent.o_MoveItemInfo.Shift
+this.Parent.o_MoveItemInfo = NULL
+IF nShift == 0
+	RETURN
+ENDIF
+nVector = IIF( nShift > 0, 1, -1 )
+nShift = ABS( nShift )
+nItemCnt = IIF( this.Parent.UseItemCollection, this.Parent.Items.Count, ALEN( this.Parent.Items, 1 ) )
+i = nFromIndex
+nToIndex = i
+DO WHILE nShift > 0
+	*-- find the "next" included item above/below
+	nShift = nShift - 1
+	DO WHILE .T.
+		i = i + nVector
+		IF !BETWEEN( i, 1, nItemCnt )
+			RETURN && Problem!!!
+		ENDIF
+		bInc = IIF( this.Parent.UseItemCollection OR this.Parent.UseItemObjects, ;
+					this.Parent.Items[i].Selected, this.Parent.Items[i,3] )
+		IF bInc
+			EXIT
+		ENDIF
+	ENDDO
+	nToIndex = i
+ENDDO
+*-- move the item
+DO CASE
+CASE this.Parent.UseItemCollection
+	LOCAL o
+	o = this.Parent.Items[nFromIndex]
+	this.Parent.Items.Remove( nFromIndex )
+	IF nToIndex >= this.Parent.Items.Count
+		this.Parent.Items.Add( o, o.Key )
+	ELSE
+		this.Parent.Items.Add( o, o.Key, nToIndex )
+	ENDIF
+CASE this.Parent.UseItemObjects
+	LOCAL oHold
+	oHold = this.Parent.Items[nFromIndex]
+	IF nFromIndex < nItemCnt
+		ADEL( this.Parent.Items, nFromIndex )
+	ENDIF
+	IF nToIndex < nItemCnt
+		AINS( this.Parent.Items, nToIndex )
+	ENDIF
+	this.Parent.Items[nToIndex] = oHold
+OTHERWISE
+	LOCAL aHold[4]
+	ACOPY( this.Parent.Items, aHold, AELEMENT( this.Parent.Items, nFromIndex, 1 ), ;
+		   ALEN( this.Parent.Items, 2 ), 1 )
+	ACOPY( this.Parent.Items, this.Parent.Items, AELEMENT( this.Parent.Items, i, 1 ), ;
+		   ALEN( this.Parent.Items, 2 ), AELEMENT( this.Parent.Items, nFromIndex, 1 ) )
+	ACOPY( aHold, this.Parent.Items, 1, ALEN( this.Parent.Items, 2 ), ;
+		   AELEMENT( this.Parent.Items, i, 1 ) )
+ENDCASE
+this.Parent.ReloadListboxes()
+this.Parent.InteractiveChange()
+
+ENDPROC
+PROCEDURE OnMoveItem
+LPARAMETERS nSource, nShift, nCurrentIndex, nMoveBy
+
+IF nMoveBy != 0 AND nSource != 8 && Programmatically triggered by the MoveItem method
+	IF !PEMSTATUS( this.Parent, "o_MoveItemInfo", 5 )
+		this.Parent.AddProperty( "o_MoveItemInfo", NULL )
+	ENDIF
+	IF ISNULL( this.Parent.o_MoveItemInfo )
+		o = CREATEOBJECT( "empty" )
+		ADDPROPERTY( o, "Index", this.IndexToItemId( nCurrentIndex ) )
+		ADDPROPERTY( o, "Shift", nMoveBy )
+		this.Parent.o_MoveItemInfo = o
+	ELSE
+		this.Parent.o_MoveItemInfo.Shift = this.Parent.o_MoveItemInfo.Shift + nMoveBy
+	ENDIF
+	IF nSource == 0 && via keyboard
+		this.MouseUp()
+	ENDIF
+ENDIF
+
+ENDPROC
+PROCEDURE When
+LOCAL a,b,c, lAnySel
+
+lAnySel = .F.
+FOR a = 1 TO this.ListCount
+	IF this.Selected[a]
+		lAnySel = .T.
+		EXIT
+	ENDIF
+ENDFOR
+this.Parent.b_ExcSelected.Enabled = lAnySel
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] linklisteditor
+[START PROPERTIES]
+Arial, 0, 9, 5, 15, 12, 32, 3, 0
+Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+[END PROPERTIES]
+[EOF]
