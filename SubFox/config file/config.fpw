@@ -1,0 +1,10 @@
+* Resources need to be off to avoid converting foxuser.subfox back to foxuser.dbf
+RESOURCE=OFF
+SCREEN=OFF
+TALK=OFF
+ECHO=OFF
+DELETE=ON
+EXCLUSIVE=OFF
+EXACT=OFF
+ALLOWEXTERNAL=OFF
+STARTUP=
