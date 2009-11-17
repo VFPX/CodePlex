@@ -1,0 +1,267 @@
+SCCTEXT Version 4.0.0.2
+PLATFORM C(8,0),UNIQUEID C(10,0),TIMESTAMP N(10,0),CLASS M(4,0),CLASSLOC M(4,0),BASECLASS M(4,0),OBJNAME M(4,0),PARENT M(4,0),PROPERTIES M(4,0),PROTECTED M(4,0),METHODS M(4,0),OBJCODE M(4,0),OLE M(4,0),OLE2 M(4,0),RESERVED1 M(4,0),RESERVED2 M(4,0),RESERVED3 M(4,0),RESERVED4 M(4,0),RESERVED5 M(4,0),RESERVED6 M(4,0),RESERVED7 M(4,0),RESERVED8 M(4,0),USER M(4,0)
+1252
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] Screen    
+[START RESERVED1]
+VERSION =   3.00[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2KC0O2LQN
+[CLASS] dataenvironment
+[BASECLASS] dataenvironment
+[OBJNAME] Dataenvironment
+[START PROPERTIES]
+DataSource = .NULL.
+Height = 0
+Left = 0
+Name = "Dataenvironment"
+Top = 0
+Width = 0
+[END PROPERTIES]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED4]
+1[END RESERVED4]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2KC0O2LQO
+[CLASS] form
+[BASECLASS] form
+[OBJNAME] ErrorForm
+[START PROPERTIES]
+AllowOutput = .F.
+AlwaysOnTop = .T.
+AutoCenter = .T.
+Caption = "Translation Errors - SubFox"
+DoCreate = .T.
+Height = 480
+Icon = subfox.ico
+MaxButton = .F.
+MinButton = .F.
+Name = "ErrorForm"
+ShowWindow = 2
+Width = 640
+WindowType = 1
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+this.MinWidth = this.Width
+this.MinHeight = this.Height
+
+This.lst_Files.RowSource = "Errors.File"
+this.lst_Files.ColumnCount = 1
+This.Lst_Files.RowSourceType = 6
+Goto top in Errors
+
+This.lst_Files.Requery()
+This.lst_Files.InteractiveChange()
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2KC0Q1U1Z
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] cmdExport
+[PARENT] ErrorForm
+[START PROPERTIES]
+Anchor = 12
+Caption = "Export"
+Height = 27
+Left = 552
+Name = "cmdExport"
+Top = 437
+Width = 72
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+Local cExport
+cExport = GetFile("dbf", "Export To", "Export", 0, "Error Export")
+If !Empty(cExport)
+	Select Errors
+	Copy To (cExport)
+	MessageBox("Export Complete")
+EndIf
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2KC0O2LQN
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label2
+[PARENT] ErrorForm
+[START PROPERTIES]
+Alignment = 1
+Anchor = 6
+Caption = "Error #"
+Height = 17
+Left = 12
+Name = "Label2"
+Top = 420
+Width = 48
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2KC0OYEKJ
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label3
+[PARENT] ErrorForm
+[START PROPERTIES]
+Alignment = 1
+Anchor = 6
+Caption = "Message : "
+Height = 17
+Left = 120
+Name = "Label3"
+Top = 420
+Width = 60
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2KC0OYEKK
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label4
+[PARENT] ErrorForm
+[START PROPERTIES]
+Alignment = 1
+Anchor = 6
+Caption = "Code : "
+Height = 17
+Left = 120
+Name = "Label4"
+Top = 444
+Width = 60
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2KC0O2LQN
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label5
+[PARENT] ErrorForm
+[START PROPERTIES]
+Alignment = 1
+Anchor = 6
+Caption = "Line #"
+Height = 17
+Left = 12
+Name = "Label5"
+Top = 444
+Width = 48
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2KC0OYEKM
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] lblCode
+[PARENT] ErrorForm
+[START PROPERTIES]
+Anchor = 14
+Caption = ""
+Height = 17
+Left = 192
+Name = "lblCode"
+Top = 444
+Width = 360
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2KC0O2LQO
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] lblError
+[PARENT] ErrorForm
+[START PROPERTIES]
+Anchor = 6
+Caption = ""
+Height = 17
+Left = 72
+Name = "lblError"
+Top = 420
+Width = 36
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2KC0P4KO1
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] lblLine
+[PARENT] ErrorForm
+[START PROPERTIES]
+Anchor = 6
+Caption = ""
+Height = 17
+Left = 72
+Name = "lblLine"
+Top = 444
+Width = 36
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2KC0OYEKL
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] lblMessage
+[PARENT] ErrorForm
+[START PROPERTIES]
+Anchor = 14
+Caption = ""
+Height = 17
+Left = 192
+Name = "lblMessage"
+Top = 420
+Width = 360
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2KC0OBJQ2
+[CLASS] listbox
+[BASECLASS] listbox
+[OBJNAME] lst_Files
+[PARENT] ErrorForm
+[START PROPERTIES]
+Anchor = 15
+ControlSource = "Errors"
+DisplayValue = 
+Height = 396
+Left = 12
+Name = "lst_Files"
+Top = 12
+Width = 612
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE InteractiveChange
+Thisform.lblError.Caption = Transform(Errors.Error)
+Thisform.lblcode.Caption = Alltrim(Errors.Message1)
+Thisform.lblmessage.Caption = Alltrim(errors.Message)
+Thisform.lblLine.Caption = Transform(errors.LineNo)
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[START PROPERTIES]
+Arial, 0, 9, 5, 15, 12, 32, 3, 0
+[END PROPERTIES]
+[EOF]
