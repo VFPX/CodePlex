@@ -1,0 +1,33 @@
+Version=  1.20
+Author=David Holden
+Company=Holden Data Systems
+Address=11421 Marion
+City=Redford
+State=MI
+Zip=48239
+Country=USA
+SaveCode=.T.
+Debug=.T.
+Encrypt=.F.
+NoLogo=.F.
+CommentStyle=1
+Comments=
+CompanyName=VFP-X
+FileDescription=Subversion client for Visual FoxPro
+LegalCopyright=copyright
+LegalTrademarks=trademark
+ProductName=SubFox
+Major=1
+Minor=2
+Revision=101
+AutoIncrement=.F.
+[OLEServers]
+C:\Projects\SubFox\SubFox.exe,subfox,subfox,subfox Type Library,0,{A07513AA-FD64-46E8-B514-7D093751C039}
+PushOkSvn_SVNClient_Events,c:\projects\subfox\export experiment.prg,subfox.PushOkSvn_SVNClient_Events,0,subfox.PushOkSvn_SVNClient_Events,HelpFile,0,{00AE932F-6590-46C5-99EE-07EE3944BB96},{A97C8A0D-0677-4B62-B70C-566C2511CB54}
+PushOkSvn_SVNClient_Events,c:\projects\subfox\svn event listener.prg,subfox.PushOkSvn_SVNClient_Events,0,subfox.PushOkSvn_SVNClient_Events,HelpFile,0,{00AE932F-6590-46C5-99EE-07EE3944BB96},{A97C8A0D-0677-4B62-B70C-566C2511CB54}
+SubFoxProject,c:\projects\subfox\subfox project class.prg,subfox.SubFoxProject,0,subfox.SubFoxProject,HelpFile,1,{B8BB42E5-4899-46AB-8792-97660B1CD8FF},{257A0B50-1134-45D9-9F77-48FC5581B56E}
+SubFoxTranslator,c:\projects\subfox\subfox translation classes.prg,subfox.SubFoxTranslator,0,subfox.SubFoxTranslator,HelpFile,1,{F04E7825-65F3-4EED-AD5A-C54892EFBDA5},{B31C31D9-8274-455F-818A-AAE2C029034D}
+SubFox_Application,c:\projects\subfox\subfox application class.prg,subfox.SubFox_Application,0,subfox.SubFox_Application,,1,{E66078FB-345F-47F7-BBF4-196377B8D01D},{D3ED3440-DD2B-4733-A477-A31B83B906ED}
+[OLEServersEnd]
+[ProjectFiles]
+[EOF]
