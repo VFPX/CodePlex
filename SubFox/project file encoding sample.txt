@@ -1,0 +1,33 @@
+SubFox Project (vsn 1)
+	Main = filename.prg
+	Icon = filename.ico
+	Version = 
+	Comments = 
+	Company = 
+	Copyright = 
+	Desc = 
+	Lang = 
+	Product = 
+	Tradmarks = 
+
+Databases
+	(exclude) FileName.dbc
+		StaticTables = (exclude) Table1, (exclude) Table2, (exclude) Table3
+		Comments = aaa...zzz
+
+FreeTables
+
+Programs
+
+Forms
+	(exclude) FileName.scx
+		Comments = text\ntext.
+
+Classlibs
+
+Menus
+
+Queries
+
+Reports
+
