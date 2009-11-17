@@ -1,0 +1,1219 @@
+SCCTEXT Version 4.0.0.2
+PLATFORM C(8,0),UNIQUEID C(10,0),TIMESTAMP N(10,0),CLASS M(4,0),CLASSLOC M(4,0),BASECLASS M(4,0),OBJNAME M(4,0),PARENT M(4,0),PROPERTIES M(4,0),PROTECTED M(4,0),METHODS M(4,0),OBJCODE M(4,0),OLE M(4,0),OLE2 M(4,0),RESERVED1 M(4,0),RESERVED2 M(4,0),RESERVED3 M(4,0),RESERVED4 M(4,0),RESERVED5 M(4,0),RESERVED6 M(4,0),RESERVED7 M(4,0),RESERVED8 M(4,0),USER M(4,0)
+1252
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] Screen    
+[START RESERVED1]
+VERSION =   3.00[END RESERVED1]
+[START RESERVED8]
+subfox.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2JN16H9BU
+[CLASS] dataenvironment
+[BASECLASS] dataenvironment
+[OBJNAME] Dataenvironment
+[START PROPERTIES]
+DataSource = .NULL.
+Height = 200
+Left = 1
+Name = "Dataenvironment"
+Top = 220
+Width = 520
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE BeforeOpenTables
+CREATE CURSOR cVersion ( ;
+		n_RevNo I, s_Author C(40), n_FileCnt I, l_Flagged L DEFAULT .T., ;
+		m_Comment M, s_Comment C(MAX_VFP_FLD_LEN), m_FileList M)
+	INDEX ON n_RevNo TAG n_RevNo
+	USE (DBF()) AGAIN IN 0 ALIAS cGridVersion
+	SET ORDER TO n_RevNo IN cGridVersion DESCENDING
+
+CREATE CURSOR cFileInVersion (n_RevNo I, k_CFile C(10))
+	INDEX ON n_RevNo TAG n_RevNo
+*	INDEX ON PADR( BINTOC( n_RevNo ) + LOWER( s_FName ), MAX_VFP_IDX_LEN ) TAG v_FName
+
+ENDPROC
+[END METHODS]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED4]
+2[END RESERVED4]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2JN16H9BV
+[CLASS] form
+[BASECLASS] form
+[OBJNAME] SUBFOX_DOWNLOAD
+[START PROPERTIES]
+AutoCenter = .T.
+Caption = "Download - SubFox"
+DataSession = 2
+DoCreate = .T.
+Height = 357
+Icon = subfox.ico
+MaxButton = .F.
+MinButton = .F.
+Name = "SUBFOX_DOWNLOAD"
+ShowTips = .T.
+Width = 410
+WindowType = 1
+l_firstactivate = .F.
+o_util = .NULL.
+s_pjxname = 
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Activate
+ON KEY LABEL F1 _SCREEN.ActiveForm.ShowHelp()
+*--	IF !this.l_FirstActivate
+*--		this.l_FirstActivate = .T.
+*--		IF this.o_PF.Page1.o_Picker.o_IncludeList.ListCount == 0
+*--			MESSAGEBOX( "There are no updates ready for download.", 64, "No Updates" )
+*--			this.Release()
+*--		ENDIF
+*--	ENDIF
+
+ENDPROC
+PROCEDURE Deactivate
+ON KEY LABEL F1 && nothing
+
+ENDPROC
+PROCEDURE Destroy
+ON KEY LABEL F1 && nothing
+ENDPROC
+PROCEDURE Init
+*-- (c) Copyright 2009 Holden Data Systems
+*-- All rights reserverd.
+
+LOCAL o
+
+this.MinWidth = this.Width
+this.MinHeight = this.Height
+
+IF .F. && prototype data
+	INSERT INTO cVersion (n_RevNo, s_Author, n_FileCnt, s_Comment) ;
+				VALUES   (123, "dholden", 3121, "These are my comments")
+	INSERT INTO cVersion (n_RevNo, s_Author, n_FileCnt) ;
+				VALUES   (122, "dholden", 18)
+	INSERT INTO cVersion (n_RevNo, s_Author, n_FileCnt, s_Comment) ;
+				VALUES   (124, "paul", 2, "no comments")
+*	INSERT INTO cFileInVersion (n_RevNo, s_FName, s_Path, e_Type, l_Encoded)
+
+	this.o_PF.Page1.o_Grid.Refresh()
+ENDIF
+
+
+* RETURN
+
+this.o_Util = NEWOBJECT( "SubFoxUtilities", "SubFox Utility Class.prg" )
+o = NEWOBJECT( "SubFoxProject", "SubFox Project Class.prg" )
+o.s_ExtraCursorFields = "n_RevNo I, l_HasUpdates L, l_NewFile L, l_Conflicted L, k_VCX C(10), k_SDT C(10)"
+IF !o.Open()
+	RETURN .F.
+ENDIF
+this.s_PjxName = o.s_PjxName
+CREATE CURSOR cSDT (k_RecKey C(10) DEFAULT SYS(2015), s_Path C(MAX_VFP_FLD_LEN), l_Conflicted L)
+	INDEX ON k_RecKey TAG k_RecKey
+	SET ORDER TO k_RecKey
+CREATE CURSOR cVCX (k_RecKey C(10) DEFAULT SYS(2015), s_FName C(128), s_Path C(MAX_VFP_FLD_LEN), ;
+					l_Conflicted L)
+	INDEX ON k_RecKey TAG k_RecKey
+	SET ORDER TO k_RecKey
+
+SELECT cFile
+DELETE FOR !l_Versioned
+this.ForceFilesToLowerCase()
+IF !this.VerifyNoConflicts()
+	RETURN .F.
+ENDIF
+this.EncodeUpdatedFiles()
+IF !this.QueryServerLog()
+	RETURN .F.
+ENDIF
+GO TOP IN cGridVersion
+WITH this.o_PF.Page1
+	.o_Grid.Refresh()
+	.o_Comment.Refresh()
+	.o_FileList.Refresh()
+ENDWITH
+*--	SELECT cFile
+*--	REPLACE l_Flagged WITH (l_HasUpdates OR l_NewFile) ALL
+* this.LoadPickList()
+
+ENDPROC
+PROCEDURE Load
+SET EXCLUSIVE OFF
+SET DELETED ON
+SET TALK OFF
+SET CENTURY ON
+SET EXACT OFF
+
+ENDPROC
+PROCEDURE QueryUnload
+NODEFAULT
+this.b_Cancel.Click()
+
+ENDPROC
+PROCEDURE applysdtupdates
+LPARAMETERS sPath
+LOCAL i,s, oDBCX, oSDT, oErr, bResult, sCWD
+
+*--	sCWD = CURDIR()
+*--	CHDIR (sPath)
+TRY
+	oDBCX = NEWOBJECT( "DBCXMgr", "DBCXMgr.vcx", "", .F., sPath )
+	IF oDBCX.oSDTMgr.NeedUpdate()
+		oDBCX.oSDTMgr.Update()
+	ENDIF
+	bResult = .T.
+CATCH TO oErr
+	bResult = .F.
+	MESSAGEBOX( "Error occured within Stonefield Database Toolkit UPDATE function:" + CR ;
+			  + TRANSFORM( oErr.ErrorNo ) + ": " + oErr.Message, 16, "Unexpected Error" )
+ENDTRY
+*--	CHDIR (sCWD)
+RETURN bResult
+
+ENDPROC
+PROCEDURE capturepicklist
+LOCAL i,s,o,k
+
+SELECT cFile
+REPLACE l_Flagged WITH .F. ALL
+SET ORDER TO k_RecKey
+o = this.o_PF.Page1.o_Picker.GetSelectedItems()
+FOR EACH k IN o
+	IF SEEK( k )
+		REPLACE l_Flagged WITH .T.
+	ENDIF
+ENDFOR
+
+ENDPROC
+PROCEDURE clearreadonlyflag
+LPARAMETERS sFName
+
+#define FILE_ATTRIBUTE_READONLY	1
+
+IF FILE( sFName )
+	DECLARE INTEGER GetFileAttributes IN WIN32API STRING sFName
+	DECLARE INTEGER SetFileAttributes IN WIN32API STRING sFName, INTEGER nAttribs
+	LOCAL i
+	i = GetFileAttributes( sFName )
+	IF BITAND( i, FILE_ATTRIBUTE_READONLY ) != 0
+		i = BITXOR( i, FILE_ATTRIBUTE_READONLY )
+		SetFileAttributes( sFName, i )
+	ENDIF
+ENDIF
+
+
+ENDPROC
+PROCEDURE decode
+LPARAMETERS sFName
+LOCAL oTranslator
+
+oTranslator = NEWOBJECT( "SubFoxTranslator", "SubFox Translation Classes.prg" )
+oTranslator.ConvertFile( sFName + "." + SUBFOX_PRIVATE_EXT, sFName )
+
+ENDPROC
+PROCEDURE dodownloads
+LOCAL i,s,ss,o, oErr, oFList, oEvents, aResult, nConflictCnt, aConflicts[1]
+LOCAL nRevNo, lEncoded, lConflicted
+LOCAL oClient AS PushOkSvn.SVNClient
+LOCAL oTranslator AS SubFoxTranslator OF "SubFox Translation Classes.prg"
+
+*-- pre-encode "local" versions to CAPTURE latest updates BEFORE DOWNLOAD
+*-- Subversion can only merge when both local and repo changes are present!
+SET TALK OFF
+SELECT cVersion
+CALCULATE MAX( n_RevNo ) TO nRevNo FOR l_Flagged
+
+oClient = CreateObject( "PushOkSvn.SVNClient" )
+oEvents = NEWOBJECT( "PushOkSvn_SVNClient_Events", "SVN Event Listener.prg" )
+EVENTHANDLER( oClient, oEvents )
+BINDEVENT( oEvents, "WcNotify", this, "onNotify" )
+oClient.InitClient()
+oFList = CreateObject("PushOkSvn.StringVector")
+oFList.Add( JUSTPATH( this.s_PjxName ) )
+
+*-- now we actually do the download
+TRY
+	aResult = oClient.GetFiles( oFList, TRANSFORM( nRevNo ) )
+	oErr = NULL
+CATCH TO oErr
+	LOCAL aErrInfo[1]
+	AERROR( aErrInfo )
+ENDTRY
+WAIT CLEAR
+UNBINDEVENTS( oEvents )
+IF !ISNULL( oErr )
+	MESSAGEBOX( "Error accessing Subversion Repository Server:" + CR ;
+			  + TRANSFORM( aErrInfo[7] ) + " - " + aErrInfo[3], 16, "Subversion Error" )
+	RETURN .F.
+ENDIF
+
+*-- examine results
+nConflictCnt = 0
+SET RELATION TO k_SDT INTO cSDT, ;
+				k_VCX INTO cVCX ;
+	IN cFile
+GO TOP IN cFile && install relation
+FOR EACH o IN aResult
+	s = LOWER( STRTRAN( o.Path, "/", "\" ) )
+	this.ClearReadOnlyFlag( s )
+	lConflicted = (o.ContState == SvnWcNotifyStateConflicted)
+	nConflictCnt = nConflictCnt + IIF( lConflicted, 1, 0 )
+	lEncoded = (JUSTEXT(s) == SUBFOX_PRIVATE_EXT)
+	IF lEncoded
+		s = LEFT( s, RAT( ".", s ) - 1 )
+	ENDIF
+	IF !this.SeekInCFile( s )
+		e = this.GetFileType( s )
+		INSERT INTO cFile  (s_FName, s_Path, e_Type, l_Encoded, l_Conflicted) ;
+					VALUES (JUSTFNAME(s), JUSTPATH(s), e, lEncoded, lConflicted)
+	ENDIF
+	IF INLIST( cFile.e_Type, FILETYPE_CLASSLIB, FILETYPE_ONECLASS )
+		s = PADR( FORCEEXT( RTRIM( cFile.s_FName ), "vcx" ), FSIZE( "s_FName", "cVCX" ) )
+		SELECT cVCX
+		LOCATE FOR s_FName == s AND s_Path == cFile.s_Path
+		IF !FOUND()
+			INSERT INTO cVCX (s_FName, s_Path) VALUES (s, cFile.s_Path)
+		ENDIF
+		IF lConflicted
+			REPLACE l_Conflicted WITH .T. IN cVCX
+		ENDIF
+		LOOP
+	ENDIF
+	IF JUSTEXT( s ) == "dbc" OR (JUSTEXT( s ) == "dbf" ;
+							AND ("," + JUSTSTEM(s) + ",") $ ("," + SDT_META_TABLES + ","))
+		SELECT cSDT
+		LOCATE FOR s_Path == cFile.s_Path
+		IF !FOUND()
+			INSERT INTO cSDT (s_Path) VALUES (cFile.s_Path)
+		ENDIF
+		IF lConflicted
+			REPLACE l_Conflicted WITH .T. IN cSDT
+		ENDIF
+		REPLACE k_SDT WITH cSDT.k_RecKey IN cFile
+		LOOP
+	ENDIF
+	IF cFile.l_Encoded AND !cFile.l_Conflicted
+		this.Decode( s )
+	ENDIF
+ENDFOR
+SELECT cFile
+SET RELATION TO && sever
+
+*-- VCX files might have multiple downloads that trigger a SINGLE decode
+SELECT cVCX
+SCAN FOR !cVCX.l_Conflicted
+	this.Decode( FORCEPATH( RTRIM( cVCX.s_FName ), RTRIM( cVCX.s_Path ) ) )
+ENDSCAN
+
+*-- SDT interface
+SELECT cSDT
+SCAN FOR !cSDT.l_Conflicted
+	SELECT cFile
+	SCAN FOR cFile.k_SDT == cSDT.k_RecKey
+		this.Decode( FORCEPATH( RTRIM( cVCX.s_FName ), RTRIM( cVCX.s_Path ) ) )
+	ENDSCAN
+	this.ApplySDTUpdates( RTRIM( cSDT.s_Path ) )
+ENDSCAN
+*-- we are done
+IF nConflictCnt > 0
+	s = IIF( nConflictCnt == 1, "There was 1 conflict", "There were " + TRANSFORM( nConflictCnt ) + " conflicts" ) ;
+	  + " generated by this download." + CR ;
+	  + "Would you like to resolve them now?"
+	i = MESSAGEBOX( s, 4 + 32, "Conflict Resolution Required" )
+	IF i == 6 && yes
+		DO FORM SubFox_ConflictEditor NOREAD
+	ENDIF
+ENDIF
+
+ENDPROC
+PROCEDURE encodeupdatedfiles
+LOCAL i,s,ss, a[1], sIn, sOut, oTrans, kParent
+
+oTrans = NEWOBJECT( "SubFoxTranslator", "SubFox Translation Classes.prg" )
+SELECT cFile
+SCAN FOR cFile.l_Encoded AND e_Type != FILETYPE_ONECLASS
+	sIn = FORCEPATH( RTRIM( s_FName ), RTRIM( s_Path ) )
+	sOut = sIn + "." + SUBFOX_PRIVATE_EXT
+	IF FILE( sIn ) AND (!FILE( sOut ) OR oTrans.FDateTime( sIn ) != oTrans.FDateTime( sOut ))
+		oTrans.ConvertToText( sIn, sOut )
+		SELECT cFile
+	ENDIF
+	IF LOWER( JUSTEXT( sIn ) ) == "vcx"
+		kParent = cFile.k_RecKey
+		s = LOWER( JUSTPATH( sIn ) )
+		FOR i = 1 TO ADIR( a, sIn + "-*." + SUBFOX_PRIVATE_EXT )
+			ss = LOWER( LEFT( a[i,1], RAT( ".", a[i,1] ) - 1 ) )
+			INSERT INTO cFile  (k_Parent, s_FName, s_Path, e_Type, l_Versioned, l_Encoded) ;
+						VALUES (kParent, ss, s, FILETYPE_ONECLASS, .T., .T.)
+		ENDFOR
+		SEEK kParent ORDER k_RecKey
+	ENDIF
+ENDSCAN
+
+ENDPROC
+PROCEDURE fdatetime
+LPARAMETERS sFName
+
+RETURN CTOT( IIF( !FILE( sFName ), "", DTOC( FDATE(sFName) ) + " " + FTIME(sFName) ) )
+ENDPROC
+PROCEDURE forcefilestolowercase
+LOCAL i,s,a[1], sPath
+
+SET ORDER TO s_FName IN cFile
+SELECT LOWER( s_Path ) AS s_Path FROM cFile GROUP BY 1 ORDER BY 1 INTO CURSOR cFolder
+SELECT cFolder
+SCAN
+	sPath = ADDBS( RTRIM( cFolder.s_Path ) )
+	SELECT cFile
+	FOR i = 1 TO ADIR( a, sPath + "*.*", "RHS", 1 )
+		IF a[i,1] != LOWER( a[i,1] ) AND SEEK( PADR( a[i,1], 120 ) )
+			LOCATE FOR ADDBS( LOWER( RTRIM( s_Path ) ) ) == sPath ;
+			  REST WHILE LOWER( RTRIM( s_FName ) ) == LOWER( a[i,1] )
+			IF FOUND()
+				this.RenameToLower( sPath + a[i,1] )
+			ENDIF
+		ENDIF
+	ENDFOR
+ENDSCAN
+USE IN cFolder
+
+ENDPROC
+PROCEDURE getfiletype
+LPARAMETERS sFName
+LOCAL sExt
+
+sExt = UPPER( JUSTEXT( sFName ) )
+IF sExt == UPPER( SUBFOX_PRIVATE_EXT )
+	sExt = UPPER( JUSTEXT( LEFT( sFName, RAT( ".", sFName ) - 1 ) ) )
+ENDIF
+DO CASE
+CASE INLIST( sExt, "PRG", "FXP" )
+	RETURN FILETYPE_PROGRAM
+CASE sExt == "SCX"
+	RETURN FILETYPE_FORM
+CASE sExt == "VCX"
+	RETURN FILETYPE_CLASSLIB
+CASE PADR( sExt, 4 ) == "VCX-"
+	RETURN FILETYPE_ONECLASS && ""
+CASE sExt == "DBC"
+	RETURN FILETYPE_DATABASE
+CASE sExt == "DBF"
+	RETURN FILETYPE_FREETABLE
+CASE sExt == "QPR"
+	RETURN FILETYPE_QUERY
+CASE sExt == "FRX"
+	RETURN FILETYPE_REPORT
+CASE sExt == "LBX"
+	RETURN FILETYPE_LABEL
+CASE sExt == "MNX"
+	RETURN FILETYPE_MENU
+CASE INLIST( sExt, "H", "TXT", "INI", "XML" )
+	RETURN FILETYPE_TEXT
+ENDCASE
+RETURN FILETYPE_OTHER
+
+ENDPROC
+PROCEDURE isdbfindbc
+LPARAMETERS sFName
+LOCAL i,s
+
+s = FILETOSTR( sFName )
+i = ATC( CRLF + "*rec*", s )
+s = IIF( i == 0, s, LEFT( s, i ) )
+i = ATC( CRLF + "Database: ", s )
+RETURN (i > 0)
+
+ENDPROC
+PROCEDURE loadpicklist
+LOCAL i, o
+
+o = this.o_PF.Page1.o_Picker
+o.Clear()
+SELECT cFile
+SET ORDER TO s_FName
+SCAN FOR l_Flagged OR this.o_ShowAllFiles.Value
+	o.Add( RTRIM( cFile.s_FName ), cFile.k_RecKey, cFile.l_Flagged )
+ENDSCAN
+
+ENDPROC
+PROCEDURE queryserverlog
+LOCAL i,s,ss,o, oErr, sPath, oEvents, oStatus, sFName, lEncoded, kParent, nMyRevNo
+LOCAL oClient AS PushOkSvn.SVNClient
+
+*--	CREATE CURSOR cFile ( ;
+*--		k_RecKey C(10) DEFAULT SYS(2015), s_FName C(128), ;
+*--		s_Path C(240), e_Type C(1), l_HasUpdates L, l_Flagged L)
+
+SET TALK OFF
+SELECT cFile
+CALCULATE MAX( n_RevNo ) TO nMyRevNo
+oClient = CreateObject("PushOkSvn.SVNClient" )
+oEvents = NEWOBJECT( "PushOkSvn_SVNClient_Events", "SVN Event Listener.prg" )
+EVENTHANDLER( oClient, oEvents )
+BINDEVENT( oEvents, "WcNotify", this, "onNotify" )
+oClient.InitClient()
+* sPath = "c:\projects\subfox\Test"
+sPath = JUSTPATH( this.s_PjxName )
+oStrParms = CreateObject("PushOkSvn.StringVector")
+oStrParms.Add( sPath )
+TRY
+	oLogRevs = oClient.Log( oStrParms, nMyRevNo, "HEAD", 0, .T. )
+	oErr = NULL
+CATCH TO oErr
+	LOCAL aErrInfo[1]
+	AERROR( aErrInfo )
+ENDTRY
+WAIT CLEAR
+UNBINDEVENTS( oEvents )
+IF !ISNULL( oErr )
+	MESSAGEBOX( "Error accessing Subversion Repository Server:" + CR ;
+			  + TRANSFORM( aErrInfo[7] ) + " - " + aErrInfo[3], 16, "Subversion Error" )
+	RETURN .F.
+ENDIF
+
+*-- process results --*
+LOCAL sFName, cAction, sCopyFrom, nCopyRev, mFileList
+	sFName = SPACE(256)
+	cAction = SPACE(256)
+	sCopyFrom = SPACE(256)
+	nCopyRev = INT(0)
+FOR EACH oRev IN oLogRevs
+	nCnt = oRev.CountChangedPaths
+	IF oRev.Revision <= nMyRevNo OR nCnt <= 0
+		LOOP
+	ENDIF
+	s = this.TrimMemo( oRev.Message )
+	INSERT INTO cVersion (n_RevNo, s_Author, s_Comment, m_Comment) ;
+				VALUES   (oRev.Revision, oRev.Author, s, oRev.Message)
+	mFileList = ""
+	FOR i = 1 TO nCnt
+		oRev.GetChangedPath( i, @sFName, @cAction, @sCopyFrom, @nCopyRev )
+		sFName = LOWER( STRTRAN( sFName, "/", "\" ) )
+		IF sFName = "\trunk"
+			sFName = STRTRAN( sFName, "\trunk", "" )
+		ELSE
+			IF sFName = "\branch"
+				sFName = STRTRAN( sFName, "\branch", "" )
+				sFName = SUBSTR( sFName, AT( "\", sFName, 2 ) )
+			ENDIF
+		ENDIF
+		IF sFName = "\"
+			sFName = SUBSTR( sFName, 2 )
+		ENDIF
+		IF !EMPTY( sFName )
+			mFileList = mFileList + sFName + CRLF
+		ENDIF
+		IF this.SeekInCFile( ADDBS( sPath ) + sFName )
+			INSERT INTO cFileInVersion (n_RevNo, k_CFile) VALUES (cVersion.n_RevNo, CFile.k_RecKey)
+		ENDIF
+	ENDFOR
+	IF !EMPTY( mFileList )
+		REPLACE n_FileCnt	WITH OCCURS( CRLF, mFileList ), ;
+				m_FileList	WITH mFileList ;
+			 IN cVersion
+	ENDIF
+ENDFOR
+
+ENDPROC
+PROCEDURE renametolower
+LPARAMETERS sFName
+
+* RENAME (sFName) TO (LOWER(sFName))
+DECLARE INTEGER MoveFile IN WIN32API STRING sOldFName, STRING sNewFName
+MoveFile( sFName, LOWER( sFName ) )
+
+ENDPROC
+PROCEDURE seekincfile
+LPARAMETERS sFName
+LOCAL i,b,s,ss
+
+s = LOWER( JUSTFNAME( sFName ) )
+IF JUSTEXT( s ) == SUBFOX_PRIVATE_EXT
+	s = LEFT( s, RAT( ".", s ) - 1 )
+ENDIF
+IF PADR( JUSTEXT( s ), 4 ) == "vcx-"
+	s = FORCEEXT( s, "vcx" )
+ENDIF
+b = SEEK( PADR(s,120), 'cFile', 's_FName' )
+IF b
+	i = SELECT(0)
+	SELECT cFile
+	LOCATE FOR RTRIM( s_Path ) == LOWER( JUSTPATH( sFName ) ) REST WHILE RTRIM( s_FName ) == s
+	b = FOUND()
+	IF !b AND !EOF()
+		GO BOTTOM
+		IF !EOF()
+			SKIP
+		ENDIF
+	ENDIF
+	SELECT (i)
+ENDIF
+RETURN b
+
+ENDPROC
+PROCEDURE showhelp
+LOCAL s, oPopup
+
+TEXT TO s NOSHOW PRETEXT 2
+	Subversion tracks updates for all <i>versioned</i> files as they come in from all developers.
+	If any updates have arrived since your last download, Subversion will identify those files
+	to SubFox, which in turn you may choose to take or leave at this time.
+
+	It is <i>highly recommended</i> that you always take <i>all available updates</i> at once.  It can be
+	dangerous and cause bugs if you download some but not all updates.
+
+	It is common to have updates for files that you are actively working on.  When installing
+	these updates, occasionally Subversion will not be able to automatically determine how the
+	incoming updates should be merged with your local edits already in place.  This is called a <i>conflict</i>.
+
+	When a conflict occurs, it is <i>always</i> on the download, never on the upload.  This is because
+	Subversion will not permit you to send any updates unless you have already downloaded and
+	installed all pending updates, and any conflicts that may have occurred must be resolved
+	before attempting to upload your changes.
+
+	Resolving conflicts is usually fairly simple and straightforward.  Details of the techniques
+	involved are included in the SubFox Conflict Editor.
+ENDTEXT
+DO FORM SubFox_Help WITH s NAME oPopup
+
+ENDPROC
+PROCEDURE trimmemo
+LPARAMETERS sText
+LOCAL i
+
+sText = STRTRAN( sText, CRLF, CR )
+sText = STRTRAN( sText, LF, CR )
+sText = STRTRAN( sText, CR, "  " )
+sText = ALLTRIM( sText )
+IF LEN( sText ) > FSIZE( "s_Comment", "cVersion" )
+	i = RAT( " ", LEFT( sText, FSIZE( "s_Comment", "cVersion" ) - 2 ) )
+	sText = LEFT( sText, IIF( i > 0, i, FSIZE( "s_Comment", "cVersion" ) - 3 ) )
+	sText = ALLTRIM( sText ) + "..."
+ENDIF
+RETURN sText
+
+ENDPROC
+PROCEDURE verifynoconflicts
+LOCAL i,s,o, oErr, sPath, oEvents, oStatus, oClient AS PushOkSvn.SVNClient
+LOCAL sRepoFName
+
+oClient = CreateObject("PushOkSvn.SVNClient" )
+oEvents = NEWOBJECT( "PushOkSvn_SVNClient_Events", "SVN Event Listener.prg" )
+EVENTHANDLER( oClient, oEvents )
+BINDEVENT( oEvents, "WcNotify", this, "onNotify" )
+oClient.InitClient()
+sPath = JUSTPATH( this.s_PjxName )
+TRY
+	oStatus = oClient.GetStatus( sPath, .T., "HEAD", .T. )
+	oErr = NULL
+CATCH TO oErr
+	LOCAL aErrInfo[1]
+	AERROR( aErrInfo )
+ENDTRY
+WAIT CLEAR
+UNBINDEVENTS( oEvents )
+IF !ISNULL( oErr )
+	MESSAGEBOX( "Error accessing local Subversion tracking data:" + CR ;
+			  + TRANSFORM( aErrInfo[7] ) + " - " + aErrInfo[3], 16, "Subversion Error" )
+	RETURN .F.
+ENDIF
+
+*-- process results --*
+SELECT cFile
+SET ORDER TO s_FName
+FOR EACH sRepoFName IN oStatus.Files
+	o = oStatus.Binary.Item(sRepoFName)
+	IF o.TextStatus == SvnWcStatusKindConflicted
+		i = MESSAGEBOX( "There are outstanding CONFLICTS yet to be resolved." + CR ;
+					  + "Would you like to fix it/them now?", 4 + 32, "Conflicts Detected" )
+		IF i == 6 && yes
+			DO FORM SubFox_ConflictEditor
+		ENDIF
+		RETURN .F.
+	ENDIF
+	IF !ISNULL( o.Entry ) AND this.SeekInCFile( STRTRAN( sRepoFName, "/", "\" ) )
+		REPLACE n_RevNo WITH o.Entry.Revision IN cFile
+	ENDIF
+ENDFOR
+
+ENDPROC
+[END METHODS]
+[START RESERVED3]
+*applysdtupdates 
+*capturepicklist 
+*clearreadonlyflag 
+*decode 
+*dodownloads 
+*encodeupdatedfiles 
+*fdatetime 
+*forcefilestolowercase 
+*getfiletype 
+*isdbfindbc 
+*loadpicklist 
+*onnotify 
+*queryserverlog 
+*renametolower 
+*seekincfile 
+*showhelp 
+*trimmemo 
+*verifynoconflicts 
+l_firstactivate
+o_util
+s_pjxname
+[END RESERVED3]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2JN16TWAK
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] b_Cancel
+[PARENT] SUBFOX_DOWNLOAD
+[START PROPERTIES]
+Anchor = 12
+Cancel = .T.
+Caption = "Cancel"
+FontName = "Tahoma"
+FontSize = 8
+Height = 27
+Left = 313
+Name = "b_Cancel"
+Top = 318
+Width = 84
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+thisform.Release()
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2JN16TWAJ
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] b_Ok
+[PARENT] SUBFOX_DOWNLOAD
+[START PROPERTIES]
+Anchor = 12
+Caption = "Ok"
+Default = .T.
+FontName = "Tahoma"
+FontSize = 8
+Height = 27
+Left = 225
+Name = "b_Ok"
+Top = 318
+Width = 84
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+* thisform.CapturePickList()
+SELECT cVersion
+LOCATE FOR l_Flagged
+IF !FOUND()
+	MESSAGEBOX( "Please select the revision(s) for wish to download.", ;
+				64, "Selection Required" )
+	RETURN
+ENDIF
+IF thisform.DoDownloads()
+	thisform.Release()
+ENDIF
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SJ02I2QJ
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label2
+[PARENT] SUBFOX_DOWNLOAD
+[START PROPERTIES]
+Anchor = 4
+AutoSize = .T.
+BackStyle = 0
+Caption = "Press F1 for Help"
+FontName = "Tahoma"
+FontSize = 8
+ForeColor = 0,0,255
+Height = 15
+Left = 10
+MousePointer = 15
+Name = "Label2"
+Top = 336
+Width = 84
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+thisform.ShowHelp()
+
+ENDPROC
+PROCEDURE MouseEnter
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+
+this.ForeColor = 0xFF00FF
+this.FontUnderline = .T.
+
+ENDPROC
+PROCEDURE MouseLeave
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+
+this.ForeColor = 0xFF0000
+this.FontUnderline = .T.
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2JN16TWAG
+[CLASS] pageframe
+[BASECLASS] pageframe
+[OBJNAME] o_PF
+[PARENT] SUBFOX_DOWNLOAD
+[START PROPERTIES]
+ActivePage = 1
+Anchor = 15
+ErasePage = .T.
+Height = 301
+Left = 6
+Name = "o_PF"
+Page1.Caption = "Download"
+Page1.FontName = "Tahoma"
+Page1.FontSize = 8
+Page1.Name = "Page1"
+PageCount = 1
+TabStop = .F.
+TabStyle = 1
+Top = 10
+Width = 390
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SJ02JJL6
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label1
+[PARENT] SUBFOX_DOWNLOAD.o_PF.Page1
+[START PROPERTIES]
+Anchor = 48
+AutoSize = .T.
+BackStyle = 0
+Caption = "Files changed in this version"
+FontName = "Tahoma"
+FontSize = 8
+Height = 15
+Left = 196
+Name = "Label1"
+Top = 156
+Width = 136
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SJ02JJL8
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label2
+[PARENT] SUBFOX_DOWNLOAD.o_PF.Page1
+[START PROPERTIES]
+Anchor = 18
+AutoSize = .T.
+BackStyle = 0
+Caption = "Comments"
+FontName = "Tahoma"
+FontSize = 8
+Height = 15
+Left = 9
+Name = "Label2"
+Top = 156
+Width = 52
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SJ02JJL7
+[CLASS] editbox
+[BASECLASS] editbox
+[OBJNAME] o_Comment
+[PARENT] SUBFOX_DOWNLOAD.o_PF.Page1
+[START PROPERTIES]
+Anchor = 150
+ControlSource = "cGridVersion.m_Comment"
+DisabledBackColor = 255,255,255
+DisabledForeColor = 0,0,0
+FontName = "Tahoma"
+FontSize = 8
+Height = 95
+Left = 9
+Name = "o_Comment"
+ReadOnly = .T.
+Top = 170
+Width = 180
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SJ02JJLD
+[CLASS] editbox
+[BASECLASS] editbox
+[OBJNAME] o_FileList
+[PARENT] SUBFOX_DOWNLOAD.o_PF.Page1
+[START PROPERTIES]
+Anchor = 60
+ControlSource = "cGridVersion.m_FileList"
+DisabledBackColor = 255,255,255
+DisabledForeColor = 0,0,0
+FontName = "Tahoma"
+FontSize = 8
+Height = 95
+Left = 196
+Name = "o_FileList"
+ReadOnly = .T.
+Top = 170
+Width = 181
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SJ02JJKV
+[CLASS] grid
+[BASECLASS] grid
+[OBJNAME] o_Grid
+[PARENT] SUBFOX_DOWNLOAD.o_PF.Page1
+[START PROPERTIES]
+AllowRowSizing = .F.
+Anchor = 75
+Column1.ControlSource = "cGridVersion.l_Flagged"
+Column1.FontName = "Tahoma"
+Column1.FontSize = 8
+Column1.Name = "Column1"
+Column1.Sparse = .F.
+Column1.Width = 20
+Column2.Alignment = 0
+Column2.ControlSource = "cGridVersion.n_RevNo"
+Column2.FontName = "Tahoma"
+Column2.FontSize = 8
+Column2.Name = "Column2"
+Column2.ReadOnly = .T.
+Column2.Width = 45
+Column3.ControlSource = "cGridVersion.n_FileCnt"
+Column3.FontName = "Tahoma"
+Column3.FontSize = 8
+Column3.InputMask = "999,999"
+Column3.Name = "Column3"
+Column3.ReadOnly = .T.
+Column3.Width = 48
+Column4.ControlSource = "cGridVersion.s_Author"
+Column4.FontName = "Tahoma"
+Column4.FontSize = 8
+Column4.Name = "Column4"
+Column4.ReadOnly = .T.
+Column4.Width = 85
+Column5.ControlSource = "cGridVersion.s_Comment"
+Column5.FontName = "Tahoma"
+Column5.FontSize = 8
+Column5.Name = "Column5"
+Column5.ReadOnly = .T.
+Column5.Width = 347
+ColumnCount = 5
+DeleteMark = .F.
+FontName = "Tahoma"
+FontSize = 8
+GridLineColor = 240,240,240
+HeaderHeight = 21
+Height = 143
+HighlightBackColor = 224,224,224
+HighlightRowLineWidth = 0
+HighlightStyle = 2
+Left = 9
+Name = "o_Grid"
+Panel = 1
+RecordMark = .F.
+RecordSource = "cGridVersion"
+RowHeight = 16
+SplitBar = .F.
+Top = 9
+Width = 368
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE AfterRowColChange
+LPARAMETERS nColIndex
+
+this.Parent.o_Comment.Refresh()
+this.Parent.o_FileList.Refresh()
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SJ02JJKW
+[CLASS] header
+[BASECLASS] header
+[OBJNAME] Header1
+[PARENT] SUBFOX_DOWNLOAD.o_PF.Page1.o_Grid.Column1
+[START PROPERTIES]
+Caption = ""
+FontName = "Tahoma"
+FontSize = 8
+Name = "Header1"
+Picture = images\checkbox.bmp
+ToolTipText = "Take/Leave"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+SELECT cVersion
+LOCATE FOR !l_Flagged
+IF FOUND()
+	REPLACE l_Flagged WITH .T. FOR !l_Flagged
+ELSE
+	REPLACE l_Flagged WITH .F. FOR l_Flagged
+ENDIF
+IF _TALLY > 0
+	this.Parent.Parent.Refresh()
+ENDIF
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SJ02JJKX
+[CLASS] checkbox
+[BASECLASS] checkbox
+[OBJNAME] Check1
+[PARENT] SUBFOX_DOWNLOAD.o_PF.Page1.o_Grid.Column1
+[START PROPERTIES]
+Alignment = 2
+Caption = ""
+Height = 17
+Left = 25
+Name = "Check1"
+Top = 32
+Width = 60
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE InteractiveChange
+LOCAL nRevNo
+
+nRevNo = cGridVersion.n_RevNo
+IF this.Value
+	REPLACE l_Flagged WITH .T. ;
+		FOR !cVersion.l_Flagged AND cVersion.n_RevNo < nRevNo ;
+		 IN cVersion
+ELSE
+	REPLACE l_Flagged WITH .F. ;
+		FOR cVersion.l_Flagged AND cVersion.n_RevNo > nRevNo ;
+		 IN cVersion
+ENDIF
+IF _TALLY > 0
+	this.Parent.Parent.Refresh()
+ENDIF
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SJ02JJKY
+[CLASS] header
+[BASECLASS] header
+[OBJNAME] Header1
+[PARENT] SUBFOX_DOWNLOAD.o_PF.Page1.o_Grid.Column2
+[START PROPERTIES]
+Caption = " Rev "
+FontName = "Tahoma"
+FontSize = 8
+Name = "Header1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SJ02JJKZ
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] Text1
+[PARENT] SUBFOX_DOWNLOAD.o_PF.Page1.o_Grid.Column2
+[START PROPERTIES]
+Alignment = 0
+BackColor = 255,255,255
+BorderStyle = 0
+FontName = "Tahoma"
+FontSize = 8
+ForeColor = 0,0,0
+Margin = 0
+Name = "Text1"
+ReadOnly = .T.
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SJ02JJL0
+[CLASS] header
+[BASECLASS] header
+[OBJNAME] Header1
+[PARENT] SUBFOX_DOWNLOAD.o_PF.Page1.o_Grid.Column3
+[START PROPERTIES]
+Alignment = 1
+Caption = " Files "
+FontName = "Tahoma"
+FontSize = 8
+Name = "Header1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SJ02JJL1
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] Text1
+[PARENT] SUBFOX_DOWNLOAD.o_PF.Page1.o_Grid.Column3
+[START PROPERTIES]
+BackColor = 255,255,255
+BorderStyle = 0
+FontName = "Tahoma"
+FontSize = 8
+ForeColor = 0,0,0
+Margin = 0
+Name = "Text1"
+ReadOnly = .T.
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SJ02JJL2
+[CLASS] header
+[BASECLASS] header
+[OBJNAME] Header1
+[PARENT] SUBFOX_DOWNLOAD.o_PF.Page1.o_Grid.Column4
+[START PROPERTIES]
+Caption = " Author "
+FontName = "Tahoma"
+FontSize = 8
+Name = "Header1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SJ02JJL3
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] Text1
+[PARENT] SUBFOX_DOWNLOAD.o_PF.Page1.o_Grid.Column4
+[START PROPERTIES]
+BackColor = 255,255,255
+BorderStyle = 0
+FontName = "Tahoma"
+FontSize = 8
+ForeColor = 0,0,0
+Margin = 0
+Name = "Text1"
+ReadOnly = .T.
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SJ02JJL4
+[CLASS] header
+[BASECLASS] header
+[OBJNAME] Header1
+[PARENT] SUBFOX_DOWNLOAD.o_PF.Page1.o_Grid.Column5
+[START PROPERTIES]
+Caption = " Comments "
+FontName = "Tahoma"
+FontSize = 8
+Name = "Header1"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SJ02JJL5
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] Text1
+[PARENT] SUBFOX_DOWNLOAD.o_PF.Page1.o_Grid.Column5
+[START PROPERTIES]
+BackColor = 255,255,255
+BorderStyle = 0
+FontName = "Tahoma"
+FontSize = 8
+ForeColor = 0,0,0
+Margin = 0
+Name = "Text1"
+ReadOnly = .T.
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SJ02JJLB
+[CLASS] splitter
+[CLASSLOC] subfox.vcx
+[BASECLASS] shape
+[OBJNAME] o_HSplitter
+[PARENT] SUBFOX_DOWNLOAD.o_PF.Page1
+[START PROPERTIES]
+Anchor = 26
+Height = 18
+Left = 9
+Name = "o_HSplitter"
+Top = 152
+Width = 368
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE enumsiblings
+this.LinkTo( "o_Grid", "Above", 120 )
+this.LinkTo( "o_VSplitter", "Below", 100 )
+this.LinkTo( "o_Comment", "Below", 100 )
+this.LinkTo( "o_FileList", "Below", 100 )
+this.LinkTo( "Label1", "Float" )
+this.LinkTo( "Label2", "Float" )
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SJ02JJLC
+[CLASS] splitter
+[CLASSLOC] subfox.vcx
+[BASECLASS] shape
+[OBJNAME] o_VSplitter
+[PARENT] SUBFOX_DOWNLOAD.o_PF.Page1
+[START PROPERTIES]
+Anchor = 180
+Height = 95
+Left = 189
+Name = "o_VSplitter"
+Top = 170
+Width = 7
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE enumsiblings
+this.LinkTo( "o_Comment", "Left", 150 )
+this.LinkTo( "o_FileList", "Right", 150 )
+this.LinkTo( "Label1", "Float" )
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[START PROPERTIES]
+Arial, 0, 9, 5, 15, 12, 32, 3, 0
+Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+[END PROPERTIES]
+[EOF]
