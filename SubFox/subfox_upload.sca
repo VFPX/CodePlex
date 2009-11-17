@@ -1,0 +1,958 @@
+SCCTEXT Version 4.0.0.2
+PLATFORM C(8,0),UNIQUEID C(10,0),TIMESTAMP N(10,0),CLASS M(4,0),CLASSLOC M(4,0),BASECLASS M(4,0),OBJNAME M(4,0),PARENT M(4,0),PROPERTIES M(4,0),PROTECTED M(4,0),METHODS M(4,0),OBJCODE M(4,0),OLE M(4,0),OLE2 M(4,0),RESERVED1 M(4,0),RESERVED2 M(4,0),RESERVED3 M(4,0),RESERVED4 M(4,0),RESERVED5 M(4,0),RESERVED6 M(4,0),RESERVED7 M(4,0),RESERVED8 M(4,0),USER M(4,0)
+1252
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] Screen    
+[START RESERVED1]
+VERSION =   3.00[END RESERVED1]
+[START RESERVED8]
+subfox.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2JN16H9BU
+[CLASS] dataenvironment
+[BASECLASS] dataenvironment
+[OBJNAME] Dataenvironment
+[START PROPERTIES]
+DataSource = .NULL.
+Height = 0
+Left = 0
+Name = "Dataenvironment"
+Top = 0
+Width = 0
+[END PROPERTIES]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED4]
+2[END RESERVED4]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2JN16H9BV
+[CLASS] form
+[BASECLASS] form
+[OBJNAME] SUBFOX_UPLOAD
+[START PROPERTIES]
+AutoCenter = .T.
+Caption = "Upload - SubFox"
+DataSession = 2
+DoCreate = .T.
+Height = 357
+Icon = subfox.ico
+MaxButton = .F.
+MinButton = .F.
+Name = "SUBFOX_UPLOAD"
+ShowTips = .T.
+Width = 410
+WindowType = 1
+l_firstactivate = .F.
+o_util = .NULL.
+s_comments = 
+s_pjxname = 
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Activate
+ON KEY LABEL F1 _SCREEN.ActiveForm.ShowHelp()
+IF !this.l_FirstActivate
+	this.l_FirstActivate = .T.
+	IF this.o_PF.Page1.o_Picker.o_IncludeList.ListCount == 0 ;
+	AND this.o_PF.Page2.o_Picker.o_IncludeList.ListCount == 0
+		MESSAGEBOX( "There are no updates ready for upload.", 64, "No Updates" )
+*		this.Release()
+	ENDIF
+ENDIF
+
+ENDPROC
+PROCEDURE Deactivate
+ON KEY LABEL F1 && nothing
+ENDPROC
+PROCEDURE Destroy
+ON KEY LABEL F1 && nothing
+ENDPROC
+PROCEDURE Init
+*-- (c) Copyright 2009 Holden Data Systems
+*-- All rights reserverd.
+
+this.MinWidth = this.Width
+this.MinHeight = this.Height
+this.o_Util = NEWOBJECT( "SubFoxUtilities", "SubFox Utility Class.prg" )
+o = NEWOBJECT( "SubFoxProject", "SubFox Project Class.prg" )
+o.s_ExtraCursorFields = "l_HasUpdates L, l_NewFile L, l_Drop L, l_Deleted L"
+IF !o.Open() && "C:\Projects\SubFoxTest1\subfoxtest.pjx" )
+	RETURN .F.
+ENDIF
+this.s_PjxName = o.s_PjxName
+SELECT cFile
+DELETE FOR !l_Versioned
+this.ForceFilesToLowerCase()
+IF !this.VerifyNoConflicts()
+	RETURN .F.
+ENDIF
+IF !this.EncodeUpdatedFiles()
+	RETURN .F.
+ENDIF
+CREATE CURSOR cFolder (s_FullPath C(120), l_Versioned L)
+SELECT cFolder
+INDEX ON s_FullPath TAG s_FullPath COLLATE "GENERAL"
+IF !this.QueryServerStatuses()
+	RETURN .F.
+ENDIF
+SELECT cFile
+REPLACE l_Flagged WITH (l_HasUpdates OR l_NewFile) ALL
+this.LoadPickLists()
+SELECT cFile
+LOCATE FOR l_Drop
+this.o_PF.Page2.Enabled = FOUND()
+
+ENDPROC
+PROCEDURE Load
+SET EXCLUSIVE OFF
+SET DELETED ON
+SET TALK OFF
+SET CENTURY ON
+SET EXACT OFF
+
+ENDPROC
+PROCEDURE QueryUnload
+NODEFAULT
+this.b_Cancel.Click()
+
+ENDPROC
+PROCEDURE capturepicklists
+LOCAL i,s,k,o
+
+SELECT cFile
+REPLACE l_Flagged WITH .F. ALL
+SET ORDER TO k_RecKey
+o = this.o_PF.Page1.o_Picker.GetSelectedItems()
+FOR EACH k IN o
+	IF SEEK( k )
+		REPLACE l_Flagged WITH .T.
+	ENDIF
+ENDFOR
+o = this.o_PF.Page2.o_Picker.GetSelectedItems()
+FOR EACH k IN o
+	IF SEEK( k )
+		REPLACE l_Flagged WITH .T.
+	ENDIF
+ENDFOR
+
+ENDPROC
+PROCEDURE clearreadonlyflag
+LPARAMETERS sFName
+
+#define FILE_ATTRIBUTE_READONLY	1
+
+IF FILE( sFName )
+	DECLARE INTEGER GetFileAttributes IN WIN32API STRING sFName
+	DECLARE INTEGER SetFileAttributes IN WIN32API STRING sFName, INTEGER nAttribs
+	LOCAL i
+	i = GetFileAttributes( sFName )
+	IF BITAND( i, FILE_ATTRIBUTE_READONLY ) != 0
+		i = BITXOR( i, FILE_ATTRIBUTE_READONLY )
+		SetFileAttributes( sFName, i )
+	ENDIF
+ENDIF
+
+
+ENDPROC
+PROCEDURE decode
+LPARAMETERS sFName
+LOCAL oTranslator
+
+oTranslator = NEWOBJECT( "SubFoxTranslator", "SubFox Translation Classes.prg" )
+oTranslator.ConvertFile( sFName + "." + SUBFOX_PRIVATE_EXT, sFName )
+
+ENDPROC
+PROCEDURE douploads
+LOCAL i,s,o, oErr, oEvents, aResult, nConflictCnt, aConflicts[1], sComments
+LOCAL oClient AS PushOkSvn.SVNClient
+LOCAL oFList AS PushOkSvn.StringVector
+LOCAL oCommitList AS PushOkSvn.StringVector
+
+
+sComments = ALLTRIM( this.s_Comments )
+oClient = CreateObject("PushOkSvn.SVNClient" )
+oEvents = NEWOBJECT( "PushOkSvn_SVNClient_Events", "SVN Event Listener.prg" )
+EVENTHANDLER( oClient, oEvents )
+BINDEVENT( oEvents, "WcNotify", this, "onNotify" )
+oClient.InitClient()
+oCommitList = CreateObject("PushOkSvn.StringVector")
+
+*--	CREATE CURSOR cFile ( ;
+*--		k_RecKey C(10) DEFAULT SYS(2015), s_FName C(128), ;
+*--		s_Path C(240), e_Type C(1), l_HasUpdates L, l_Flagged L, l_NewFile L, l_Deleted L, l_Encoded L)
+
+*-- Deletes --*
+SELECT cFile
+LOCATE FOR l_Drop AND l_Flagged
+IF FOUND()
+	oFList = CreateObject("PushOkSvn.StringVector")
+	SCAN FOR l_Drop AND l_Flagged REST
+		s = FORCEPATH( RTRIM( s_FName ), RTRIM( s_Path ) )
+		s = s + IIF( l_Encoded, "." + SUBFOX_PRIVATE_EXT, "" )
+		oFList.Add( s )
+		oCommitList.Add( s )
+	ENDSCAN
+	TRY
+		s = IIF( EMPTY( sComments ), "", sComments + " (deletes)" )
+		aResult = oClient.Delete( oFList, s )
+		oErr = NULL
+	CATCH TO oErr
+		LOCAL aErrInfo[1]
+		AERROR( aErrInfo )
+	ENDTRY
+	WAIT CLEAR
+	oFList = NULL
+	IF !ISNULL( oErr )
+		MESSAGEBOX( "Error Updating Subversion Repository Server (deleted files):" + CR ;
+				  + TRANSFORM( aErrInfo[7] ) + " - " + aErrInfo[3], 16, "Subversion Error" )
+		RETURN .F.
+	ENDIF
+ENDIF
+
+*-- New Files --*
+SELECT cFile
+LOCATE FOR l_NewFile AND l_Flagged
+IF FOUND()
+	*-- here we verify that Subversion has added the folder to the repository 
+	*-- BEFORE trying to add the subordinate file
+	SELECT s_Path FROM cFile ;
+		INTO CURSOR cTemp ORDER BY 1 GROUP BY 1 ;
+		WHERE l_NewFile AND l_Flagged
+	SELECT cTemp
+	SET ORDER TO s_FullPath IN cFolder
+	SET RELATION TO PADR( ADDBS( RTRIM( s_Path ) ), MAX_VFP_IDX_LEN ) INTO cFolder
+	oFList = NULL
+	SCAN FOR EOF( 'cFolder' ) OR !cFolder.l_Versioned
+		this.ForceFolderToLowerCase( RTRIM( LOWER( s_Path ) ) )
+		IF ISNULL( oFList ) && first one found
+			oFList = CreateObject("PushOkSvn.StringVector")
+		ENDIF
+		oFList.Add( RTRIM( LOWER( s_Path ) ) ) && the folder itself, not any particular files therein
+		oCommitList.Add( RTRIM( LOWER( s_Path ) ) )
+	ENDSCAN
+	USE IN cTemp
+	IF !ISNULL( oFList ) && there are some new folders...
+		TRY
+			*-- doesn't work && oClient.MkDir( oFList, "" )
+			aResult = oClient.AddFiles( oFList, .F. ) && don't recurse folders
+			* aResult = oClient.Commit( oFList, "", .F., .T. )
+			oErr = NULL
+		CATCH TO oErr
+			LOCAL aErrInfo[1]
+			AERROR( aErrInfo )
+		ENDTRY
+		WAIT CLEAR
+		oFList = NULL
+		IF !ISNULL( oErr )
+			MESSAGEBOX( "Error Updating Subversion Repository Server (adding files):" + CR ;
+					  + TRANSFORM( aErrInfo[7] ) + " - " + aErrInfo[3], 16, "Subversion Error" )
+			RETURN .F.
+		ENDIF
+	ENDIF
+	*-- now pickup the "new" files themselves
+	oFList = CreateObject("PushOkSvn.StringVector")
+	SELECT cFile
+	SCAN FOR l_NewFile AND l_Flagged
+		s = FORCEPATH( RTRIM( s_FName ), RTRIM( s_Path ) )
+		s = s + IIF( l_Encoded, "." + SUBFOX_PRIVATE_EXT, "" )
+		oFList.Add( s )
+		oCommitList.Add( s )
+	ENDSCAN
+	TRY
+		aResult = oClient.AddFiles( oFList )
+		oErr = NULL
+	CATCH TO oErr
+		LOCAL aErrInfo[1]
+		AERROR( aErrInfo )
+	ENDTRY
+	WAIT CLEAR
+	oFList = NULL
+	IF !ISNULL( oErr )
+		MESSAGEBOX( "Error Updating Subversion Repository Server (adding files):" + CR ;
+				  + TRANSFORM( aErrInfo[7] ) + " - " + aErrInfo[3], 16, "Subversion Error" )
+		RETURN .F.
+	ENDIF
+ENDIF
+
+*-- Updated Files --*
+SELECT cFile
+SCAN FOR !l_Drop AND !l_NewFile AND l_Flagged
+	s = FORCEPATH( RTRIM( s_FName ), RTRIM( s_Path ) ) ;
+	  + IIF( !l_Encoded, "", "." + SUBFOX_PRIVATE_EXT )
+	oCommitList.Add( s )
+ENDSCAN
+
+*-- All types get committed in one fell swoop!
+IF oCommitList.Count > 0
+	TRY
+		aResult = oClient.Commit( oCommitList, sComments, .F., .T. )
+		oErr = NULL
+	CATCH TO oErr
+		LOCAL aErrInfo[1]
+		AERROR( aErrInfo )
+	ENDTRY
+	WAIT CLEAR
+	oCommitList = NULL
+	IF !ISNULL( oErr )
+		MESSAGEBOX( "Error Updating Subversion Repository Server:" + CR ;
+				  + TRANSFORM( aErrInfo[7] ) + " - " + aErrInfo[3], 16, "Subversion Error" )
+		RETURN .F.
+	ENDIF
+	SELECT cFile
+	SCAN FOR !l_Drop AND l_Flagged
+		s = FORCEPATH( RTRIM( s_FName ), RTRIM( s_Path ) ) ;
+		  + IIF( !l_Encoded, "", "." + SUBFOX_PRIVATE_EXT )
+		this.ClearReadOnlyFlag( s )
+	ENDSCAN
+ENDIF
+UNBINDEVENTS( oEvents )
+
+ENDPROC
+PROCEDURE encodeupdatedfiles
+LOCAL i,s,ss,a[1], sIn, sOut, oTrans, kParent
+
+oTrans = NEWOBJECT( "SubFoxTranslator", "SubFox Translation Classes.prg" )
+SELECT cFile
+SCAN FOR cFile.l_Encoded AND !cFile.l_Drop AND cFile.e_Type != FILETYPE_ONECLASS
+	sIn = FORCEPATH( RTRIM( s_FName ), RTRIM( s_Path ) )
+	sOut = sIn + "." + SUBFOX_PRIVATE_EXT
+	IF FILE( sIn ) AND (!FILE( sOut ) OR oTrans.FDateTime( sIn ) != oTrans.FDateTime( sOut ))
+		oTrans.ConvertToText( sIn, sOut )
+		SELECT cFile
+	ENDIF
+	IF LOWER( JUSTEXT( sIn ) ) == "vcx"
+		kParent = cFile.k_RecKey
+		s = LOWER( JUSTPATH( sIn ) )
+		FOR i = 1 TO ADIR( a, sIn + "-*." + SUBFOX_PRIVATE_EXT )
+			ss = LOWER( LEFT( a[i,1], RAT( ".", a[i,1] ) - 1 ) )
+			INSERT INTO cFile  (k_Parent, s_FName, s_Path, e_Type, l_Versioned, l_Encoded) ;
+						VALUES (kParent, ss, s, FILETYPE_ONECLASS, .T., .T.)
+		ENDFOR
+		SEEK kParent ORDER k_RecKey
+	ENDIF
+ENDSCAN
+
+ENDPROC
+PROCEDURE fdatetime
+LPARAMETERS sFName
+
+RETURN CTOT( IIF( !FILE( sFName ), "", DTOC( FDATE(sFName) ) + " " + FTIME(sFName) ) )
+ENDPROC
+PROCEDURE forcefilestolowercase
+LOCAL i,s,a[1], sPath
+
+SET ORDER TO s_FName IN cFile
+SELECT LOWER( s_Path ) AS s_Path FROM cFile GROUP BY 1 ORDER BY 1 INTO CURSOR cFolder
+SELECT cFolder
+SCAN
+	sPath = ADDBS( RTRIM( cFolder.s_Path ) )
+	SELECT cFile
+	FOR i = 1 TO ADIR( a, sPath + "*.*", "RHS", 1 )
+		IF a[i,1] != LOWER( a[i,1] ) AND SEEK( PADR( a[i,1], 120 ) )
+			LOCATE FOR ADDBS( LOWER( RTRIM( s_Path ) ) ) == sPath ;
+			  REST WHILE LOWER( RTRIM( s_FName ) ) == LOWER( a[i,1] )
+			IF FOUND()
+				this.RenameToLower( sPath + a[i,1] )
+			ENDIF
+		ENDIF
+	ENDFOR
+ENDSCAN
+USE IN cFolder
+
+ENDPROC
+PROCEDURE forcefoldertolowercase
+LPARAMETERS sPath
+LOCAL i,s, sSubPath, sBasePath
+
+sPath = LOWER( sPath )
+sBasePath = LOWER( JUSTPATH( this.s_PJXName ) )
+IF sPath == sBasePath
+	RETURN
+ENDIF
+IF sPath = ADDBS( sBasePath )
+	sSubPath = STRTRAN( sPath, ADDBS( sBasePath ), "", 1, 1 )
+ELSE
+	sSubPath = sPath
+	sBasePath = ""
+	RETURN && this is suicide
+ENDIF
+DO WHILE .T.
+	i = AT( "\", sSubPath )
+	s = ADDBS( sBasePath ) + RTRIM( IIF( i == 0, sSubPath, LEFT( sSubPath, i-1 ) ) )
+	* RENAME (s) TO (s)
+	this.RenameToLower( s )
+	IF i == 0
+		EXIT
+	ENDIF
+	sBasePath = s
+	sSubPath = LTRIM( SUBSTR( sSubPath, i+1 ) )
+ENDDO
+
+ENDPROC
+PROCEDURE getfiletype
+LPARAMETERS sFName
+LOCAL sExt
+
+sExt = UPPER( JUSTEXT( sFName ) )
+IF sExt == UPPER( SUBFOX_PRIVATE_EXT )
+	sExt = UPPER( JUSTEXT( LEFT( sFName, RAT( ".", sFName ) - 1 ) ) )
+ENDIF
+DO CASE
+CASE INLIST( sExt, "PRG", "FXP" )
+	RETURN FILETYPE_PROGRAM
+CASE sExt == "SCX"
+	RETURN FILETYPE_FORM
+CASE sExt == "VCX"
+	RETURN FILETYPE_CLASSLIB
+CASE PADR( sExt, 4 ) == "VCX-"
+	RETURN FILETYPE_ONECLASS
+CASE sExt == "DBC"
+	RETURN FILETYPE_DATABASE
+CASE sExt == "DBF"
+	RETURN FILETYPE_FREETABLE
+CASE sExt == "QPR"
+	RETURN FILETYPE_QUERY
+CASE sExt == "FRX"
+	RETURN FILETYPE_REPORT
+CASE sExt == "LBX"
+	RETURN FILETYPE_LABEL
+CASE sExt == "MNX"
+	RETURN FILETYPE_MENU
+CASE sExt == "PJX"
+	RETURN FILETYPE_PROJECT
+CASE INLIST( sExt, "H", "TXT", "INI", "XML" )
+	RETURN FILETYPE_TEXT
+ENDCASE
+RETURN FILETYPE_OTHER
+
+ENDPROC
+PROCEDURE loadpicklists
+LOCAL i, o1,o2
+
+o1 = this.o_PF.Page1.o_Picker
+o2 = this.o_PF.Page2.o_Picker
+o1.Clear()
+o2.Clear()
+SELECT cFile
+SET ORDER TO s_FName
+SCAN FOR l_Flagged OR cFile.l_Drop OR this.o_ShowAllFiles.Value
+	IF cFile.l_Drop
+		o2.Add( RTRIM( cFile.s_FName ), cFile.k_RecKey, cFile.l_Flagged )
+	ELSE
+		o1.Add( RTRIM( cFile.s_FName ), cFile.k_RecKey, cFile.l_Flagged )
+	ENDIF
+ENDSCAN
+
+ENDPROC
+PROCEDURE onnotify
+LPARAMETERS oNotify
+
+WAIT WINDOW NOWAIT oNotify.Path
+
+ENDPROC
+PROCEDURE queryserverstatuses
+LOCAL i,s,ss,o, oErr, sPath, oEvents, oStatus, oClient AS PushOkSvn.SVNClient
+LOCAL sRepoFName, sLocalFName, lEncoded
+
+oClient = CreateObject("PushOkSvn.SVNClient" )
+oEvents = NEWOBJECT( "PushOkSvn_SVNClient_Events", "SVN Event Listener.prg" )
+EVENTHANDLER( oClient, oEvents )
+BINDEVENT( oEvents, "WcNotify", this, "onNotify" )
+oClient.InitClient()
+* sPath = "c:\projects\subfox\Test"
+sPath = JUSTPATH( this.s_PjxName )
+TRY
+	oStatus = oClient.GetStatus( sPath, .T., "HEAD", .T., .T. )
+	oErr = NULL
+CATCH TO oErr
+	LOCAL aErrInfo[1]
+	AERROR( aErrInfo )
+ENDTRY
+WAIT CLEAR
+UNBINDEVENTS( oEvents )
+IF !ISNULL( oErr )
+	MESSAGEBOX( "Error accessing Subversion Repository Server:" + CR ;
+			  + TRANSFORM( aErrInfo[7] ) + " - " + aErrInfo[3], 16, "Subversion Error" )
+	RETURN .F.
+ENDIF
+
+*--	sAllFiles = ""
+
+*-- process results --*
+*-- flag all files as NEW, then UN-FLAG them as encountered because... ;
+	Subversion will return a node for each file in discovers, including unversioned files, ;
+	but ONLY in folders CURRENTLY versioned!!  ;
+	NEW files that are in NEW FOLDERS won't get mentioned AT ALL. ;
+	Must assume recs in cFile that don't get touched are therefore NEW.
+REPLACE l_NewFile WITH .T. IN cFile ALL
+SET ORDER TO s_FName IN cFile
+FOR EACH sRepoFName IN oStatus.Files
+	o = oStatus.Binary.Item(sRepoFName)
+	sRepoFName = STRTRAN( sRepoFName, "/", "\" )
+*--		sAllFiles = sAllFiles + TRANSFORM( o.TextStatus ) + " - " + sRepoFName + CHR(13)
+	* IF o.LastCmtKind == SvnNodeKindDir && this should work, but doesn't!
+	IF DIRECTORY( sRepoFName )
+		s = PADR( ADDBS( sRepoFName ), MAX_VFP_IDX_LEN )
+		IF !SEEK( s, "cFolder", "s_FullPath" )
+			INSERT INTO cFolder (s_FullPath) VALUES (s)
+		ENDIF
+		REPLACE l_Versioned WITH (o.TextStatus > SvnWcStatusKindUnversioned) IN cFolder
+		LOOP
+	ENDIF
+*--		IF o.LastCmtKind != SvnNodeKindFile
+*--			LOOP && some other bullshit -- just ignore it
+*--		ENDIF
+	IF INLIST( o.ReposTextStatus, SvnWcStatusKindModified, SvnWcStatusKindAdded, ;
+			   SvnWcStatusKindReplaced, SvnWcStatusKindMerged )
+		MESSAGEBOX( "There are changes at the server which must be downloaded", ;
+					16, "Download Required" )
+		DO FORM SubFox_Download NOREAD
+		RETURN .F.
+	ENDIF
+	sLocalFName = LOWER( this.o_Util.FullPath( sRepoFName, sPath ) )
+	lEncoded = (JUSTEXT( sLocalFName ) == SUBFOX_PRIVATE_EXT)
+	IF lEncoded
+		sLocalFName = LEFT( sLocalFName, RAT( ".", sLocalFName ) - 1 )
+	ENDIF
+	SELECT cFile
+	SEEK PADR( JUSTFNAME( sLocalFName ), MAX_VFP_IDX_LEN )
+	LOCATE FOR LOWER( RTRIM( s_Path ) ) == LOWER( JUSTPATH( sLocalFName ) ) AND l_Encoded == lEncoded ;
+		  REST WHILE LOWER( RTRIM( s_FName ) ) == LOWER( JUSTFNAME( sLocalFName ) )
+	IF FOUND()
+		*-- this file is supposed to be versioned...
+		IF o.TextStatus != SvnWcStatusKindUnversioned
+			REPLACE l_NewFile WITH .F. IN cFile
+		ENDIF
+		IF INLIST( o.TextStatus, SvnWcStatusKindModified, SvnWcStatusKindAdded, ;
+				   SvnWcStatusKindReplaced, SvnWcStatusKindMerged, SvnWcStatusKindUnversioned )
+			REPLACE l_HasUpdates WITH .T. IN cFile
+		ENDIF
+	ELSE
+		*-- this file ought to be unversioned...
+		IF o.TextStatus > SvnWcStatusKindUnversioned
+			e = this.GetFileType( sLocalFName )
+			IF !EMPTY( e )
+				INSERT INTO cFile  (s_FName, s_Path, e_Type, l_Drop, l_Deleted) ;
+							VALUES (JUSTFNAME( sRepoFName ), JUSTPATH( sRepoFName ), e, .T., ;
+									o.TextStatus == SvnWcStatusKindMissing)
+			ENDIF
+		ENDIF
+	ENDIF
+ENDFOR
+i=0 && debug stop point
+*--	_cliptext = sAllFiles
+*--	MESSAGEBOX( "Come and get it", 64 )
+
+ENDPROC
+PROCEDURE renametolower
+LPARAMETERS sFName
+
+* RENAME (sFName) TO (LOWER(sFName))
+DECLARE INTEGER MoveFile IN WIN32API STRING sOldFName, STRING sNewFName
+MoveFile( sFName, LOWER( sFName ) )
+
+ENDPROC
+PROCEDURE showhelp
+LOCAL s, oPopup
+
+TEXT TO s NOSHOW PRETEXT 2
+	Subversion tracks updates for all <i>versioned</i> files as they come in from all developers.
+	If any updates have arrived since your last upload, Subversion will NOT permit you to upload
+	your changes until you have downloaded and merged them with you local updates.
+
+	In addition to having all the recent updates from other developers merged with yours, you
+	must also have all conflicts resolved before you can upload your changes.
+
+	Once both of those requirements are met, you may choose to upload some or all of the changed
+	files in your local work area.  It is <i>highly recommended</i> that you always send ALL updated files
+	each time you upload.
+ENDTEXT
+DO FORM SubFox_Help WITH s NAME oPopup
+
+ENDPROC
+PROCEDURE verifynoconflicts
+LOCAL i,s,o, oErr, sPath, oEvents, oStatus, oClient AS PushOkSvn.SVNClient
+LOCAL sRepoFName
+
+oClient = CreateObject("PushOkSvn.SVNClient" )
+oEvents = NEWOBJECT( "PushOkSvn_SVNClient_Events", "SVN Event Listener.prg" )
+EVENTHANDLER( oClient, oEvents )
+BINDEVENT( oEvents, "WcNotify", this, "onNotify" )
+oClient.InitClient()
+sPath = JUSTPATH( this.s_PjxName )
+TRY
+	oStatus = oClient.GetStatus( sPath, .T., "HEAD", .F. )
+	oErr = NULL
+CATCH TO oErr
+	LOCAL aErrInfo[1]
+	AERROR( aErrInfo )
+ENDTRY
+WAIT CLEAR
+UNBINDEVENTS( oEvents )
+IF !ISNULL( oErr )
+	MESSAGEBOX( "Error accessing local Subversion tracking data:" + CR ;
+			  + TRANSFORM( aErrInfo[7] ) + " - " + aErrInfo[3], 16, "Subversion Error" )
+	RETURN .F.
+ENDIF
+
+*-- process results --*
+SELECT cFile
+SET ORDER TO s_FName
+FOR EACH sRepoFName IN oStatus.Files
+	o = oStatus.Binary.Item(sRepoFName)
+	IF o.TextStatus == SvnWcStatusKindConflicted
+		i = MESSAGEBOX( "There are outstanding CONFLICTS yet to be resolved." + CR ;
+					  + "Would you like to fix it/them now?", 4 + 32, "Conflicts Detected" )
+		IF i == 6 && yes
+			DO FORM SubFox_ConflictEditor
+		ENDIF
+		RETURN .F.
+	ENDIF
+ENDFOR
+
+ENDPROC
+[END METHODS]
+[START RESERVED3]
+*capturepicklists 
+*clearreadonlyflag 
+*decode 
+*douploads 
+*encodeupdatedfiles 
+*fdatetime 
+*forcefilestolowercase 
+*forcefoldertolowercase 
+*getfiletype 
+*loadpicklists 
+*onnotify 
+*queryserverstatuses 
+*renametolower 
+*showhelp 
+*verifynoconflicts 
+l_firstactivate
+o_util
+s_comments
+s_pjxname
+[END RESERVED3]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2JN16TWAK
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] b_Cancel
+[PARENT] SUBFOX_UPLOAD
+[START PROPERTIES]
+Anchor = 12
+Cancel = .T.
+Caption = "Cancel"
+FontName = "Tahoma"
+FontSize = 8
+Height = 27
+Left = 313
+Name = "b_Cancel"
+Top = 318
+Width = 84
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+thisform.Release()
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2JN16TWAJ
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] b_Ok
+[PARENT] SUBFOX_UPLOAD
+[START PROPERTIES]
+Anchor = 12
+Caption = "Ok"
+Default = .T.
+FontName = "Tahoma"
+FontSize = 8
+Height = 27
+Left = 225
+Name = "b_Ok"
+Top = 318
+Width = 84
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+thisform.CapturePickLists()
+SELECT cFile
+LOCATE FOR l_Flagged
+IF !FOUND()
+	MESSAGEBOX( "Please select the file(s) for wish to upload.", ;
+				64, "Selection Required" )
+	RETURN
+ENDIF
+IF thisform.DoUploads()
+	thisform.Release()
+ENDIF
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SJ02LEUB
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label2
+[PARENT] SUBFOX_UPLOAD
+[START PROPERTIES]
+Anchor = 4
+AutoSize = .T.
+BackStyle = 0
+Caption = "Press F1 for Help"
+FontName = "Tahoma"
+FontSize = 8
+ForeColor = 0,0,255
+Height = 15
+Left = 118
+MousePointer = 15
+Name = "Label2"
+Top = 324
+Width = 84
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+thisform.ShowHelp()
+
+ENDPROC
+PROCEDURE MouseEnter
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+
+this.ForeColor = 0xFF00FF
+this.FontUnderline = .T.
+
+ENDPROC
+PROCEDURE MouseLeave
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+
+this.ForeColor = 0xFF0000
+this.FontUnderline = .T.
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2JN16TWAG
+[CLASS] pageframe
+[BASECLASS] pageframe
+[OBJNAME] o_PF
+[PARENT] SUBFOX_UPLOAD
+[START PROPERTIES]
+Anchor = 15
+ErasePage = .T.
+Height = 301
+Left = 10
+Name = "o_PF"
+Page1.Caption = "Upload"
+Page1.FontName = "Tahoma"
+Page1.FontSize = 8
+Page1.Name = "Page1"
+Page2.Caption = "Deletes"
+Page2.FontName = "Tahoma"
+Page2.FontSize = 8
+Page2.Name = "Page2"
+PageCount = 2
+TabStop = .F.
+TabStyle = 1
+Top = 8
+Width = 390
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Page1.Activate
+this.o_Comments.Refresh()
+ENDPROC
+PROCEDURE Page2.Activate
+this.o_Comments.Refresh()
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SJ02QR16
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label1
+[PARENT] SUBFOX_UPLOAD.o_PF.Page1
+[START PROPERTIES]
+AutoSize = .T.
+BackStyle = 0
+Caption = "Brief Description of Updates"
+FontName = "Tahoma"
+FontSize = 8
+Height = 15
+Left = 9
+Name = "Label1"
+TabIndex = 1
+Top = 4
+Width = 136
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SJ02QR17
+[CLASS] editbox
+[BASECLASS] editbox
+[OBJNAME] o_Comments
+[PARENT] SUBFOX_UPLOAD.o_PF.Page1
+[START PROPERTIES]
+Anchor = 10
+ControlSource = "thisform.s_Comments"
+FontName = "Tahoma"
+FontSize = 8
+Height = 39
+Left = 9
+Name = "o_Comments"
+TabIndex = 2
+Top = 20
+Width = 367
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SJ02QR15
+[CLASS] linklisteditor
+[CLASSLOC] picker.vcx
+[BASECLASS] container
+[OBJNAME] o_Picker
+[PARENT] SUBFOX_UPLOAD.o_PF.Page1
+[START PROPERTIES]
+Anchor = 15
+Height = 200
+Left = 9
+Name = "o_Picker"
+TabIndex = 3
+Top = 64
+Width = 367
+b_ExcAll.Name = "b_ExcAll"
+b_ExcSelected.Name = "b_ExcSelected"
+b_IncAll.Name = "b_IncAll"
+b_IncSelected.Name = "b_IncSelected"
+o_ExcludeCaption.Caption = "Need to be Uploaded"
+o_ExcludeCaption.Name = "o_ExcludeCaption"
+o_ExcludeList.Name = "o_ExcludeList"
+o_IncludeCaption.Caption = "Upload to Repository"
+o_IncludeCaption.Name = "o_IncludeCaption"
+o_IncludeList.Name = "o_IncludeList"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SJ02QR19
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label1
+[PARENT] SUBFOX_UPLOAD.o_PF.Page2
+[START PROPERTIES]
+AutoSize = .T.
+BackStyle = 0
+Caption = "Brief Description of Updates"
+FontName = "Tahoma"
+FontSize = 8
+Height = 15
+Left = 9
+Name = "Label1"
+TabIndex = 1
+Top = 4
+Width = 136
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SJ02QR1A
+[CLASS] editbox
+[BASECLASS] editbox
+[OBJNAME] o_Comments
+[PARENT] SUBFOX_UPLOAD.o_PF.Page2
+[START PROPERTIES]
+Anchor = 10
+ControlSource = "thisform.s_Comments"
+FontName = "Tahoma"
+FontSize = 8
+Height = 39
+Left = 9
+Name = "o_Comments"
+TabIndex = 2
+Top = 20
+Width = 367
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SJ02QR18
+[CLASS] linklisteditor
+[CLASSLOC] picker.vcx
+[BASECLASS] container
+[OBJNAME] o_Picker
+[PARENT] SUBFOX_UPLOAD.o_PF.Page2
+[START PROPERTIES]
+Anchor = 15
+Height = 200
+Left = 9
+Name = "o_Picker"
+TabIndex = 3
+Top = 64
+Width = 367
+b_ExcAll.Name = "b_ExcAll"
+b_ExcSelected.Name = "b_ExcSelected"
+b_IncAll.Name = "b_IncAll"
+b_IncSelected.Name = "b_IncSelected"
+o_ExcludeCaption.Caption = "Missing Files"
+o_ExcludeCaption.Name = "o_ExcludeCaption"
+o_ExcludeList.Name = "o_ExcludeList"
+o_IncludeCaption.Caption = "Notify Repository of Deletion"
+o_IncludeCaption.Name = "o_IncludeCaption"
+o_IncludeList.Name = "o_IncludeList"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2JN16TWAL
+[CLASS] checkbox
+[BASECLASS] checkbox
+[OBJNAME] o_ShowAllFiles
+[PARENT] SUBFOX_UPLOAD
+[START PROPERTIES]
+Alignment = 0
+Anchor = 6
+AutoSize = .T.
+BackStyle = 0
+Caption = "Show All Files"
+FontName = "Tahoma"
+FontSize = 8
+Height = 15
+Left = 12
+Name = "o_ShowAllFiles"
+Top = 323
+Value = .F.
+Width = 82
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE InteractiveChange
+STORE IIF( this.Value, "All Files", "Ready for Upload" ) ;
+	TO thisform.o_PF.Page1.o_Picker.o_ExcludeCaption.Caption
+thisform.CapturePickLists()
+thisform.LoadPickLists()
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[START PROPERTIES]
+Arial, 0, 9, 5, 15, 12, 32, 3, 0
+Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+[END PROPERTIES]
+[EOF]
