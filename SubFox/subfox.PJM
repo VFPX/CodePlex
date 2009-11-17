@@ -22,7 +22,7 @@ Minor=2
 Revision=101
 AutoIncrement=.F.
 [OLEServers]
-C:\Projects\SubFox\SubFox.exe,subfox,subfox,subfox Type Library,0,{A07513AA-FD64-46E8-B514-7D093751C039}
+C:\Projects\SubFox\SubFox.exe,subfox,subfox,subfox Type Library,9640800,{A07513AA-FD64-46E8-B514-7D093751C039}
 PushOkSvn_SVNClient_Events,c:\projects\subfox\export experiment.prg,subfox.PushOkSvn_SVNClient_Events,0,subfox.PushOkSvn_SVNClient_Events,HelpFile,0,{00AE932F-6590-46C5-99EE-07EE3944BB96},{A97C8A0D-0677-4B62-B70C-566C2511CB54}
 PushOkSvn_SVNClient_Events,c:\projects\subfox\svn event listener.prg,subfox.PushOkSvn_SVNClient_Events,0,subfox.PushOkSvn_SVNClient_Events,HelpFile,0,{00AE932F-6590-46C5-99EE-07EE3944BB96},{A97C8A0D-0677-4B62-B70C-566C2511CB54}
 SubFoxProject,c:\projects\subfox\subfox project class.prg,subfox.SubFoxProject,0,subfox.SubFoxProject,HelpFile,1,{B8BB42E5-4899-46AB-8792-97660B1CD8FF},{257A0B50-1134-45D9-9F77-48FC5581B56E}
@@ -30,4 +30,62 @@ SubFoxTranslator,c:\projects\subfox\subfox translation classes.prg,subfox.SubFox
 SubFox_Application,c:\projects\subfox\subfox application class.prg,subfox.SubFox_Application,0,subfox.SubFox_Application,,1,{E66078FB-345F-47F7-BBF4-196377B8D01D},{D3ED3440-DD2B-4733-A477-A31B83B906ED}
 [OLEServersEnd]
 [ProjectFiles]
+         0,i,subfox.ico,.F.,.F.,0,,,
+ 965895953,P,export experiment.prg,.T.,.F.,1252,,,R&D Experiment Sandbox
+ 965895953,P,pushok svn admin.prg,.T.,.F.,1252,,,
+ 965895953,P,pushok svn client.prg,.T.,.F.,1252,,,
+ 966294332,T,pushok.h,.T.,.F.,1252,,,
+ 966358048,P,subfox toolbar.prg,.T.,.F.,1252,,,
+ 966358579,K,subfox_includes.scx,.F.,.F.,1252,,,
+ 966375005,V,picker.vcx,.F.,.F.,1252,,,
+ 966416846,T,foxpro.h,.T.,.F.,1252,,,
+ 966416901,T,subfox.h,.T.,.F.,1252,,,
+ 966484448,K,subfox_translator.scx,.F.,.F.,1252,,,
+ 966525666,P,subfox translation classes.prg,.F.,.F.,1252,,,
+ 966565413,K,subfox_download.scx,.F.,.F.,1252,,,
+ 966622933,P,svn event listener.prg,.F.,.F.,1252,,,
+ 975274296,P,subfox application class.prg,.F.,.F.,1252,,,
+ 975331541,P,bootstrap.prg,.T.,.F.,1252,,,
+ 975340916,K,subfox_upload.scx,.F.,.F.,1252,,,
+ 975373345,V,subfox.vcx,.F.,.F.,1252,,,
+ 975397827,K,subfox_conflicteditor.scx,.F.,.F.,1252,,,
+ 975461512,P,subfox project class.prg,.F.,.F.,1252,,,
+ 975591940,V,dbcxmgr.vcx,.F.,.F.,1252,,,
+ 975591940,V,sdt.vcx,.F.,.F.,1252,,,
+ 976181623,P,subfox tortoise.prg,.F.,.F.,1252,,,
+ 976183891,P,winregprocs.prg,.F.,.F.,1252,,,
+ 976186275,T,winregprocs.h,.T.,.F.,1252,,,
+ 976248378,x,images\right1.bmp,.F.,.F.,1252,,,
+ 976248378,x,images\right2.bmp,.F.,.F.,1252,,,
+ 976248379,x,images\left1.bmp,.F.,.F.,1252,,,
+ 976248379,x,images\left2.bmp,.F.,.F.,1252,,,
+ 976248379,x,images\download16.bmp,.F.,.F.,1252,,,
+ 976248379,x,images\download16.msk,.F.,.F.,1252,,,
+ 976248379,x,images\merge16.bmp,.F.,.F.,1252,,,
+ 976248379,x,images\merge16.msk,.F.,.F.,1252,,,
+ 976248379,x,images\upload16.bmp,.F.,.F.,1252,,,
+ 976248379,x,images\upload16.msk,.F.,.F.,1252,,,
+ 976248379,x,images\include16.bmp,.F.,.F.,1252,,,
+ 976248379,x,images\include16.msk,.F.,.F.,1252,,,
+ 976248379,x,images\gears16.bmp,.F.,.F.,1252,,,
+ 976248379,x,images\gears16.msk,.F.,.F.,1252,,,
+ 976248379,x,images\help16.bmp,.F.,.F.,1252,,,
+ 976248379,x,images\help16.msk,.F.,.F.,1252,,,
+ 976249421,P,subfox utility class.prg,.F.,.F.,1252,,,
+ 976641155,P,twofox.prg,.T.,.F.,1252,,,
+ 976649602,T,project file encoding sample.txt,.T.,.F.,1252,,,
+ 976650529,P,dummy.prg,.T.,.F.,1252,,,
+ 976707960,x,images\checkbox.bmp,.F.,.F.,1252,,,
+ 976707960,x,images\checkbox.msk,.F.,.F.,1252,,,
+ 976708536,x,images\subfox16.bmp,.F.,.F.,0,,,
+ 976708536,x,images\subfox16.msk,.F.,.F.,0,,,
+ 992577876,P,subfox main.prg,.F.,.T.,1252,,,
+ 996890633,K,subfox_help.scx,.F.,.F.,1252,,,
+ 996936279,x,subfox64.png,.F.,.F.,1252,,,
+ 997001789,P,hello world sample.prg,.T.,.F.,1252,,,
+ 997169740,T,config file\config.fpw,.F.,.F.,1252,,,
+ 997177990,P,subfoxtortoise.prg,.T.,.F.,1252,,,
+ 997179261,K,subfox_errors.scx,.F.,.F.,1252,,,
+ 997196835,x,images\tortoise16.bmp,.F.,.F.,0,,,
+ 997196835,x,images\tortoise16.msk,.F.,.F.,0,,,
 [EOF]
