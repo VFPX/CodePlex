@@ -1,0 +1,550 @@
+SCCTEXT Version 4.0.0.2
+PLATFORM C(8,0),UNIQUEID C(10,0),TIMESTAMP N(10,0),CLASS M(4,0),CLASSLOC M(4,0),BASECLASS M(4,0),OBJNAME M(4,0),PARENT M(4,0),PROPERTIES M(4,0),PROTECTED M(4,0),METHODS M(4,0),OBJCODE M(4,0),OLE M(4,0),OLE2 M(4,0),RESERVED1 M(4,0),RESERVED2 M(4,0),RESERVED3 M(4,0),RESERVED4 M(4,0),RESERVED5 M(4,0),RESERVED6 M(4,0),RESERVED7 M(4,0),RESERVED8 M(4,0),USER M(4,0)
+1252
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] Screen    
+[START RESERVED1]
+VERSION =   3.00[END RESERVED1]
+[START RESERVED8]
+subfox.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2JK0VS1WZ
+[CLASS] dataenvironment
+[BASECLASS] dataenvironment
+[OBJNAME] Dataenvironment
+[START PROPERTIES]
+DataSource = .NULL.
+Height = 0
+Left = 0
+Name = "Dataenvironment"
+Top = 0
+Width = 0
+[END PROPERTIES]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED4]
+2[END RESERVED4]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2JK0VS1X0
+[CLASS] form
+[BASECLASS] form
+[OBJNAME] SUBFOX_INCLUDES
+[START PROPERTIES]
+AutoCenter = .T.
+BufferMode = 0
+Caption = "Project Files - SubFox"
+DataSession = 2
+DoCreate = .T.
+Height = 360
+Icon = subfox.ico
+MaxButton = .F.
+MinButton = .F.
+Name = "SUBFOX_INCLUDES"
+ShowTips = .T.
+Width = 400
+WindowType = 1
+l_anychange = .F.
+s_pjxname = .F.
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Activate
+ON KEY LABEL F1 _SCREEN.ActiveForm.ShowHelp()
+ENDPROC
+PROCEDURE Deactivate
+ON KEY LABEL F1 && Nothing
+ENDPROC
+PROCEDURE Destroy
+ON KEY LABEL F1 && nothing
+
+ENDPROC
+PROCEDURE Init
+*-- (c) Copyright 2009 Holden Data Systems
+*-- All rights reserverd.
+
+LOCAL o
+
+this.MinWidth = this.Width
+this.MinHeight = this.Height
+o = NEWOBJECT( "SubFoxProject", "SubFox Project Class.prg" )
+IF !o.Open() && auto-select project
+	RETURN .F.
+ENDIF
+this.s_PjxName = o.s_PjxName
+*-- don't show user files that cannot be added/removed
+DELETE FOR cFile.n_RecNo == 0 IN cFile
+
+ENDPROC
+PROCEDURE Load
+SET EXCLUSIVE OFF
+SET DELETED ON
+SET TALK OFF
+SET CENTURY ON
+SET EXACT OFF
+
+ENDPROC
+PROCEDURE QueryUnload
+NODEFAULT
+this.b_Cancel.Click()
+ENDPROC
+PROCEDURE capturepicks
+LPARAMETERS oPicker AS LinkListEditor OF Picker.vcx
+LOCAL o, bAnyChange
+
+bAnyChange = .F.
+SELECT cFile
+SET ORDER TO k_RecKey
+
+* this.Items[i].Selected
+FOR EACH o IN oPicker.Items
+	IF SEEK( o.Key ) AND cFile.l_Versioned != o.Selected
+		REPLACE l_Versioned WITH o.Selected
+		bAnyChange = .T.
+	ENDIF
+ENDFOR
+
+*--	FOR EACH o IN oPicker.o_ExcludeList
+*--		IF SEEK( o.Key ) AND !cFile.l_Versioned
+*--			REPLACE l_Versioned WITH .F.
+*--			bAnyChange = .T.
+*--		ENDIF
+*--	ENDFOR
+*--	FOR EACH o IN oPicker.o_IncludeList
+*--		IF SEEK( o.Key ) AND cFile.l_Versioned
+*--			REPLACE l_Versioned WITH .T.
+*--			bAnyChange = .T.
+*--		ENDIF
+*--	ENDFOR
+
+RETURN bAnyChange
+
+ENDPROC
+PROCEDURE saveedits
+LOCAL o,l
+
+* this.CapturePicks( this.o_PF.Page2.o_PickList ) && Databases
+this.CapturePicks( this.o_PF.Page2.o_PickList ) && Tables
+this.CapturePicks( this.o_PF.Page3.o_PickList ) && All Others
+
+o = NEWOBJECT( "SubFoxProject", "SubFox Project Class.prg" )
+o.s_PjxName = this.s_PjxName
+IF !o.Save( @l )
+	RETURN .F.
+ENDIF
+this.l_AnyChange = l
+
+ENDPROC
+PROCEDURE showhelp
+LOCAL s, oPopup
+
+TEXT TO s NOSHOW PRETEXT 2
+	SubFox interprets the VFP project file for most of it's configuration
+	settings, but there are a few questions left unanswered.
+
+	When a file is included in a SubFox project, it becomes a <i>versioned</i> file.
+	Versioned files are captured by SubFox, distributed to all team members
+	and tracked for all changes throughout the development cycle.
+
+	Likewise, VFP projects allow files to be <i>excluded</i> from the <i>BUILD</i>. 
+	Included files are always part of the SubFox project.  Sometimes excluded files are 
+	truly part of the project, but with the distinction that they remain <i>external</i> 
+	to the compiled EXE.  You must manually identify these files.
+
+	Database Containers (DBC) and Tables (DBF) are always excluded from BUILDs, but are
+	usually included in SubFox as versioned files.  To accomplish this, SubFox uses
+	Stonefield Database Toolkit (SDT) to track table <i>structure</i> revisions, then captures
+	the STD meta-data files.  As required by SDT, database containers are also copied in
+	the SubFox repository.
+
+	If your project contains <i>static</i> tables -- ones with <i>data</i> that should be 
+	versioned along with the structure -- you must identify those tables explicitly.
+ENDTEXT
+DO FORM SubFox_Help WITH s NAME oPopup
+
+ENDPROC
+[END METHODS]
+[START RESERVED3]
+*capturepicks 
+*saveedits 
+*showhelp 
+l_anychange
+s_pjxname
+[END RESERVED3]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2JK0VS1X0
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] b_Cancel
+[PARENT] SUBFOX_INCLUDES
+[START PROPERTIES]
+Anchor = 12
+Cancel = .T.
+Caption = "Cancel"
+FontName = "Tahoma"
+FontSize = 8
+Height = 27
+Left = 303
+Name = "b_Cancel"
+Top = 321
+Width = 84
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+thisform.Release()
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2JK0VS1WZ
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] b_Ok
+[PARENT] SUBFOX_INCLUDES
+[START PROPERTIES]
+Anchor = 12
+Caption = "Ok"
+Default = .T.
+FontName = "Tahoma"
+FontSize = 8
+Height = 27
+Left = 215
+Name = "b_Ok"
+Top = 321
+Width = 84
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+IF thisform.SaveEdits()
+	thisform.Release()
+ENDIF
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SJ01N37K
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label2
+[PARENT] SUBFOX_INCLUDES
+[START PROPERTIES]
+Anchor = 4
+AutoSize = .T.
+BackStyle = 0
+Caption = "Press F1 for Help"
+FontName = "Tahoma"
+FontSize = 8
+ForeColor = 0,0,255
+Height = 15
+Left = 10
+MousePointer = 15
+Name = "Label2"
+Top = 333
+Width = 84
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+thisform.ShowHelp()
+
+ENDPROC
+PROCEDURE MouseEnter
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+
+this.ForeColor = 0xFF00FF
+this.FontUnderline = .T.
+
+ENDPROC
+PROCEDURE MouseLeave
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+
+this.ForeColor = 0xFF0000
+this.FontUnderline = .T.
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2JK0WVKAH
+[CLASS] pageframe
+[BASECLASS] pageframe
+[OBJNAME] o_PF
+[PARENT] SUBFOX_INCLUDES
+[START PROPERTIES]
+Anchor = 15
+ErasePage = .T.
+Height = 304
+Left = 10
+Name = "o_PF"
+Page1.Caption = "Databases"
+Page1.FontName = "Tahoma"
+Page1.FontSize = 8
+Page1.Name = "Page1"
+Page2.Caption = "Tables"
+Page2.FontName = "Tahoma"
+Page2.FontSize = 8
+Page2.Name = "Page2"
+Page3.Caption = "Other Files"
+Page3.FontName = "Tahoma"
+Page3.FontSize = 8
+Page3.Name = "Page3"
+PageCount = 3
+TabStop = .F.
+TabStyle = 1
+Top = 8
+Width = 380
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Page1.Activate
+LPARAMETERS lForce
+LOCAL i,o, oPicker
+
+IF this.Initialized AND !lForce
+	RETURN
+ENDIF
+this.Initialized = .T.
+
+*--	CREATE CURSOR cFile ( ;
+*--		k_RecKey C(10) DEFAULT SYS(2015), k_Parent C(10), s_FName C(120), s_Path C(240), ;
+*--		e_Type C(1), l_InBuild L, l_Versioned L)
+
+this.o_PickList.Clear()
+SELECT cFile
+SET ORDER TO s_FName
+SCAN FOR e_Type == FILETYPE_DATABASE
+	this.o_PickList.Add( RTRIM( cFile.s_FName ), cFile.k_RecKey, cFile.l_Versioned )
+ENDSCAN
+
+ENDPROC
+PROCEDURE Page1.Init
+this.AddProperty( "Initialized", .F. )
+
+ENDPROC
+PROCEDURE Page2.Activate
+LPARAMETERS lForce
+LOCAL i,o,s, oPicker
+
+IF this.Initialized AND !lForce
+	RETURN
+ENDIF
+this.Initialized = .T.
+this.o_PickList.Clear()
+
+*-- database tables first
+USE (DBF('cFile')) AGAIN IN 0 ALIAS cTable
+SET ORDER TO s_FName IN cTable
+SELECT cFile
+SET ORDER TO s_FName
+SCAN FOR e_Type == FILETYPE_DATABASE AND cFile.l_Versioned
+	s = JUSTSTEM( RTRIM( cFile.s_FName ) ) + "!"
+	SELECT cTable
+	SCAN FOR k_Parent == cFile.k_RecKey
+		this.o_PickList.Add( s + JUSTSTEM( RTRIM( cTable.s_FName ) ), cTable.k_RecKey, cTable.l_Versioned )
+	ENDSCAN
+ENDSCAN
+USE IN cTable
+
+*-- now do free-tables
+SELECT cFile
+SET ORDER TO s_FName
+SCAN FOR e_Type == FILETYPE_FREETABLE
+	this.o_PickList.Add( RTRIM( cFile.s_FName ), cFile.k_RecKey, cFile.l_Versioned )
+ENDSCAN
+
+ENDPROC
+PROCEDURE Page2.Init
+this.AddProperty( "Initialized", .F. )
+
+ENDPROC
+PROCEDURE Page3.Activate
+LPARAMETERS lForce
+LOCAL i,o,s, oPicker
+
+IF this.Initialized AND !lForce
+	RETURN
+ENDIF
+this.Initialized = .T.
+this.o_PickList.Clear()
+
+SELECT cFile
+SET ORDER TO s_FName
+SCAN FOR !INLIST( e_Type, FILETYPE_DATABASE, FILETYPE_DBTABLE, FILETYPE_FREETABLE )
+	this.o_PickList.Add( RTRIM( cFile.s_FName ), cFile.k_RecKey, cFile.l_Versioned )
+ENDSCAN
+
+ENDPROC
+PROCEDURE Page3.Init
+this.AddProperty( "Initialized", .F. )
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2JK0VS1WZ
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label2
+[PARENT] SUBFOX_INCLUDES.o_PF.Page1
+[START PROPERTIES]
+AutoSize = .T.
+BackStyle = 0
+Caption = 'Which databases are "versioned" in this project?'
+FontBold = .T.
+FontName = "Tahoma"
+FontSize = 8
+Height = 15
+Left = 9
+Name = "Label2"
+Top = 8
+Width = 278
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SJ01HETI
+[CLASS] linklisteditor
+[CLASSLOC] picker.vcx
+[BASECLASS] container
+[OBJNAME] o_PickList
+[PARENT] SUBFOX_INCLUDES.o_PF.Page1
+[START PROPERTIES]
+Anchor = 15
+Height = 240
+Left = 9
+Name = "o_PickList"
+Top = 27
+Width = 357
+b_ExcAll.Name = "b_ExcAll"
+b_ExcSelected.Name = "b_ExcSelected"
+b_IncAll.Name = "b_IncAll"
+b_IncSelected.Name = "b_IncSelected"
+o_ExcludeCaption.Caption = "Un-versioned"
+o_ExcludeCaption.Name = "o_ExcludeCaption"
+o_ExcludeList.Name = "o_ExcludeList"
+o_IncludeCaption.Caption = "Versioned"
+o_IncludeCaption.Name = "o_IncludeCaption"
+o_IncludeList.Name = "o_IncludeList"
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE interactivechange
+IF thisform.CapturePicks( this )
+	thisform.o_PF.Page2.Initialized = .F.
+ENDIF
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SJ01HETJ
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label2
+[PARENT] SUBFOX_INCLUDES.o_PF.Page2
+[START PROPERTIES]
+AutoSize = .T.
+BackStyle = 0
+Caption = 'Which tables have DATA that is "versioned" in this project?'
+FontBold = .T.
+FontName = "Tahoma"
+FontSize = 8
+Height = 15
+Left = 9
+Name = "Label2"
+Top = 8
+Width = 336
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SJ01HETK
+[CLASS] linklisteditor
+[CLASSLOC] picker.vcx
+[BASECLASS] container
+[OBJNAME] o_PickList
+[PARENT] SUBFOX_INCLUDES.o_PF.Page2
+[START PROPERTIES]
+Anchor = 15
+Height = 240
+Left = 9
+Name = "o_PickList"
+Top = 27
+Width = 357
+b_ExcAll.Name = "b_ExcAll"
+b_ExcSelected.Name = "b_ExcSelected"
+b_IncAll.Name = "b_IncAll"
+b_IncSelected.Name = "b_IncSelected"
+o_ExcludeCaption.Caption = 'Normal "Un-versioned" Tables'
+o_ExcludeCaption.Name = "o_ExcludeCaption"
+o_ExcludeList.Name = "o_ExcludeList"
+o_IncludeCaption.Caption = 'Static "Versioned" Tables'
+o_IncludeCaption.Name = "o_IncludeCaption"
+o_IncludeList.Name = "o_IncludeList"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SJ01HETL
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label2
+[PARENT] SUBFOX_INCLUDES.o_PF.Page3
+[START PROPERTIES]
+AutoSize = .T.
+BackStyle = 0
+Caption = 'Which "excluded" files are "versioned" in this project?'
+FontBold = .T.
+FontName = "Tahoma"
+FontSize = 8
+Height = 15
+Left = 9
+Name = "Label2"
+Top = 8
+Width = 308
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SJ01HETM
+[CLASS] linklisteditor
+[CLASSLOC] picker.vcx
+[BASECLASS] container
+[OBJNAME] o_PickList
+[PARENT] SUBFOX_INCLUDES.o_PF.Page3
+[START PROPERTIES]
+Anchor = 15
+Height = 240
+Left = 9
+Name = "o_PickList"
+Top = 27
+Width = 357
+b_ExcAll.Name = "b_ExcAll"
+b_ExcSelected.Name = "b_ExcSelected"
+b_IncAll.Name = "b_IncAll"
+b_IncSelected.Name = "b_IncSelected"
+o_ExcludeCaption.Caption = "Excluded Files"
+o_ExcludeCaption.Name = "o_ExcludeCaption"
+o_ExcludeList.Name = "o_ExcludeList"
+o_IncludeCaption.Caption = 'Non-embedded "Versioned" Files'
+o_IncludeCaption.Name = "o_IncludeCaption"
+o_IncludeList.Name = "o_IncludeList"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[START PROPERTIES]
+Arial, 0, 9, 5, 15, 12, 32, 3, 0
+Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+[END PROPERTIES]
+[EOF]
