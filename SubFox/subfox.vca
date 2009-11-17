@@ -1,0 +1,1125 @@
+SCCTEXT Version 4.0.0.2
+PLATFORM C(8,0),UNIQUEID C(10,0),TIMESTAMP N(10,0),CLASS M(4,0),CLASSLOC M(4,0),BASECLASS M(4,0),OBJNAME M(4,0),PARENT M(4,0),PROPERTIES M(4,0),PROTECTED M(4,0),METHODS M(4,0),OBJCODE M(4,0),OLE M(4,0),OLE2 M(4,0),RESERVED1 M(4,0),RESERVED2 M(4,0),RESERVED3 M(4,0),RESERVED4 M(4,0),RESERVED5 M(4,0),RESERVED6 M(4,0),RESERVED7 M(4,0),RESERVED8 M(4,0),USER M(4,0)
+1252
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] Class     
+[START RESERVED1]
+VERSION =   3.00[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _15T0SXGE6
+[CLASS] container
+[BASECLASS] container
+[OBJNAME] ie
+[START PROPERTIES]
+BackColor = 255,255,255
+BorderWidth = 0
+Height = 186
+Name = "ie"
+Width = 350
+cachepath = 
+destroycacheonexit = .F.
+fontface = Arial
+fontsize = 10
+temphtmlfname = 
+[END PROPERTIES]
+[START PROTECTED]
+gentemphtmlfile^
+purgefolder^
+temphtmlfname^
+[END PROTECTED]
+[START METHODS]
+PROCEDURE Destroy
+this.PurgeCache()
+
+ENDPROC
+PROCEDURE Resize
+this.OnResize()
+ENDPROC
+PROCEDURE generatetempcache
+this.PurgeCache()
+DO WHILE .T.
+	this.CachePath = ADDBS( SYS(2023) ) + RIGHT( SYS(2015), 7 )
+	IF FILE( this.CachePath ) OR DIRECTORY( this.CachePath )
+		LOOP
+	ENDIF
+	TRY
+		MKDIR (this.CachePath)
+	CATCH
+		this.CachePath = ""
+	ENDTRY
+	EXIT
+ENDDO
+this.DestroyCacheOnExit = .T. && !EMPTY( this.CachePath ) OR this.DestroyCacheOnExit
+RETURN !EMPTY( this.CachePath ) AND DIRECTORY( this.CachePath )
+ENDPROC
+PROCEDURE gentemphtmlfile
+LOCAL a,b,c
+
+IF EMPTY( this.TempHTMLFName ) AND !EMPTY( this.CachePath ) AND DIRECTORY( this.CachePath )
+	DO WHILE .T.
+		a = RIGHT( SYS(2015), 7 ) + ".htm"
+		b = ADDBS( this.CachePath ) + a
+		IF !FILE( b ) AND !DIRECTORY( b )
+			TRY
+				STRTOFILE( "", b )
+			CATCH
+			ENDTRY
+			this.TempHTMLFName = IIF( FILE( b ), JUSTFNAME( b ), "" )
+			EXIT
+		ENDIF
+	ENDDO
+ENDIF
+a = IIF( EMPTY( this.CachePath ) OR EMPTY( this.TempHTMLFName ), ;
+			"", ADDBS( this.CachePath ) + this.TempHTMLFName )
+RETURN a
+ENDPROC
+PROCEDURE htmlencode
+LPARAMETERS sHTML
+
+sHTML = STRTRAN( sHTML, '&', "&amp;" )
+sHTML = STRTRAN( sHTML, '<', "&lt;" )
+sHTML = STRTRAN( sHTML, '>', "&gt;" )
+RETURN sHTML
+ENDPROC
+PROCEDURE isready
+RETURN (this.IE.ReadyState == 4) && complete
+ENDPROC
+PROCEDURE onresize
+*--	LOCAL nLeft, nTop, nWidth, nHeight
+
+*--	DOEVENTS
+*--	WITH this.IE
+*--		nLeft   = 0 && .Left
+*--		nTop    = 0 && .Top
+*--		nWidth  = this.Width - nLeft
+*--		nHeight = this.Height - nTop
+*--		.Move( nLeft, nTop, nWidth + 1, nHeight )
+*--		.Move( nLeft, nTop, nWidth, nHeight )
+*--	ENDWITH
+
+ENDPROC
+PROCEDURE purgecache
+IF !EMPTY( this.CachePath )
+	IF this.DestroyCacheOnExit
+		this.PurgeFolder( this.CachePath )
+	ENDIF
+	this.CachePath = ""
+ENDIF
+
+ENDPROC
+PROCEDURE purgefolder
+LPARAMETERS sPath
+LOCAL a,b,c, nSubDirCnt
+LOCAL ARRAY aTemp[1], aSubDirs[1]
+
+IF !DIRECTORY( sPath )
+	RETURN
+ENDIF
+c = ADIR( aTemp, ADDBS( sPath ) + "*.*", "D" )
+b = 0
+DIMENSION aSubDirs[MAX(1,c)]
+FOR a = 1 TO c
+	IF LEFT( aTemp[a,1], 1 ) != "."
+		IF "D" $ aTemp[a,5]
+			b = b + 1
+			aSubDirs[b] = aTemp[a,1]
+		ELSE
+			DELETE FILE (ADDBS(sPath) + aTemp[a,1])
+		ENDIF
+	ENDIF
+ENDFOR
+DIMENSION aTemp[1]
+FOR a = 1 TO b
+	IF !this.PurgeFolder( ADDBS( sPath ) + aSubDirs[a] )
+		RETURN .F.
+	ENDIF
+ENDFOR
+RMDIR (sPath)
+
+ENDPROC
+PROCEDURE scriptevent
+LPARAMETERS sAction, oParameters
+
+ENDPROC
+PROCEDURE visible_assign
+LPARAMETERS vNewVal
+this.Visible = m.vNewVal
+this.IE.Visible = this.Visible
+
+
+ENDPROC
+PROCEDURE writehtml
+LPARAMETERS sHTML
+LOCAL a
+
+sHTML = IIF( VARTYPE( sHTML ) == 'C', sHTML, "" )
+sHTML = STRTRAN( sHTML, CHR(0), '' )
+IF NOT "<body" $ LOWER( sHTML )
+	LOCAL a, cScript
+	a = RIGHT( TRANSFORM( this.BackColor, "@0" ), 6 )
+	a = [#] + SUBSTR( a, 5, 2 ) + SUBSTR( a, 3, 2 ) + SUBSTR( a, 1, 2 )
+	TEXT TO cScript NOSHOW PRETEXT ' '
+		<SCRIPT ID=clientEventHandlersJS LANGUAGE=javascript>
+		document.oncontextmenu = 
+			function document_oncontextmenu()
+				{ return false; };
+		document.onkeypress = 
+			function (evt) {
+				if (event.keyCode == 27) location.href = "vfps://close/";
+				return true;
+			};
+		</SCRIPT>
+	ENDTEXT
+	sHTML = [<html><head>] + cScript + [</head><body bgcolor="] + a ;
+		  + [" scroll="auto"><font style="FONT-SIZE: ] + TRANSFORM( INT( this.FontSize ) ) ;
+		  + [pt; FONT-FAMILY: ] + this.FontFace + [; FONT-STYLE: normal">] ;
+		  + sHTML + [</font></body></html>]
+ENDIF
+DO WHILE VARTYPE( this.IE.Document ) != 'O'
+ENDDO
+a = this.GenTempHTMLFile()
+IF EMPTY( a )
+	this.IE.Document.Open()
+	this.IE.Document.Write( sHTML )
+	this.IE.Document.Close()
+	this.IE.Refresh2()
+ELSE
+	IF FILE( a )
+		DELETE FILE (a)
+	ENDIF
+	STRTOFILE( sHTML, a )
+	this.IE.Navigate( a )
+ENDIF
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+3[END RESERVED2]
+[START RESERVED3]
+*generatetempcache 
+*gentemphtmlfile 
+*htmlencode 
+*isready 
+*onresize 
+*purgecache 
+*purgefolder 
+*scriptevent 
+*visible_assign 
+*writehtml 
+cachepath
+destroycacheonexit
+fontface
+fontsize Specifies the font size for text displayed with an object.
+temphtmlfname
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _15T0URTN2
+[CLASS] ie_eventtimer
+[CLASSLOC] subfox.vcx
+[BASECLASS] timer
+[OBJNAME] EventTimer
+[PARENT] ie
+[START PROPERTIES]
+Left = 8
+Name = "EventTimer"
+Top = 8
+action = 
+parameters = .NULL.
+[END PROPERTIES]
+[START PROTECTED]
+TRUE
+[END PROTECTED]
+[START METHODS]
+PROCEDURE Timer
+IF this.Enabled
+	this.Enabled = .F.
+	this.Reset()
+	LOCAL sAction, oParms
+	sAction = this.Action
+	oParms = this.Parameters
+	this.Action = ""
+	this.Parms = NULL
+	IF !EMPTY( sAction )
+		this.parent.ScriptEvent( sAction, oParms )
+	ENDIF
+ENDIF
+ENDPROC
+PROCEDURE fire
+LPARAMETERS sAction, oParameters
+
+this.Action = IIF( VARTYPE( sAction ) == 'C', sAction, "" )
+this.Parameters = IIF( VARTYPE( oParameters ) == 'O', oParameters, NULL )
+this.Interval = 1
+this.Enabled = .T.
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _15T0SZIZY
+[CLASS] olecontrol
+[BASECLASS] olecontrol
+[OBJNAME] IE
+[PARENT] ie
+[START PROPERTIES]
+Anchor = 15
+Height = 200
+Left = 0
+Name = "IE"
+Top = 0
+Width = 350
+[END PROPERTIES]
+[START PROTECTED]
+TRUE
+[END PROTECTED]
+[START METHODS]
+PROCEDURE BeforeNavigate2
+LPARAMETERS pdisp, sURL, nFlags, sTargetFrameName, PostData, Headers, bCancel
+LOCAL a,b,c, i, lVFP, cHTML, cAction, oWebForm, oElement, oParameters, nPos, nCnt, cParam
+LOCAL cValue, cOption, oException, cElementName, lHandled, sURLParameters
+LOCAL ARRAY aParamList[1]
+
+IF m.sURL = "http:///" OR m.sURL = "https:///"
+	bCancel = .T.
+	RETURN
+ENDIF
+*!*	IF !this.Parent.lRendering AND INLIST(LOWER(JUSTFNAME(m.sURL)), "loading.htm", "loadinet.htm")
+*!*		bCancel = .T.
+*!*		RETURN
+*!*	ENDIF
+
+lVFP = LOWER( LEFTC( sURL, 5 ) ) = "vfps:"
+* oParameters = NEWOBJECT( "ParameterCollection", "ParamCollection.prg" )
+oParameters = CREATEOBJECT( "IE_Parms" )
+nPos = AT_C('?', sURL)
+IF nPos > 0 && grab sURL parameters
+	nCnt = ALINES( aParamList, SUBSTRC( sURL, nPos + 1 ), .T., '&' )
+	FOR i = 1 TO nCnt
+		nPos = AT_C('=', aParamList[i])
+		IF nPos > 0
+			cParam = LEFTC(aParamList[i], nPos - 1)
+			cValue = SUBSTRC(aParamList[i], nPos + 1)
+			
+			IF !EMPTY(cParam)
+				IF cParam == "url"
+					EXIT  && if we get to a url statement, assume the rest of it is our link
+				ENDIF
+				TRY
+					oParameters.Add(cValue, cParam)
+				CATCH TO oException
+				ENDTRY
+			ENDIF
+		ELSE
+			IF !EMPTY(aParamList[i])
+				TRY
+					oParameters.Add('', aParamList[i])
+				CATCH TO oException
+				ENDTRY
+			ENDIF
+		ENDIF
+	ENDFOR
+	nPos = AT_C( "url=", sURL )
+	IF nPos > 0
+		TRY
+			oParameters.Add( SUBSTRC( sURL, nPos + 4 ), "url" )
+		CATCH
+		ENDTRY
+	ENDIF
+ENDIF
+IF VARTYPE( this.Document ) == 'O' && grab form parameters
+	FOR EACH oWebForm IN this.Document.Forms
+		FOR EACH oElement IN oWebForm.elements
+			m.cElementName = oElement.ID
+			IF EMPTY( m.cElementName )
+				m.cElementName = oElement.Name
+			ENDIF
+			IF !EMPTY( m.cElementName )
+				TRY
+					oParameters.Add( oElement.Value, m.cElementName )
+				CATCH
+				ENDTRY
+			ENDIF
+		ENDFOR
+	ENDFOR
+ENDIF
+
+m.sURLParameters = ''
+IF !m.lVFP
+	m.cAction = m.sURL
+ELSE
+	m.nPos = AT_C( '?', m.sURL )
+	m.cAction = SUBSTRC( IIF( nPos > 0, LEFTC( m.sURL, m.nPos - 1 ), m.sURL ), 6 )
+	IF LEFTC( m.cAction, 2 ) == "//"
+		m.cAction = SUBSTRC( m.cAction, 3 )
+	ENDIF
+	IF RIGHTC( m.cAction, 1 ) == "/"
+		m.cAction = LEFTC( m.cAction, LENC( m.cAction ) - 1 )
+	ENDIF
+ENDIF
+
+* uncomment to show all parameters found on the page
+*!*	FOR i = 1 TO oParameters.Count
+*!*		MESSAGEBOX(oParameters.GetKey(i) + "=" + TRANSFORM(oParameters.Item(i)))
+*!*	ENDFOR
+
+IF m.lVFP
+	bCancel = .T.
+*!*		this.Parent.cAction = m.cAction
+*!*		this.Parent.oParameters = m.oParameters
+*!*		this.Parent.lDoRefresh = (m.cAction == "refresh" OR !ISNULL(oParameters.Get("refresh", .NULL.)))
+	this.Parent.EventTimer.Fire( m.cAction, m.oParameters )
+ENDIF
+
+
+ENDPROC
+PROCEDURE DownloadBegin
+*!*	IF EMPTY( this.RestorePath ) AND !EMPTY( this.parent.CachePath )
+*!*		this.RestorePath = SYS(5) + SYS(2003)
+*!*		CD (this.parent.CachePath)
+*!*	ENDIF
+
+ENDPROC
+PROCEDURE DownloadComplete
+*!*	IF !EMPTY( this.RestorePath )
+*!*		CD (this.RestorePath)
+*!*		this.RestorePath = ""
+*!*	ENDIF
+
+ENDPROC
+PROCEDURE Init
+this.Anchor = 0
+this.Move( 0,0, this.Parent.Width, this.Parent.Height )
+this.Anchor = 15
+this.AddProperty( "RestorePath", "" )
+this.Navigate("about:blank")
+ENDPROC
+PROCEDURE Refresh
+NODEFAULT
+
+ENDPROC
+[END METHODS]
+[BINSTART OLE]
+CHECKSUM=15757
+[BINEND OLE]
+[BINSTART OLE2]
+CHECKSUM=16181
+[BINEND OLE2]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] ie
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _15T0UPK46
+[CLASS] timer
+[BASECLASS] timer
+[OBJNAME] ie_eventtimer
+[START PROPERTIES]
+Height = 23
+Name = "ie_eventtimer"
+Width = 23
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE fire
+LPARAMETERS sAction, oParameters
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+*fire 
+action
+parameters
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] ie_eventtimer
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SI10EOYK
+[CLASS] collection
+[BASECLASS] collection
+[OBJNAME] ie_parms
+[START PROPERTIES]
+Height = 23
+Name = "ie_parms"
+Width = 23
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE get
+LPARAMETERS cParamName, xDefault
+LOCAL xResult
+
+TRY
+	xResult = this.Item( cParamName )
+	xDefault = IIF( PCOUNT() > 1, xDefault, '' )
+CATCH
+	xResult = IIF( PCOUNT() > 1, xDefault, '' )
+ENDTRY
+IF VARTYPE( xResult ) == 'C'
+	xResult = STRTRAN( xResult, "%20", ' ' )
+ENDIF
+RETURN xResult
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+*get 
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] ie_parms
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2JK0U827Y
+[CLASS] toolbar
+[BASECLASS] toolbar
+[OBJNAME] sftoolbar
+[START PROPERTIES]
+Caption = "SubFox"
+Height = 28
+Left = 0
+Name = "sftoolbar"
+Top = 0
+Width = 155
+onetime = .F.
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+PUBLIC oSubFoxToolbar
+oSubFoxToolbar = this
+this.Dock(0)
+this.Show()
+* this.CreateMenuBars()
+ENDPROC
+PROCEDURE createmenubars
+LOCAL i,s, aBars[1], iPad, iBar
+
+IF this.OneTime
+	RETURN
+ENDIF
+this.OneTime = .T.
+
+WITH oSubFoxToolbar
+	DEFINE POPUP _msubfox MARGIN RELATIVE SHADOW COLOR SCHEME 4
+
+	DEFINE BAR 1234 OF _mfile BEFORE _mfi_import PROMPT "SubFox" PICTURE "images\subfox16.bmp"
+	ON BAR 1234 OF _mfile ACTIVATE POPUP _msubfox
+
+	DEFINE BAR 1 OF _msubfox PICTURE .b_Translate.Picture ;
+		PROMPT ALLTRIM( STRTRAN( .b_Translate.ToolTipText, "SubFox:", "", 1, 1, 1 ) )
+* "Setup Versioned Files..."
+	ON SELECTION BAR 1 OF _msubfox oSubFoxToolbar.b_Translate.Click()
+	DEFINE BAR 2 OF _msubfox PICTURE .b_Config.Picture ;
+		PROMPT ALLTRIM( STRTRAN( .b_Config.ToolTipText, "SubFox:", "", 1, 1, 1 ) )
+* "Translate Source Files..."
+	ON SELECTION BAR 2 OF _msubfox oSubFoxToolbar.b_Config.Click()
+	DEFINE BAR 3 OF _msubfox PICTURE .b_Help.Picture ;
+		PROMPT ALLTRIM( STRTRAN( .b_Help.ToolTipText, "SubFox:", "", 1, 1, 1 ) )
+* "Help"
+	ON SELECTION BAR 3 OF _msubfox oSubFoxToolbar.b_Help.Click()
+	DEFINE BAR 4 OF _msubfox PROMPT "\-"
+	DEFINE BAR 5 OF _msubfox PICTURE .b_Download.Picture ;
+		PROMPT ALLTRIM( STRTRAN( .b_Download.ToolTipText, "SubFox:", "", 1, 1, 1 ) )
+* "Download from Repository..."
+	ON SELECTION BAR 5 OF _msubfox oSubFoxToolbar.b_Download.Click()
+	DEFINE BAR 6 OF _msubfox PICTURE .b_EditConflicts.Picture ;
+		PROMPT ALLTRIM( STRTRAN( .b_EditConflicts.ToolTipText, "SubFox:", "", 1, 1, 1 ) )
+	ON SELECTION BAR 6 OF _msubfox oSubFoxToolbar.b_EditConflicts.Click()
+* "Resolve Conflicts..."
+	DEFINE BAR 7 OF _msubfox PICTURE .b_Upload.Picture ;
+		PROMPT ALLTRIM( STRTRAN( .b_Upload.ToolTipText, "SubFox:", "", 1, 1, 1 ) )
+* "Upload to Repository..."
+	ON SELECTION BAR 7 OF _msubfox oSubFoxToolbar.b_Upload.Click()
+	SET SYSMENU SAVE
+ENDWITH
+
+ENDPROC
+PROCEDURE visible_assign
+LPARAMETERS vNewVal
+
+IF TYPE( "m.vNewVal" ) != "L" && OR m.vNewVal == this.Visible
+	RETURN
+ENDIF
+this.Visible = m.vNewVal
+*--	IF this.Visible
+*--		this.CreateMenuBars()
+*--	ELSE
+*--		this.ReleaseMenuBars()
+*--	ENDIF
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+8[END RESERVED2]
+[START RESERVED3]
+*createmenubars 
+*releasemenubars 
+*visible_assign 
+onetime
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2JK0V4VUR
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] b_Config
+[PARENT] sftoolbar
+[START PROPERTIES]
+Caption = ""
+Height = 22
+Left = 104
+Name = "b_Config"
+Picture = images\gears16.bmp
+SpecialEffect = 2
+ToolTipText = "SubFox: Translate Source Files..."
+Top = 3
+Width = 23
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+DO FORM SubFox_Translator
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2JK0U9JEK
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] b_Download
+[PARENT] sftoolbar
+[START PROPERTIES]
+Caption = ""
+Height = 22
+Left = 5
+Name = "b_Download"
+Picture = images\download16.bmp
+SpecialEffect = 2
+ToolTipText = "SubFox: Download from Repository..."
+Top = 3
+Width = 23
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+DO FORM SubFox_Download
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2JK0UON6M
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] b_EditConflicts
+[PARENT] sftoolbar
+[START PROPERTIES]
+Caption = ""
+Height = 22
+Left = 28
+Name = "b_EditConflicts"
+Picture = images\merge16.bmp
+SpecialEffect = 2
+ToolTipText = "SubFox: Resolve Conflicts..."
+Top = 3
+Width = 23
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+DO FORM SubFox_ConflictEditor
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2JL0V9P4N
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] b_Help
+[PARENT] sftoolbar
+[START PROPERTIES]
+Caption = ""
+Height = 22
+Left = 127
+Name = "b_Help"
+Picture = images\help16.bmp
+SpecialEffect = 2
+ToolTipText = "SubFox: Help"
+Top = 3
+Width = 23
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+LOCAL s,ss
+
+s = ADDBS( HOME() ) + "SubFoxDocs.html"
+ss = "subfox documentation.html"
+IF FILE(ss)
+	IF FILE(s)
+		DELETE FILE (s)
+	ENDIF
+	*COPY FILE (ss) TO (s)
+	STRTOFILE( FILETOSTR(ss), s )
+ENDIF
+IF FILE(s)
+	DECLARE INTEGER ShellExecute IN shell32.DLL ;
+		INTEGER hWnd, STRING sAction, STRING sFileName, STRING sParams, STRING sDir, INTEGER nShowWin
+	IF ShellExecute( 0, "open", s, "", HOME(), 1 ) < 33 && Failure returns 32 or less
+		MESSAGEBOX( "Windows reported an error when attempting to open the SubFox help document", ;
+					64, "SubFox Internal Error" )
+	ENDIF
+ENDIF
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2JK0UBDW6
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] b_Translate
+[PARENT] sftoolbar
+[START PROPERTIES]
+Caption = ""
+Height = 22
+Left = 81
+Name = "b_Translate"
+Picture = images\include16.bmp
+SpecialEffect = 2
+ToolTipText = "SubFox: Setup Versioned Files..."
+Top = 3
+Width = 23
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+DO FORM SubFox_Includes
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2JK0U9JEL
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] b_Upload
+[PARENT] sftoolbar
+[START PROPERTIES]
+Caption = ""
+Height = 22
+Left = 51
+Name = "b_Upload"
+Picture = images\upload16.bmp
+SpecialEffect = 2
+ToolTipText = "SubFox: Upload to Repository..."
+Top = 3
+Width = 23
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+DO FORM SubFox_Upload
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2JK0UBDW5
+[CLASS] separator
+[BASECLASS] separator
+[OBJNAME] Separator1
+[PARENT] sftoolbar
+[START PROPERTIES]
+Height = 0
+Left = 81
+Name = "Separator1"
+Style = 1
+Top = 3
+Width = 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] sftoolbar
+[START PROPERTIES]
+Arial, 0, 9, 5, 15, 12, 32, 3, 0
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2JU0U44YL
+[CLASS] shape
+[BASECLASS] shape
+[OBJNAME] splitter
+[START PROPERTIES]
+BackColor = 128,128,128
+BorderStyle = 0
+BorderWidth = 0
+DrawMode = 7
+FillColor = 128,128,128
+FillStyle = 0
+Height = 200
+Name = "splitter"
+Width = 6
+anyundefinedmodes = .F.
+formresizepercent = 100
+isvertical = .T.
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+IF !DODEFAULT()
+	RETURN .F.
+ENDIF
+IF this.Width != this.Height
+	this.IsVertical = (this.Height > this.Width)
+ENDIF
+this.BackStyle = 0 && Transparent
+this.FillStyle = 1 && Transparent
+this.MousePointer = IIF( this.Width > this.Height, 7, 9 )
+this.ZOrder()
+this.AddProperty( "o_LinkedControls", CREATEOBJECT( "Collection" ) )
+
+ENDPROC
+PROCEDURE MouseDown
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+LOCAL i, oItem, nPos, nStartPos, nMinPos, nMaxPos, nOffset, sMyPosExpr
+
+IF nButton != 1
+	RETURN DODEFAULT( nButton, nShift, nXCoord, nYCoord )
+ENDIF
+IF this.o_LinkedControls.Count == 0
+	this.EnumSiblings()
+	IF this.o_LinkedControls.Count == 0
+		RETURN DODEFAULT( nButton, nShift, nXCoord, nYCoord )
+	ENDIF
+ENDIF
+IF PEMSTATUS( thisform, "Calibrate", 5 )
+	*-- resizeable form must react to the STARTING position of everything
+	thisform.Calibrate()
+ENDIF
+IF this.AnyUndefinedModes
+	this.AnyUndefinedModes = .F.
+	FOR EACH oItem IN this.o_LinkedControls
+		IF oItem.Mode == "?"
+			oItem.Mode = this.GuessObjectMode( oItem.Name )
+			this.AnyUndefinedModes = (oItem.Mode == "?" OR this.AnyUndefinedModes)
+		ENDIF
+	ENDFOR
+ENDIF
+STORE -1 TO nMinPos, nMaxPos
+this.GetDragRange( @nMinPos, @nMaxPos )
+this.BeforeDrag()
+* this.BackStyle = 1 && Opaque
+this.FillStyle = 0 && Solid (DrawMode = 7 && XOR)
+sMyPosExpr = IIF( this.IsVertical, "this.Left", "this.Top" )
+nStartPos = &sMyPosExpr
+nPos = nStartPos
+nOffset = this.GetMousePosition() - nStartPos
+DO WHILE MDOWN()
+	nPos = this.GetMousePosition() - nOffset
+	IF nMinPos >= 0
+		nPos = MAX( nMinPos, nPos )
+	ENDIF
+	IF nMaxPos >= 0
+		nPos = MIN( nMaxPos, nPos )
+	ENDIF
+	&sMyPosExpr = nPos
+	DOEVENTS
+ENDDO
+* KEYBOARD '{TAB}'
+* this.BackStyle = 0 && Transparent
+this.FillStyle = 1 && Transparent
+this.AfterDrag()
+IF nPos != nStartPos
+	i = this.Anchor
+	this.Anchor = i
+	this.SplitterMoved( nPos - nStartPos )
+ENDIF
+
+ENDPROC
+PROCEDURE getdragrange
+LPARAMETERS nMinPos, nMaxPos
+LOCAL n, s, oItem, oObj, sSizeExpr, sTarget
+
+STORE -1 TO nMinPos, nMaxPos
+sSizeExpr = IIF( this.IsVertical, "Width", "Height" )
+FOR EACH oItem IN this.o_LinkedControls
+	IF NOT oItem.Mode $ "<>" OR oItem.MinSize == 0
+		LOOP
+	ENDIF
+	s = "this.parent." + oItem.Name
+	oObj = IIF( TYPE( s ) != "O", NULL, &s )
+	IF ISNULL( oObj )
+		LOOP
+	ENDIF
+	sTarget = IIF( oItem.Mode == "<", "nMinPos", "nMaxPos" )
+	n = MAX( 0, oObj.&sSizeExpr - oItem.MinSize )
+	&sTarget = IIF( &sTarget == -1, n, MIN( n, &sTarget ) )
+ENDFOR
+nMinPos = IIF( nMinPos == -1, -1, IIF( this.IsVertical, this.Left, this.Top ) - nMinPos )
+nMaxPos = IIF( nMaxPos == -1, -1, IIF( this.IsVertical, this.Left, this.Top ) + nMaxPos )
+
+ENDPROC
+PROCEDURE getminsize
+LPARAMETERS sObjName, eMode
+LOCAL oItem
+
+sObjName = UPPER( sObjName )
+FOR EACH oItem IN this.o_LinkedControls
+	IF UPPER( oItem.Name ) == sObjName
+		eMode = oItem.Mode
+		RETURN IIF( oItem.Mode $ "<>", oItem.MinSize, 0 )
+	ENDIF
+ENDFOR
+RETURN 0
+
+ENDPROC
+PROCEDURE getmouseposition
+RETURN IIF( this.IsVertical, MCOL( WONTOP(), 3 ), MROW( WONTOP(), 3 ) )
+
+ENDPROC
+PROCEDURE guessobjectmode
+LPARAMETERS sObjName
+LOCAL oObj
+
+IF TYPE( "this.parent." + sObjName ) == "O"
+ENDIF
+oObj = this.parent.&sObjName
+DO CASE
+CASE ISNULL( oObj )
+	*-- do nothing
+CASE oObj.BaseClass == "Line"
+	RETURN "|"
+CASE (this.IsVertical AND oObj.Left >= this.Left) ;
+  OR (!this.IsVertical AND oObj.Top >= this.Top)
+	RETURN ">"
+CASE (this.IsVertical AND (oObj.Left + oObj.Width) <= (this.Left + this.Width)) ;
+  OR (!this.IsVertical AND (oObj.Top + oObj.Height) <= (this.Top + this.Height))
+	RETURN "<"
+ENDCASE
+RETURN "?"
+
+ENDPROC
+PROCEDURE linkto
+LPARAMETERS sObjName, sMode, nMinSize
+LOCAL s, oItem, eMode, oObj
+
+IF TYPE( 'sObjName' ) == 'O' AND !ISNULL( sObjName )
+	s = "sObjName.parent." + this.Name
+	IF TYPE( s ) == 'O' AND COMPOBJ( &s, this )
+		s = sObjName.Name
+		RELEASE sObjName
+		LOCAL sObjName
+		sObjName = s
+	ENDIF
+ENDIF
+IF TYPE( 'sObjName' ) != 'C' && OR TYPE( "this.parent." + sObjName ) != "O"
+	RETURN
+ENDIF
+sMode = IIF( EMPTY( sMode ) OR TYPE( 'sMode' ) != 'C', "", PROPER( ALLTRIM( sMode ) ) )
+DO CASE
+CASE EMPTY( sMode )
+	eMode = this.GuessObjectMode( sObjName )
+CASE sMode $ "Float,Move,|"
+	eMode = "|"
+CASE sMode $ "Above,Left,<"
+	eMode = "<"
+CASE sMode $ "Below,Right,>"
+	eMode = ">"
+CASE OTHERWISE && sMode $ "Undefined,?"
+	eMode = "?"
+ENDCASE
+IF TYPE( 'nMinSize' ) != 'N'
+	nMinSize = 0
+	oObj = IIF( TYPE( "this.parent." + sObjName ) != "O", NULL, this.parent.&sObjName )
+	IF !ISNULL( oObj )
+		s = IIF( this.IsVertical, "MinWidth", "MinHeight" )
+		IF TYPE( "oObj." + s ) != 'N'
+			s = SUBSTR( s, 4 )
+		ENDIF
+		IF TYPE( "oObj." + s ) == 'N'
+			nMinSize = oObj.&s
+		ENDIF
+		oObj = NULL && discard obj ref
+	ENDIF
+ENDIF
+FOR EACH oItem IN this.o_LinkedControls
+	IF UPPER( oItem.Name ) == UPPER( sObjName )
+		IF eMode != "?"
+			oItem.Mode = eMode
+		ENDIF
+		IF nMinSize > 0
+			oItem.MinSize = nMinSize
+		ENDIF
+		RETURN
+	ENDIF
+ENDFOR
+this.AnyUndefinedModes = (sMode == "?" OR this.AnyUndefinedModes)
+oItem = CREATEOBJECT( "Empty" )
+ADDPROPERTY( oItem, "Name", sObjName )
+ADDPROPERTY( oItem, "Mode", eMode )
+ADDPROPERTY( oItem, "MinSize", nMinSize )
+this.o_LinkedControls.Add( oItem, oItem.Name )
+
+ENDPROC
+PROCEDURE onformresize
+LPARAMETERS cx,cy
+LOCAL i,n,s, nPixels, nLeftGrowth, nRightGrowth, oItem, oObj, sSizeExpr, sTarget, sFloatExpr, sLeftExpr, sRightExpr
+
+nPixels = IIF( PCOUNT() < 2, cx, IIF( this.IsVertical, cx, cy ) )
+IF EMPTY( nPixels )
+	RETURN
+ENDIF
+nLeftGrowth = FLOOR( nPixels * this.FormResizePercent / 100 )
+nRightGrowth = nPixels - nLeftGrowth
+IF this.o_LinkedControls.Count == 0
+	this.EnumSiblings()
+	IF this.o_LinkedControls.Count == 0
+		RETURN
+	ENDIF
+ENDIF
+IF nPixels < 0 && growth cannot violate minimums
+	sSizeExpr = IIF( this.IsVertical, "Width", "Height" )
+	FOR EACH oItem IN this.o_LinkedControls
+		IF NOT oItem.Mode $ "<>" OR oItem.MinSize == 0
+			LOOP
+		ENDIF
+		s = "this.parent." + oItem.Name
+		oObj = IIF( TYPE( s ) != "O", NULL, &s )
+		IF ISNULL( oObj )
+			LOOP
+		ENDIF
+		n = MIN( 0, oItem.MinSize - oObj.&sSizeExpr ) && maximum allowable shrinkage (neg nbr)
+		sTarget = IIF( oItem.Mode == "<", "nLeftGrowth", "nRightGrowth" )
+		IF &sTarget < n && shrinkage is TOO much
+			&sTarget = n
+			sTarget = IIF( sTarget == "nLeftGrowth", "nRightGrowth", "nLeftGrowth" )
+			&sTarget = nPixels - n
+		ENDIF
+	ENDFOR
+	RELEASE oItem
+	LOCAL oItem
+ENDIF
+*-- now we move/resize on behalf of the form
+sFloatExpr = IIF( this.IsVertical, "oObj.Left = oObj.Left + nLeftGrowth", "oObj.Top = oObj.Top + nLeftGrowth" )
+sLeftExpr = IIF( this.IsVertical, "oObj.Width = oObj.Width + nLeftGrowth", "oObj.Height = oObj.Height + nLeftGrowth" )
+sRightExpr = IIF( this.IsVertical, "oObj.Move( oObj.Left + nLeftGrowth, oObj.Top, oObj.Width + nRightGrowth, oObj.Height )", ;
+								   "oObj.Move( oObj.Left, oObj.Top + nLeftGrowth, oObj.Width, oObj.Height + nRightGrowth )" )
+FOR EACH oItem IN this.o_LinkedControls
+	IF oItem.Mode $ "<>|"
+		s = "this.parent." + oItem.Name
+		oObj = IIF( TYPE( s ) != "O", NULL, &s )
+		DO CASE
+		CASE ISNULL( oObj )
+			*-- do nothing
+		CASE oItem.Mode == "|" AND nLeftGrowth != 0
+			&sFloatExpr
+		CASE oItem.Mode == "<" AND nLeftGrowth != 0
+			&sLeftExpr
+		CASE oItem.Mode == ">"
+			&sRightExpr
+		ENDCASE
+	ENDIF
+ENDFOR
+oObj = this
+&sFloatExpr
+* thisform.Refresh()
+
+ENDPROC
+PROCEDURE splittermoved
+LPARAMETERS nPixels
+LOCAL i,s, oItem, oObj, sFloatExpr, sLeftExpr, sRightExpr
+
+sFloatExpr = IIF( this.IsVertical, "oObj.Left = oObj.Left + nPixels", "oObj.Top = oObj.Top + nPixels" )
+sLeftExpr = IIF( this.IsVertical, "oObj.Width = oObj.Width + nPixels", "oObj.Height = oObj.Height + nPixels" )
+sRightExpr = IIF( this.IsVertical, "oObj.Move( oObj.Left + nPixels, oObj.Top, oObj.Width - nPixels, oObj.Height )", ;
+								   "oObj.Move( oObj.Left, oObj.Top + nPixels, oObj.Width, oObj.Height - nPixels )" )
+FOR EACH oItem IN this.o_LinkedControls
+	IF oItem.Mode $ "<>|"
+		s = "this.parent." + oItem.Name
+		oObj = IIF( TYPE( s ) != "O", NULL, &s )
+		IF ISNULL( oObj )
+			LOOP
+		ENDIF
+		DO CASE
+		CASE oItem.Mode == "|"
+			&sFloatExpr
+		CASE oItem.Mode == "<"
+			&sLeftExpr
+		CASE oItem.Mode == ">"
+			&sRightExpr
+		ENDCASE
+		IF oItem.Mode $ "<|>"
+			i = oObj.Anchor
+			oObj.Anchor = i
+		ENDIF
+	ENDIF
+ENDFOR
+thisform.Refresh()
+
+ENDPROC
+PROCEDURE windowshrinkevent
+LPARAMETERS nPixels
+
+ENDPROC
+[END METHODS]
+[START RESERVED1]
+Class[END RESERVED1]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED3]
+*afterdrag Put code here to restore any ActiveX (OLE) controls previously hidden by the HideOLEControls method.
+*beforedrag Put code here to HIDE any ActiveX (OLE) controls the splitter may have to traverse across.
+*enumsiblings Place THIS.LINKTO() calls here to connect the splitter to adjacent controls.
+*getdragrange 
+*getminsize 
+*getmouseposition 
+*guessobjectmode 
+*linkto Parameter is a sibling object affected by the splitter.
+*onformresize 
+*splittermoved 
+*windowshrinkevent Called by resizable form prior to shrinking controls within the form.  Allows minimum sizes to be maintained.
+anyundefinedmodes
+formresizepercent
+isvertical
+[END RESERVED3]
+[START RESERVED6]
+Pixels[END RESERVED6]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[OBJNAME] splitter
+[EOF]
