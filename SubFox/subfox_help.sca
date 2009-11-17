@@ -1,0 +1,145 @@
+SCCTEXT Version 4.0.0.2
+PLATFORM C(8,0),UNIQUEID C(10,0),TIMESTAMP N(10,0),CLASS M(4,0),CLASSLOC M(4,0),BASECLASS M(4,0),OBJNAME M(4,0),PARENT M(4,0),PROPERTIES M(4,0),PROTECTED M(4,0),METHODS M(4,0),OBJCODE M(4,0),OLE M(4,0),OLE2 M(4,0),RESERVED1 M(4,0),RESERVED2 M(4,0),RESERVED3 M(4,0),RESERVED4 M(4,0),RESERVED5 M(4,0),RESERVED6 M(4,0),RESERVED7 M(4,0),RESERVED8 M(4,0),USER M(4,0)
+1252
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] Screen    
+[START RESERVED1]
+VERSION =   3.00[END RESERVED1]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SI0NL414
+[CLASS] dataenvironment
+[BASECLASS] dataenvironment
+[OBJNAME] Dataenvironment
+[START PROPERTIES]
+DataSource = .NULL.
+Height = 0
+Left = 0
+Name = "Dataenvironment"
+Top = 0
+Width = 0
+[END PROPERTIES]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED4]
+1[END RESERVED4]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SI0NL415
+[CLASS] form
+[BASECLASS] form
+[OBJNAME] SUBFOX_HELP
+[START PROPERTIES]
+AutoCenter = .T.
+Caption = "SubFox Help"
+DoCreate = .T.
+Height = 375
+Icon = subfox.ico
+MinButton = .F.
+Name = "SUBFOX_HELP"
+Width = 500
+WindowType = 1
+restorecmd = 
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Destroy
+EXECSCRIPT( this.RestoreCmd )
+
+ENDPROC
+PROCEDURE Init
+LPARAMETERS sTitle, sHTML
+LOCAL s
+
+IF PCOUNT() == 1
+	sHTML = sTitle
+	sTitle = ""
+ENDIF
+* this.RestoreCmd = "ON KEY LABEL ESC"
+* ON KEY LABEL ESC _VFP.ActiveForm.Release()
+sTitle = ALLTRIM( EVL( sTitle, "SubFox Help" ) )
+sHTML = EVL( sHTML, "This is some sample text" )
+sHTML = STRTRAN( sHTML, CHR(10), "" )
+sHTML = STRTRAN( sHTML, CHR(13) + CHR(13), "</p><p>" )
+sHTML = STRTRAN( sHTML, CHR(13), CHR(13) + CHR(9) )
+sHTML = STRTRAN( sHTML, "</p><p>", CHR(13) + "</p>" + CHR(13) + "<p>" + CHR(13) )
+
+*-- prefix with style stuff
+TEXT TO sHTML NOSHOW PRETEXT 2 TEXTMERGE
+	<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+	<html>
+	<head>
+	<style>
+		BODY {
+			FONT-WEIGHT: normal; FONT-SIZE: 10pt; FONT-FAMILY: Tahoma, Arial, Helvetica;
+			TEXT-TRANSFORM: none; BACKGROUND: White; COLOR: Black;
+		}
+		H1 {
+			FONT-WEIGHT: bold; FONT-SIZE: 18pt; COLOR: #0E70E7;
+		}
+		IMG { BORDER: 0; }
+		A { COLOR: #3399FF; TEXT-DECORATION: none; }
+		A:visited { COLOR: #3399FF; }
+		A:hover { COLOR: #FF6600; TEXT-DECORATION: underline; }
+	</style>
+	</head>
+	<body>
+	<img src="icon.png" align=left style="margin-right:12px; margin-bottom:12px"></img>
+	<h1><<sTitle>></h1>
+	<p>
+	<<sHTML>>
+	</p>
+	</body>
+	</html>
+ENDTEXT
+_cliptext = sHTML
+IF this.o_IE.GenerateTempCache()
+	COPY FILE ("SubFox64.png") TO (ADDBS( this.o_IE.CachePath ) + "icon.png")
+ENDIF
+this.o_IE.WriteHTML( sHTML )
+
+ENDPROC
+PROCEDURE Load
+IF ATC( "SubFox.vcx", SET( "classlib" ) ) == 0
+	SET CLASSLIB TO SubFox ADDITIVE
+ENDIF
+
+ENDPROC
+[END METHODS]
+[START RESERVED3]
+restorecmd
+[END RESERVED3]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SI11BEDY
+[CLASS] ie
+[CLASSLOC] subfox.vcx
+[BASECLASS] container
+[OBJNAME] o_IE
+[PARENT] SUBFOX_HELP
+[START PROPERTIES]
+Anchor = 15
+EventTimer.Name = "EventTimer"
+Height = 375
+Left = 0
+Name = "o_IE"
+Top = 0
+Width = 500
+ie.Height = 200
+ie.Left = 0
+ie.Name = "ie"
+ie.Top = 0
+ie.Width = 350
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[START PROPERTIES]
+Arial, 0, 9, 5, 15, 12, 32, 3, 0
+[END PROPERTIES]
+[EOF]
