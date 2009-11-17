@@ -1,0 +1,564 @@
+SCCTEXT Version 4.0.0.2
+PLATFORM C(8,0),UNIQUEID C(10,0),TIMESTAMP N(10,0),CLASS M(4,0),CLASSLOC M(4,0),BASECLASS M(4,0),OBJNAME M(4,0),PARENT M(4,0),PROPERTIES M(4,0),PROTECTED M(4,0),METHODS M(4,0),OBJCODE M(4,0),OLE M(4,0),OLE2 M(4,0),RESERVED1 M(4,0),RESERVED2 M(4,0),RESERVED3 M(4,0),RESERVED4 M(4,0),RESERVED5 M(4,0),RESERVED6 M(4,0),RESERVED7 M(4,0),RESERVED8 M(4,0),USER M(4,0)
+1252
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] Screen    
+[START RESERVED1]
+VERSION =   3.00[END RESERVED1]
+[START RESERVED8]
+subfox.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2JM0Q973A
+[CLASS] dataenvironment
+[BASECLASS] dataenvironment
+[OBJNAME] Dataenvironment
+[START PROPERTIES]
+DataSource = .NULL.
+Height = 0
+Left = 0
+Name = "Dataenvironment"
+Top = 0
+Width = 0
+[END PROPERTIES]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED4]
+2[END RESERVED4]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2JM0Q973B
+[CLASS] form
+[BASECLASS] form
+[OBJNAME] SUBFOX_TRANSLATOR
+[START PROPERTIES]
+AutoCenter = .T.
+Caption = "Translate Files - SubFox"
+DataSession = 2
+DoCreate = .T.
+Height = 357
+Icon = subfox.ico
+MaxButton = .F.
+MinButton = .F.
+Name = "SUBFOX_TRANSLATOR"
+ShowTips = .T.
+Width = 410
+WindowType = 1
+o_encoder = .NULL.
+s_pjxname = 
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Activate
+ON KEY LABEL F1 _SCREEN.ActiveForm.ShowHelp()
+ENDPROC
+PROCEDURE Deactivate
+ON KEY LABEL F1 && nothing
+
+ENDPROC
+PROCEDURE Destroy
+ON KEY LABEL F1 && nothing
+
+ENDPROC
+PROCEDURE Init
+*-- (c) Copyright 2009 Holden Data Systems
+*-- All rights reserverd.
+
+LPARAMETERS sParmFName, eAction
+LOCAL o,s,t1,t2
+
+* Activate Screen
+this.MinWidth = this.Width
+this.MinHeight = this.Height
+this.o_Encoder = NEWOBJECT( "SubFoxTranslator", "SubFox Translation Classes.prg" )
+
+o = NEWOBJECT( "SubFoxProject", "SubFox Project Class.prg" )
+o.s_ExtraCursorFields = "l_Changed L, l_Decode L, l_Encode L"
+IF !o.Open( IIF( EMPTY( sParmFName ) OR !FILE( sParmFName ), "", sParmFName ) )
+	RETURN .F.
+ENDIF
+this.s_PjxName = o.s_PjxName
+SELECT cFile
+DELETE FOR !l_Versioned OR !l_Encoded
+INDEX ON IIF( e_Type == FILETYPE_DATABASE, '0', '1' ) + LEFT(s_FName,119) ;
+		 TAG s_DBCFirst COLLATE "GENERAL"
+
+IF !this.VerifyNoConflicts()
+	RETURN .F.
+ENDIF
+
+SELECT cFile
+SCAN FOR l_Encoded
+	s = FORCEPATH( RTRIM( s_FName ), RTRIM( s_Path ) )
+	t1 = this.FDateTime( s )
+	t2 = this.FDateTime( s + "." + SUBFOX_PRIVATE_EXT )
+	IF FILE( s + "." + SUBFOX_PRIVATE_EXT ) AND t1 == t2 AND LOWER( JUSTEXT( s ) ) == "vcx"
+		this.TestVCXForChanges( s )
+	ELSE
+		REPLACE l_Changed	WITH t1 != t2, ;
+				l_Decode	WITH t1 < t2
+	ENDIF
+ENDSCAN
+REPLACE l_Encode WITH (l_Changed AND !l_Decode) ALL
+
+this.LoadPickLists()
+IF !EMPTY( eAction )
+	this.o_PF.ActivePage = IIF( eAction == "encode", 1, 2 )
+ENDIF
+
+ENDPROC
+PROCEDURE Load
+SET EXCLUSIVE OFF
+SET DELETED ON
+SET TALK OFF
+SET CENTURY ON
+SET EXACT OFF
+
+ENDPROC
+PROCEDURE QueryUnload
+NODEFAULT
+this.b_Cancel.Click()
+ENDPROC
+PROCEDURE capturepicklists
+LOCAL i,s,o,k
+
+SELECT cFile
+REPLACE l_Encode WITH .F., l_Decode WITH .F. ALL
+SET ORDER TO k_RecKey
+o = this.o_PF.Page1.o_Picker.GetSelectedItems()
+FOR EACH k IN o
+	IF SEEK( k )
+		REPLACE l_Encode WITH .T.
+	ENDIF
+ENDFOR
+o = this.o_PF.Page2.o_Picker.GetSelectedItems()
+FOR EACH k IN o
+	IF SEEK( k )
+		REPLACE l_Decode WITH .T.
+	ENDIF
+ENDFOR
+
+ENDPROC
+PROCEDURE convertthefiles
+LOCAL i, sFName, lDoingDecode
+
+*--	k_RecKey C(10) DEFAULT SYS(2015), s_FName C(120), ;
+*--	s_Path C(240), e_Type C(1), l_Changed L, l_Decode L, l_Encode L)
+lDoingDecode = (this.o_PF.ActivePage == 2)
+USE (DBF('cFile')) AGAIN IN 0 ALIAS cParent
+SELECT cFile
+SET ORDER TO s_DBCFirst
+SCAN FOR IIF( lDoingDecode, cFile.l_Decode, cFile.l_Encode )
+	IF e_Type == FILETYPE_DBTABLE AND EMPTY( s_Path )
+		*-- handle separately here
+	ELSE
+		sFName = FORCEPATH( RTRIM( SUBSTR( cFile.s_FName, AT( "!", cFile.s_FName ) + 1 ) ), RTRIM( cFile.s_Path ) )
+	ENDIF
+	IF lDoingDecode
+		IF !FILE( sFName + "." + SUBFOX_PRIVATE_EXT )
+			this.LogError( 'Non-existent encoded file "' + sFName + "." + SUBFOX_PRIVATE_EXT + '"' )
+		ELSE
+			this.Decode( sFName )
+		ENDIF
+	ELSE
+		IF !FILE( sFName )
+			this.LogError( 'Non-existent source file "' + sFName )
+		ELSE
+			this.Encode( sFName )
+		ENDIF
+	ENDIF
+ENDSCAN
+USE IN cParent
+
+ENDPROC
+PROCEDURE decode
+LPARAMETERS sFName
+
+this.o_Encoder.ConvertFile( sFName + "." + SUBFOX_PRIVATE_EXT, sFName )
+
+ENDPROC
+PROCEDURE encode
+LPARAMETERS sFName
+
+this.o_Encoder.ConvertFile( sFName, sFName + "." + SUBFOX_PRIVATE_EXT )
+
+ENDPROC
+PROCEDURE fdatetime
+LPARAMETERS sFName
+
+RETURN CTOT( IIF( !FILE( sFName ), "", DTOC( FDATE(sFName) ) + " " + FTIME(sFName) ) )
+ENDPROC
+PROCEDURE istextfile
+LPARAMETERS sFName
+
+RETURN ("," + LOWER( JUSTEXT( sFName ) ) + ",") $ ("," + SUBFOX_TEXT_EXTS + ",")
+
+ENDPROC
+PROCEDURE loadpicklists
+LOCAL i, o1,o2
+
+o1 = this.o_PF.Page1.o_Picker
+o2 = this.o_PF.Page2.o_Picker
+o1.Clear()
+o2.Clear()
+SELECT cFile
+SET ORDER TO s_FName
+SCAN FOR l_Changed OR this.o_ShowAllFiles.Value
+	o1.Add( RTRIM( cFile.s_FName ), cFile.k_RecKey, cFile.l_Encode )
+	IF cFile.e_Type != FILETYPE_PROJECT
+		o2.Add( RTRIM( cFile.s_FName ), cFile.k_RecKey, cFile.l_Decode )
+	ENDIF
+ENDSCAN
+
+ENDPROC
+PROCEDURE showhelp
+LOCAL s, oPopup
+
+TEXT TO s NOSHOW PRETEXT 2
+	Subversion requires text-based files to properly resolve multi-user editing
+	conflicts.  Although Visual FoxPro uses binary files (DBFs) for most of it's source code,
+	all of them can be represented as text, and in a fairly readable format.
+
+	SubFox automatically encodes files before uploading, and decodes files after downloading.
+	However, SubFox is not a comprehensive Subversion client.  It is presumed that you will
+	occasionally use another client (such as Tortoise) to do odd jobs.  Under these conditions,
+	you will need to "manually" encode or decode files to complete the process of moving files.
+
+	This tool <b>only does one operation</b> -- either encoding or decoding.  It automatically selects
+	the files that are in need of processing based upon date-time stamps, but then
+	offers you the chance to pick-and-choose which files to process.
+ENDTEXT
+DO FORM SubFox_Help WITH s NAME oPopup
+
+ENDPROC
+PROCEDURE testvcxforchanges
+LPARAMETERS sVcxFName
+LOCAL i,s,a[1], t1,t2
+
+s = FILETOSTR( sVcxFName + "." + SUBFOX_PRIVATE_EXT )
+i = ATC( "Classes-FREETEXT=" + CRLF, s )
+s = IIF( i == 0, "", SUBSTR( s, i + LEN("Classes-FREETEXT=" + CRLF) ) )
+i = ATC( CRLF + "*rec*", s )
+s = IIF( i == 0, s, LEFT( s, i+1 ) )
+nCnt = IIF( EMPTY( s ), 0, ALINES( a, STRTRAN( LOWER(s), CHR(9), "" ), 5 ) )
+t1 = this.FDateTime( sVcxFName )
+FOR i = 1 TO nCnt
+	t2 = this.FDateTime( sVcxFName + "-" + a[i] + "." + SUBFOX_PRIVATE_EXT )
+	IF t2 != t1 && in case of a SVN-REVERT, the date-time-stamp will be EARLIER but still need to be DECODED
+		REPLACE l_Changed	WITH .T., ;
+				l_Decode	WITH .T. ;
+			 IN cFile
+		EXIT
+	ENDIF
+ENDFOR
+
+ENDPROC
+PROCEDURE untranslatable
+LPARAMETERS sFName
+
+RETURN ("," + LOWER( JUSTEXT( sFName ) ) + ",") $ ("," + SUBFOX_UNENCODEABLE_EXTS + ",")
+
+ENDPROC
+PROCEDURE verifynoconflicts
+LOCAL i,s,o, oErr, sPath, oEvents, oStatus, oClient AS PushOkSvn.SVNClient
+LOCAL sRepoFName
+
+*-- NOTE: Bootstrap situation might not have the target project 
+*--	tracked by SubVersion -- just the Export mechanism.
+
+oClient = CreateObject("PushOkSvn.SVNClient" )
+oEvents = NEWOBJECT( "PushOkSvn_SVNClient_Events", "SVN Event Listener.prg" )
+EVENTHANDLER( oClient, oEvents )
+* BINDEVENT( oEvents, "WcNotify", this, "onNotify" )
+oClient.InitClient()
+sPath = JUSTPATH( this.s_PjxName )
+TRY
+	oStatus = oClient.GetStatus( sPath, .T., "HEAD", .F. )
+	oErr = NULL
+CATCH TO oErr
+	LOCAL aErrInfo[1]
+	AERROR( aErrInfo )
+ENDTRY
+WAIT CLEAR
+* UNBINDEVENTS( oEvents )
+IF !ISNULL( oErr )
+	IF "is not a working copy" $ aErrInfo[3]
+		*-- this is NOT a "versioned" folder, which is Okay for decoding features
+		this.o_PF.Page1.Enabled = .F.
+		RETURN
+	ENDIF
+	MESSAGEBOX( "Error accessing local Subversion tracking data:" + CR ;
+			  + TRANSFORM( aErrInfo[7] ) + " - " + aErrInfo[3], 16, "Subversion Error" )
+	RETURN .F.
+ENDIF
+
+*-- process results --*
+SELECT cFile
+SET ORDER TO s_FName
+FOR EACH sRepoFName IN oStatus.Files
+	o = oStatus.Binary.Item(sRepoFName)
+	IF o.TextStatus == SvnWcStatusKindConflicted
+		i = MESSAGEBOX( "There are outstanding CONFLICTS yet to be resolved." + CR ;
+					  + "Would you like to fix it/them now?", 4 + 32, "Conflicts Detected" )
+		IF i == 6 && yes
+			DO FORM SubFox_ConflictEditor
+		ENDIF
+		RETURN .F.
+	ENDIF
+ENDFOR
+
+ENDPROC
+[END METHODS]
+[START RESERVED3]
+*capturepicklists 
+*convertthefiles 
+*decode 
+*encode 
+*fdatetime 
+*istextfile 
+*loadpicklists 
+*logerror 
+*showhelp 
+*testvcxforchanges 
+*untranslatable 
+*verifynoconflicts 
+o_encoder
+s_pjxname
+[END RESERVED3]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2JM0QQYX8
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] b_Cancel
+[PARENT] SUBFOX_TRANSLATOR
+[START PROPERTIES]
+Anchor = 12
+Cancel = .T.
+Caption = "Cancel"
+FontName = "Tahoma"
+FontSize = 8
+Height = 27
+Left = 313
+Name = "b_Cancel"
+Top = 318
+Width = 84
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+thisform.Release()
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2JM0QQYX7
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] b_Ok
+[PARENT] SUBFOX_TRANSLATOR
+[START PROPERTIES]
+Anchor = 12
+Caption = "Ok"
+Default = .T.
+FontName = "Tahoma"
+FontSize = 8
+Height = 27
+Left = 225
+Name = "b_Ok"
+Top = 318
+Width = 84
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+LOCAL s
+
+thisform.CapturePickLists()
+SELECT cFile
+IF !thisform.o_ShowAllFiles.Value
+	REPLACE l_Encode WITH .F., l_Decode WITH .F. ;
+		FOR !cFile.l_Changed
+ENDIF
+s = IIF( thisform.o_PF.ActivePage == 1, "l_Encode", "l_Decode" )
+LOCATE FOR &s
+IF !FOUND()
+	MESSAGEBOX( "Please select the file(s) for wish to " + LOWER( SUBSTR( s, 3 ) ) + ".", ;
+				64, "Selection Required" )
+	RETURN
+ENDIF
+IF thisform.ConvertTheFiles()
+	thisform.Release()
+ENDIF
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SJ01US9Y
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label2
+[PARENT] SUBFOX_TRANSLATOR
+[START PROPERTIES]
+Anchor = 4
+AutoSize = .T.
+BackStyle = 0
+Caption = "Press F1 for Help"
+FontName = "Tahoma"
+FontSize = 8
+ForeColor = 0,0,255
+Height = 15
+Left = 118
+MousePointer = 15
+Name = "Label2"
+Top = 324
+Width = 84
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+thisform.ShowHelp()
+
+ENDPROC
+PROCEDURE MouseEnter
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+
+this.ForeColor = 0xFF00FF
+this.FontUnderline = .T.
+
+ENDPROC
+PROCEDURE MouseLeave
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+
+this.ForeColor = 0xFF0000
+this.FontUnderline = .T.
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2JM0QMFS5
+[CLASS] pageframe
+[BASECLASS] pageframe
+[OBJNAME] o_PF
+[PARENT] SUBFOX_TRANSLATOR
+[START PROPERTIES]
+Anchor = 15
+ErasePage = .T.
+Height = 301
+Left = 10
+Name = "o_PF"
+Page1.Caption = "Encode - before Uploading"
+Page1.FontName = "Tahoma"
+Page1.FontSize = 8
+Page1.Name = "Page1"
+Page2.Caption = "Decode - after Downloading"
+Page2.FontName = "Tahoma"
+Page2.FontSize = 8
+Page2.Name = "Page2"
+PageCount = 2
+TabStop = .F.
+TabStyle = 1
+Top = 8
+Width = 390
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SJ01VFSB
+[CLASS] linklisteditor
+[CLASSLOC] picker.vcx
+[BASECLASS] container
+[OBJNAME] o_Picker
+[PARENT] SUBFOX_TRANSLATOR.o_PF.Page1
+[START PROPERTIES]
+Anchor = 15
+Height = 257
+Left = 9
+Name = "o_Picker"
+Top = 7
+Width = 367
+b_ExcAll.Name = "b_ExcAll"
+b_ExcSelected.Name = "b_ExcSelected"
+b_IncAll.Name = "b_IncAll"
+b_IncSelected.Name = "b_IncSelected"
+o_ExcludeCaption.Caption = "Changed Files"
+o_ExcludeCaption.Name = "o_ExcludeCaption"
+o_ExcludeList.Name = "o_ExcludeList"
+o_IncludeCaption.Caption = "Files to Encode into Upload Format"
+o_IncludeCaption.Name = "o_IncludeCaption"
+o_IncludeList.Name = "o_IncludeList"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SJ01VFSC
+[CLASS] linklisteditor
+[CLASSLOC] picker.vcx
+[BASECLASS] container
+[OBJNAME] o_Picker
+[PARENT] SUBFOX_TRANSLATOR.o_PF.Page2
+[START PROPERTIES]
+Anchor = 15
+Height = 257
+Left = 9
+Name = "o_Picker"
+Top = 7
+Width = 367
+b_ExcAll.Name = "b_ExcAll"
+b_ExcSelected.Name = "b_ExcSelected"
+b_IncAll.Name = "b_IncAll"
+b_IncSelected.Name = "b_IncSelected"
+o_ExcludeCaption.Caption = "Changed Files"
+o_ExcludeCaption.Name = "o_ExcludeCaption"
+o_ExcludeList.Name = "o_ExcludeList"
+o_IncludeCaption.Caption = "Files to Decode into Native VFP Format"
+o_IncludeCaption.Name = "o_IncludeCaption"
+o_IncludeList.Name = "o_IncludeList"
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2JM0RSYWR
+[CLASS] checkbox
+[BASECLASS] checkbox
+[OBJNAME] o_ShowAllFiles
+[PARENT] SUBFOX_TRANSLATOR
+[START PROPERTIES]
+Alignment = 0
+Anchor = 6
+AutoSize = .T.
+BackStyle = 0
+Caption = "Show All Files"
+FontName = "Tahoma"
+FontSize = 8
+Height = 15
+Left = 12
+Name = "o_ShowAllFiles"
+Top = 323
+Value = .F.
+Width = 82
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE InteractiveChange
+STORE IIF( this.Value, "All Files", "Changed Files" ) ;
+	TO thisform.o_PF.Page1.o_Picker.o_ExcludeCaption.Caption, ;
+	   thisform.o_PF.Page2.o_Picker.o_ExcludeCaption.Caption
+thisform.CapturePickLists()
+thisform.LoadPickLists()
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[START PROPERTIES]
+Arial, 0, 9, 5, 15, 12, 32, 3, 0
+Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+[END PROPERTIES]
+[EOF]
