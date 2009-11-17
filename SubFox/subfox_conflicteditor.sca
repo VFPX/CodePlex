@@ -1,0 +1,1424 @@
+SCCTEXT Version 4.0.0.2
+PLATFORM C(8,0),UNIQUEID C(10,0),TIMESTAMP N(10,0),CLASS M(4,0),CLASSLOC M(4,0),BASECLASS M(4,0),OBJNAME M(4,0),PARENT M(4,0),PROPERTIES M(4,0),PROTECTED M(4,0),METHODS M(4,0),OBJCODE M(4,0),OLE M(4,0),OLE2 M(4,0),RESERVED1 M(4,0),RESERVED2 M(4,0),RESERVED3 M(4,0),RESERVED4 M(4,0),RESERVED5 M(4,0),RESERVED6 M(4,0),RESERVED7 M(4,0),RESERVED8 M(4,0),USER M(4,0)
+1252
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] Screen    
+[START RESERVED1]
+VERSION =   3.00[END RESERVED1]
+[START RESERVED8]
+subfox.h[END RESERVED8]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2JU0QSLKM
+[CLASS] dataenvironment
+[BASECLASS] dataenvironment
+[OBJNAME] Dataenvironment
+[START PROPERTIES]
+DataSource = .NULL.
+Height = 0
+Left = 0
+Name = "Dataenvironment"
+Top = 0
+Width = 0
+[END PROPERTIES]
+[START RESERVED2]
+1[END RESERVED2]
+[START RESERVED4]
+2[END RESERVED4]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2JU0QSLKN
+[CLASS] form
+[BASECLASS] form
+[OBJNAME] SUBFOX_CONFLICTEDITOR
+[START PROPERTIES]
+AutoCenter = .T.
+Caption = "Conflict Editor  - SubFox"
+DataSession = 2
+DoCreate = .T.
+Height = 317
+Icon = subfox.ico
+MaxButton = .F.
+MinButton = .F.
+Name = "SUBFOX_CONFLICTEDITOR"
+ShowTips = .T.
+Width = 410
+WindowType = 1
+s_pjxname = 
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Activate
+ON KEY LABEL F1 _SCREEN.ActiveForm.ShowHelp()
+ENDPROC
+PROCEDURE Deactivate
+ON KEY LABEL F1 && nothing
+
+ENDPROC
+PROCEDURE Destroy
+ON KEY LABEL F1 && nothing
+
+ENDPROC
+PROCEDURE Init
+*-- (c) Copyright 2009 Holden Data Systems
+*-- All rights reserverd.
+
+this.MinWidth = this.Width
+this.MinHeight = this.Height
+x = 8
+o = NEWOBJECT( "SubFoxProject", "SubFox Project Class.prg" )
+o.s_ExtraCursorFields = "l_Conflicted L, l_IsText L, l_IsImage L, l_Deleted L, " ;
+					  + "s_OldExt C(12), s_NewExt C(12), s_WorkExt C(12), " ;
+					  + "l_SDT_Phase1 L, l_SDT_Phase2 L"
+IF !o.Open()
+	RETURN .F.
+ENDIF
+this.s_PjxName = o.s_PjxName
+SELECT cFile
+DELETE FOR !l_Versioned
+
+this.LoadSDTHoldFile()
+
+*-- SDT Interface
+*--		IF !FILE( FORCEPATH( SDT_UPD_PEND_FNAME, JUSTPATH( this.s_PjxName  ) ) )
+
+*-- get the list of conflicts
+IF !this.QueryServerStatuses()
+	RETURN .F.
+ENDIF
+
+SELECT cFile
+LOCATE FOR l_Conflicted
+IF !FOUND()
+	MESSAGEBOX( "There are no conflicts reported by Subversion at this time", 64, "No Conflicts" )
+	RETURN .F.
+ENDIF
+* DELETE FOR !l_Conflicted
+REPLACE l_IsText WITH (l_Encoded OR AT( "," + JUSTEXT( RTRIM( s_FName ) ) + ",", "," + SUBFOX_TEXT_EXTS + "," ) > 0) ;
+	FOR !l_Deleted AND l_Conflicted
+REPLACE l_IsImage WITH (AT( "," + JUSTEXT( RTRIM( s_FName ) ) + ",", "," + SUBFOX_IMAGE_EXTS + "," ) > 0) ;
+	FOR !l_IsText AND !l_Deleted AND l_Conflicted
+this.LoadPickLists()
+
+ENDPROC
+PROCEDURE Load
+SET EXCLUSIVE OFF
+SET DELETED ON
+SET TALK OFF
+SET CENTURY ON
+SET EXACT OFF
+
+ENDPROC
+PROCEDURE QueryUnload
+NODEFAULT
+this.Release()
+
+ENDPROC
+PROCEDURE applysdtupdates
+LOCAL i,s, oDBCX, oSDT, oErr, bResult, sCWD
+
+sCWD = CURDIR()
+CHDIR (JUSTPATH( this.s_PjxName ))
+TRY
+	oDBCX = NEWOBJECT( "DBCXMgr", "DBCXMgr.vcx" )
+	IF oDBCX.oSDTMgr.NeedUpdate()
+		oDBCX.oSDTMgr.Update()
+	ENDIF
+	bResult = .T.
+CATCH TO oErr
+	bResult = .F.
+	MESSAGEBOX( "Error occured within Stonefield Database Toolkit UPDATE function:" + CR ;
+			  + TRANSFORM( oErr.ErrorNo ) + ": " + oErr.Message, 16, "Unexpected Error" )
+ENDTRY
+CHDIR (sCWD)
+RETURN bResult
+
+ENDPROC
+PROCEDURE decode
+LPARAMETERS sFName
+LOCAL i,s,ss,o, sIn, sOut, oErr, oEvents, oStatus, oClient AS PushOkSvn.SVNClient
+
+*-- must verify there are no OTHER conflicts in that affect our handling of THIS file
+*-- VCXs have multiple encoded files that must ALL be free of conflicts before decoding
+*-- DBFs must have their parent DBC decoded AND SDT decoded and "updated" before decoding
+
+sIn = LOWER( sFName )
+sOut = LEFT( sIn, RAT( ".", sIn ) - 1 )
+oTranslator = NEWOBJECT( "SubFoxTranslator", "SubFox Translation Classes.prg" )
+this.SeekInCFile( sIn )
+IF cFile.l_SDT_Phase1
+	oTranslator.RestoreToTable( sIn, sOut )
+	REPLACE l_SDT_Phase1 WITH .F. IN cFile && it's done
+	this.RewriteSDTHoldFile()
+	RETURN
+ENDIF
+IF cFile.l_SDT_Phase2
+	oTranslator.RestoreToTable( sIn, sOut )
+	REPLACE l_SDT_Phase2 WITH .F. IN cFile && it's done
+	this.RewriteSDTHoldFile()
+	RETURN
+ENDIF
+IF (PADR( JUSTEXT( sOut ), 3 ) == "vcx")
+	*-- verify there are no remaining conflicts for other "parts" of this classlib
+	sOut = FORCEEXT( sOut, "vcx" )
+	SELECT cFile
+	LOCATE FOR PADR( JUSTEXT( RTRIM( s_FName ) ), 3 ) == "vcx" ;
+		   AND JUSTSTEM( RTRIM( s_FName ) ) == JUSTSTEM( sOut ) ;
+		   AND l_Conflicted
+	IF FOUND()
+		RETURN && overall the VCX is still conflicted
+	ENDIF
+ENDIF
+
+
+oTranslator.RestoreToTable( sIn, sOut )
+
+ENDPROC
+PROCEDURE getfiletype
+LPARAMETERS sFName
+LOCAL sExt
+
+sExt = UPPER( JUSTEXT( sFName ) )
+IF sExt == UPPER( SUBFOX_PRIVATE_EXT )
+	sExt = UPPER( JUSTEXT( LEFT( sFName, RAT( ".", sFName ) - 1 ) ) )
+ENDIF
+DO CASE
+CASE INLIST( sExt, "PRG", "FXP" )
+	RETURN FILETYPE_PROGRAM
+CASE sExt == "SCX"
+	RETURN FILETYPE_FORM
+CASE sExt == "VCX"
+	RETURN FILETYPE_CLASSLIB
+CASE PADR( sExt, 4 ) == "VCX-"
+	RETURN ""
+CASE sExt == "DBC"
+	RETURN FILETYPE_DATABASE
+CASE sExt == "DBF"
+	RETURN FILETYPE_FREETABLE
+CASE sExt == "QPR"
+	RETURN FILETYPE_QUERY
+CASE sExt == "FRX"
+	RETURN FILETYPE_REPORT
+CASE sExt == "LBX"
+	RETURN FILETYPE_LABEL
+CASE sExt == "MNX"
+	RETURN FILETYPE_MENU
+CASE INLIST( sExt, "H", "TXT", "INI", "XML" )
+	RETURN FILETYPE_TEXT
+ENDCASE
+RETURN FILETYPE_OTHER
+
+ENDPROC
+PROCEDURE inquotes
+LPARAMETERS sFName
+LOCAL cQuote
+
+cQuote = IIF( " " $ sFName, ["], [] )
+RETURN cQuote + sFName + cQuote
+
+ENDPROC
+PROCEDURE loadpicklists
+LOCAL i, o1,o2
+
+SELECT cFile
+SET ORDER TO s_FName
+WITH this.o_PF.Page1.o_Files
+	.Clear()
+	SCAN FOR l_IsText AND !l_Deleted AND l_Conflicted
+		.AddListItem( RTRIM( s_FName ), RECNO() )
+	ENDSCAN
+	this.o_PF.Page1.Enabled = (.ListCount > 0)
+ENDWITH
+WITH this.o_PF.Page2.o_Files
+	.Clear()
+	SCAN FOR l_IsImage AND !l_Deleted AND l_Conflicted
+		.AddListItem( RTRIM( s_FName ), RECNO() )
+	ENDSCAN
+	this.o_PF.Page2.Enabled = (.ListCount > 0)
+ENDWITH
+WITH this.o_PF.Page3.o_Files
+	.Clear()
+	SCAN FOR l_Deleted AND l_Conflicted
+		.AddListItem( RTRIM( s_FName ), RECNO() )
+	ENDSCAN
+	this.o_PF.Page3.Enabled = (.ListCount > 0)
+ENDWITH
+WITH this.o_PF.Page4.o_Files
+	.Clear()
+	SCAN FOR !l_IsText AND !l_IsImage AND !l_Deleted AND l_Conflicted
+		.AddListItem( RTRIM( s_FName ), RECNO() )
+	ENDSCAN
+	this.o_PF.Page4.Enabled = (.ListCount > 0)
+ENDWITH
+
+ENDPROC
+PROCEDURE loadsdtholdfile
+LOCAL i,s,ss,a[1]
+
+*--	o.s_ExtraCursorFields = "l_Conflicted L, l_IsText L, l_IsImage L, l_Deleted L, " ;
+*--						  + "s_OldExt C(12), s_NewExt C(12), s_WorkExt C(12), " ;
+*--						  + "l_SDT_Phase1 L, l_SDT_Phase2 L"
+s = FORCEPATH( SDT_UPD_PEND_FNAME, JUSTPATH( this.s_PjxName ) )
+IF !FILE( s )
+	RETURN
+ENDIF
+s = FILETOSTR( s )
+i = ATC( "[" + SDT_TABLE_SECTION + "]", s )
+ss = IIF( i == 0, "", SUBSTR( s, i ) )
+s = IIF( i == 0, s, LEFT( s, i-1 ) )
+s = SUBSTR( s, AT( CRLF, s ) + 2 ) && trim off the leading "[SDT_META_FILES]"
+FOR i = 1 TO ALINES( a, s, 5 )
+	IF this.SeekInCFile( a[i] )
+		REPLACE l_SDT_Phase1 WITH .T. IN cFile
+	ENDIF
+ENDFOR
+IF !EMPTY( ss )
+	ss = SUBSTR( ss, AT( CRLF, ss ) + 2 ) && trim off the leading "[SDT_STATIC_TABLES]"
+	FOR i = 1 TO ALINES( a, ss, 5 )
+		IF this.SeekInCFile( a[i] )
+			REPLACE l_SDT_Phase2 WITH .T. IN cFile
+		ENDIF
+	ENDFOR
+ENDIF
+
+ENDPROC
+PROCEDURE onnotify
+LPARAMETERS oNotify
+
+WAIT WINDOW NOWAIT oNotify.Path
+
+ENDPROC
+PROCEDURE queryserverstatuses
+LOCAL i,s,ss,o, oErr, sPath, oEvents, oStatus, oClient AS PushOkSvn.SVNClient
+LOCAL sRepoFName, sLocalFName, lEncoded, lDeleted
+
+oClient = CreateObject("PushOkSvn.SVNClient" )
+oEvents = NEWOBJECT( "PushOkSvn_SVNClient_Events", "SVN Event Listener.prg" )
+EVENTHANDLER( oClient, oEvents )
+BINDEVENT( oEvents, "WcNotify", this, "onNotify" )
+oClient.InitClient()
+* sPath = "c:\projects\subfox\Test"
+sPath = JUSTPATH( this.s_PjxName )
+TRY
+	oStatus = oClient.GetStatus( sPath, .T., "HEAD", .F. )
+	oErr = NULL
+CATCH TO oErr
+	LOCAL aErrInfo[1]
+	AERROR( aErrInfo )
+ENDTRY
+WAIT CLEAR
+UNBINDEVENTS( oEvents )
+IF !ISNULL( oErr )
+	MESSAGEBOX( "Error accessing Subversion Repository Server:" + CR ;
+			  + TRANSFORM( aErrInfo[7] ) + " - " + aErrInfo[3], 16, "Subversion Error" )
+	RETURN .F.
+ENDIF
+
+*-- process results --*
+SELECT cFile
+SET ORDER TO s_FName
+FOR EACH sRepoFName IN oStatus.Files
+	o = oStatus.Binary.Item(sRepoFName)
+	IF o.TextStatus != SvnWcStatusKindConflicted ;
+	AND o.ReposTextStatus != SvnWcStatusKindConflicted
+		LOOP
+	ENDIF
+	sRepoFName = STRTRAN( sRepoFName, "/", "\" )
+	sLocalFName = LOWER( FULLPATH( sRepoFName ) )
+	lEncoded = (JUSTEXT( sLocalFName ) == SUBFOX_PRIVATE_EXT)
+	IF lEncoded
+		sLocalFName = LEFT( sLocalFName, RAT( ".", sLocalFName ) - 1 )
+		IF PADR( JUSTEXT( sLocalFName ), 4 ) == "vcx-"
+			*-- verify the "vcx" is still versioned in the project.
+			*-- If not, then sub-class files aren't either.
+			SEEK PADR( JUSTFNAME( FORCEEXT( sLocalFName, "vcx" ) ), 120 )
+			LOCATE FOR LOWER( RTRIM( s_Path ) ) == JUSTPATH( sLocalFName ) AND l_Encoded == lEncoded ;
+				  REST WHILE LOWER( RTRIM( s_FName ) ) == JUSTFNAME( FORCEEXT( sLocalFName, "vcx" ) )
+			lDeleted = !FOUND()
+			INSERT INTO cFile  (s_FName, s_Path, e_Type, l_Deleted, l_Encoded, l_Conflicted) ;
+						VALUES (JUSTFNAME( sLocalFName ), JUSTPATH( sLocalFName ), ;
+								FILETYPE_CLASSLIB, lDeleted, .T., .T.)
+			LOOP
+		ENDIF
+	ENDIF
+	SEEK PADR( JUSTFNAME( sLocalFName ), 120 )
+	LOCATE FOR LOWER( RTRIM( s_Path ) ) == LOWER( JUSTPATH( sLocalFName ) ) AND l_Encoded == lEncoded ;
+		  REST WHILE LOWER( RTRIM( s_FName ) ) == LOWER( JUSTFNAME( sLocalFName ) )
+	IF !FOUND()
+		e = this.GetFileType( sLocalFName )
+*		IF o.TextStatus == SvnWcStatusKindMissing AND !EMPTY( e )
+			INSERT INTO cFile  (s_FName, s_Path, e_Type, l_Deleted, l_Conflicted) ;
+						VALUES (JUSTFNAME( sRepoFName ), JUSTPATH( sRepoFName ), e, .T., .T.)
+*		ENDIF
+	ELSE
+		REPLACE l_Conflicted	WITH .T., ;
+				s_OldExt		WITH JUSTEXT( o.Entry.ConflictOld ), ;
+				s_NewExt		WITH JUSTEXT( o.Entry.ConflictNew ), ;
+				s_WorkExt		WITH IIF( EMPTY( o.Entry.ConflictWrk ), ;
+										  "", JUSTEXT( o.Entry.ConflictWrk ) ) ;
+			 IN cFile
+	ENDIF
+ENDFOR
+
+ENDPROC
+PROCEDURE rewritesdtholdfile
+LOCAL i,s, sFName
+
+sFName = FORCEPATH( SDT_UPD_PEND_FNAME, JUSTPATH( this.s_PjxName ) )
+IF FILE( sFName )
+	DELETE FILE (sFName) && pre-delete
+ENDIF
+SELECT cFile
+SET ORDER TO s_FName
+s = ""
+SCAN FOR l_SDT_Phase1
+	s = s + FORCEPATH( RTRIM( s_FName ), RTRIM( s_Path ) ) + CRLF
+ENDSCAN
+IF !EMPTY( s ) && there are still "some" hold files
+	s = "[" + SDT_META_SECTION + "]" + CRLF + s
+	LOCATE FOR l_SDT_Phase2
+	IF FOUND()
+		s = s + CRLF + "[" + SDT_TABLE_SECTION + "]" + CRLF
+		SCAN FOR l_SDT_Phase2
+			s = s + FORCEPATH( RTRIM( s_FName ), RTRIM( s_Path ) ) + CRLF
+		ENDSCAN
+	ENDIF
+	STRTOFILE( s, sFName )
+	RETURN
+ENDIF
+*-- there are no other "hold" files
+this.ApplySDTUpdates()
+SELECT cFile
+SET ORDER TO s_FName
+SCAN FOR l_SDT_Phase2
+	REPLACE l_SDT_Phase2 WITH .F.
+	IF !cFile.l_Conflicted
+		s = FORCEPATH( RTRIM( s_FName ), RTRIM( s_Path ) ) + "." + SUBFOX_PRIVATE_EXT
+		this.Decode( s )
+	ENDIF
+ENDSCAN
+
+ENDPROC
+PROCEDURE seekincfile
+LPARAMETERS sFName
+LOCAL i,b,s,ss
+
+s = LOWER( JUSTFNAME( sFName ) )
+IF JUSTEXT( s ) == SUBFOX_PRIVATE_EXT
+	s = LEFT( s, RAT( ".", s ) - 1 )
+ENDIF
+IF PADR( JUSTEXT( s ), 4 ) == "vcx-"
+	s = FORCEEXT( s, "vcx" )
+ENDIF
+b = SEEK( PADR(s,120), 'cFile', 's_FName' )
+IF b
+	i = SELECT(0)
+	SELECT cFile
+	LOCATE FOR RTRIM( s_Path ) == LOWER( JUSTPATH( sFName ) ) REST WHILE RTRIM( sFName ) == s
+	b = FOUND()
+	IF !b AND !EOF()
+		GO BOTTOM
+		IF !EOF()
+			SKIP
+		ENDIF
+	ENDIF
+	SELECT (i)
+ENDIF
+RETURN b
+
+ENDPROC
+PROCEDURE setpickedimage
+LPARAMETERS sImageObjName
+
+WITH this.o_PF.Page2
+	STORE !EMPTY( sImageObjName ) TO .b_EditMerge.Enabled, .b_Done.Enabled
+	STORE .F. TO .o_OldVersion.DottedOutline.Visible, ;
+				 .o_TheirVersion.DottedOutline.Visible, ;
+				 .o_MyVersion.DottedOutline.Visible
+	IF !EMPTY( sImageObjName )
+		.&sImageObjName..DottedOutline.Visible = .T.
+	ENDIF
+ENDWITH
+
+ENDPROC
+PROCEDURE showhelp
+LOCAL s, oPopup
+
+TEXT TO s NOSHOW PRETEXT 2
+	The Subversion download <i>surgically</i> inserts changes into your current working copy of the project.
+	Normally this occurs without fanfare, but occasionally Subversion cannot determine how to
+	perfectly merge your local edits with those being downloaded.  This is called a <i>conflict</i>.
+
+	When a conflict occurs, Subfox creates 4 files: a) The old <i>original</i> version, b) the version
+	<i>with your edits</i>, c) the version with <i>everyone else's</i> edits, and d) a composite with both your
+	edits and everyone elses merged together, but also with markup symbols to distiguish the changes.
+
+	There are two ways to resolve conflicts:
+
+	First, use the DIFF program included with Tortoise.  It shows side-by-side yours-and-theirs versions
+	with controls to let you pick which to use, and the ability to type-over whatever is necessary.
+
+	Second, you can simply pick which of the 3 <i>good</i> versions to accept as the <i>right</i> one (old, new-yours
+	or new-theirs).  This is the preferred method for bitmaps, icons, sound files, etc.
+ENDTEXT
+DO FORM SubFox_Help WITH s NAME oPopup
+
+ENDPROC
+[END METHODS]
+[START RESERVED3]
+*applysdtupdates 
+*decode 
+*getfiletype 
+*inquotes 
+*loadpicklists 
+*loadsdtholdfile 
+*onnotify 
+*queryserverstatuses 
+*rewritesdtholdfile 
+*seekincfile 
+*setpickedimage 
+*showhelp 
+s_pjxname
+[END RESERVED3]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SJ02AT1Y
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label2
+[PARENT] SUBFOX_CONFLICTEDITOR
+[START PROPERTIES]
+Anchor = 8
+AutoSize = .T.
+BackStyle = 0
+Caption = "Press F1 for Help"
+FontName = "Tahoma"
+FontSize = 8
+ForeColor = 0,0,255
+Height = 15
+Left = 316
+MousePointer = 15
+Name = "Label2"
+Top = 8
+Width = 84
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+thisform.ShowHelp()
+
+ENDPROC
+PROCEDURE MouseEnter
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+
+this.ForeColor = 0xFF00FF
+this.FontUnderline = .T.
+
+ENDPROC
+PROCEDURE MouseLeave
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+
+this.ForeColor = 0xFF0000
+this.FontUnderline = .T.
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2JU0R6OJ0
+[CLASS] pageframe
+[BASECLASS] pageframe
+[OBJNAME] o_PF
+[PARENT] SUBFOX_CONFLICTEDITOR
+[START PROPERTIES]
+Anchor = 15
+ErasePage = .T.
+Height = 301
+Left = 10
+Name = "o_PF"
+Page1.Caption = "Text Based"
+Page1.FontName = "Tahoma"
+Page1.FontSize = 8
+Page1.Name = "Page1"
+Page2.Caption = "Images"
+Page2.FontName = "Tahoma"
+Page2.FontSize = 8
+Page2.Name = "Page2"
+Page3.Caption = "Deleted"
+Page3.FontName = "Tahoma"
+Page3.FontSize = 8
+Page3.Name = "Page3"
+Page4.Caption = "All Others"
+Page4.FontName = "Tahoma"
+Page4.FontSize = 8
+Page4.Name = "Page4"
+PageCount = 4
+TabStop = .F.
+TabStyle = 1
+Top = 8
+Width = 390
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SJ027AIX
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] b_Done
+[PARENT] SUBFOX_CONFLICTEDITOR.o_PF.Page1
+[START PROPERTIES]
+Anchor = 9
+Caption = "Resolved"
+Enabled = .F.
+FontName = "Tahoma"
+FontSize = 8
+Height = 27
+Left = 284
+Name = "b_Done"
+TabIndex = 4
+Top = 49
+Width = 84
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+LOCAL i,s, sFName, sFrom, sTo
+
+*-- identify the file the user picked, then COPY it into position
+SELECT cFile
+GOTO this.Parent.o_Files.ListItemId IN cFile
+sFName = FORCEPATH( RTRIM( cFile.s_FName ), RTRIM( cFile.s_Path ) )
+
+*-- clean up the local environment *first*
+REPLACE l_Conflicted WITH .F. IN cFile && DELETE IN cFile
+WITH this.Parent.o_Files
+	i = .ListIndex
+	.RemoveItem( i )
+	.ListIndex = MIN( i, .ListCount )
+	.InteractiveChange()
+ENDWITH
+
+*-- Notify Subversion we have resolved the conflict
+LOCAL oEvents, oFName, oErr, oClient AS PushOkSvn.SVNClient
+oClient = CreateObject("PushOkSvn.SVNClient" )
+* oEvents = NEWOBJECT( "PushOkSvn_SVNClient_Events", "SVN Event Listener.prg" )
+oFName = CreateObject("PushOkSvn.StringVector")
+oFName.Add( sFName )
+* EVENTHANDLER( oClient, oEvents )
+* BINDEVENT( oEvents, "WcNotify", this, "onNotify" )
+oClient.InitClient()
+TRY
+	oClient.Resolved( oFName )
+	oErr = NULL
+CATCH TO oErr
+	LOCAL aErrInfo[1]
+	AERROR( aErrInfo )
+ENDTRY
+* WAIT CLEAR
+* UNBINDEVENTS( oEvents )
+IF !ISNULL( oErr )
+	MESSAGEBOX( "Error notifying Subversion of conflict resolution:" + CR ;
+			  + TRANSFORM( aErrInfo[7] ) + " - " + aErrInfo[3], 16, "Subversion Error" )
+	RETURN .F.
+ENDIF
+
+*-- Now we decode the file, if possible!
+IF JUSTEXT( sFName ) == SUBFOX_PRIVATE_EXT
+	thisform.Decode( sFName )
+ENDIF
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SJ027AIW
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] b_EditMerge
+[PARENT] SUBFOX_CONFLICTEDITOR.o_PF.Page1
+[START PROPERTIES]
+Anchor = 9
+Caption = "Edit/Merge"
+Enabled = .F.
+FontName = "Tahoma"
+FontSize = 8
+Height = 27
+Left = 284
+Name = "b_EditMerge"
+TabIndex = 3
+Top = 19
+Width = 84
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+LOCAL i,s, sFName, sOldFName, sTheirFName, sMyFName, sCWD
+
+*-- Beyond Compare Registry entry
+*--	"HKEY_CLASSES_ROOT\BeyondCompare.Snapshot\shell\open\command"
+*--	default="C:\Program Files\Beyond Compare 2\BC2.EXE" "%1"
+
+*-- identify the file the user picked, then COPY it into position
+SELECT cFile
+GOTO this.Parent.o_Files.ListItemId IN cFile
+sCWD = CURDIR()
+CHDIR (RTRIM( cFile.s_Path ))
+sFName = RTRIM( cFile.s_FName ) && FORCEPATH( RTRIM( cFile.s_FName ), RTRIM( cFile.s_Path ) )
+sOldFName = sFName + "." + RTRIM( cFile.s_OldExt )
+sTheirFName = sFName + "." + RTRIM( cFile.s_NewExt )
+sMyFName = sFName + IIF( EMPTY( s_WorkExt ), "", "." + RTRIM( s_WorkExt ) )
+
+IF this.Parent.o_UseBC.Value
+	s = thisform.InQuotes( "C:\Program Files\Beyond Compare 2\BC2.EXE" ) ;
+	  + " " + thisform.InQuotes( sTheirFName ) ;
+	  + " " + thisform.InQuotes( sMyFName ) ;
+	  + " /mergeoutput=" + thisform.InQuotes( sFName ) ;
+	  + " /title1=Theirs /title2=Mine"
+ELSE
+	s = 'TortoiseProc.exe /command:conflicteditor /path:"' + sFName + '"'
+ENDIF
+RUN /N &s
+CHDIR (sCWD)
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SJ027AIV
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label1
+[PARENT] SUBFOX_CONFLICTEDITOR.o_PF.Page1
+[START PROPERTIES]
+AutoSize = .T.
+BackStyle = 0
+Caption = "Conflicted Files"
+FontName = "Tahoma"
+FontSize = 8
+Height = 15
+Left = 9
+Name = "Label1"
+TabIndex = 1
+Top = 4
+Width = 74
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SJ027AIU
+[CLASS] listbox
+[BASECLASS] listbox
+[OBJNAME] o_Files
+[PARENT] SUBFOX_CONFLICTEDITOR.o_PF.Page1
+[START PROPERTIES]
+FontName = "Tahoma"
+FontSize = 8
+Height = 246
+Left = 9
+Name = "o_Files"
+TabIndex = 2
+Top = 19
+Width = 269
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE DblClick
+IF this.ListIndex > 0
+	this.Parent.b_EditMerge.Click()
+ENDIF
+
+
+ENDPROC
+PROCEDURE InteractiveChange
+STORE (this.ListIndex > 0) TO this.Parent.b_EditMerge.Enabled, this.Parent.b_Done.Enabled
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SJ027AIY
+[CLASS] checkbox
+[BASECLASS] checkbox
+[OBJNAME] o_UseBC
+[PARENT] SUBFOX_CONFLICTEDITOR.o_PF.Page1
+[START PROPERTIES]
+Alignment = 0
+Anchor = 9
+AutoSize = .T.
+BackStyle = 0
+Caption = "Beyond Compare"
+FontName = "Small Fonts"
+FontSize = 7
+Height = 13
+Left = 287
+Name = "o_UseBC"
+TabIndex = 5
+Top = 82
+Value = .F.
+Width = 90
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SJ027AJI
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] b_Done
+[PARENT] SUBFOX_CONFLICTEDITOR.o_PF.Page2
+[START PROPERTIES]
+Anchor = 9
+Caption = "Resolved"
+Enabled = .F.
+FontName = "Tahoma"
+FontSize = 8
+Height = 27
+Left = 288
+Name = "b_Done"
+Top = 53
+Width = 84
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+LOCAL i,s, sFName, sFrom, sTo
+
+*-- identify the file the user picked, then COPY it into position
+SELECT cFile
+GOTO this.Parent.o_Files.ListItemId IN cFile
+sFName = FORCEPATH( RTRIM( cFile.s_FName ), RTRIM( cFile.s_Path ) )
+sTo = LOWER( sFName )
+sFrom = IIF( this.Parent.o_OldVersion.DottedOutline.Visible, this.Parent.o_OldVersion.Image.Picture, ;
+		IIF( this.Parent.o_TheirVersion.DottedOutline.Visible, this.Parent.o_TheirVersion.Image.Picture, ;
+		IIF( this.Parent.o_MyVersion.DottedOutline.Visible, this.Parent.o_MyVersion.Image.Picture, ;
+			 "" ) ) )
+IF EMPTY( sFrom ) OR !FILE( sFrom )
+	MESSAGEBOX( "Click on the image to declare as THE IMAGE", 64, "Selection Required" )
+	RETURN
+ENDIF
+sTo = LOWER( sTo )
+IF NOT sFrom == sTo
+	s = SET( "SAFETY" )
+	SET SAFETY OFF
+	COPY FILE (sFrom) TO (sTo)
+	SET SAFETY &s
+ENDIF
+*-- clean up the local environment *first*
+DELETE IN cFile
+i = this.Parent.o_Files.ListIndex
+this.Parent.o_Files.RemoveItem( i )
+this.Parent.o_Files.ListIndex = MIN( i, this.Parent.o_Files.ListCount )
+this.Parent.o_Files.InteractiveChange()
+
+*-- Notify Subversion we have resolved the conflict
+LOCAL oEvents, oFName, oErr, oClient AS PushOkSvn.SVNClient
+oClient = CreateObject("PushOkSvn.SVNClient" )
+* oEvents = NEWOBJECT( "PushOkSvn_SVNClient_Events", "SVN Event Listener.prg" )
+oFName = CreateObject("PushOkSvn.StringVector")
+oFName.Add( sFName )
+* EVENTHANDLER( oClient, oEvents )
+* BINDEVENT( oEvents, "WcNotify", this, "onNotify" )
+oClient.InitClient()
+TRY
+	oClient.Resolved( oFName )
+	oErr = NULL
+CATCH TO oErr
+	LOCAL aErrInfo[1]
+	AERROR( aErrInfo )
+ENDTRY
+* WAIT CLEAR
+* UNBINDEVENTS( oEvents )
+IF !ISNULL( oErr )
+	MESSAGEBOX( "Error notifying Subversion of conflict resolution:" + CR ;
+			  + TRANSFORM( aErrInfo[7] ) + " - " + aErrInfo[3], 16, "Subversion Error" )
+	RETURN .F.
+ENDIF
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SJ027AJH
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] b_EditMerge
+[PARENT] SUBFOX_CONFLICTEDITOR.o_PF.Page2
+[START PROPERTIES]
+Anchor = 9
+Caption = "Edit/Merge"
+Enabled = .F.
+FontName = "Tahoma"
+FontSize = 8
+Height = 27
+Left = 288
+Name = "b_EditMerge"
+Top = 23
+Width = 84
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SJ027AJ0
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label1
+[PARENT] SUBFOX_CONFLICTEDITOR.o_PF.Page2
+[START PROPERTIES]
+AutoSize = .T.
+BackStyle = 0
+Caption = "Conflicted Files"
+FontName = "Tahoma"
+FontSize = 8
+Height = 15
+Left = 13
+Name = "Label1"
+TabIndex = 1
+Top = 8
+Width = 74
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SJ027AIZ
+[CLASS] listbox
+[BASECLASS] listbox
+[OBJNAME] o_Files
+[PARENT] SUBFOX_CONFLICTEDITOR.o_PF.Page2
+[START PROPERTIES]
+Anchor = 11
+FontName = "Tahoma"
+FontSize = 8
+Height = 159
+Left = 13
+Name = "o_Files"
+Top = 23
+Width = 269
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE InteractiveChange
+LOCAL sFName
+
+thisform.SetPickedImage("")
+this.Parent.b_EditMerge.Enabled = (this.ListIndex > 0)
+IF this.ListItemId > 0
+	GOTO this.ListItemId IN cFile
+	sFName = FORCEPATH( RTRIM( s_FName ), RTRIM( s_Path ) )
+	this.Parent.o_OldVersion.Image.Picture = sFName + "." + RTRIM( cFile.s_OldExt )
+	this.Parent.o_TheirVersion.Image.Picture = sFName + "." + RTRIM( cFile.s_NewExt )
+	this.Parent.o_MyVersion.Image.Picture = sFName + IIF( EMPTY( s_WorkExt ), "", "." + RTRIM( s_WorkExt ) )
+ELSE
+	STORE "" TO this.Parent.o_OldVersion.Image.Picture, this.Parent.o_TheirVersion.Image.Picture, ;
+				this.Parent.o_MyVersion.Image.Picture
+ENDIF
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SJ027AJC
+[CLASS] container
+[BASECLASS] container
+[OBJNAME] o_MyVersion
+[PARENT] SUBFOX_CONFLICTEDITOR.o_PF.Page2
+[START PROPERTIES]
+Anchor = 45
+BorderWidth = 0
+Height = 80
+Left = 261
+Name = "o_MyVersion"
+Top = 189
+Width = 120
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+this.BackStyle = 0
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SJ027AJD
+[CLASS] shape
+[BASECLASS] shape
+[OBJNAME] Backdrop
+[PARENT] SUBFOX_CONFLICTEDITOR.o_PF.Page2.o_MyVersion
+[START PROPERTIES]
+Anchor = 15
+Height = 80
+Left = 0
+Name = "Backdrop"
+SpecialEffect = 0
+Top = 0
+Width = 120
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SJ027AJE
+[CLASS] shape
+[BASECLASS] shape
+[OBJNAME] DottedOutline
+[PARENT] SUBFOX_CONFLICTEDITOR.o_PF.Page2.o_MyVersion
+[START PROPERTIES]
+Anchor = 15
+BorderColor = 0,0,255
+BorderStyle = 3
+BorderWidth = 1
+Curvature = 12
+Height = 74
+Left = 3
+Name = "DottedOutline"
+Top = 3
+Visible = .F.
+Width = 114
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SJ027AJF
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] Image
+[PARENT] SUBFOX_CONFLICTEDITOR.o_PF.Page2.o_MyVersion
+[START PROPERTIES]
+Anchor = 15
+Height = 70
+Left = 5
+Name = "Image"
+Stretch = 1
+Top = 5
+Width = 110
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SJ027AJG
+[CLASS] shape
+[BASECLASS] shape
+[OBJNAME] MouseInterceptor
+[PARENT] SUBFOX_CONFLICTEDITOR.o_PF.Page2.o_MyVersion
+[START PROPERTIES]
+Anchor = 15
+BackStyle = 0
+BorderWidth = 0
+Height = 80
+Left = 0
+MousePointer = 15
+Name = "MouseInterceptor"
+Top = 0
+Width = 120
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+thisform.SetPickedImage( this.Parent.Name )
+ENDPROC
+PROCEDURE DblClick
+thisform.SetPickedImage( this.Parent.Name )
+this.Parent.Parent.b_Done.Click()
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SJ027AJ2
+[CLASS] container
+[BASECLASS] container
+[OBJNAME] o_OldVersion
+[PARENT] SUBFOX_CONFLICTEDITOR.o_PF.Page2
+[START PROPERTIES]
+Anchor = 135
+BorderWidth = 0
+Height = 80
+Left = 13
+Name = "o_OldVersion"
+Top = 189
+Width = 120
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+this.BackStyle = 0
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SJ027AJ3
+[CLASS] shape
+[BASECLASS] shape
+[OBJNAME] Backdrop
+[PARENT] SUBFOX_CONFLICTEDITOR.o_PF.Page2.o_OldVersion
+[START PROPERTIES]
+Anchor = 15
+Height = 80
+Left = 0
+Name = "Backdrop"
+SpecialEffect = 0
+Top = 0
+Width = 120
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SJ027AJ4
+[CLASS] shape
+[BASECLASS] shape
+[OBJNAME] DottedOutline
+[PARENT] SUBFOX_CONFLICTEDITOR.o_PF.Page2.o_OldVersion
+[START PROPERTIES]
+Anchor = 15
+BorderColor = 0,0,255
+BorderStyle = 3
+BorderWidth = 1
+Curvature = 12
+Height = 74
+Left = 3
+Name = "DottedOutline"
+Top = 3
+Visible = .F.
+Width = 114
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SJ027AJ5
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] Image
+[PARENT] SUBFOX_CONFLICTEDITOR.o_PF.Page2.o_OldVersion
+[START PROPERTIES]
+Anchor = 15
+Height = 70
+Left = 5
+Name = "Image"
+Stretch = 1
+Top = 5
+Width = 110
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SJ027AJ6
+[CLASS] shape
+[BASECLASS] shape
+[OBJNAME] MouseInterceptor
+[PARENT] SUBFOX_CONFLICTEDITOR.o_PF.Page2.o_OldVersion
+[START PROPERTIES]
+Anchor = 15
+BackStyle = 0
+BorderWidth = 0
+Height = 80
+Left = 0
+MousePointer = 15
+Name = "MouseInterceptor"
+Top = 0
+Width = 120
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+thisform.SetPickedImage( this.Parent.Name )
+ENDPROC
+PROCEDURE DblClick
+thisform.SetPickedImage( this.Parent.Name )
+this.Parent.Parent.b_Done.Click()
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SJ027AJ7
+[CLASS] container
+[BASECLASS] container
+[OBJNAME] o_TheirVersion
+[PARENT] SUBFOX_CONFLICTEDITOR.o_PF.Page2
+[START PROPERTIES]
+Anchor = 165
+BorderWidth = 0
+Height = 80
+Left = 137
+Name = "o_TheirVersion"
+Top = 189
+Width = 120
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Init
+this.BackStyle = 0
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SJ027AJ8
+[CLASS] shape
+[BASECLASS] shape
+[OBJNAME] Backdrop
+[PARENT] SUBFOX_CONFLICTEDITOR.o_PF.Page2.o_TheirVersion
+[START PROPERTIES]
+Anchor = 15
+Height = 80
+Left = 0
+Name = "Backdrop"
+SpecialEffect = 0
+Top = 0
+Width = 120
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SJ027AJ9
+[CLASS] shape
+[BASECLASS] shape
+[OBJNAME] DottedOutline
+[PARENT] SUBFOX_CONFLICTEDITOR.o_PF.Page2.o_TheirVersion
+[START PROPERTIES]
+Anchor = 15
+BorderColor = 0,0,255
+BorderStyle = 3
+BorderWidth = 1
+Curvature = 12
+Height = 74
+Left = 3
+Name = "DottedOutline"
+Top = 3
+Visible = .F.
+Width = 114
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SJ027AJA
+[CLASS] image
+[BASECLASS] image
+[OBJNAME] Image
+[PARENT] SUBFOX_CONFLICTEDITOR.o_PF.Page2.o_TheirVersion
+[START PROPERTIES]
+Anchor = 15
+Height = 70
+Left = 5
+Name = "Image"
+Stretch = 1
+Top = 5
+Width = 110
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SJ027AJB
+[CLASS] shape
+[BASECLASS] shape
+[OBJNAME] MouseInterceptor
+[PARENT] SUBFOX_CONFLICTEDITOR.o_PF.Page2.o_TheirVersion
+[START PROPERTIES]
+Anchor = 15
+BackStyle = 0
+BorderWidth = 0
+Height = 80
+Left = 0
+MousePointer = 15
+Name = "MouseInterceptor"
+Top = 0
+Width = 120
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE Click
+thisform.SetPickedImage( this.Parent.Name )
+ENDPROC
+PROCEDURE DblClick
+thisform.SetPickedImage( this.Parent.Name )
+this.Parent.Parent.b_Done.Click()
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SJ027AJ1
+[CLASS] splitter
+[CLASSLOC] subfox.vcx
+[BASECLASS] shape
+[OBJNAME] Splitter1
+[PARENT] SUBFOX_CONFLICTEDITOR.o_PF.Page2
+[START PROPERTIES]
+Anchor = 11
+Height = 8
+Left = 13
+Name = "Splitter1"
+Top = 182
+Width = 369
+[END PROPERTIES]
+[START METHODS]
+PROCEDURE enumsiblings
+this.LinkTo( "o_Files", "Above", 140 )
+this.LinkTo( "o_OldVersion", "Below", 80 )
+this.LinkTo( "o_MyVersion", "Below", 80 )
+this.LinkTo( "o_TheirVersion", "Below", 80 )
+
+ENDPROC
+[END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SJ027AJL
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] b_Done
+[PARENT] SUBFOX_CONFLICTEDITOR.o_PF.Page3
+[START PROPERTIES]
+Anchor = 9
+Caption = "Resolved"
+FontName = "Tahoma"
+FontSize = 8
+Height = 27
+Left = 284
+Name = "b_Done"
+Top = 49
+Width = 84
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SJ027AJK
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] b_EditMerge
+[PARENT] SUBFOX_CONFLICTEDITOR.o_PF.Page3
+[START PROPERTIES]
+Anchor = 9
+Caption = "Edit/Merge"
+FontName = "Tahoma"
+FontSize = 8
+Height = 27
+Left = 284
+Name = "b_EditMerge"
+Top = 19
+Width = 84
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SJ027AJM
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label1
+[PARENT] SUBFOX_CONFLICTEDITOR.o_PF.Page3
+[START PROPERTIES]
+AutoSize = .T.
+BackStyle = 0
+Caption = "Conflicted Files"
+FontName = "Tahoma"
+FontSize = 8
+Height = 15
+Left = 9
+Name = "Label1"
+TabIndex = 1
+Top = 4
+Width = 74
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SJ027AJJ
+[CLASS] listbox
+[BASECLASS] listbox
+[OBJNAME] o_Files
+[PARENT] SUBFOX_CONFLICTEDITOR.o_PF.Page3
+[START PROPERTIES]
+FontName = "Tahoma"
+FontSize = 8
+Height = 246
+Left = 9
+Name = "o_Files"
+Top = 19
+Width = 269
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SJ027AJP
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] b_Done
+[PARENT] SUBFOX_CONFLICTEDITOR.o_PF.Page4
+[START PROPERTIES]
+Anchor = 9
+Caption = "Resolved"
+FontName = "Tahoma"
+FontSize = 8
+Height = 27
+Left = 284
+Name = "b_Done"
+Top = 49
+Width = 84
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SJ027AJO
+[CLASS] commandbutton
+[BASECLASS] commandbutton
+[OBJNAME] b_EditMerge
+[PARENT] SUBFOX_CONFLICTEDITOR.o_PF.Page4
+[START PROPERTIES]
+Anchor = 9
+Caption = "Edit/Merge"
+FontName = "Tahoma"
+FontSize = 8
+Height = 27
+Left = 284
+Name = "b_EditMerge"
+Top = 19
+Width = 84
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SJ027AJQ
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label1
+[PARENT] SUBFOX_CONFLICTEDITOR.o_PF.Page4
+[START PROPERTIES]
+AutoSize = .T.
+BackStyle = 0
+Caption = "Conflicted Files"
+FontName = "Tahoma"
+FontSize = 8
+Height = 15
+Left = 9
+Name = "Label1"
+TabIndex = 1
+Top = 4
+Width = 74
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SJ027AJN
+[CLASS] listbox
+[BASECLASS] listbox
+[OBJNAME] o_Files
+[PARENT] SUBFOX_CONFLICTEDITOR.o_PF.Page4
+[START PROPERTIES]
+FontName = "Tahoma"
+FontSize = 8
+Height = 246
+Left = 9
+Name = "o_Files"
+Top = 19
+Width = 269
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] COMMENT 
+[UNIQUEID] RESERVED  
+[START PROPERTIES]
+Arial, 0, 9, 5, 15, 12, 32, 3, 0
+Small Fonts, 0, 7, 5, 11, 9, 9, 2, 0
+Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+[END PROPERTIES]
+[EOF]
