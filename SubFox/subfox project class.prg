@@ -57,12 +57,12 @@ FUNCTION Open(sFName AS String) AS Boolean
 						  + "Would you like to open one now?", 4 + 32, "No Active Project" ) == 7
 				RETURN .F.
 			ENDIF
-*			sFName = GETFILE( "PJX", "Project:" )
-			sFName = GETFILE( "Foxpro Project:pjx;Subfox Project:pjx." + SUBFOX_PRIVATE_EXT, "Project:" )
+			*sFName = LOWER( GETFILE( "Foxpro Project:pjx;Subfox Project:pjx." + SUBFOX_PRIVATE_EXT, "Project:" ) )
+			sFName = LOWER( GETFILE( "Subfox Project:pjx." + SUBFOX_PRIVATE_EXT + ";Foxpro Project:pjx", "Project:" ) )
 			IF EMPTY( sFName ) OR !FILE( sFName )
 				RETURN .F.
 			ENDIF
-			IF LOWER( JUSTEXT( sFName ) ) == SUBFOX_PRIVATE_EXT
+			IF JUSTEXT( sFName ) == SUBFOX_PRIVATE_EXT
 				s = LEFT( sFName, RAT( ".", sFName ) - 1 )
 				o = NEWOBJECT( "SubFoxTranslator", "SubFox Translation Classes.prg" )
 				IF !FILE(s) OR o.FDateTime(s) != o.FDateTime(sFName)
@@ -71,11 +71,11 @@ FUNCTION Open(sFName AS String) AS Boolean
 				sFName = s
 			ENDIF
 			this.s_PjxName = LOWER( sFName )
-			* Do we really want to OPEN IN VFP???
-*--				MODIFY PROJECT (sFName) NOWAIT
-*--				IF _VFP.Projects.Count == 0
-*--					RETURN .F.
-*--				ENDIF
+			* Do we really want to OPEN IN VFP??? -- yes!
+			MODIFY PROJECT (sFName) NOWAIT
+			IF _VFP.Projects.Count == 0
+				RETURN .F.
+			ENDIF
 		ENDIF
 	ENDIF
 	IF EMPTY( this.s_PjxName ) AND _VFP.Projects.Count > 0
