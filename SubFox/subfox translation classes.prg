@@ -924,6 +924,7 @@ FUNCTION RestoreToTable(sInFName AS STRING, sOutFName AS STRING) AS VOID
 		THROW oErr
 		RETURN
 	ENDIF
+	oPjx.HomeDir = JUSTPATH( sOutFName )
 	this.s_Input = FILETOSTR( sInFName )
 	ALINES( aByType, this.s_Input, .T., CRLF + CRLF )
 	oHdr = this.ParseHdr( aByType[1] )
