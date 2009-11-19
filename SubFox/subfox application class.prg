@@ -1,6 +1,6 @@
 *-- SubFox Application Class --*
 
-DEFINE CLASS SubFox_Application AS Session OLEPUBLIC
+DEFINE CLASS SubFox_Application AS Session && OLEPUBLIC
 	*-- properties --*
 	UseToolbar = .F.
 	Toolbar = NULL
