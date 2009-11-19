@@ -41,7 +41,7 @@ BufferMode = 0
 Caption = "Project Files - SubFox"
 DataSession = 2
 DoCreate = .T.
-Height = 360
+Height = 400
 Icon = subfox.ico
 MaxButton = .F.
 MinButton = .F.
@@ -192,7 +192,7 @@ FontSize = 8
 Height = 27
 Left = 303
 Name = "b_Cancel"
-Top = 321
+Top = 361
 Width = 84
 [END PROPERTIES]
 [START METHODS]
@@ -217,7 +217,7 @@ FontSize = 8
 Height = 27
 Left = 215
 Name = "b_Ok"
-Top = 321
+Top = 361
 Width = 84
 [END PROPERTIES]
 [START METHODS]
@@ -228,6 +228,27 @@ ENDIF
 
 ENDPROC
 [END METHODS]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SQ0P9H1L
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label1
+[PARENT] SUBFOX_INCLUDES
+[START PROPERTIES]
+AutoSize = .T.
+BackStyle = 0
+Caption = "Project:"
+FontName = "Tahoma"
+FontSize = 8
+Height = 15
+Left = 18
+Name = "Label1"
+TabIndex = 1
+Top = 18
+Width = 40
+[END PROPERTIES]
 
 [ RECORD]
 [PLATFORM] WINDOWS 
@@ -248,7 +269,7 @@ Height = 15
 Left = 10
 MousePointer = 15
 Name = "Label2"
-Top = 333
+Top = 373
 Width = 84
 [END PROPERTIES]
 [START METHODS]
@@ -300,7 +321,7 @@ Page3.Name = "Page3"
 PageCount = 3
 TabStop = .F.
 TabStyle = 1
-Top = 8
+Top = 48
 Width = 380
 [END PROPERTIES]
 [START METHODS]
@@ -541,10 +562,53 @@ o_IncludeList.Name = "o_IncludeList"
 [END PROPERTIES]
 
 [ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SQ0P9H1M
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] o_Project
+[PARENT] SUBFOX_INCLUDES
+[START PROPERTIES]
+Anchor = 10
+BackStyle = 0
+BorderStyle = 0
+ControlSource = "thisform.s_PJXName"
+FontBold = .T.
+FontName = "Tahoma"
+FontSize = 8
+Height = 17
+Left = 56
+Margin = 1
+Name = "o_Project"
+ReadOnly = .T.
+TabStop = .F.
+Top = 17
+Width = 338
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SQ0P9H1K
+[CLASS] shape
+[BASECLASS] shape
+[OBJNAME] Shape1
+[PARENT] SUBFOX_INCLUDES
+[START PROPERTIES]
+Anchor = 10
+Height = 30
+Left = 10
+Name = "Shape1"
+SpecialEffect = 0
+Top = 10
+Width = 390
+[END PROPERTIES]
+
+[ RECORD]
 [PLATFORM] COMMENT 
 [UNIQUEID] RESERVED  
 [START PROPERTIES]
 Arial, 0, 9, 5, 15, 12, 32, 3, 0
 Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+Tahoma, 1, 8, 6, 13, 11, 26, 2, 0
 [END PROPERTIES]
 [EOF]
