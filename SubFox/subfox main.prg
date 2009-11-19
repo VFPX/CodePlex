@@ -21,7 +21,6 @@ CASE sOption == "Decode" && Tortoise command
 	o = NEWOBJECT( "SubFoxTortoiseTools", "SubFox Tortoise.prg" )
 	o.Decode( p1 )
 CASE sOption == "Setup"
-	MESSAGEBOX( "Setup...", 64 )
 	DO FORM SubFox_Includes
 CASE sOption == "Translate"
 	DO FORM SubFox_Translator
