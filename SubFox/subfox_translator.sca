@@ -40,7 +40,7 @@ AutoCenter = .T.
 Caption = "Translate Files - SubFox"
 DataSession = 2
 DoCreate = .T.
-Height = 357
+Height = 397
 Icon = subfox.ico
 MaxButton = .F.
 MinButton = .F.
@@ -345,7 +345,7 @@ FontSize = 8
 Height = 27
 Left = 313
 Name = "b_Cancel"
-Top = 318
+Top = 358
 Width = 84
 [END PROPERTIES]
 [START METHODS]
@@ -370,7 +370,7 @@ FontSize = 8
 Height = 27
 Left = 225
 Name = "b_Ok"
-Top = 318
+Top = 358
 Width = 84
 [END PROPERTIES]
 [START METHODS]
@@ -399,6 +399,27 @@ ENDPROC
 
 [ RECORD]
 [PLATFORM] WINDOWS 
+[UNIQUEID] _2SQ0PAGHB
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label1
+[PARENT] SUBFOX_TRANSLATOR
+[START PROPERTIES]
+AutoSize = .T.
+BackStyle = 0
+Caption = "Project:"
+FontName = "Tahoma"
+FontSize = 8
+Height = 15
+Left = 18
+Name = "Label1"
+TabIndex = 1
+Top = 18
+Width = 40
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
 [UNIQUEID] _2SJ01US9Y
 [CLASS] label
 [BASECLASS] label
@@ -416,7 +437,7 @@ Height = 15
 Left = 118
 MousePointer = 15
 Name = "Label2"
-Top = 324
+Top = 364
 Width = 84
 [END PROPERTIES]
 [START METHODS]
@@ -464,7 +485,7 @@ Page2.Name = "Page2"
 PageCount = 2
 TabStop = .F.
 TabStyle = 1
-Top = 8
+Top = 48
 Width = 390
 [END PROPERTIES]
 
@@ -524,6 +545,31 @@ o_IncludeList.Name = "o_IncludeList"
 
 [ RECORD]
 [PLATFORM] WINDOWS 
+[UNIQUEID] _2SQ0PAGHC
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] o_Project
+[PARENT] SUBFOX_TRANSLATOR
+[START PROPERTIES]
+Anchor = 10
+BackStyle = 0
+BorderStyle = 0
+ControlSource = "thisform.s_PJXName"
+FontBold = .T.
+FontName = "Tahoma"
+FontSize = 8
+Height = 17
+Left = 56
+Margin = 1
+Name = "o_Project"
+ReadOnly = .T.
+TabStop = .F.
+Top = 17
+Width = 338
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
 [UNIQUEID] _2JM0RSYWR
 [CLASS] checkbox
 [BASECLASS] checkbox
@@ -540,7 +586,7 @@ FontSize = 8
 Height = 15
 Left = 12
 Name = "o_ShowAllFiles"
-Top = 323
+Top = 363
 Value = .F.
 Width = 82
 [END PROPERTIES]
@@ -555,10 +601,28 @@ ENDPROC
 [END METHODS]
 
 [ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SQ0PAGHA
+[CLASS] shape
+[BASECLASS] shape
+[OBJNAME] Shape1
+[PARENT] SUBFOX_TRANSLATOR
+[START PROPERTIES]
+Anchor = 10
+Height = 30
+Left = 10
+Name = "Shape1"
+SpecialEffect = 0
+Top = 10
+Width = 390
+[END PROPERTIES]
+
+[ RECORD]
 [PLATFORM] COMMENT 
 [UNIQUEID] RESERVED  
 [START PROPERTIES]
 Arial, 0, 9, 5, 15, 12, 32, 3, 0
 Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+Tahoma, 1, 8, 6, 13, 11, 26, 2, 0
 [END PROPERTIES]
 [EOF]
