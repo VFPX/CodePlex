@@ -5,7 +5,7 @@
 #include SubFox.h
 
 *******************************************************************************
-DEFINE CLASS SubFoxProject AS Custom OLEPUBLIC
+DEFINE CLASS SubFoxProject AS Custom && OLEPUBLIC
 *-- Properties --*
 	s_PjxName = "" && file name to "normal" VFP project file "MyProject.pjx"
 	s_RootPath = ""
@@ -164,14 +164,16 @@ FUNCTION Open(sFName AS String) AS Boolean
 		IF !this.GetTablesInDBC( s, cFile.k_RecKey, sVsndTbls )
 			RETURN .F.
 		ENDIF
-		s = ADDBS( JUSTPATH( s ) )
-		FOR i = 1 TO ALEN( aSDT )
-			ss = s + FORCEEXT( aSDT[i], "dbf" )
-			IF FILE( ss ) AND !this.SeekFName( ss )
-				INSERT INTO cFile  (k_Parent, s_FName, s_Path, e_Type, l_Versioned, l_Encoded) ;
-							VALUES (kDBC, JUSTFNAME(ss), JUSTPATH(ss), FILETYPE_FREETABLE, .T., .T.)
-			ENDIF
-		ENDFOR
+		IF !lUnversioned && 11-19-2009 -- Why pickup SdtMeta.dbf in the folder of a DBC that IS NOT VERSIONED???
+			s = ADDBS( JUSTPATH( s ) )
+			FOR i = 1 TO ALEN( aSDT )
+				ss = s + FORCEEXT( aSDT[i], "dbf" )
+				IF FILE( ss ) AND !this.SeekFName( ss )
+					INSERT INTO cFile  (k_Parent, s_FName, s_Path, e_Type, l_Versioned, l_Encoded) ;
+								VALUES (kDBC, JUSTFNAME(ss), JUSTPATH(ss), FILETYPE_FREETABLE, .T., .T.)
+				ENDIF
+			ENDFOR
+		ENDIF
 		SEEK kDBC IN cFile ORDER k_RecKey
 		GOTO cFile.n_RecNo IN cPjx
 	ENDSCAN
@@ -185,6 +187,7 @@ FUNCTION SeekFName(sFName AS String) AS Boolean
 	IF b
 		i = SELECT(0)
 		SELECT cFile
+		SET ORDER TO s_FName
 		LOCATE FOR RTRIM( s_Path ) == LOWER( JUSTPATH( sFName ) ) REST WHILE RTRIM( s_FName ) == s
 		b = FOUND()
 		IF !b AND !EOF()
