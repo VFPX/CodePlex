@@ -6,9 +6,10 @@
 *--		Only one filename, either in or out, should be a VFP file
 
 #include SubFox.h
+#include WinRegProcs.h
 
 *******************************************************************************
-DEFINE CLASS SubFoxTranslator AS ErrorHandler OLEPUBLIC
+DEFINE CLASS SubFoxTranslator AS ErrorHandler && OLEPUBLIC
 	*-- Properties --*
 	o_Util = NULL
 
@@ -709,6 +710,166 @@ DEFINE CLASS DBContainerConverter AS TableConverter
 		USE && close 
 		SELECT (nHoldCWA)
 	ENDFUNC && CreateOutputTable
+	*******************************************************************************
+	FUNCTION ConvertToText(sInFName AS STRING, sOutFName AS STRING) AS VOID
+		LOCAL sSDT
+		SET PROCEDURE TO WinRegProcs ADDITIVE
+		sSDT = ReadRegistry( HKEY_LOCAL_MACHINE, "Software\SubFox", "SDT", "n/a" )
+		IF !EMPTY( sSDT ) AND sSDT != "n/a" AND FILE( sSDT )
+			this.UpdateStonefieldTables( sSDT, sInFName )
+		ENDIF
+		DODEFAULT( sInFName, sOutFName )
+	ENDFUNC && CreateOutputTable
+	*******************************************************************************
+	FUNCTION UpdateStonefieldTables(sSDT AS String, sDBC AS STRING) AS Boolean
+		LOCAL i,s,ss, kDBC, aSDT[1], sPath, oMeta, oErr, oRec, nHoldArea, sHoldOrder, nHoldRecNo
+		nHoldArea = SELECT(0)
+		nHoldRecNo = IIF( EOF(), 0, RECNO() )
+		sHoldOrder = SET("Order")
+		sHoldOrder = STREXTRACT( sHoldOrder, "TAG ", " OF " )
+		sPath = JUSTPATH( sDBC )
+		*-- DBCX updates a date-time stamp every time, which ruins our test for "any changes?"
+		IF !FILE( FORCEPATH( "_coremeta.dbf", sPath ) )
+			*-- make a back copy of the "coremeta" table
+			s = FORCEPATH( "coremeta.dbf", sPath )
+			IF FILE( s )
+				USE (s) AGAIN IN 0 SHARED ALIAS cCoreMeta NOUPDATE
+				SELECT cCoreMeta
+				COPY TO (FORCEPATH( "_coremeta.dbf", sPath )) WITH CDX
+				USE IN cCoreMeta
+			ENDIF
+		ENDIF
+		TRY
+			s = "accessing Stonefield Database Toolkit"
+			* oMeta = NEWOBJECT( 'DBCXMgr', 'DBCXMgr.vcx', sSDT, .F., sPath, .T. )
+			* oMeta = NEWOBJECT( 'SdtDbcxMgr', 'SdtManagers.vcx', sSDT, .F., sPath, .T. )
+			ss = [NEWOBJECT( 'SdtDbcxMgr', 'SdtManagers.vcx', '] + sSDT + [', .F., sPath, .T. )]
+			oMeta = &ss
+			IF ISNULL( oMeta )
+				ERROR 'Unable to create "SdtDbcxMgr" object'
+			ENDIF
+			oMeta.lShowStatus = .T.
+			oMeta.lDebugMode  = .F.
+			* If the SDT Manager isn't registered, do it now.
+			IF !oMeta.IsManagerRegistered( 'oSDTMgr' )
+				oMeta.RegisterManager( 'Stonefield Database Toolkit', JUSTPATH( sSDT ), 'SDT.vcx', 'SDTMgr' )
+			ENDIF
+			s = 'accessing database "' + sDBC + '"'
+			IF !DBUSED( sDBC )
+				OPEN DATABASE (sDBC) SHARED NOUPDATE
+			ENDIF
+			SET DATABASE TO (sDBC)
+			s = 'building SDT meta-data for "' + sDBC + '"'
+			WAIT WINDOW NOWAIT 'Generating Stonefield data for database' + CHR(13) + sDBC
+			IF !oMeta.Validate( sDBC, "Database" )
+				ERROR "SDT Validation Error"
+			ENDIF
+			oErr = NULL
+		CATCH TO oErr
+		ENDTRY
+		oMeta = NULL
+		WAIT CLEAR
+		IF !ISNULL( oErr )
+			IF USED( sDBC )
+				SET DATABASE TO (sDBC)
+				CLOSE DATABASES && just this one
+			ENDIF
+			i = MESSAGEBOX( "Error encountered " + s + CHR(13) ;
+						  + TRANSFORM( oErr.ErrorNo ) + ": " + oErr.Message + CHR(13) + CHR(13) ;
+						  + "Do you want to continue without using SDT?", 4 + 32 + 256 )
+			IF i == 7 && no
+				IF nHoldRecNo > 0
+					GO nHoldRecNo
+				ELSE
+					GO BOTTOM
+					IF !EOF()
+						SKIP
+					ENDIF
+				ENDIF
+				SET ORDER TO &sHoldOrder
+				SELECT (nHoldArea)
+				RETURN .F.
+			ENDIF
+			EXIT && don't bother scanning for other DBCs
+		ENDIF
+		*-- fixup datetime stamps in coremeta
+		s = FORCEPATH( "coremeta.dbf", sPath )
+		ss = FORCEPATH( "_coremeta.dbf", sPath )
+		IF FILE( s ) AND FILE( ss )
+			USE (s) IN 0 SHARED ALIAS cNewCoreMeta
+			USE (ss) IN 0 SHARED ALIAS cOldCoreMeta
+			SELECT iid FROM cOldCoreMeta INTO CURSOR cExtinctCoreMeta READWRITE
+			SELECT cExtinctCoreMeta
+			INDEX ON iid TAG iid
+			SET ORDER TO iid IN  cExtinctCoreMeta
+			SET ORDER TO iid IN  cOldCoreMeta
+			SELECT cNewCoreMeta
+			SET RELATION TO iid INTO cOldCoreMeta, iid INTO cExtinctCoreMeta
+			SCAN && FOR !EOF( 'cOldCoreMeta' )
+				IF EOF( 'cOldCoreMeta' )
+					SCATTER MEMO NAME oRec
+					INSERT INTO cOldCoreMeta FROM NAME oRec
+				ELSE
+					DELETE IN cExtinctCoreMeta
+					s = SYS( 2017, "tLastMod", 3 )
+					SELECT cOldCoreMeta
+					ss = SYS( 2017, "tLastMod", 3 )
+					SELECT cNewCoreMeta
+					IF s == ss && nothing else has changed
+						REPLACE tLastMod WITH cOldCoreMeta.tLastMod && restore the time stamp
+					ELSE
+						SCATTER MEMO NAME oRec
+						SELECT cOldCoreMeta
+						GATHER MEMO NAME oRec
+						SELECT cNewCoreMeta
+					ENDIF
+				ENDIF
+			ENDSCAN
+			SET RELATION TO && sever
+			SELECT cOldCoreMeta
+			SET RELATION TO iid INTO cExtinctCoreMeta
+			GO TOP && install relation
+			DELETE FOR !EOF( 'cExtinctCoreMeta' ) IN cOldCoreMeta
+			SET RELATION TO && sever
+			USE IN cNewCoreMeta
+			USE IN cOldCoreMeta
+			USE IN cExtinctCoreMeta
+		ENDIF
+		IF USED( 'cFile' ) && add the new tables (if any) to cFile
+			kDBC = cFile.k_RecKey
+			FOR i = 1 TO ALINES( aSDT, SDT_META_TABLES, .T., "," )
+				s = ADDBS( sPath ) + FORCEEXT( aSDT[i], "dbf" )
+				IF FILE( s ) AND !this.SeekFName( s )
+					INSERT INTO cFile  (k_Parent, s_FName, s_Path, e_Type, l_Versioned, l_Encoded) ;
+								VALUES (kDBC, JUSTFNAME(s), JUSTPATH(s), FILETYPE_FREETABLE, .T., .T.)
+				ENDIF
+			ENDFOR
+		ENDIF
+		SELECT (nHoldArea)
+		IF nHoldRecNo != 0
+			GO nHoldRecNo
+		ELSE
+			GO BOTTOM
+			IF !EOF()
+				SKIP
+			ENDIF
+		ENDIF
+		SET ORDER TO &sHoldOrder
+	ENDFUNC && UpdateStonefieldTables
+	*******************************************************************************
+	FUNCTION SeekFName(sFName AS String) AS Boolean
+		LOCAL i,b,s
+		s = LOWER( JUSTFNAME( sFName ) )
+		IF !SEEK( PADR(s,MAX_VFP_IDX_LEN), 'cFile', 's_FName' )
+			RETURN .F.
+		ENDIF
+		i = SELECT(0)
+		SELECT cFile
+		SET ORDER TO s_FName
+		LOCATE FOR RTRIM( s_Path ) == LOWER( JUSTPATH( sFName ) ) REST WHILE RTRIM( s_FName ) == s
+		SELECT (i)
+		RETURN FOUND('cFile')
+	ENDFUNC && SeekFName
 ENDDEFINE && DBContainerConverter
 *******************************************************************************
 DEFINE CLASS FormConverter AS TableConverter
