@@ -40,7 +40,7 @@ AutoCenter = .T.
 Caption = "Conflict Editor  - SubFox"
 DataSession = 2
 DoCreate = .T.
-Height = 317
+Height = 357
 Icon = subfox.ico
 MaxButton = .F.
 MinButton = .F.
@@ -486,6 +486,27 @@ s_pjxname
 
 [ RECORD]
 [PLATFORM] WINDOWS 
+[UNIQUEID] _2SQ0PBUPT
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label1
+[PARENT] SUBFOX_CONFLICTEDITOR
+[START PROPERTIES]
+AutoSize = .T.
+BackStyle = 0
+Caption = "Project:"
+FontName = "Tahoma"
+FontSize = 8
+Height = 15
+Left = 18
+Name = "Label1"
+TabIndex = 1
+Top = 18
+Width = 40
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
 [UNIQUEID] _2SJ02AT1Y
 [CLASS] label
 [BASECLASS] label
@@ -503,7 +524,7 @@ Height = 15
 Left = 316
 MousePointer = 15
 Name = "Label2"
-Top = 8
+Top = 48
 Width = 84
 [END PROPERTIES]
 [START METHODS]
@@ -559,7 +580,7 @@ Page4.Name = "Page4"
 PageCount = 4
 TabStop = .F.
 TabStyle = 1
-Top = 8
+Top = 48
 Width = 390
 [END PROPERTIES]
 
@@ -1414,11 +1435,54 @@ Width = 269
 [END PROPERTIES]
 
 [ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SQ0PBUPU
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] o_Project
+[PARENT] SUBFOX_CONFLICTEDITOR
+[START PROPERTIES]
+Anchor = 10
+BackStyle = 0
+BorderStyle = 0
+ControlSource = "thisform.s_PJXName"
+FontBold = .T.
+FontName = "Tahoma"
+FontSize = 8
+Height = 17
+Left = 56
+Margin = 1
+Name = "o_Project"
+ReadOnly = .T.
+TabStop = .F.
+Top = 17
+Width = 338
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SQ0PBUPS
+[CLASS] shape
+[BASECLASS] shape
+[OBJNAME] Shape1
+[PARENT] SUBFOX_CONFLICTEDITOR
+[START PROPERTIES]
+Anchor = 10
+Height = 30
+Left = 10
+Name = "Shape1"
+SpecialEffect = 0
+Top = 10
+Width = 390
+[END PROPERTIES]
+
+[ RECORD]
 [PLATFORM] COMMENT 
 [UNIQUEID] RESERVED  
 [START PROPERTIES]
 Arial, 0, 9, 5, 15, 12, 32, 3, 0
 Small Fonts, 0, 7, 5, 11, 9, 9, 2, 0
 Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+Tahoma, 1, 8, 6, 13, 11, 26, 2, 0
 [END PROPERTIES]
 [EOF]
