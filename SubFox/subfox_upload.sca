@@ -40,14 +40,14 @@ AutoCenter = .T.
 Caption = "Upload - SubFox"
 DataSession = 2
 DoCreate = .T.
-Height = 357
+Height = 397
 Icon = subfox.ico
 MaxButton = .F.
 MinButton = .F.
 Name = "SUBFOX_UPLOAD"
 ShowTips = .T.
 Width = 410
-WindowType = 1
+WindowType = 0
 l_firstactivate = .F.
 o_util = .NULL.
 s_comments = 
@@ -172,7 +172,6 @@ LOCAL i,s,o, oErr, oEvents, aResult, nConflictCnt, aConflicts[1], sComments
 LOCAL oClient AS PushOkSvn.SVNClient
 LOCAL oFList AS PushOkSvn.StringVector
 LOCAL oCommitList AS PushOkSvn.StringVector
-
 
 sComments = ALLTRIM( this.s_Comments )
 oClient = CreateObject("PushOkSvn.SVNClient" )
@@ -321,7 +320,8 @@ SELECT cFile
 SCAN FOR cFile.l_Encoded AND !cFile.l_Drop AND cFile.e_Type != FILETYPE_ONECLASS
 	sIn = FORCEPATH( RTRIM( s_FName ), RTRIM( s_Path ) )
 	sOut = sIn + "." + SUBFOX_PRIVATE_EXT
-	IF FILE( sIn ) AND (!FILE( sOut ) OR oTrans.FDateTime( sIn ) != oTrans.FDateTime( sOut ))
+	IF FILE( sIn ) AND (JUSTEXT( sIn ) == "dbc" OR !FILE( sOut ) ;
+					 OR oTrans.FDateTime( sIn ) != oTrans.FDateTime( sOut ))
 		oTrans.ConvertToText( sIn, sOut )
 		SELECT cFile
 	ENDIF
@@ -655,7 +655,7 @@ FontSize = 8
 Height = 27
 Left = 313
 Name = "b_Cancel"
-Top = 318
+Top = 358
 Width = 84
 [END PROPERTIES]
 [START METHODS]
@@ -680,7 +680,7 @@ FontSize = 8
 Height = 27
 Left = 225
 Name = "b_Ok"
-Top = 318
+Top = 358
 Width = 84
 [END PROPERTIES]
 [START METHODS]
@@ -702,6 +702,27 @@ ENDPROC
 
 [ RECORD]
 [PLATFORM] WINDOWS 
+[UNIQUEID] _2SQ0P3F13
+[CLASS] label
+[BASECLASS] label
+[OBJNAME] Label1
+[PARENT] SUBFOX_UPLOAD
+[START PROPERTIES]
+AutoSize = .T.
+BackStyle = 0
+Caption = "Project:"
+FontName = "Tahoma"
+FontSize = 8
+Height = 15
+Left = 18
+Name = "Label1"
+TabIndex = 1
+Top = 18
+Width = 40
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
 [UNIQUEID] _2SJ02LEUB
 [CLASS] label
 [BASECLASS] label
@@ -719,7 +740,7 @@ Height = 15
 Left = 118
 MousePointer = 15
 Name = "Label2"
-Top = 324
+Top = 364
 Width = 84
 [END PROPERTIES]
 [START METHODS]
@@ -767,7 +788,7 @@ Page2.Name = "Page2"
 PageCount = 2
 TabStop = .F.
 TabStyle = 1
-Top = 8
+Top = 48
 Width = 390
 [END PROPERTIES]
 [START METHODS]
@@ -781,7 +802,7 @@ ENDPROC
 
 [ RECORD]
 [PLATFORM] WINDOWS 
-[UNIQUEID] _2SJ02QR16
+[UNIQUEID] _2JN16H9BU
 [CLASS] label
 [BASECLASS] label
 [OBJNAME] Label1
@@ -919,6 +940,31 @@ o_IncludeList.Name = "o_IncludeList"
 
 [ RECORD]
 [PLATFORM] WINDOWS 
+[UNIQUEID] _2SQ0P3F14
+[CLASS] textbox
+[BASECLASS] textbox
+[OBJNAME] o_Project
+[PARENT] SUBFOX_UPLOAD
+[START PROPERTIES]
+Anchor = 10
+BackStyle = 0
+BorderStyle = 0
+ControlSource = "thisform.s_PJXName"
+FontBold = .T.
+FontName = "Tahoma"
+FontSize = 8
+Height = 17
+Left = 56
+Margin = 1
+Name = "o_Project"
+ReadOnly = .T.
+TabStop = .F.
+Top = 17
+Width = 338
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
 [UNIQUEID] _2JN16TWAL
 [CLASS] checkbox
 [BASECLASS] checkbox
@@ -935,7 +981,7 @@ FontSize = 8
 Height = 15
 Left = 12
 Name = "o_ShowAllFiles"
-Top = 323
+Top = 363
 Value = .F.
 Width = 82
 [END PROPERTIES]
@@ -949,10 +995,28 @@ ENDPROC
 [END METHODS]
 
 [ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _2SQ0P3F12
+[CLASS] shape
+[BASECLASS] shape
+[OBJNAME] Shape1
+[PARENT] SUBFOX_UPLOAD
+[START PROPERTIES]
+Anchor = 10
+Height = 30
+Left = 10
+Name = "Shape1"
+SpecialEffect = 0
+Top = 10
+Width = 390
+[END PROPERTIES]
+
+[ RECORD]
 [PLATFORM] COMMENT 
 [UNIQUEID] RESERVED  
 [START PROPERTIES]
 Arial, 0, 9, 5, 15, 12, 32, 3, 0
 Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
+Tahoma, 1, 8, 6, 13, 11, 26, 2, 0
 [END PROPERTIES]
 [EOF]
