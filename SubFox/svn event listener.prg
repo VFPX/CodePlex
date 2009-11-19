@@ -1,6 +1,6 @@
 *-- SVN Event Listener --*
 
-DEFINE CLASS PushOkSvn_SVNClient_Events AS session OLEPUBLIC
+DEFINE CLASS PushOkSvn_SVNClient_Events AS session && OLEPUBLIC
 	IMPLEMENTS _ISVNClientEvents IN "C:\Program Files\Pushok Software\SVN Proxy\svn\SVNCOM.DLL"
 **********************************************************************************
 	PROCEDURE _ISVNClientEvents_Idle(oClient AS PushOkSvn.SVNClient) AS VOID;
