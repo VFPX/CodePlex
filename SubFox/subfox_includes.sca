@@ -34,7 +34,7 @@ Width = 0
 [UNIQUEID] _2JK0VS1X0
 [CLASS] form
 [BASECLASS] form
-[OBJNAME] SUBFOX_INCLUDES
+[OBJNAME] subfox_includes
 [START PROPERTIES]
 AutoCenter = .T.
 BufferMode = 0
@@ -45,7 +45,7 @@ Height = 400
 Icon = subfox.ico
 MaxButton = .F.
 MinButton = .F.
-Name = "SUBFOX_INCLUDES"
+Name = "subfox_includes"
 ShowTips = .T.
 Width = 400
 WindowType = 1
@@ -182,7 +182,7 @@ s_pjxname
 [CLASS] commandbutton
 [BASECLASS] commandbutton
 [OBJNAME] b_Cancel
-[PARENT] SUBFOX_INCLUDES
+[PARENT] subfox_includes
 [START PROPERTIES]
 Anchor = 12
 Cancel = .T.
@@ -207,7 +207,7 @@ ENDPROC
 [CLASS] commandbutton
 [BASECLASS] commandbutton
 [OBJNAME] b_Ok
-[PARENT] SUBFOX_INCLUDES
+[PARENT] subfox_includes
 [START PROPERTIES]
 Anchor = 12
 Caption = "Ok"
@@ -235,7 +235,7 @@ ENDPROC
 [CLASS] label
 [BASECLASS] label
 [OBJNAME] Label1
-[PARENT] SUBFOX_INCLUDES
+[PARENT] subfox_includes
 [START PROPERTIES]
 AutoSize = .T.
 BackStyle = 0
@@ -256,7 +256,7 @@ Width = 40
 [CLASS] label
 [BASECLASS] label
 [OBJNAME] Label2
-[PARENT] SUBFOX_INCLUDES
+[PARENT] subfox_includes
 [START PROPERTIES]
 Anchor = 4
 AutoSize = .T.
@@ -299,7 +299,7 @@ ENDPROC
 [CLASS] pageframe
 [BASECLASS] pageframe
 [OBJNAME] o_PF
-[PARENT] SUBFOX_INCLUDES
+[PARENT] subfox_includes
 [START PROPERTIES]
 Anchor = 15
 ErasePage = .T.
@@ -398,7 +398,7 @@ this.o_PickList.Clear()
 
 SELECT cFile
 SET ORDER TO s_FName
-SCAN FOR !INLIST( e_Type, FILETYPE_DATABASE, FILETYPE_DBTABLE, FILETYPE_FREETABLE )
+SCAN FOR !l_InBuild AND !INLIST( e_Type, FILETYPE_DATABASE, FILETYPE_DBTABLE, FILETYPE_FREETABLE )
 	this.o_PickList.Add( RTRIM( cFile.s_FName ), cFile.k_RecKey, cFile.l_Versioned )
 ENDSCAN
 
@@ -415,7 +415,7 @@ ENDPROC
 [CLASS] label
 [BASECLASS] label
 [OBJNAME] Label2
-[PARENT] SUBFOX_INCLUDES.o_PF.Page1
+[PARENT] subfox_includes.o_PF.Page1
 [START PROPERTIES]
 AutoSize = .T.
 BackStyle = 0
@@ -437,7 +437,7 @@ Width = 278
 [CLASSLOC] picker.vcx
 [BASECLASS] container
 [OBJNAME] o_PickList
-[PARENT] SUBFOX_INCLUDES.o_PF.Page1
+[PARENT] subfox_includes.o_PF.Page1
 [START PROPERTIES]
 Anchor = 15
 Height = 240
@@ -471,7 +471,7 @@ ENDPROC
 [CLASS] label
 [BASECLASS] label
 [OBJNAME] Label2
-[PARENT] SUBFOX_INCLUDES.o_PF.Page2
+[PARENT] subfox_includes.o_PF.Page2
 [START PROPERTIES]
 AutoSize = .T.
 BackStyle = 0
@@ -493,7 +493,7 @@ Width = 336
 [CLASSLOC] picker.vcx
 [BASECLASS] container
 [OBJNAME] o_PickList
-[PARENT] SUBFOX_INCLUDES.o_PF.Page2
+[PARENT] subfox_includes.o_PF.Page2
 [START PROPERTIES]
 Anchor = 15
 Height = 240
@@ -519,7 +519,7 @@ o_IncludeList.Name = "o_IncludeList"
 [CLASS] label
 [BASECLASS] label
 [OBJNAME] Label2
-[PARENT] SUBFOX_INCLUDES.o_PF.Page3
+[PARENT] subfox_includes.o_PF.Page3
 [START PROPERTIES]
 AutoSize = .T.
 BackStyle = 0
@@ -541,7 +541,7 @@ Width = 308
 [CLASSLOC] picker.vcx
 [BASECLASS] container
 [OBJNAME] o_PickList
-[PARENT] SUBFOX_INCLUDES.o_PF.Page3
+[PARENT] subfox_includes.o_PF.Page3
 [START PROPERTIES]
 Anchor = 15
 Height = 240
@@ -567,7 +567,7 @@ o_IncludeList.Name = "o_IncludeList"
 [CLASS] textbox
 [BASECLASS] textbox
 [OBJNAME] o_Project
-[PARENT] SUBFOX_INCLUDES
+[PARENT] subfox_includes
 [START PROPERTIES]
 Anchor = 10
 BackStyle = 0
@@ -592,7 +592,7 @@ Width = 338
 [CLASS] shape
 [BASECLASS] shape
 [OBJNAME] Shape1
-[PARENT] SUBFOX_INCLUDES
+[PARENT] subfox_includes
 [START PROPERTIES]
 Anchor = 10
 Height = 30
