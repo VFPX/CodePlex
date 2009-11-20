@@ -136,8 +136,8 @@ FUNCTION Open(sFName AS String) AS Boolean
 			nIconRecNo = RECNO('cPjx')
 			LOOP
 		ENDIF
-		INSERT INTO cFile  (n_RecNo, s_FName, s_Path, e_Type, l_Versioned, l_Encoded) ;
-					VALUES (RECNO('cPjx'), JUSTFNAME(s), JUSTPATH(s), cPjx.Type, ;
+		INSERT INTO cFile  (n_RecNo, s_FName, s_Path, e_Type, l_InBuild, l_Versioned, l_Encoded) ;
+					VALUES (RECNO('cPjx'), JUSTFNAME(s), JUSTPATH(s), cPjx.Type, !cPjx.Exclude, ;
 							(!cPjx.Exclude OR ATC( "versioned", cPjx.User ) > 0), ;
 							INLIST( cPjx.Type, FILETYPE_DATABASE, FILETYPE_FREETABLE, FILETYPE_DBTABLE, ;
 									FILETYPE_PROJECT, FILETYPE_FORM, FILETYPE_REPORT, FILETYPE_LABEL, ;
