@@ -7,7 +7,7 @@ State=
 Zip=
 Country=
 SaveCode=.T.
-Debug=.F.
+Debug=.T.
 Encrypt=.F.
 NoLogo=.F.
 CommentStyle=1
@@ -56,4 +56,7 @@ AutoIncrement=.F.
  859338418,V,..\applicationblocks\configuration\configurationblock.vcx,.F.,.F.,0,,,
  861385476,P,..\applicationblocks\common\foxresource.prg,.F.,.F.,1252,,,
  861667643,x,images\folder_time.png,.F.,.F.,1252,,,
+1015388914,P,bindwinevent.prg,.F.,.F.,1252,,,
+1015388914,P,unbindwinevents.prg,.F.,.F.,1252,,,
+1015388936,P,vfpxwin32eventhandler.prg,.F.,.F.,1252,,,
 [EOF]
