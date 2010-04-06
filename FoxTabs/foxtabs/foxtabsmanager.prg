@@ -37,7 +37,7 @@ Define Class FoxTabsManager As Custom
 	Function SetBindings()
 	
 		* Bind to all WM_CREATE messages
-		BindEvent(0, WM_CREATE, This.WindowsEvents, "WMEventHandler")	
+		BindWinEvent(0, WM_CREATE, This.WindowsEvents, "WMEventHandler")	
 
 		* Setup event bindings to our Windows message event handler
 		BindEvent(This.WindowsEvents, "WindowShowEvent", This, "WindowShow")
@@ -264,7 +264,7 @@ Define Class FoxTabsManager As Custom
 			* Check if the window is a VFP IDE window we are intersted in
 			If Not This.IsIDEWindow(hWnd) 			
 				* Release WM_SETTEXT event binding to this window
-				UnBindEvents(hWnd, WM_SETTEXT)
+				UnBindWinEvents(hWnd, WM_SETTEXT, This.WindowsEvents, "WMEventHandler")
 				* Exit the try...catch block
 				Exit										
 			EndIf 
@@ -410,7 +410,7 @@ Define Class FoxTabsManager As Custom
 			This.FoxTabs.Remove(Transform(hWnd, "@0x"))
 
 			* Release event bindings to this window
-			UnBindEvents(hWnd)
+			UnBindWinEvents(hWnd, 0, This.WindowsEvents, "WMEventHandler")
 
 		Catch To oException When oException.ErrorNo = 2071		&& user thrown
 			* Throw to caller
@@ -433,7 +433,7 @@ Define Class FoxTabsManager As Custom
 			This.WindowDestroy(Val(This.FoxTabs[1].hWnd))
 		EndDo 
 		
-		UnBindEvents(0)
+		UnBindWinEvents(0, 0, This.WindowsEvents, "WMEventHandler")
 		
 	EndFunc 	
 
@@ -636,7 +636,7 @@ Define Class FoxTabsEventHandler As Custom
 	Function Destroy()
 	
 		* Unbind all windows message events
-		UnBindEvents(0)
+		UnBindWinEvents(0, 0, This, "WMEventHandler")
 		
 	EndFunc 
 		
@@ -644,6 +644,7 @@ Define Class FoxTabsEventHandler As Custom
 
 		Local oException As Exception 
 		Local lnReturn As Integer
+		Local lcWindowTitle, lcParentWindow
 
 		lnReturn = 0
 
@@ -656,6 +657,7 @@ Define Class FoxTabsEventHandler As Custom
 		EndIf 
 
 		Try
+			lcWindowTitle = Lower(This.Parent.GetWindowTitle(hWnd))
 			* Handle each windows message case
 			Do Case	
 				*CASE INLIST(lParam, 1235848, 1236368, 1236268, 1238376, 1238848, 1234504, 1235024, 1237032, 1236884, 1235540, 1234504)
@@ -675,22 +677,22 @@ Define Class FoxTabsEventHandler As Custom
 					*	a program is suspended. This code temporarily unbinds WM_CREATE and turns it back on 
 					*	in the WM_ACTIVATE event below.
 					* See http://www.codeplex.com/VFPX/WorkItem/View.aspx?WorkItemId=19307
-					If Lower(This.Parent.GetWindowTitle(hWnd)) =  "call stack" and Program(0) <> "FOXTABS"
-						UnBindEvents(0, WM_CREATE)
-						BindEvent(0, WM_ACTIVATE, This, "WMEventHandler")
+					If lcWindowTitle =  "call stack" and Program(0) <> "FOXTABS"
+						UnBindWinEvents(0, WM_CREATE, This, "WMEventHandler")
+						BindWinEvent(0, WM_ACTIVATE, This, "WMEventHandler")
 					EndIf 
 				
 					* Raise the window create event
 					RaiseEvent(This, "WindowCreateEvent", hWnd)
 					
 					* Bind to these events so we can add it to our collection
-					BindEvent(hWnd, WM_SHOWWINDOW, This, "WMEventHandler", 4)
-					BindEvent(hWnd, WM_SETTEXT, This, "WMEventHandler", 4)
+					BindWinEvent(hWnd, WM_SHOWWINDOW, This, "WMEventHandler", 4)
+					BindWinEvent(hWnd, WM_SETTEXT, This, "WMEventHandler", 4)
 				
 				Case Msg = WM_ACTIVATE
 					* Rebind CM_CREATE event after unbound above
-					UnBindEvents(0, WM_ACTIVATE)
-					BindEvent(0, WM_CREATE, This, "WMEventHandler")	
+					UnBindWinEvents(0, WM_ACTIVATE, This, "WMEventHandler")
+					BindWinEvent(0, WM_CREATE, This, "WMEventHandler")	
 
 				Case Msg = WM_SHOWWINDOW
 
@@ -700,7 +702,7 @@ Define Class FoxTabsEventHandler As Custom
 					EndIf 
 					
 					* Unbind to the this event as we do not require it any more
-					UnBindEvents(hWnd, WM_SHOWWINDOW)
+					UnBindWinEvents(hWnd, WM_SHOWWINDOW, This, "WMEventHandler")
 					
 				Case InList(Msg, WM_SETFOCUS, WM_WINDOWPOSCHANGED, WM_CHILDACTIVATE)
 					* Raise the window set focus event 
@@ -746,12 +748,12 @@ Define Class FoxTabsEventHandler As Custom
 	Function SetBindings(hWnd As Integer)
 	
 		* Setup event bindings for this window
-		BindEvent(hWnd, WM_DESTROY, This, "WMEventHandler", 4)
-		BindEvent(hWnd, WM_SETTEXT, This, "WMEventHandler", 4)
-		BindEvent(hWnd, WM_SETFOCUS, This, "WMEventHandler", 4)
+		BindWinEvent(hWnd, WM_DESTROY, This, "WMEventHandler", 4)
+		BindWinEvent(hWnd, WM_SETTEXT, This, "WMEventHandler", 4)
+		BindWinEvent(hWnd, WM_SETFOCUS, This, "WMEventHandler", 4)
 		* Some IDE Windows don't have WM_SETFOCUS event, so use other events
 		If InList(Lower(This.Parent.GetWindowTitle(hWnd)), "project manager", "properties", "class designer", "form designer")
-			BindEvent(hWnd, WM_WINDOWPOSCHANGED, This, "WMEventHandler", 4)
+			BindWinEvent(hWnd, WM_WINDOWPOSCHANGED, This, "WMEventHandler", 4)
 		EndIf 
 
 	EndFunc 
