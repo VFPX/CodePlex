@@ -2580,7 +2580,10 @@ Activate Window (lpcWindowName)
 * Now call the Close menu item
 Sys(1500, "_MFI_CLOSE", "_MFILE")
 *JAL: Not sure why using menu call above, but Release Window in case menu not available
-Release Windows (lpcWindowName)
+* Do not release window if name starts with "Screen", or VFP will close. See http://vfpx.codeplex.com/WorkItem/View.aspx?WorkItemId=24767.
+If UPPER(lpcWindowName) <> "SCREEN"
+	Release Windows (lpcWindowName)
+EndIf 
 
 * CJB 06 Sep2 006 - to force the resize of the toolbar
 this.Resize()
