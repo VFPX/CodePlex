@@ -104,7 +104,7 @@ Local lcWindowName As String
 
 * If modal form is active, don't switch windows
 * Form in Class/Form designer could be modal, so don't check if those are active
-If !InList(Wontop, "CLASS DESIGNER", "FORM DESIGNER") and Type("_screen.ActiveForm.WindowType") = "N" ;
+If !InList(Wontop(), "CLASS DESIGNER", "FORM DESIGNER") and Type("_screen.ActiveForm.WindowType") = "N" ;
 		and _screen.ActiveForm.WindowType = 1
 	Return 
 EndIf 
