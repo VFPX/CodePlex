@@ -36,15 +36,17 @@ DEFINE CLASS VFPxWin32EventHandler AS Collection
 		LOCAL loBind as WinEvent of VFPxWin32EventHandler.prg, lnNum, lnNdx, lbEventNotBinded, lcKey, lnReturn
 		LOCAL ARRAY laEvents[1,4]
 *-*		Add the requested Event Binding to the collection
-		loBind = NewObject("WinEvent", "VFPxWin32EventHandler.prg")
-		loBind.hWnd = thWnd
-		loBind.nMessage = tnMessage
 		lcKey = Transform(thWnd) + "~" + Transform(tnMessage)
 		If this.GetKey(lcKey) = 0
+			loBind = NewObject("WinEvent", "VFPxWin32EventHandler.prg")
+			loBind.hWnd = thWnd
+			loBind.nMessage = tnMessage
 			this.Add(loBind,lcKey) 
+			* Bind Win event to collection
+			BindEvent(thWnd, tnMessage, loBind, "EventFired")
+		Else 
+			loBind = This.Item(lcKey)
 		EndIf 
-		* Bind Win event to collection
-		BindEvent(thWnd, tnMessage, loBind, "EventFired")
 		* Bind collection object to event handler/delegate
 		IF PCOUNT() = 4
 			lnReturn = BindEvent(loBind, "EventFired", toEventHandler, tcDelegate)
