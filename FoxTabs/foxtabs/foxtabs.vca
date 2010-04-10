@@ -423,22 +423,27 @@ PROCEDURE Click
 This.Parent.SetActive()
 ENDPROC
 PROCEDURE DblClick
-* Optionally close the Window if double-clicking on it
+* Optionally close the Window if double-clicking on it, if option is enabled
+IF oFoxTabs.Configuration("AppSettings.DoubleClickToClose").Value = "true"
+	* If modal form is active, return
+	If Type("_screen.ActiveForm.WindowType") = "N" and _screen.ActiveForm.WindowType = 1
+		Return 
+	EndIf 
 
-Try
-	oFoxTabsToolbar = This.Parent.Parent
+	Try
+		oFoxTabsToolbar = This.Parent.Parent
 
-	* We need to remove the * character appended when changes have been made to the file
-	lcWindowName = Chrtran(This.Parent.FoxTab.WindowName, "*", "")
+		* We need to remove the * character appended when changes have been made to the file
+		lcWindowName = Chrtran(This.Parent.FoxTab.WindowName, "*", "")
 
-	oFoxTabsToolbar.ReleaseWindow(lcWindowName)
+		oFoxTabsToolbar.ReleaseWindow(lcWindowName)
 
-Catch To oException
-	* Raise error event on FoxTabs application class
-	RaiseEvent(This.Parent.Parent.Parent, "LogError", oException, "Exception caught closing " + Transform(lcWindowName))
+	Catch To oException
+		* Raise error event on FoxTabs application class
+		RaiseEvent(This.Parent.Parent.Parent, "LogError", oException, "Exception caught closing " + Transform(lcWindowName))
 
-EndTry	
-
+	EndTry	
+ENDIF 
 ENDPROC
 PROCEDURE MouseEnter
 LPARAMETERS nButton, nShift, nXCoord, nYCoord
@@ -526,27 +531,27 @@ PROCEDURE Click
 This.Parent.SetActive()
 ENDPROC
 PROCEDURE DblClick
-* Optionally close the Window if double-clicking on it
+* Optionally close the Window if double-clicking on it, if option is enabled
+IF oFoxTabs.Configuration("AppSettings.DoubleClickToClose").Value = "true"
+	* If modal form is active, return
+	If Type("_screen.ActiveForm.WindowType") = "N" and _screen.ActiveForm.WindowType = 1
+		Return 
+	EndIf 
 
-* If modal form is active, return
-If Type("_screen.ActiveForm.WindowType") = "N" and _screen.ActiveForm.WindowType = 1
-	Return 
-EndIf 
+	Try
+		oFoxTabsToolbar = This.Parent.Parent
 
-Try
-	oFoxTabsToolbar = This.Parent.Parent
+		* We need to remove the * character appended when changes have been made to the file
+		lcWindowName = Chrtran(This.Parent.FoxTab.WindowName, "*", "")
 
-	* We need to remove the * character appended when changes have been made to the file
-	lcWindowName = Chrtran(This.Parent.FoxTab.WindowName, "*", "")
+		oFoxTabsToolbar.ReleaseWindow(lcWindowName)
 
-	oFoxTabsToolbar.ReleaseWindow(lcWindowName)
+	Catch To oException
+		* Raise error event on FoxTabs application class
+		RaiseEvent(This.Parent.Parent.Parent, "LogError", oException, "Exception caught closing " + Transform(lcWindowName))
 
-Catch To oException
-	* Raise error event on FoxTabs application class
-	RaiseEvent(This.Parent.Parent.Parent, "LogError", oException, "Exception caught closing " + Transform(lcWindowName))
-
-EndTry	
-
+	EndTry	
+ENDIF 
 ENDPROC
 PROCEDURE MouseEnter
 LPARAMETERS nButton, nShift, nXCoord, nYCoord
@@ -672,8 +677,9 @@ Text To lcDefaultSettings NoShow
 	<IncludeFormFiles>true</IncludeFormFiles>
 	<IncludeReportFiles>true</IncludeReportFiles>
 	<IncludeDatabaseFiles>true</IncludeDatabaseFiles>
-	<IncludeTableFiles>true</IncludeTableFiles>
+	<IncludeTableFiles>true</IncludeTableFiles>	
 	<OnTableSelection>browse</OnTableSelection>
+	<DoubleClickToClose>true</DoubleClickToClose>
 EndText 
 
 * Return default xml string
@@ -737,6 +743,7 @@ With ThisForm.oOptionPages.General.oGeneral As Container
 	.spnMaxNumber.Value = Val(oFoxTabs.Configuration("AppSettings.MaxNumTabs").Value)
 	.spnMaxChars.Value 	= Val(oFoxTabs.Configuration("AppSettings.MaxChars").Value)
 	.chkFullname.Value 	= ( oFoxTabs.Configuration("AppSettings.ShowFullName").Value = "true" )
+	.chkDoubleClickClose.Value = ( oFoxTabs.Configuration("AppSettings.DoubleClickToClose").Value = "true" )
 
 EndWith
 
@@ -795,6 +802,7 @@ With ThisForm.oOptionPages.General.oGeneral As Container
 	oFoxTabs.Configuration("AppSettings.MaxNumTabs").Value = Transform(.spnMaxNumber.Value)
 	oFoxTabs.Configuration("AppSettings.MaxChars").Value = Transform(.spnMaxChars.Value)
 	oFoxTabs.Configuration("AppSettings.ShowFullName").Value = Iif(Empty(.chkFullname.Value), "false", "true")
+	oFoxTabs.Configuration("AppSettings.DoubleClickToClose").Value = IIF(EMPTY(.chkDoubleClickClose.Value), "false", "true")
 
 EndWith
 
@@ -827,7 +835,7 @@ ENDPROC
 [START RESERVED1]
 Class[END RESERVED1]
 [START RESERVED2]
-44[END RESERVED2]
+45[END RESERVED2]
 [START RESERVED3]
 *bindconfigsettings 
 *showoption Shows the specified options container
@@ -967,7 +975,29 @@ Width = 185
 
 [ RECORD]
 [PLATFORM] WINDOWS 
-[UNIQUEID] _1LD0ZUJ91
+[UNIQUEID] _2RS0XQ6GT
+[CLASS] checkbox
+[BASECLASS] checkbox
+[OBJNAME] chkDoubleClickClose
+[PARENT] foxtabsoptions.oOptionPages.General.oGeneral
+[START PROPERTIES]
+Alignment = 0
+AutoSize = .T.
+BackStyle = 0
+Caption = "Double-click tabs to close"
+FontName = "Tahoma"
+FontSize = 8
+Height = 15
+Left = 50
+Name = "chkDoubleClickClose"
+TabIndex = 6
+Top = 202
+Width = 138
+[END PROPERTIES]
+
+[ RECORD]
+[PLATFORM] WINDOWS 
+[UNIQUEID] _1MB19JZ6L
 [CLASS] checkbox
 [BASECLASS] checkbox
 [OBJNAME] chkFullname
@@ -1265,7 +1295,7 @@ Width = 350
 [START PROPERTIES]
 BackStyle = 0
 Curvature = 5
-Height = 100
+Height = 112
 Left = 2
 Name = "Shape2"
 Style = 3
