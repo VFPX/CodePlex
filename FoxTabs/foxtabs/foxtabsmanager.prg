@@ -690,7 +690,7 @@ Define Class FoxTabsEventHandler As Custom
 					BindWinEvent(hWnd, WM_SETTEXT, This, "WMEventHandler", 4)
 				
 				Case Msg = WM_ACTIVATE
-					* Rebind CM_CREATE event after unbound above
+					* Rebind WM_CREATE event after unbound above
 					UnBindWinEvents(0, WM_ACTIVATE, This, "WMEventHandler")
 					BindWinEvent(0, WM_CREATE, This, "WMEventHandler")	
 
@@ -702,7 +702,9 @@ Define Class FoxTabsEventHandler As Custom
 					EndIf 
 					
 					* Unbind to the this event as we do not require it any more
-					UnBindWinEvents(hWnd, WM_SHOWWINDOW, This, "WMEventHandler")
+					* Unbinding this can cause issues similar to http://www.codeplex.com/VFPX/WorkItem/View.aspx?WorkItemId=19330
+					* Doesn't seem to cause any harm to leave event bound.  
+					* UnBindWinEvents(hWnd, WM_SHOWWINDOW, This, "WMEventHandler")
 					
 				Case InList(Msg, WM_SETFOCUS, WM_WINDOWPOSCHANGED, WM_CHILDACTIVATE)
 					* Raise the window set focus event 
