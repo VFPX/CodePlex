@@ -1968,7 +1968,6 @@ Tahoma, 0, 8, 5, 13, 11, 21, 2, 0
 [BASECLASS] toolbar
 [OBJNAME] foxtabstoolbar
 [START PROPERTIES]
-
 Caption = "FoxTabs"
 Height = 32
 Left = 0
@@ -1976,9 +1975,8 @@ Movable = .F.
 Name = "foxtabstoolbar"
 Top = 0
 Width = 148
-_memberdata =       93<VFPData><memberdata name="otabtoremove" type="property" display="oTabToRemove"/></VFPData>
+_memberdata = <VFPData><memberdata name="atabstoremove" display="aTabsToRemove"/></VFPData>
 lpaused = .F.
-otabtoremove = .NULL.
 [END PROPERTIES]
 [START METHODS]
 PROCEDURE AfterDock
@@ -2627,41 +2625,40 @@ PROCEDURE removefoxtab
 Lparameters oFoxTab As Object
 
 Local oFoxTabControl As Object
-Local lnControl As Integer 
+Local lnControl As Integer
 
-* Delay removal of tab because of timing issues with error reporting
+* Delay removal of tabs because of timing issues with error reporting
 * See http://www.codeplex.com/VFPX/WorkItem/View.aspx?WorkItemId=19330
+* This can be called multiple times before timer fires, so put hWnds in queue.
 If Vartype(oFoxTab) = "O"
-	* If tab already in the queue to be removed (from selecting Close All), remove it now
-	If Vartype(This.oTabToRemove) = "O" and !IsNull(This.oTabToRemove)
-		This.RemoveFoxTab()
+	If !Empty(This.aTabsToRemove[1])
+		Dimension This.aTabsToRemove[Alen(This.aTabsToRemove)+1]
+		Ains(This.aTabsToRemove, 1)
 	EndIf 
-	This.oTabToRemove = oFoxTab
+	This.aTabsToRemove[1] = oFoxTab.hWnd
 	This.tmrRemoveFoxTab.Interval = 100
 	Return 
-Else 
-	oFoxTab = This.oTabToRemove
-	This.oTabToRemove = NULL
-EndIf 
-If Vartype(oFoxTab) <> "O" or IsNull(oFoxTab)
-	Return
 EndIf 
 
-* Locate the FoxTab control
-For Each oFoxTabControl In This.Controls
-	If Lower(oFoxTabControl.Class) = "foxtabcontrol" ;
-		And oFoxTabControl.FoxTab.hWnd = oFoxTab.hWnd
-		
-		* Release the reference to the FoxTab object
-		oFoxTabControl.FoxTab = Null
-		
-		* Remove the FoxTab control
-		This.RemoveObject(oFoxTabControl.Name)	
+* Remove all tabs in queue
+Do while !Empty(This.aTabsToRemove[1])
+	* Locate the FoxTab control
+	For Each oFoxTabControl In This.Controls
+		If Lower(oFoxTabControl.Class) = "foxtabcontrol" ;
+			And oFoxTabControl.FoxTab.hWnd = This.aTabsToRemove[1]
 			
-		* All done		
-		Exit
-	EndIf 
-Next 
+			* Release the reference to the FoxTab object
+			oFoxTabControl.FoxTab = Null
+			
+			* Remove the FoxTab control
+			This.RemoveObject(oFoxTabControl.Name)	
+				
+			* All done	
+			Exit
+		EndIf 
+	Next 
+	Adel(This.aTabsToRemove, 1)
+EndDo 
 
 * Show the most recent hidden FoxTab control
 This.ShowLastFoxTab()
@@ -2929,9 +2926,9 @@ Class[END RESERVED1]
 *showcontextmenu Display the FoxTabToolbar context menu
 *showlastfoxtab Set the most recent hidden FoxTab control visible
 *showoptionsdialog Displays the FoxTabs options dialog
+^atabstoremove[1,0] FoxTab to remove.
 _memberdata XML Metadata for customizable properties
 lpaused Is .T. when event tracking is paused.
-otabtoremove FoxTab to remove.
 [END RESERVED3]
 [START RESERVED6]
 Pixels[END RESERVED6]
