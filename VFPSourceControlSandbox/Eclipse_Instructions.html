@@ -1,0 +1,56 @@
+<html>
+<body>
+<h3>Download the Eclipse IDE Client version 3.5</h3><br>
+This can be downloaded from <a href="http://www.eclipse.org/downloads/packages/eclipse-classic-350/galileor">here</a><br>
+Download creates a ZIP file on your computer.<br>
+Install the Eclipse client by copying the eclipse-SDK-3.5-win32.zip file to the root of a drive of your choice and extracting<br>
+all the files (ensure you have folder names checked). Alternatively, you could right click on the zip and choose Extract to from<br>
+the WinZip right click menu and choose your destination.<br>
+<br>
+<h3>Download the Team Explorer Everywhere</h3><br>
+The CodePlex instructions for download and installation are <a href="http://codeplex.codeplex.com/wikipage?title=Obtaining%20the%20Team%20Explorer%20Everywhere%20Client&referringTitle=Source%20control%20clients">here</a>.<br>
+This page contains a product key you will need later.
+<br>
+The download page for Team Explorer is <a href="http://www.microsoft.com/downloads/en/details.aspx?FamilyID=AF1F5168-C0F7-47C6-BE7A-2A83A6C02E57&displaylang=en">here</a>
+<br>
+or you can click the link on the codeplex page.
+<br>
+You will download all three files listed:<br>
+     InstallTEE.htm 		33KB	Instructions on how to install<br>
+     TEE-CLC-10.0.0.zip	9.8MB	Command line client for cross platform development<br>
+     TFSEclipsePlugin-UpdateSiteArchive-10.0.0.zip	11.9MB	Plugin for TFS for Eclipse<br>
+<br>
+NOTE:If you do not need command line, cross-platform ability (not likely for a VFP Project), you do not have to download teh TEE-CLC file.<br>
+InstallTEE.htm are the instructions on how to add the Team Explorer Plug in to Eclipse IDE. Follow the instructions to attach the plug in to the iDE.<br>
+Installation of the plug in forces a restart of Eclipse IDE.<br>
+Once restarted, choose workbench from the initial screen.<br>
+Note: Subsequent launches will ask for your workspace. If you have more than one, you will have to manage these folders yourself. (EG H:\Projects\VFPx)<br>
+All projects will live under this folder. You can check the always use this folder box to stop the dialog from appearing.
+<br>
+<h3>To add a project from the IDE</h3>
+Click File, Import<br>
+From the Import list, expand Team and choose Team Foundation server and click Next<br>
+First time only you will need to setup your account on the CodePlex Server
+Click the servers button to setup the tfs server / username<br>
+Click Add to add a new server.<br>
+On the login detail tab, set the server to https://tfs.codeplex.com/tfs<br>
+Set the authentication dropdown to "Authenticate using these credentials"<br>
+Enter your Codeplex User name with an added "_cp" (no quotes, set the domain to snd and enter your password.<br>
+<b><i>Important:</b></i>Dont forget to add the _cp to your username.<br>
+You can change the Name of the connection at the bottom of the screen to something you will remember.<br>
+Click OK to save.<br>
+Eclipse will attempt to connect to the server, if successful you should see TFS01 in the Team Project Collections, and VFPx in the Team projects panes respectively.<br>
+If not, close Eclipse and restart.<br>
+Click OK<br>
+After the first time, you will not see this dialog, Eclipse will use the connection information from the last time you connected to TFS.<br>
+You may see the workspace selection dialog at this point. Simply select your TFS workspace now, or add a new one. You can have mulitple workspaces if you choose.<br>
+Next, you should see a treeview with tfs.codeplex.com\TFS01 at the root and a first level node of VFPX.<br>
+Below that, is the list of projects, highlight all the projects to join.<br>
+You can check the "Perform a force Get" to have all the source files downloaded as part of adding the project, but it seems to get them on the Add anyway.<br>
+Click Next to view the Confirmation dialog. You cannot change anything here, just click finish or cancel depending upon your desire. <br>
+Clicking finish will add the project(s) to eclipse.<br>
+
+The selected projects will be added to the projects pane of the IDE where you can now perform all source control functions on the project file(s).
+</body>
+
+</html>
