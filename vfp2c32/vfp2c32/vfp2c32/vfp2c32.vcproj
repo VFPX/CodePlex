@@ -71,9 +71,8 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying file to VFP-Folder"
-				CommandLine="copy &quot;$(TargetPath)&quot; &quot;D:\Stuff\vfp2c32front\$(TargetFileName)&quot;
-copy &quot;$(TargetPath)&quot; &quot;D:\Stuff\vfp2cexamples\$(TargetFileName)&quot;
-copy &quot;$(TargetPath)&quot; D:\Stuff\vfpreport2zendpdf\$(TargetFileName)&quot;
+				CommandLine="copy &quot;$(TargetPath)&quot; &quot;$(SolutionDir)..\vfp2c32front\$(TargetFileName)&quot;
+copy &quot;$(TargetPath)&quot; &quot;$(SolutionDir)..\vfp2cexamples\$(TargetFileName)&quot;
 "/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -145,9 +144,8 @@ copy &quot;$(TargetPath)&quot; D:\Stuff\vfpreport2zendpdf\$(TargetFileName)&quot
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying file to VFP-Folder"
-				CommandLine="copy &quot;$(TargetPath)&quot; &quot;D:\Stuff\vfp2c32front\$(TargetFileName)&quot;
-copy &quot;$(TargetPath)&quot; &quot;D:\Stuff\vfp2cexamples\$(TargetFileName)&quot;
-copy &quot;$(TargetPath)&quot; &quot;D:\Stuff\vfpreport2zendpdf\$(TargetFileName)&quot;
+				CommandLine="copy &quot;$(TargetPath)&quot; &quot;$(SolutionDir)..\vfp2c32front\$(TargetFileName)&quot;
+copy &quot;$(TargetPath)&quot; &quot;$(SolutionDir)..\vfp2cexamples\$(TargetFileName)&quot;
 "/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -209,9 +207,8 @@ copy &quot;$(TargetPath)&quot; &quot;D:\Stuff\vfpreport2zendpdf\$(TargetFileName
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying to VFP Folder"
-				CommandLine="copy &quot;$(TargetPath)&quot; &quot;D:\Stuff\vfp2c32front\$(TargetFileName)&quot;
-copy &quot;$(TargetPath)&quot; &quot;D:\Stuff\vfp2cexamples\$(TargetFileName)&quot;
-
+				CommandLine="copy &quot;$(TargetPath)&quot; &quot;$(SolutionDir)..\vfp2c32front\$(TargetFileName)&quot;
+copy &quot;$(TargetPath)&quot; &quot;$(SolutionDir)..\vfp2cexamples\$(TargetFileName)&quot;
 "/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
