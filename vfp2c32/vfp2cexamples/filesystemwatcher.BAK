@@ -1,0 +1,65 @@
+&& RAS functions 
+&& prerequisites: InitVFP2C32 must have been called with the VFP2C_INIT_RAS flag set and
+&& VFP2C_INIT_MARSHAL flag for the RASDIALPARAMS structure
+
+#INCLUDE "vfp2c.h"
+
+CD (FULLPATH(JUSTPATH(SYS(16))))
+SET LIBRARY TO vfp2c32d.fll ADDITIVE
+INITVFP2C32(VFP2C_INIT_ASYNC)
+
+
+&&
+
+&& monitor RAS connnections
+PUBLIC loFileMonitor
+loFileMonitor = CREATEOBJECT('FileSystemWatcher')
+&& 
+loFileMonitor.WatchFolder('D:\Stuff', .T., FILE_NOTIFY_CHANGE_FILE_NAME + FILE_NOTIFY_CHANGE_DIR_NAME + FILE_NOTIFY_CHANGE_ATTRIBUTES + FILE_NOTIFY_CHANGE_SIZE)
+
+DEFINE CLASS FileSystemWatcher AS Custom
+
+	PROTECTED hHandle
+	PROTECTED cPublicName
+	hHandle = 0
+	cPublicName = ''
+
+	FUNCTION Init
+		THIS.cPublicName = THIS.Class + SYS(2015)
+		CreatePublicShadowObjReference(THIS.cPublicName, THIS)
+	ENDFUNC
+
+	FUNCTION Destroy
+		THIS.Stop()
+		ReleasePublicShadowObjReference(THIS.cPublicName)
+	ENDFUNC
+	
+	FUNCTION Stop
+		IF THIS.hHandle != 0
+			CancelFileChange(THIS.hHandle)
+			THIS.hHandle = 0
+		ENDIF
+	ENDFUNC
+	
+	FUNCTION WatchFolder
+		LPARAMETERS cPath, bWatchSubtree, nFilter
+		THIS.Stop()
+		THIS.hHandle = FindFileChange(cPath, bWatchSubtree, nFilter, THIS.cPublicName + '.FolderChangedEvent')
+	ENDFUNC
+	
+	&& callback function that gets called in asyncronous mode
+	&& it's up to you to implement it in a reasable manner
+	&& see: http://msdn.microsoft.com/library/default.asp?url=/library/en-us/rras/rras/rasdialfunc2.asp for behaviour on WinNT/2K/XP
+	&& see: http://msdn.microsoft.com/library/default.asp?url=/library/en-us/rras/rras/rasdialfunc1.asp for behaviour on WinMe/Win9X
+	FUNCTION FolderChangedEvent
+		LPARAMETERS hHandle, cPath, nError
+
+		IF nError = 0
+			? cPath + ' changed'
+		ELSE
+			? 'Function: ' + cPath + " failed. ErrorNo. ", nError
+			THIS.hHandle = 0
+		ENDIF		
+	ENDFUNC
+	
+ENDDEFINE

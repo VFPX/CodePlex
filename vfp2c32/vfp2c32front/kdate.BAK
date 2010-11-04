@@ -1,0 +1,74 @@
+DECLARE CivilToHebrew IN kdate.dll STRING @ retval, INTEGER day, INTEGER month, INTEGER year
+DECLARE GetParsha IN kdate.dll STRING @ retval, INTEGER dayandmonth, INTEGER year, INTEGER diaspora 
+
+SET STEP ON
+
+LOCAL lcHDate
+lcHDate = SPACE(6)
+CivilToHebrew(@lcHDate,4,1,2002)
+
+LOCAL lnDay, lnMonth, lnYear
+lnDay = WordToNum(SUBSTR(lcHDate,1,2))
+lnMonth = WordToNum(SUBSTR(lcHDate,3,2))
+lnYear = WordToNum(SUBSTR(lcHDate,5,2))
+
+LOCAL lcReading, lnDayMonth
+lcReading = SPACE(12)
+lnDayMonth = DWORDToNum(SUBSTR(lcHDate,1,4))
+lnDayMonth = BITOR(BITLSHIFT(lnMonth,16),lnDay) && combine two WORD values into an integer
+GetParsha(@lcReading, lnDayMonth, lnYear, 0)
+
+LOCAL lnReading1, lnReading2, lnSpecial
+lnReading1 = DWORDToNum(SUBSTR(lcReading,1,4))
+lnReading2 = DWORDToNum(SUBSTR(lcReading,5,4))
+lnSpecial = DWORDToNum(SUBSTR(lcReading,9,4))
+
+*!*	typedef struct hdate_t {
+*!*		WORD	day;
+*!*		WORD	month;
+*!*		WORD	year;
+*!*	} HDATE_T;
+
+*!*	typedef struct reading_t {
+*!*		int		reading1;
+*!*		int		reading2;
+*!*		int		special;
+*!*	} READING_T;
+
+*!*	KDATE_API HDATE_T	CivilToHebrew(int day, int month, int year);
+*!*	KDATE_API READING_T	GetReading(HDATE_T hd, int diaspora);
+
+FUNCTION NumToWORD
+*
+*  Creates a C USHORT (WORD) from a number
+*
+*  Parameters:
+*
+*	tnNum			(R)  Number to convert
+*
+	LPARAMETER tnNum
+	*
+	*  x holds an int
+	*
+	LOCAL x
+	x=INT(tnNum)
+	RETURN CHR(MOD(x,256))+CHR(INT(x/256))
+ENDFUNC
+
+FUNCTION WORDToNum
+	*	Take a binary WORD (16 bit USHORT) and convert it to a VFP Numeric
+	LPARAMETER tcWORD
+	RETURN (256 *  ASC(SUBST(tcWORD,2,1)) ) + ASC(tcWORD)
+ENDFUNC
+
+FUNCTION DWORDToNum
+	* Take a binary DWORD and convert it to a VFP Numeric
+	* use this to extract an embedded pointer in a structure in a string to an nPtr
+	LPARAMETER tcDWORD
+	LOCAL b0,b1,b2,b3
+	b0=asc(tcDWORD)
+	b1=asc(subs(tcDWORD,2,1))
+	b2=asc(subs(tcDWORD,3,1))
+	b3=asc(subs(tcDWORD,4,1))
+	RETURN ( ( (b3 * 256 + b2) * 256 + b1) * 256 + b0)
+ENDFUNC
