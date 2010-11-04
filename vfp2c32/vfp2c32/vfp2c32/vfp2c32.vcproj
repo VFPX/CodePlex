@@ -5,10 +5,6 @@
 	Name="vfp2c32"
 	ProjectGUID="{C50B92FD-886D-4016-946F-DD9E1313B6A2}"
 	RootNamespace="vfpstructs"
-	SccProjectName="SAK"
-	SccAuxPath="SAK"
-	SccLocalPath="SAK"
-	SccProvider="SAK"
 	Keyword="Win32Proj">
 	<Platforms>
 		<Platform

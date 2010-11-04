@@ -5,10 +5,6 @@
 	Name="cparser"
 	ProjectGUID="{F48F8780-666A-4038-AF40-862B0DE912DE}"
 	RootNamespace="cparser"
-	SccProjectName="SAK"
-	SccAuxPath="SAK"
-	SccLocalPath="SAK"
-	SccProvider="SAK"
 	Keyword="Win32Proj">
 	<Platforms>
 		<Platform
