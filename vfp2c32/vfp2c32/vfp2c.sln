@@ -8,20 +8,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cparser", "cparser\cparser.
 	EndProjectSection
 EndProject
 Global
-	GlobalSection(SourceCodeControl) = preSolution
-		SccNumberOfProjects = 3
-		SccLocalPath0 = .
-		CanCheckoutShared = true
-		SolutionUniqueID = {99E06904-E188-4597-944E-16C68A2DB726}
-		SccProjectUniqueName1 = cparser\\cparser.vcproj
-		SccLocalPath1 = .
-		CanCheckoutShared = true
-		SccProjectFilePathRelativizedFromConnection1 = cparser\\
-		SccProjectUniqueName2 = vfp2c32\\vfp2c32.vcproj
-		SccLocalPath2 = .
-		CanCheckoutShared = true
-		SccProjectFilePathRelativizedFromConnection2 = vfp2c32\\
-	EndGlobalSection
 	GlobalSection(SolutionConfiguration) = preSolution
 		Debug = Debug
 		Release = Release
