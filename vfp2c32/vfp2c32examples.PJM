@@ -1,0 +1,65 @@
+Version=  1.20
+Author=
+Company=
+Address=
+City=
+State=
+Zip=
+Country=
+SaveCode=.T.
+Debug=.T.
+Encrypt=.F.
+NoLogo=.F.
+CommentStyle=1
+Comments=
+CompanyName=
+FileDescription=
+LegalCopyright=
+LegalTrademarks=
+ProductName=
+Major=
+Minor=
+Revision=
+AutoIncrement=.F.
+[OLEServers]
+[OLEServersEnd]
+[ProjectFiles]
+ 740366085,P,apihelper.prg,.F.,.F.,1252,,,
+ 856984228,P,vfp2cdummy.prg,.F.,.F.,1252,,,
+ 856984230,L,vfp2c32.fll,.T.,.F.,0,,,
+ 856984261,T,vfp2c.h,.F.,.F.,1252,,,
+ 856985421,P,registry.prg,.F.,.F.,1252,,,
+ 857111051,P,files.prg,.F.,.F.,1252,,,
+ 857351044,P,dialogs.prg,.F.,.F.,1252,,,
+ 857386584,P,conversion.prg,.F.,.F.,1252,,,
+ 860236627,P,memleaktest.prg,.F.,.F.,1252,,,
+ 860237158,P,inet.prg,.F.,.F.,1252,,,
+ 860249423,P,enumeration.prg,.F.,.F.,1252,,,
+ 860270743,P,odbc.prg,.F.,.F.,1252,,,
+ 860571086,P,structs.prg,.F.,.F.,1252,,,
+ 862551709,P,services.prg,.F.,.F.,1252,,,
+ 862953226,P,windowevents.prg,.F.,.F.,1252,,,
+ 864172710,P,usingstructs.prg,.F.,.F.,1252,,,
+ 865355435,P,arraycomputations.prg,.F.,.F.,1252,,,
+ 876455003,P,vfp2c.prg,.F.,.F.,1252,,,
+ 877224701,P,ccallback.prg,.F.,.F.,1252,,,
+ 880251322,P,fileex.prg,.F.,.F.,1252,,,
+ 880447131,P,u3dapi.prg,.F.,.F.,1252,,,
+ 880447150,T,u3dapi.h,.F.,.F.,1252,,,
+ 880479621,L,vfp2c32d.fll,.T.,.F.,0,,,
+ 881045992,P,ole.prg,.F.,.F.,1252,,,
+ 881627320,T,windows.h,.F.,.F.,1252,,,
+ 881627434,P,iphelper.prg,.F.,.F.,1252,,,
+ 882424851,P,cstylearrays.prg,.F.,.F.,1252,,,
+ 882480050,P,filecopyandmove.prg,.F.,.F.,1252,,,
+ 882480469,K,frmfileprogress.scx,.F.,.F.,1252,,,
+ 883114892,P,printer.prg,.F.,.F.,1252,,,
+ 883255129,K,frmdownloadprogress.scx,.F.,.F.,1252,,,
+ 883654937,P,ras.prg,.F.,.F.,1252,,,
+ 893084954,T,rasapi32.h,.F.,.F.,1252,,,
+ 910860016,P,themes.prg,.F.,.F.,1252,,,
+ 918647026,P,wintaskbar.prg,.F.,.F.,1252,,,
+ 918655526,P,wintaskbarfoxonly.prg,.F.,.F.,1252,,,
+ 980202869,P,globalhotkey.prg,.F.,.F.,1252,,,
+1029223013,P,async.prg,.F.,.F.,1252,,,
+[EOF]
