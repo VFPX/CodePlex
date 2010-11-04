@@ -1,0 +1,22 @@
+#INCLUDE vfp2c.h
+
+CD (FULLPATH(JUSTPATH(SYS(16))))
+SET LIBRARY TO vfp2c32.fll ADDITIVE
+INITVFP2C32(VFP2C_INIT_ALL)
+
+PUBLIC loForm
+DO FORM frmfileprogress NAME loForm LINKED
+SET ESCAPE ON
+ON ESCAPE loForm.Abort()
+
+MoveFileEx('D:\TT.rm','C:\TT.rm','loForm.Progress')
+MoveFileEx('C:\TT.rm','D:\TT.rm','loForm.Progress')
+DELETEFILEEX('C:\TestDir\TT.rm')
+CopyFileEx('D:\TT.rm','C:\TestDir\TT.rm','loForm.Progress')
+
+SET ESCAPE OFF
+ON ESCAPE
+RELEASE loForm
+
+
+

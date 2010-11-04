@@ -1,0 +1,330 @@
+----------------------------
+C#:
+----------------------------
+
+public struct DEVMODE
+{
+    [MarshalAs(UnmanagedType.ByValTStr,SizeConst=32)]
+    public string dmDeviceName;
+    public short  dmSpecVersion;
+    public short  dmDriverVersion;
+    public short  dmSize;
+    public short  dmDriverExtra;
+    public int    dmFields;
+
+    public short dmOrientation;
+    public short dmPaperSize;
+    public short dmPaperLength;
+    public short dmPaperWidth;
+
+    public short dmScale;
+    public short dmCopies;
+    public short dmDefaultSource;
+    public short dmPrintQuality;
+    public short dmColor;
+    public short dmDuplex;
+    public short dmYResolution;
+    public short dmTTOption;
+    public short dmCollate;
+    [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
+    public string dmFormName;
+    public short dmLogPixels;
+    public short dmBitsPerPel;
+    public int   dmPelsWidth;
+    public int   dmPelsHeight;
+
+    public int   dmDisplayFlags;
+    public int   dmDisplayFrequency;
+
+    public int   dmICMMethod;
+    public int   dmICMIntent;
+    public int   dmMediaType;
+    public int   dmDitherType;
+    public int   dmReserved1;
+    public int   dmReserved2;
+
+    public int   dmPanningWidth;
+    public int   dmPanningHeight;
+};
+
+
+!! use Indexer's for array indexing for whole struct & members !!
+public class Meti
+{
+	public int this [string index]
+	{
+		get	{ return 12345; }
+	}
+} 
+
+Just now I have
+
+[StructLayout(LayoutKind.Explicit  , CharSet = CharSet.Unicode  )]
+ struct DeviceMode {
+  [MarshalAs(UnmanagedType.LPWStr     , SizeConst = 32)]
+  [FieldOffset(0)]
+  public string dmDeviceName; //32 long
+  [FieldOffset(64)]
+  public ushort  dmSpecVersion;
+  [FieldOffset(66)]
+  public ushort   dmDriverVersion;
+  [FieldOffset(68)]
+  public ushort   dmSize;
+  [FieldOffset(70)]
+  public ushort   dmDriverExtra;
+  [FieldOffset(72)]
+  public ushort  dmFields;
+  [FieldOffset(74)]
+  public short dmOrientation;
+  [FieldOffset(76)]
+  public short dmPaperSize;
+  [FieldOffset(78)]
+  public short dmPaperLength;
+  [FieldOffset(80)]
+  public short dmPaperWidth;
+  [FieldOffset(82)]
+  public short dmScale;
+  [FieldOffset(84)]
+  public short dmCopies;
+  [FieldOffset(86)]
+  public short dmDefaultSource;
+  [FieldOffset(88)]
+  public short dmPrintQuality;
+  [FieldOffset(74)]
+  public Point dmPosition;
+  [FieldOffset(74)]
+  public int dmDisplayOrientation;
+  [FieldOffset(74)]
+  public int dmDisplayFixedOutput;
+  [FieldOffset(90)]
+  public short  dmColor;
+  [FieldOffset(92)]
+  public short  dmDuplex;
+  [FieldOffset(94)]
+  public short  dmYResolution;
+  [FieldOffset(96)]
+  public short  dmTTOption;
+  [FieldOffset(98)]
+  public short  dmCollate;
+  [MarshalAs(UnmanagedType.LPWStr   ,SizeConst = 32)]
+  [FieldOffset(100)]
+  public string  dmFormName; //32 long
+  [FieldOffset(164)]
+  public ushort  dmLogPixels;
+  [FieldOffset(166)]
+  public int  dmBitsPerPel;
+  [FieldOffset(170)]
+  public int  dmPelsWidth;
+  [FieldOffset(174)]
+  public int  dmPelsHeight;
+  [FieldOffset(178)]
+  public int  dmDisplayFlags;
+  [FieldOffset(178)]
+  public int  dmNup;
+  [FieldOffset(182)]
+  public int  dmDisplayFrequency;
+  [FieldOffset(186)]
+  public int  dmICMMethod;
+  [FieldOffset(190)]
+  public int  dmICMIntent;
+  [FieldOffset(194)]
+  public int  dmMediaType;
+  [FieldOffset(198)]
+  public int  dmDitherType;
+  [FieldOffset(202)]
+  public int  dmReserved1;
+  [FieldOffset(206)]
+  public int  dmReserved2;
+  [FieldOffset(210)]
+  public int  dmPanningWidth;
+  [FieldOffset(214)]
+  public int  dmPanningHeight;
+ }
+
+[StructLayout(LayoutKind.Sequential)]
+        public struct TSDKTrace
+        {
+                public System.Int32 Count; 
+                [MarshalAs(UnmanagedType.LPStruct)]public TSDKPosition Points;
+                /*public TSDKPosition Points
+                {
+                        get
+                        {
+
+                                return (TSDKPosition)Marshal.PtrToStructure(pPoints,typeof(TSDKPosition));
+                        }
+                        set
+                        {
+                                Marshal.StructureToPtr(value,Marshal.AllocHGlobal(8),false);
+                        }
+
+                }*/
+
+        };
+        
+[StructLayout(LayoutKind.Sequential)]
+public struct MyStruct
+{
+        private IntPtr name; //Pointer to buffer allocated by malloc
+        uint size;
+        ushort count;
+        public MyUnion myUnion;
+        uint id;
+        ushort type;
+
+        //Create a string with the name:
+        public string Name
+        {
+                get{ return Marshal.PtrToStringAnsi(name); }
+        }
+
+}; 
+        
+----------------------------
+VB Net:
+----------------------------
+Imports System.Runtime.InteropServices
+'Class for deleting the cache.
+Public Class Class1
+        'For PInvoke: Contains information about an entry in the Internet cache
+        <StructLayout(LayoutKind.Explicit, Size:=80)> _
+        Public Structure INTERNET_CACHE_ENTRY_INFOA
+        <FieldOffset(0)> Public dwStructSize As UInt32
+        <FieldOffset(4)> Public lpszSourceUrlName As IntPtr
+        <FieldOffset(8)> Public lpszLocalFileName As IntPtr
+        <FieldOffset(12)> Public CacheEntryType As UInt32
+        <FieldOffset(16)> Public dwUseCount As UInt32
+        <FieldOffset(20)> Public dwHitRate As UInt32
+        <FieldOffset(24)> Public dwSizeLow As UInt32
+        <FieldOffset(28)> Public dwSizeHigh As UInt32
+        <FieldOffset(32)> Public LastModifiedTime As FILETIME
+        <FieldOffset(40)> Public ExpireTime As FILETIME
+        <FieldOffset(48)> Public LastAccessTime As FILETIME
+        <FieldOffset(56)> Public LastSyncTime As FILETIME
+        <FieldOffset(64)> Public lpHeaderInfo As IntPtr
+        <FieldOffset(68)> Public dwHeaderInfoSize As UInt32
+        <FieldOffset(72)> Public lpszFileExtension As IntPtr
+        <FieldOffset(76)> Public dwReserved As UInt32
+        <FieldOffset(76)> Public dwExemptDelta As UInt32
+    End Structure
+
+    'For PInvoke: Initiates the enumeration of the cache groups in the Internet cache
+    <DllImport("wininet.dll", SetLastError:=True, _
+       CharSet:=CharSet.Auto, _
+       EntryPoint:="FindFirstUrlCacheGroup", _
+       CallingConvention:=CallingConvention.StdCall)> _
+    Shared Function FindFirstUrlCacheGroup( _
+        ByVal dwFlags As Int32, _
+        ByVal dwFilter As Integer, _
+        ByVal lpSearchCondition As IntPtr, _
+        ByVal dwSearchCondition As Int32, _
+        ByRef lpGroupId As Long, _
+        ByVal lpReserved As IntPtr) As IntPtr
+    End Function
+
+    'For PInvoke: Retrieves the next cache group in a cache group enumeration
+    <DllImport("wininet.dll", _
+       SetLastError:=True, _
+       CharSet:=CharSet.Auto, _
+       EntryPoint:="FindNextUrlCacheGroup", _
+       CallingConvention:=CallingConvention.StdCall)> _
+    Shared Function FindNextUrlCacheGroup( _
+        ByVal hFind As IntPtr, _
+        ByRef lpGroupId As Long, _
+        ByVal lpReserved As IntPtr) As Boolean
+    End Function
+
+    'For PInvoke: Releases the specified GROUPID and any associated state in the cache index file
+    <DllImport("wininet.dll", _
+       SetLastError:=True, _
+       CharSet:=CharSet.Auto, _
+       EntryPoint:="DeleteUrlCacheGroup", _
+       CallingConvention:=CallingConvention.StdCall)> _
+    Shared Function DeleteUrlCacheGroup( _
+        ByVal GroupId As Long, _
+        ByVal dwFlags As Int32, _
+        ByVal lpReserved As IntPtr) As Boolean
+    End Function
+
+   'For PInvoke: Begins the enumeration of the Internet cache
+   <DllImport("wininet.dll", _
+       SetLastError:=True, _
+       CharSet:=CharSet.Auto, _
+       EntryPoint:="FindFirstUrlCacheEntryA", _
+       CallingConvention:=CallingConvention.StdCall)> _
+    Shared Function FindFirstUrlCacheEntry( _
+    <MarshalAs(UnmanagedType.LPStr)> ByVal lpszUrlSearchPattern As String, _
+         ByVal lpFirstCacheEntryInfo As IntPtr, _
+         ByRef lpdwFirstCacheEntryInfoBufferSize As Int32) As IntPtr
+    End Function
+
+    'For PInvoke: Retrieves the next entry in the Internet cache
+    <DllImport("wininet.dll", _
+       SetLastError:=True, _
+       CharSet:=CharSet.Auto, _
+       EntryPoint:="FindNextUrlCacheEntryA", _
+       CallingConvention:=CallingConvention.StdCall)> _
+    Shared Function FindNextUrlCacheEntry( _
+          ByVal hFind As IntPtr, _
+          ByVal lpNextCacheEntryInfo As IntPtr, _
+          ByRef lpdwNextCacheEntryInfoBufferSize As Integer) As Boolean
+    End Function
+
+    'For PInvoke: Removes the file that is associated with the source name from the cache, if the file exists
+    <DllImport("wininet.dll", _
+      SetLastError:=True, _
+      CharSet:=CharSet.Auto, _
+      EntryPoint:="DeleteUrlCacheEntryA", _
+      CallingConvention:=CallingConvention.StdCall)> _
+    Shared Function DeleteUrlCacheEntry( _
+        ByVal lpszUrlName As IntPtr) As Boolean
+    End Function
+
+End Class
+
+ <StructLayout(LayoutKind.Sequential)> Public Structure
+INTERNET_CACHE_ENTRY_INFO
+    Public dwStructSize As Integer
+    Public lpszSourceUrlName As IntPtr
+    Public lpszLocalFileName As IntPtr
+    Public CacheEntryType As Integer
+    Public dwUseCount As Integer
+    Public dwHitRate As Integer
+    Public dwSizeLow As Integer
+    Public dwSizeHigh As Integer
+    Public LastModifiedTime As FILETIME
+    Public ExpireTime As FILETIME
+    Public LastAccessTime As FILETIME
+    Public LastSyncTime As FILETIME
+    Public lpHeaderInfo As Integer
+    Public dwHeaderInfoSize As Integer
+    Public lpszFileExtension As IntPtr
+    Public dwExemptDelta As Integer
+
+    Public ReadOnly Property SourceUrlName() As String
+      Get
+      If Not IntPtr.Zero.Equals(lpszSourceUrlName) Then
+        Return Marshal.PtrToStringAnsi_
+        (lpszSourceUrlName)
+      End If
+      End Get
+    End Property
+
+    Public ReadOnly Property LocalFileName() As String
+      Get
+      If Not IntPtr.Zero.Equals(lpszLocalFileName) Then
+        Return Marshal.PtrToStringAnsi_
+        (lpszLocalFileName)
+      End If
+      End Get
+    End Property
+
+    Public ReadOnly Property FileExtension() As String
+      Get
+      If Not IntPtr.Zero.Equals(lpszFileExtension)Then
+        Return Marshal.PtrToStringAnsi_
+        (lpszFileExtension)
+      End If
+      End Get
+    End Property
+  End Structure 

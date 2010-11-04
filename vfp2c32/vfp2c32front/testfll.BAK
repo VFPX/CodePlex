@@ -1,0 +1,41 @@
+#Define HEAP_ZERO_MEMORY		0x8
+
+m.lcString = Filetostr(Getfile())
+m.lnLen = Len(m.lcString)
+
+Declare Integer GetProcessHeap In win32api
+
+Declare Integer HeapAlloc In win32api ;
+	Integer hHeap, ;
+	Integer dwFlags, ;
+	Integer dwBytes
+
+Declare Integer HeapFree In win32api ;
+	Integer hHeap, ;
+	Integer dwFlags, ;
+	Integer lpMem
+
+m.lnHeap  = GetProcessHeap()
+
+m.lnSeconds = Seconds()
+m.lnMemBlock1 = HeapAlloc(m.lnHeap, 0x8, m.lnLen)
+m.lnMemBlock2 = HeapAlloc(m.lnHeap, 0x8, m.lnLen * 3)
+
+Sys(2600, m.lnMemBlock1, m.lnLen, m.lcString)
+
+For m.lnPos = 1 To m.lnLen
+	m.lcChar = Sys(2600, m.lnMemBlock1 + m.lnPos - 1, 1)
+	m.lnOffset = (m.lnPos - 1) * 3
+	Sys(2600, m.lnMemBlock2 + m.lnOffset, 3, [%] + Strconv(m.lcChar, 15))
+Endfor
+
+m.lcEscHex = Sys(2600, m.lnMemBlock2,  m.lnLen * 3)
+
+HeapFree(m.lnHeap, 0, m.lnMemBlock1)
+HeapFree(m.lnHeap, 0, m.lnMemBlock2)
+
+?[Time: ], Seconds() - m.lnSeconds
+
+m.lnSeconds = SECONDS()
+m.lcHex = StringToHexEx(m.lcString)
+?[Time FLL: ], Seconds() - m.lnSeconds
