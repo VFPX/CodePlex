@@ -233,7 +233,7 @@ void _fastcall InitVFP2C32(ParamBlk *parm)
 	if (dwFlags & VFP2C_INIT_COM)
 	{
 		VFP2C_Init_Com();
-			// gnInitStatus |= VFP2C_INIT_COM; -> comment for the same reason as VFP2C_Init_Marshal
+			// gnInitStatus |= VFP2C_INIT_COM; -> commented for the same reason as VFP2C_Init_Marshal
 	}
 /*
 	if (dwFlags & VFP2C_INIT_WININET)
@@ -653,10 +653,10 @@ FoxInfo VFP2CFuncs[] =
 	{"SHRenameFiles", (FPFI) SHRenameFiles, 3, "CC.I"},
 	{"SHBrowseFolder", (FPFI) SHBrowseFolder, 5, "CIR.C.C"},
 
-	/* window message hooks */
+	/* windows message hooks */
 	{"BindEventsEx", (FPFI) BindEventsEx, 6, "II?C.?.I"},
-	{"UnBindEventsEx", (FPFI) UnBindEventsEx, 3, "I.I.L"},
-	/* callback functions */
+	{"UnbindEventsEx", (FPFI) UnbindEventsEx, 3, "I.I.L"},
+	/* C callback function emulation */
 	{"CreateCallbackFunc", (FPFI) CreateCallbackFunc, 5, "CCC.O.I"},
 	{"DestroyCallbackFunc", (FPFI) DestroyCallbackFunc, 1, "I"},
 

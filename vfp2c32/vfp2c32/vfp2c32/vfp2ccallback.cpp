@@ -86,7 +86,7 @@ try
 {
 	RESETWIN32ERRORS();
 
-	HWND hHwnd = (HWND)p1.ev_long;
+	HWND hHwnd = reinterpret_cast<HWND>(p1.ev_long);
 	FoxString pCallback(p4);
 	FoxString pParameters(parm,5);
 
@@ -139,7 +139,7 @@ try
 		sprintfex(aObjectName,BINDEVENTSEX_OBJECT_SCHEME,bClassProc,hHwnd,uMsg);
         StoreObjectRef(aObjectName,lpMsg->nObject,p3);
 	}
-	Return((void*)lpSubclass->pDefaultWndProc);
+	Return(reinterpret_cast<void*>(lpSubclass->pDefaultWndProc));
 }
 catch(int nErrorNo)
 {
@@ -154,26 +154,23 @@ catch(int nErrorNo)
 }
 }
 
-void _fastcall UnBindEventsEx(ParamBlk *parm)
+void _fastcall UnbindEventsEx(ParamBlk *parm)
 {
 try
 {
 	RESETWIN32ERRORS();
 
-	HWND hHwnd = (HWND)p1.ev_long;
-	UINT uMsg = (UINT)p2.ev_long;
+	HWND hHwnd = reinterpret_cast<HWND>(p1.ev_long);
+	UINT uMsg = static_cast<UINT>(p2.ev_long);
 	LPWINDOWSUBCLASS lpSubclass;
 	LPMSGCALLBACK lpMsg = 0;
 	bool bClassProc = PCOUNT() == 3 && p3.ev_length;
 
-	if (uMsg < WM_NULL)
-		throw E_INVALIDPARAMS;
-
 	// get reference to struct for the hWnd, if none is found - the window was not subclassed
-	lpSubclass = FindWindowSubclass(hHwnd,bClassProc);
+	lpSubclass = FindWindowSubclass(hHwnd, bClassProc);
 	if (!lpSubclass)
 	{
-		SAVECUSTOMERROREX("UnBindEventsEx","There are no message bindings for window %I",hHwnd);
+		SAVECUSTOMERROREX("UnbindEventsEx","There are no message bindings for window %I",hHwnd);
 		throw E_APIERROR;
 	}
 
@@ -182,7 +179,7 @@ try
 	{
 		if (!RemoveMsgCallback(lpSubclass,uMsg))
 		{
-			SAVECUSTOMERROREX("UnBindEventsEx","There is no message binding for message no. %I",uMsg);
+			SAVECUSTOMERROREX("UnbindEventsEx","There is no message binding for message no. %I",uMsg);
 			throw E_APIERROR;
 		}
 		// if no more hooks are present, unsubclass window
@@ -892,7 +889,7 @@ try
 	FoxString pRetVal(p2);
 	FoxString pParams(p3);
 	
-	DWORD nSyncFlag = PCOUNT() == 5 ? (DWORD)p5.ev_long : CALLBACK_SYNCRONOUS;
+	DWORD nSyncFlag = PCOUNT() == 5 ? static_cast<DWORD>(p5.ev_long) : CALLBACK_SYNCRONOUS;
 	bool bCDeclCallConv = (nSyncFlag | CALLBACK_CDECL) > 0; // is CALLBACK_CDECL set?
 	nSyncFlag &= ~CALLBACK_CDECL; // remove CALLBACK_CDECL from nSyncFlag
 	nSyncFlag = nSyncFlag ? nSyncFlag : CALLBACK_SYNCRONOUS; // set nSyncFlag to default CALLBACK_SYNCRONOUS if is 0
@@ -1205,7 +1202,7 @@ catch(int nErrorNo)
 
 void _fastcall DestroyCallbackFunc(ParamBlk *parm)
 {
-	Return(DeleteCallbackFunc((void*)p1.ev_long));
+	Return(DeleteCallbackFunc(reinterpret_cast<void*>(p1.ev_long)));
 }
 
 LRESULT _stdcall AsyncCallbackWindowProc(HWND nHwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -1215,12 +1212,13 @@ LRESULT _stdcall AsyncCallbackWindowProc(HWND nHwnd, UINT uMsg, WPARAM wParam, L
 	{
 		__try
 		{
-			if (wParam)
+			char* pCommand = reinterpret_cast<char*>(wParam);
+			if (pCommand)
 			{
-				if (_msize((void*)wParam) > 0)
+				if (_msize(pCommand) > 0)
 				{
-					nErrorNo = _Execute((char*)wParam);
-					free((void*)wParam);
+					nErrorNo = _Execute(pCommand);
+					free(reinterpret_cast<void*>(wParam));
 					if (nErrorNo)
 						RaiseError(nErrorNo);
 					return 0;

@@ -1,6 +1,0 @@
----------------------------------------------------------------------
-COMPLETE!!!!:
----------------------------------------------------------------------
-complete vfp2cmarshal.c - test marshalcursor routines
--UnMarshalCursorWString, UnMarshalCursorCharArray, MarshalCursorWCharArray
-complete CenterWindowEx
