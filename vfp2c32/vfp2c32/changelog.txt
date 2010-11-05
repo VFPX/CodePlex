@@ -1,0 +1,182 @@
+VFP2C32 Version 2.0.0.5 -- 2010-11-05 
+
+-added functions:
+ APaperSizes
+ AServiceConfig
+ ADependentServices
+ WaitForServiceStatus
+ AFontInfo,  
+ ARasDevices
+ ARasPhonebookEntries
+ RasPhonebookDlgEx
+ RasDialEx
+ RasHangUpEx
+ RasGetConnectStatusEx
+ RasDialDlgEx
+ RasConnectionNotificationEx
+ AbortRasConnectionNotificationEx
+ RasClearConnectionStatisticsEx
+ CreatePublicShadowObjReference
+ ReleasePublicShadowObjReference
+ GetLocaleInfoEx
+ AsyncWaitForObject
+ CancelWaitForObject
+
+-renamed functions:
+ "Invoke" to "IDispatch_Invoke"
+ "AsyncInvoke" to "IDispatch_AsyncInvoke"
+ "ADialUpConnections" to "ARasConnections"
+
+-fixed some memory leaks in various functions which occured in an error condition
+-interal code cleanup - replaced many of the preprocessor marcros with C++ inline functions
+-removed hardcoded threadlimit in FindFileChange & FindRegistryChange
+
+VFP2C32 Version 2.0.0.3 changes:
+-fixed a bug in the AbortUrlDownloadToFileEx function,
+abortable asynchronous downloading of internet resources with progress monitoring works now flawlessly,
+see updated example
+-updated Intellisense table for UrlDownloadToFileEx/AbortUrlDownloadToFileEx
+
+VFP2C32 Version 2.0.0.2 changes:
+-fixed parameter verification in SQLExecEx - callback functionality was not useable
+
+VFP2C32 Version 2.0.0.1 changes:
+-fixed ClsIdFromProgID - function returned an empty string instead of the CLSID
+-fixed CreateCallbackFunc - the last parameter expects a numerical flag, but only a logical value was accepted
+-enhanced ADirEx, AFileAttributes(Ex) & Get(Set)FileTimes, file times can now be retrieved/set as UTC times
+
+&& NEW C++ style release
+VFP2C32 Version 2.0.0.0 changes:
+-fixed the BINDSTATUS #DEFINE's in vfp2c.h
+-extended UrlDownloadToFile, the function can now be executed asyncronous on a different thread
+-added function AbortUrlDownloadToFileEx to abort an asyncronous download started with UrlDownLoadToFileEx
+-added function Decimals, which returns the number of decimals of a numeric value
+-added functions MoveFileEx & CopyFileEx (move/copy files with progress callback)
+-added marshaling functions: 
+ReadPInt64AsDouble, ReadPUInt64AsDouble, WriteInt64, WritePInt64, WriteUInt64, WritePUInt64
+-added function CreateGuid
+-added function CenterWindowEx
+-enhanced function CreateCallbackFunc - C callback functions that are called from a different thread are now supported
+-added function ControlService
+-added function APrintersEx
+-added function IcmpPing 
+-rewritten large parts of the FLL with a new set of C++ classes that wrap the Fox Library construction kit (vfp2ccppapi.cpp/h)
+
+&& OLD C style code
+VFP2C32 Version 1.0.3.5 changes:
+-added function Value2Variant & Variant2Value
+-added VFP like extended file functions:
+FCreateEx, FOpenEx, FCloseEx, FReadEx, FWriteEx, FGetsEx, FPutsEx, FSeekEx, FEoFEx, 
+FChSizeEx, FFlushEx, FLockFile, FUnlockFile, FLockFileEx, FUnlockFileEx, FHandleEx, AFHandlesEx
+
+VFP2C32 Version 1.0.3.4 (development release) changes:
+-added function ADialUpConnections
+-added function Ip2MacAddress
+-updated/added alot of functions in the Intellisense script
+-added function PauseService & ContinueService
+-enhanced StopService, depenant services are now stopped in an recursive algorithm 
+-fixed bugs in FindFileChange & FindRegistryChange:
+the functions worked as expected before but if the limit of notifications slots was reached the error handling was incorrect
+
+VFP2C32 Version 1.0.3.3 (development release) changes:
+-enhanced ANetFiles, also works on Win95/98/Me now
+-enhanced AProcesses, also works on WinNT now (if psapi.dll is present)
+
+-enhanced all functions that take a filename as a parameter:
+GetFileSize, AFileAttributes(Ex), Get(Set)FileAttributes, Get(Set)FileTimes,
+CompareFileTimes, GetLongPathName, GetShortPathName, GetFileOwner, DeleteFileEx - 
+one don't has to specify the fullpathname of the file anymore, internally the VFP
+function FULLPATH is now used to retrieve the fullpath of the file
+
+-enhanced GetOpenFileName & GetSaveFileName:
+both functions now optionally can call a VFP callback procedure while the dialog is running (for dialog events, customizing dialog appearance).
+and GetOpenFileName takes as an extra parameter an arrayname into which a multiple file selection is stored (see dialogs.prg example)
+
+-added function Int64_Add, Int64_Sub, Int64_Mul, Int64_Div, Int64_Mod to do simple arithmetic on Int64 literals
+-added function AIPAddresses - store IP addresses of the local machine into an array
+-added function ResolveHostToIp - get IP address of a server in your domain or from a toplevel domain e.g. www.google.com
+-added function GetWindowRectEx - stores screen coordinates of a window into an array
+
+VFP2C32 Version 1.0.3.2 (development release) changes:
+SQLExecEx enhancements/fixes:
+-SQL_BIGINT is now converted to a character (C(20)) column by default
+-SQL_GUID is now converted to a character (C(36)) column by default
+-removed General field support, the content was successfully stored into a general field before as is, but the general field was invalid in VFP.
+-unknown SQL types are now converted to a character/memo field by default depending on size (xml datatype in MS SQL Server for example)
+-fixed bug when decimals had bigger precision or scale than is supported in VFP.
+-added flag SQLEXECEX_STORE_INFO, output of PRINT statements or other commands can be stored in an array
+-added new optional parameter nCallbackInterval - specifies interval in records when the callback progress function should be called (before 100 was the default)
+-fixed callback functionality - "Invalid parameters" error was risen when more than 7 parameters were passed to SQLEXECEX
+-fixed some non working datatype conversions
+-.NULL. values are now retrieved into memo/blob fields properly
+-SQL_DEST_VARIABLE now supports all datatypes, large types (SQL_LONGVARCHAR, SQL_LONGBINARY, SQL_WLONGVARCHAR ..) weren't stored.
+-SQL_FLOAT, SQL_REAL & SQL_DOUBLE are now by default converted to B(16) datatype instead of N(20,16).
+-memo/blob fields that were specified as parameters inside the SQL statement are now send properly
+-fixed bug when a SQL_CHAR or SQL_BINARY column was bigger than 254 bytes, it's converted to a memo/blob field now, before error "invalid field length" was risen
+-fixed bug in storing money datatype with SQLGetData - error "datatype mismatch" was risen
+-fixed bug in parsing the cursorschema, decimal precision of N(X,X) was lost, resulting into N(X,0)
+-if data should be converted to currency, it's retrieved now as SQL_CHAR since most ODBC drivers doesn't support the SQL_C_NUMERIC type that was used before
+
+-added functions ASum, AAverage, AMax & AMin
+
+VFP2C32 Version 1.0.3.1 (development release) changes:
+-fixed a bug in ADIREX that was introduced in one of the last development releases.
+-added function OpenService, CloseServiceHandle & AServiceStatus
+-function AServices now always creates an array with 10 dimension regardless of OS in use, and on WinNT the last two columns are set to 0
+
+VFP2C32 Version 1.0.3.0 (development release) changes:
+-added functions GetWindowsDirectory, GetSystemDirectory & ExpandEnvironmentStrings
+-added functions GetLongPathName, GetShortPathName
+-added function RegisterObjectAsFileMoniker
+
+VFP2C32 Version 1.0.2.9 (development release) changes:
+-added function GetWindowTextEx
+-changed flags for BindEventsEx - see Intellisense help.
+-fixed a bug in UnBindEventsEx, when more than one window was subclassed
+-fixed yet another bug in BindEventsEx that occured when you rebind a message that was previously hooked to another object,
+the first object was released from memory.
+
+VFP2C32 Version 1.0.2.8 (development release) changes:
+-fixed a critical bug in BINDEVENTSEX for callbacks on an object method
+
+VFP2C32 Version 1.0.2.7 (development release) changes:
+-added functions BindEventsEx & UnbindEventsEx
+-added function GetCursorPosEx
+-added functions StartService & StopService
+-rewritten InitVFPC32(), doesn't stop initialzing independent parts of the libary if an error occurs
+-corrected initialization #DEFINES in vfp2c.h
+
+VFP2C32 Version 1.0.2.6 (development release) changes:
+-corrected bug in SQLExecEx if you tried to pass NULL or empty date(time)s as parameters. 
+-added flag SQLEXECEX_REUSE_CURSOR to SQLExecEx function
+-added functions RGB2Colors & Colors2RGB
+
+VFP2C32 Version 1.0.2.5 (development release) changes:
+-finished SQLExecEx - extended SQLExec with storage of updated/deleted/inserted rows, progress callback & custom cursorschema support ..
+we needed that years ago don't we? :-)
+since this function is rather complex (about 1300 lines of code in itself and the 30 helper functions) i put it into this development release first ..
+
+-fixed bug in ODBC errorhandler - AErrorEx returned wrong number of errors 
+-added function ATimeZones - enumerate all available times zones on the system
+-added functions DT2UTC & UTC2DT to convert datetimes from UTC/GMT to local time and vice versa
+-added function SyncToSNTPServer - sync to an SNTP (Time) Server on the internet or local network (for all OS's)
+-changed GetSystemTime & GetServerTime - both now return the time instead of storing it into a variable passed by reference
+if you're using these functions you'll have to adjust your code - backward compatibilty isn't my highest priority.
+If I make a fault in a function interface (like in this case) i'll correct it as soon as possible.
+
+
+VFP2C32 Version 1.0.2.0 changes:
+- fixed SetFileTimes - was completly messed up .. 
+- added functions to convert numeric types into binary strings and vice versa:
+Str2Short, Short2Str, Str2Long, Long2Str, Str2ULong, ULong2Str, Str2Double, Double2Str, Str2Float, Float2Str .. 
+- added functions RegisterActiveObject, RevokeActiveObject - to register COM objects into the running object table
+-fixed bug in internal helper function DateTimeToFileTimeEx (for those that use the source code or are interested in)
+-added function RegistryHiveToObject - builds an object hierarchie with values and subkeys of a registry key in one call
+-fixed a minor bug in SHFileOperation wrappers (SHCopyFiles, SHDeleteFiles, SHMoveFiles, SHRenameFiles)
+if you passed a title to for the dialog to one of these function's but didn't specify the FOF_SIMPELPROGRESS flag the title was ignored,
+now the FOF_SIMPLEPROGRESS flag is added if you pass a title
+-added function ASplitStr - split a string into an array of N fixed length strings
+
+VFP2C32 Version 1.0.1.0 changes:
+- added functions SyncToServerTime & RegistryValuesToObject
+- enhanced ADIREX and fixed a small bug in it

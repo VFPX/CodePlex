@@ -1991,6 +1991,35 @@ FoxMemo::FoxMemo() : m_File(0), m_Location(0), m_pContent(0)
 	memset(&m_Loc,0,sizeof(Locator));
 }
 
+FoxMemo::FoxMemo(ParamBlk *parm, int nParmNo) : m_pContent(0)
+{
+	if (parm->pCount >= nParmNo && IsMemoRef(parm->p[nParmNo-1].loc))
+	{
+		memcpy(&m_Loc, &parm->p[nParmNo-1].loc, sizeof(Locator));
+
+		m_Location = _FindMemo(&m_Loc);
+		if (m_Location < 0)
+			throw E_FIELDNOTFOUND;
+
+		m_File = _MemoChan(m_Loc.l_where);
+		if (m_File == -1)
+		{
+			SAVECUSTOMERROREX("_MemoChan","Function failed for workarea %I.",m_Loc.l_where);
+			throw E_APIERROR;
+		}
+
+		m_Size = _MemoSize(&m_Loc);
+		if (m_Size < 0)
+			throw m_Size;
+	}
+	else
+	{
+		m_File = 0;
+		m_Location = 0;
+		memset(&m_Loc,0,sizeof(Locator));
+	}
+}
+
 FoxMemo::FoxMemo(Locator &pLoc) : m_pContent(0)
 {
 	memcpy(&m_Loc,&pLoc,sizeof(Locator));
@@ -2046,8 +2075,8 @@ char* FoxMemo::Read(unsigned int &nLen)
 	if (m_pContent == 0)
 		throw E_INSUFMEMORY;
 
-	_FSeek(m_File,m_Location,FS_FROMBOF);
-	nLen = _FRead(m_File,m_pContent,nBytes);
+	_FSeek(m_File, m_Location, FS_FROMBOF);
+	nLen = _FRead(m_File, m_pContent, nBytes);
 	return m_pContent;
 }
 

@@ -568,6 +568,7 @@ class FoxMemo
 {
 public:
 	FoxMemo();
+	FoxMemo(ParamBlk *parm, int nParmNo);
 	FoxMemo(Locator &pLoc);
 	~FoxMemo();
 
