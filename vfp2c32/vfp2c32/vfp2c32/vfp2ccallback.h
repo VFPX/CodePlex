@@ -63,7 +63,7 @@ void _fastcall CreateCallbackFunc(ParamBlk *parm);
 void _fastcall DestroyCallbackFunc(ParamBlk *parm);
 
 void _fastcall BindEventsEx(ParamBlk *parm);
-void _fastcall UnBindEventsEx(ParamBlk *parm);
+void _fastcall UnbindEventsEx(ParamBlk *parm);
 
 #ifdef __cplusplus
 } // extern C

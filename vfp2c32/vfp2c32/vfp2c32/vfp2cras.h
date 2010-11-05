@@ -63,8 +63,8 @@ private:
 class RasNotifyThread : public CThread
 {
 public:
-	RasNotifyThread(CThreadManager &pPool);
-	~RasNotifyThread();
+	RasNotifyThread(CThreadManager &pPool) : CThread(pPool) { }
+	~RasNotifyThread() { }
 
 	virtual void SignalThreadAbort();
 	virtual DWORD Run();
@@ -74,8 +74,8 @@ public:
 private:
 	CStr m_Callback;
 	CStr m_Buffer;
-	HANDLE m_RasEvent;
-	HANDLE m_AbortEvent;
+	CEvent m_RasEvent;
+	CEvent m_AbortEvent;
     HRASCONN m_Conn;
 	DWORD m_Flags;
 };

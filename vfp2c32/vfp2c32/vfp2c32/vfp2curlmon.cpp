@@ -218,7 +218,7 @@ try
 	FoxString pUrl(p1);
 	FoxString pFile(p2);
 	FoxString pCallback(parm,3);
-	bool bAsync = PCOUNT() == 4 && p4.ev_length;
+	bool bAsync = PCOUNT() == 4 && p4.ev_length > 0;
 
 	if (bAsync && !pCallback.Len())
 		throw E_INVALIDPARAMS;
