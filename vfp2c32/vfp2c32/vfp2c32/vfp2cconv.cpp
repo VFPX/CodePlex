@@ -7,41 +7,42 @@
 
 void _fastcall PG_ByteA2Str(ParamBlk *parm)
 {
-	V_STRING(vRetVal);
-	unsigned char *pInput = 0, *pInputOrig = 0, *pInputEnd, *pRetVal, *pRetValStart;
-	int nErrorNo = 0, nMemoLen;
+try
+{
+	FoxString vInput(parm, 1, 0);
+	FoxMemo vMemo(parm, 1);
+	FoxString vRetVal;
+	unsigned char *pInput, *pInputEnd, *pRetVal, *pRetValStart;
+	unsigned int nMemoLen = 0;
 
 	if (Vartype(p1) == 'C')
 	{
-		if (!AllocHandleEx(vRetVal,p1.ev_length))
-			RaiseError(E_INSUFMEMORY);
+		if (vInput.Len() == 0)
+		{
+			vRetVal.Return();
+			return;
+		}
 
-		pRetValStart = pRetVal = (unsigned char*)HandleToPtr(vRetVal);
-		pInput = (unsigned char*)HandleToPtr(p1);
-		pInputEnd = pInput + p1.ev_length;
+		vRetVal.Size(vInput.Len());
+		pRetValStart = pRetVal = vRetVal;
+		pInput = vInput;
+		pInputEnd = pInput + vInput.Len();
 	}
 	else if (IsMemoRef(r1))
 	{
-		nMemoLen = GetMemoContentEx(&r1,(char**)&pInputOrig,&nErrorNo);
-		if (nMemoLen == -1)
-			goto ErrorOut;
-		else if (nMemoLen == 0)
+		pInput = reinterpret_cast<unsigned char*>(vMemo.Read(nMemoLen));
+		if (nMemoLen == 0)
 		{
-			Return(vRetVal);
+			vRetVal.Return();
 			return;
 		}
-		pInput = pInputOrig;
-		pInputEnd = pInput + nMemoLen;
 
-		if (!AllocHandleEx(vRetVal,nMemoLen))
-		{
-			nErrorNo = E_INSUFMEMORY;
-			goto ErrorOut;
-		}
-		pRetValStart = pRetVal = (unsigned char*)HandleToPtr(vRetVal);
+		pInputEnd = pInput + nMemoLen;
+		vRetVal.Size(nMemoLen);
+		pRetValStart = pRetVal = vRetVal;
 	}
 	else
-		RaiseError(E_INVALIDPARAMS);
+		throw E_INVALIDPARAMS;
 
 	while (pInput < pInputEnd)
 	{
@@ -67,62 +68,58 @@ void _fastcall PG_ByteA2Str(ParamBlk *parm)
 			*pRetVal++ = *pInput++;
 	}
 
-	if (Vartype(p1) != 'C')
-		free(pInputOrig);
-
-	vRetVal.ev_length = pRetVal - pRetValStart;
-	Return(vRetVal);
-	return;
-
-	ErrorOut:
-		FreeHandle(vRetVal);
-		if (pInputOrig)
-			free(pInputOrig);
-		RaiseError(nErrorNo);
+	vRetVal.Len(pRetVal - pRetValStart);
+	vRetVal.Return();
+}
+catch(int nErrorNo)
+{
+	RaiseError(nErrorNo);
+}
 }
 
 void _fastcall PG_Str2ByteA(ParamBlk *parm)
 {
-	V_STRING(vRetVal);
-	unsigned char *pInput = 0, *pInputOrig = 0, *pInputEnd, *pRetVal, *pRetValStart;
-	int nErrorNo = 0, nMemoLen;
-	BOOL bDouble = PCOUNT() == 2 ? p2.ev_length : FALSE;
-	int nMemMulti = bDouble == FALSE ? 4 : 5;
+try
+{
+	FoxString vInput(parm, 1, 0);
+	FoxMemo vMemo(parm, 1);
+	FoxString vRetVal;
+	unsigned char *pInput, *pInputEnd, *pRetVal, *pRetValStart;
+	unsigned int nMemoLen = 0;
+	bool bDouble = PCOUNT() == 2 ? p2.ev_length > 0 : false;
+	int nMemMulti = bDouble == false ? 4 : 5;
 
 	if (Vartype(p1) == 'C')
 	{
+		if (vInput.Len() == 0)
+		{
+			vRetVal.Return();
+			return;
+		}
 		// allocate 4/5 times the space of the original which is the maximum size
 		// the data can grow if all characters have to be translated to octal reprensentation
-		if (!AllocHandleEx(vRetVal,p1.ev_length * nMemMulti))
-			RaiseError(E_INSUFMEMORY);
+		vRetVal.Size(vInput.Len() * nMemMulti);
 
-		pRetValStart = pRetVal = (unsigned char*)HandleToPtr(vRetVal);
-		pInput = (unsigned char*)HandleToPtr(p1);
-		pInputEnd = pInput + p1.ev_length;
+		pRetValStart = pRetVal = vRetVal;
+		pInput = vInput;
+		pInputEnd = pInput + vInput.Len();
 	}
 	else if (IsMemoRef(r1))
 	{
-		nMemoLen = GetMemoContentEx(&r1,(char**)&pInputOrig,&nErrorNo);
-		if (nMemoLen == -1)
-			goto ErrorOut;
-		else if (nMemoLen == 0)
+		pInput = reinterpret_cast<unsigned char*>(vMemo.Read(nMemoLen));
+		if (nMemoLen == 0)
 		{
-			Return(vRetVal);
+			vRetVal.Return();
 			return;
 		}
-		pInput = pInputOrig;
 		pInputEnd = pInput + nMemoLen;
 
 		// 4/5 times .. see comment above ..
-		if (!AllocHandleEx(vRetVal,nMemoLen * nMemMulti))
-		{
-			nErrorNo = E_INSUFMEMORY;
-			goto ErrorOut;
-		}
-		pRetValStart = pRetVal = (unsigned char*)HandleToPtr(vRetVal);
+		vRetVal.Size(nMemoLen * nMemMulti);
+		pRetValStart = pRetVal = vRetVal;
 	}
 	else
-		RaiseError(E_INVALIDPARAMS);
+		throw E_INVALIDPARAMS;
 
 	while (pInput < pInputEnd)
 	{
@@ -141,18 +138,13 @@ void _fastcall PG_Str2ByteA(ParamBlk *parm)
 			*pRetVal++ = *pInput++;
 	}
 
-	if (Vartype(p1) != 'C')
-		free(pInputOrig);
-
-	vRetVal.ev_length = pRetVal - pRetValStart;
-	Return(vRetVal);
-	return;
-
-	ErrorOut:
-		FreeHandle(vRetVal);
-		if (pInputOrig)
-			free(pInputOrig);
-		RaiseError(nErrorNo);
+	vRetVal.Len(pRetVal - pRetValStart);
+	vRetVal.Return();
+}
+catch(int nErrorNo)
+{
+	RaiseError(nErrorNo);
+}
 }
 
 void _fastcall RGB2Colors(ParamBlk *parm)
