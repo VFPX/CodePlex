@@ -4,7 +4,7 @@
 #INCLUDE "vfp2c.h"
 
 CD (FULLPATH(JUSTPATH(SYS(16))))
-SET LIBRARY TO vfp2c32d.fll ADDITIVE
+SET LIBRARY TO vfp2c32.fll ADDITIVE
 INITVFP2C32(VFP2C_INIT_ASYNC)
 
 
@@ -18,7 +18,35 @@ loFileMonitor2.Watch('D:\Stuff2008', .T., FILE_NOTIFY_CHANGE_FILE_NAME + FILE_NO
 
 PUBLIC loRegMonitor
 loRegMonitor = CREATEOBJECT('RegistryKeyWatcher')
-loRegMonitor.Watch(HKEY_LOCAL_MACHINE, 'Software\YourFirmName', .T., REG_NOTIFY_CHANGE_NAME + REG_NOTIFY_CHANGE_LAST_SET)
+
+TRY
+	STORE 0 TO lnKey, lnNewKey
+	&& one can only create direct subkey's of already open keys
+	lnKey = OPENREGISTRYKEY(HKEY_LOCAL_MACHINE,'SOFTWARE')
+	lnNewKey = CREATEREGISTRYKEY(lnKey,'YourFirmName') && create HKEY_LOCAL_MACHINE\SOFTWARE\YourFirmName
+
+	loRegMonitor.Watch(HKEY_LOCAL_MACHINE, 'Software\YourFirmName', .T., REG_NOTIFY_CHANGE_NAME + REG_NOTIFY_CHANGE_LAST_SET)
+
+	WRITEREGISTRYKEY(lnNewKey,'Hello') && write Hello to the standard value
+	WRITEREGISTRYKEY(lnNewKey,25,'SomeNumber')
+	WRITEREGISTRYKEY(lnNewKey,34.345,'SomeFractional')
+	WRITEREGISTRYKEY(lnNewKey,DATE(),'InstallDate')
+	WRITEREGISTRYKEY(lnNewKey,DATETIME(),'InstallTime')
+	WRITEREGISTRYKEY(lnNewKey,'A Multi_SZ_Value'+CHR(0)+'Second Value','SomeValue','',REG_MULTI_SZ)
+	WRITEREGISTRYKEY(lnNewKey,'somebinary_variable_here_aasdfasdfkdjfkajdkfjalkjdfjadksfjlkajsdfj','SomeValue2','',REG_BINARY)
+	WRITEREGISTRYKEY(lnNewKey,DATETIME(),'InstallTime 2')
+
+CATCH TO loExp
+	AERROREX('laError')
+	DISPLAY MEMORY LIKE laError
+FINALLY 
+	IF lnNewKey != 0
+		CLOSEREGISTRYKEY(lnNewKey)
+	ENDIF
+	IF lnKey != 0
+		CLOSEREGISTRYKEY(lnKey)
+	ENDIF
+ENDTRY
 
 DEFINE CLASS AsyncWatcher AS Custom
 

@@ -50,7 +50,16 @@ void _stdcall FindVar(char *pVarname, Locator &sVar) throw(int)
 /* implementation of C++ wrapper classes over FoxPro datatypes */
 FoxValue::~FoxValue()
 {
-	ReleaseValue(m_Value);
+	if (Vartype() == 'C')
+	{
+		UnlockHandle();
+		FreeHandle();
+	}
+	else if (Vartype() == 'O')
+	{
+		UnlockObject();
+		FreeObject();
+	}
 }
 
 FoxValue& FoxValue::Load(Locator& pLoc)
@@ -61,11 +70,134 @@ FoxValue& FoxValue::Load(Locator& pLoc)
 	return *this;
 }
 
+FoxValue& FoxValue::Store(Locator& pLoc)
+{
+	int nErrorNo;
+	if (nErrorNo = _Store(&pLoc, &m_Value))
+		throw nErrorNo;
+	return *this;
+}
+
+FoxValue& FoxValue::AllocHandle(int nBytes)
+{
+	assert(m_Value.ev_handle == 0);
+	m_Value.ev_handle = _AllocHand(nBytes);
+	if (m_Value.ev_handle == 0)
+		throw E_INSUFMEMORY;
+	return *this;
+}
+
+FoxValue& FoxValue::FreeHandle()
+{
+	if (m_Value.ev_handle)
+	{
+		_FreeHand(m_Value.ev_handle);
+		m_Value.ev_handle = 0;
+	}
+	return *this;
+}
+
+char* FoxValue::HandleToPtr()
+{
+	assert(Vartype() == 'C' && m_Value.ev_handle);
+	return reinterpret_cast<char*>(_HandToPtr(m_Value.ev_handle));
+}
+
+FoxValue& FoxValue::LockHandle()
+{
+	if (m_Locked == false)
+	{
+		assert(Vartype() == 'C' && m_Value.ev_handle);
+		_HLock(m_Value.ev_handle);
+		m_Locked = true;
+	}
+	return *this;
+}
+
+FoxValue& FoxValue::UnlockHandle()
+{
+	if (m_Locked)
+	{
+		assert(Vartype() == 'C' && m_Value.ev_handle);
+		_HUnLock(m_Value.ev_handle);
+		m_Locked = false;
+	}
+	return *this;
+}
+
+FoxValue& FoxValue::SetHandleSize(unsigned long nSize)
+{
+	assert(Vartype() == 'C' && m_Value.ev_handle);
+	if (_SetHandSize(m_Value.ev_handle, nSize) == 0)
+		throw E_INSUFMEMORY;
+	return *this;
+}
+
+FoxValue& FoxValue::ExpandHandle(int nBytes)
+{
+	assert(Vartype() == 'C' && m_Value.ev_handle);
+	if (_SetHandSize(m_Value.ev_handle, m_Value.ev_length + nBytes) == 0)
+		throw E_INSUFMEMORY;
+	return *this;
+}
+
+FoxValue& FoxValue::LockObject()
+{
+	assert(Vartype() == 'O' && m_Value.ev_object);
+	if (m_Locked == false)
+	{
+		int nErrorNo = _ObjectReference(&m_Value);
+		if (nErrorNo)
+			throw nErrorNo;
+		m_Locked = true;
+	}
+	return *this;
+}
+
+FoxValue& FoxValue::UnlockObject()
+{
+	if (m_Locked)
+	{
+		assert(Vartype() == 'O' && m_Value.ev_object);
+		int nErrorNo = _ObjectRelease(&m_Value);
+		if (nErrorNo)
+			throw nErrorNo;
+		m_Locked = false;
+	}
+	return *this;
+}
+
+FoxValue& FoxValue::FreeObject()
+{
+	if (m_Value.ev_object)
+	{
+		assert(Vartype() == 'O');
+		_FreeObject(&m_Value);
+		m_Value.ev_object = 0;
+	}
+	return *this;
+}
+
+void FoxValue::Return()
+{
+	assert(m_Locked == false);
+	_RetVal(&m_Value);
+	 m_Value.ev_type = '0';
+}
+
 void FoxValue::Release()
 {
-	ReleaseValue(m_Value);
+	if (Vartype() == 'C')
+	{
+		UnlockHandle();
+		FreeHandle();
+	}
+	else if (Vartype() == 'O')
+	{
+		UnlockObject();
+		FreeObject();
+	}
 	m_Value.ev_type = '0';
-	m_Value.ev_handle = 0;
 }
 
 /* FoxReference */
@@ -204,18 +336,18 @@ FoxVariable::FoxVariable()
 FoxVariable::FoxVariable(char *pName)
 {
 	m_Nti = 0;
-	this->Attach(pName);
+	Attach(pName);
 }
 
 FoxVariable::FoxVariable(char *pName, bool bPublic)
 {
 	m_Nti = 0;
-	this->New(pName, bPublic);
+	New(pName, bPublic);
 }
 
 FoxVariable::~FoxVariable()
 {
-	this->Release();
+	Release();
 }
 
 void FoxVariable::New(char *pName, bool bPublic)
@@ -317,25 +449,6 @@ FoxVariable& FoxVariable::operator=(bool bValue)
 	return *this;
 }
 
-/* FoxInt64 */
-FoxInt64& FoxInt64::operator=(double nValue)
-{
-	m_Value.ev_real = nValue;
-	return *this;
-}
-
-FoxInt64& FoxInt64::operator=(__int64 nValue)
-{
-	m_Value.ev_real = static_cast<double>(nValue);
-	return *this;
-}
-
-FoxInt64& FoxInt64::operator=(unsigned __int64 nValue)
-{
-	m_Value.ev_real = static_cast<double>(nValue);
-	return *this;
-}
-
 /* FoxString */
 FoxString::FoxString()
 {
@@ -353,11 +466,10 @@ FoxString::FoxString(FoxString &pString)
 
 	if (m_BufferSize)
 	{
-		if (!AllocHandleEx(m_Value, m_BufferSize))
-			throw E_INSUFMEMORY;
+		AllocHandle(m_BufferSize);
 		m_Value.ev_length = pString.Len();
 		m_Value.ev_width = pString.Binary() ? 0 : 1;
-		m_String = HandleToPtr(m_Value);
+		m_String = HandleToPtr();
 		memcpy(m_String,pString,m_Value.ev_length);
 	}
 	else
@@ -374,13 +486,13 @@ FoxString::FoxString(Value &pVal)
 	if (!NullTerminateValue(pVal))
 		throw E_INSUFMEMORY;
 
-	LockHandle(pVal);
-	m_String = HandleToPtr(pVal);
 	m_Value.ev_type = 'C';
 	m_Value.ev_length = pVal.ev_length;
 	m_Value.ev_width = pVal.ev_width;
 	m_Value.ev_handle = pVal.ev_handle;
 	m_BufferSize = pVal.ev_length + 1;
+	LockHandle();
+	m_String = HandleToPtr();
 	m_ParameterRef = true;
 }
 
@@ -391,13 +503,13 @@ FoxString::FoxString(Value &pVal, unsigned int nExpand)
 		if (!ExpandValue(pVal, nExpand))
 			throw E_INSUFMEMORY;
 	}
-	LockHandle(pVal);
-	m_String = HandleToPtr(pVal);
 	m_Value.ev_type = 'C';
 	m_Value.ev_length = pVal.ev_length;
 	m_Value.ev_width = pVal.ev_width;
 	m_Value.ev_handle = pVal.ev_handle;
 	m_BufferSize = pVal.ev_length + nExpand;
+	LockHandle();
+	m_String = HandleToPtr();
 	m_ParameterRef = true;
 }
 
@@ -414,13 +526,13 @@ FoxString::FoxString(ParamBlk *pParms, int nParmNo)
 			if (!NullTerminateValue(pVal))
 				throw E_INSUFMEMORY;
 	
-			LockHandle(pVal);
-			m_String = HandleToPtr(pVal);
 			m_Value.ev_handle = pVal->ev_handle;
 			m_Value.ev_length = pVal->ev_length;
 			m_Value.ev_width = pVal->ev_width;
 			m_BufferSize = pVal->ev_length + 1;
 			m_ParameterRef = true;
+			LockHandle();
+			m_String = HandleToPtr();
 			return;
 		}
 	}
@@ -444,13 +556,13 @@ FoxString::FoxString(ParamBlk *pParms, int nParmNo, unsigned int nExpand)
 				if (!ExpandValue(pVal, nExpand))
 					throw E_INSUFMEMORY;
 			}
-			LockHandle(pVal);
-			m_String = HandleToPtr(pVal);
 			m_Value.ev_handle = pVal->ev_handle;
 			m_Value.ev_length = pVal->ev_length;
 			m_Value.ev_width = pVal->ev_width;
 			m_BufferSize = pVal->ev_length + nExpand;
 			m_ParameterRef = true;
+			LockHandle();
+			m_String = HandleToPtr();
 			return;
 		}
 	}
@@ -467,10 +579,9 @@ FoxString::FoxString(const char *pString)
 	{
 		unsigned int nStrLen = strlen(pString);
 		m_BufferSize = nStrLen + 1;
-		if (!AllocHandleEx(m_Value, m_BufferSize))
-			throw E_INSUFMEMORY;
-		LockHandle(m_Value);
-		m_String = HandleToPtr(m_Value);
+		AllocHandle(m_BufferSize);
+		LockHandle();
+		m_String = HandleToPtr();
 		memcpy(m_String,pString,nStrLen);
 		m_String[nStrLen] = '\0';
 		m_Value.ev_length = nStrLen;
@@ -489,10 +600,9 @@ FoxString::FoxString(unsigned int nBufferSize)
 	m_ParameterRef = false;
 	m_Value.ev_type = 'C';
 	m_Value.ev_length = 0;
-	if (!AllocHandleEx(m_Value, nBufferSize))
-			throw E_INSUFMEMORY;
-	LockHandle(m_Value);
-	m_String = HandleToPtr(m_Value);
+	AllocHandle(nBufferSize);
+	LockHandle();
+	m_String = HandleToPtr();
 	m_BufferSize = nBufferSize;
 	*m_String = '\0';
 }
@@ -506,10 +616,9 @@ FoxString::FoxString(BSTR pString, UINT nCodePage)
 		unsigned int nLen = SysStringLen(pString);
 		m_Value.ev_length = nLen;
 		m_BufferSize = nLen + 1;
-		if (!AllocHandleEx(m_Value, nLen+1))
-			throw E_INSUFMEMORY;
-		LockHandle(m_Value);
-		m_String = HandleToPtr(m_Value);
+		AllocHandle(m_BufferSize);
+		LockHandle();
+		m_String = HandleToPtr();
 		int nChars;
 		nChars = WideCharToMultiByte(nCodePage, 0, pString, nLen, m_String, nLen, 0, 0);
 		if (!nChars)
@@ -552,11 +661,9 @@ FoxString::FoxString(SAFEARRAY *pArray)
 		m_Value.ev_length = nLen;
 		m_Value.ev_width = 1;
 		m_BufferSize = nLen;
-
-		if (!AllocHandleEx(m_Value, nLen))
-			throw E_INSUFMEMORY;
-		LockHandle(m_Value);
-		m_String = HandleToPtr(m_Value);
+		AllocHandle(m_BufferSize);
+		LockHandle();
+		m_String = HandleToPtr();
 
 		void *pData;
 		hr = SafeArrayAccessData(pArray, &pData);
@@ -586,33 +693,40 @@ FoxString::~FoxString()
 {
 	if (m_Value.ev_handle)
 	{
-		UnlockHandle(m_Value);
+		UnlockHandle();
 		if (!m_ParameterRef)
-			FreeHandle(m_Value);
-		m_Value.ev_handle = 0;
+			FreeHandle();
 	}
+	m_Value.ev_type = '0';
+}
+
+void FoxString::Release()
+{
+	if (m_Value.ev_handle)
+	{
+		UnlockHandle();
+		if (!m_ParameterRef)
+			FreeHandle();
+		else
+			m_Value.ev_handle = 0;
+	}
+	m_ParameterRef = false;
+	m_Value.ev_length = 0;
+	m_BufferSize = 0;
 }
 
 FoxString& FoxString::Size(unsigned int nSize)
 {
 	if (m_Value.ev_handle)
 	{
-		UnlockHandle(m_Value);
-		if (!SetHandleSize(m_Value, nSize))
-		{
-			if (!m_ParameterRef)
-				FreeHandle(m_Value);
-			m_Value.ev_handle = 0;
-			throw E_INSUFMEMORY;
-		}
+		UnlockHandle();
+		SetHandleSize(nSize);
 	}
 	else
-	{
-		if (!AllocHandleEx(m_Value, nSize))
-			throw E_INSUFMEMORY;
-	}
-	LockHandle(m_Value);
-	m_String = HandleToPtr(m_Value);
+		AllocHandle(nSize);
+
+	LockHandle();
+	m_String = HandleToPtr();
 	m_BufferSize = nSize;
 	return *this;
 }
@@ -654,7 +768,8 @@ FoxString& FoxString::StrnCpy(const char *pString, unsigned int nMaxLen)
 FoxString& FoxString::CopyBytes(const unsigned char *pBytes, unsigned int nLen)
 {
 	assert(nLen <= m_BufferSize);
-	memcpy(m_String,pBytes,nLen);
+	memcpy(m_String, pBytes, nLen);
+	m_Value.ev_length = nLen;
 	return *this;
 }
 
@@ -664,7 +779,6 @@ FoxString& FoxString::CopyDblString(const char *pDblString, unsigned int nMaxLen
 	{
 		unsigned int nLen = strdblnlen(pDblString, nMaxLen);
 		ExtendBuffer(nLen);
-		Len(nLen);
 		CopyBytes(reinterpret_cast<const unsigned char*>(pDblString), nLen);
 	}
 	else
@@ -718,7 +832,7 @@ unsigned int FoxString::StringDblCount()
 void FoxString::Return()
 {
 	assert(m_Value.ev_handle);
-	UnlockHandle(m_Value);
+	UnlockHandle();
 	_RetVal(&m_Value);
 	m_Value.ev_handle = 0;
 	m_String = 0;
@@ -915,49 +1029,33 @@ unsigned int FoxString::Expand(int nSize)
 	m_BufferSize += nSize;
 	if (m_Value.ev_handle)
 	{
-		UnlockHandle(m_Value);
-		if (!SetHandleSize(m_Value, m_BufferSize))
-		{
-			if (!m_ParameterRef)
-				FreeHandle(m_Value);
-			m_Value.ev_handle = 0;
-			throw E_INSUFMEMORY;
-		}
+		UnlockHandle();
+		SetHandleSize(m_BufferSize);
 	}
 	else
-	{
-		if (!AllocHandleEx(m_Value, m_BufferSize))
-			throw E_INSUFMEMORY;
-	}
-	LockHandle(m_Value);
-	m_String = HandleToPtr(m_Value);
+		AllocHandle(m_BufferSize);
+
+	LockHandle();
+	m_String = HandleToPtr();
 	return m_BufferSize;
 }
 
 FoxString& FoxString::ExtendBuffer(unsigned int nNewMinBufferSize)
 {
-	if (m_BufferSize > nNewMinBufferSize)
+	if (m_BufferSize >= nNewMinBufferSize)
 		return *this;
 
 	m_BufferSize = nNewMinBufferSize;
 	if (m_Value.ev_handle)
 	{
-		UnlockHandle(m_Value);
-		if (!SetHandleSize(m_Value, m_BufferSize))
-		{
-			if (!m_ParameterRef)
-				FreeHandle(m_Value);
-			m_Value.ev_handle = 0;
-			throw E_INSUFMEMORY;
-		}
+		UnlockHandle();
+		SetHandleSize(m_BufferSize);
 	}
 	else
-	{
-		if (!AllocHandleEx(m_Value, m_BufferSize))
-			throw E_INSUFMEMORY;
-	}
-	LockHandle(m_Value);
-	m_String = HandleToPtr(m_Value);
+		AllocHandle(m_BufferSize);
+
+	LockHandle();
+	m_String = HandleToPtr();
 	return *this;
 }
 
@@ -965,21 +1063,21 @@ FoxString& FoxString::Fullpath()
 {
 	assert(m_String);
 
-	V_VALUE(vFullpath);
+	Value vFullpath = {'0'};
 	char aBuffer[VFP2C_MAX_CALLBACKFUNCTION];
 
 	_snprintf(aBuffer,VFP2C_MAX_CALLBACKFUNCTION,"FULLPATH('%s')+CHR(0)",m_String);
 	Evaluate(vFullpath,aBuffer);
 
-	UnlockHandle(m_Value);
+	UnlockHandle();
 	if (!m_ParameterRef)
-		FreeHandle(m_Value);
+		FreeHandle();
 
 	m_ParameterRef = false;
 	m_Value.ev_handle = vFullpath.ev_handle;
 	m_BufferSize = m_Value.ev_length = vFullpath.ev_length - 1;
-	LockHandle(m_Value);
-	m_String = HandleToPtr(m_Value);
+	LockHandle();
+	m_String = HandleToPtr();
 	return *this;
 }
 
@@ -1039,15 +1137,15 @@ void FoxString::Attach(Value &pValue, unsigned int nExpand)
 	{
 		if (!ExpandValue(pValue, nExpand))
 		{
-			FreeHandle(pValue);
+			::FreeHandle(pValue);
 			throw E_INSUFMEMORY;
 		}
 	}
 
 	m_Value.ev_handle = pValue.ev_handle;
 	m_Value.ev_width = pValue.ev_width;
-	LockHandle(m_Value);
-	m_String = HandleToPtr(m_Value);
+	LockHandle();
+	m_String = HandleToPtr();
 	m_Value.ev_length = pValue.ev_length;
 	m_BufferSize = pValue.ev_length + nExpand;
 }
@@ -1055,7 +1153,7 @@ void FoxString::Attach(Value &pValue, unsigned int nExpand)
 void FoxString::Detach()
 {
 	if (m_Value.ev_handle)
-		UnlockHandle(m_Value);
+		UnlockHandle();
 	m_BufferSize = m_Value.ev_length = m_Value.ev_handle = 0;
 	m_String = 0;
 }
@@ -1067,7 +1165,7 @@ void FoxString::Detach(Value &pValue)
 	pValue.ev_length = m_Value.ev_length;
 	pValue.ev_width = m_Value.ev_width;
 	if (m_Value.ev_handle)
-		UnlockHandle(m_Value);
+		UnlockHandle();
 	m_BufferSize = m_Value.ev_length = m_Value.ev_handle = 0;
 	m_String = 0;
 }
@@ -1106,7 +1204,7 @@ FoxString& FoxString::operator=(const Value &pVal)
 {
 	assert(pVal.ev_type == 'C');
 
-	ReleaseValue();
+	Release();
 
 	m_Value.ev_handle = pVal.ev_handle;
 	m_BufferSize = m_Value.ev_length = pVal.ev_length;
@@ -1114,11 +1212,11 @@ FoxString& FoxString::operator=(const Value &pVal)
 	
 	if (!NullTerminateValue(m_Value))
 	{
-		FreeHandle(m_Value);
+		FreeHandle();
 		throw E_INSUFMEMORY;
 	}
-	LockHandle(m_Value);
-    m_String = HandleToPtr(m_Value);
+	LockHandle();
+    m_String = HandleToPtr();
 	return *this;
 }
 
@@ -1139,7 +1237,7 @@ FoxString& FoxString::operator=(const wchar_t *pWString)
 			m_Value.ev_length = 0;
 		else
 		{
-			nChars = WideCharToMultiByte(CP_ACP,0,pWString,nLen,m_String,m_BufferSize,0,0);
+			nChars = WideCharToMultiByte(CP_ACP, 0, pWString, nLen-1, m_String, m_BufferSize, 0, 0);
 			if (!nChars)
 			{
 				SAVEWIN32ERROR(MultiByteToWideChar,GetLastError());
@@ -1207,20 +1305,6 @@ bool FoxString::operator==(FoxString &pString) const
 		return memcmp(m_String,pString,m_Value.ev_length) == 0;
 }
 
-void FoxString::ReleaseValue()
-{
-	if (m_Value.ev_handle)
-	{
-		UnlockHandle(m_Value);
-		if (!m_ParameterRef)
-			FreeHandle(m_Value);
-	}
-	m_ParameterRef = false;
-	m_Value.ev_handle = 0;
-	m_Value.ev_length = 0;
-	m_BufferSize = 0;
-}
-
 /* FoxWString */
 FoxWString::FoxWString(Value &pVal)
 {
@@ -1233,12 +1317,12 @@ FoxWString::FoxWString(Value &pVal)
 		if (m_String == 0)
 			throw E_INSUFMEMORY;
 		
-		char *pString = HandleToPtr(pVal);
+		char *pString = ::HandleToPtr(pVal);
 		nWChars = MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED,pString,pVal.ev_length,m_String,dwLength);
 		if (!nWChars)
 		{
 			SAVEWIN32ERROR(MultiByteToWideChar,GetLastError());
-			UnlockHandle(pVal);
+			::UnlockHandle(pVal);
 			throw E_APIERROR;
 		}
 		m_String[pVal.ev_length] = L'\0'; // nullterminate
@@ -1262,7 +1346,7 @@ FoxWString::FoxWString(ParamBlk *pParms, int nParmNo)
 			if (m_String == 0)
 				throw E_INSUFMEMORY;
 
-			char *pString = HandleToPtr(pVal);
+			char *pString = ::HandleToPtr(pVal);
 			nWChars = MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, pString, pVal->ev_length, m_String, dwLength);
 			if (!nWChars)
 			{
@@ -1292,7 +1376,7 @@ FoxWString::FoxWString(ParamBlk *pParms, int nParmNo, char cTypeCheck)
 			if (m_String == 0)
 				throw E_INSUFMEMORY;
 
-			char *pString = HandleToPtr(pVal);
+			char *pString = ::HandleToPtr(pVal);
 			nWChars = MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, pString, pVal->ev_length, m_String, dwLength);
 			if (!nWChars)
 			{
@@ -1773,7 +1857,7 @@ FoxObject::FoxObject() : m_Property(0), m_ParameterRef(false)
 
 FoxObject::FoxObject(Value &pVal) : m_Property(0), m_ParameterRef(true)
 {
-	assert(Vartype(pVal) == 'O');
+	assert(::Vartype(pVal) == 'O');
 	m_Value.ev_type = 'O';
 	m_Value.ev_object = pVal.ev_object;
 }
@@ -1802,10 +1886,27 @@ FoxObject::FoxObject(char *pExpression) : m_Property(0), m_ParameterRef(false)
 
 FoxObject::~FoxObject()
 {
-	if (!m_ParameterRef)
-		FreeObject(m_Value);
-	else
-		m_Value.ev_object = 0;
+	if (m_Value.ev_object)
+	{
+		UnlockObject();
+		if (!m_ParameterRef)
+			FreeObject();
+	}
+	m_Value.ev_type = '0';
+}
+
+void FoxObject::Release()
+{
+	if (m_Value.ev_object)
+	{
+		UnlockObject();
+		if (!m_ParameterRef)
+			FreeObject();
+		else
+			m_Value.ev_object = 0;
+	}
+	m_ParameterRef = false;
+	m_Value.ev_type = '0';
 }
 
 FoxObject& FoxObject::NewObject(char *pClass)
@@ -1814,7 +1915,7 @@ FoxObject& FoxObject::NewObject(char *pClass)
 
 	/* free existing object */
 	if (!m_ParameterRef)
-		FreeObject(m_Value);
+		FreeObject();
 	
 	m_ParameterRef = false;
 	// set to 0 (NULL), so when Evaluate fails the destructor doesn't free the object twice
@@ -1828,7 +1929,7 @@ FoxObject& FoxObject::EmptyObject()
 {
 	/* free existing object */
 	if (!m_ParameterRef)
-		FreeObject(m_Value);
+		FreeObject();
 
 	m_ParameterRef = false;
 
@@ -1837,24 +1938,6 @@ FoxObject& FoxObject::EmptyObject()
 		Evaluate(m_Value,"CREATEOBJECT('Empty')");
 	else
 		Evaluate(m_Value,"CREATEOBJECT('Relation')");
-	return *this;
-}
-
-FoxObject& FoxObject::Lock()
-{
-	assert(Vartype(m_Value) == 'O' && m_Value.ev_object);
-	int nErrorNo = _ObjectReference(&m_Value);
-	if (nErrorNo)
-		throw nErrorNo;
-	return *this;
-}
-
-FoxObject& FoxObject::Unlock()
-{
-	assert(Vartype(m_Value) == 'O' && m_Value.ev_object);
-	int nErrorNo = _ObjectRelease(&m_Value);
-	if (nErrorNo)
-		throw nErrorNo;
 	return *this;
 }
 
@@ -1867,7 +1950,7 @@ FoxObject& FoxObject::operator()(char *pProperty)
 
 FoxObject& FoxObject::operator=(FoxString &pString)
 {
-	assert(m_Property);
+	assert(m_Property && m_Value.ev_object);
 	int nErrorNo;
 	if (nErrorNo = _SetObjectProperty(&m_Value,m_Property,pString,TRUE))
 		throw nErrorNo;
@@ -1876,7 +1959,7 @@ FoxObject& FoxObject::operator=(FoxString &pString)
 
 FoxObject& FoxObject::operator=(FoxObject &pObject)
 {
-	assert(m_Property);
+	assert(m_Property && m_Value.ev_object);
 	int nErrorNo;
 	if (nErrorNo = _SetObjectProperty(&m_Value,m_Property,pObject,TRUE))
 		throw nErrorNo;
@@ -1885,7 +1968,7 @@ FoxObject& FoxObject::operator=(FoxObject &pObject)
 
 FoxObject& FoxObject::operator=(const Value &pVal)
 {
-	assert(m_Property);
+	assert(m_Property && m_Value.ev_object);
 	int nErrorNo;
 	if (nErrorNo = _SetObjectProperty(&m_Value,m_Property,const_cast<Value*>(&pVal),TRUE))
 		throw nErrorNo;
@@ -1894,7 +1977,7 @@ FoxObject& FoxObject::operator=(const Value &pVal)
 
 FoxObject& FoxObject::operator=(short nValue)
 {
-	assert(m_Property);
+	assert(m_Property && m_Value.ev_object);
 	int nErrorNo;
 	Value vTmp;
 	vTmp.ev_type = 'I';
@@ -1907,7 +1990,7 @@ FoxObject& FoxObject::operator=(short nValue)
 
 FoxObject& FoxObject::operator=(unsigned short nValue)
 {
-	assert(m_Property);
+	assert(m_Property && m_Value.ev_object);
 	int nErrorNo;
 	Value vTmp;
 	vTmp.ev_type = 'I';
@@ -1920,7 +2003,7 @@ FoxObject& FoxObject::operator=(unsigned short nValue)
 	
 FoxObject& FoxObject::operator=(int nValue)
 {
-	assert(m_Property);
+	assert(m_Property && m_Value.ev_object);
 	int nErrorNo;
 	Value vTmp;
 	vTmp.ev_type = 'I';
@@ -1933,7 +2016,7 @@ FoxObject& FoxObject::operator=(int nValue)
 
 FoxObject& FoxObject::operator=(unsigned long nValue)
 {
-	assert(m_Property);
+	assert(m_Property && m_Value.ev_object);
 	int nErrorNo;
 	Value vTmp;
 	vTmp.ev_type = 'N';
@@ -1947,7 +2030,7 @@ FoxObject& FoxObject::operator=(unsigned long nValue)
 
 FoxObject& FoxObject::operator=(bool bValue)
 {
-	assert(m_Property);
+	assert(m_Property && m_Value.ev_object);
 	int nErrorNo;
 	Value vTmp;
 	vTmp.ev_type = 'L';
@@ -1959,7 +2042,7 @@ FoxObject& FoxObject::operator=(bool bValue)
 
 FoxObject& FoxObject::operator=(double nValue)
 {
-	assert(m_Property);
+	assert(m_Property && m_Value.ev_object);
 	int nErrorNo;
 	Value vTmp;
 	vTmp.ev_type = 'N';
@@ -1973,7 +2056,7 @@ FoxObject& FoxObject::operator=(double nValue)
 
 FoxObject& FoxObject::operator=(__int64 nValue)
 {
-	assert(m_Property);
+	assert(m_Property && m_Value.ev_object);
 	int nErrorNo;
 	Value vTmp;
 	vTmp.ev_type = 'N';
@@ -2372,6 +2455,15 @@ FoxArray& FoxArray::operator=(FoxObject &pObject)
 	return *this;
 }
 
+FoxArray& FoxArray::operator=(FoxInt64 &pInt64)
+{
+	int nErrorNo;
+	nErrorNo = _Store(&m_Loc, pInt64);
+	if (nErrorNo)
+		throw nErrorNo;
+	return *this;
+}
+
 FoxArray& FoxArray::operator=(const Value &pVal)
 {
 	int nErrorNo;
@@ -2443,7 +2535,6 @@ FoxArray& FoxArray::operator=(__int64 nValue)
 	return *this;
 }
 
-
 FoxArray::operator Value&()
 {
 	int nErrorNo;
@@ -2460,29 +2551,29 @@ FoxCursor::~FoxCursor()
 
 void FoxCursor::Create(char *pCursorName, char *pFields)
 {
-	V_VALUE(vValue);
+	FoxValue vValue;
 	char aExeBuffer[8192];
 
-	sprintfex(aExeBuffer,"SELECT('%S')",pCursorName);
-	Evaluate(vValue,aExeBuffer);
+	sprintfex(aExeBuffer, "SELECT('%S')", pCursorName);
+	Evaluate(vValue, aExeBuffer);
 
 	// if workarea == 0 the cursor does not exist
-	if(vValue.ev_long == 0)
+	if(vValue->ev_long == 0)
 	{
 		// create the cursor
 		sprintfex(aExeBuffer,"CREATE CURSOR %S (%S)",pCursorName,pFields);
 		Execute(aExeBuffer);
 
 		// get the workarea
-		Evaluate(vValue,"SELECT(0)");
+		Evaluate(vValue, "SELECT(0)");
 	}
 	
-	m_WorkArea = vValue.ev_long;
+	m_WorkArea = vValue->ev_long;
 
 	// get fieldcount
-	sprintfex(aExeBuffer,"FCOUNT(%I)",m_WorkArea);
-	Evaluate(vValue,aExeBuffer);
-	m_FieldCnt = vValue.ev_long;
+	sprintfex(aExeBuffer, "FCOUNT(%I)", m_WorkArea);
+	Evaluate(vValue, aExeBuffer);
+	m_FieldCnt = vValue->ev_long;
 
 	m_pFieldLocs = new Locator[m_FieldCnt];
 	if (m_pFieldLocs == 0)
@@ -2492,16 +2583,16 @@ void FoxCursor::Create(char *pCursorName, char *pFields)
 	NTI nVarNti;
 	for (unsigned int nFieldNo = 1; nFieldNo <= m_FieldCnt; nFieldNo++)
 	{
-		sprintfex(aExeBuffer,"FIELD(%I,%I)+CHR(0)",nFieldNo,m_WorkArea);
-		Evaluate(vValue,aExeBuffer);
+		sprintfex(aExeBuffer, "FIELD(%I,%I)+CHR(0)", nFieldNo, m_WorkArea);
+		Evaluate(vValue, aExeBuffer);
 	
-        nVarNti = _NameTableIndex(HandleToPtr(vValue));
-		FreeHandle(vValue);
+        nVarNti = _NameTableIndex(vValue.HandleToPtr());
+		vValue.Release();
 
 		if (nVarNti == -1)
 			throw E_FIELDNOTFOUND;
 
-		if (!_FindVar(nVarNti,m_WorkArea,m_pFieldLocs + (nFieldNo-1)))
+		if (!_FindVar(nVarNti, m_WorkArea, m_pFieldLocs + (nFieldNo-1)))
 			throw E_FIELDNOTFOUND;
 	}
 }
@@ -2509,7 +2600,7 @@ void FoxCursor::Create(char *pCursorName, char *pFields)
 void FoxCursor::AppendBlank()
 {
 	int nErrorNo;
-	if (nErrorNo = _DBAppend(m_WorkArea,0))
+	if (nErrorNo = _DBAppend(m_WorkArea, 0))
 		throw nErrorNo;
 }
 

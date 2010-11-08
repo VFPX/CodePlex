@@ -61,39 +61,36 @@ LOCAL loHive
 loHive = CREATEOBJECT('Empty')
 ?RegistryHiveToObject(HKEY_CURRENT_USER,'Control Panel\Desktop',loHive)
 ?loHive.CaretWidth
-?loHive.ConvertedWallpaper
-?loHive.OriginalWallpaper
 ?loHive.WindowMetrics.AppliedDPI
 ?loHive.WindowMetrics.ScrollHeight
 ?loHive.WindowMetrics.BorderWidth
 && ...
 && value/key names are converted to property names like described above
 
-
 && enumerate all subkeys of a key into an array
 LOCAL laKeys[1], lnCount
-lnCount = AREGISTRYKEYS('laKeys',HKEY_CURRENT_USER,'SOFTWARE')
+lnCount = AREGISTRYKEYS('laKeys', HKEY_CURRENT_USER, 'SOFTWARE')
 IF lnCount > 0
 	DISPLAY MEMORY LIKE laKeys
 ENDIF
 
 && enumerate all valuenames of a key into an array
 LOCAL laValues[1]
-lnCount = AREGISTRYVALUES('laValues',HKEY_CURRENT_USER,'SOFTWARE\Windows\Windows Help')
+lnCount = AREGISTRYVALUES('laValues',HKEY_CURRENT_USER, 'Environment')
 IF lnCount > 0
 	DISPLAY MEMORY LIKE laValues
 ENDIF
 
 && enumerate all valuenames & values of a key into an array
 LOCAL laValues[1]
-lnCount = AREGISTRYVALUES('laValues',HKEY_CURRENT_USER,'SOFTWARE\Windows\Windows Help',REG_ENUMVALUE)
+lnCount = AREGISTRYVALUES('laValues',HKEY_CURRENT_USER, 'Environment', REG_ENUMVALUE)
 IF lnCount > 0
 	DISPLAY MEMORY LIKE laValues
 ENDIF
 
 && enumerate all valuenames,values & valuetypes of a key into an array
 LOCAL laValues[1]
-lnCount = AREGISTRYVALUES('laValues',HKEY_CURRENT_USER,'SOFTWARE\Windows\Windows Help',REG_ENUMTYPE+REG_ENUMVALUE)
+lnCount = AREGISTRYVALUES('laValues',HKEY_CURRENT_USER, 'Environment', REG_ENUMTYPE + REG_ENUMVALUE)
 IF lnCount > 0
 	DISPLAY MEMORY LIKE laValues
 ENDIF
@@ -127,5 +124,3 @@ FINALLY
 		CLOSEREGISTRYKEY(lnKey)
 	ENDIF
 ENDTRY
-
-RELEASE LIBRARY vfp2c32.fll

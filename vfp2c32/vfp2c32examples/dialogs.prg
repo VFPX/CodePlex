@@ -44,8 +44,8 @@ ENDCASE
 && use of a callback function to respond to events inside the dialog 
 lnFiles = GETOPENFILENAME(0,"Special Files" + CHR(0) + "au*.bat","","C:","",0,"","OpenFileCallback")
 DO CASE
-	CASE VARTYPE(lcFile) = 'C'
-		? "File" + lcFile + " selected"
+	CASE VARTYPE(lnFiles) = 'C'
+		? "File" + lnFiles + " selected"
 	CASE lnFiles = 0
 		? "Dialog box aborted"
 	CASE lnFiles = -1

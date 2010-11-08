@@ -295,10 +295,13 @@ BOOL _stdcall WindowEnumCallback(HWND nHwnd, LPARAM nParam)
 BOOL _stdcall WindowEnumCallbackCall(HWND nHwnd, LPARAM nParam) throw(int)
 {
 	LPWINDOWENUMPARAM pEnum = (LPWINDOWENUMPARAM)nParam;
-	V_VALUE(vRetVal);
-	sprintfex(pEnum->pCallback,pEnum->pBuffer,nHwnd);
+	FoxValue vRetVal;
+	sprintfex(pEnum->pCallback, pEnum->pBuffer, nHwnd);
 	Evaluate(vRetVal, pEnum->pCallback);
-	return vRetVal.ev_length;
+	if (vRetVal.Vartype() == 'L')
+        return vRetVal->ev_length;
+	else
+		return 0;
 }
 
 void _fastcall AWindowsEx(ParamBlk *parm)

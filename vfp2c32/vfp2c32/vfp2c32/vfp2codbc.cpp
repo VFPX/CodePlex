@@ -52,15 +52,15 @@ void _stdcall ODBCInstallerErrorHandler(char *pFunction)
 bool _stdcall VFP2C_Init_Odbc()
 {
 	int nErrorNo;
-	V_VALUE(vODBCHandle);
+	FoxValue vODBCHandle;
 
-	if (nErrorNo = _Evaluate(&vODBCHandle,"INT(VAL(SYS(3053)))"))
+	if (nErrorNo = _Evaluate(vODBCHandle, "INT(VAL(SYS(3053)))"))
 	{
-		ADDCUSTOMERROREX("SYS(3053)","Cannot retrieve ODBC environment handle. Error: %I",nErrorNo);
+		ADDCUSTOMERROREX("SYS(3053)","Cannot retrieve ODBC environment handle. Error: %I", nErrorNo);
 		return false;
 	}
 
-	hODBCEnvHandle = (SQLHENV)vODBCHandle.ev_long;
+	hODBCEnvHandle = reinterpret_cast<SQLHENV>(vODBCHandle->ev_long);
 	return true;
 }
 
@@ -239,8 +239,8 @@ try
 	FoxString pConAttribute(p2);
 	FoxReference pRef(r3);
 	FoxString pBuffer;
+	FoxValue vConHandle;
 
-	V_VALUE(vConHandle);
 	char aEvalFunc[VFP2C_MAX_FUNCTIONBUFFER];
 	int nRetVal = 1;
 	bool bEvalHandle = true;
@@ -263,13 +263,13 @@ try
 	if (bEvalHandle)
 	{
 		Evaluate(vConHandle,aEvalFunc);
-		hConHandle = (SQLHDBC)vConHandle.ev_long;
+		hConHandle = reinterpret_cast<SQLHDBC>(vConHandle->ev_long);
 	}
 
 	if (pConAttribute.ICompare("TRACE"))
 	{
 		BOOL bTrace;
-		nApiRet = SQLGetConnectAttr(hConHandle,SQL_ATTR_TRACE,&bTrace,0,0);
+		nApiRet = SQLGetConnectAttr(hConHandle, SQL_ATTR_TRACE, &bTrace,0,0);
 		if (nApiRet == SQL_ERROR)
 		{
 			SAVEODBCDBCERROR(SQLGetConnectAttr,hConHandle);
@@ -371,8 +371,8 @@ try
 	FoxString pCursor(parm,1);
 	FoxString pConAttribute(p2);
 	FoxString pProperty(parm,3);
+	FoxValue vConHandle;
 
-	V_VALUE(vConHandle);
 	char aEvalFunc[VFP2C_MAX_FUNCTIONBUFFER];
 	int nRetVal = 1;
 	bool bEvalHandle = true;
@@ -383,19 +383,19 @@ try
 	{
 		DWORD nHandle = Vartype(p1) == 'I' ? (DWORD)p1.ev_long : (DWORD)p1.ev_real;
 		if (nHandle)
-	        sprintfex(aEvalFunc,"INT(SQLGETPROP(%U,'ODBChdbc'))",p1.ev_long);
+	        sprintfex(aEvalFunc, "INT(SQLGETPROP(%U,'ODBChdbc'))", p1.ev_long);
 		else
 			bEvalHandle = false;
 	}
 	else if (Vartype(p1) == 'C')
-		sprintfex(aEvalFunc,"INT(SQLGETPROP(CURSORGETPROP('ConnectHandle','%S'),'ODBChdbc'))",(char*)pCursor);
+		sprintfex(aEvalFunc, "INT(SQLGETPROP(CURSORGETPROP('ConnectHandle','%S'),'ODBChdbc'))", (char*)pCursor);
 	else
 		throw E_INVALIDPARAMS;
 
 	if (bEvalHandle)
 	{
-		Evaluate(vConHandle,aEvalFunc);
-		hConHandle = (SQLHDBC)vConHandle.ev_long;
+		Evaluate(vConHandle, aEvalFunc);
+		hConHandle = reinterpret_cast<SQLHDBC>(vConHandle->ev_long);
 	}
 
 	if (pConAttribute.ICompare("TRACE"))
@@ -513,7 +513,7 @@ void _fastcall SQLExecEx(ParamBlk *parm)
 	SQLINTEGER nSQLLen;
 	SQLRETURN nApiRet;
 	LPSQLSTATEMENT pStmt = 0;
-	V_INTEGER(vRowCount);
+	Value vRowCount = {'I','\0',11,0};
 	V_STRING(vCursorName);
 	char *pCursorName;
 	BOOL bAbort = FALSE;
@@ -1123,7 +1123,7 @@ LPSQLSTATEMENT _stdcall SQLAllocStatement(ParamBlk *parm, int *nErrorNo)
 {
 	LPSQLSTATEMENT pStmt;
 	char *pCallbackFunc;
-	V_VALUE(vConHandle);
+	Value vConHandle = {'0'};
 	char aBuffer[VFP2C_MAX_FUNCTIONBUFFER];
 
 	pStmt = (LPSQLSTATEMENT)malloc(sizeof(SQLSTATEMENT));
@@ -2942,7 +2942,7 @@ int _stdcall SQLParseCursorSchema(LPSQLSTATEMENT pStmt)
 int _stdcall SQLParseCursorSchemaEx(LPSQLSTATEMENT pStmt, char *pCursor)
 {
 	LPSQLCOLUMNDATA lpCS;
-	V_VALUE(vValue);
+	Value vValue = {'0'};
 	char *pValue;
 	Locator lArrayLoc;
 	int nErrorNo, nColumns;
@@ -3173,7 +3173,8 @@ int _stdcall SQLCreateCursor(LPSQLSTATEMENT pStmt, char *pCursorName)
 	char *pChar;
 	V_STRING(vChar);
 	V_INTEGER(vNumeric);
-	V_LOGICAL(vLogical);
+	Value vLogical;
+	vLogical.ev_type = 'L';
 	char aArrayName[VFP2C_MAX_FUNCTIONBUFFER];
 	char aExeBuffer[VFP2C_MAX_FUNCTIONBUFFER];
 		
@@ -3275,7 +3276,7 @@ int _stdcall SQLCreateCursor(LPSQLSTATEMENT pStmt, char *pCursorName)
 int _stdcall SQLBindFieldLocators(LPSQLSTATEMENT pStmt, char *pCursorName)
 {
 	LPSQLCOLUMNDATA lpCS = pStmt->pColumnData;
-	V_VALUE(vWorkArea);
+	Value vWorkArea = {'0'};
 	int nErrorNo, nColNo = 0;
 	char aBuffer[256];
 
@@ -3995,7 +3996,7 @@ SQLRETURN _stdcall SQLPutDataEx(SQLHSTMT hStmt)
 int _stdcall SQLSaveOutputParameters(LPSQLSTATEMENT pStmt)
 {
 	LPSQLPARAMDATA lpPS;
-	V_VALUE(vNull);
+	Value vNull = {'0'};
 	int nErrorNo, xj;
 
 	if (!pStmt->bOutputParams)
@@ -4071,7 +4072,7 @@ int _stdcall SQLSaveOutputParameters(LPSQLSTATEMENT pStmt)
 
 int _stdcall SQLProgressCallback(LPSQLSTATEMENT pStmt, int nRowsFetched, BOOL *bAbort)
 {
-	V_VALUE(vCallRet);
+	Value vCallRet = {'0'};
 	int nErrorNo;
 	bool bAbortFlag;
 

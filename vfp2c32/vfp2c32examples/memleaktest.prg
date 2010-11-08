@@ -16,7 +16,7 @@ TRACKMEM(.T.) && enable memory allocation tracking in the library
 LOCAL loStruct
 loStruct = CREATEOBJECT('TestStruct')
 loStruct.pField1 = "Hello memory leak :)"
-loStruct.pField2 = 345
+loStruct.nField2 = 345
 loStruct = .NULL.
 
 && 3rd step, call AMemLeaks
@@ -37,7 +37,7 @@ DEFINE CLASS TestStruct AS Relation
 	Name = "TestStruct"
 	&& structure fields
 	pField1 = .F.
-	nFiedl2 = .F.
+	nField2 = .F.
 
 	PROCEDURE Init()
 		THIS.Address = AllocMem(THIS.SizeOf)
@@ -73,5 +73,3 @@ DEFINE CLASS TestStruct AS Relation
 	ENDPROC
 
 ENDDEFINE
-
-

@@ -69,7 +69,6 @@ extern "C" {
 #define VFP2C_VFP_MAX_FIELDNAME			(VFP2C_VFP_MAX_CURSOR_NAME + 1 + VFP2C_VFP_MAX_COLUMN_NAME)
 
 // misc VFP related helper/conversion functions
-void _stdcall FreeHandEx(Value *pValue);
 int _stdcall Dimension(char *pArrayName, unsigned long nRows, unsigned long nDims);
 int _stdcall DimensionEx(char *pArrayName, Locator *lArrayLoc, unsigned long nRows, unsigned long nDims);
 int _stdcall ASubscripts(Locator *pLoc, int *nRows, int *nDims);

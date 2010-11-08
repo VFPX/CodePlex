@@ -77,7 +77,7 @@ try
 	HRESULT hr;
 	IUnknown *pUnk;
 	IDispatch *pDisp;
-	V_VALUE(vDisp);
+	FoxValue vDisp;
 	char aCommand[VFP2C_MAX_CALLBACKBUFFER];
 
 	if (pObject.Len() > VFP2C_MAX_CALLBACKFUNCTION)
@@ -85,7 +85,7 @@ try
 
 	sprintfex(aCommand,"INT(SYS(3095,%S))",(char*)pObject);
 	Evaluate(vDisp,aCommand);
-	pDisp = (IDispatch*)vDisp.ev_long;
+	pDisp = reinterpret_cast<IDispatch*>(vDisp->ev_long);
 
 	hr = pDisp->QueryInterface(IID_IUnknown,(void**)&pUnk);
 	if (FAILED(hr))
@@ -125,6 +125,7 @@ try
 		throw E_APIERROR;
 	}
 	
+	pClsId.Binary(true);
 	pClsId.Len(sizeof(GUID));
 	pClsId.Return();
 }
@@ -206,6 +207,8 @@ try
 		throw E_APIERROR;
 	}
 
+	pClsId.Binary(true);
+	pClsId.Len(sizeof(GUID));
 	pClsId.Return();
 }
 catch(int nErrorNo)
@@ -354,6 +357,7 @@ try
 		pGuidString.Size(sizeof(GUID));
 		memcpy(pGuidString,pGuid,sizeof(GUID));
 		pGuidString.Len(sizeof(GUID));
+		pGuidString.Binary(true);
 	}
 
 	pGuidString.Return();
@@ -375,13 +379,13 @@ try
 	DWORD nRotKey = 0;
 	int nErrorNo = 0;
 	IUnknown *pUnk = 0;
-	V_VALUE(vUnk);
+	FoxValue vUnk;
 	CLSID sClsId;
 	char aCommand[VFP2C_MAX_CALLBACKBUFFER];
 
 	sprintfex(aCommand,"INT(SYS(3095,%S))",(char*)pObject);
 	Evaluate(vUnk,aCommand);
-	pUnk = (IDispatch*)vUnk.ev_long;
+	pUnk = reinterpret_cast<IDispatch*>(vUnk->ev_long);
 
 	if (!pUnk)
 	{
@@ -439,13 +443,13 @@ try
 	DWORD nRotKey = 0;
 	HRESULT hr;
 	IUnknown *pUnk;
-	V_VALUE(vUnk);
+	FoxValue vUnk;
 	IID sClsId, spClsId;
 	char aCommand[VFP2C_MAX_CALLBACKBUFFER];
 
 	sprintfex(aCommand,"INT(SYS(3095,%S))",(char*)pObject);
 	Evaluate(vUnk,aCommand);
-	pUnk = (IUnknown*)vUnk.ev_long;
+	pUnk = reinterpret_cast<IUnknown*>(vUnk->ev_long);
 	
 	if (!pUnk)
 	{

@@ -52,7 +52,7 @@ try
 	//check if this is a TrueType font and the version is 1.0
 	if( ttOffsetTable.uMajorVersion != 1 || ttOffsetTable.uMinorVersion != 0)
 	{
-		V_VALUE(vNull);
+		FoxValue vNull;
 		Return(vNull);
 		return;
 	}

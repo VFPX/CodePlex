@@ -3,7 +3,8 @@
 && -also handles files larger than 2GB
 && -files can be created/opened for shared access (VFP native functions only allow exclusive access)
 && -additional functions for locking parts of a file (FLockFile(Ex), FUnlockFile(Ex))
-&& -function to get the real windows file handle (FHandleEx), if you need this handle for other API functions
+&& FCreateEx and FOpenEx return the real windows file handle, you can use this handle for other API functions
+&& you can also pass API handles not created with FCreateEx or FOpenEx to the function FWriteEx, FPutsEx, FReadEx ect. ...
 
 && prerequisites: if you want to use F(Un)LockFileEx - InitVFP2C32 must have been called with the VFP2C_INIT_FILE flag
 && all other functions don't need any initialization

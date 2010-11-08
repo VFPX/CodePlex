@@ -7,6 +7,8 @@
 #include <winioctl.h>
 #include <uxtheme.h>
 
+#include <list>
+
 #include "pro_ext.h"
 #include "vfp2c32.h"
 #include "vfp2cutil.h"
@@ -41,8 +43,8 @@ static PQUERYDOSDEVICE fpQueryDosDevice = 0;
 static PDEVICEIOCONTROL fpDeviceIoControl = 0;
 static PGETVOLUMEPATHNAME fpGetVolumePathName = 0;
 
-// array of HANDLEs for F..Ex functions (FCreateEx, FOpenEx, FWriteEx ...)
-static HANDLE gaFileHandles[VFP2C_MAX_FILE_HANDLES] = {0};
+// list of HANDLEs for F..Ex functions (FCreateEx, FOpenEx, FWriteEx ...)
+static std::list<HANDLE> glFileHandles;
 
 // Filesearch class implementation
 bool FileSearch::FindFirst(char *pSearch)
@@ -173,12 +175,19 @@ bool _stdcall VFP2C_Init_File()
 void _stdcall VFP2C_Destroy_File()
 {
 	// release all file handles
-	int xj;
+	std::list<HANDLE>::iterator Iterator;
+	for (Iterator = glFileHandles.begin(); Iterator != glFileHandles.end(); Iterator++)
+	{
+		CloseHandle(*Iterator);
+	}
+	glFileHandles.clear();
+/*	int xj;
 	for (xj = 0; xj < VFP2C_MAX_FILE_HANDLES; xj++)
 	{
 		if (gaFileHandles[xj])
 			CloseHandle(gaFileHandles[xj]);
 	}
+*/
 }
 
 void _fastcall ADirEx(ParamBlk *parm)
@@ -200,8 +209,8 @@ try
 	FileSearch pSearch;
 	FoxDateTimeLiteral pCreationTime, pAccessTime, pWriteTime;
 
-	CBuffer pCallback;
-	CBuffer pCallbackCmd;
+	CStr pCallback;
+	CStr pCallbackCmd;
 
 	bool bToLocal = (nDest & ADIREX_UTC_TIMES) == 0;
 	bool bEnumFakeDirs = (nFileFilter & FILE_ATTRIBUTE_FAKEDIRECTORY) != 0;
@@ -236,9 +245,9 @@ try
 	}
 	else // destination is callback procedure
 	{
-		pCallback.Size(VFP2C_MAX_CALLBACKBUFFER);
 		pCallbackCmd.Size(VFP2C_MAX_CALLBACKBUFFER);
-		sprintfex(pCallback,"%S('%%S','%%S',%%S,%%S,%%S,%%0F,%%U)",(char*)pDestination);
+		pCallback = pDestination;
+		pCallback += "('%S','%S',%S,%S,%S,%0F,%U)";
 	}
 	
 	if (!pSearch.FindFirst(pSearchString))
@@ -322,9 +331,7 @@ try
 	}
 	else // call callback procedure
 	{
-		V_VALUE(vRetVal);
 		double nFileSize;
-
 		do 
 		{
 			if (fpFilterFunc(pSearch.File.dwFileAttributes,nFileFilter))
@@ -338,13 +345,13 @@ try
 			pWriteTime.Convert(pSearch.File.ftLastWriteTime,bToLocal);
 			nFileSize = (double)pSearch.Filesize();
             
-			sprintfex(pCallbackCmd,pCallback,pSearch.File.cFileName,pSearch.File.cAlternateFileName,
-				(char*)pCreationTime,(char*)pAccessTime,(char*)pWriteTime,nFileSize,pSearch.File.dwFileAttributes);
+			pCallbackCmd.Format(pCallback, pSearch.File.cFileName, pSearch.File.cAlternateFileName, 
+								(char*)pCreationTime, (char*)pAccessTime, (char*)pWriteTime, nFileSize, pSearch.File.dwFileAttributes);
 
-			Evaluate(vRetVal,pCallbackCmd);
-			if (!vRetVal.ev_length)
+			FoxValue vRetVal;
+			Evaluate(vRetVal, pCallbackCmd);
+			if (vRetVal.Vartype() != 'L' || !vRetVal->ev_length)
 				break;
-			
 			} // endif nFileFilter
 
 		} while(pSearch.FindNext());
@@ -1415,25 +1422,20 @@ catch(int nErrorNo)
 
 int _stdcall SHBrowseCallback(HWND hwnd, UINT uMsg, LPARAM lParam, LPARAM lpData)
 {
-	V_VALUE(vRetVal);
-	BrowseCallback *lpBC = (BrowseCallback*)lpData;
+	FoxValue vRetVal;
+	BrowseCallback *lpBC = reinterpret_cast<BrowseCallback*>(lpData);
 	lpBC->pBuffer.Format(lpBC->pCallback, hwnd, uMsg, lParam);
 
-	if (_Evaluate(&vRetVal, lpBC->pBuffer) == 0)
+	if (_Evaluate(vRetVal, lpBC->pBuffer) == 0)
 	{
-		if (Vartype(vRetVal) == 'I')
-			return vRetVal.ev_long;
-		else if (Vartype(vRetVal) == 'L')
-			return vRetVal.ev_length;
-		else if (Vartype(vRetVal) == 'N')
-			return (UINT)vRetVal.ev_real;
-		else
-			ReleaseValue(vRetVal);
-
-		return 0;
+		if (vRetVal.Vartype() == 'I')
+			return vRetVal->ev_long;
+		else if (vRetVal.Vartype() == 'L')
+			return vRetVal->ev_length;
+		else if (vRetVal.Vartype() == 'N')
+			return static_cast<UINT>(vRetVal->ev_real);
 	}
-	else
-		return 0;
+	return 0;
 }
 
 void _fastcall GetOpenFileNameLib(ParamBlk *parm)
@@ -1664,16 +1666,16 @@ UINT_PTR _stdcall GetFileNameCallback(HWND hDlg, UINT uMsg, WPARAM wParam, LPARA
 
 	if (uMsg == WM_INITDIALOG)
 	{
-		lpOpfn = (LPOPENFILENAME)lParam;
+		lpOpfn = reinterpret_cast<LPOPENFILENAME>(lParam);
 		if (lpOpfn->lCustData)
-			SetWindowLong(hDlg,GWL_USERDATA,(LONG)lpOpfn->lCustData);
+			SetWindowLong(hDlg, GWL_USERDATA, static_cast<LONG>(lpOpfn->lCustData));
 	}
 	else if (uMsg == WM_NOTIFY)
 	{
-		lpCallback = (OpenfileCallback*)GetWindowLong(hDlg,GWL_USERDATA);
+		lpCallback = reinterpret_cast<OpenfileCallback*>(GetWindowLong(hDlg,GWL_USERDATA));
 		if (lpCallback)
 		{
-			lpHdr = (NMHDR*)lParam;
+			lpHdr = reinterpret_cast<NMHDR*>(lParam);
 			lpCallback->pBuffer.Format(lpCallback->pCallback, lpHdr->hwndFrom, lpHdr->idFrom, lpHdr->code);
 			lpCallback->nErrorNo = _Evaluate(&lpCallback->vRetVal, lpCallback->pBuffer);
 			if (!lpCallback->nErrorNo)
@@ -2190,12 +2192,8 @@ try
 	RESETWIN32ERRORS();
 	FoxString pFileName(p1);
 
-	ApiHandle hFile;
-	int nSlot;
+	HANDLE hFile;
 	DWORD dwAccess, dwShare, dwFlags;
-
-	// get a free entry in our file handle array
-	nSlot = FindFreeFileSlot();
 
 	MapFileAccessFlags(PCOUNT() >= 2 ? p2.ev_long : 0,
 									PCOUNT() >= 3 ? p3.ev_long : 2,
@@ -2209,8 +2207,8 @@ try
 		throw E_APIERROR;
 	}
 
-	gaFileHandles[nSlot] = hFile.Detach();
-	Return(nSlot);
+	glFileHandles.push_back(hFile);
+	Return(hFile);
 }
 catch(int nErrorNo)
 {
@@ -2228,12 +2226,10 @@ try
 	RESETWIN32ERRORS();
 
 	FoxString pFileName(p1);
-	int nSlot;
-	ApiHandle hFile;
+	HANDLE hFile;
 	DWORD dwAccess, dwShare, dwFlags;
 
 	// get a free entry in our file handle array
-	nSlot = FindFreeFileSlot();
 	pFileName.Fullpath();
 
 	MapFileAccessFlags(PCOUNT() >= 2 ? p2.ev_long : 0,
@@ -2248,8 +2244,8 @@ try
 		throw E_APIERROR;
 	}
 
-	gaFileHandles[nSlot] = hFile.Detach();
-	Return(nSlot);
+	glFileHandles.push_back(hFile);
+	Return(hFile);
 }
 catch(int nErrorNo)
 {
@@ -2266,35 +2262,24 @@ try
 {
 	RESETWIN32ERRORS();
 
-	if (!VFP2C_VALID_FILE_HANDLE(p1.ev_long) && p1.ev_long != -1)
-		throw E_INVALIDPARAMS;
-
 	BOOL bApiRet;
+	HANDLE hFile = reinterpret_cast<HANDLE>(p1.ev_long);
 
-	if (p1.ev_long >= 0)
+	if (hFile != INVALID_HANDLE_VALUE)
 	{
-		bApiRet = CloseHandle(gaFileHandles[p1.ev_long]);
+		bApiRet = CloseHandle(hFile);
 		if (!bApiRet)
 			SAVEWIN32ERROR(CloseHandle,GetLastError());
 		else
-			gaFileHandles[p1.ev_long] = 0;
+			glFileHandles.remove(hFile);
 	}
 	else
 	{
 		bApiRet = TRUE;
-		for (int xj = 0; xj < VFP2C_MAX_FILE_HANDLES; xj++)
-		{
-			if (gaFileHandles[xj])
-			{
-				if (!CloseHandle(gaFileHandles[xj]))
-				{
-					ADDWIN32ERROR(CloseHandle,GetLastError());
-					bApiRet = FALSE;
-				}
-				else
-					gaFileHandles[xj] = 0;
-			}
-		}
+		std::list<HANDLE>::iterator Iterator;
+		for (Iterator = glFileHandles.begin(); Iterator != glFileHandles.end(); Iterator++)
+			CloseHandle(*Iterator);
+		glFileHandles.clear();
 	}
 
 	Return(bApiRet == TRUE);
@@ -2311,16 +2296,14 @@ try
 {
 	RESETWIN32ERRORS();
 
-	if (!VFP2C_VALID_FILE_HANDLE(p1.ev_long) || p2.ev_long < 0)
-		throw E_INVALIDPARAMS;
-
-	BOOL bApiRet = TRUE;
+	BOOL bApiRet;
 	DWORD dwRead;
+	HANDLE hFile = reinterpret_cast<HANDLE>(p1.ev_long);
 	FoxString pData(p2.ev_long);
 
-	bApiRet = ReadFile(gaFileHandles[p1.ev_long],pData,pData.Size(),&dwRead,0);
+	bApiRet = ReadFile(hFile, pData, pData.Size(), &dwRead, 0);
 	if (!bApiRet)
-		SAVEWIN32ERROR(ReadFile,GetLastError());
+		SAVEWIN32ERROR(ReadFile, GetLastError());
 
 	pData.Len(bApiRet ? dwRead : 0); 
 	pData.Return();
@@ -2337,14 +2320,12 @@ try
 {
 	RESETWIN32ERRORS();
 
-	if (!VFP2C_VALID_FILE_HANDLE(p1.ev_long))
-		throw E_INVALIDPARAMS;
-
 	if (PCOUNT() == 3 && p3.ev_long < 0)
 		throw E_INVALIDPARAMS;
 
 	BOOL bApiRet;
 	DWORD dwWritten, dwLength;
+	HANDLE hFile = reinterpret_cast<HANDLE>(p1.ev_long);
 	FoxString pData(p2,0);
 
 	if (PCOUNT() == 3 && p2.ev_length >= (DWORD)p3.ev_long)
@@ -2352,7 +2333,7 @@ try
 	else
 		dwLength = p2.ev_length;
 
-	bApiRet = WriteFile(gaFileHandles[p1.ev_long],pData,dwLength,&dwWritten,0);
+	bApiRet = WriteFile(hFile, pData, dwLength, &dwWritten,0);
 	if (!bApiRet)
 		SAVEWIN32ERROR(WriteFile,GetLastError());
 
@@ -2373,11 +2354,9 @@ try
 {
 	RESETWIN32ERRORS();
 
-	if (!VFP2C_VALID_FILE_HANDLE(p1.ev_long))
-		throw E_INVALIDPARAMS;
-
 	BOOL bApiRet;
 	unsigned char *pData, *pOrigData;
+	HANDLE hFile = reinterpret_cast<HANDLE>(p1.ev_long);
 	int dwLen = PCOUNT() == 2 ? p2.ev_long : 256;
 	int bCarri = 0;
 	LONG dwRead, dwBuffer;
@@ -2386,9 +2365,9 @@ try
 	pOrigData = pData = pBuffer;
 
 	dwBuffer = min(dwLen,VFP2C_FILE_LINE_BUFFER);
-	while (1)
+	while(true)
 	{
-		bApiRet = ReadFile(gaFileHandles[p1.ev_long],pData,dwBuffer,(LPDWORD)&dwRead,0);
+		bApiRet = ReadFile(hFile, pData, dwBuffer, reinterpret_cast<LPDWORD>(&dwRead), 0);
 		if (!bApiRet)
 		{
 			SAVEWIN32ERROR(ReadFile,GetLastError());
@@ -2411,7 +2390,7 @@ try
 				}
 				else
 					bCarri = 1; // set detect flag
-				SetFilePointer(gaFileHandles[p1.ev_long],-dwRead,0,FILE_CURRENT); // position filepointer after carri/linefeed(s)
+				SetFilePointer(hFile, -dwRead, 0, FILE_CURRENT); // position filepointer after carri/linefeed(s)
 				break;
 			}
 			else if (*pData == '\n')
@@ -2425,7 +2404,7 @@ try
 				}
 				else
 					bCarri = 1;
-				SetFilePointer(gaFileHandles[p1.ev_long],-dwRead,0,FILE_CURRENT); // position filepointer after carri/linefeed(s)
+				SetFilePointer(hFile, -dwRead, 0, FILE_CURRENT); // position filepointer after carri/linefeed(s)
 				break;
 			}
 			else
@@ -2451,14 +2430,12 @@ try
 {
 	RESETWIN32ERRORS();
 
-	if (!VFP2C_VALID_FILE_HANDLE(p1.ev_long))
-		throw E_INVALIDPARAMS;
-
 	if (PCOUNT() == 3 && p3.ev_long < 0)
 		throw E_INVALIDPARAMS;
 
 	BOOL bApiRet;
 	DWORD dwWritten, dwLength;
+	HANDLE hFile = reinterpret_cast<HANDLE>(p1.ev_long);
 	FoxString pData(p2,2);
 
 	if (PCOUNT() == 3 && pData.Len() >= (DWORD)p3.ev_long)
@@ -2470,7 +2447,7 @@ try
 	pData[dwLength] = '\r';
 	pData[dwLength+1] = '\n';
 
-	bApiRet = WriteFile(gaFileHandles[p1.ev_long],pData,dwLength + 2,&dwWritten,0);
+	bApiRet = WriteFile(hFile, pData, dwLength + 2, &dwWritten,0);
 	if (!bApiRet)
 		SAVEWIN32ERROR(WriteFile,GetLastError());
 
@@ -2491,15 +2468,13 @@ try
 {
 	RESETWIN32ERRORS();
 
-	if (!VFP2C_VALID_FILE_HANDLE(p1.ev_long))
-		throw E_INVALIDPARAMS;
-
+	HANDLE hFile = reinterpret_cast<HANDLE>(p1.ev_long);
 	LARGE_INTEGER nFilePos;
 	FoxInt64 pNewFilePos;
 	DWORD dwMove = PCOUNT() == 3 ? p3.ev_long : FILE_BEGIN;
 
 	nFilePos.QuadPart = (__int64)p2.ev_real;
-	nFilePos.LowPart = SetFilePointer(gaFileHandles[p1.ev_long],nFilePos.LowPart,&nFilePos.HighPart,dwMove);
+	nFilePos.LowPart = SetFilePointer(hFile, nFilePos.LowPart, &nFilePos.HighPart,dwMove);
 	if (nFilePos.LowPart == INVALID_SET_FILE_POINTER && GetLastError() != NO_ERROR)
 	{
 		SAVEWIN32ERROR(SetFilePointer,GetLastError());
@@ -2521,17 +2496,12 @@ try
 {
 	RESETWIN32ERRORS();
 
-	if (!VFP2C_VALID_FILE_HANDLE(p1.ev_long))
-		throw E_INVALIDPARAMS;
-
+	HANDLE hFile = reinterpret_cast<HANDLE>(p1.ev_long);
 	LARGE_INTEGER nCurr, nEof;
 	DWORD nReset;
-	HANDLE hFile;
-
-	hFile = gaFileHandles[p1.ev_long];
 
 	nCurr.HighPart = 0;
-	nCurr.LowPart = SetFilePointer(hFile,0,&nCurr.HighPart,FILE_CURRENT);
+	nCurr.LowPart = SetFilePointer(hFile, 0, &nCurr.HighPart, FILE_CURRENT);
 	if (nCurr.LowPart == INVALID_SET_FILE_POINTER && GetLastError() != NO_ERROR)
 	{
 		SAVEWIN32ERROR(SetFilePointer,GetLastError());
@@ -2567,21 +2537,17 @@ try
 {
 	RESETWIN32ERRORS();
 
-	if (!VFP2C_VALID_FILE_HANDLE(p1.ev_long))
-		throw E_INVALIDPARAMS;
-
+	HANDLE hFile = reinterpret_cast<HANDLE>(p1.ev_long);
 	BOOL bApiRet;
-	HANDLE hFile;
 	LARGE_INTEGER nSize;
 	LARGE_INTEGER nCurrPos;
 	FoxInt64 pFilePos;
 
-	hFile = gaFileHandles[p1.ev_long];
 	nSize.QuadPart = (__int64)p2.ev_real;
     
 	// save current file pointer
 	nCurrPos.HighPart = 0;
-	nCurrPos.LowPart = SetFilePointer(hFile,0,&nCurrPos.HighPart,FILE_CURRENT);
+	nCurrPos.LowPart = SetFilePointer(hFile, 0, &nCurrPos.HighPart, FILE_CURRENT);
 	if (nCurrPos.LowPart == INVALID_SET_FILE_POINTER && GetLastError() != NO_ERROR)
 	{
 		SAVEWIN32ERROR(SetFilePointer,GetLastError());
@@ -2589,7 +2555,7 @@ try
 	}
 
 	// set file pointer to specified size
-	nSize.LowPart = SetFilePointer(hFile,nSize.LowPart,&nSize.HighPart,FILE_BEGIN);
+	nSize.LowPart = SetFilePointer(hFile, nSize.LowPart, &nSize.HighPart, FILE_BEGIN);
 	if (nSize.LowPart == INVALID_SET_FILE_POINTER && GetLastError() != NO_ERROR)
 	{
 		SAVEWIN32ERROR(SetFilePointer,GetLastError());
@@ -2605,7 +2571,7 @@ try
 	}
 
 	// reset file pointer to saved position
-	nCurrPos.LowPart = SetFilePointer(hFile,0,&nCurrPos.HighPart,FILE_BEGIN);
+	nCurrPos.LowPart = SetFilePointer(hFile, 0, &nCurrPos.HighPart, FILE_BEGIN);
 	if (nCurrPos.LowPart == INVALID_SET_FILE_POINTER && GetLastError() != NO_ERROR)
 	{
 		SAVEWIN32ERROR(SetFilePointer,GetLastError());
@@ -2631,12 +2597,8 @@ try
 	RESETWIN32ERRORS();
 
 	BOOL bApiRet;
-
-	if (!VFP2C_VALID_FILE_HANDLE(p1.ev_long))
-		throw E_INVALIDPARAMS;
-
-	bApiRet = FlushFileBuffers(gaFileHandles[p1.ev_long]);
-
+	HANDLE hFile = reinterpret_cast<HANDLE>(p1.ev_long);
+	bApiRet = FlushFileBuffers(hFile);
 	if (!bApiRet)
 		SAVEWIN32ERROR(FlushFileBuffers,GetLastError());
 
@@ -2655,10 +2617,8 @@ try
 	RESETWIN32ERRORS();
 
 	BOOL bApiRet;
+	HANDLE hFile = reinterpret_cast<HANDLE>(p1.ev_long);
 	LARGE_INTEGER nOffset, nLen;
-
-	if (!VFP2C_VALID_FILE_HANDLE(p1.ev_long))
-		throw E_INVALIDPARAMS;
 
 	if (Vartype(p2) == 'I')
 		nOffset.QuadPart = (__int64)p2.ev_long;
@@ -2674,8 +2634,7 @@ try
 	else
 		throw E_INVALIDPARAMS;
 
-	bApiRet = LockFile(gaFileHandles[p1.ev_long],nOffset.LowPart,nOffset.HighPart,nLen.LowPart,nLen.HighPart);
-
+	bApiRet = LockFile(hFile, nOffset.LowPart, nOffset.HighPart, nLen.LowPart, nLen.HighPart);
 	if (!bApiRet)
 		SAVEWIN32ERROR(LockFile,GetLastError());
 
@@ -2694,10 +2653,8 @@ try
 	RESETWIN32ERRORS();
 
 	BOOL bApiRet;
+	HANDLE hFile = reinterpret_cast<HANDLE>(p1.ev_long);
 	LARGE_INTEGER nOffset, nLen;
-
-	if (!VFP2C_VALID_FILE_HANDLE(p1.ev_long))
-		throw E_INVALIDPARAMS;
 
 	if (Vartype(p2) == 'I')
 		nOffset.QuadPart = (__int64)p2.ev_long;
@@ -2713,8 +2670,7 @@ try
 	else
 		throw E_INVALIDPARAMS;
 
-	bApiRet = UnlockFile(gaFileHandles[p1.ev_long],nOffset.LowPart,nOffset.HighPart,nLen.LowPart,nLen.HighPart);
-
+	bApiRet = UnlockFile(hFile, nOffset.LowPart, nOffset.HighPart, nLen.LowPart, nLen.HighPart);
 	if (!bApiRet)
 		SAVEWIN32ERROR(UnlockFile,GetLastError());
 
@@ -2735,10 +2691,8 @@ try
 	if (!fpLockFileEx)
 		throw E_NOENTRYPOINT;
 
-	if (!VFP2C_VALID_FILE_HANDLE(p1.ev_long))
-		throw E_INVALIDPARAMS;
-
 	BOOL bApiRet;
+	HANDLE hFile = reinterpret_cast<HANDLE>(p1.ev_long);
 	DWORD dwFlags = PCOUNT() == 4 ? p4.ev_long : 0;
 	LARGE_INTEGER nOffset, nLen;
 	OVERLAPPED sOverlap;
@@ -2761,7 +2715,7 @@ try
 	sOverlap.Offset = nOffset.LowPart;
 	sOverlap.OffsetHigh = nOffset.HighPart;
 
-	bApiRet = LockFileEx(gaFileHandles[p1.ev_long],dwFlags,0,nLen.LowPart,nLen.HighPart,&sOverlap);
+	bApiRet = LockFileEx(hFile, dwFlags, 0, nLen.LowPart, nLen.HighPart, &sOverlap);
 
 	if (!bApiRet)
 		SAVEWIN32ERROR(LockFileEx,GetLastError());
@@ -2783,10 +2737,8 @@ try
 	if (!fpUnlockFileEx)
 		throw E_NOENTRYPOINT;
 
-	if (!VFP2C_VALID_FILE_HANDLE(p1.ev_long))
-		throw E_INVALIDPARAMS;
-
 	BOOL bApiRet;
+	HANDLE hFile = reinterpret_cast<HANDLE>(p1.ev_long);
 	LARGE_INTEGER nOffset, nLen;
 	OVERLAPPED sOverlap;
 
@@ -2808,8 +2760,7 @@ try
 	sOverlap.Offset = nOffset.LowPart;
 	sOverlap.OffsetHigh = nOffset.HighPart;
 
-	bApiRet = fpUnlockFileEx(gaFileHandles[p1.ev_long],0,nLen.LowPart,nLen.HighPart,&sOverlap);
-
+	bApiRet = fpUnlockFileEx(hFile, 0, nLen.LowPart, nLen.HighPart, &sOverlap);
 	if (!bApiRet)
 		SAVEWIN32ERROR(UnlockFileEx,GetLastError());
 
@@ -2821,26 +2772,12 @@ catch(int nErrorNo)
 }
 }
 
-void _fastcall FHandleEx(ParamBlk *parm)
-{
-	if (!VFP2C_VALID_FILE_HANDLE(p1.ev_long))
-		RaiseError(E_INVALIDPARAMS);
-	Return((int)gaFileHandles[p1.ev_long]);
-}
-
 void _fastcall AFHandlesEx(ParamBlk *parm)
 {
 try
 {
 	FoxArray pArray(p1);	
-	unsigned int nHandleCnt = 0;
-	int xj;
-
-	for (xj = 0; xj < VFP2C_MAX_FILE_HANDLES; xj++)
-	{
-		if (gaFileHandles[xj])
-			nHandleCnt++;
-	}
+	unsigned int nHandleCnt = glFileHandles.size();
 
 	if (nHandleCnt == 0)
 	{
@@ -2848,17 +2785,14 @@ try
 		return;
 	}
 
-	pArray.Dimension(nHandleCnt,2);
+	pArray.Dimension(nHandleCnt, 1);
 
-	unsigned int nRow = 0;
-	for (xj = 0; xj < VFP2C_MAX_FILE_HANDLES; xj++)
+	int xj = 1;
+	std::list<HANDLE>::iterator Iterator;
+	for (Iterator = glFileHandles.begin(); Iterator != glFileHandles.end(); Iterator++)
 	{
-		if (gaFileHandles[xj])
-		{
-			nRow++;
-			pArray(nRow,1) = xj;
-			pArray(nRow,2) = (int)gaFileHandles[xj];
-		}
+		pArray(xj) = reinterpret_cast<int>(*Iterator);
+		xj++;
 	}
 
 	pArray.ReturnRows();
@@ -2867,18 +2801,6 @@ catch(int nErrorNo)
 {
 	RaiseError(nErrorNo);
 }
-}
-
-int _stdcall FindFreeFileSlot() throw(int)
-{
-	int xj;
-	for (xj = 0; xj < VFP2C_MAX_FILE_HANDLES; xj++)
-	{
-		if (!gaFileHandles[xj])
-			return xj;
-	}
-	SAVECUSTOMERROR("FCreateEx/FOpenEx","Maximum number of file handles exceeded.");
-	throw E_APIERROR;
 }
 
 void _stdcall MapFileAccessFlags(int nFileAttribs, int nAccess, int nShare, LPDWORD pAccess, LPDWORD pShare, LPDWORD pFlags) throw(int)

@@ -1,3 +1,20 @@
+VFP2C32 Version 2.0.0.6 -- 2010-11-08
+- changed FCreateEx, FOpenEx, and all other F...Ex functions to use the windows api file handle directly instead of an internal pseudo handle.
+ If you already have code written using these functions they work still like the old version, the only two differences are that the 
+ function "FHandleEx" which returned the api file handle previously is removed now since it isn't needed anymore, and "AFHandlesEx"
+ now returns a 1 column array of api handles instead of a 2 column array with the mapping of internal handles to api handles.
+ This change has the advantage that now any file/pipe/whatever api handle (not necessaryly created with FCreateEx or FOpenEx) can be used with the FPutsEx, FWriteEx, FReadEx ...
+ functions.
+- changed copyright notice in FLL resource (AGETFILEVERSION())
+- CLSIDFromProgID now returns a binary string (like created with CREATEBINARY) instead of a normal string - should not affect any code using it already - just cosmetics since the CLSID returned is actually binary data
+- CreateGUID now also returns a binary string (only when 2 is passed as a parameter)
+- fixed a bug in CLSIDFromString - the function always returned an empty string
+- fixed a bug in ARegistryKeys - the function raised error "access denied" cause the registry key was not opened with sufficient rights
+- internal code cleanup:
+ revised the C++ API over the LCK
+ replaced many C-style casts with C++ casts
+ removed more macros 
+
 VFP2C32 Version 2.0.0.5 -- 2010-11-05 
 
 -added functions:

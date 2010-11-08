@@ -162,7 +162,8 @@ int _stdcall Win32HeapExceptionHandler(int nExceptionCode)
 
 void _stdcall AddDebugAlloc(void* pPointer, int nSize)
 {
-	V_VALUE(vProgInfo);
+	Value vProgInfo;
+	vProgInfo.ev_type = '0';
 	LPDBGALLOCINFO pDbg;	
 	char *pProgInfo = 0;
 
@@ -216,7 +217,8 @@ void _stdcall RemoveDebugAlloc(void* pPointer)
 void _stdcall ReplaceDebugAlloc(void* pOrig, void* pNew, int nSize)
 {
 	LPDBGALLOCINFO pDbg = gpDbgInfo;
-	V_VALUE(vProgInfo);
+	Value vProgInfo;
+	vProgInfo.ev_type = '0';
 	char* pProgInfo = 0;
 
 	if (!pNew || !gbTrackAlloc)
@@ -1356,7 +1358,9 @@ void _fastcall ReadBytes(ParamBlk *parm)
 
 void _fastcall UnMarshalArrayShort(ParamBlk *parm)
 {
-	V_SHORT(tmpValue);
+	Value tmpValue;
+	tmpValue.ev_type = 'I';
+	tmpValue.ev_width = 6;
 	ARRAYLOCALS(short*)
 
 	BEGIN_ARRAYGET()
@@ -1366,7 +1370,9 @@ void _fastcall UnMarshalArrayShort(ParamBlk *parm)
 
 void _fastcall UnMarshalArrayUShort(ParamBlk *parm)
 {
-	V_SHORT(tmpValue);
+	Value tmpValue;
+	tmpValue.ev_type = 'I';
+	tmpValue.ev_width = 6;
 	ARRAYLOCALS(unsigned short*)
 
 	BEGIN_ARRAYGET()
@@ -1416,7 +1422,8 @@ void _fastcall UnMarshalArrayDouble(ParamBlk *parm)
 
 void _fastcall UnMarshalArrayLogical(ParamBlk *parm)
 {
-	V_LOGICAL(tmpValue);
+	Value tmpValue;
+	tmpValue.ev_type = 'L';
 	ARRAYLOCALS(BOOL*)
 
 	BEGIN_ARRAYGET()
@@ -1572,7 +1579,7 @@ void _fastcall UnMarshalArrayWCharArray(ParamBlk *parm)
 
 void _fastcall MarshalArrayShort(ParamBlk *parm)
 {
-	V_VALUE(tmpValue);
+	Value tmpValue = {'0'};
 	ARRAYLOCALS(short*)
 
 	BEGIN_ARRAYSET()
@@ -1585,7 +1592,7 @@ void _fastcall MarshalArrayShort(ParamBlk *parm)
 
 void _fastcall MarshalArrayUShort(ParamBlk *parm)
 {
-	V_VALUE(tmpValue);
+	Value tmpValue = {'0'};
 	ARRAYLOCALS(unsigned short*)
 
 	BEGIN_ARRAYSET()
@@ -1597,7 +1604,7 @@ void _fastcall MarshalArrayUShort(ParamBlk *parm)
 }
 void _fastcall MarshalArrayInt(ParamBlk *parm)
 {
-	V_VALUE(tmpValue);
+	Value tmpValue = {'0'};
 	ARRAYLOCALS(long*)
 
 	BEGIN_ARRAYSET()
@@ -1609,7 +1616,7 @@ void _fastcall MarshalArrayInt(ParamBlk *parm)
 }
 void _fastcall MarshalArrayUInt(ParamBlk *parm)
 {
-	V_VALUE(tmpValue);
+	Value tmpValue = {'0'};
 	ARRAYLOCALS(unsigned long*)
 
 	BEGIN_ARRAYSET()
@@ -1622,7 +1629,7 @@ void _fastcall MarshalArrayUInt(ParamBlk *parm)
 
 void _fastcall MarshalArrayFloat(ParamBlk *parm)
 {
-	V_VALUE(tmpValue);
+	Value tmpValue = {'0'};
 	ARRAYLOCALS(float*)
 
 	BEGIN_ARRAYSET()
@@ -1635,7 +1642,7 @@ void _fastcall MarshalArrayFloat(ParamBlk *parm)
 
 void _fastcall MarshalArrayDouble(ParamBlk *parm)
 {
-	V_VALUE(tmpValue);
+	Value tmpValue = {'0'};
 	ARRAYLOCALS(double*)
 
 	BEGIN_ARRAYSET()
@@ -1648,7 +1655,7 @@ void _fastcall MarshalArrayDouble(ParamBlk *parm)
 
 void _fastcall MarshalArrayLogical(ParamBlk *parm)
 {
-	V_VALUE(tmpValue);
+	Value tmpValue = {'0'};
 	ARRAYLOCALS(BOOL*)
 
 	BEGIN_ARRAYSET()
@@ -1661,7 +1668,7 @@ void _fastcall MarshalArrayLogical(ParamBlk *parm)
 
 void _fastcall MarshalArrayCString(ParamBlk *parm)
 {
-	V_VALUE(tmpValue);
+	Value tmpValue = {'0'};
 	ARRAYLOCALS(char**)
 
 	BEGIN_ARRAYSET()
@@ -1695,7 +1702,7 @@ void _fastcall MarshalArrayCString(ParamBlk *parm)
 
 void _fastcall MarshalArrayWString(ParamBlk *parm)
 {
-	V_VALUE(tmpValue);
+	Value tmpValue = {'0'};
 	int nCharsWritten;
 	UINT nCodePage;
 	ARRAYLOCALS(wchar_t**)
@@ -1742,7 +1749,7 @@ void _fastcall MarshalArrayWString(ParamBlk *parm)
 
 void _fastcall MarshalArrayCharArray(ParamBlk *parm)
 {
-	V_VALUE(tmpValue);
+	Value tmpValue = {'0'};
 	SIZE_T nLength, nCharCount;
 	ARRAYLOCALS(char*)
 	nLength = (unsigned int)p3.ev_long - 1;
@@ -1766,7 +1773,7 @@ void _fastcall MarshalArrayCharArray(ParamBlk *parm)
 
 void _fastcall MarshalArrayWCharArray(ParamBlk *parm)
 {
-	V_VALUE(tmpValue);
+	Value tmpValue = {'0'};
 	int nCharsWritten;
 	UINT nCodePage;
 	ARRAYLOCALS(wchar_t*)
@@ -1796,7 +1803,7 @@ void _fastcall MarshalArrayWCharArray(ParamBlk *parm)
 
 void _fastcall UnMarshalCursorShort(ParamBlk *parm)
 {
-	V_SHORT(tmpValue);
+	Value tmpValue = {'I', '\0', 6};
 	COLUMNGETLOCALS(short*)
 
 	BEGIN_COLUMNGET()
@@ -1806,7 +1813,10 @@ void _fastcall UnMarshalCursorShort(ParamBlk *parm)
 
 void _fastcall UnMarshalCursorUShort(ParamBlk *parm)
 {
-	V_SHORT(tmpValue);
+	Value tmpValue;
+	tmpValue.ev_type = 'I';
+	tmpValue.ev_length = 6;
+
 	COLUMNGETLOCALS(unsigned short*)
 
 	BEGIN_COLUMNGET()
@@ -1856,7 +1866,8 @@ void _fastcall UnMarshalCursorDouble(ParamBlk *parm)
 
 void _fastcall UnMarshalCursorLogical(ParamBlk *parm)
 {
-	V_LOGICAL(tmpValue);
+	Value tmpValue;
+	tmpValue.ev_type = 'L';
 	COLUMNGETLOCALS(BOOL*)
 
 	BEGIN_COLUMNGET()

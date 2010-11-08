@@ -13,19 +13,22 @@
 static TIME_ZONE_INFORMATION gsTimeZone = {0};
 static DWORD gnTimeZone = 0;
 
-void _stdcall FreeHandEx(Value *pValue)
+// some helper functions for common tasks
+int _stdcall Dimension(char *pArrayName, unsigned long nRows, unsigned long nDims)
 {
-	if (pValue->ev_handle)
-	{
-		_HUnLock(pValue->ev_handle);
-		_FreeHand(pValue->ev_handle);
-	}
+	char aExeBuffer[256];
+	if (nDims > 1)
+		sprintfex(aExeBuffer,"DIMENSION %S[%U,%U]",pArrayName,nRows,nDims);
+	else
+		sprintfex(aExeBuffer,"DIMENSION %S[%U]",pArrayName,nRows);
+	return _Execute(aExeBuffer);
 }
 
 int _stdcall DimensionEx(char *pArrayName, Locator *lArrayLoc, unsigned long nRows, unsigned long nDims)
 {
 	int nErrorNo;
-	V_LOGICAL(vFalse);
+	Value vFalse;
+	vFalse.ev_type = 'L';
 
 	nErrorNo = FindFoxVar(pArrayName,lArrayLoc);
 	if (nErrorNo == E_VARIABLENOTFOUND)
@@ -58,17 +61,6 @@ int _stdcall DimensionEx(char *pArrayName, Locator *lArrayLoc, unsigned long nRo
 	lArrayLoc->l_sub1 = 0;
 	lArrayLoc->l_sub2 = 0;
 	return 0;
-}
-
-// some helper functions for common tasks
-int _stdcall Dimension(char *pArrayName, unsigned long nRows, unsigned long nDims)
-{
-	char aExeBuffer[256];
-	if (nDims > 1)
-		sprintfex(aExeBuffer,"DIMENSION %S[%U,%U]",pArrayName,nRows,nDims);
-	else
-		sprintfex(aExeBuffer,"DIMENSION %S[%U]",pArrayName,nRows);
-	return _Execute(aExeBuffer);
 }
 
 int _stdcall ASubscripts(Locator *pLoc, int *nRows, int *nDims)
@@ -132,7 +124,7 @@ int _stdcall FindFoxFieldC(char *pName, Locator *pLoc, char *pCursor)
 {
 	NTI nVarNti;
 	int nErrorNo;
-	V_VALUE(vWorkarea);
+	Value vWorkarea = {'0'};
 	char aExeBuffer[VFP2C_MAX_FUNCTIONBUFFER];
 
 	nVarNti = _NameTableIndex(pName);
@@ -154,7 +146,7 @@ int _stdcall FindFoxFieldC(char *pName, Locator *pLoc, char *pCursor)
 int _stdcall FindFoxFieldEx(int nFieldNo, Locator *pLoc, int nWorkarea)
 {
 	char aExeBuffer[64];
-	V_VALUE(vFieldName);
+	Value vFieldName = {'0'};
 	NTI nVarNti;
 	int nErrorNo;
 
@@ -191,7 +183,7 @@ int _stdcall FindFoxVarOrFieldEx(char *pName, Locator *pLoc)
 {
 	char *pVarOrField = pName;
 	int nErrorNo;
-	V_VALUE(vWorkArea);
+	Value vWorkArea = {'0'};
 	char aTableOrVar[VFP2C_VFP_MAX_CURSOR_NAME];
 	char aColumn[VFP2C_VFP_MAX_COLUMN_NAME];
 	char aExeBuffer[VFP2C_MAX_FUNCTIONBUFFER];
@@ -224,7 +216,7 @@ int _stdcall StoreEx(Locator *pLoc, Value *pValue)
 void _stdcall StoreObjectRef(char *pName, NTI &nVarNti, Value &sObject)
 {
 	Locator lVar;
-	V_VALUE(vTmpObject);
+	Value vTmpObject = {'0'};
 	if (nVarNti)
 	{
 		FindVar(nVarNti,lVar);
@@ -243,7 +235,7 @@ void _stdcall StoreObjectRef(char *pName, NTI &nVarNti, Value &sObject)
 
 void _stdcall ReleaseObjectRef(char *pName, NTI nVarNti)
 {
-	V_VALUE(vObject);
+	Value vObject = {'0'};
 	if (nVarNti)
 	{
 		_Evaluate(&vObject, pName);
@@ -378,8 +370,6 @@ int _stdcall AppendMemo(char *pData, int nLen, FCHAN hFile, long *nLoc)
 	*nLoc += nLen;
 	return 0;
 }
-
-
 
 int _stdcall Zap(char *pCursor)
 {

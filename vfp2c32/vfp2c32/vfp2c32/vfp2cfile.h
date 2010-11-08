@@ -48,7 +48,7 @@ typedef struct _FILEATTRIBUTEINFO {
 class BrowseCallback
 {
 public:
-	BrowseCallback() { pCallback.Size(VFP2C_MAX_CALLBACKBUFFER); pBuffer.Size(VFP2C_MAX_CALLBACKBUFFER); }
+	BrowseCallback() { pBuffer.Size(VFP2C_MAX_CALLBACKBUFFER); }
 
 	CStr pCallback;
 	CStr pBuffer;
@@ -57,7 +57,7 @@ public:
 class OpenfileCallback
 {
 public:
-	OpenfileCallback() { pCallback.Size(VFP2C_MAX_CALLBACKBUFFER); pBuffer.Size(VFP2C_MAX_CALLBACKBUFFER); vRetVal.ev_type = '0'; }
+	OpenfileCallback() { pBuffer.Size(VFP2C_MAX_CALLBACKBUFFER); vRetVal.ev_type = '0'; }
 
 	int nErrorNo;
 	Value vRetVal;
@@ -92,9 +92,7 @@ public:
 #define VFP2C_MAX_MOUNTPOINT_NAME		512
 #define VFP2C_MAX_DEVICE_NAME			1024
 
-#define VFP2C_MAX_FILE_HANDLES		128
 #define VFP2C_FILE_LINE_BUFFER		32
-#define VFP2C_VALID_FILE_HANDLE(nHandle) (nHandle >= 0 && nHandle < VFP2C_MAX_FILE_HANDLES)
 
 #define MAXFILESEARCHPARAM (MAX_PATH-3)
 
@@ -192,9 +190,7 @@ void _fastcall FLockFile(ParamBlk *parm);
 void _fastcall FUnlockFile(ParamBlk *parm);
 void _fastcall FLockFileEx(ParamBlk *parm);
 void _fastcall FUnlockFileEx(ParamBlk *parm);
-void _fastcall FHandleEx(ParamBlk *parm);
 void _fastcall AFHandlesEx(ParamBlk *parm);
-int _stdcall FindFreeFileSlot() throw(int);
 void _stdcall MapFileAccessFlags(int nFileAttribs, int nAccess, int nShare, LPDWORD pAccess, LPDWORD pShare, LPDWORD pFlags) throw(int);
 
 // shell api wrappers

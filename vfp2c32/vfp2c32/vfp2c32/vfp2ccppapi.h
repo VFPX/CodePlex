@@ -35,7 +35,7 @@ NTI _stdcall FindVar(char *pVarname) throw(int);
 void _stdcall FindVar(NTI nVarNti, Locator &sVar) throw(int);
 void _stdcall FindVar(char *pVarname, Locator &sVar) throw(int);
 
-inline void  Evaluate(Value &pVal, char *pExpression)
+inline void Evaluate(Value &pVal, char *pExpression)
 {
 	int nErrorNo;
 	if (nErrorNo = _Evaluate(&pVal, pExpression))
@@ -147,9 +147,9 @@ inline bool IsVariableRef(Locator &pLoc) { return pLoc.l_type == 'R' && pLoc.l_w
 inline bool IsMemoRef(Locator &pLoc) { return pLoc.l_type == 'R' && pLoc.l_where != -1; }
 
 /* Memory Handle management */
-inline char* HandleToPtr(MHandle pHandle) { return static_cast<char*>(_HandToPtr(pHandle)); }
-inline char* HandleToPtr(const Value &pVal) { return static_cast<char*>(_HandToPtr(pVal.ev_handle)); }
-inline char* HandleToPtr(Value *pVal) { return static_cast<char*>(_HandToPtr(pVal->ev_handle)); }
+inline char* HandleToPtr(MHandle pHandle) { return reinterpret_cast<char*>(_HandToPtr(pHandle)); }
+inline char* HandleToPtr(const Value &pVal) { return reinterpret_cast<char*>(_HandToPtr(pVal.ev_handle)); }
+inline char* HandleToPtr(Value *pVal) { return reinterpret_cast<char*>(_HandToPtr(pVal->ev_handle)); }
 
 inline bool AllocHandleEx(Value &pVal, int nBytes) { pVal.ev_handle = _AllocHand(nBytes); return pVal.ev_handle != 0; }
 
@@ -257,48 +257,129 @@ inline HWND WHwndByTitle(char *lcWindow) { return _WhToHwnd(_WFindTitle(lcWindow
 inline double Ints2Double(int nLowInt, int nHighInt) { return ((double)nHighInt) * 4294967296.0 + nLowInt; }
 inline __int64 Ints2Int64(int nLowInt, int nHighInt) { return ((__int64)nHighInt) * 4294967296 + nLowInt; }
 
-/*
-class FoxValueC : public Value
-{
-	FoxValueC() : ev_type = 'C';
-};
-*/
-
 /* base class for variable types*/
 class FoxValue
 {
 public:
-	FoxValue() { m_Value.ev_type = '0'; }
-	FoxValue(char cType) { m_Value.ev_type = cType; m_Value.ev_long = 0; m_Value.ev_width = 0; m_Value.ev_length = 0; m_Value.ev_handle = 0; m_Value.ev_real = 0.0; }
-	FoxValue(char cType, int nWidth) { m_Value.ev_type = cType; m_Value.ev_width = nWidth; m_Value.ev_real = 0.0; }
-	FoxValue(char cType, int nWidth, unsigned long nPrec) { m_Value.ev_type = cType; m_Value.ev_width = nWidth; m_Value.ev_length = nPrec; m_Value.ev_real = 0.0; }
+	FoxValue() : m_Locked(false) { m_Value.ev_type = '0'; m_Value.ev_handle = 0; m_Value.ev_object = 0; }
+	FoxValue(char cType) : m_Locked(false) { m_Value.ev_type = cType; m_Value.ev_long = 0; m_Value.ev_width = 0; m_Value.ev_length = 0; m_Value.ev_object = 0; m_Value.ev_handle = 0; m_Value.ev_real = 0.0; }
+	FoxValue(char cType, int nWidth) : m_Locked(false) { m_Value.ev_type = cType; m_Value.ev_width = nWidth; m_Value.ev_real = 0.0; }
+	FoxValue(char cType, int nWidth, unsigned long nPrec) : m_Locked(false) { m_Value.ev_type = cType; m_Value.ev_width = nWidth; m_Value.ev_length = nPrec; m_Value.ev_real = 0.0; }
 	~FoxValue();
 	
 	FoxValue& Load(Locator& pLoc);
+	FoxValue& Store(Locator& pLoc);
 
 	void Release();
-	Value& GetReference() { return m_Value; }
-	void Return() { _RetVal(&m_Value); }
-	operator const Value&() const { return m_Value; }
-	operator Value*() { return &m_Value; }
+	char Vartype() const { return m_Value.ev_type; }
 
+	FoxValue& AllocHandle(int nBytes);
+	FoxValue& FreeHandle();
+	char* HandleToPtr();
+	FoxValue& LockHandle();
+	FoxValue& UnlockHandle();
+	FoxValue& SetHandleSize(unsigned long nSize);
+	FoxValue& ExpandHandle(int nBytes);
+
+	FoxValue& LockObject();
+	FoxValue& UnlockObject();
+	FoxValue& FreeObject();
+
+	void Return();
+	operator const Value&() const { return m_Value; }
+	operator Value&() { return m_Value; }
+	operator Value*() { return &m_Value; }
+	Value* operator->() { return &m_Value; }
 
 protected:
 	Value m_Value;
+	bool m_Locked;
+};
+
+class FoxLogical : public FoxValue
+{
+public:
+	FoxLogical() : FoxValue('L') {}
+	~FoxLogical() {}
+
+	FoxLogical& operator=(bool bValue) { m_Value.ev_length = bValue ? 1 : 0; return *this; }
+	FoxLogical& operator=(BOOL bValue) { m_Value.ev_length = bValue; return *this; }
+	operator bool() { return m_Value.ev_length > 0; }
+	operator BOOL() { return m_Value.ev_length; }
+};
+
+class FoxShort : public FoxValue
+{
+public:
+	FoxShort() : FoxValue('I', 6, 0) {}
+	~FoxShort() {}
+
+	FoxShort& operator=(short nValue) { m_Value.ev_long = nValue; return *this; }
+	operator short() { return static_cast<short>(m_Value.ev_long); }
+};
+
+class FoxUShort : public FoxValue
+{
+public:
+	FoxUShort() : FoxValue('I', 5, 0) {}
+	~FoxUShort() {}
+
+	FoxUShort& operator=(unsigned short nValue) { m_Value.ev_long = nValue; return *this; }
+	operator unsigned short() { return static_cast<unsigned short>(m_Value.ev_long); }
+};
+
+class FoxInt : public FoxValue
+{
+public:
+	FoxInt() : FoxValue('I', 11, 0) {}
+	~FoxInt() {}
+
+	FoxInt& operator=(int nValue) { m_Value.ev_long = nValue; return *this; }
+	operator int() { return m_Value.ev_long; }
+};
+
+class FoxUInt : public FoxValue
+{
+public:
+	FoxUInt() : FoxValue('N', 10, 0) {}
+	~FoxUInt() {}
+
+	FoxUInt& operator=(unsigned int nValue) { m_Value.ev_real = static_cast<double>(nValue); return *this; }
+	operator unsigned int() { return static_cast<unsigned int>(m_Value.ev_real); }
+};
+
+class FoxFloat : public FoxValue
+{
+public:
+	FoxFloat() : FoxValue('N', 20, 6) {}
+	~FoxFloat() {}
+
+	FoxFloat& operator=(float nValue) { m_Value.ev_real = static_cast<double>(nValue); return *this; }
+	operator float() { return static_cast<float>(m_Value.ev_real); }
+};
+
+class FoxDouble : public FoxValue
+{
+public: 
+	FoxDouble() : FoxValue('N', 20, 16) {}
+	~FoxDouble() {}
+
+	FoxDouble& operator=(double nValue) { m_Value.ev_real = nValue; return *this; }
+	operator double() { return m_Value.ev_real; }
 };
 
 class FoxInt64 : public FoxValue
 {
 public:
-	FoxInt64() { m_Value.ev_type = 'N'; m_Value.ev_width = 20; m_Value.ev_length = 0; }
+	FoxInt64() : FoxValue('N', 20, 0) {}
 	~FoxInt64() {}
 
-	FoxInt64& operator=(double nValue);
-	FoxInt64& operator=(__int64 nValue);
-	FoxInt64& operator=(unsigned __int64 nValue);
-};
+	FoxInt64& operator=(double nValue) { m_Value.ev_real = nValue; return *this; }
+	FoxInt64& operator=(__int64 nValue) { m_Value.ev_real = static_cast<double>(nValue); return *this; }
+	FoxInt64& operator=(unsigned __int64 nValue) { m_Value.ev_real = static_cast<double>(nValue); return *this; }
 
-class FoxFormatParam;
+	operator __int64() { return static_cast<__int64>(m_Value.ev_real); }
+};
 
 /* FoxString - wraps a FoxPro character/binary string */
 class FoxString : public FoxValue
@@ -352,8 +433,7 @@ public:
 	void Detach();
 	void Detach(Value &pValue);
 	void Return();
-	FoxString& Format(const char *pFormat, FoxFormatParam fp1);
-	FoxString& Format(const char *pFormat, FoxFormatParam fp1, FoxFormatParam fp2);
+	void Release();
 
 	/* operator overloads */
 	FoxString& operator=(FoxString &pString);
@@ -380,7 +460,6 @@ public:
 	operator const wchar_t*() const { return reinterpret_cast<const wchar_t*>(m_String); }
 
 private:
-	void ReleaseValue();
 	char *m_String;
 	unsigned int m_BufferSize;
 	bool m_ParameterRef;
@@ -474,8 +553,7 @@ public:
 
 	FoxObject& NewObject(char *pClass);
 	FoxObject& EmptyObject();
-	FoxObject& Lock();
-	FoxObject& Unlock();
+	void Release(); 
 
 	FoxObject& operator=(FoxString &pString);
 	FoxObject& operator=(FoxObject &pObject);
@@ -616,6 +694,7 @@ public:
 	FoxArray& operator()(unsigned int nRow, unsigned int nDim);
 	FoxArray& operator=(FoxString &pString);
 	FoxArray& operator=(FoxObject &pObject);
+	FoxArray& operator=(FoxInt64 &pInt64);
 	FoxArray& operator=(const Value &pVal);
 	FoxArray& operator=(int nValue);
 	FoxArray& operator=(unsigned long nValue);
