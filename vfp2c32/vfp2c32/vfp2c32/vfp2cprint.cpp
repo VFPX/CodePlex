@@ -519,7 +519,7 @@ try
 	int nUnit = PCOUNT() == 4 ? p4.ev_long : PAPERSIZE_UNIT_MM;
 	double nTmp;
 
-	if (nUnit < PAPERSIZE_UNIT_MM || nUnit > PAPERSIZE_UNIT_PT)
+	if (nUnit < PAPERSIZE_UNIT_MM || nUnit > PAPERSIZE_UNIT_POINT)
 		throw E_INVALIDPARAMS;
 
 	FoxString pPapernameTmp(65);
@@ -561,7 +561,7 @@ try
 				pArray(xj,3) = nTmp = pPapersize->x * INCH_PER_MM;
 				pArray(xj,4) = nTmp = pPapersize->y * INCH_PER_MM;
 				break;
-			case PAPERSIZE_UNIT_PT:
+			case PAPERSIZE_UNIT_POINT:
 				/*
 				nTmp = floor(pPapersize->x * POINTS_PER_MM + 0.5) / 10;
 				nTmp = floor(pPapersize->y * POINTS_PER_MM + 0.5) / 10;

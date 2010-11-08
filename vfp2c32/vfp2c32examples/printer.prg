@@ -151,9 +151,9 @@ IF lnCount >= 1
 		? "Size X:", laForms[xj,3]
 		? "Size Y:", laForms[xj,4]
 		? "Imageable Area Bottom:", laForms[xj,5]
-		? "Imageable Area Top:" laForms[xj,6]
-		? "Imageable Area Left:" laForms[xj,7]
-		? "Imageable Area Right:" laForms[xj,8]
+		? "Imageable Area Top:", laForms[xj,6]
+		? "Imageable Area Left:", laForms[xj,7]
+		? "Imageable Area Right:", laForms[xj,8]
 	ENDFOR
 ENDIF
 
@@ -165,8 +165,19 @@ lnCount = APRINTERTRAYS('laTrays',lcPrinter,lcPort)
 IF lnCount >= 1
 	FOR xj = 1 TO lnCount
 		? "Trayname:", laTrays[xj,1]
-		? "Tray-No.:" laTrays[xj,2]
+		? "Tray-No.:", laTrays[xj,2]
 	ENDFOR
 ENDIF
 
 
+&& APaperSizes
+&& wraps DeviceCapabilities api - http://search.msdn.microsoft.com/search/default.aspx?siteId=0&tab=0&query=DeviceCapabilities
+lnCount = APAPERSIZES('laPapers', lcPrinter, lcPort, PAPERSIZE_UNIT_MM)
+IF lnCount >= 1
+	FOR xj = 1 TO lnCount
+		? "No.", laPapers[xj,1]
+		? "Name", laPapers[xj,2]
+		? "Width", laPapers[xj,3]
+		? "Height", laPapers[xj,4]
+	ENDFOR
+ENDIF

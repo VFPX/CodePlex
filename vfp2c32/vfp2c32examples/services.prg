@@ -17,7 +17,7 @@ laServiceStatus[5] = 'CONTINUE PENDING'
 laServiceStatus[6] = 'PAUSE PENDING'
 laServiceStatus[7] = 'PAUSED'
 
-lnServiceHandle = OpenService('Windows Audio')
+lnServiceHandle = OpenService('Dhcp')
 IF AServiceStatus('laStatus',lnServiceHandle) = 1
 	? "Service is in : " + laServiceStatus[laStatus[3]] + " state"
 ELSE

@@ -248,7 +248,7 @@ void _fastcall InitVFP2C32(ParamBlk *parm)
 
 void _fastcall OnLoad()
 {
-	V_VALUE(vFoxVer);
+	FoxValue vFoxVer;
 
 	/* get module handle - _GetAPIHandle() doesn't work (unresolved external error from linker) */
 	ghModule = GetModuleHandle(FLLFILENAME);
@@ -260,8 +260,8 @@ void _fastcall OnLoad()
 		GetVersionEx((LPOSVERSIONINFO)&gsOSVerInfo);
 	}
 
-	_Evaluate(&vFoxVer, "INT(VERSION(5))");
-	gnFoxVersion = vFoxVer.ev_long;
+	_Evaluate(vFoxVer, "INT(VERSION(5))");
+	gnFoxVersion = vFoxVer->ev_long;
 }
 
 void _fastcall OnUnload()
@@ -375,7 +375,7 @@ try
 
 	FoxArray pArray(p1,gnErrorCount+1,4);
 	FoxString pErrorInfo(VFP2C_ERROR_MESSAGE_LEN);
-	V_VALUE(vNullValue);
+	FoxValue vNullValue;
 
 	unsigned int nRow = 0;
 	for (unsigned int xj = 0; xj <= gnErrorCount; xj++)
@@ -642,7 +642,6 @@ FoxInfo VFP2CFuncs[] =
 	{"FUnlockFile", (FPFI) FUnlockFile, 3, "I??"},
 	{"FLockFileEx", (FPFI) FLockFileEx, 4, "I??.I"},
 	{"FUnlockFileEx", (FPFI) FUnlockFileEx, 3, "I??"},
-	{"FHandleEx", (FPFI) FHandleEx, 1, "I"},
 	{"AFHandlesEx", (FPFI) AFHandlesEx, 1, "C"},
 
 	/* some shell32.dll wrappers */

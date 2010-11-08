@@ -465,82 +465,75 @@ void _fastcall Value2Variant(ParamBlk *parm)
 
 void _fastcall Variant2Value(ParamBlk *parm)
 {
-	V_VALUE(vVariant);
+try
+{
+	FoxValue vVariant;
+	FoxMemo vMemo(parm, 1);
+	FoxString vString(parm, 1);
 	LPVALUEEX pData;
-	char *pContent = 0;
-	int nErrorNo;
+	LPVALUEEX pDataTmp;
 
 	if (IsMemoRef(r1))
 	{
-		if (GetMemoContentEx(&r1,&pContent,&nErrorNo) == -1)
-			RaiseError(nErrorNo);
-		pData = (LPVALUEEX)pContent;
+		unsigned int nLen = 0;
+		pData = reinterpret_cast<LPVALUEEX>(vMemo.Read(nLen));
 	}
 	else if (Vartype(p1) == 'C')
 	{
-		pData = (LPVALUEEX)HandleToPtr(p1);
+		pData = (LPVALUEEX)(char*)vString;
 	}
 	else
-		RaiseError(E_INVALIDPARAMS);
+		throw E_INVALIDPARAMS;
 
-	vVariant.ev_type = pData->ev_type;
+	vVariant->ev_type = pData->ev_type;
 
 	switch(pData->ev_type)
 	{
 		case 'I':
-			vVariant.ev_long = pData->ev_long;
-			vVariant.ev_width = pData->ev_width;
+			vVariant->ev_long = pData->ev_long;
+			vVariant->ev_width = pData->ev_width;
 			break;
 
 		case 'N':
-			vVariant.ev_real = pData->ev_real;
-			vVariant.ev_width = pData->ev_width;
-			vVariant.ev_length = pData->ev_decimals;
+			vVariant->ev_real = pData->ev_real;
+			vVariant->ev_width = pData->ev_width;
+			vVariant->ev_length = pData->ev_decimals;
 			break;
 
 		case 'C':
-			vVariant.ev_length = pData->ev_length; // len of data
-			vVariant.ev_width = pData->ev_width;   // binary or character?
-			
-			if (!AllocHandleEx(vVariant,vVariant.ev_length))
-				RaiseError(E_INSUFMEMORY);
-
-			if (p1.ev_type == 'C')
-				memcpy(HandleToPtr(vVariant),++pData,vVariant.ev_length);
-			else
-				memcpy(HandleToPtr(vVariant),pContent+sizeof(VALUEEX),vVariant.ev_length);
+			vVariant->ev_length = pData->ev_length; // len of data
+			vVariant->ev_width = pData->ev_width;   // binary or character?
+			vVariant.AllocHandle(vVariant->ev_length);
+			pDataTmp = pData;
+			memcpy(vVariant.HandleToPtr(), ++pDataTmp, vVariant->ev_length);
 			break;
 
 		case 'L':
-			vVariant.ev_length = pData->ev_length;
+			vVariant->ev_length = pData->ev_length;
 			break;
 
 		case 'T':
 		case 'D':
-			vVariant.ev_real = pData->ev_real;
+			vVariant->ev_real = pData->ev_real;
 			break;
 
 		case 'Y':
-			vVariant.ev_currency.QuadPart = pData->ev_currency.QuadPart;
+			vVariant->ev_currency.QuadPart = pData->ev_currency.QuadPart;
 			break;
 		
 		case '0':
 			break;
 
 		default:
-			if (IsMemoRef(r1))
-				free(pContent);
-			RaiseError(E_INVALIDPARAMS);
+			throw E_INVALIDPARAMS;
 	}
 
-	if (IsMemoRef(r1))
-	{
-		if (pContent)
-			free(pContent);
-	}
-
-	Return(vVariant);
-
+	vVariant.Return();
+}
+catch(int nErrorNo)
+{
+	RaiseError(nErrorNo);
+}
 }
 
 /* its as simple as that :) */
@@ -596,7 +589,7 @@ void _fastcall ReleasePublicShadowObjReference(ParamBlk *parm)
 {
 try
 {
-    V_VALUE(vObject);
+	Value vObject = {'0'};
     FoxString pVarname(p1);
     Evaluate(vObject, pVarname);
     ReleaseVar(pVarname);

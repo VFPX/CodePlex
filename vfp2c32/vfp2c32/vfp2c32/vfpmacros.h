@@ -62,8 +62,8 @@
 #define PCOUNT() (parm->pCount)
 
 // defines for easier declaration of typed Value's
-#define V_LOGICAL(sValue)					Value sValue = {'L','\0',0,0}
-#define V_SHORT(sValue) 					Value sValue = {'I','\0',6,0}
+// #define V_LOGICAL(sValue)					Value sValue = {'L','\0',0,0}
+// #define V_SHORT(sValue) 					Value sValue = {'I','\0',6,0}
 #define V_INTEGER(sValue) 				Value sValue = {'I','\0',11,0}
 #define V_UINTEGER(sValue)				Value sValue = {'N','\0',10,0}
 #define V_DOUBLE(sValue) 					Value sValue = {'N','\0',20,16}
@@ -73,7 +73,7 @@
 #define V_CURRENCY(sValue)				Value sValue = {'Y','\0',0,0,0,0,0,0}
 #define V_STRING(sValue) 					Value sValue = {'C','\0',0,0,0,0,0,0}
 #define V_STRINGN(sValue,nLength) 		Value sValue = {'C','\0',0,nLength,0,0,0,0}
-#define V_VALUE(sValue) 				Value sValue = {'0'}
+// #define V_VALUE(sValue) 				Value sValue = {'0'}
 
 // defines for easier 'typeing' an already existing "Value"
 #define SET_LOGICAL(sValue)		sValue.ev_type = 'L'; sValue.ev_length = 0
@@ -107,19 +107,5 @@
 // #define AROWS(sLocator)		_ALen(sLocator.l_NTI,AL_SUBSCRIPT1)
 #define ADIMS(sLocator)		_ALen(sLocator.l_NTI,AL_SUBSCRIPT2)
 #define VALID_ADIM(nDims,nPassed) ((nPassed <= nDims) || (nPassed == 1 && nDims == 0))
-
-// some VFP internal error numbers
-#define E_INSUFMEMORY		182
-#define E_TYPECONFLICT		532
-#define E_FIELDNOTFOUND		806
-#define E_ARRAYNOTFOUND		176
-#define E_VARIABLENOTFOUND	170
-#define E_INVALIDPARAMS		901
-#define E_NOENTRYPOINT		754
-#define E_INVALIDSUBSCRIPT	224
-#define E_NOTANARRAY		176
-#define E_LOCKFAILED		503
-#define E_CUSTOMERROR		7777
-#define E_APIERROR			12345678
 
 #endif // _VFP2CMACROS_H__

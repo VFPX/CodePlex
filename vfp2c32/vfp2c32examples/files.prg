@@ -1,16 +1,19 @@
 #INCLUDE vfp2c.h
 
-CD (FULLPATH(JUSTPATH(SYS(16))))
+LOCAL lcPath
+m.lcPath = FULLPATH(JUSTPATH(SYS(16)))
+CD (m.lcPath)
+
 SET LIBRARY TO vfp2c32.fll ADDITIVE
 INITVFP2C32(VFP2C_INIT_ALL)
 
 LOCAL lnCount, laFiles[1], xj
 
 
-ADIRECTORYINFO('laDir','C:\Windows')
-?"No. of files:", laDir[1]
-"No. of subdirectories:", laDir[2]
-"Size of files:", laDir[3] && in bytes
+ADIRECTORYINFO('laDir', m.lcPath)
+? "No. of files:", laDir[1]
+? "No. of subdirectories:", laDir[2]
+? "Size of files:", laDir[3] && in bytes
 
 lnCount = ADRIVEINFO('laDrives')
 FOR xj = 1 TO lnCount
@@ -42,6 +45,7 @@ USE IN curfiles
 && fieldtypes & order must match the ones below!!
 CREATE CURSOR yourCursor (thefilename C(254), thealternate C(13), ctime T, atime T, wtime T, fisize N(20,0), fattribs I)
 lnCount = ADIREX('yourCursor',ADDBS(FULLPATH(CURDIR()))+"*.*",0,ADIREX_DEST_CURSOR)
+BROWSE
 USE IN yourCursor
 
 && enumerate all files by calling back into AdirCallback function
@@ -139,19 +143,20 @@ LOCAL lcOwner,lcDomain,lnSidType
 && GETFILEOWNER("vfp2c32.fll",@lcOwner,@lcDomain)
 
 && deleting a file even if it is marked readonly
-ON ERROR ? ERROR(), MESSAGE()
-STRTOFILE('DummyFile','dummy.txt')
-SETFILEATTRIBUTES('dummy.txt',FILE_ATTRIBUTE_READONLY)
-DELETE FILE "dummy.txt" && triggers error since file is read only
-ON ERROR
+TRY
+	STRTOFILE('DummyFile','dummy.txt')
+	SETFILEATTRIBUTES('dummy.txt',FILE_ATTRIBUTE_READONLY)
+	DELETE FILE "dummy.txt" && triggers error since file is read only
+CATCH TO loError
+	?loError.ErrorNo, loError.Message
+ENDTRY
 DELETEFILEEX('dummy.txt') && this succeeds since it checks for readonly and removes attribute if needed
-
 
 && shell file operation's
 &&
 && copy all files in a directory into a new directory
 LOCAL lcSource, lcTarget
-lcSource = FULLPATH(CURDIR())+"*.*"
+lcSource = FULLPATH(CURDIR())+"*.prg"
 lcTarget = FULLPATH(CURDIR())+"testdirectory"
 ?SHCOPYFILES(lcSource,lcTarget)
 
@@ -160,8 +165,8 @@ lcSource = FULLPATH(CURDIR())+"vfp2c32.fll" + CHR(0) + FULLPATH(CURDIR())+"vfp2c
 lcTarget = FULLPATH(CURDIR())+"testdirectory"
 ?SHCOPYFILES(lcSource,lcTarget)
 
-&& copy all files in a directory into several new directories
-lcSource = FULLPATH(CURDIR())+"*.*"
+&& copy all prg files in a directory into several new directories
+lcSource = FULLPATH(CURDIR())+"*.prg"
 lcTarget = FULLPATH(CURDIR())+"testdirectory" + CHR(0) + FULLPATH(CURDIR())+"testdirectory2" + CHR(0) + FULLPATH(CURDIR())+"testdirectory3"
 ?SHCOPYFILES(lcSource,lcTarget,FOF_MULTIDESTFILES)
 
@@ -171,11 +176,8 @@ lcTarget = FULLPATH(CURDIR())+"testdirectory" + CHR(0) + FULLPATH(CURDIR())+"tes
 FULLPATH(CURDIR())+"testdirectory\vfp2c32.fll.bak"
 ?SHCOPYFILES(lcSource,lcTarget,FOF_MULTIDESTFILES)
 
-
 && deleting a whole directory (the one we created above in SHCopyFiles)
 ?DELETEDIRECTORY(FULLPATH(CURDIR())+"testdirectory")
-
-RELEASE LIBRARY vfp2c32.fll
 
 FUNCTION AdirCallback(lcFileName,lcDosFileName,tCreationTime,tAccessTime,tWriteTime, ;
 				nFileSize,nFileAttributes)
@@ -188,6 +190,3 @@ FUNCTION FileProgress(lnReason,lnSize,lnPercent)
 	WAIT WINDOW TRANSFORM(lnReason) + "," + TRANSFORM(lnSize) + "," + TRANSFORM(lnPercent) NOWAIT NOCLEAR
 	RETURN .T.
 ENDFUNC
-
-
-

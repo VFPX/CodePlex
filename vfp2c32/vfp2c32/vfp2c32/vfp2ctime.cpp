@@ -12,7 +12,7 @@
 // Datetime to FILETIME
 void _fastcall DT2FT(ParamBlk *parm)
 {
-	LPFILETIME pFileTime = (LPFILETIME)p2.ev_long;
+	LPFILETIME pFileTime = reinterpret_cast<LPFILETIME>(p2.ev_long);
 	FILETIME sFileTime;
 
 	if (PCOUNT() == 2 || !p3.ev_length)
@@ -30,7 +30,7 @@ void _fastcall FT2DT(ParamBlk *parm)
 {
 try
 {
-	LPFILETIME pFileTime = (LPFILETIME)p1.ev_long;
+	LPFILETIME pFileTime = reinterpret_cast<LPFILETIME>(p1.ev_long);
 	FoxDateTime pTime(*pFileTime);
 
 	if (PCOUNT() == 1 || !p2.ev_length)
@@ -48,7 +48,7 @@ catch(int nErrorNo)
 void _fastcall DT2ST(ParamBlk *parm)
 {
 	FILETIME sFileTime, sUTCTime;
-	LPSYSTEMTIME pSysTime = (LPSYSTEMTIME)p2.ev_long;
+	LPSYSTEMTIME pSysTime = reinterpret_cast<LPSYSTEMTIME>(p2.ev_long);
 
 	DateTimeToFileTime(&p1,&sFileTime);
 
@@ -72,7 +72,7 @@ void _fastcall ST2DT(ParamBlk *parm)
 {
 try
 {
-	LPSYSTEMTIME pTime = (LPSYSTEMTIME)p1.ev_long;
+	LPSYSTEMTIME pTime = reinterpret_cast<LPSYSTEMTIME>(p1.ev_long);
 	FoxDateTime pDateTime(*pTime);
 
 	if (PCOUNT() == 1 || !p2.ev_length)

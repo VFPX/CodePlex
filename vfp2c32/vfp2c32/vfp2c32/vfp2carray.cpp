@@ -34,15 +34,12 @@ try
 
 	for (int xj = 1; xj <= nRows; xj++)
 	{
-		pArray(xj) = pBuffer.CopyBytes(pSubString,nSubStrLen);
+		pArray(xj) = pBuffer.CopyBytes(pSubString, nSubStrLen);
 		pSubString += nSubStrLen;
 	}
 
 	if (nRemain)
-	{
-		pBuffer.Len(nRemain);
-		pArray(++xj) = pBuffer.CopyBytes(pSubString,nRemain);
-	}
+		pArray(++xj) = pBuffer.CopyBytes(pSubString, nRemain);
 
 	pArray.ReturnRows();
 }
@@ -54,116 +51,25 @@ catch (int nErrorNo)
 
 void _fastcall ASum(ParamBlk *parm)
 {
-	double nSum;
-	CCY nSumCur;
-	int nRows, nDims, nErrorNo;
-	unsigned short *pRowPtr;
-	char cType;
-	V_VALUE(vValue);
-
-	if (nErrorNo = ASubscripts(&r1,&nRows,&nDims))
-		goto ErrorOut;
-
-	if (PCOUNT() == 1)
-        p2.ev_long = 1;
-	else if (p2.ev_long < 0)
-		RaiseError(E_INVALIDPARAMS);
-
-	if (PCOUNT() == 2 && !VALID_ADIM(nDims,p2.ev_long))
-		RaiseError(E_INVALIDSUBSCRIPT);
-
-	if (PCOUNT() == 1 || p2.ev_long || !nDims)
-	{
-		RESETARRAY(r1,nDims);
-		ADIM(r1) = (USHORT)p2.ev_long;
-		pRowPtr = &AROW(r1);
-	}
-	else
-	{
-		RESETARRAY(r1,2);
-		AROW(r1) = 1;
-		nRows *= nDims;
-		pRowPtr = &ADIM(r1);
-	}
-
-    while (++(*pRowPtr) <= nRows)
-	{
-		if (nErrorNo = _Load(&r1, &vValue))
-			goto ErrorOut;
-
-		if (Vartype(vValue) == 'N' || Vartype(vValue) == 'Y')
-		{
-			cType = Vartype(vValue);
-			if (Vartype(vValue) == 'N')
-				nSum = vValue.ev_real;
-			else
-				nSumCur.QuadPart = vValue.ev_currency.QuadPart;
-			break;
-		}
-		else if (Vartype(vValue) == '0');
-		else
-		{
-			nErrorNo = E_INVALIDPARAMS;
-			goto ErrorOut;
-		}
-	}
-
-	if (*pRowPtr > nRows)
-	{
-		Return(vValue);
-		return;
-	}
-
-	for (++(*pRowPtr); *pRowPtr <= nRows; (*pRowPtr)++)
-	{
-		if (nErrorNo = _Load(&r1, &vValue))
-			goto ErrorOut;
-
-		if (Vartype(vValue) == cType)
-		{
-			if (cType == 'N')
-				nSum += vValue.ev_real;
-			else
-				nSumCur.QuadPart += vValue.ev_currency.QuadPart;
-		}
-		else if (Vartype(vValue) == '0');
-		else
-		{
-			nErrorNo = E_INVALIDPARAMS;
-			goto ErrorOut;
-		}
-	}
-
-	if (cType == 'N')
-		Return(nSum);
-	else
-		Return(nSumCur);
-	return;
-
-	ErrorOut:
-		ReleaseValue(vValue);
-		RaiseError(nErrorNo);
-}
-
-void _fastcall AAverage(ParamBlk *parm)
+try
 {
 	double nSum;
 	CCY nSumCur;
 	int nRows, nDims, nErrorNo;
 	unsigned short *pRowPtr;
 	char cType;
-	V_VALUE(vValue);
+	FoxValue vValue;
 
 	if (nErrorNo = ASubscripts(&r1,&nRows,&nDims))
-		goto ErrorOut;
+		throw nErrorNo;
 
 	if (PCOUNT() == 1)
         p2.ev_long = 1;
 	else if (p2.ev_long < 0)
-		RaiseError(E_INVALIDPARAMS);
+		throw E_INVALIDPARAMS;
 
 	if (PCOUNT() == 2 && !VALID_ADIM(nDims,p2.ev_long))
-		RaiseError(E_INVALIDSUBSCRIPT);
+		throw E_INVALIDSUBSCRIPT;
 
 	if (PCOUNT() == 1 || p2.ev_long || !nDims)
 	{
@@ -181,50 +87,129 @@ void _fastcall AAverage(ParamBlk *parm)
 
     while (++(*pRowPtr) <= nRows)
 	{
-		if (nErrorNo = _Load(&r1, &vValue))
-			goto ErrorOut;
+		vValue.Load(r1);
 
-		if (Vartype(vValue) == 'N' || Vartype(vValue) == 'Y')
+		if (vValue.Vartype() == 'N' || vValue.Vartype() == 'Y')
 		{
-			cType = Vartype(vValue);
-			if (Vartype(vValue) == 'N')
-				nSum = vValue.ev_real;
+			cType = vValue.Vartype();
+			if (cType == 'N')
+				nSum = vValue->ev_real;
 			else
-				nSumCur.QuadPart = vValue.ev_currency.QuadPart;
+				nSumCur.QuadPart = vValue->ev_currency.QuadPart;
 			break;
 		}
-		else if (Vartype(vValue) == '0');
+		else if (vValue.Vartype() == '0');
 		else
-		{
-			nErrorNo = E_INVALIDPARAMS;
-			goto ErrorOut;
-		}
+			throw E_INVALIDPARAMS;
 	}
 
 	if (*pRowPtr > nRows)
 	{
-		Return(vValue);
+		vValue.Return();
+		return;
+	}
+
+	for (++(*pRowPtr); *pRowPtr <= nRows; (*pRowPtr)++)
+	{
+		vValue.Load(r1);
+
+		if (vValue.Vartype() == cType)
+		{
+			if (cType == 'N')
+				nSum += vValue->ev_real;
+			else
+				nSumCur.QuadPart += vValue->ev_currency.QuadPart;
+		}
+		else if (vValue.Vartype() == '0');
+		else
+			throw E_INVALIDPARAMS;
+	}
+
+	if (cType == 'N')
+		Return(nSum);
+	else
+		Return(nSumCur);
+}
+catch(int nErrorNo)
+{
+	RaiseError(nErrorNo);
+}
+}
+
+void _fastcall AAverage(ParamBlk *parm)
+{
+try
+{
+	double nSum;
+	CCY nSumCur;
+	int nRows, nDims, nErrorNo;
+	unsigned short *pRowPtr;
+	char cType;
+	FoxValue vValue;
+
+	if (nErrorNo = ASubscripts(&r1,&nRows,&nDims))
+		throw nErrorNo;
+
+	if (PCOUNT() == 1)
+        p2.ev_long = 1;
+	else if (p2.ev_long < 0)
+		throw E_INVALIDPARAMS;
+
+	if (PCOUNT() == 2 && !VALID_ADIM(nDims,p2.ev_long))
+		throw E_INVALIDSUBSCRIPT;
+
+	if (PCOUNT() == 1 || p2.ev_long || !nDims)
+	{
+		RESETARRAY(r1,nDims);
+		ADIM(r1) = (USHORT)p2.ev_long;
+		pRowPtr = &AROW(r1);
+	}
+	else
+	{
+		RESETARRAY(r1,2);
+		AROW(r1) = 1;
+		nRows *= nDims;
+		pRowPtr = &ADIM(r1);
+	}
+
+    while (++(*pRowPtr) <= nRows)
+	{
+		vValue.Load(r1);
+
+		if (vValue.Vartype() == 'N' || vValue.Vartype() == 'Y')
+		{
+			cType = vValue.Vartype();
+			if (cType == 'N')
+				nSum = vValue->ev_real;
+			else
+				nSumCur.QuadPart = vValue->ev_currency.QuadPart;
+			break;
+		}
+		else if (vValue.Vartype() == '0');
+		else
+			throw E_INVALIDPARAMS;
+	}
+
+	if (*pRowPtr > nRows)
+	{
+		vValue.Return();
 		return;
 	}
 
     for (++(*pRowPtr); *pRowPtr <= nRows; (*pRowPtr)++)
 	{
-		if (nErrorNo = _Load(&r1, &vValue))
-				goto ErrorOut;
+		vValue.Load(r1);
 
-		if (Vartype(vValue) == cType)
+		if (vValue.Vartype() == cType)
 		{
 			if (cType == 'N')
-				nSum += vValue.ev_real;
+				nSum += vValue->ev_real;
 			else
-				nSumCur.QuadPart += vValue.ev_currency.QuadPart;
+				nSumCur.QuadPart += vValue->ev_currency.QuadPart;
 		}
-		else if (Vartype(vValue) == '0');
+		else if (vValue.Vartype() == '0');
 		else
-		{
-			nErrorNo = E_INVALIDPARAMS;
-			goto ErrorOut;
-		}
+			throw E_INVALIDPARAMS;
 	}
 
 	if (cType == 'N')
@@ -234,32 +219,34 @@ void _fastcall AAverage(ParamBlk *parm)
 		nSumCur.QuadPart /= nRows;
 		Return(nSumCur);
 	}
-	return;
-
-	ErrorOut:
-		ReleaseValue(vValue);
-		RaiseError(nErrorNo);
+}
+catch(int nErrorNo)
+{
+	RaiseError(nErrorNo);
+}
 }
 
 void _fastcall AMax(ParamBlk *parm)
+{
+try
 {
 	double nMax;
 	CCY nMaxCur;
 	int nRows, nDims, nErrorNo;
 	unsigned short *pRowPtr;
 	char cType;
-	V_VALUE(vValue);
+	FoxValue vValue;
 
 	if (nErrorNo = ASubscripts(&r1,&nRows,&nDims))
-		goto ErrorOut;
+		throw nErrorNo;
 
 	if (PCOUNT() == 1)
         p2.ev_long = 1;
 	else if (p2.ev_long < 0)
-		RaiseError(E_INVALIDPARAMS);
+		throw E_INVALIDPARAMS;
 
 	if (PCOUNT() == 2 && !VALID_ADIM(nDims,p2.ev_long))
-		RaiseError(E_INVALIDSUBSCRIPT);
+		throw E_INVALIDSUBSCRIPT;
 
 	if (PCOUNT() == 1 || p2.ev_long || !nDims)
 	{
@@ -277,98 +264,90 @@ void _fastcall AMax(ParamBlk *parm)
 
 	while (++(*pRowPtr) <= nRows)
 	{
-		if (nErrorNo = _Load(&r1, &vValue))
-			goto ErrorOut;
+		vValue.Load(r1);
 
-		if (Vartype(vValue) == 'N' || Vartype(vValue) == 'D' || Vartype(vValue) == 'T' || Vartype(vValue) == 'Y')
+		if (vValue.Vartype() == 'N' || vValue.Vartype() == 'D' || vValue.Vartype() == 'T' || vValue.Vartype() == 'Y')
 		{
-			if (Vartype(vValue) == 'Y')
-				nMaxCur.QuadPart = vValue.ev_currency.QuadPart;
+			cType = vValue.Vartype();
+			if (cType == 'Y')
+				nMaxCur.QuadPart = vValue->ev_currency.QuadPart;
 			else
-				nMax = vValue.ev_real;
-			cType = Vartype(vValue);
+				nMax = vValue->ev_real;
 			break;
 		}
-		else if (Vartype(vValue) == '0');
+		else if (vValue.Vartype() == '0');
 		else
-		{
-			nErrorNo = E_INVALIDPARAMS;
-			goto ErrorOut;
-		}
+			throw E_INVALIDPARAMS;
 	}
 		
 	// all rows were .NULL.
 	if (*pRowPtr > nRows)
 	{
-		Return(vValue);
+		vValue.Return();
 		return;
 	}
 
 	for (++(*pRowPtr); *pRowPtr <= nRows; (*pRowPtr)++)
 	{
-		if (nErrorNo = _Load(&r1, &vValue))
-			goto ErrorOut;
+		vValue.Load(r1);
 
-		if (Vartype(vValue) == cType)
+		if (vValue.Vartype() == cType)
 		{
 			if (cType != 'Y')
 			{
-				if (nMax < vValue.ev_real)
-					nMax = vValue.ev_real;
+				if (nMax < vValue->ev_real)
+					nMax = vValue->ev_real;
 			}
 			else
 			{
-				if (nMaxCur.QuadPart < vValue.ev_currency.QuadPart)
-					nMaxCur.QuadPart = vValue.ev_currency.QuadPart;
+				if (nMaxCur.QuadPart < vValue->ev_currency.QuadPart)
+					nMaxCur.QuadPart = vValue->ev_currency.QuadPart;
 			}
 		}
-		else if (Vartype(vValue) == '0');
+		else if (vValue.Vartype() == '0');
 		else
-		{
-			nErrorNo = E_INVALIDPARAMS;
-			goto ErrorOut;
-		}
+			throw E_INVALIDPARAMS;
 	}
 	
 	if (cType == 'N')
 		Return(nMax);
 	else 
 	{
-		vValue.ev_type = cType;
+		vValue->ev_type = cType;
 		if (cType != 'Y')
-			vValue.ev_real = nMax;
+			vValue->ev_real = nMax;
 		else
-			vValue.ev_currency.QuadPart = nMaxCur.QuadPart;
-		
-		Return(vValue);
+			vValue->ev_currency.QuadPart = nMaxCur.QuadPart;
+		vValue.Return();
 	}
-	
-	return;
-
-	ErrorOut:
-		ReleaseValue(vValue);
-		RaiseError(nErrorNo);
+}
+catch(int nErrorNo)
+{
+	RaiseError(nErrorNo);
+}
 }
 
 void _fastcall AMin(ParamBlk *parm)
+{
+try
 {
 	double nMin;
 	CCY nMinCur;
 	int nRows, nDims, nErrorNo;
 	unsigned short *pRowPtr;
 	char cType;
-	V_VALUE(vValue);
+	FoxValue vValue;
 
 	if (nErrorNo = ASubscripts(&r1,&nRows,&nDims))
-		goto ErrorOut;
+		throw nErrorNo;
 
 	if (PCOUNT() == 1)
         p2.ev_long = 1;
 	else if (p2.ev_long < 0)
-		RaiseError(E_INVALIDPARAMS);
+		throw E_INVALIDPARAMS;
 
 	if (PCOUNT() == 2 && !VALID_ADIM(nDims,p2.ev_long))
-		RaiseError(E_INVALIDSUBSCRIPT);
+		throw E_INVALIDSUBSCRIPT;
 
 	if (PCOUNT() == 1 || p2.ev_long || !nDims)
 	{
@@ -386,76 +365,68 @@ void _fastcall AMin(ParamBlk *parm)
 
 	while (++(*pRowPtr) <= nRows)
 	{
-		if (nErrorNo = _Load(&r1, &vValue))
-			goto ErrorOut;
+		vValue.Load(r1);
 
-		if (Vartype(vValue) == 'N' || Vartype(vValue) == 'D' || Vartype(vValue) == 'T' || Vartype(vValue) == 'Y')
+		if (vValue.Vartype() == 'N' || vValue.Vartype() == 'D' || vValue.Vartype() == 'T' || vValue.Vartype() == 'Y')
 		{
-			if (Vartype(vValue) == 'Y')
-				nMinCur.QuadPart = vValue.ev_currency.QuadPart;
+			cType = vValue.Vartype();
+			if (cType == 'Y')
+				nMinCur.QuadPart = vValue->ev_currency.QuadPart;
 			else
-				nMin = vValue.ev_real;
-			cType = Vartype(vValue);
+				nMin = vValue->ev_real;
 			break;
 		}
-		else if (Vartype(vValue) == '0');
+		else if (vValue.Vartype() == '0');
 		else
-		{
-			nErrorNo = E_INVALIDPARAMS;
-			goto ErrorOut;
-		}
+			throw E_INVALIDPARAMS;
 	}
 		
 	// all rows were .NULL.
 	if (*pRowPtr > nRows)
 	{
-		Return(vValue);
+		vValue.Return();
 		return;
 	}
 
 	for (++(*pRowPtr); *pRowPtr <= nRows; (*pRowPtr)++)
 	{
-		if (nErrorNo = _Load(&r1, &vValue))
-			goto ErrorOut;
+		vValue.Load(r1);
 
-		if (Vartype(vValue) == cType)
+		if (vValue.Vartype() == cType)
 		{
 			if (cType != 'Y')
 			{
-				if (nMin > vValue.ev_real)
-					nMin = vValue.ev_real;
+				if (nMin > vValue->ev_real)
+					nMin = vValue->ev_real;
 			}
 			else
 			{
-				if (nMinCur.QuadPart > vValue.ev_currency.QuadPart)
-					nMinCur.QuadPart = vValue.ev_currency.QuadPart;
+				if (nMinCur.QuadPart > vValue->ev_currency.QuadPart)
+					nMinCur.QuadPart = vValue->ev_currency.QuadPart;
 			}
 		}
-		else if (Vartype(vValue) == '0');
+		else if (vValue.Vartype() == '0');
 		else
-		{
-			nErrorNo = E_INVALIDPARAMS;
-			goto ErrorOut;
-		}
+			throw E_INVALIDPARAMS;
 	}
 
 	if (cType == 'N')
 		Return(nMin);
 	else if (cType == 'Y')
 	{
-		vValue.ev_type = cType;
-		vValue.ev_currency.QuadPart = nMinCur.QuadPart;
-		Return(vValue);
+		vValue->ev_type = cType;
+		vValue->ev_currency.QuadPart = nMinCur.QuadPart;
+		vValue.Return();
 	}
 	else
 	{
-		vValue.ev_type = cType;
-		vValue.ev_real = nMin;
-		Return(vValue);
+		vValue->ev_type = cType;
+		vValue->ev_real = nMin;
+		vValue.Return();
 	}
-	return;
-
-	ErrorOut:
-		ReleaseValue(vValue);
-		RaiseError(nErrorNo);
+}
+catch(int nErrorNo)
+{
+	RaiseError(nErrorNo);
+}
 }

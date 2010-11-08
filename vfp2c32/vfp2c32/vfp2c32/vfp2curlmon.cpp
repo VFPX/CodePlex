@@ -90,21 +90,19 @@ STDMETHODIMP UrlDownload::OnProgress(ULONG ulProgress,
 {
 	if (m_bCallback)
 	{
-		V_VALUE(vRetVal);
 		m_Buffer.Format(m_Callback, ulProgress, ulProgressMax, ulStatusCode);
 
 		if (!m_bAsync)
 		{
-			if (_Evaluate(&vRetVal, m_Buffer) == 0)
+			FoxValue vRetVal;
+			if (_Evaluate(vRetVal, m_Buffer) == 0)
 			{
-				if (Vartype(vRetVal) == 'L')
-					return vRetVal.ev_length ? S_OK : E_ABORT;
-				else if (Vartype(vRetVal) == 'I')
-					return vRetVal.ev_long ? S_OK : E_ABORT;
-				else if (Vartype(vRetVal) == 'N')
-					return vRetVal.ev_real != 0.0 ? S_OK : E_ABORT;
-				else
-					ReleaseValue(vRetVal);
+				if (vRetVal.Vartype() == 'L')
+					return vRetVal->ev_length ? S_OK : E_ABORT;
+				else if (vRetVal.Vartype() == 'I')
+					return vRetVal->ev_long ? S_OK : E_ABORT;
+				else if (vRetVal.Vartype() == 'N')
+					return vRetVal->ev_real != 0.0 ? S_OK : E_ABORT;
 			}
 			return E_ABORT;
 		}
@@ -118,7 +116,7 @@ STDMETHODIMP UrlDownload::OnProgress(ULONG ulProgress,
 					m_nTickCount = nCount;
 					char *pCommand = m_Buffer.Strdup();
 					if (pCommand)
-						PostMessage(ghAsyncHwnd, WM_CALLBACK,(WPARAM)pCommand,0);
+						PostMessage(ghAsyncHwnd, WM_CALLBACK, reinterpret_cast<WPARAM>(pCommand), 0);
 				}
 				return S_OK;
 			}
@@ -148,7 +146,7 @@ STDMETHODIMP UrlDownload::OnStopBinding(HRESULT hr, LPCWSTR lpStatus)
 
 			char *pCommand = m_Buffer.Strdup();
 			if (pCommand)
-				PostMessage(ghAsyncHwnd, WM_CALLBACK, (WPARAM)pCommand,0);
+				PostMessage(ghAsyncHwnd, WM_CALLBACK, reinterpret_cast<WPARAM>(pCommand), 0);
 		}
 	}
 	return S_OK;

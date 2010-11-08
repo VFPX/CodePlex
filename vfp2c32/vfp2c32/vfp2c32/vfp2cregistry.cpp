@@ -307,7 +307,7 @@ try
 		nWriteTimeDim = bEnumClassName ? 3 : 2;
 	}
 
-	hKey.Open(hRoot,pKeyName,KEY_ENUMERATE_SUB_KEYS);
+	hKey.Open(hRoot,pKeyName,KEY_QUERY_VALUE | KEY_ENUMERATE_SUB_KEYS);
 
 	hKey.QueryInfo(0,0,&nSubKeys,&nSubKeyMaxLen,&nClassMaxLen);
 
