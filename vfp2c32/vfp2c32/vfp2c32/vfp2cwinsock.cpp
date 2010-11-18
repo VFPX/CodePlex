@@ -161,18 +161,3 @@ catch(int nErrorNo)
 	RaiseError(nErrorNo);
 }
 }
-
-void _fastcall SendWinsockData(ParamBlk *parm)
-{
-try
-{
-	FoxString pHost(p1);
-	long nPort = p2.ev_long;
-	FoxString pData(p3,0);
-	LPHOSTENT lpHost = 0;
-}
-catch(int nErrorNo)
-{
-	RaiseError(nErrorNo);
-}
-}

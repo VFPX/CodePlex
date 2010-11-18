@@ -3,50 +3,46 @@
 
 #include <tlhelp32.h>
 #include <vdmdbg.h>
+
 #include "vfp2ccppapi.h"
+#include "vfp2chelpers.h"
 
-// custom types and defines for windowstation and desktop enumeration functions
-#define WINDOWSTATION_ENUM_LEN 1024
-#define DESKTOP_ENUM_LEN 1024
-
-typedef struct _WINDOWSTATIONENUMPARAM
+// custom class windowstation and desktop enumeration functions
+class EnumParameter
 {
+public:
+	EnumParameter() { pName.Size(1024); }
 	FoxArray pArray;
-	FoxString pWinStaName;
-} WINDOWSTATIONENUMPARAM, *LPWINDOWSTATIONENUMPARAM; 
-
-typedef struct _DESKTOPENUMPARAM {
-	FoxArray pArray;
-	FoxString pDesktopName;
-} DESKTOPENUMPARAM, *LPDESKTOPENUMPARAM;
+	FoxString pName;
+};
 
 // custom types and defines for window enumeration & window property enumeration functions 
 #define WINDOW_ENUM_CLASSLEN	128
-#define WINDOW_ENUM_TEXTLEN	4096
+#define WINDOW_ENUM_TEXTLEN		4096
 #define WINDOW_ENUM_TOPLEVEL	1
 #define WINDOW_ENUM_CHILD		2
-#define WINDOW_ENUM_THREAD	4
-#define WINDOW_ENUM_DESKTOP	8
+#define WINDOW_ENUM_THREAD		4
+#define WINDOW_ENUM_DESKTOP		8
 #define WINDOW_ENUM_CALLBACK	16
 #define WINDOW_ENUM_FLAGS		15
 #define WINDOWPROP_ENUM_LEN	1024
 
-typedef struct _WINDOWENUMPARAM {
+class WindowEnumParam
+{
+public:
 	FoxArray pArray;
-	FoxString pBuffer;
-	FoxString pCallback;
-} WINDOWENUMPARAM, *LPWINDOWENUMPARAM;
+	CStr pBuffer;
+	CStr pCallback;
+};
 
-typedef struct _WINDOWENUMPARAMEX {
+class WindowEnumParamEx
+{
+public:
+	WindowEnumParamEx() { pBuffer.Size(WINDOW_ENUM_CLASSLEN); }
 	FoxArray pArray;
 	FoxString pBuffer;
 	unsigned short aFlags[WINDOW_ENUM_FLAGS];
-} WINDOWENUMPARAMEX, *LPWINDOWENUMPARAMEX;
-
-typedef struct _WPROPENUMPARAM {
-	FoxArray pArray;
-	FoxString pProperty;
-} WPROPENUMPARAM, *LPWPROPENUMPARAM;
+};
 
 // custom types and defines for resource enumeration functions
 #define RESOURCE_ENUM_TYPELEN 512

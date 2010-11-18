@@ -9,7 +9,6 @@ INITVFP2C32(VFP2C_INIT_ALL)
 
 LOCAL lnCount, laFiles[1], xj
 
-
 ADIRECTORYINFO('laDir', m.lcPath)
 ? "No. of files:", laDir[1]
 ? "No. of subdirectories:", laDir[2]
@@ -155,29 +154,29 @@ DELETEFILEEX('dummy.txt') && this succeeds since it checks for readonly and remo
 && shell file operation's
 &&
 && copy all files in a directory into a new directory
-LOCAL lcSource, lcTarget
-lcSource = FULLPATH(CURDIR())+"*.prg"
-lcTarget = FULLPATH(CURDIR())+"testdirectory"
-?SHCOPYFILES(lcSource,lcTarget)
+*!*	LOCAL lcSource, lcTarget
+*!*	lcSource = FULLPATH(CURDIR())+"*.prg"
+*!*	lcTarget = FULLPATH(CURDIR())+"testdirectory"
+*!*	?SHCOPYFILES(lcSource,lcTarget)
 
-&& copy several single files into a new directory
-lcSource = FULLPATH(CURDIR())+"vfp2c32.fll" + CHR(0) + FULLPATH(CURDIR())+"vfp2c32d.fll" + CHR(0) + FULLPATH(CURDIR())+"vfp2cdummy.prg"
-lcTarget = FULLPATH(CURDIR())+"testdirectory"
-?SHCOPYFILES(lcSource,lcTarget)
+*!*	&& copy several single files into a new directory
+*!*	lcSource = FULLPATH(CURDIR())+"vfp2c32.fll" + CHR(0) + FULLPATH(CURDIR())+"vfp2c32d.fll" + CHR(0) + FULLPATH(CURDIR())+"vfp2cdummy.prg"
+*!*	lcTarget = FULLPATH(CURDIR())+"testdirectory"
+*!*	?SHCOPYFILES(lcSource,lcTarget)
 
-&& copy all prg files in a directory into several new directories
-lcSource = FULLPATH(CURDIR())+"*.prg"
-lcTarget = FULLPATH(CURDIR())+"testdirectory" + CHR(0) + FULLPATH(CURDIR())+"testdirectory2" + CHR(0) + FULLPATH(CURDIR())+"testdirectory3"
-?SHCOPYFILES(lcSource,lcTarget,FOF_MULTIDESTFILES)
+*!*	&& copy all prg files in a directory into several new directories
+*!*	lcSource = FULLPATH(CURDIR())+"*.prg"
+*!*	lcTarget = FULLPATH(CURDIR())+"testdirectory" + CHR(0) + FULLPATH(CURDIR())+"testdirectory2" + CHR(0) + FULLPATH(CURDIR())+"testdirectory3"
+*!*	?SHCOPYFILES(lcSource,lcTarget,FOF_MULTIDESTFILES)
 
-&& copy one file into several new destinations
-lcSource = FULLPATH(CURDIR())+"vfp2c32.fll"
-lcTarget = FULLPATH(CURDIR())+"testdirectory" + CHR(0) + FULLPATH(CURDIR())+"testdirectory2" + CHR(0) + ;
-FULLPATH(CURDIR())+"testdirectory\vfp2c32.fll.bak"
-?SHCOPYFILES(lcSource,lcTarget,FOF_MULTIDESTFILES)
+*!*	&& copy one file into several new destinations
+*!*	lcSource = FULLPATH(CURDIR())+"vfp2c32.fll"
+*!*	lcTarget = FULLPATH(CURDIR())+"testdirectory" + CHR(0) + FULLPATH(CURDIR())+"testdirectory2" + CHR(0) + ;
+*!*	FULLPATH(CURDIR())+"testdirectory\vfp2c32.fll.bak"
+*!*	?SHCOPYFILES(lcSource,lcTarget,FOF_MULTIDESTFILES)
 
 && deleting a whole directory (the one we created above in SHCopyFiles)
-?DELETEDIRECTORY(FULLPATH(CURDIR())+"testdirectory")
+*!*	?DELETEDIRECTORY(FULLPATH(CURDIR())+"testdirectory")
 
 FUNCTION AdirCallback(lcFileName,lcDosFileName,tCreationTime,tAccessTime,tWriteTime, ;
 				nFileSize,nFileAttributes)

@@ -4,9 +4,9 @@
 #include "vfp2c32.h"
 #include "vfp2cutil.h"
 #include "vfp2cnetapiex.h"
-#include "vfpmacros.h"
 #include "vfp2ccppapi.h"
 #include "vfp2chelpers.h"
+#include "vfpmacros.h"
 
 static HMODULE hNetApi32 = 0;
 static PNETFILEENUMEX fpNetFileEnum = 0;
@@ -66,15 +66,15 @@ try
 
 		pArray.Dimension(dwEntries,5);
 
-		pFileInfo50 = (struct file_info_50*)pBuffer.Address();
+		pFileInfo50 = reinterpret_cast<struct file_info_50*>(pBuffer.Address());
 		unsigned int nRow = 1;	
 		while (dwEntries--)
 		{
 			pArray(nRow,1) = pNetInfo = pFileInfo50->fi50_pathname;
 			pArray(nRow,2) = pNetInfo = pFileInfo50->fi50_username;
-			pArray(nRow,3) = (int)pFileInfo50->fi50_id;
-			pArray(nRow,4) = (int)pFileInfo50->fi50_permissions;
-			pArray(nRow,5) = (int)pFileInfo50->fi50_num_locks;
+			pArray(nRow,3) = pFileInfo50->fi50_id;
+			pArray(nRow,4) = pFileInfo50->fi50_permissions;
+			pArray(nRow,5) = pFileInfo50->fi50_num_locks;
 			pFileInfo50++;
 			nRow++;
 		}

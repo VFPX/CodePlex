@@ -7,7 +7,6 @@
 
 /* VFP2C specific includes */
 #include "vfp2c32.h"  /* VFP2C32 specific types & defines */
-#include "vfp2ccppapi.h" /* C++ class library over LCK */
 #include "vfp2carray.h" /* array functions */
 #include "vfp2casync.h" /* asynchronous functions */
 #include "vfp2cconv.h" /* misc data conversion functions */
@@ -33,7 +32,8 @@
 #include "vfp2ciphelper.h" /* IP Helper (iphlpapi.dll) wrappers */
 #include "vfp2cfont.h" /* Font functions  */
 #include "vfp2cutil.h" /* common utility functions */
-#include "vfpmacros.h" /* common macros for FLL construction */
+#include "vfp2ccppapi.h" /* C++ class library over LCK */
+#include "vfpmacros.h"
 
 /* Global variables:
 module handle for this DLL */
@@ -133,7 +133,7 @@ void _stdcall RaiseError(int nErrorNo)
 
 void _fastcall InitVFP2C32(ParamBlk *parm)
 {
-	DWORD dwFlags = (DWORD)p1.ev_long;
+	DWORD dwFlags = p1.ev_long;
 	dwFlags &= ~gnInitStatus;
 
 	RESETWIN32ERRORS();
@@ -248,8 +248,6 @@ void _fastcall InitVFP2C32(ParamBlk *parm)
 
 void _fastcall OnLoad()
 {
-	FoxValue vFoxVer;
-
 	/* get module handle - _GetAPIHandle() doesn't work (unresolved external error from linker) */
 	ghModule = GetModuleHandle(FLLFILENAME);
 	/* get OS information, first try to get EX info, it that fails get normal version */
@@ -260,6 +258,7 @@ void _fastcall OnLoad()
 		GetVersionEx((LPOSVERSIONINFO)&gsOSVerInfo);
 	}
 
+	FoxValue vFoxVer;
 	_Evaluate(vFoxVer, "INT(VERSION(5))");
 	gnFoxVersion = vFoxVer->ev_long;
 }
@@ -339,15 +338,15 @@ try
 	FoxString pMessage(VFP2C_ERROR_MESSAGE_LEN);
 	
 	if (PCOUNT() == 2)
-		nLanguage = (DWORD)p2.ev_long;
+		nLanguage = p2.ev_long;
 	else if (PCOUNT() == 3)
 	{
-		nLanguage = (DWORD)p2.ev_long;
-		lpModule = (LPCVOID)p3.ev_long;
+		nLanguage = p2.ev_long;
+		lpModule = reinterpret_cast<LPCVOID>(p3.ev_long);
 		nFlags |= FORMAT_MESSAGE_FROM_HMODULE;
 	}
 
-	pMessage.Len(FormatMessage(nFlags,lpModule,(DWORD)p1.ev_long,nLanguage,pMessage,pMessage.Size(),0));
+	pMessage.Len(FormatMessage(nFlags, lpModule, p1.ev_long, nLanguage, pMessage, pMessage.Size(), 0));
 
 	if (pMessage.Len())
 		pMessage.Return();
@@ -373,7 +372,7 @@ try
 		return;
 	}
 
-	FoxArray pArray(p1,gnErrorCount+1,4);
+	FoxArray pArray(p1, gnErrorCount+1, 4);
 	FoxString pErrorInfo(VFP2C_ERROR_MESSAGE_LEN);
 	FoxValue vNullValue;
 
@@ -771,7 +770,6 @@ FoxInfo VFP2CFuncs[] =
 	{"CreatePublicShadowObjReference", (FPFI) CreatePublicShadowObjReference, 2, "CO"},
 	{"ReleasePublicShadowObjReference", (FPFI) ReleasePublicShadowObjReference, 1, "C"},
 	{"GetLocaleInfoEx", (FPFI) GetLocaleInfoExLib, 2, "I.I"},
-	// {"StrtranEx", (FPFI) StrtranEx, 4, "CCC.L"},
 
 	/* array routines */
 	{"ASum", (FPFI) ASum, 2, "R.I"},

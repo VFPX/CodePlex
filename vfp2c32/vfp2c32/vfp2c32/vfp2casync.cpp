@@ -4,11 +4,11 @@
 
 #include "pro_ext.h"
 #include "vfp2c32.h"
-#include "vfpmacros.h"
 #include "vfp2casync.h"
 #include "vfp2cutil.h"
 #include "vfp2ccppapi.h"
 #include "vfp2chelpers.h"
+#include "vfpmacros.h"
 
 HWND ghAsyncHwnd = 0;
 static ATOM gnAsyncAtom = 0;
@@ -73,7 +73,7 @@ try
 
 	FoxString pPath(p1);
 	bool bWatchSubtree = p2.ev_length > 0;
-	DWORD nFilter = static_cast<DWORD>(p3.ev_long);
+	DWORD nFilter = p3.ev_long;
 	FoxString pCallback(p4);
 
 	if (!goThreadManager.Initialized())
@@ -140,7 +140,7 @@ try
 	HKEY hRoot = reinterpret_cast<HKEY>(p1.ev_long);
 	FoxString pKey(p2);
 	bool bWatchSubtree = p3.ev_length > 0;
-	DWORD dwFilter = static_cast<DWORD>(p4.ev_long);
+	DWORD dwFilter = p4.ev_long;
 	FoxString pCallback(p5);
 
 	if (!goThreadManager.Initialized())

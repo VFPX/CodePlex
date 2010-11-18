@@ -7,9 +7,9 @@
 #include "vfp2c32.h"
 #include "vfp2curlmon.h"
 #include "vfp2cutil.h"
-#include "vfpmacros.h"
 #include "vfp2ccppapi.h"
 #include "vfp2casync.h"
+#include "vfpmacros.h"
 
 static CThreadManager goUrlThreads;
 
@@ -21,7 +21,7 @@ UrlDownload::UrlDownload() : m_bCallback(false), m_bAsync(false), m_nAborted(0),
 
 DWORD UrlDownloadThread::Run()
 {
-	return (DWORD)m_Download.Download();
+	return static_cast<DWORD>(m_Download.Download());
 }
 
 void UrlDownloadThread::SignalThreadAbort()

@@ -4,9 +4,9 @@
 #include "vfp2c32.h"
 #include "vfp2cutil.h"
 #include "vfp2cservices.h"
-#include "vfpmacros.h"
 #include "vfp2ccppapi.h"
 #include "vfp2chelpers.h"
+#include "vfpmacros.h"
 
 // dynamic function pointers
 static POPENSCMANAGER fpOpenSCManager = 0;
@@ -34,7 +34,7 @@ ServiceManager::~ServiceManager()
 void ServiceManager::Open(const char *pMachine, const char *pDatabase, DWORD dwAccess)
 {
 	m_Handle = fpOpenSCManager(pMachine,pDatabase,dwAccess);
-	if (!m_Handle)
+	if (m_Handle == NULL)
 	{
 		SAVEWIN32ERROR(OpenSCManager,GetLastError());
 		throw E_APIERROR;
@@ -58,7 +58,7 @@ void Service::Open(SC_HANDLE hSCM, const char* pServiceName, DWORD dwAccess)
 		fpCloseServiceHandle(m_Handle);
 
 	m_Handle = fpOpenService(hSCM,pServiceName,dwAccess);
-	if (!m_Handle)
+	if (m_Handle == NULL)
 	{
 		SAVEWIN32ERROR(OpenService,GetLastError());
 		throw E_APIERROR;
@@ -76,7 +76,7 @@ int Service::Start(DWORD nNumberOfArgs, LPCSTR *pArgs, int nTimeout)
 
 	if (m_Status.dwCurrentState != SERVICE_START_PENDING)
 	{
-		if (!fpStartService(m_Handle,nNumberOfArgs,pArgs))
+		if (!fpStartService(m_Handle, nNumberOfArgs, pArgs))
 		{
 			SAVEWIN32ERROR(StartService,GetLastError());
 			throw E_APIERROR;
@@ -99,7 +99,7 @@ int Service::Start(DWORD nNumberOfArgs, LPCSTR *pArgs, int nTimeout)
 		dwTimeout = m_Status.dwWaitHint;
 	else
 	{
-		dwTimeout = (DWORD)nTimeout * 1000;
+		dwTimeout = nTimeout * 1000;
 		bCustomTimeout = true;
 	}
 
@@ -160,7 +160,7 @@ int Service::Pause(int nTimeout)
 		return 1;
 
 	if (m_Status.dwCurrentState == SERVICE_PAUSE_PENDING)
-		return WaitForServiceStatus(SERVICE_PAUSED,nTimeout);
+		return WaitForServiceStatus(SERVICE_PAUSED, nTimeout);
 
 	// Send pause command to the service
 	if (!fpControlService(m_Handle,SERVICE_CONTROL_PAUSE,&m_Status))
@@ -169,7 +169,7 @@ int Service::Pause(int nTimeout)
 		throw E_APIERROR;
 	}
 
-	return WaitForServiceStatus(SERVICE_PAUSED,nTimeout);
+	return WaitForServiceStatus(SERVICE_PAUSED, nTimeout);
 }
 
 int Service::Continue(int nTimeout)
@@ -182,10 +182,10 @@ int Service::Continue(int nTimeout)
 
 	// If continue is pending, just wait for it
 	if (m_Status.dwCurrentState == SERVICE_CONTINUE_PENDING)
-		return WaitForServiceStatus(SERVICE_RUNNING,nTimeout);
+		return WaitForServiceStatus(SERVICE_RUNNING, nTimeout);
 
 	// Send pause command to the service
-	if (!fpControlService(m_Handle,SERVICE_CONTROL_CONTINUE,&m_Status))
+	if (!fpControlService(m_Handle, SERVICE_CONTROL_CONTINUE, &m_Status))
 	{
 		SAVEWIN32ERROR(ControlService,GetLastError());
 		throw E_APIERROR;
@@ -197,7 +197,7 @@ int Service::Continue(int nTimeout)
 int Service::Control(DWORD nControlCode)
 {
 	// Send a stop code to the main service
-	if (!fpControlService(m_Handle,nControlCode,&m_Status))
+	if (!fpControlService(m_Handle, nControlCode, &m_Status))
 	{
 		SAVEWIN32ERROR(ControlService,GetLastError());
 		throw E_APIERROR;
@@ -207,7 +207,7 @@ int Service::Control(DWORD nControlCode)
 
 void Service::QueryStatus(LPSERVICE_STATUS pStatus)
 {
-	if (!fpQueryServiceStatus(m_Handle,pStatus))
+	if (!fpQueryServiceStatus(m_Handle, pStatus))
 	{
 		SAVEWIN32ERROR(QueryServiceStatus,GetLastError());
 		throw E_APIERROR;
@@ -218,7 +218,7 @@ void Service::QueryConfig(CBuffer &pBuffer)
 {
 	DWORD nBytesNeeded = 0;
 	pBuffer.Size(8192);
-	if(!fpQueryServiceConfig(m_Handle, (LPQUERY_SERVICE_CONFIG)pBuffer.Address(), pBuffer.Size(), &nBytesNeeded))
+	if(!fpQueryServiceConfig(m_Handle, reinterpret_cast<LPQUERY_SERVICE_CONFIG>(pBuffer.Address()), pBuffer.Size(), &nBytesNeeded))
 	{
 		SAVEWIN32ERROR(QueryServiceConfig,GetLastError());
 		throw E_APIERROR;
@@ -235,7 +235,7 @@ int Service::WaitForServiceStatus(DWORD dwState, int nTimeout)
 	else if (nTimeout == SERVICE_INFINITE_TIMEOUT)
 		dwTimeout = INFINITE;
 	else
-		dwTimeout = (DWORD)nTimeout * 1000;
+		dwTimeout = nTimeout * 1000;
 
 	if (dwTimeout == 0)
 		return 0;
@@ -262,8 +262,7 @@ void Service::StopDependantServices(SC_HANDLE hSCM)
     LPENUM_SERVICE_STATUS pDepStatus;
 
 	// this will always fail, called to determine the required buffersize
-	fpEnumDependentServices(m_Handle,SERVICE_ACTIVE,0,0,&nBytesNeeded,&nCount);
-
+	fpEnumDependentServices(m_Handle, SERVICE_ACTIVE, 0, 0, &nBytesNeeded, &nCount);
 	nApiRet = GetLastError();
 	if (nApiRet != ERROR_MORE_DATA)
 	{
@@ -272,10 +271,9 @@ void Service::StopDependantServices(SC_HANDLE hSCM)
 	}
 	
 	pBuffer.Size(nBytesNeeded);
-	pDepStatus = (LPENUM_SERVICE_STATUS)pBuffer.Address();
+	pDepStatus = reinterpret_cast<LPENUM_SERVICE_STATUS>(pBuffer.Address());
 
-	if (!fpEnumDependentServices(m_Handle,SERVICE_ACTIVE,
-		pDepStatus,nBytesNeeded,&nBytesNeeded,&nCount))
+	if (!fpEnumDependentServices(m_Handle,SERVICE_ACTIVE, pDepStatus, nBytesNeeded, &nBytesNeeded, &nCount))
 	{
 		SAVEWIN32ERROR(EnumDependentServices,GetLastError());
 		throw E_APIERROR;
@@ -283,30 +281,26 @@ void Service::StopDependantServices(SC_HANDLE hSCM)
 	
 	for (unsigned int xj = 0; xj < nCount; xj++) 
 	{
-		hDepService.Open(hSCM,pDepStatus->lpServiceName,
-			SERVICE_STOP|SERVICE_QUERY_STATUS|SERVICE_ENUMERATE_DEPENDENTS);
+		hDepService.Open(hSCM,pDepStatus->lpServiceName, SERVICE_STOP|SERVICE_QUERY_STATUS|SERVICE_ENUMERATE_DEPENDENTS);
 		hDepService.Stop(true,INFINITE,hSCM);
 		pDepStatus++;
 	}
 }
 
-Service& Service::operator=(int hHandle)
+Service& Service::Attach(Value &pVal)
 {
 	if (m_Handle && m_Owner)
+	{
 		fpCloseServiceHandle(m_Handle);
+		m_Handle = NULL;
+	}
 
-	m_Handle = reinterpret_cast<SC_HANDLE>(hHandle);
+	if (Vartype(pVal) == 'I')
+		m_Handle = reinterpret_cast<SC_HANDLE>(pVal.ev_long);
+	else if (Vartype(pVal) == 'N')
+		m_Handle = reinterpret_cast<SC_HANDLE>(static_cast<long>(pVal.ev_real));
+
 	m_Owner = false;
-	return *this;
-}
-
-Service& Service::operator=(SC_HANDLE hHandle)
-{
-	if (m_Handle && m_Owner)
-		fpCloseServiceHandle(m_Handle);
-
-	m_Handle = hHandle;
-	m_Owner = true;
 	return *this;
 }
 
@@ -356,7 +350,7 @@ try
 	hSCM.Open(pMachine,pDatabase);
 	hService.Open(hSCM,pServiceName,dwAccess);
 
-	Return((int)hService.Detach());
+	Return(hService.Detach());
 }
 catch(int nErrorNo)
 {
@@ -373,7 +367,7 @@ try
 	if (!fpCloseServiceHandle)
 		throw E_NOENTRYPOINT;
 
-	if (!fpCloseServiceHandle((SC_HANDLE)p1.ev_long))
+	if (!fpCloseServiceHandle(reinterpret_cast<SC_HANDLE>(p1.ev_long)))
 	{
 		SAVEWIN32ERROR(CloseServiceHandle,GetLastError());
 		throw E_APIERROR;
@@ -402,7 +396,7 @@ try
 		throw E_INVALIDPARAMS;
 
 	FoxString pService(parm,1);
-	FoxArray pArgs(r2);
+	FoxArray pArgs(parm, 2);
 	FoxString pMachine(parm,4);
 	FoxString pDatabase(parm,5);
 	FoxCStringArray pArguments;
@@ -413,27 +407,22 @@ try
 	{
 		if (PCOUNT() >= 4)
 			throw E_INVALIDPARAMS;
-		if (Vartype(p1) == 'N')
-			p1.ev_long = (DWORD)p1.ev_real;
-		hService = p1.ev_long;
+		hService.Attach(p1);
 	}
 	else if (Vartype(p1) == 'C')
 	{
 		hSCM.Open(pMachine,pDatabase);
-		hService.Open(hSCM,pService,SERVICE_START|SERVICE_QUERY_STATUS);
+		hService.Open(hSCM,pService, SERVICE_START|SERVICE_QUERY_STATUS);
 	}
 	else
 		throw E_INVALIDPARAMS;
 
-	unsigned int nNumberOfArgs = 0;
-	// convert FoxPro array into C-Style string array in one line - neat, isn't it?! :-)
-	if (PCOUNT() >= 2 && Vartype(p2) == 'R')
-		nNumberOfArgs = pArguments = pArgs;
+	pArguments = pArgs;
 
 	if (PCOUNT() < 3 || Vartype(p3) == '0')
-		p2.ev_long = SERVICE_DEFAULT_TIMEOUT;
+		p3.ev_long = SERVICE_DEFAULT_TIMEOUT;
 
-	Return (hService.Start(nNumberOfArgs,pArguments,p3.ev_long));
+	Return (hService.Start(pArguments.ARows(), pArguments, p3.ev_long));
 }
 catch(int nErrorNo)
 {
@@ -470,15 +459,11 @@ try
 
 	if (Vartype(p1) == 'I' || Vartype(p1) == 'N')
 	{
-		if (Vartype(p1) == 'N')
-			p1.ev_long = (DWORD)p1.ev_real;
-        hService = p1.ev_long;
+		hService.Attach(p1);
 	}
 	else if (Vartype(p1) == 'C')
 	{
-		hService.Open(hSCM,pServiceName,bStopDependencies ?
-			(SERVICE_STOP|SERVICE_QUERY_STATUS|SERVICE_ENUMERATE_DEPENDENTS) :
-			(SERVICE_STOP|SERVICE_QUERY_STATUS));
+		hService.Open(hSCM,pServiceName,bStopDependencies ? (SERVICE_STOP|SERVICE_QUERY_STATUS|SERVICE_ENUMERATE_DEPENDENTS) : (SERVICE_STOP|SERVICE_QUERY_STATUS));
 	}
 	else
 		throw E_INVALIDPARAMS;
@@ -514,10 +499,7 @@ try
 
 	if (Vartype(p1) == 'I' || Vartype(p1) == 'N')
 	{
-		if (Vartype(p1) == 'N')
-			p1.ev_long = (DWORD)p1.ev_real;
-
-		hService = p1.ev_long;
+		hService.Attach(p1);
 	}
 	else if (Vartype(p1) == 'C')
 	{
@@ -558,9 +540,7 @@ try
 
 	if (Vartype(p1) == 'I' || Vartype(p1) == 'N')
 	{
-		if (Vartype(p1) == 'N')
-			p1.ev_long = (DWORD)p1.ev_real;
-		hService = p1.ev_long;
+		hService.Attach(p1);
 	}
 	else if (Vartype(p1) == 'C')
 	{
@@ -595,9 +575,7 @@ try
 
 	if (Vartype(p1) == 'I' || Vartype(p1) == 'N')
 	{
-		if (Vartype(p1) == 'N')
-			p1.ev_long = (DWORD)p1.ev_real;
-		hService = p1.ev_long;
+		hService.Attach(p1);
 	}
 	else if (Vartype(p1) == 'C')
 	{
@@ -607,7 +585,7 @@ try
 	else
 		throw E_INVALIDPARAMS;
 
-	Return(hService.Control((DWORD)p2.ev_long));
+	Return(hService.Control(p2.ev_long));
 }
 catch(int nErrorNo)
 {
@@ -631,28 +609,25 @@ try
 	ServiceManager hSCM;
 	CBuffer pBuffer;
 
-	DWORD dwState = SERVICE_STATE_ALL, dwType = SERVICE_WIN32, dwBytes = SERVICE_ENUM_BUFFER, hResume = 0;
+	DWORD dwState, dwType, dwBytes = SERVICE_ENUM_BUFFER, hResume = 0;
 	DWORD nServices, nLastError;
 	unsigned int nRow;
 	LPENUM_SERVICE_STATUS pServiceStatus;
 	LPENUM_SERVICE_STATUS_PROCESS pServiceStatusEx;
 	
-	if (PCOUNT() >= 4 && p4.ev_long)
-		dwState = (DWORD)p4.ev_long;
-
-	if (PCOUNT() >= 5 && p5.ev_long)
-		dwType = (DWORD)p5.ev_long;
+	dwState = PCOUNT() >= 4 && p4.ev_long ? p4.ev_long : SERVICE_STATE_ALL;
+	dwType = PCOUNT() >= 5 && p5.ev_long ? p5.ev_long : SERVICE_WIN32;
 
 	hSCM.Open(pMachine,pDatabase,SC_MANAGER_ENUMERATE_SERVICE);
 
 	pBuffer.Size(dwBytes);
+	pArray.AutoGrow(32);
 
 	if (fpEnumServicesStatusEx)
 	{
 		while (1)
 		{
-			if (!fpEnumServicesStatusEx(hSCM,SC_ENUM_PROCESS_INFO,
-					dwType,dwState,pBuffer,dwBytes,&dwBytes,&nServices,&hResume,0))
+			if (!fpEnumServicesStatusEx(hSCM,SC_ENUM_PROCESS_INFO, dwType, dwState, pBuffer, dwBytes, &dwBytes, &nServices, &hResume,0))
 				nLastError = GetLastError();
 			else
 				nLastError = ERROR_SUCCESS;
@@ -663,20 +638,20 @@ try
 				throw E_APIERROR;
 			}
 
-			pServiceStatusEx = (LPENUM_SERVICE_STATUS_PROCESS)pBuffer.Address();
+			pServiceStatusEx = reinterpret_cast<LPENUM_SERVICE_STATUS_PROCESS>(pBuffer.Address());
 			while (nServices--)
 			{
 				nRow = pArray.Grow();
 				pArray(nRow,1) = pStringBuffer = pServiceStatusEx->lpServiceName;
 				pArray(nRow,2) = pStringBuffer = pServiceStatusEx->lpDisplayName;
-				pArray(nRow,3) = (int)pServiceStatusEx->ServiceStatusProcess.dwServiceType;
-				pArray(nRow,4) = (int)pServiceStatusEx->ServiceStatusProcess.dwCurrentState;
-				pArray(nRow,5) = (int)pServiceStatusEx->ServiceStatusProcess.dwWin32ExitCode;
-				pArray(nRow,6) = (int)pServiceStatusEx->ServiceStatusProcess.dwServiceSpecificExitCode;
-				pArray(nRow,7) = (int)pServiceStatusEx->ServiceStatusProcess.dwCheckPoint;
-				pArray(nRow,8) = (int)pServiceStatusEx->ServiceStatusProcess.dwControlsAccepted;
-				pArray(nRow,9) = (int)pServiceStatusEx->ServiceStatusProcess.dwServiceFlags;
-				pArray(nRow,10) = (int)pServiceStatusEx->ServiceStatusProcess.dwProcessId;
+				pArray(nRow,3) = pServiceStatusEx->ServiceStatusProcess.dwServiceType;
+				pArray(nRow,4) = pServiceStatusEx->ServiceStatusProcess.dwCurrentState;
+				pArray(nRow,5) = pServiceStatusEx->ServiceStatusProcess.dwWin32ExitCode;
+				pArray(nRow,6) = pServiceStatusEx->ServiceStatusProcess.dwServiceSpecificExitCode;
+				pArray(nRow,7) = pServiceStatusEx->ServiceStatusProcess.dwCheckPoint;
+				pArray(nRow,8) = pServiceStatusEx->ServiceStatusProcess.dwControlsAccepted;
+				pArray(nRow,9) = pServiceStatusEx->ServiceStatusProcess.dwServiceFlags;
+				pArray(nRow,10) = pServiceStatusEx->ServiceStatusProcess.dwProcessId;
 				pServiceStatusEx++;
 			}
 			
@@ -685,7 +660,7 @@ try
 				if (dwBytes < SERVICE_ENUM_BUFFER)
 					continue;
 
-				dwBytes = max(dwBytes,SERVICE_MAX_ENUM_BUFFER);
+				dwBytes = max(dwBytes, SERVICE_MAX_ENUM_BUFFER);
 				pBuffer.Size(dwBytes);
 			}
 			else
@@ -696,10 +671,9 @@ try
 	{
 		while (1)
 		{
-			pServiceStatus = (LPENUM_SERVICE_STATUS)pBuffer.Address();
+			pServiceStatus = reinterpret_cast<LPENUM_SERVICE_STATUS>(pBuffer.Address());
 
-			if (!fpEnumServicesStatus(hSCM,dwType,dwState,
-				pServiceStatus,dwBytes,&dwBytes,&nServices,&hResume))
+			if (!fpEnumServicesStatus(hSCM, dwType, dwState, pServiceStatus, dwBytes, &dwBytes, &nServices, &hResume))
 				nLastError = GetLastError();
 			else
 				nLastError = ERROR_SUCCESS;
@@ -715,12 +689,12 @@ try
 				nRow = pArray.Grow();
 				pArray(nRow,1) = pStringBuffer = pServiceStatus->lpServiceName;
 				pArray(nRow,2) = pStringBuffer = pServiceStatus->lpDisplayName;
-				pArray(nRow,3) = (int)pServiceStatus->ServiceStatus.dwServiceType;
-				pArray(nRow,4) = (int)pServiceStatus->ServiceStatus.dwCurrentState;
-				pArray(nRow,5) = (int)pServiceStatus->ServiceStatus.dwWin32ExitCode;
-				pArray(nRow,6) = (int)pServiceStatus->ServiceStatus.dwServiceSpecificExitCode;
-				pArray(nRow,7) = (int)pServiceStatus->ServiceStatus.dwCheckPoint;
-				pArray(nRow,8) = (int)pServiceStatus->ServiceStatus.dwControlsAccepted;
+				pArray(nRow,3) = pServiceStatus->ServiceStatus.dwServiceType;
+				pArray(nRow,4) = pServiceStatus->ServiceStatus.dwCurrentState;
+				pArray(nRow,5) = pServiceStatus->ServiceStatus.dwWin32ExitCode;
+				pArray(nRow,6) = pServiceStatus->ServiceStatus.dwServiceSpecificExitCode;
+				pArray(nRow,7) = pServiceStatus->ServiceStatus.dwCheckPoint;
+				pArray(nRow,8) = pServiceStatus->ServiceStatus.dwControlsAccepted;
 				pArray(nRow,9) = 0;
 				pArray(nRow,10) = 0;
 				pServiceStatus++;
@@ -770,9 +744,7 @@ try
 	{
 		if (PCOUNT() > 2)
 			throw E_INVALIDPARAMS;
-		if (Vartype(p2) == 'N')
-			p2.ev_long = (DWORD)p2.ev_real;
-		hService = p2.ev_long;
+		hService.Attach(p2);
 	}
 	else if (Vartype(p2) == 'C')
 	{
@@ -784,13 +756,13 @@ try
 
 	hService.QueryStatus(&sStatus);
 
-	pArray(1) = (int)sStatus.dwCheckPoint;
-	pArray(2) = (int)sStatus.dwControlsAccepted;
-	pArray(3) = (int)sStatus.dwCurrentState;
-	pArray(4) = (int)sStatus.dwServiceSpecificExitCode;
-	pArray(5) = (int)sStatus.dwServiceType;
-	pArray(6) = (int)sStatus.dwWaitHint;
-	pArray(7) = (int)sStatus.dwWin32ExitCode;
+	pArray(1) = sStatus.dwCheckPoint;
+	pArray(2) = sStatus.dwControlsAccepted;
+	pArray(3) = sStatus.dwCurrentState;
+	pArray(4) = sStatus.dwServiceSpecificExitCode;
+	pArray(5) = sStatus.dwServiceType;
+	pArray(6) = sStatus.dwWaitHint;
+	pArray(7) = sStatus.dwWin32ExitCode;
 
 	Return(1);
 }
@@ -823,9 +795,7 @@ try
 	{
 		if (PCOUNT() > 2)
 			throw E_INVALIDPARAMS;
-		if (Vartype(p2) == 'N')
-			p2.ev_long = (DWORD)p2.ev_real;
-		hService = p2.ev_long;
+		hService.Attach(p2);
 	}
 	else if (Vartype(p2) == 'C')
 	{
@@ -839,9 +809,9 @@ try
 
 	pServiceConfig = (LPQUERY_SERVICE_CONFIG)pBuffer.Address();
 
-	pArray(1) = (int)pServiceConfig->dwServiceType;
-	pArray(2) = (int)pServiceConfig->dwStartType;
-	pArray(3) = (int)pServiceConfig->dwErrorControl;
+	pArray(1) = pServiceConfig->dwServiceType;
+	pArray(2) = pServiceConfig->dwStartType;
+	pArray(3) = pServiceConfig->dwErrorControl;
 	pArray(4) = pStringBuffer = pServiceConfig->lpBinaryPathName;
 	pArray(5) = pStringBuffer = pServiceConfig->lpLoadOrderGroup;
 	pArray(6) = pServiceConfig->dwTagId;
@@ -885,9 +855,7 @@ try
 	{
 		if (PCOUNT() > 2)
 			throw E_INVALIDPARAMS;
-		if (Vartype(p2) == 'N')
-			p2.ev_long = (DWORD)p2.ev_real;
-		hService = p2.ev_long;
+		hService.Attach(p2);
 	}
 	else if (Vartype(p2) == 'C')
 	{
@@ -896,7 +864,6 @@ try
 	}
 	else
 		throw E_INVALIDPARAMS;
-
 
 	if (!fpEnumDependentServices(hService, SERVICE_STATE_ALL, 0, 0, &dwBytesNeeded, &dwServiceCount))
 	{
@@ -914,24 +881,26 @@ try
 	}
 
 	pBuffer.Size(dwBytesNeeded);
-	pServiceStatus = (LPENUM_SERVICE_STATUS)pBuffer.Address();
+	pServiceStatus = reinterpret_cast<LPENUM_SERVICE_STATUS>(pBuffer.Address());
+
 	if (!fpEnumDependentServices(hService, SERVICE_STATE_ALL, pServiceStatus, pBuffer.Size(), &dwBytesNeeded, &dwServiceCount))
 	{
 		SAVEWIN32ERROR(EnumDependentServices, nLastError);
 		throw E_APIERROR;
 	}
     
+	pArray.Dimension(dwServiceCount, 8);
 	while (dwServiceCount--)
 	{
 		nRow = pArray.Grow();
 		pArray(nRow,1) = pStringBuffer = pServiceStatus->lpServiceName;
 		pArray(nRow,2) = pStringBuffer = pServiceStatus->lpDisplayName;
-		pArray(nRow,3) = (int)pServiceStatus->ServiceStatus.dwServiceType;
-		pArray(nRow,4) = (int)pServiceStatus->ServiceStatus.dwCurrentState;
-		pArray(nRow,5) = (int)pServiceStatus->ServiceStatus.dwWin32ExitCode;
-		pArray(nRow,6) = (int)pServiceStatus->ServiceStatus.dwServiceSpecificExitCode;
-		pArray(nRow,7) = (int)pServiceStatus->ServiceStatus.dwCheckPoint;
-		pArray(nRow,8) = (int)pServiceStatus->ServiceStatus.dwControlsAccepted;
+		pArray(nRow,3) = pServiceStatus->ServiceStatus.dwServiceType;
+		pArray(nRow,4) = pServiceStatus->ServiceStatus.dwCurrentState;
+		pArray(nRow,5) = pServiceStatus->ServiceStatus.dwWin32ExitCode;
+		pArray(nRow,6) = pServiceStatus->ServiceStatus.dwServiceSpecificExitCode;
+		pArray(nRow,7) = pServiceStatus->ServiceStatus.dwCheckPoint;
+		pArray(nRow,8) = pServiceStatus->ServiceStatus.dwControlsAccepted;
 		pServiceStatus++;
 	}
 
@@ -962,9 +931,7 @@ try
 
 	if (Vartype(p1) == 'I' || Vartype(p1) == 'N')
 	{
-		if (Vartype(p1) == 'N')
-			p1.ev_long = (DWORD)p1.ev_real;
-		hService = p1.ev_long;
+		hService.Attach(p1);
 	}
 	else if (Vartype(p1) == 'C')
 	{

@@ -6,16 +6,15 @@
 #include <stdio.h>
 #include <winioctl.h>
 #include <uxtheme.h>
-
 #include <list>
 
 #include "pro_ext.h"
 #include "vfp2c32.h"
 #include "vfp2cutil.h"
 #include "vfp2cfile.h"
-#include "vfpmacros.h"
 #include "vfp2ccppapi.h"
 #include "vfp2chelpers.h"
+#include "vfpmacros.h"
 
 // dynamic function pointers for runtime linking
 static PGETFILESIZEEX fpGetFileSizeEx = 0;
@@ -181,13 +180,6 @@ void _stdcall VFP2C_Destroy_File()
 		CloseHandle(*Iterator);
 	}
 	glFileHandles.clear();
-/*	int xj;
-	for (xj = 0; xj < VFP2C_MAX_FILE_HANDLES; xj++)
-	{
-		if (gaFileHandles[xj])
-			CloseHandle(gaFileHandles[xj]);
-	}
-*/
 }
 
 void _fastcall ADirEx(ParamBlk *parm)
@@ -216,7 +208,7 @@ try
 	bool bEnumFakeDirs = (nFileFilter & FILE_ATTRIBUTE_FAKEDIRECTORY) != 0;
 	nFileFilter &= ~FILE_ATTRIBUTE_FAKEDIRECTORY;
 
-	DWORD nFileCnt = 0;
+	unsigned int nFileCnt = 0;
 	PADIREXFILTER fpFilterFunc;
 
 	if (!(nDest & (ADIREX_DEST_ARRAY | ADIREX_DEST_CURSOR | ADIREX_DEST_CALLBACK)))
@@ -236,12 +228,14 @@ try
 
 	// destination is array
 	if (nDest & ADIREX_DEST_ARRAY)
+	{
 		pArray.Dimension((char*)pDestination,1,7);
+		pArray.AutoGrow(16);
+	}
 	// else if destination is cursor
 	else if (nDest & ADIREX_DEST_CURSOR)
 	{
-		pCursor.Create(pDestination,"filename C(254), dosfilename C(13), creationtime T, accesstime T, "
-						"writetime T, filesize N(20,0), fileattribs I");
+		pCursor.Create(pDestination,"filename C(254), dosfilename C(13), creationtime T, accesstime T, writetime T, filesize N(20,0), fileattribs I");
 	}
 	else // destination is callback procedure
 	{
@@ -265,8 +259,7 @@ try
 				if (!bEnumFakeDirs && pSearch.IsFakeDir())
 					continue;
 				
-				nFileCnt++;
-				pArray.ReDimension(nFileCnt,7);
+				nFileCnt = pArray.Grow();
 				pArray(nFileCnt,1) = pFileName = pSearch.File.cFileName;
 				pArray(nFileCnt,2) = pFileName = pSearch.File.cAlternateFileName;
 
@@ -286,11 +279,13 @@ try
 				pArray(nFileCnt,5) = pFileTime;
 
 				pArray(nFileCnt,6) = pFileSize = pSearch.Filesize();
-				pArray(nFileCnt,7) = (int)pSearch.File.dwFileAttributes;
+				pArray(nFileCnt,7) = pSearch.File.dwFileAttributes;
 
 			} // endif nFileFilter
 
 		} while(pSearch.FindNext());
+
+		pArray.ReturnRows();
 	}
 	else if (nDest & ADIREX_DEST_CURSOR) // destination is cursor ...
 	{
@@ -323,41 +318,44 @@ try
 				pCursor(5) = pFileTime;
 
 				pCursor(6) = pFileSize = pSearch.Filesize();
-				pCursor(7) = (int)pSearch.File.dwFileAttributes;
+				pCursor(7) = pSearch.File.dwFileAttributes;
 
 			} // endif nFileFilter
 
 		} while(pSearch.FindNext());
+
+		Return(nFileCnt);
 	}
 	else // call callback procedure
 	{
 		double nFileSize;
+		FoxValue vRetVal;
+
 		do 
 		{
 			if (fpFilterFunc(pSearch.File.dwFileAttributes,nFileFilter))
 			{
+				if (!bEnumFakeDirs && pSearch.IsFakeDir())
+					continue;
+				
+				nFileCnt++;
+				pCreationTime.Convert(pSearch.File.ftCreationTime,bToLocal);
+				pAccessTime.Convert(pSearch.File.ftLastAccessTime,bToLocal);
+				pWriteTime.Convert(pSearch.File.ftLastWriteTime,bToLocal);
+				nFileSize = (double)pSearch.Filesize();
+	            
+				pCallbackCmd.Format(pCallback, pSearch.File.cFileName, pSearch.File.cAlternateFileName, 
+									(char*)pCreationTime, (char*)pAccessTime, (char*)pWriteTime, nFileSize, pSearch.File.dwFileAttributes);
 
-			if (!bEnumFakeDirs && pSearch.IsFakeDir())
-				continue;
-			
-			pCreationTime.Convert(pSearch.File.ftCreationTime,bToLocal);
-			pAccessTime.Convert(pSearch.File.ftLastAccessTime,bToLocal);
-			pWriteTime.Convert(pSearch.File.ftLastWriteTime,bToLocal);
-			nFileSize = (double)pSearch.Filesize();
-            
-			pCallbackCmd.Format(pCallback, pSearch.File.cFileName, pSearch.File.cAlternateFileName, 
-								(char*)pCreationTime, (char*)pAccessTime, (char*)pWriteTime, nFileSize, pSearch.File.dwFileAttributes);
-
-			FoxValue vRetVal;
-			Evaluate(vRetVal, pCallbackCmd);
-			if (vRetVal.Vartype() != 'L' || !vRetVal->ev_length)
-				break;
+				vRetVal.Evaluate(pCallbackCmd);
+				if (vRetVal.Vartype() != 'L' || !vRetVal->ev_length)
+					break;
 			} // endif nFileFilter
 
 		} while(pSearch.FindNext());
-	}
 
-	Return(nFileCnt);
+		Return(nFileCnt);
+	}
 }
 catch(int nErrorNo)
 {
@@ -404,7 +402,7 @@ try
 	pSearch = pDirectory;
 	pSearch.AddBs();
 
-	ADirectoryInfoSubRoutine(&sDirInfo,pSearch);
+	ADirectoryInfoSubRoutine(&sDirInfo, pSearch);
 
 	pArray(1) = sDirInfo.nNumberOfFiles;
 	pArray(2) = sDirInfo.nNumberOfSubDirs;
@@ -480,7 +478,7 @@ try
 		throw E_APIERROR;
 	}
 
-	pArray(1) = (int)sFileAttribs.dwFileAttributes;
+	pArray(1) = sFileAttribs.dwFileAttributes;
 	pArray(2) = pFileSize = Ints2Double(sFileAttribs.nFileSizeLow, sFileAttribs.nFileSizeHigh);
 	
 	pFileTime = sFileAttribs.ftCreationTime;
@@ -533,7 +531,7 @@ try
 		throw E_APIERROR;
 	}
 
-	pArray(1) = (int)sFileAttribs.dwFileAttributes;
+	pArray(1) = sFileAttribs.dwFileAttributes;
 	pArray(2) = pFileSize = Ints2Double(sFileAttribs.nFileSizeLow, sFileAttribs.nFileSizeHigh);
 
 	pFileTime = sFileAttribs.ftCreationTime;
@@ -551,7 +549,7 @@ try
 		pFileTime.ToLocal();
 	pArray(5) = pFileTime;
 
-	pArray(6) = (int)sFileAttribs.nNumberOfLinks - 1;
+	pArray(6) = sFileAttribs.nNumberOfLinks - 1;
 	pArray(7) = sFileAttribs.dwVolumeSerialNumber;
 	pArray(8) = sFileAttribs.nFileIndexLow;
 	pArray(9) = sFileAttribs.nFileIndexHigh;
@@ -638,7 +636,7 @@ try
 {
 	RESETWIN32ERRORS();
 
-	bool  bCreation, bAccess, bWrite;
+	bool bCreation, bAccess, bWrite;
 
 	if (Vartype(p2) == 'T')
 		bCreation = p2.ev_real != 0.0;
@@ -681,8 +679,7 @@ try
 
 	FILETIME sCreationTime, sAccessTime, sWriteTime;
 
-	hFile = CreateFile(pFileName.Fullpath(),FILE_WRITE_ATTRIBUTES,0,0,
-		OPEN_EXISTING,FILE_FLAG_BACKUP_SEMANTICS,0);
+	hFile = CreateFile(pFileName.Fullpath(), FILE_WRITE_ATTRIBUTES, 0, 0, OPEN_EXISTING,FILE_FLAG_BACKUP_SEMANTICS, 0);
 	if (!hFile)
 	{
 		SAVEWIN32ERROR(CreateFile,GetLastError());
@@ -704,6 +701,7 @@ try
 			pTime.ToUTC();
 		sAccessTime = pTime;
 	}
+
     if (bWrite)
 	{
 		pTime = p4;
@@ -712,10 +710,7 @@ try
 		sWriteTime = pTime;
 	}
 
-	if (!SetFileTime(hFile,
-		bCreation ? &sCreationTime : 0,
-		bAccess ? &sAccessTime : 0,
-		bWrite ? &sWriteTime : 0))
+	if (!SetFileTime(hFile, bCreation ? &sCreationTime : 0, bAccess ? &sAccessTime : 0, bWrite ? &sWriteTime : 0))
 	{
 		SAVEWIN32ERROR(SetFileTime,GetLastError());
 		throw E_APIERROR;
@@ -738,7 +733,7 @@ try
 	ApiHandle hFile;
 	LARGE_INTEGER sSize;
 
-	hFile = CreateFile(pFileName.Fullpath(),0,0,0,OPEN_EXISTING,FILE_FLAG_BACKUP_SEMANTICS,0);
+	hFile = CreateFile(pFileName.Fullpath(), 0, 0, 0, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, 0);
 	if (!hFile)
 	{
 		SAVEWIN32ERROR(CreateFile,GetLastError());
@@ -747,7 +742,7 @@ try
 
 	if (fpGetFileSizeEx)
 	{
-		if (!fpGetFileSizeEx(hFile,&sSize))
+		if (!fpGetFileSizeEx(hFile, &sSize))
 		{
 			SAVEWIN32ERROR(GetFileSizeEx,GetLastError());
 			throw E_APIERROR;
@@ -829,7 +824,6 @@ try
 	FoxString pOwner(MAX_PATH);
 	FoxString pDomain(MAX_PATH);
 	CBuffer pDescBuffer;
-	FoxReference pRef;
 	ApiHandle hFile;
 	int SidType;
 	
@@ -838,7 +832,7 @@ try
 	PSECURITY_DESCRIPTOR pSecDesc;
 	PSID pOwnerId;
 
-	hFile = CreateFile(pFileName.Fullpath(),READ_CONTROL,0,0,OPEN_EXISTING,0,0);
+	hFile = CreateFile(pFileName.Fullpath(), READ_CONTROL, 0, 0, OPEN_EXISTING, 0, 0);
 	if (!hFile)
 	{
 		SAVEWIN32ERROR(CreateFile,GetLastError());
@@ -848,9 +842,9 @@ try
 	while(1)
 	{
 		pDescBuffer.Size(dwSize);
-		pSecDesc = (PSECURITY_DESCRIPTOR)pDescBuffer.Address();
+		pSecDesc = reinterpret_cast<PSECURITY_DESCRIPTOR>(pDescBuffer.Address());
 
-		if (!fpGetKernelObjectSecurity(hFile,OWNER_SECURITY_INFORMATION,pSecDesc,dwSize,&dwSize))
+		if (!fpGetKernelObjectSecurity(hFile, OWNER_SECURITY_INFORMATION, pSecDesc, dwSize, &dwSize))
 		{
 			nLastError = GetLastError();
 			if (nLastError != ERROR_INSUFFICIENT_BUFFER)
@@ -880,19 +874,19 @@ try
 	pOwner.Len(dwOwnerLen);
 	pDomain.Len(dwDomainLen);
 
-	pRef = r2;
-    pRef = pOwner;
+	FoxReference rOwner(r2);
+    rOwner = pOwner;
 
 	if (PCOUNT() >= 3)
 	{
-		pRef = r3;
-		pRef = pDomain;
+		FoxReference rDomain(r3);
+		rDomain = pDomain;
 	}
 
 	if (PCOUNT() >= 4)
 	{
-		pRef = r4;
-		pRef = SidType;
+		FoxReference rSid(r4);
+		rSid = SidType;
 	}
 
 	Return(1);
@@ -913,7 +907,7 @@ try
 	FoxString pFileName(p1);
 	FoxString pLongFileName(MAX_PATH+1);
 	
-	pLongFileName.Len(fpGetLongPathName(pFileName.Fullpath(),pLongFileName,MAX_PATH+1));
+	pLongFileName.Len(fpGetLongPathName(pFileName.Fullpath(), pLongFileName, MAX_PATH+1));
 	if (!pLongFileName.Len())
 	{
 		SAVEWIN32ERROR(GetLongPathName,GetLastError());
@@ -997,9 +991,9 @@ try
 
 	// builds the format command to be called back , %% is reduced to one % by sprintf
 	if (sProgress.bCallback)
-		sprintf(sProgress.pFileProgress,"%s(%%I64d,%%I64d,%%.2f)",(char*)pCallback);
+		sprintf(sProgress.pFileProgress,"%s(%%I64d,%%I64d,%%.2f)", (char*)pCallback);
 
-	bRetVal = MoveFileProgress(pSource,pDest,INVALID_FILE_ATTRIBUTES,bCrossVolume,&sProgress);
+	bRetVal = MoveFileProgress(pSource, pDest, INVALID_FILE_ATTRIBUTES, bCrossVolume, &sProgress);
 	Return(bRetVal);
 }
 catch(int nErrorNo)
@@ -1358,9 +1352,9 @@ try
 	if (PCOUNT() >= 4)
 	{
 		if (Vartype(p4) == 'I')
-			sBrow.pidlRoot = (LPITEMIDLIST)p4.ev_long;
+			sBrow.pidlRoot = reinterpret_cast<LPITEMIDLIST>(p4.ev_long);
 		else if (Vartype(p4) == 'N')
-			sBrow.pidlRoot = (LPITEMIDLIST)(UINT)p4.ev_real;
+			sBrow.pidlRoot = reinterpret_cast<LPITEMIDLIST>(static_cast<int>(p4.ev_real));
 		else if (Vartype(p4) == 'C')
 		{
 			if (pRootFolder)
@@ -1392,12 +1386,12 @@ try
 	}
 
 	sBrow.lpfn = pCallback.Len() ? SHBrowseCallback : 0;
-	sBrow.lParam = pCallback.Len() ? (LPARAM)&sCallback : 0;
+	sBrow.lParam = pCallback.Len() ? reinterpret_cast<LPARAM>(&sCallback) : 0;
 	sBrow.iImage = 0;
 	sBrow.hwndOwner = WTopHwnd();
 	sBrow.pszDisplayName = aDisplayName;
 	sBrow.lpszTitle = pTitle;
-	sBrow.ulFlags = (UINT)p2.ev_long;
+	sBrow.ulFlags = p2.ev_long;
 
 	pIdl = SHBrowseForFolder(&sBrow);
 
@@ -1683,7 +1677,7 @@ UINT_PTR _stdcall GetFileNameCallback(HWND hDlg, UINT uMsg, WPARAM wParam, LPARA
 				if (Vartype(lpCallback->vRetVal) == 'I')
 					return lpCallback->vRetVal.ev_long;
 				else if (Vartype(lpCallback->vRetVal) == 'N')
-					return (UINT)lpCallback->vRetVal.ev_real;
+					return static_cast<UINT_PTR>(lpCallback->vRetVal.ev_real);
 				else if (Vartype(lpCallback->vRetVal) == 'L')
 					return lpCallback->vRetVal.ev_length;
 				else
@@ -1704,7 +1698,7 @@ try
 	RESETWIN32ERRORS();
 
 	FoxArray pArray(p1);
-	FoxString pDrive(4);
+	FoxString pDrive = "X:\\";
 	ApiHandle hDriveHandle;
 	
 	STORAGE_DEVICE_NUMBER sDevNo;
@@ -1712,7 +1706,6 @@ try
 	DWORD nDriveMask, nDriveCnt = 0, nMask = 1, dwBytes;	
 
 	char pDriveEx[] = "\\\\.\\X:";
-	pDrive = "X:\\";
 
 	nDriveMask = GetLogicalDrives();
 	for (unsigned int xj = 0; xj <= 31; xj++)
@@ -1734,7 +1727,7 @@ try
 
 			pDrive[0] = (char)('A' + xj);
 			pArray(nRow,1) = pDrive;
-			pArray(nRow,2) = (int)GetDriveType(pDrive);
+			pArray(nRow,2) = GetDriveType(pDrive);
 
 			if (fpDeviceIoControl)
 			{
@@ -1747,8 +1740,7 @@ try
 					throw E_APIERROR;
 				}
 
-				bApiRet = fpDeviceIoControl(hDriveHandle,IOCTL_STORAGE_GET_DEVICE_NUMBER,0,0,
-					&sDevNo,sizeof(sDevNo),&dwBytes,0);
+				bApiRet = fpDeviceIoControl(hDriveHandle, IOCTL_STORAGE_GET_DEVICE_NUMBER, 0, 0, &sDevNo, sizeof(sDevNo), &dwBytes,0);
 				if (bApiRet)
 				{
 					pArray(nRow,3) = sDevNo.DeviceNumber;
@@ -2195,10 +2187,7 @@ try
 	HANDLE hFile;
 	DWORD dwAccess, dwShare, dwFlags;
 
-	MapFileAccessFlags(PCOUNT() >= 2 ? p2.ev_long : 0,
-									PCOUNT() >= 3 ? p3.ev_long : 2,
-									PCOUNT() >= 4 ? p4.ev_long : 0,
-									&dwAccess,&dwShare,&dwFlags);
+	MapFileAccessFlags(PCOUNT() >= 2 ? p2.ev_long : 0, PCOUNT() >= 3 ? p3.ev_long : 2, PCOUNT() >= 4 ? p4.ev_long : 0, &dwAccess, &dwShare, &dwFlags);
 
 	hFile = CreateFile(pFileName,dwAccess,dwShare,0,CREATE_ALWAYS,dwFlags,0);
 	if (!hFile)
@@ -2232,10 +2221,7 @@ try
 	// get a free entry in our file handle array
 	pFileName.Fullpath();
 
-	MapFileAccessFlags(PCOUNT() >= 2 ? p2.ev_long : 0,
-					PCOUNT() >= 3 ? p3.ev_long : 2,
-					PCOUNT() >= 4 ? p4.ev_long : 0,
-					&dwAccess,&dwShare,&dwFlags);
+	MapFileAccessFlags(PCOUNT() >= 2 ? p2.ev_long : 0, PCOUNT() >= 3 ? p3.ev_long : 2, PCOUNT() >= 4 ? p4.ev_long : 0, &dwAccess, &dwShare, &dwFlags);
 
 	hFile = CreateFile(pFileName,dwAccess,dwShare,0,OPEN_EXISTING,dwFlags,0);
 	if (!hFile)
@@ -2276,9 +2262,9 @@ try
 	else
 	{
 		bApiRet = TRUE;
-		std::list<HANDLE>::iterator Iterator;
-		for (Iterator = glFileHandles.begin(); Iterator != glFileHandles.end(); Iterator++)
-			CloseHandle(*Iterator);
+		std::list<HANDLE>::iterator iter;
+		for (iter = glFileHandles.begin(); iter != glFileHandles.end(); iter++)
+			CloseHandle(*iter);
 		glFileHandles.clear();
 	}
 
@@ -2328,8 +2314,8 @@ try
 	HANDLE hFile = reinterpret_cast<HANDLE>(p1.ev_long);
 	FoxString pData(p2,0);
 
-	if (PCOUNT() == 3 && p2.ev_length >= (DWORD)p3.ev_long)
-		dwLength = (DWORD)p3.ev_long;
+	if (PCOUNT() == 3 && p2.ev_length >= static_cast<DWORD>(p3.ev_long))
+		dwLength = p3.ev_long;
 	else
 		dwLength = p2.ev_length;
 
@@ -2438,8 +2424,8 @@ try
 	HANDLE hFile = reinterpret_cast<HANDLE>(p1.ev_long);
 	FoxString pData(p2,2);
 
-	if (PCOUNT() == 3 && pData.Len() >= (DWORD)p3.ev_long)
-		dwLength = (DWORD)p3.ev_long;
+	if (PCOUNT() == 3 && pData.Len() >= static_cast<DWORD>(p3.ev_long))
+		dwLength = p3.ev_long;
 	else
 		dwLength = pData.Len();
 
@@ -2788,10 +2774,10 @@ try
 	pArray.Dimension(nHandleCnt, 1);
 
 	int xj = 1;
-	std::list<HANDLE>::iterator Iterator;
-	for (Iterator = glFileHandles.begin(); Iterator != glFileHandles.end(); Iterator++)
+	std::list<HANDLE>::iterator iter;
+	for (iter = glFileHandles.begin(); iter != glFileHandles.end(); iter++)
 	{
-		pArray(xj) = reinterpret_cast<int>(*Iterator);
+		pArray(xj) = *iter;
 		xj++;
 	}
 

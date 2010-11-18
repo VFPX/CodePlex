@@ -1,18 +1,18 @@
 #define _WINSOCKAPI_ // we're using winsock2 .. so this is neccessary to exclude winsock.h 
 #define _WIN32_DCOM
 
-#include "windows.h"
-#include "stdio.h"
+#include <windows.h>
+#include <stdio.h>
+#include <list>
 
 #include "pro_ext.h"
 #include "vfp2c32.h"
 #include "vfp2cutil.h"
 #include "vfp2ccom.h"
-#include "vfpmacros.h"
 #include "vfp2ccppapi.h"
 #include "vfp2chelpers.h"
 #include "vfp2ccomcall.h"
-#include <list>
+#include "vfpmacros.h"
 
 // static list<RegisteredComDll*> glRegisteredComDlls;
 static PLOADTYPELIBEX fpLoadTypeLibEx = 0;
@@ -33,7 +33,7 @@ try
 	FoxVariable pTempVar("__VFP2C_FLL_FILENAME", false);
 	FoxString pFllFileName(MAX_PATH);
 
-	pFllFileName.Len(GetModuleFileName(ghModule, pFllFileName, MAX_PATH));
+	pFllFileName.Len(GetModuleFileName(ghModule, pFllFileName, pFllFileName.Size()));
 	if (!pFllFileName.Len())
 	{
 		ADDWIN32ERROR(GetModuleFileName,GetLastError());
@@ -84,7 +84,7 @@ try
 		throw E_INVALIDPARAMS;
 
 	sprintfex(aCommand,"INT(SYS(3095,%S))",(char*)pObject);
-	Evaluate(vDisp,aCommand);
+	vDisp.Evaluate(aCommand);
 	pDisp = reinterpret_cast<IDispatch*>(vDisp->ev_long);
 
 	hr = pDisp->QueryInterface(IID_IUnknown,(void**)&pUnk);
@@ -228,7 +228,7 @@ try
 	LPGUID pGuid;
 	wchar_t aGuidString[GUID_STRING_LEN];
 
-	if (Vartype(p1) == 'C' && p1.ev_length == sizeof(GUID))
+	if (Vartype(p1) == 'C' && Len(p1) == sizeof(GUID))
 		pGuid = (LPGUID)(void*)pClsId;
 	else if (Vartype(p1) == 'I')
 		pGuid = (LPGUID)p1.ev_long;
@@ -264,7 +264,7 @@ try
 
 	// convert GUID1
 	if (Vartype(p1) == 'C')
-	{	if (p1.ev_length == sizeof(GUID))
+	{	if (Len(p1) == sizeof(GUID))
 			pGuid1 = (LPGUID)(void*)pGuidParm1;
 		else
 		{
@@ -289,7 +289,7 @@ try
 	// convert GUID2
 	if (Vartype(p2) == 'C')
 	{
-		if (p2.ev_length == sizeof(GUID))
+		if (Len(p2) == sizeof(GUID))
 			pGuid2 = (LPGUID)(void*)pGuidParm2;
 		else
 		{
@@ -377,15 +377,14 @@ try
 
 	HRESULT hr;
 	DWORD nRotKey = 0;
-	int nErrorNo = 0;
 	IUnknown *pUnk = 0;
 	FoxValue vUnk;
 	CLSID sClsId;
 	char aCommand[VFP2C_MAX_CALLBACKBUFFER];
 
 	sprintfex(aCommand,"INT(SYS(3095,%S))",(char*)pObject);
-	Evaluate(vUnk,aCommand);
-	pUnk = reinterpret_cast<IDispatch*>(vUnk->ev_long);
+	vUnk.Evaluate(aCommand);
+	pUnk = reinterpret_cast<IUnknown*>(vUnk->ev_long);
 
 	if (!pUnk)
 	{
@@ -400,7 +399,7 @@ try
 		throw E_APIERROR;
 	}
 
-	hr = RegisterActiveObject(pUnk,sClsId,ACTIVEOBJECT_STRONG,&nRotKey);
+	hr = RegisterActiveObject(pUnk, sClsId, ACTIVEOBJECT_STRONG, &nRotKey);
 	if (FAILED(hr))
 	{
 		SAVEWIN32ERROR(RegisterActiveObject,hr);
@@ -418,14 +417,12 @@ catch(int nErrorNo)
 void _fastcall RevokeActiveObjectLib(ParamBlk *parm)
 {
 	HRESULT hr;
-	hr = RevokeActiveObject((DWORD)p1.ev_long,0);
+	hr = RevokeActiveObject(p1.ev_long, 0);
 	if (FAILED(hr))
 	{
-		SAVEWIN32ERROR(RevokeActiveObject,hr);
-		Return(-1);
-		return;
+		SAVEWIN32ERROR(RevokeActiveObject, hr);
+		RaiseError(E_APIERROR);
 	}
-	Return(1);
 }
 
 void _fastcall RegisterObjectAsFileMoniker(ParamBlk *parm)
@@ -448,7 +445,7 @@ try
 	char aCommand[VFP2C_MAX_CALLBACKBUFFER];
 
 	sprintfex(aCommand,"INT(SYS(3095,%S))",(char*)pObject);
-	Evaluate(vUnk,aCommand);
+	vUnk.Evaluate(aCommand);
 	pUnk = reinterpret_cast<IUnknown*>(vUnk->ev_long);
 	
 	if (!pUnk)
@@ -921,8 +918,8 @@ try
 		else
 			nParmTypeCount = 0;
 
-		Value sParmType;
-		Value sParmBase;
+		FoxValue sParmType;
+		FoxValue sParmBase;
 		VARTYPE vType = VT_EMPTY;
 		int nBase = 1;
 
@@ -931,18 +928,18 @@ try
 			
 			if (nParmTypeCount >= xj)
 			{
-				pParmTypes(xj,1).Load(sParmType);
+				sParmType = pParmTypes(xj,1);
 
-				if (Vartype(sParmType) == 'N')
-					vType = (VARTYPE)(sParmType.ev_long);
+				if (sParmType.Vartype() == 'N')
+					vType = (VARTYPE)(sParmType->ev_long);
 				else
 					vType = VT_EMPTY;
 
 				if (nDims == 2)
 				{
-					pParmTypes(xj,2).Load(sParmBase);
-					if (Vartype(sParmBase) == 'N')
-						nBase = sParmBase.ev_long;
+					sParmBase = pParmTypes(xj,2);
+					if (sParmBase.Vartype() == 'N')
+						nBase = sParmBase->ev_long;
 					else
 						nBase = 1;
 				}
@@ -979,7 +976,7 @@ try
 	FoxString pResultObject(p4);
 	FoxWString pResultMethod(p5);
 	LCID nLocale = PCOUNT() >= 6 && p6.ev_long ? (LCID)p6.ev_long : LOCALE_USER_DEFAULT;
-	DWORD dwContext = PCOUNT() == 7 ? (DWORD)p7.ev_long : CLSCTX_INPROC_SERVER | CLSCTX_LOCAL_SERVER;
+	DWORD dwContext = PCOUNT() == 7 ? p7.ev_long : CLSCTX_INPROC_SERVER | CLSCTX_LOCAL_SERVER;
 	
 	IUnknown *pUnk;
 	char aCommand[VFP2C_MAX_CALLBACKBUFFER];
@@ -1007,7 +1004,7 @@ try
 		nParams = pParameters.ALen(nDims);
 		pCall->SetParameterCount(nParams);
 
-		Value sParam;
+		FoxValue sParam;
 		FoxString pType;
 		VARTYPE vType = VT_EMPTY;
 		int nBase = 1;
@@ -1016,7 +1013,7 @@ try
 		{
 			if (nDims == 2)
 			{
-				pParameters(xj,2).Load(pType);
+				pType = pParameters(xj,2);
 				if (pType.Len() == 0)
 					vType = VT_EMPTY;
 				else if (pType.Len() == 1)
@@ -1037,7 +1034,7 @@ try
 				else
 					throw E_INVALIDPARAMS;
 			}
-			pParameters(xj,1).Load(sParam);
+			sParam = pParameters(xj,1);
 			//pCall->MarshalParameter(xj, sParam, vType, nBase);
 		}
 	}

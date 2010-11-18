@@ -35,16 +35,16 @@ typedef struct _DBGALLOCINFO {
 	int nRetVal; \
 	unsigned short nRows, nDimensions; \
 	pAddress = (pType)p1.ev_long; \
-	nRows = (unsigned short)ALEN(r2,1); \
-	nDimensions = (unsigned short)ALEN(r2,2); \
+	nRows = (unsigned short)_ALen(r2.l_NTI, 1); \
+	nDimensions = (unsigned short)_ALen(r2.l_NTI, 2); \
 	nDimensions = nDimensions ? nDimensions : 1; \
-	RESETARRAY(r2,nDimensions);
+	ResetArrayLocator(r2, nDimensions);
 
 #define BEGIN_ARRAYGET() \
-	while(++ADIM(r2) <= nDimensions) \
+	while(++r2.l_sub2 <= nDimensions) \
 	{ \
-		AROW(r2) = 0; \
-		while(++AROW(r2) <= nRows) \
+		r2.l_sub1 = 0; \
+		while(++r2.l_sub1 <= nRows) \
 		{
 
 #define END_ARRAYGET(nIter) \

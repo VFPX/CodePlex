@@ -1,13 +1,11 @@
-#include "pro_ext.h"
-#include "vfp2c32.h"
-#include "vfp2cutil.h"
-#include "vfpmacros.h"
-#include "vfp2ccppapi.h"
-
-#include <assert.h>
 #include <math.h>
 #include <new>
 #include <stdio.h>
+
+#include "pro_ext.h"
+#include "vfp2c32.h"
+#include "vfp2cutil.h"
+#include "vfp2ccppapi.h"
 
 static TimeZoneInfo gsTimeZone;
 
@@ -47,192 +45,67 @@ void _stdcall FindVar(char *pVarname, Locator &sVar) throw(int)
 	FindVar(nVarNti, sVar);
 }
 
+void _stdcall StoreObjectRef(char *pName, NTI &nVarNti, Value &sObject)
+{
+	Locator lVar;
+	Value vTmpObject = {'0'};
+	if (nVarNti)
+	{
+		FindVar(nVarNti, lVar);
+		// increment reference count by calling evaluate
+		Evaluate(vTmpObject, pName);
+		Store(lVar, sObject);
+		ObjectRelease(sObject);
+	}
+	else
+	{
+		nVarNti = NewVar(pName, lVar, true);
+		Store(lVar, sObject);
+		ObjectRelease(sObject);
+	}
+}
+
+void _stdcall ReleaseObjectRef(char *pName, NTI nVarNti)
+{
+	Value vObject = {'0'};
+	if (nVarNti)
+	{
+		_Evaluate(&vObject, pName);
+		_Release(nVarNti);
+	}
+}
+
 /* implementation of C++ wrapper classes over FoxPro datatypes */
-FoxValue::~FoxValue()
-{
-	if (Vartype() == 'C')
-	{
-		UnlockHandle();
-		FreeHandle();
-	}
-	else if (Vartype() == 'O')
-	{
-		UnlockObject();
-		FreeObject();
-	}
-}
-
-FoxValue& FoxValue::Load(Locator& pLoc)
-{
-	int nErrorNo;
-	if (nErrorNo = _Load(&pLoc,&m_Value))
-		throw nErrorNo;
-	return *this;
-}
-
-FoxValue& FoxValue::Store(Locator& pLoc)
-{
-	int nErrorNo;
-	if (nErrorNo = _Store(&pLoc, &m_Value))
-		throw nErrorNo;
-	return *this;
-}
-
-FoxValue& FoxValue::AllocHandle(int nBytes)
-{
-	assert(m_Value.ev_handle == 0);
-	m_Value.ev_handle = _AllocHand(nBytes);
-	if (m_Value.ev_handle == 0)
-		throw E_INSUFMEMORY;
-	return *this;
-}
-
-FoxValue& FoxValue::FreeHandle()
-{
-	if (m_Value.ev_handle)
-	{
-		_FreeHand(m_Value.ev_handle);
-		m_Value.ev_handle = 0;
-	}
-	return *this;
-}
-
-char* FoxValue::HandleToPtr()
-{
-	assert(Vartype() == 'C' && m_Value.ev_handle);
-	return reinterpret_cast<char*>(_HandToPtr(m_Value.ev_handle));
-}
-
-FoxValue& FoxValue::LockHandle()
-{
-	if (m_Locked == false)
-	{
-		assert(Vartype() == 'C' && m_Value.ev_handle);
-		_HLock(m_Value.ev_handle);
-		m_Locked = true;
-	}
-	return *this;
-}
-
-FoxValue& FoxValue::UnlockHandle()
-{
-	if (m_Locked)
-	{
-		assert(Vartype() == 'C' && m_Value.ev_handle);
-		_HUnLock(m_Value.ev_handle);
-		m_Locked = false;
-	}
-	return *this;
-}
-
-FoxValue& FoxValue::SetHandleSize(unsigned long nSize)
-{
-	assert(Vartype() == 'C' && m_Value.ev_handle);
-	if (_SetHandSize(m_Value.ev_handle, nSize) == 0)
-		throw E_INSUFMEMORY;
-	return *this;
-}
-
-FoxValue& FoxValue::ExpandHandle(int nBytes)
-{
-	assert(Vartype() == 'C' && m_Value.ev_handle);
-	if (_SetHandSize(m_Value.ev_handle, m_Value.ev_length + nBytes) == 0)
-		throw E_INSUFMEMORY;
-	return *this;
-}
-
-FoxValue& FoxValue::LockObject()
-{
-	assert(Vartype() == 'O' && m_Value.ev_object);
-	if (m_Locked == false)
-	{
-		int nErrorNo = _ObjectReference(&m_Value);
-		if (nErrorNo)
-			throw nErrorNo;
-		m_Locked = true;
-	}
-	return *this;
-}
-
-FoxValue& FoxValue::UnlockObject()
-{
-	if (m_Locked)
-	{
-		assert(Vartype() == 'O' && m_Value.ev_object);
-		int nErrorNo = _ObjectRelease(&m_Value);
-		if (nErrorNo)
-			throw nErrorNo;
-		m_Locked = false;
-	}
-	return *this;
-}
-
-FoxValue& FoxValue::FreeObject()
-{
-	if (m_Value.ev_object)
-	{
-		assert(Vartype() == 'O');
-		_FreeObject(&m_Value);
-		m_Value.ev_object = 0;
-	}
-	return *this;
-}
-
-void FoxValue::Return()
-{
-	assert(m_Locked == false);
-	_RetVal(&m_Value);
-	 m_Value.ev_type = '0';
-}
-
-void FoxValue::Release()
-{
-	if (Vartype() == 'C')
-	{
-		UnlockHandle();
-		FreeHandle();
-	}
-	else if (Vartype() == 'O')
-	{
-		UnlockObject();
-		FreeObject();
-	}
-	m_Value.ev_type = '0';
-}
 
 /* FoxReference */
-FoxReference::FoxReference(Locator &pLoc)
-{
-	m_pLoc = &pLoc;
-}
-
-FoxReference& FoxReference::operator=(const Value &pVal)
+FoxReference& FoxReference::operator=(FoxValue &pValue)
 {
 	int nErrorNo;
-	if (m_pLoc->l_where == -1)
+	if (m_Loc.l_where == -1)
 	{
-		if (nErrorNo = _Store(m_pLoc,const_cast<Value*>(&pVal)))
+		if (nErrorNo = _Store(&m_Loc, pValue))
 			throw nErrorNo;
 	}
 	else
 	{
-		if (nErrorNo = _DBReplace(m_pLoc,const_cast<Value*>(&pVal)))
+		if (nErrorNo = _DBReplace(&m_Loc, pValue))
 			throw nErrorNo;
 	}
 	return *this;
 }
 
-FoxReference& FoxReference::operator=(FoxString &pString)
+FoxReference& FoxReference::operator=(Locator &pLoc)
 {
 	int nErrorNo;
-	if (m_pLoc->l_where == -1)
+	FoxValue pValue(pLoc);
+	if (m_Loc.l_where == -1)
 	{
-		if (nErrorNo = _Store(m_pLoc,pString))
+		if (nErrorNo = _Store(&m_Loc, pValue))
 			throw nErrorNo;
 	}
 	else
 	{
-		if (nErrorNo = _DBReplace(m_pLoc,pString))
+		if (nErrorNo = _DBReplace(&m_Loc, pValue))
 			throw nErrorNo;
 	}
 	return *this;
@@ -245,14 +118,14 @@ FoxReference& FoxReference::operator=(int nValue)
 	vTmp.ev_type = 'I';
 	vTmp.ev_width = 11;
 	vTmp.ev_long = nValue;
-	if (m_pLoc->l_where == -1)
+	if (m_Loc.l_where == -1)
 	{
-		if (nErrorNo = _Store(m_pLoc,&vTmp))
+		if (nErrorNo = _Store(&m_Loc, &vTmp))
 			throw nErrorNo;
 	}
 	else
 	{
-		if (nErrorNo = _DBReplace(m_pLoc,&vTmp))
+		if (nErrorNo = _DBReplace(&m_Loc, &vTmp))
 			throw nErrorNo;
 	}
 	return *this;
@@ -266,14 +139,14 @@ FoxReference& FoxReference::operator=(unsigned long nValue)
 	vTmp.ev_width = 10;
 	vTmp.ev_length = 0;
 	vTmp.ev_real = static_cast<double>(nValue);
-	if (m_pLoc->l_where == -1)
+	if (m_Loc.l_where == -1)
 	{
-		if (nErrorNo = _Store(m_pLoc,&vTmp))
+		if (nErrorNo = _Store(&m_Loc, &vTmp))
 			throw nErrorNo;
 	}
 	else
 	{
-		if (nErrorNo = _DBReplace(m_pLoc,&vTmp))
+		if (nErrorNo = _DBReplace(&m_Loc, &vTmp))
 			throw nErrorNo;
 	}
 	return *this;
@@ -287,14 +160,14 @@ FoxReference& FoxReference::operator=(double nValue)
 	vTmp.ev_width = 20;
 	vTmp.ev_length = 16;
 	vTmp.ev_real = nValue;
-	if (m_pLoc->l_where == -1)
+	if (m_Loc.l_where == -1)
 	{
-		if (nErrorNo = _Store(m_pLoc,&vTmp))
+		if (nErrorNo = _Store(&m_Loc, &vTmp))
 			throw nErrorNo;
 	}
 	else
 	{
-		if (nErrorNo = _DBReplace(m_pLoc,&vTmp))
+		if (nErrorNo = _DBReplace(&m_Loc, &vTmp))
 			throw nErrorNo;
 	}
 	return *this;
@@ -305,217 +178,80 @@ FoxReference& FoxReference::operator=(bool bValue)
 	int nErrorNo;
 	Value vTmp;
 	vTmp.ev_type = 'L';
-	vTmp.ev_length = (int)bValue;
-	if (m_pLoc->l_where == -1)
+	vTmp.ev_length = bValue ? 1 : 0;
+	if (m_Loc.l_where == -1)
 	{
-		if (nErrorNo = _Store(m_pLoc,&vTmp))
+		if (nErrorNo = _Store(&m_Loc, &vTmp))
 			throw nErrorNo;
 	}
 	else
 	{
-		if (nErrorNo = _DBReplace(m_pLoc,&vTmp))
+		if (nErrorNo = _DBReplace(&m_Loc, &vTmp))
 			throw nErrorNo;
 	}
 	return *this;
 }
 
-FoxReference& FoxReference::Load(Value &pVal)
-{
-	int nErrorNo;
-	if (nErrorNo = _Load(m_pLoc, &pVal))
-		throw nErrorNo;
-	return *this;
-}
-
-/* FoxVariable */
-FoxVariable::FoxVariable()
-{
-	m_Nti = 0;
-}
-
-FoxVariable::FoxVariable(char *pName)
-{
-	m_Nti = 0;
-	Attach(pName);
-}
-
-FoxVariable::FoxVariable(char *pName, bool bPublic)
-{
-	m_Nti = 0;
-	New(pName, bPublic);
-}
-
-FoxVariable::~FoxVariable()
-{
-	Release();
-}
-
-void FoxVariable::New(char *pName, bool bPublic)
-{
-	this->Release();
-	m_Loc.l_subs = 0;
-    m_Nti = _NewVar(pName, &m_Loc, bPublic ? NV_PUBLIC : NV_PRIVATE);
-	if (m_Nti < 0)
-		throw -m_Nti;
-}
-
-void FoxVariable::Attach(char *pName)
-{
-	this->Release();
-	m_Nti = _NameTableIndex(pName);
-	if (m_Nti == -1)
-		throw E_VARIABLENOTFOUND;
-
-	if (!_FindVar(m_Nti,-1, &m_Loc))
-		throw E_VARIABLENOTFOUND;
-}
-
-void FoxVariable::Detach()
-{
-	m_Nti = 0;
-}
-
-void FoxVariable::Release()
-{
-	if (m_Nti)
-	{
-		_Release(m_Nti);
-		m_Nti = 0;
-	}
-}
-
-FoxVariable& FoxVariable::operator=(const Value &pVal)
-{
-	int nErrorNo;
-	if (nErrorNo = _Store(&m_Loc,const_cast<Value*>(&pVal)))
-		throw nErrorNo;
-	return *this;
-}
-
-FoxVariable& FoxVariable::operator=(FoxString &pString)
-{
-	int nErrorNo;
-	if (nErrorNo = _Store(&m_Loc,pString))
-		throw nErrorNo;
-	return *this;
-}
-
-FoxVariable& FoxVariable::operator=(int nValue)
-{
-	int nErrorNo;
-	Value vTmp;
-	vTmp.ev_type = 'I';
-	vTmp.ev_width = 11;
-	vTmp.ev_long = nValue;
-	if (nErrorNo = _Store(&m_Loc,&vTmp))
-		throw nErrorNo;
-	return *this;
-}
-
-FoxVariable& FoxVariable::operator=(unsigned long nValue)
-{
-	int nErrorNo;
-	Value vTmp;
-	vTmp.ev_type = 'N';
-	vTmp.ev_width = 10;
-	vTmp.ev_length = 0;
-	vTmp.ev_real = static_cast<double>(nValue);
-	if (nErrorNo = _Store(&m_Loc,&vTmp))
-		throw nErrorNo;
-	return *this;
-}
-
-FoxVariable& FoxVariable::operator=(double nValue)
-{
-	int nErrorNo;
-	Value vTmp;
-	vTmp.ev_type = 'N';
-	vTmp.ev_width = 20;
-	vTmp.ev_length = 16;
-	vTmp.ev_real = nValue;
-	if (nErrorNo = _Store(&m_Loc,&vTmp))
-		throw nErrorNo;
-	return *this;
-}
-
-FoxVariable& FoxVariable::operator=(bool bValue)
-{
-	int nErrorNo;
-	Value vTmp;
-	vTmp.ev_type = 'L';
-	vTmp.ev_length = (int)bValue;
-	if (nErrorNo = _Store(&m_Loc,&vTmp))
-		throw nErrorNo;
-	return *this;
-}
-
 /* FoxString */
-FoxString::FoxString()
+FoxString::FoxString() : FoxValue('C')
 {
 	m_ParameterRef = false;
-	m_Value.ev_type = 'C';
-	m_Value.ev_handle = m_BufferSize = m_Value.ev_length = 0;
+	m_BufferSize = 0;
 	m_String = 0;
 }
 
-FoxString::FoxString(FoxString &pString)
+FoxString::FoxString(FoxString &pString) : FoxValue('C')
 {
 	m_ParameterRef = false;
-	m_Value.ev_type = 'C';
 	m_BufferSize = pString.Size();
 
 	if (m_BufferSize)
 	{
 		AllocHandle(m_BufferSize);
-		m_Value.ev_length = pString.Len();
-		m_Value.ev_width = pString.Binary() ? 0 : 1;
+		Len(pString.Len());
+		Binary(pString.Binary());
 		m_String = HandleToPtr();
-		memcpy(m_String,pString,m_Value.ev_length);
+		memcpy(m_String, pString, Len());
 	}
 	else
 	{
 		m_String = 0;
-		m_Value.ev_length = 0;
-		m_Value.ev_handle = 0;
 	}
 }
 
-FoxString::FoxString(Value &pVal)
+FoxString::FoxString(Value &pVal) : FoxValue('C')
 {
 	// nullterminate
 	if (!NullTerminateValue(pVal))
 		throw E_INSUFMEMORY;
 
-	m_Value.ev_type = 'C';
 	m_Value.ev_length = pVal.ev_length;
 	m_Value.ev_width = pVal.ev_width;
 	m_Value.ev_handle = pVal.ev_handle;
 	m_BufferSize = pVal.ev_length + 1;
+	m_ParameterRef = true;
 	LockHandle();
 	m_String = HandleToPtr();
-	m_ParameterRef = true;
 }
 
-FoxString::FoxString(Value &pVal, unsigned int nExpand)
+FoxString::FoxString(Value &pVal, unsigned int nExpand) : FoxValue('C')
 {
 	if (nExpand > 0)
 	{
 		if (!ExpandValue(pVal, nExpand))
 			throw E_INSUFMEMORY;
 	}
-	m_Value.ev_type = 'C';
 	m_Value.ev_length = pVal.ev_length;
 	m_Value.ev_width = pVal.ev_width;
 	m_Value.ev_handle = pVal.ev_handle;
 	m_BufferSize = pVal.ev_length + nExpand;
+	m_ParameterRef = true;
 	LockHandle();
 	m_String = HandleToPtr();
-	m_ParameterRef = true;
 }
 
-FoxString::FoxString(ParamBlk *pParms, int nParmNo)
+FoxString::FoxString(ParamBlk *pParms, int nParmNo) : FoxValue('C')
 {
-	m_Value.ev_type = 'C';
 	// if parameter count is equal or greater than the parameter we want
 	if (pParms->pCount >= nParmNo)
 	{
@@ -538,13 +274,12 @@ FoxString::FoxString(ParamBlk *pParms, int nParmNo)
 	}
 	// else
 	m_ParameterRef = false;
-	m_Value.ev_handle = m_Value.ev_length = m_Value.ev_width = m_BufferSize = 0;
+	m_BufferSize = 0;
 	m_String = 0;
 }
 
-FoxString::FoxString(ParamBlk *pParms, int nParmNo, unsigned int nExpand)
+FoxString::FoxString(ParamBlk *pParms, int nParmNo, unsigned int nExpand) : FoxValue('C')
 {
-	m_Value.ev_type = 'C';
 	// if parameter count is equal or greater than the parameter we want
 	if (pParms->pCount >= nParmNo)
 	{
@@ -568,11 +303,11 @@ FoxString::FoxString(ParamBlk *pParms, int nParmNo, unsigned int nExpand)
 	}
 	// else
 	m_ParameterRef = false;
-	m_Value.ev_handle = m_Value.ev_length = m_Value.ev_width = m_BufferSize = 0;
+	m_BufferSize = 0;
 	m_String = 0;
 }
 
-FoxString::FoxString(const char *pString)
+FoxString::FoxString(const char *pString) : FoxValue('C')
 {
 	m_ParameterRef = false;
 	if (pString)
@@ -589,17 +324,15 @@ FoxString::FoxString(const char *pString)
 	}
 	else
 	{
-		m_Value.ev_handle = m_Value.ev_length = m_Value.ev_width = m_BufferSize = 0;
+		m_BufferSize = 0;
 		m_String = 0;
 	}
 }
 
-FoxString::FoxString(unsigned int nBufferSize)
-{
+FoxString::FoxString(unsigned int nBufferSize) : FoxValue('C')
+   {
 	assert(nBufferSize > 0);
 	m_ParameterRef = false;
-	m_Value.ev_type = 'C';
-	m_Value.ev_length = 0;
 	AllocHandle(nBufferSize);
 	LockHandle();
 	m_String = HandleToPtr();
@@ -607,10 +340,9 @@ FoxString::FoxString(unsigned int nBufferSize)
 	*m_String = '\0';
 }
 
-FoxString::FoxString(BSTR pString, UINT nCodePage)
+FoxString::FoxString(BSTR pString, UINT nCodePage) : FoxValue('C')
 {
 	m_ParameterRef = false;
-	m_Value.ev_type = 'C';
 	if (pString)
 	{
 		unsigned int nLen = SysStringLen(pString);
@@ -630,12 +362,12 @@ FoxString::FoxString(BSTR pString, UINT nCodePage)
 	}
 	else
 	{
-		m_BufferSize = m_Value.ev_handle = m_Value.ev_length = 0;
+		m_BufferSize = 0;
 		m_String = 0;
 	}
 }
 
-FoxString::FoxString(SAFEARRAY *pArray)
+FoxString::FoxString(SAFEARRAY *pArray) : FoxValue('C')
 {
 	HRESULT hr;
 	VARTYPE vt;
@@ -654,7 +386,6 @@ FoxString::FoxString(SAFEARRAY *pArray)
 		}
 
 		m_ParameterRef = false;
-		m_Value.ev_type = 'C';
 
 		unsigned long nLen;
 		nLen = pArray->rgsabound[0].cElements;
@@ -684,7 +415,7 @@ FoxString::FoxString(SAFEARRAY *pArray)
 	}
 	else
 	{
-		m_BufferSize = m_Value.ev_handle = m_Value.ev_length = 0;
+		m_BufferSize = 0;
 		m_String = 0;
 	}
 }
@@ -731,22 +462,11 @@ FoxString& FoxString::Size(unsigned int nSize)
 	return *this;
 }
 
-bool FoxString::Binary() const
-{
-	return m_Value.ev_width == 1;
-}
-
-FoxString& FoxString::Binary(bool bBinary)
-{
-	m_Value.ev_width = bBinary ? 1 : 0;
-	return *this;
-}
-
 bool FoxString::Empty() const
 {
-	if (m_Value.ev_length && m_String)
+	if (m_String && Len())
 	{
-		char *pString = m_String;
+		const char *pString = m_String;
 		do
 		{
 			if (*pString == ' ' || *pString == '\t' || *pString == '\n' || *pString == '\r')
@@ -761,16 +481,14 @@ bool FoxString::Empty() const
 FoxString& FoxString::StrnCpy(const char *pString, unsigned int nMaxLen)
 {
 	assert(nMaxLen < m_BufferSize);
-	m_Value.ev_length = strncpyex(m_String, pString, nMaxLen);
-	return *this;
+	return Len(strncpyex(m_String, pString, nMaxLen));
 }
 
 FoxString& FoxString::CopyBytes(const unsigned char *pBytes, unsigned int nLen)
 {
 	assert(nLen <= m_BufferSize);
 	memcpy(m_String, pBytes, nLen);
-	m_Value.ev_length = nLen;
-	return *this;
+	return Len(nLen);
 }
 
 FoxString& FoxString::CopyDblString(const char *pDblString, unsigned int nMaxLen)
@@ -779,17 +497,15 @@ FoxString& FoxString::CopyDblString(const char *pDblString, unsigned int nMaxLen
 	{
 		unsigned int nLen = strdblnlen(pDblString, nMaxLen);
 		ExtendBuffer(nLen);
-		CopyBytes(reinterpret_cast<const unsigned char*>(pDblString), nLen);
+		return CopyBytes(reinterpret_cast<const unsigned char*>(pDblString), nLen);
 	}
 	else
-		Len(0);
-	return *this;
+		return Len(0);
 }
 
 FoxString& FoxString::StringLen()
 {
-	m_Value.ev_length = strnlen(m_String,m_BufferSize);
-	return *this;
+	return Len(strnlen(m_String, m_BufferSize));
 }
 
 unsigned int FoxString::StringDblLen()
@@ -831,7 +547,6 @@ unsigned int FoxString::StringDblCount()
 
 void FoxString::Return()
 {
-	assert(m_Value.ev_handle);
 	UnlockHandle();
 	_RetVal(&m_Value);
 	m_Value.ev_handle = 0;
@@ -841,24 +556,24 @@ void FoxString::Return()
 FoxString& FoxString::Alltrim()
 {
 	 /* nonvalid or empty string */
-	if (!m_String || m_Value.ev_length == 0)
+	if (m_String == 0 || Len() == 0)
 		return *this;
 
 	char *pStart, *pEnd;
 	pStart = m_String;
-	pEnd = m_String + m_Value.ev_length; /* compute end of string */
+	pEnd = m_String + Len();	/* compute end of string */
 
 	while (*pStart == ' ') pStart++; /* skip over spaces at beginning of string */
 
 	if (pStart == pEnd) /* entire string consisted of spaces */
 	{
 		*m_String = '\0';
-		m_Value.ev_length = 0;
+		Len(0);
 		return *this;
 	}
 
 	while (*--pEnd == ' '); /* find end of valid characters */
-	m_Value.ev_length = pEnd - pStart + 1; // set new length
+	Len(pEnd - pStart + 1); // set new length
 	if (pStart != m_String) /* need to move string back */
 	{
 		char *pString = m_String;
@@ -875,7 +590,7 @@ FoxString& FoxString::Alltrim()
 /* to be done */
 FoxString& FoxString::LTrim()
 {
-	if (!m_String || m_Value.ev_length == 0)
+	if (m_String == 0 || Len() == 0)
 		return *this;
 
 	char *pStart = m_String;
@@ -885,21 +600,21 @@ FoxString& FoxString::LTrim()
 	{
 		unsigned int nBytes = pStart - m_String;
 		m_Value.ev_length -= nBytes;
-		memmove(m_String,pStart,m_Value.ev_length+1);
+		memmove(m_String,pStart, Len() + 1);
 	}
 	return *this;
 }
 
 FoxString& FoxString::RTrim()
 {
-	if (!m_String || m_Value.ev_length == 0)
+	if (m_String == 0 || Len() == 0)
 		return *this;
 
-	char *pEnd = m_String + m_Value.ev_length;
+	char *pEnd = m_String + Len();
 	while (*--pEnd == ' '); /* skip back over spaces at end of string */
 
-	m_Value.ev_length = pEnd - m_String + 1;
-	m_String[m_Value.ev_length] = '\0';
+	Len(pEnd - m_String + 1);
+	m_String[Len()] = '\0';
 	return *this;
 }
 
@@ -922,20 +637,11 @@ FoxString& FoxString::Prepend(const char *pString)
 	unsigned int nLen;
 	nLen = strlen(pString);
 	Size(nLen + m_BufferSize);
-	memmove(m_String+nLen, m_String, m_Value.ev_length);
+	memmove(m_String + nLen, m_String, Len());
 	memcpy(m_String, pString, nLen);
 	m_Value.ev_length += nLen;
 	return *this;
 }
-
-/* to be done */
-/*
-FoxString& FoxString::ChrTran(char *pSearch, char *pReplacement)
-{
-
-	return *this;
-}
-*/
 
 FoxString& FoxString::Strtran(FoxString &sSearchFor, FoxString &sReplacement)
 {
@@ -1000,14 +706,6 @@ unsigned int FoxString::At(char cSearchFor, unsigned int nOccurence, unsigned in
 	return 0;
 }
 
-/* to be done */
-/*
-unsigned int FoxString::RAt(char cSearchFor, unsigned int nOccurence = 1, unsigned int nMax = 0) const
-{
-	return 0;
-}
-*/
-
 unsigned int FoxString::GetWordCount(const char pSeperator) const
 {
 	assert(m_String);
@@ -1067,18 +765,9 @@ FoxString& FoxString::Fullpath()
 	char aBuffer[VFP2C_MAX_CALLBACKFUNCTION];
 
 	_snprintf(aBuffer,VFP2C_MAX_CALLBACKFUNCTION,"FULLPATH('%s')+CHR(0)",m_String);
-	Evaluate(vFullpath,aBuffer);
+	::Evaluate(vFullpath,aBuffer);
 
-	UnlockHandle();
-	if (!m_ParameterRef)
-		FreeHandle();
-
-	m_ParameterRef = false;
-	m_Value.ev_handle = vFullpath.ev_handle;
-	m_BufferSize = m_Value.ev_length = vFullpath.ev_length - 1;
-	LockHandle();
-	m_String = HandleToPtr();
-	return *this;
+	return Attach(vFullpath);
 }
 
 bool FoxString::ICompare(char *pString) const
@@ -1129,7 +818,7 @@ SAFEARRAY* FoxString::ToU1SafeArray() const
 	return pArray;
 }
 
-void FoxString::Attach(Value &pValue, unsigned int nExpand)
+FoxString& FoxString::Attach(Value &pValue, unsigned int nExpand)
 {
 	assert(pValue.ev_type == 'C');
 
@@ -1142,18 +831,20 @@ void FoxString::Attach(Value &pValue, unsigned int nExpand)
 		}
 	}
 
+	Release();
+
 	m_Value.ev_handle = pValue.ev_handle;
 	m_Value.ev_width = pValue.ev_width;
 	LockHandle();
 	m_String = HandleToPtr();
 	m_Value.ev_length = pValue.ev_length;
 	m_BufferSize = pValue.ev_length + nExpand;
+	return *this;
 }
 
 void FoxString::Detach()
 {
-	if (m_Value.ev_handle)
-		UnlockHandle();
+	UnlockHandle();
 	m_BufferSize = m_Value.ev_length = m_Value.ev_handle = 0;
 	m_String = 0;
 }
@@ -1164,20 +855,69 @@ void FoxString::Detach(Value &pValue)
 	pValue.ev_handle = m_Value.ev_handle;
 	pValue.ev_length = m_Value.ev_length;
 	pValue.ev_width = m_Value.ev_width;
-	if (m_Value.ev_handle)
-		UnlockHandle();
+	UnlockHandle();
 	m_BufferSize = m_Value.ev_length = m_Value.ev_handle = 0;
 	m_String = 0;
 }
 
 /* Operator overloading */
+FoxString& FoxString::operator=(Locator &pLoc)
+{
+	Release();
+	int nErrorNo;
+	if (nErrorNo = _Load(&pLoc, &m_Value))
+		throw nErrorNo;
+	return *this;	
+}
+
+FoxString& FoxString::operator=(FoxValue &pValue)
+{
+	if (pValue.Vartype() != 'C')
+		throw E_TYPECONFLICT;
+
+	unsigned int nSize = pValue.GetHandleSize(); 
+	if (Size() < nSize)
+		Size(nSize);
+
+	Len(::Len(pValue));
+	Binary(pValue->ev_width == 1);
+	LockHandle();
+    m_String = HandleToPtr();
+	memcpy(m_String, pValue.HandleToPtr(), Len());
+	return *this;
+}
+
+FoxString& FoxString::operator<<(FoxObject &pObject)
+{
+	Release();
+	int nErrorNo;
+	if (nErrorNo = _GetObjectProperty(&m_Value, pObject, pObject.Property()))
+		throw nErrorNo;
+	if (Vartype() == 'C')
+	{
+		m_BufferSize = Len();
+		LockHandle();
+		m_String = HandleToPtr();
+	}
+	else if (Vartype() == 'O')
+	{
+        FreeObject();
+		throw E_TYPECONFLICT;
+	}
+	else
+		throw E_TYPECONFLICT;
+	return *this;
+}
+
 FoxString& FoxString::operator=(FoxString &pString)
 {
-	assert(&pString != this);
+	if (&pString == this)
+		return *this;
+
 	if (m_BufferSize < pString.Size())
 		Size(pString.Size());
 
-	memcpy(m_String,pString,pString.Len()+1);
+	memcpy(m_String, pString, pString.Size());
 	return *this;
 }
 
@@ -1188,38 +928,17 @@ FoxString& FoxString::operator=(const char *pString)
 		unsigned int nLen = strlen(pString) + 1;
 		if (m_BufferSize < nLen)
 			Expand(nLen - m_BufferSize);
-		memcpy(m_String,pString,nLen);
-		m_Value.ev_length = nLen - 1;
+		memcpy(m_String, pString, nLen);
+		Len(nLen - 1);
 	}
 	else
 	{
-		m_Value.ev_length = 0;
+		Len(0);
 		if (m_String)
 			*m_String = '\0';
 	}
 	return *this;
 }
-
-FoxString& FoxString::operator=(const Value &pVal)
-{
-	assert(pVal.ev_type == 'C');
-
-	Release();
-
-	m_Value.ev_handle = pVal.ev_handle;
-	m_BufferSize = m_Value.ev_length = pVal.ev_length;
-	m_Value.ev_width = pVal.ev_width;
-	
-	if (!NullTerminateValue(m_Value))
-	{
-		FreeHandle();
-		throw E_INSUFMEMORY;
-	}
-	LockHandle();
-    m_String = HandleToPtr();
-	return *this;
-}
-
 
 FoxString& FoxString::operator=(const wchar_t *pWString)
 {
@@ -1259,10 +978,10 @@ FoxString& FoxString::operator=(const wchar_t *pWString)
 FoxString& FoxString::operator+=(const char *pString)
 {
 	unsigned int nLen = strlen(pString) + 1;
-	int nDiff = m_BufferSize - (m_Value.ev_length + nLen);
+	int nDiff = m_BufferSize - (Len() + nLen);
 	if (nDiff < 0)
 		Expand(m_BufferSize + (-nDiff));
-	memcpy(m_String + m_Value.ev_length,pString,nLen);
+	memcpy(m_String + Len(), pString, nLen);
 	m_Value.ev_length += (nLen - 1);
 	return *this;
 }
@@ -1270,19 +989,19 @@ FoxString& FoxString::operator+=(const char *pString)
 FoxString& FoxString::operator+=(FoxString &pString)
 {
 	unsigned int nLen = pString.Len() + 1;
-	int nDiff = m_BufferSize - (m_Value.ev_length + nLen);
+	int nDiff = m_BufferSize - (Len() + nLen);
 	if (nDiff < 0)
 		Expand(m_BufferSize + (-nDiff));
-	memcpy(m_String + m_Value.ev_length,pString,nLen);
+	memcpy(m_String + Len(), pString, nLen);
 	m_Value.ev_length += (nLen - 1);
 	return *this;
 }
 
 FoxString& FoxString::operator+=(const char pChar)
 {
-	if ((m_Value.ev_length + 1) > m_BufferSize)
+	if ((Len() + 1) > m_BufferSize)
 		Expand(1);
-	char *pTmp = m_String + m_Value.ev_length;
+	char *pTmp = m_String + Len();
 	*pTmp++ = pChar;
 	*pTmp = '\0';
 	m_Value.ev_length++;
@@ -1292,17 +1011,17 @@ FoxString& FoxString::operator+=(const char pChar)
 bool FoxString::operator==(const char *pString) const
 {
 	assert(m_String && pString);
-	return strcmp(m_String,pString) == 0;
+	return strcmp(m_String, pString) == 0;
 }
 
 bool FoxString::operator==(FoxString &pString) const
 {
 	if (&pString == this)
 		return true;
-	else if (m_Value.ev_length != pString.Len())
+	else if (Len() != pString.Len())
 		return false;
 	else
-		return memcmp(m_String,pString,m_Value.ev_length) == 0;
+		return memcmp(m_String, pString, Len()) == 0;
 }
 
 /* FoxWString */
@@ -1484,26 +1203,20 @@ FoxWString& FoxWString::operator=(FoxString& pString)
 }
 
 /* FoxDate */
-FoxDate::FoxDate(Value &pVal)
+FoxDate::FoxDate(Value &pVal) : FoxValue('D')
 {
-	m_Value.ev_type = 'D';
+	assert(::Vartype(pVal) == 'D');
 	m_Value.ev_real = pVal.ev_real;
 }
 
-FoxDate::FoxDate(SYSTEMTIME &sTime)
+FoxDate::FoxDate(SYSTEMTIME &sTime) : FoxValue('D')
 {
 	SystemTimeToDate(sTime);
 }
 
-FoxDate::FoxDate(FILETIME &sTime)
+FoxDate::FoxDate(FILETIME &sTime) : FoxValue('D')
 {
 	FileTimeToDate(sTime);
-}
-
-FoxDate& FoxDate::operator=(double nDate)
-{
-	m_Value.ev_real = nDate;
-	return *this;
 }
 
 FoxDate& FoxDate::operator=(const SYSTEMTIME &sTime)
@@ -1568,7 +1281,7 @@ void FoxDate::DateToSystemTime(SYSTEMTIME &sTime)
 	int lnA, lnB, lnC, lnD, lnE, lnM;
 	DWORD lnDays;
 
-	lnDays = (DWORD)floor(m_Value.ev_real);
+	lnDays = static_cast<DWORD>(floor(m_Value.ev_real));
 
 	lnA = lnDays + 32044;
 	lnB = (4 * lnA + 3) / 146097;
@@ -1611,34 +1324,25 @@ void FoxDate::DateToFileTime(FILETIME &sTime)
 
 
 /* FoxDateTime */
-FoxDateTime::FoxDateTime(Value &pVal)
+FoxDateTime::FoxDateTime(Value &pVal) : FoxValue('T')
 {
-	m_Value.ev_type = 'T';
+	assert(::Vartype(pVal) == 'T');
 	m_Value.ev_real = pVal.ev_real;
 }
 
-FoxDateTime::FoxDateTime(SYSTEMTIME &sTime)
+FoxDateTime::FoxDateTime(SYSTEMTIME &sTime) : FoxValue('T')
 {
-	m_Value.ev_type = 'T';
 	SystemTimeToDateTime(sTime);
 }
 
-FoxDateTime::FoxDateTime(FILETIME &sTime)
+FoxDateTime::FoxDateTime(FILETIME &sTime) : FoxValue('T')
 {
-	m_Value.ev_type = 'T';
 	FileTimeToDateTime(sTime);
 }
 
-FoxDateTime::FoxDateTime(double dTime)
+FoxDateTime::FoxDateTime(double dTime) : FoxValue('T')
 {
-	m_Value.ev_type = 'T';
 	m_Value.ev_real = dTime;
-}
-
-FoxDateTime& FoxDateTime::operator=(double nDateTime)
-{
-	m_Value.ev_real = nDateTime;
-	return *this;
 }
 
 FoxDateTime& FoxDateTime::operator=(const SYSTEMTIME &sTime)
@@ -1659,6 +1363,7 @@ FoxDateTime::operator SYSTEMTIME()
 	DateTimeToSystemTime(sTime);
 	return sTime;
 }
+
 FoxDateTime::operator FILETIME()
 {
 	FILETIME sTime;
@@ -1667,14 +1372,14 @@ FoxDateTime::operator FILETIME()
 }
 
 FoxDateTime& FoxDateTime::ToUTC()
-{
-	m_Value.ev_real += gsTimeZone.Bias();
+{ 
+	m_Value.ev_real += TimeZoneInfo::Bias;
 	return *this;
 }
 
 FoxDateTime& FoxDateTime::ToLocal()
 {
-	m_Value.ev_real -= gsTimeZone.Bias();
+	m_Value.ev_real -= TimeZoneInfo::Bias;
 	return *this;
 }
 
@@ -1718,7 +1423,7 @@ void FoxDateTime::DateTimeToSystemTime(SYSTEMTIME &sTime)
 	double dDays, dSecs;
 
 	dSecs = modf(m_Value.ev_real,&dDays);
-	lnDays = (DWORD)dDays;
+	lnDays = static_cast<DWORD>(dDays);
 
 	lnA = lnDays + 32044;
 	lnB = (4 * lnA + 3) / 146097;
@@ -1848,17 +1553,9 @@ void FoxDateTimeLiteral::Convert(FILETIME &sTime, bool bToLocal)
 		strcpy(m_Literal,"{ ::}");
 }
 
-/* FoxObject */
-FoxObject::FoxObject() : m_Property(0), m_ParameterRef(false) 
-{
-	m_Value.ev_type = 'O';
-	m_Value.ev_object = 0;
-}
-
-FoxObject::FoxObject(Value &pVal) : m_Property(0), m_ParameterRef(true)
+FoxObject::FoxObject(Value &pVal) : FoxValue('O'), m_Property(0), m_ParameterRef(true)
 {
 	assert(::Vartype(pVal) == 'O');
-	m_Value.ev_type = 'O';
 	m_Value.ev_object = pVal.ev_object;
 }
 
@@ -1874,14 +1571,14 @@ FoxObject::FoxObject(ParamBlk *parm, int nParmNo) : m_Property(0)
 	else
 	{
 		m_Value.ev_type = '0';
+		m_Value.ev_object = 0;
 		m_ParameterRef = false;
 	}
 }
 
 FoxObject::FoxObject(char *pExpression) : m_Property(0), m_ParameterRef(false)
 {
-	m_Value.ev_type = '0';
-	Evaluate(m_Value,pExpression);
+	Evaluate(pExpression);
 }
 
 FoxObject::~FoxObject()
@@ -1911,160 +1608,20 @@ void FoxObject::Release()
 
 FoxObject& FoxObject::NewObject(char *pClass)
 {
+	Release();
 	char aCommand[VFP2C_MAX_CALLBACKFUNCTION];
-
-	/* free existing object */
-	if (!m_ParameterRef)
-		FreeObject();
-	
-	m_ParameterRef = false;
-	// set to 0 (NULL), so when Evaluate fails the destructor doesn't free the object twice
-	m_Value.ev_type = '0';
 	sprintfex(aCommand,"CREATEOBJECT('%S')",pClass);
-	Evaluate(m_Value,aCommand);
+	Evaluate(aCommand);
 	return *this;
 }
 
 FoxObject& FoxObject::EmptyObject()
 {
-	/* free existing object */
-	if (!m_ParameterRef)
-		FreeObject();
-
-	m_ParameterRef = false;
-
-	m_Value.ev_type = '0'; // set to 0 (NULL)
+	Release();
 	if (IS_FOX8ORHIGHER())
-		Evaluate(m_Value,"CREATEOBJECT('Empty')");
+		Evaluate("CREATEOBJECT('Empty')");
 	else
-		Evaluate(m_Value,"CREATEOBJECT('Relation')");
-	return *this;
-}
-
-FoxObject& FoxObject::operator()(char *pProperty)
-{
-	assert(pProperty);
-	m_Property = pProperty;
-	return *this;
-}
-
-FoxObject& FoxObject::operator=(FoxString &pString)
-{
-	assert(m_Property && m_Value.ev_object);
-	int nErrorNo;
-	if (nErrorNo = _SetObjectProperty(&m_Value,m_Property,pString,TRUE))
-		throw nErrorNo;
-	return *this;
-}
-
-FoxObject& FoxObject::operator=(FoxObject &pObject)
-{
-	assert(m_Property && m_Value.ev_object);
-	int nErrorNo;
-	if (nErrorNo = _SetObjectProperty(&m_Value,m_Property,pObject,TRUE))
-		throw nErrorNo;
-	return *this;
-}
-
-FoxObject& FoxObject::operator=(const Value &pVal)
-{
-	assert(m_Property && m_Value.ev_object);
-	int nErrorNo;
-	if (nErrorNo = _SetObjectProperty(&m_Value,m_Property,const_cast<Value*>(&pVal),TRUE))
-		throw nErrorNo;
-	return *this;
-}
-
-FoxObject& FoxObject::operator=(short nValue)
-{
-	assert(m_Property && m_Value.ev_object);
-	int nErrorNo;
-	Value vTmp;
-	vTmp.ev_type = 'I';
-	vTmp.ev_length = 6;
-	vTmp.ev_long = nValue;
-	if (nErrorNo = _SetObjectProperty(&m_Value,m_Property,&vTmp,TRUE))
-		throw nErrorNo;
-	return *this;
-}
-
-FoxObject& FoxObject::operator=(unsigned short nValue)
-{
-	assert(m_Property && m_Value.ev_object);
-	int nErrorNo;
-	Value vTmp;
-	vTmp.ev_type = 'I';
-	vTmp.ev_length = 6;
-	vTmp.ev_long = nValue;
-	if (nErrorNo = _SetObjectProperty(&m_Value,m_Property,&vTmp,TRUE))
-		throw nErrorNo;
-	return *this;
-}
-	
-FoxObject& FoxObject::operator=(int nValue)
-{
-	assert(m_Property && m_Value.ev_object);
-	int nErrorNo;
-	Value vTmp;
-	vTmp.ev_type = 'I';
-	vTmp.ev_length = 11;
-	vTmp.ev_long = nValue;
-	if (nErrorNo = _SetObjectProperty(&m_Value,m_Property,&vTmp,TRUE))
-		throw nErrorNo;
-	return *this;
-}
-
-FoxObject& FoxObject::operator=(unsigned long nValue)
-{
-	assert(m_Property && m_Value.ev_object);
-	int nErrorNo;
-	Value vTmp;
-	vTmp.ev_type = 'N';
-	vTmp.ev_width = 10;
-	vTmp.ev_length = 0;
-	vTmp.ev_real = static_cast<double>(nValue);
-	if (nErrorNo = _SetObjectProperty(&m_Value,m_Property,&vTmp,TRUE))
-		throw nErrorNo;
-	return *this;
-}
-
-FoxObject& FoxObject::operator=(bool bValue)
-{
-	assert(m_Property && m_Value.ev_object);
-	int nErrorNo;
-	Value vTmp;
-	vTmp.ev_type = 'L';
-	vTmp.ev_length = (int)bValue;
-	if (nErrorNo = _SetObjectProperty(&m_Value,m_Property,&vTmp,TRUE))
-		throw nErrorNo;
-	return *this;
-}
-
-FoxObject& FoxObject::operator=(double nValue)
-{
-	assert(m_Property && m_Value.ev_object);
-	int nErrorNo;
-	Value vTmp;
-	vTmp.ev_type = 'N';
-	vTmp.ev_width = 20;
-	vTmp.ev_length = 16;
-	vTmp.ev_real = nValue;
-	if (nErrorNo = _SetObjectProperty(&m_Value,m_Property,&vTmp,TRUE))
-		throw nErrorNo;
-	return *this;
-}
-
-FoxObject& FoxObject::operator=(__int64 nValue)
-{
-	assert(m_Property && m_Value.ev_object);
-	int nErrorNo;
-	Value vTmp;
-	vTmp.ev_type = 'N';
-	vTmp.ev_width = 20;
-	vTmp.ev_length = 0;
-	vTmp.ev_real = static_cast<double>(nValue);
-	if (nErrorNo = _SetObjectProperty(&m_Value,m_Property,&vTmp,TRUE))
-		throw nErrorNo;
+		Evaluate("CREATEOBJECT('Relation')");
 	return *this;
 }
 
@@ -2078,7 +1635,7 @@ FoxMemo::FoxMemo(ParamBlk *parm, int nParmNo) : m_pContent(0)
 {
 	if (parm->pCount >= nParmNo && IsMemoRef(parm->p[nParmNo-1].loc))
 	{
-		memcpy(&m_Loc, &parm->p[nParmNo-1].loc, sizeof(Locator));
+		m_Loc = parm->p[nParmNo-1].loc;
 
 		m_Location = _FindMemo(&m_Loc);
 		if (m_Location < 0)
@@ -2099,13 +1656,14 @@ FoxMemo::FoxMemo(ParamBlk *parm, int nParmNo) : m_pContent(0)
 	{
 		m_File = 0;
 		m_Location = 0;
-		memset(&m_Loc,0,sizeof(Locator));
+		m_Size = 0;
+		memset(&m_Loc, 0 ,sizeof(Locator));
 	}
 }
 
 FoxMemo::FoxMemo(Locator &pLoc) : m_pContent(0)
 {
-	memcpy(&m_Loc,&pLoc,sizeof(Locator));
+	m_Loc = pLoc;
 
 	m_Location = _FindMemo(&m_Loc);
 	if (m_Location < 0)
@@ -2182,65 +1740,37 @@ FoxMemo& FoxMemo::operator=(FoxString &pString)
 	return *this;
 }
 
+
 /* FoxArray */
-FoxArray::FoxArray(Value &pVal, bool bParamRef)
+FoxArray::FoxArray()
 {
-	assert(pVal.ev_type == 'C' && pVal.ev_length <= VFP_MAX_VARIABLE_NAME);
-	m_ParameterRef = bParamRef;	
-	if (!NullTerminateValue(pVal))
-		throw E_INSUFMEMORY;
-	LockHandle(pVal);
-	m_Name = HandleToPtr(pVal);
-	m_pValue = &pVal;
-	m_Loc.l_NTI = 0;
+	Init();
 }
 
 FoxArray::FoxArray(Value &pVal, unsigned int nRows, unsigned int nDims)
 {
-	assert(pVal.ev_type == 'C' && pVal.ev_length <= VFP_MAX_VARIABLE_NAME);
-	m_ParameterRef = true;
-	if (!NullTerminateValue(pVal))
-		throw E_INSUFMEMORY;
-	LockHandle(pVal);
-	m_Name = HandleToPtr(pVal);
-	m_pValue = &pVal;
-	Dimension(nRows,nDims);
+ 	Init(pVal, nRows, nDims);
 }
 
 FoxArray::FoxArray(Locator &pLoc)
 {
-	m_ParameterRef = false;
-	m_pValue = 0;
-	m_Loc.l_type = pLoc.l_type;
-	m_Loc.l_NTI = pLoc.l_NTI;
-	m_Loc.l_offset = pLoc.l_offset;
-	m_Loc.l_where = pLoc.l_where;
-	m_Loc.l_subs = pLoc.l_subs;
-	m_Loc.l_sub1 = m_Loc.l_sub2 = 0;
-	m_Rows = ALen(m_Dims);
+	Init(pLoc);
 }
 
 FoxArray::FoxArray(ParamBlk *parm, int nParmNo)
 {
 	if (parm->pCount >= nParmNo)
 	{
-		Value *pVal = &parm->p[nParmNo-1].val;
-		if (pVal->ev_type == 'C' && pVal->ev_length > 0)
-		{
-			m_ParameterRef = true;
-			if (!NullTerminateValue(pVal))
-				throw E_INSUFMEMORY;
-			LockHandle(pVal);
-			m_Name = HandleToPtr(pVal);
-			m_pValue = pVal;
-			m_Loc.l_NTI = 0;
-			return;
-		}
+		Parameter *pParameter = &parm->p[nParmNo-1];
+		if (Vartype(pParameter) == 'C' && pParameter->val.ev_length > 0)
+			Init(pParameter->val);
+		else if (Vartype(pParameter) == 'R')
+			Init(pParameter->loc);
+		else
+			Init();
 	}
-	// else
-	m_pValue = 0;
-	m_ParameterRef = false;
-	m_Name = 0;
+	else
+		Init();
 }
 
 FoxArray::FoxArray(ParamBlk *parm, int nParmNo, char cTypeCheck)
@@ -2250,297 +1780,160 @@ FoxArray::FoxArray(ParamBlk *parm, int nParmNo, char cTypeCheck)
 		Value *pVal = &parm->p[nParmNo-1].val;
 		if (Vartype(pVal) == 'C' && pVal->ev_length > 0)
 		{
-			m_ParameterRef = true;
-			if (!NullTerminateValue(pVal))
-				throw E_INSUFMEMORY;
-			LockHandle(pVal);
-			m_Name = HandleToPtr(pVal);
-			m_pValue = pVal;
-			m_Loc.l_NTI = 0;
+			Init(*pVal);
 			return;
 		}
 		else if (pVal->ev_type != cTypeCheck)
 			throw E_INVALIDPARAMS;
 	}
-	// else
-	m_pValue = 0;
-	m_ParameterRef = false;
-	m_Name = 0;
+	Init();
 }
 
-FoxArray::~FoxArray()
+void FoxArray::Init()
 {
-	if (m_pValue && m_pValue->ev_handle)
+	m_Name[0] = '\0';
+	m_Loc.l_NTI = 0;
+	m_Loc.l_subs = 0;
+	m_Loc.l_sub1 = 0;
+	m_Loc.l_sub2 = 0;
+	m_Rows = 0;
+	m_Dims = 0;
+	m_AutoGrow = 0;
+}
+
+void FoxArray::Init(Locator &pLoc)
+{
+	m_Name[0] = '\0';
+	m_Loc = pLoc;
+	m_Rows = ::ARows(m_Loc);
+	m_Dims = ::ADims(m_Loc);
+	m_Dims = m_Dims > 0 ? m_Dims : 1;
+	m_Loc.l_subs = m_Dims > 1 ? 2 : 1;
+	m_AutoGrow = 0;
+}
+
+void FoxArray::Init(Value &pVal, unsigned int nRows, unsigned int nDims)
+{
+	if (Vartype(pVal) != 'C' || pVal.ev_handle == 0 || pVal.ev_length > VFP_MAX_VARIABLE_NAME)
+		throw E_INVALIDPARAMS;
+ 	memcpy(m_Name, HandleToPtr(pVal), pVal.ev_length);
+ 	m_Name[pVal.ev_length] = '\0';
+	m_Loc.l_NTI = 0;
+	m_AutoGrow = 0;
+	if (nRows)
+		Dimension(nRows, nDims);
+	else
 	{
-		UnlockHandle(m_pValue);
-		if (!m_ParameterRef)
-			FreeHandle(m_pValue);
+		m_Loc.l_subs = 0;
+		m_Loc.l_sub1 = 0;
+		m_Loc.l_sub2 = 0;
+		m_Rows = 0;
+		m_Dims = 0;
 	}
 }
 
-void FoxArray::Dimension(unsigned int nRows, unsigned int nDims)
+FoxArray& FoxArray::Dimension(unsigned int nRows, unsigned int nDims)
 {
-	int nErrorNo;
-	if (!FindArray())
+	if (m_Loc.l_NTI)
 	{
 		ReDimension(nRows,nDims);
-		if (!FindArray())
-			throw E_VARIABLENOTFOUND;
+		return *this;
+	}
+
+	if (!FindArray())
+	{
+		m_Loc.l_subs = nDims > 1 ? 2 : 1;
+		m_Loc.l_sub1 = nRows;
+		m_Loc.l_sub2 = nDims;
+		NTI nVarNti = _NewVar(m_Name, &m_Loc, NV_PRIVATE);
+		if (nVarNti < 0)
+			throw (int)-nVarNti;
+		m_Rows = nRows;
+		m_Dims = nDims;
 	}
 	else
 	{
-		Value vFalse;
-		vFalse.ev_type = 'L';
-		vFalse.ev_length = 0;
-		ReDimension(nRows,nDims);
-		m_Loc.l_subs = 0;
-		if (nErrorNo = _Store(&m_Loc,&vFalse))
-			throw nErrorNo;
+		ReDimension(nRows, nDims);
+		if (!FindArray())
+			throw E_ARRAYNOTFOUND;
+		m_Loc.l_subs = nDims > 1 ? 2 : 1;
+		InitArray();
 	}
-	m_Loc.l_subs = nDims > 1 ? 2 : 1;
 	m_Loc.l_sub1 = 0;
 	m_Loc.l_sub2 = 0;
+	return *this;
 }
 
-void FoxArray::Dimension(Value &pVal, unsigned int nRows, unsigned int nDims)
+FoxArray& FoxArray::Dimension(Value &pVal, unsigned int nRows, unsigned int nDims)
 {
-	if (!NullTerminateValue(pVal))
-		throw E_INSUFMEMORY;
-	LockHandle(pVal);
-	m_Name = HandleToPtr(pVal);
-	m_pValue = &pVal;
-	Dimension(nRows,nDims);
+	if (Vartype(pVal) != 'C' || pVal.ev_handle == 0 || pVal.ev_length > VFP_MAX_VARIABLE_NAME)
+		throw E_INVALIDPARAMS;
+	memcpy(m_Name, HandleToPtr(pVal), pVal.ev_length);
+	m_Name[pVal.ev_length] = '\0';
+	return Dimension(nRows,nDims);
 }
 
-void FoxArray::Dimension(char *pName, unsigned int nRows, unsigned int nDims)
+FoxArray& FoxArray::Dimension(char *pName, unsigned int nRows, unsigned int nDims)
 {
-	m_Name = pName;
-	Dimension(nRows,nDims);
+	assert(pName);
+	unsigned int nLen = strlen(pName);
+	if (nLen > VFP_MAX_VARIABLE_NAME)
+		throw E_INVALIDPARAMS;
+	memcpy(m_Name, pName, nLen);
+	m_Name[nLen] = '\0';
+	return Dimension(nRows,nDims);
 }
 
 bool FoxArray::FindArray()
 {
-	NTI nVarNti;
-	nVarNti = _NameTableIndex(const_cast<char*>(m_Name));
+	NTI nVarNti = _NameTableIndex(m_Name);
 	if (nVarNti == -1)
 		return false;
-	return _FindVar(nVarNti,-1,&m_Loc) > 0;
+	return _FindVar(nVarNti, -1, &m_Loc) > 0;
+}
+
+void FoxArray::InitArray()
+{
+	assert(m_Loc.l_NTI);
+	int nErrorNo;
+	USHORT tmpSubs;
+	Value vFalse;
+	vFalse.ev_type = 'L';
+	vFalse.ev_length = 0;
+	tmpSubs = m_Loc.l_subs;
+	m_Loc.l_subs = 0;
+	if (nErrorNo = _Store(&m_Loc,&vFalse))
+		throw nErrorNo;
+	m_Loc.l_subs = tmpSubs;
 }
 
 void FoxArray::ReDimension(unsigned int nRows, unsigned int nDims)
 {
+	assert(strlen(m_Name));
 	char aExeBuffer[256];
 	if (nDims > 1)
-		sprintfex(aExeBuffer,"DIMENSION %S[%U,%U]",m_Name,nRows,nDims);
+		sprintfex(aExeBuffer,"DIMENSION %S[%U,%U]", m_Name, nRows, nDims);
 	else
-		sprintfex(aExeBuffer,"DIMENSION %S[%U]",m_Name,nRows);
+		sprintfex(aExeBuffer,"DIMENSION %S[%U]", m_Name, nRows);
 	Execute(aExeBuffer);
 	m_Rows = nRows;
 	m_Dims = nDims;
 }
 
-unsigned int FoxArray::Grow(unsigned int nRows)
-{
-	m_Loc.l_sub1 += static_cast<unsigned short>(nRows);
-	assert(m_Loc.l_sub1 <= 65000); // LCK only supports array's up to 65000 rows
-	if (m_Loc.l_sub1 > m_Rows)
-		ReDimension(m_Loc.l_sub1,m_Dims);
-	return m_Loc.l_sub1;
-}
-
 unsigned int FoxArray::ALen(unsigned int &nDims)
 {
-	assert(m_Name);
-	unsigned int nRows;
-	if (m_Loc.l_NTI == 0 && !FindArray())
-		throw E_VARIABLENOTFOUND;
+	if (m_Loc.l_NTI == 0)
+	{	
+		if (!FindArray())
+			throw E_VARIABLENOTFOUND;
 
-	nRows = ARows(m_Loc);
-	nDims = ADims(m_Loc);
+		m_Rows = ::ARows(m_Loc);
+		m_Dims = ::ADims(m_Loc);
+		m_Loc.l_subs = m_Dims > 1 ? 2 : 1;
+	}
 
-	nDims = nDims > 0 ? nDims : 1;
-	m_Loc.l_subs = nDims > 1 ? 2 : 1;
-	m_Loc.l_sub1 = 0;
-	m_Loc.l_sub2 = 0;
-	return nRows;
-}
-
-void FoxArray::ReturnRows() const
-{
-	_RetInt(m_Loc.l_sub1,5);
-}
-
-void FoxArray::Load(Value &pValue)
-{
-	int nErrorNo;
-	if (nErrorNo = _Load(&m_Loc,&pValue))
-		throw nErrorNo;
-}
-
-void FoxArray::Load(FoxString &pString)
-{
-	Value vTmp;
-	vTmp.ev_type = '0';
-	int nErrorNo;
-	if (nErrorNo = _Load(&m_Loc,&vTmp))
-		throw nErrorNo;
-	pString.Attach(vTmp);
-}
-
-void FoxArray::Load(FoxDateTime &pDateTime)
-{
-	int nErrorNo;
-	if (nErrorNo = _Load(&m_Loc,pDateTime))
-		throw nErrorNo;
-}
-
-void FoxArray::Load(int &nValue)
-{
-	Value vTmp;
-	vTmp.ev_type = '0';
-	int nErrorNo;
-	if (nErrorNo = _Load(&m_Loc,&vTmp))
-		throw nErrorNo;
-	nValue = vTmp.ev_long;
-}
-
-void FoxArray::Load(float &nValue)
-{
-	Value vTmp;
-	vTmp.ev_type = '0';
-	int nErrorNo;
-	if (nErrorNo = _Load(&m_Loc,&vTmp))
-		throw nErrorNo;
-	nValue = (float)vTmp.ev_real;
-}
-
-void FoxArray::Load(double &nValue)
-{
-	Value vTmp;
-	vTmp.ev_type = '0';
-	int nErrorNo;
-	if (nErrorNo = _Load(&m_Loc,&vTmp))
-		throw nErrorNo;
-	nValue = vTmp.ev_real;
-}
-
-FoxArray& FoxArray::operator()(unsigned int nRow)
-{
-	m_Loc.l_sub1 = nRow;
-	return *this;
-}
-
-FoxArray& FoxArray::operator()(unsigned int nRow, unsigned int nDim)
-{
-	m_Loc.l_sub1 = nRow;
-	m_Loc.l_sub2 = nDim;
-	return *this;
-}
-
-FoxArray& FoxArray::operator=(FoxString &pString)
-{
-	int nErrorNo;
-	nErrorNo = _Store(&m_Loc,pString);
-	if (nErrorNo)
-		throw nErrorNo;
-	return *this;
-}
-
-FoxArray& FoxArray::operator=(FoxObject &pObject)
-{
-	int nErrorNo;
-	nErrorNo = _Store(&m_Loc,pObject);
-	if (nErrorNo)
-		throw nErrorNo;
-	return *this;
-}
-
-FoxArray& FoxArray::operator=(FoxInt64 &pInt64)
-{
-	int nErrorNo;
-	nErrorNo = _Store(&m_Loc, pInt64);
-	if (nErrorNo)
-		throw nErrorNo;
-	return *this;
-}
-
-FoxArray& FoxArray::operator=(const Value &pVal)
-{
-	int nErrorNo;
-	nErrorNo = _Store(&m_Loc,const_cast<Value*>(&pVal));
-	if (nErrorNo)
-		throw nErrorNo;
-	return *this;
-}
-
-FoxArray& FoxArray::operator=(int nValue)
-{
-	int nErrorNo;
-	Value vTmp;
-	vTmp.ev_type = 'I';
-	vTmp.ev_length = 11;
-	vTmp.ev_long = nValue;
-	if (nErrorNo = _Store(&m_Loc,&vTmp))
-		throw nErrorNo;
-	return *this;
-}
-
-FoxArray& FoxArray::operator=(unsigned long nValue)
-{
-	int nErrorNo;
-	Value vTmp;
-	vTmp.ev_type = 'N';
-	vTmp.ev_width = 10;
-	vTmp.ev_length = 0;
-	vTmp.ev_real = static_cast<double>(nValue);
-	if (nErrorNo = _Store(&m_Loc,&vTmp))
-		throw nErrorNo;
-	return *this;
-}
-
-FoxArray& FoxArray::operator=(bool bValue)
-{
-	int nErrorNo;
-	Value vTmp;
-	vTmp.ev_type = 'L';
-	vTmp.ev_length = (int)bValue;
-	if (nErrorNo = _Store(&m_Loc,&vTmp))
-		throw nErrorNo;
-	return *this;
-}
-
-FoxArray& FoxArray::operator=(double nValue)
-{
-	int nErrorNo;
-	Value vTmp;
-	vTmp.ev_type = 'N';
-	vTmp.ev_width = 20;
-	vTmp.ev_length = 16;
-	vTmp.ev_real = nValue;
-	if (nErrorNo = _Store(&m_Loc,&vTmp))
-		throw nErrorNo;
-	return *this;
-}
-
-FoxArray& FoxArray::operator=(__int64 nValue)
-{
-	int nErrorNo;
-	Value vTmp;
-	vTmp.ev_type = 'N';
-	vTmp.ev_width = 20;
-	vTmp.ev_length = 0;
-	vTmp.ev_real = static_cast<double>(nValue);
-	if (nErrorNo = _Store(&m_Loc,&vTmp))
-		throw nErrorNo;
-	return *this;
-}
-
-FoxArray::operator Value&()
-{
-	int nErrorNo;
-	if (nErrorNo = _Load(&m_Loc,&m_Value))
-		throw nErrorNo;
-	return m_Value;
+	nDims = m_Dims;
+	return m_Rows;
 }
 
 FoxCursor::~FoxCursor()
@@ -2549,13 +1942,13 @@ FoxCursor::~FoxCursor()
 		delete[] m_pFieldLocs;
 }
 
-void FoxCursor::Create(char *pCursorName, char *pFields)
+FoxCursor& FoxCursor::Create(char *pCursorName, char *pFields)
 {
 	FoxValue vValue;
 	char aExeBuffer[8192];
 
 	sprintfex(aExeBuffer, "SELECT('%S')", pCursorName);
-	Evaluate(vValue, aExeBuffer);
+	vValue.Evaluate(aExeBuffer);
 
 	// if workarea == 0 the cursor does not exist
 	if(vValue->ev_long == 0)
@@ -2565,14 +1958,14 @@ void FoxCursor::Create(char *pCursorName, char *pFields)
 		Execute(aExeBuffer);
 
 		// get the workarea
-		Evaluate(vValue, "SELECT(0)");
+		vValue.Evaluate("SELECT(0)");
 	}
 	
 	m_WorkArea = vValue->ev_long;
 
 	// get fieldcount
 	sprintfex(aExeBuffer, "FCOUNT(%I)", m_WorkArea);
-	Evaluate(vValue, aExeBuffer);
+	vValue.Evaluate(aExeBuffer);
 	m_FieldCnt = vValue->ev_long;
 
 	m_pFieldLocs = new Locator[m_FieldCnt];
@@ -2584,7 +1977,7 @@ void FoxCursor::Create(char *pCursorName, char *pFields)
 	for (unsigned int nFieldNo = 1; nFieldNo <= m_FieldCnt; nFieldNo++)
 	{
 		sprintfex(aExeBuffer, "FIELD(%I,%I)+CHR(0)", nFieldNo, m_WorkArea);
-		Evaluate(vValue, aExeBuffer);
+		vValue.Evaluate(aExeBuffer);
 	
         nVarNti = _NameTableIndex(vValue.HandleToPtr());
 		vValue.Release();
@@ -2595,65 +1988,17 @@ void FoxCursor::Create(char *pCursorName, char *pFields)
 		if (!_FindVar(nVarNti, m_WorkArea, m_pFieldLocs + (nFieldNo-1)))
 			throw E_FIELDNOTFOUND;
 	}
-}
-
-void FoxCursor::AppendBlank()
-{
-	int nErrorNo;
-	if (nErrorNo = _DBAppend(m_WorkArea, 0))
-		throw nErrorNo;
-}
-
-FoxCursor& FoxCursor::operator()(unsigned int nFieldNo)
-{
-	m_pCurrentLoc = m_pFieldLocs + (nFieldNo-1);
 	return *this;
 }
 
-FoxCursor& FoxCursor::operator=(const Value &pVal)
-{
-	int nErrorNo;
-	if (nErrorNo = _DBReplace(m_pCurrentLoc,const_cast<Value*>(&pVal)))
-		throw nErrorNo;
-	return *this;
-}
-
-FoxCursor& FoxCursor::operator=(int nValue)
-{
-	int nErrorNo;
-	Value vTmp;
-	vTmp.ev_type = 'I';
-	vTmp.ev_length = 11;
-	vTmp.ev_long = nValue;
-	if (nErrorNo = _DBReplace(m_pCurrentLoc,&vTmp))
-		throw nErrorNo;
-	return *this;
-}
-
-FoxCursor& FoxCursor::operator=(DWORD nValue)
-{
-	int nErrorNo;
-	Value vTmp;
-	vTmp.ev_type = 'N';
-	vTmp.ev_width = 10;
-	vTmp.ev_length = 0;
-	vTmp.ev_real = static_cast<double>(nValue);
-	if (nErrorNo = _DBReplace(m_pCurrentLoc,&vTmp))
-		throw nErrorNo;
-	return *this;
-}
 
 /* FoxCStringArray */
 FoxCStringArray::~FoxCStringArray()
 {
 	if (m_pStrings)
 		delete[] m_pStrings;
-	if (m_pHandles)
-	{
-		for (unsigned int xj = 0; xj < m_Rows; xj++)
-			FreeHandleEx(m_pHandles[xj]);
-		delete[] m_pHandles;
-	}
+	if (m_pValues)
+		delete[] m_pValues;
 }
 
 void FoxCStringArray::Dimension(unsigned int nRows)
@@ -2663,45 +2008,36 @@ void FoxCStringArray::Dimension(unsigned int nRows)
 	m_pStrings = new char*[nRows];
 	if (m_pStrings == 0)
 		throw E_INSUFMEMORY;
-    ZeroMemory(m_pStrings,sizeof(char*)*nRows);
+    ZeroMemory(m_pStrings, sizeof(char*)*nRows);
 
-    m_pHandles = new MHANDLE[nRows];
-	if (m_pHandles == 0)
-	{
-		delete[] m_pStrings;
-		m_pStrings = 0;
+    m_pValues = new FoxValue[nRows];
+	if (m_pValues == 0)
 		throw E_INSUFMEMORY;
-	}
-	ZeroMemory(m_pHandles,sizeof(MHANDLE)*nRows);
-
-	m_Rows = nRows;
 }
 
-unsigned int FoxCStringArray::operator=(FoxArray &pArray)
+FoxCStringArray& FoxCStringArray::operator=(FoxArray &pArray)
 {
-	unsigned int nRows, nDims;
-	nRows = pArray.ALen(nDims);
-	if (nRows)
+	FoxValue *pValue;
+	m_Rows = pArray.ARows();
+	if (m_Rows)
 	{
-		Dimension(nRows);
-		Value vString;
-		for (unsigned int xj = 0; xj < nRows; xj++)
+		Dimension(m_Rows);
+		pValue = m_pValues;
+		for (unsigned int xj = 0; xj < m_Rows; xj++)
 		{
-			vString = pArray(xj+1);
-			if (Vartype(vString) != 'C')
+			*pValue = pArray(xj+1);
+			if (pValue->Vartype() != 'C')
 				throw E_INVALIDPARAMS;
 
-			if (!NullTerminateValue(vString))
-				throw E_INSUFMEMORY;
-
-			LockHandle(vString);
-			m_pStrings[xj] = HandleToPtr(vString);
-			m_pHandles[xj] = vString.ev_handle;
+			m_pStrings[xj] = pValue->NullTerminate().LockHandle().HandleToPtr();
+			pValue++;
 		}
 	}
-	return nRows;
+	return *this;
 }
 
+
+double TimeZoneInfo::Bias = 0;
 
 /* TimeZoneInfo class */
 TimeZoneInfo::TimeZoneInfo() : m_Hwnd(0), m_Atom(0)
@@ -2723,7 +2059,7 @@ TimeZoneInfo::TimeZoneInfo() : m_Hwnd(0), m_Atom(0)
 	{
 		m_Hwnd = CreateWindowEx(0,(LPCSTR)m_Atom,0,WS_POPUP,0,0,0,0,0,0,ghModule,0);
 		if (m_Hwnd)
-			SetWindowLong(m_Hwnd,GWL_USERDATA,(LONG)this);
+			SetWindowLong(m_Hwnd,GWL_USERDATA, reinterpret_cast<LONG>(this));
 		else
 			ADDWIN32ERROR(CreateWindowEx,GetLastError());
 	}
@@ -2745,18 +2081,18 @@ void TimeZoneInfo::Refresh()
 {
 	m_CurrentZone = GetTimeZoneInformation(&m_ZoneInfo);
 	if (m_CurrentZone == TIME_ZONE_ID_STANDARD || m_CurrentZone == TIME_ZONE_ID_UNKNOWN)
-		m_Bias = ((double)m_ZoneInfo.Bias * 60) / SECONDSPERDAY;
+		TimeZoneInfo::Bias = ((double)m_ZoneInfo.Bias * 60) / SECONDSPERDAY;
 	else if (m_CurrentZone == TIME_ZONE_ID_DAYLIGHT)
-		m_Bias = ((double)m_ZoneInfo.Bias * 60 + m_ZoneInfo.DaylightBias * 60) / SECONDSPERDAY;
+		TimeZoneInfo::Bias = ((double)m_ZoneInfo.Bias * 60 + m_ZoneInfo.DaylightBias * 60) / SECONDSPERDAY;
 	else
-		m_Bias = 0;
+		TimeZoneInfo::Bias = 0;
 }
 
 LRESULT _stdcall TimeZoneInfo::TimeChangeWindowProc(HWND nHwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	if (uMsg == WM_TIMECHANGE)
 	{
-		TimeZoneInfo *lpTimeZone = (TimeZoneInfo*)GetWindowLong(nHwnd,GWL_USERDATA);
+		TimeZoneInfo *lpTimeZone = reinterpret_cast<TimeZoneInfo*>(GetWindowLong(nHwnd,GWL_USERDATA));
 		lpTimeZone->Refresh();
 	}
 	return DefWindowProc(nHwnd,uMsg,wParam,lParam);

@@ -4,10 +4,10 @@
 #include "pro_ext.h"
 #include "vfp2c32.h"
 #include "vfp2cutil.h"
-#include "vfpmacros.h"
 #include "vfp2cenum.h"
 #include "vfp2ccppapi.h"
 #include "vfp2chelpers.h"
+#include "vfpmacros.h"
 
 // PSAPI data
 static HMODULE ghPsApi = 0;
@@ -66,13 +66,10 @@ bool _stdcall VFP2C_Init_Enum()
 
 		hDll = GetModuleHandle("ntdll.dll");
 		if (hDll)
-			fpNtQueryInformationProcess = 
-			(PNTQUERYINFORMATIONPROCESS)GetProcAddress(hDll,"NtQueryInformationProcess");
+			fpNtQueryInformationProcess = (PNTQUERYINFORMATIONPROCESS)GetProcAddress(hDll,"NtQueryInformationProcess");
 	
-		gbPSAPIFuncs = (fpEnumProcesses && fpEnumProcessModules && fpGetModuleBaseName &&
-						fpNtQueryInformationProcess);
+		gbPSAPIFuncs = (fpEnumProcesses && fpEnumProcessModules && fpGetModuleBaseName && fpNtQueryInformationProcess);
 	}
-
 
 	// we can use GetModuleHandle instead of LoadLibrary since kernel32.dll is loaded already by VFP for sure
 	hDll = GetModuleHandle("kernel32.dll");
@@ -139,15 +136,11 @@ try
 	if (!fpEnumWindowStations)
 		throw E_NOENTRYPOINT;
 
-	WINDOWSTATIONENUMPARAM sEnum;
-
+	EnumParameter sEnum;
 	// initialize array
 	sEnum.pArray.Dimension(p1,1);
-	// allocate temporary memory in a Value structure 
-	// which is used to store the enumerated values into the array
-	sEnum.pWinStaName.Size(WINDOWSTATION_ENUM_LEN);
 
-	if (!fpEnumWindowStations(WindowStationEnumCallback,(LPARAM)&sEnum))
+	if (!fpEnumWindowStations(WindowStationEnumCallback,reinterpret_cast<LPARAM>(&sEnum)))
 	{
 		SAVEWIN32ERROR(EnumWindowStations,GetLastError());
 		throw E_APIERROR;
@@ -163,9 +156,9 @@ catch (int nErrorNo)
 
 BOOL _stdcall WindowStationEnumCallback(LPSTR lpszWinSta, LPARAM nParam)
 {
-	LPWINDOWSTATIONENUMPARAM pEnum = (LPWINDOWSTATIONENUMPARAM)nParam;
+	EnumParameter *pEnum = reinterpret_cast<EnumParameter*>(nParam);
 	pEnum->pArray.Grow();
-	pEnum->pArray = pEnum->pWinStaName = lpszWinSta;
+	pEnum->pArray = pEnum->pName = lpszWinSta;
 	return TRUE;
 } 
 
@@ -178,15 +171,13 @@ try
 	if (!fpEnumDesktops)
 		throw E_NOENTRYPOINT;
 
-	DESKTOPENUMPARAM sEnum;
+	EnumParameter sEnum;
 	HWINSTA hWinSta;
 
 	sEnum.pArray.Dimension(p1,1);
-	sEnum.pDesktopName.Size(DESKTOP_ENUM_LEN);
-
-	hWinSta = PCOUNT() == 1 ? fpGetProcessWindowStation() : (HWINSTA)p2.ev_long;
+	hWinSta = PCOUNT() == 1 ? fpGetProcessWindowStation() : reinterpret_cast<HWINSTA>(p2.ev_long);
 	
-	if (!fpEnumDesktops(hWinSta,(DESKTOPENUMPROC)DesktopEnumCallback,(LPARAM)&sEnum))
+	if (!fpEnumDesktops(hWinSta,(DESKTOPENUMPROC)DesktopEnumCallback, reinterpret_cast<LPARAM>(&sEnum)))
 	{
 		SAVEWIN32ERROR(EnumDesktops,GetLastError());
 		throw E_APIERROR;
@@ -202,9 +193,9 @@ catch(int nErrorNo)
 
 BOOL _stdcall DesktopEnumCallback(LPCSTR lpszDesktop, LPARAM nParam)
 {
-	LPDESKTOPENUMPARAM pEnum = (LPDESKTOPENUMPARAM)nParam;
+	EnumParameter *pEnum = reinterpret_cast<EnumParameter*>(nParam);
 	pEnum->pArray.Grow();
-	pEnum->pArray = pEnum->pDesktopName = lpszDesktop;
+	pEnum->pArray = pEnum->pName = lpszDesktop;
 	return TRUE;  
 }
 
@@ -214,8 +205,9 @@ try
 {
 	RESETWIN32ERRORS();
 
-	WINDOWENUMPARAM sEnum;
-	DWORD nEnumFlag = (DWORD)p2.ev_long;
+	WindowEnumParam sEnum;
+	FoxString pArrayOrCallback(p1);
+	DWORD nEnumFlag = p2.ev_long;
 	DWORD nLastError = ERROR_SUCCESS;
 
 	// are parameters valid?
@@ -229,31 +221,29 @@ try
 	
 	if (nEnumFlag & WINDOW_ENUM_CALLBACK)
 	{
-		sEnum.pBuffer = p1;
-		sEnum.pBuffer += "(%U)";
-		sEnum.pCallback.Size(VFP2C_MAX_CALLBACKBUFFER);
+		sEnum.pCallback = pArrayOrCallback;
+		sEnum.pCallback += "(%U)";
+		sEnum.pBuffer.Size(VFP2C_MAX_CALLBACKBUFFER);
 	}
 	else
-		sEnum.pArray.Dimension(p1,1);
+	{
+		sEnum.pArray.Dimension((char*)pArrayOrCallback, 1);
+		sEnum.pArray.AutoGrow(16);
+	}
 
 	if (nEnumFlag & WINDOW_ENUM_TOPLEVEL)
 	{
-		if (!EnumWindows(nEnumFlag & WINDOW_ENUM_CALLBACK ? WindowEnumCallbackCall : WindowEnumCallback,
-			(LPARAM)&sEnum))
+		if (!EnumWindows(nEnumFlag & WINDOW_ENUM_CALLBACK ? WindowEnumCallbackCall : WindowEnumCallback, reinterpret_cast<LPARAM>(&sEnum)))
 			nLastError = GetLastError();
 	}
 	else if (nEnumFlag & WINDOW_ENUM_CHILD)
 	{
-		if (!EnumChildWindows((HWND)p3.ev_long,
-			nEnumFlag & WINDOW_ENUM_CALLBACK ? WindowEnumCallbackCall : WindowEnumCallback,
-			(LPARAM)&sEnum))
+		if (!EnumChildWindows(reinterpret_cast<HWND>(p3.ev_long), nEnumFlag & WINDOW_ENUM_CALLBACK ? WindowEnumCallbackCall : WindowEnumCallback, reinterpret_cast<LPARAM>(&sEnum)))
 			nLastError = GetLastError();
 	}
 	else if (nEnumFlag & WINDOW_ENUM_THREAD)
 	{
-		if (!EnumThreadWindows((DWORD)p3.ev_long,
-			nEnumFlag & WINDOW_ENUM_CALLBACK ? WindowEnumCallbackCall : WindowEnumCallback,
-			(LPARAM)&sEnum))
+		if (!EnumThreadWindows(p3.ev_long, nEnumFlag & WINDOW_ENUM_CALLBACK ? WindowEnumCallbackCall : WindowEnumCallback, reinterpret_cast<LPARAM>(&sEnum)))
 			nLastError = GetLastError();
 	}
 	else if (nEnumFlag & WINDOW_ENUM_DESKTOP)
@@ -261,9 +251,7 @@ try
 		if (!fpEnumDesktopWindows)
 			throw E_NOENTRYPOINT;
 
-		if (!fpEnumDesktopWindows((HDESK)p3.ev_long,
-			nEnumFlag & WINDOW_ENUM_CALLBACK ? WindowEnumCallbackCall : WindowEnumCallback,
-			(LPARAM)&sEnum))
+		if (!fpEnumDesktopWindows(reinterpret_cast<HDESK>(p3.ev_long), nEnumFlag & WINDOW_ENUM_CALLBACK ? WindowEnumCallbackCall : WindowEnumCallback, reinterpret_cast<LPARAM>(&sEnum)))
 			nLastError = GetLastError();
 	}
 
@@ -286,18 +274,18 @@ catch(int nErrorNo)
 
 BOOL _stdcall WindowEnumCallback(HWND nHwnd, LPARAM nParam)
 {
-	LPWINDOWENUMPARAM pEnum = (LPWINDOWENUMPARAM)nParam;
+	WindowEnumParam *pEnum = reinterpret_cast<WindowEnumParam*>(nParam);
 	pEnum->pArray.Grow();
-	pEnum->pArray = (int)nHwnd;
+	pEnum->pArray = nHwnd;
 	return TRUE;		
 }
 
 BOOL _stdcall WindowEnumCallbackCall(HWND nHwnd, LPARAM nParam) throw(int)
 {
-	LPWINDOWENUMPARAM pEnum = (LPWINDOWENUMPARAM)nParam;
+	WindowEnumParam *pEnum = reinterpret_cast<WindowEnumParam*>(nParam);
 	FoxValue vRetVal;
-	sprintfex(pEnum->pCallback, pEnum->pBuffer, nHwnd);
-	Evaluate(vRetVal, pEnum->pCallback);
+	pEnum->pBuffer.Format(pEnum->pCallback, nHwnd);
+	vRetVal.Evaluate(pEnum->pBuffer);
 	if (vRetVal.Vartype() == 'L')
         return vRetVal->ev_length;
 	else
@@ -311,15 +299,13 @@ try
 	RESETWIN32ERRORS();
 
 	FoxString pFlags(p2);
-	WINDOWENUMPARAMEX sEnum;
+	WindowEnumParamEx sEnum;
 	
 	// are parameters valid?
 	if (PCOUNT() == 3 && p3.ev_long != WINDOW_ENUM_TOPLEVEL)
 		throw E_INVALIDPARAMS;
 	else if (p3.ev_long < WINDOW_ENUM_TOPLEVEL || p3.ev_long > WINDOW_ENUM_DESKTOP)
 		throw E_INVALIDPARAMS;
-
-	sEnum.pBuffer.Size(WINDOW_ENUM_CLASSLEN);
 
 	sEnum.aFlags[0] = pFlags.At('W',1,WINDOW_ENUM_FLAGS); // HWND
 	sEnum.aFlags[1] = pFlags.At('C',1,WINDOW_ENUM_FLAGS); // WindowClass
@@ -345,22 +331,23 @@ try
 		throw E_INVALIDPARAMS;
 
 	sEnum.pArray.Dimension(p1,1,nMaxDim);
+	sEnum.pArray.AutoGrow(16);
 
 	DWORD nLastError = ERROR_SUCCESS;
 	switch(p3.ev_long)
 	{
 		case WINDOW_ENUM_TOPLEVEL:
-			if (!EnumWindows(WindowEnumCallbackEx,(LPARAM)&sEnum))
+			if (!EnumWindows(WindowEnumCallbackEx, reinterpret_cast<LPARAM>(&sEnum)))
 				nLastError = GetLastError();
 			break;
 
 		case WINDOW_ENUM_CHILD:
-            if (!EnumChildWindows((HWND)p4.ev_long,WindowEnumCallbackEx,(LPARAM)&sEnum))
+            if (!EnumChildWindows(reinterpret_cast<HWND>(p4.ev_long), WindowEnumCallbackEx, reinterpret_cast<LPARAM>(&sEnum)))
 				nLastError = GetLastError();
 			break;
 
 		case WINDOW_ENUM_THREAD:
-            if (!EnumThreadWindows((DWORD)p4.ev_long,WindowEnumCallbackEx,(LPARAM)&sEnum))
+            if (!EnumThreadWindows(p4.ev_long, WindowEnumCallbackEx, reinterpret_cast<LPARAM>(&sEnum)))
 				nLastError = GetLastError();
 			break;
 
@@ -368,7 +355,7 @@ try
             if (!fpEnumDesktopWindows)
 				throw E_NOENTRYPOINT;
 
-			if (!fpEnumDesktopWindows((HDESK)p4.ev_long,WindowEnumCallbackEx,(LPARAM)&sEnum))
+			if (!fpEnumDesktopWindows(reinterpret_cast<HDESK>(p4.ev_long), WindowEnumCallbackEx, reinterpret_cast<LPARAM>(&sEnum)))
 				nLastError = GetLastError();
 	}
 
@@ -389,12 +376,12 @@ catch(int nErrorNo)
 BOOL _stdcall WindowEnumCallbackEx(HWND nHwnd, LPARAM nParam)
 {
 	DWORD nProcessID, nThreadID;
-	LPWINDOWENUMPARAMEX pEnum = (LPWINDOWENUMPARAMEX)nParam;
+	WindowEnumParamEx *pEnum = reinterpret_cast<WindowEnumParamEx*>(nParam);
 
 	unsigned int nRow = pEnum->pArray.Grow();
 
 	if (pEnum->aFlags[0])
-		pEnum->pArray(nRow,pEnum->aFlags[0]) = (int)nHwnd;
+		pEnum->pArray(nRow,pEnum->aFlags[0]) = nHwnd;
 	
 	if(pEnum->aFlags[1])
 		pEnum->pArray(nRow,pEnum->aFlags[1]) = pEnum->pBuffer.Len(GetClassName(nHwnd,pEnum->pBuffer,WINDOW_ENUM_CLASSLEN));
@@ -412,7 +399,7 @@ BOOL _stdcall WindowEnumCallbackEx(HWND nHwnd, LPARAM nParam)
 		pEnum->pArray(nRow,pEnum->aFlags[5]) = GetWindowLong(nHwnd,GWL_HINSTANCE);
 
 	if (pEnum->aFlags[6])
-		pEnum->pArray(nRow,pEnum->aFlags[6]) = (int)GetParent(nHwnd);
+		pEnum->pArray(nRow,pEnum->aFlags[6]) = GetParent(nHwnd);
 
 	if (pEnum->aFlags[7])
 		pEnum->pArray(nRow,pEnum->aFlags[7]) = GetWindowLong(nHwnd,GWL_USERDATA);
@@ -448,14 +435,12 @@ void _fastcall AWindowProps(ParamBlk *parm)
 {
 try
 {
-	WPROPENUMPARAM sEnum;
+	EnumParameter sEnum;
 	int nApiRet;
 
 	sEnum.pArray.Dimension(p1,1,2);
-	sEnum.pProperty.Size(WINDOWPROP_ENUM_LEN);
 	
-	nApiRet = EnumPropsEx((HWND)p2.ev_long,(PROPENUMPROCEX)WindowPropEnumCallback,(LPARAM)&sEnum);
-
+	nApiRet = EnumPropsEx(reinterpret_cast<HWND>(p2.ev_long), (PROPENUMPROCEX)WindowPropEnumCallback, reinterpret_cast<LPARAM>(&sEnum));
 	if (nApiRet != -1)
 		sEnum.pArray.ReturnRows();
 	else
@@ -469,12 +454,12 @@ catch (int nErrorNo)
 
 BOOL _stdcall WindowPropEnumCallback(HWND nHwnd, LPCSTR pPropName, HANDLE hData, DWORD nParam)
 {
-	LPWPROPENUMPARAM pEnum = (LPWPROPENUMPARAM)nParam;
+	EnumParameter *pEnum = reinterpret_cast<EnumParameter*>(nParam);
 	if (IsBadReadPtr(pPropName,1))
 		return TRUE;
 	unsigned int nRow = pEnum->pArray.Grow();
-	pEnum->pArray(nRow,1) = pEnum->pProperty = pPropName;
-	pEnum->pArray(nRow,2) = (int)hData;
+	pEnum->pArray(nRow,1) = pEnum->pName = pPropName;
+	pEnum->pArray(nRow,2) = hData;
 	return TRUE;		
 }
 
@@ -482,22 +467,22 @@ void _fastcall AProcesses(ParamBlk *parm)
 {
 	RESETWIN32ERRORS();
 
-	if (IS_WINNT())
+ 	if (IS_WINNT())
 	{
 		AProcessesPSAPI(parm);
 		return;
 	}
 try
 {
-	if (!gbProcessEnumFuncs)
+ 	if (!gbProcessEnumFuncs)
 		throw E_NOENTRYPOINT;
 
-	ApiHandle hProcSnap;
-	FoxString pExeName(MAX_PATH+1);
+ 	ApiHandle hProcSnap;
+ 	FoxString pExeName(MAX_PATH+1);
 	FoxArray pArray(p1,1,5);
 	PROCESSENTRY32 pProcs;
 	DWORD nLastError;
-
+	
 	hProcSnap = fpCreateToolhelp32Snapshot(TH32CS_SNAPPROCESS,0);
 	if(!hProcSnap)
 	{
@@ -522,6 +507,7 @@ try
 		}
 	}
 
+	pArray.AutoGrow(64);
 	unsigned int nRow;
 	do
 	{
@@ -529,10 +515,9 @@ try
 		pArray(nRow,1) = pExeName = pProcs.szExeFile;
 		pArray(nRow,2) = pProcs.th32ProcessID;
 		pArray(nRow,3) = pProcs.th32ParentProcessID;
-		// impossible to be greater than MAX_LONG so we can just use int instead of casting to double
-		pArray(nRow,4) = (int)pProcs.cntThreads;
+		pArray(nRow,4) = pProcs.cntThreads;
 		pArray(nRow,5) = pProcs.pcPriClassBase;
-	} while(fpProcess32Next(hProcSnap,&pProcs));
+	} while(fpProcess32Next(hProcSnap, &pProcs));
 
 	nLastError = GetLastError();
 	if (nLastError != ERROR_NO_MORE_FILES)
@@ -567,10 +552,10 @@ try
 
 	while (1)
 	{
-		pBuffer.Size(dwProcesses*sizeof(DWORD));
-		lpProcIds = (LPDWORD)pBuffer.Address();
-
-		if (!fpEnumProcesses(lpProcIds,dwProcesses*sizeof(DWORD),&dwBytes))
+		pBuffer.Size(dwProcesses * sizeof(DWORD));
+		lpProcIds = reinterpret_cast<LPDWORD>(pBuffer.Address());
+ 
+		if (!fpEnumProcesses(lpProcIds, dwProcesses * sizeof(DWORD), &dwBytes))
 		{
 			SAVEWIN32ERROR(EnumProcesses,GetLastError());
 			throw E_APIERROR;
@@ -585,7 +570,7 @@ try
 
 	dwProcesses = dwBytes / sizeof(DWORD);
 	
-	pArray.Dimension(dwProcesses,5);
+	pArray.Dimension(dwProcesses, 5);
 
 	for (unsigned int xj = 1; xj <= dwProcesses; xj++)
 	{
@@ -647,7 +632,7 @@ try
 	FoxArray pArray(p1,1,3);
 	ApiHandle hThreadSnap;
 	THREADENTRY32 pThreads; 
-   	DWORD nProcId = (DWORD)p2.ev_long;
+   	DWORD nProcId = p2.ev_long;
 	DWORD nLastError;
 
 	if (!gbThreadEnumFuncs)
@@ -677,6 +662,7 @@ try
 		}
 	}
 
+	pArray.AutoGrow(4);
 	unsigned int nRow;
 	do 
 	{ 
@@ -714,7 +700,7 @@ try
 	FoxString pBuffer(MAX_PATH+1);
 	ApiHandle hModuleSnap; 
 	MODULEENTRY32 pModules;
-  	DWORD nProcId = (DWORD)p2.ev_long;
+  	DWORD nProcId = p2.ev_long;
 	DWORD nLastError;
 	
 	if (!gbModuleEnumFuncs)
@@ -744,16 +730,17 @@ try
 		}
 	}
 
+	pArray.AutoGrow(32);
 	unsigned int nRow;
 	do 
 	{ 
 		nRow = pArray.Grow();
 		pArray(nRow,1) = pBuffer = pModules.szModule;
 		pArray(nRow,2) = pBuffer = pModules.szExePath;
-		pArray(nRow,3) = (int)pModules.hModule;
+		pArray(nRow,3) = pModules.hModule;
 		pArray(nRow,4) = pModules.modBaseSize;
-		pArray(nRow,5) = (int)pModules.modBaseAddr;
-	} while(fpModule32Next(hModuleSnap,&pModules)); 
+		pArray(nRow,5) = pModules.modBaseAddr;
+	} while(fpModule32Next(hModuleSnap, &pModules)); 
 
 	nLastError = GetLastError();
 	if (nLastError != ERROR_NO_MORE_FILES)
@@ -781,7 +768,7 @@ try
 
 	FoxArray pArray(p1,1,2);
 	ApiHandle hHeapSnap;
-  	DWORD nProcId = (DWORD)p2.ev_long;
+  	DWORD nProcId = p2.ev_long;
 	DWORD nLastError;
 	HEAPLIST32 pHeaps; 
 
@@ -810,6 +797,7 @@ try
 		}
 	}
 
+	pArray.AutoGrow(4);
 	unsigned int nRow;
 	do 
 	{ 
@@ -848,7 +836,7 @@ try
 
 	pHeapEntry.dwSize = sizeof(HEAPENTRY32);
 
-	if (!fpHeap32First(&pHeapEntry,(DWORD)p2.ev_long,(DWORD)p3.ev_long))
+	if (!fpHeap32First(&pHeapEntry, p2.ev_long, p3.ev_long))
 	{
 		nLastError = GetLastError();
 		if (nLastError == ERROR_NO_MORE_FILES)
@@ -863,16 +851,17 @@ try
 		}
 	}
 
+	pArray.AutoGrow(32);
 	unsigned int nRow;
 	do
 	{
 		nRow = pArray.Grow();
-		pArray(nRow,1) = (int)pHeapEntry.dwSize;
-		pArray(nRow,2) = (int)pHeapEntry.hHandle;
-		pArray(nRow,3) = (int)pHeapEntry.dwAddress;
-		pArray(nRow,4) = (int)pHeapEntry.dwBlockSize;
-		pArray(nRow,5) = (int)pHeapEntry.dwFlags;
-		pArray(nRow,6) = (int)pHeapEntry.dwLockCount;
+		pArray(nRow,1) = pHeapEntry.dwSize;
+		pArray(nRow,2) = pHeapEntry.hHandle;
+		pArray(nRow,3) = pHeapEntry.dwAddress;
+		pArray(nRow,4) = pHeapEntry.dwBlockSize;
+		pArray(nRow,5) = pHeapEntry.dwFlags;
+		pArray(nRow,6) = pHeapEntry.dwLockCount;
 	} while(fpHeap32Next(&pHeapEntry));
 
 	nLastError = GetLastError();
@@ -900,8 +889,7 @@ try
 	FoxString vRetVal(p3.ev_long);
 	SIZE_T dwRead;
 
-	if (fpToolhelp32ReadProcessMemory((DWORD)p1.ev_long,(LPCVOID)p2.ev_long,
-		vRetVal,(SIZE_T)p3.ev_long,&dwRead))
+	if (fpToolhelp32ReadProcessMemory(p1.ev_long, reinterpret_cast<LPCVOID>(p2.ev_long), vRetVal, static_cast<SIZE_T>(p3.ev_long), &dwRead))
 		vRetVal.Len(dwRead);
 	else
 		vRetVal.Len(0);
@@ -925,7 +913,7 @@ try
 	sEnum.pArray.Dimension(p1,1);
 	sEnum.pBuffer.Size(RESOURCE_ENUM_TYPELEN);
 
-	if (!EnumResourceTypes((HMODULE)p2.ev_long,(ENUMRESTYPEPROC)ResourceTypesEnumCallback,(LONG)&sEnum))
+	if (!EnumResourceTypes(reinterpret_cast<HMODULE>(p2.ev_long),(ENUMRESTYPEPROC)ResourceTypesEnumCallback, reinterpret_cast<LONG>(&sEnum)))
 	{
 		SAVEWIN32ERROR(EnumResourceTypes,GetLastError());
 		throw E_APIERROR;
@@ -941,12 +929,12 @@ catch(int nErrorNo)
 
 BOOL _stdcall ResourceTypesEnumCallback(HANDLE hModule, LPSTR lpszType, LONG nParam)  
 {
-	LPRESOURCEENUMPARAM pEnum = (LPRESOURCEENUMPARAM)nParam;
+	LPRESOURCEENUMPARAM pEnum = reinterpret_cast<LPRESOURCEENUMPARAM>(nParam);
 	pEnum->pArray.Grow();
 	if ((ULONG)lpszType & 0xFFFF0000) 
 		pEnum->pArray = pEnum->pBuffer = lpszType;
 	else
-		pEnum->pArray = (int)(unsigned short)lpszType;
+		pEnum->pArray = reinterpret_cast<unsigned short>(lpszType);
 	return TRUE;		
 }
 
@@ -966,14 +954,13 @@ try
 	if (Vartype(p3) == 'C')
 		pResourceType = pType;
 	else if (Vartype(p3) == 'I')
-        pResourceType = (char*)p3.ev_long; 
+        pResourceType = reinterpret_cast<char*>(p3.ev_long); 
 	else if (Vartype(p3) == 'N')
-		pResourceType = (char*)(int)p3.ev_real;
+		pResourceType = reinterpret_cast<char*>(static_cast<int>(p3.ev_real));
 	else
 		throw E_INVALIDPARAMS;
 
-	if (!EnumResourceNames((HMODULE)p2.ev_long,pResourceType,
-		(ENUMRESNAMEPROC)ResourceNamesEnumCallback,(LONG_PTR)&sEnum))
+	if (!EnumResourceNames(reinterpret_cast<HMODULE>(p2.ev_long), pResourceType, (ENUMRESNAMEPROC)ResourceNamesEnumCallback, reinterpret_cast<LONG_PTR>(&sEnum)))
 	{
 		SAVEWIN32ERROR(EnumResourceNames,GetLastError());
 		throw E_APIERROR;
@@ -989,12 +976,12 @@ catch(int nErrorNo)
 
 BOOL _stdcall ResourceNamesEnumCallback(HANDLE hModule, LPCSTR lpszType, LPSTR lpszName, LONG_PTR nParam)
 {
-	LPRESOURCEENUMPARAM pEnum = (LPRESOURCEENUMPARAM)nParam;
+	LPRESOURCEENUMPARAM pEnum = reinterpret_cast<LPRESOURCEENUMPARAM>(nParam);
 	pEnum->pArray.Grow();
 	if ((ULONG)lpszName & 0xFFFF0000)
 		pEnum->pArray = pEnum->pBuffer = lpszName;
 	else
-		pEnum->pArray = (int)lpszName;
+		pEnum->pArray = reinterpret_cast<int>(lpszName);
 	return TRUE;
 }
 
@@ -1015,23 +1002,22 @@ try
 	if (Vartype(p3) == 'C')
 		pResourceType = pType;
 	else if (Vartype(p3) == 'I')
-		pResourceType = (char*)p3.ev_long;
+		pResourceType = reinterpret_cast<char*>(p3.ev_long);
 	else if (Vartype(p3) == 'N')
-		pResourceType = (char*)(int)p3.ev_real;
+		pResourceType = reinterpret_cast<char*>(static_cast<int>(p3.ev_real));
 	else
 		throw E_INVALIDPARAMS;
 
 	if (Vartype(p4) == 'C')
         pResourceName = pName;
 	else if (Vartype(p4) == 'I')
-		pResourceName = (char*)p4.ev_long;
+		pResourceName = reinterpret_cast<char*>(p4.ev_long);
 	else if (Vartype(p4) == 'N')
-		pResourceName = (char*)(int)p4.ev_real;
+		pResourceName = reinterpret_cast<char*>(static_cast<int>(p4.ev_real));
 	else
 		throw E_INVALIDPARAMS;
 
-	if (!EnumResourceLanguages((HMODULE)p2.ev_long,pResourceType,pResourceName,
-		(ENUMRESLANGPROC)ResourceLangEnumCallback,(LONG)&sEnum))
+	if (!EnumResourceLanguages(reinterpret_cast<HMODULE>(p2.ev_long), pResourceType, pResourceName, (ENUMRESLANGPROC)ResourceLangEnumCallback, reinterpret_cast<LONG>(&sEnum)))
 	{
 		SAVEWIN32ERROR(EnumResourceLanguages,GetLastError());
 		throw E_APIERROR;
@@ -1045,12 +1031,11 @@ catch(int nErrorNo)
 }
 }
 
-BOOL _stdcall ResourceLangEnumCallback(HANDLE hModule, LPCSTR lpszType, LPCSTR lpszName,
-									   WORD wIDLanguage, LONG nParam)
+BOOL _stdcall ResourceLangEnumCallback(HANDLE hModule, LPCSTR lpszType, LPCSTR lpszName, WORD wIDLanguage, LONG nParam)
 {
-	LPRESOURCEENUMPARAM pEnum = (LPRESOURCEENUMPARAM)nParam;
+	LPRESOURCEENUMPARAM pEnum = reinterpret_cast<LPRESOURCEENUMPARAM>(nParam);
 	pEnum->pArray.Grow();
-	pEnum->pArray = (int)wIDLanguage;
+	pEnum->pArray = wIDLanguage;
 	return TRUE;
 }
 
@@ -1071,14 +1056,15 @@ try
 	sDevMode.dmSize = sizeof(DEVMODE);
 
 	DWORD dwRes = 0;
-	while (fpEnumDisplaySettings(pDevice,dwRes++,&sDevMode))
+	unsigned int nRow;
+	pArray.AutoGrow(32);
+	while (fpEnumDisplaySettings(pDevice, dwRes++, &sDevMode))
 	{
-		unsigned int nRow;
 		nRow = pArray.Grow();
-		pArray(nRow,1) = (int)sDevMode.dmPelsWidth;
-		pArray(nRow,2) = (int)sDevMode.dmPelsHeight;
-		pArray(nRow,3) = (int)sDevMode.dmBitsPerPel;
-		pArray(nRow,4) = (int)sDevMode.dmDisplayFrequency;
+		pArray(nRow,1) = sDevMode.dmPelsWidth;
+		pArray(nRow,2) = sDevMode.dmPelsHeight;
+		pArray(nRow,3) = sDevMode.dmBitsPerPel;
+		pArray(nRow,4) = sDevMode.dmDisplayFrequency;
 	}
 
 	if (IS_WIN2KXP())
@@ -1113,14 +1099,14 @@ try
 	sDevice.cb = sizeof(DISPLAY_DEVICE);
 	DWORD dwDev = 0;
 	unsigned int nRow;
-	while (fpEnumDisplayDevices(pDevice,dwDev++,&sDevice,0))
+	while (fpEnumDisplayDevices(pDevice, dwDev++, &sDevice, 0))
 	{
 		nRow = pArray.Grow();
 		pArray(nRow,1) = pBuffer = sDevice.DeviceString;
 		pArray(nRow,2) = pBuffer = sDevice.DeviceName;
 		pArray(nRow,3) = pBuffer = sDevice.DeviceID;
 		pArray(nRow,4) = pBuffer = sDevice.DeviceKey;
-		pArray(nRow,5) = (int)sDevice.StateFlags;
+		pArray(nRow,5) = sDevice.StateFlags;
 	}
 
 	pArray.ReturnRows();

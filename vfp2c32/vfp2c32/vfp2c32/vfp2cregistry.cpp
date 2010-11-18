@@ -2,11 +2,11 @@
 
 #include "pro_ext.h"
 #include "vfp2c32.h"
-#include "vfpmacros.h"
 #include "vfp2cutil.h"
 #include "vfp2cregistry.h"
 #include "vfp2ccppapi.h"
 #include "vfp2chelpers.h"
+#include "vfpmacros.h"
 
 void _fastcall CreateRegistryKey(ParamBlk *parm)
 {
@@ -14,7 +14,7 @@ try
 {
 	RESETWIN32ERRORS();
 	
-	HKEY hRoot = (HKEY)p1.ev_long;
+	HKEY hRoot = reinterpret_cast<HKEY>(p1.ev_long);
 	FoxString pKey(p2);
 	REGSAM nKeyRights = (PCOUNT() < 3) ? KEY_ALL_ACCESS : p3.ev_long;
 	DWORD nOptions = (PCOUNT() < 4) ? REG_OPTION_NON_VOLATILE : p4.ev_long;
@@ -37,7 +37,7 @@ try
 {
 	RESETWIN32ERRORS();
 
-	HKEY hRoot = (HKEY)p1.ev_long;
+	HKEY hRoot = reinterpret_cast<HKEY>(p1.ev_long);
 	FoxString pKey(p2);
 	bool bShell = PCOUNT() == 2 || p3.ev_long != REG_DELETE_NORMAL;
 	RegistryKey hKey;
@@ -56,14 +56,14 @@ try
 {
 	RESETWIN32ERRORS();
 
-	HKEY hRoot = (HKEY)p1.ev_long;
+	HKEY hRoot = reinterpret_cast<HKEY>(p1.ev_long);
 	FoxString pKeyName(p2);
 	REGSAM nKeyRights = (PCOUNT() == 2) ? KEY_ALL_ACCESS : (REGSAM)p3.ev_long;
 
 	RegistryKey hKey;
 
 	hKey.Open(hRoot,pKeyName,nKeyRights);
-	Return((int)hKey.Detach());
+	Return(hKey.Detach());
 }
 catch(int nErrorNo)
 {
@@ -73,11 +73,10 @@ catch(int nErrorNo)
 
 void _fastcall CloseRegistryKey(ParamBlk *parm)
 {
-	LONG nApiRet;
-
 	RESETWIN32ERRORS();
 
-	if ((nApiRet = RegCloseKey((HKEY)p1.ev_long)) != ERROR_SUCCESS)
+	LONG nApiRet = RegCloseKey(reinterpret_cast<HKEY>(p1.ev_long));
+	if (nApiRet != ERROR_SUCCESS)
 	{
 		SAVEWIN32ERROR(RegCloseKey,nApiRet);
 		RaiseError(E_APIERROR);
@@ -90,7 +89,7 @@ try
 {
 	RESETWIN32ERRORS();
 	
-	HKEY hRoot = (HKEY)p1.ev_long;
+	HKEY hRoot = reinterpret_cast<HKEY>(p1.ev_long);
 	FoxString pValue(parm,2);
 	FoxString pKeyName(parm,3);
 
@@ -150,7 +149,7 @@ try
 {
 	RESETWIN32ERRORS();
 
-	HKEY hRoot = (HKEY)p1.ev_long;
+	HKEY hRoot = reinterpret_cast<HKEY>(p1.ev_long);
 	
 	FoxString pData(parm,2,0);
 	FoxString pValueName(parm,3);
@@ -181,13 +180,13 @@ try
 			throw E_INVALIDPARAMS;
 	}
 	else
-		nValueType = (DWORD)p5.ev_long;
+		nValueType = p5.ev_long;
 
 	if (Vartype(p2) == 'C')
 	{
 		if (REG_KEY_STRING(nValueType))
 		{
-			pData.Expand();
+			pData.Expand(1);
 			pData.Len(pData.Len()+1);
 		}
 		pValueData = pData;
@@ -197,25 +196,25 @@ try
 	{
 		if (nValueType == REG_DWORD)
 		{
-			nDWord = (DWORD)p2.ev_real;
-			pValueData = (BYTE*)&nDWord;
+			nDWord = static_cast<DWORD>(p2.ev_real);
+			pValueData = reinterpret_cast<BYTE*>(&nDWord);
 			nValueSize = sizeof(DWORD);
 		}
 		else if (nValueType == REG_QWORD)
 		{
-			nQWord = (unsigned __int64)p2.ev_real;
-            pValueData = (BYTE*)&nQWord;
+			nQWord = static_cast<unsigned __int64>(p2.ev_real);
+            pValueData = reinterpret_cast<BYTE*>(&nQWord);
 			nValueSize = sizeof(unsigned __int64);
 		}
 		else if (nValueType == REG_DOUBLE)
 		{
-			pValueData = (BYTE*)&p2.ev_real;
+			pValueData = reinterpret_cast<BYTE*>(&p2.ev_real);
 			nValueSize = sizeof(double);
 		}
 		else if (nValueType == REG_INTEGER)
 		{
-			p2.ev_long = (int)p2.ev_real;
-			pValueData = (BYTE*)&p2.ev_long;
+			p2.ev_long = static_cast<int>(p2.ev_real);
+			pValueData = reinterpret_cast<BYTE*>(&p2.ev_long);
 			nValueSize = sizeof(int);
 		}
 	}
@@ -223,41 +222,41 @@ try
 	{
 		if (nValueType == REG_DWORD)
 		{
-			nDWord = (DWORD)p2.ev_long;
-			pValueData = (BYTE*)&nDWord;
+			nDWord = p2.ev_long;
+			pValueData = reinterpret_cast<BYTE*>(&nDWord);
 			nValueSize = sizeof(DWORD);
 		}
 		else if (nValueType == REG_QWORD)
 		{
-			nQWord = (unsigned __int64)p2.ev_long;
-            pValueData = (BYTE*)&nQWord;
+			nQWord = static_cast<unsigned __int64>(p2.ev_long);
+            pValueData = reinterpret_cast<BYTE*>(&nQWord);
 			nValueSize = sizeof(unsigned __int64);
 		}
 		else if (nValueType == REG_INTEGER)
 		{
-			pValueData = (BYTE*)&p2.ev_long;
+			pValueData = reinterpret_cast<BYTE*>(&p2.ev_long);
 			nValueSize = sizeof(int);
 		}
 		else if (nValueType == REG_DOUBLE)
 		{
-			p2.ev_real = (double)p2.ev_long;
-			pValueData = (BYTE*)&p2.ev_real;
+			p2.ev_real = static_cast<double>(p2.ev_long);
+			pValueData = reinterpret_cast<BYTE*>(&p2.ev_real);
 			nValueSize = sizeof(double);
 		}
 	}
 	else if (Vartype(p2) == 'D')
 	{
-        pValueData = (BYTE*)&p2.ev_real;
+        pValueData = reinterpret_cast<BYTE*>(&p2.ev_real);
 		nValueSize = sizeof(double);
 	}
 	else if (Vartype(p2) == 'T')
 	{
-		pValueData = (BYTE*)&p2.ev_real;
+		pValueData = reinterpret_cast<BYTE*>(&p2.ev_real);
 		nValueSize = sizeof(double);
 	}
 	else if (Vartype(p2) == 'L')
 	{
-		pValueData = (BYTE*)&p2.ev_length;
+		pValueData = reinterpret_cast<BYTE*>(&p2.ev_length);
 		nValueSize = sizeof(DWORD);
 	}
 	else	
@@ -281,9 +280,9 @@ try
 	RESETWIN32ERRORS();
 
 	FoxArray pArray(p1);
-	HKEY hRoot = (HKEY)p2.ev_long;
+	HKEY hRoot = reinterpret_cast<HKEY>(p2.ev_long);
 	FoxString pKeyName(p3);
-	DWORD dwFlags = PCOUNT() == 4 ? (DWORD)p4.ev_long : 0;
+	DWORD dwFlags = PCOUNT() == 4 ? p4.ev_long : 0;
 
 	RegistryKey hKey;
 
@@ -363,9 +362,9 @@ try
 	RESETWIN32ERRORS();
 
 	FoxArray pArray(p1);
-	HKEY hRoot = (HKEY)p2.ev_long;
+	HKEY hRoot = reinterpret_cast<HKEY>(p2.ev_long);
 	FoxString pKeyName(p3);
-	DWORD dwFlags = PCOUNT() == 4 ? (DWORD)p4.ev_long : 0;
+	DWORD dwFlags = PCOUNT() == 4 ? p4.ev_long : 0;
 
 	RegistryKey hKey;
 	FoxString pValueName;
@@ -482,7 +481,7 @@ try
 {
 	RESETWIN32ERRORS();
 
-	HKEY hRoot = (HKEY)p1.ev_long;
+	HKEY hRoot = reinterpret_cast<HKEY>(p1.ev_long);
 	FoxString pKeyName(p2);
 	FoxObject pObject(p3);
 
@@ -528,35 +527,35 @@ try
 			case REG_BINARY:
 				pValue.Binary(nValueType == REG_BINARY);
 				pValue.Len(nValueLen);
-				pObject(pValueName) = pValue;
+				pObject(pValueName) << pValue;
 				break;
 
 			case REG_DWORD:
-				pObject(pValueName) = *(DWORD*)pRegValue;
+				pObject(pValueName) << *(DWORD*)pRegValue;
 				break;
 
 			case REG_QWORD:
-				pObject(pValueName) = *(__int64*)pRegValue;
+				pObject(pValueName) << *(__int64*)pRegValue;
 				break;
 
 			case REG_INTEGER:
-				pObject(pValueName) = *(int*)pRegValue;
+				pObject(pValueName) << *(int*)pRegValue;
 				break;
 
 			case REG_DOUBLE:
-				pObject(pValueName) = *(double*)pRegValue;
+				pObject(pValueName) << *(double*)pRegValue;
 				break;
 
 			case REG_DATE:
-				pObject(pValueName) = pDate = *(double*)pRegValue;
+				pObject(pValueName) << (pDate = (*(double*)pRegValue));
 				break;
 
 			case REG_DATETIME:
-				pObject(pValueName) = pDateTime = *(double*)pRegValue;
+				pObject(pValueName) << (pDateTime = *(double*)pRegValue);
 				break;
 
 			case REG_LOGICAL:
-				pObject(pValueName) = (*(DWORD*)pRegValue) > 0;
+				pObject(pValueName) << ((*(DWORD*)pRegValue) > 0);
 				break;
 		}
 
@@ -581,7 +580,7 @@ try
 {
 	RESETWIN32ERRORS();
 	
-	HKEY hRoot = (HKEY)p1.ev_long;
+	HKEY hRoot = reinterpret_cast<HKEY>(p1.ev_long);
 	FoxString pKeyName(p2);
 	FoxObject pObject(p3);
 	RegistryHiveSubroutine(hRoot,pKeyName,pObject);
@@ -597,9 +596,6 @@ void _stdcall RegistryHiveSubroutine(HKEY hRoot, char* pKey, FoxObject& pObject)
 {
 	RegistryKey hKey;
 	FoxString pValue;
-	FoxObject pObjectEx;
-	FoxDate pDate;
-	FoxDateTime pDateTime;
 	CStr pName, pProperty, pSubKey;
 	DWORD nValues, nValueNameLen, nValueLen, nValueType, nSubKeys, nSubKeyLen;
 	LPBYTE pRegValue;
@@ -612,7 +608,7 @@ void _stdcall RegistryHiveSubroutine(HKEY hRoot, char* pKey, FoxObject& pObject)
 		pValue.Size(nValueLen);
 	pRegValue = pValue;
 
-	pName.Size(max(nSubKeyLen,nValueNameLen));
+	pName.Size(max(nSubKeyLen, nValueNameLen));
 	if (nSubKeys > 0)
 		pSubKey.Size(nSubKeyLen + strlen(pKey) + 1);
 	
@@ -620,6 +616,9 @@ void _stdcall RegistryHiveSubroutine(HKEY hRoot, char* pKey, FoxObject& pObject)
 	
 	if (nValues > 0)
 	{
+		FoxDate pDate;
+		FoxDateTime pDateTime;
+
 		bRet = hKey.EnumFirstValue(pName,&nValueNameLen,pValue,&nValueLen,&nValueType);
 
 		while (bRet)
@@ -635,35 +634,35 @@ void _stdcall RegistryHiveSubroutine(HKEY hRoot, char* pKey, FoxObject& pObject)
 				case REG_BINARY:
 					pValue.Binary(nValueType == REG_BINARY);
 					pValue.Len(nValueLen);
-					pObject(pProperty) = pValue;
+					pObject(pProperty) << pValue;
 					break;
 
 				case REG_DWORD:
-					pObject(pProperty) = *(DWORD*)pRegValue;
+					pObject(pProperty) << *(DWORD*)pRegValue;
 					break;
 
 				case REG_QWORD:
-					pObject(pProperty) = *(__int64*)pRegValue;
+					pObject(pProperty) << *(__int64*)pRegValue;
 					break;
 
 				case REG_INTEGER:
-					pObject(pProperty) = *(int*)pRegValue;
+					pObject(pProperty) << *(int*)pRegValue;
 					break;
 
 				case REG_DOUBLE:
-					pObject(pProperty) = *(double*)pRegValue;
+					pObject(pProperty) << *(double*)pRegValue;
 					break;
 
 				case REG_DATE:
-					pObject(pProperty) = pDate = *(double*)pRegValue;
+					pObject(pProperty) << (pDate = *(double*)pRegValue);
 					break;
 
 				case REG_DATETIME:
-					pObject(pProperty) = pDateTime = *(double*)pRegValue;
+					pObject(pProperty) << (pDateTime = *(double*)pRegValue);
 					break;
 
 				case REG_LOGICAL:
-					pObject(pProperty) = (*(DWORD*)pRegValue) > 0;
+					pObject(pProperty) << ((*(DWORD*)pRegValue) > 0);
 					break;
 			}
 
@@ -678,10 +677,11 @@ void _stdcall RegistryHiveSubroutine(HKEY hRoot, char* pKey, FoxObject& pObject)
 		bRet = hKey.EnumFirstKey(pName,&nSubKeyLen);
 		while (bRet)
 		{
+			FoxObject pObjectEx;
 			pProperty = pName.Len(nSubKeyLen);
 			pProperty.RegValueToPropertyName();
 			pObjectEx.EmptyObject();
-			pObject(pProperty) = pObjectEx;
+			pObject(pProperty) << pObjectEx;
 
 			pSubKey = pKey;
 			pSubKey += "\\";

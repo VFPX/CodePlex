@@ -1,12 +1,10 @@
 #ifndef _VFP2CCOMCALL_H__
 #define _VFP2CCOMCALL_H__
 
-#include "windows.h"
+#include <windows.h>
 #include "pro_ext.h"
 #include "vfp2c32.h"
 #include <vector>
-
-using namespace std;
 
 typedef HRESULT (_stdcall *PDLLGETCLASSOBJECT)(REFCLSID, REFIID, LPVOID*); // DllGetClassObject
 typedef HRESULT (_stdcall *PLOADTYPELIBEX)(LPCOLESTR, REGKIND, ITypeLib**); // LoadTypeLibEx
@@ -22,7 +20,7 @@ public:
 
 private:
 	HMODULE m_hDll;
-	vector<DWORD> m_CoClasses;
+	std::vector<DWORD> m_CoClasses;
 };
 
 #define VFP2C_COMCALL_PARMOFFSET 3

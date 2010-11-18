@@ -5,7 +5,6 @@
 
 #include "pro_ext.h"
 #include "vfp2c32.h"
-#include "vfpmacros.h"
 #include "vfp2ccppapi.h"
 #include "vfp2cutil.h"
 #include "vfp2chelpers.h"
@@ -25,18 +24,6 @@ CStr::~CStr()
 {
 	if (m_String)
 		delete[] m_String;
-}
-
-CStr& CStr::Len(unsigned int nLen)
-{
-	assert(nLen <= m_Size);
-	m_Length = nLen;
-	return *this;
-}
-
-unsigned int CStr::Len() const
-{
-	return m_Length;
 }
 
 void CStr::Size(unsigned int nSize)
@@ -68,11 +55,6 @@ void CStr::Size(unsigned int nSize)
 		m_String = pTmp;
 		m_Size = nSize;
 	}
-}
-
-unsigned int CStr::Size() const
-{
-	return m_Size;
 }
 
 CStr& CStr::AddBs()
@@ -290,64 +272,39 @@ unsigned int CStr::Format(const char *lpFormat,...)
   return lpString - m_String;
 }
 
-CStr& CStr::operator=(const CStr &pStr)
+CStr& CStr::operator=(const CStr &pString)
 {
-	unsigned int nSize = pStr.Size();
-	if (m_String && m_Size < nSize)
-	{
-		delete[] m_String;
-		m_String = new char[nSize];
-		if (m_String == 0)
-			throw E_INSUFMEMORY;
-		m_Size = nSize;
-	}
-	m_Length = pStr.Len();
-	memcpy(m_String,pStr,m_Length+1);
+	unsigned int nSize = pString.Size();
+	Size(nSize);
+	m_Length = pString.Len();
+	memcpy(m_String, pString, m_Length+1);
 	return *this;
 }
 
 CStr& CStr::operator=(const char *pString)
 {
 	unsigned int nLen = strlen(pString) + 1;
-	if (m_String == 0)
-	{
-		m_String = new char[nLen];
-		if (m_String == 0)
-			throw E_INSUFMEMORY;
-		m_Size = nLen;
-	}
-	else if (m_Size < nLen)
-	{
-		delete[] m_String;
-		m_String = new char[nLen];
-		if (m_String == 0)
-			throw E_INSUFMEMORY;
-		m_Size = nLen;
-	}
+	Size(nLen);
 	memcpy(m_String,pString,nLen);
 	m_Length = nLen - 1;
+	return *this;
+}
+
+CStr& CStr::operator+=(const CStr &pString)
+{
+	unsigned int nLen = pString.Len() + 1;
+	Size(nLen + m_Length);
+	memcpy(m_String + m_Length, pString, nLen);
+	m_Length += nLen - 1;
 	return *this;
 }
 
 CStr& CStr::operator+=(const char *pString)
 {
 	unsigned int nLen = strlen(pString) + 1;
-	if (m_String != 0)
-	{
-		if (m_Size < nLen + m_Length)
-			Size(nLen + m_Length);
-		memcpy(m_String + m_Length,pString,nLen);
-		m_Length += nLen - 1;
-	}
-	else
-	{
-		m_String = new char[nLen];
-		if (m_String == 0)
-			throw E_INSUFMEMORY;
-		memcpy(m_String + m_Length,pString,nLen);
-		m_Length = nLen - 1;
-		m_Size = nLen;
-	}
+	Size(nLen + m_Length);
+	memcpy(m_String + m_Length, pString, nLen);
+	m_Length += nLen - 1;
 	return *this;
 }
 

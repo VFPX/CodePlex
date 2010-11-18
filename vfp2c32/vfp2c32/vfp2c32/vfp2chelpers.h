@@ -4,6 +4,7 @@
 #include <shlwapi.h>
 #include <list>
 #include <algorithm>
+#include <assert.h>
 
 /* Some helper classes */
 class CStr
@@ -13,10 +14,11 @@ public:
 	CStr(unsigned int nSize);
 	~CStr();
 
-	unsigned int Len() const;
-	CStr& Len(unsigned int nLen);
-	unsigned int Size() const;
+	unsigned int Len() const { return m_Length; }
+	CStr& Len(unsigned int nLen) { assert(nLen <= m_Size); m_Length = nLen; return *this; }
+	unsigned int Size() const { return m_Size; }
 	void Size(unsigned int nSize);
+
 	CStr& AddBs();
 	CStr& AddBsWc();
 	CStr& AddLastPath(const char *pPath);
@@ -26,8 +28,9 @@ public:
 	CStr& RegValueToPropertyName();
 	unsigned int Format(const char *pFormat,...);
 
-	CStr& operator=(const CStr &pStr);
+	CStr& operator=(const CStr &pString);
 	CStr& operator=(const char *pString);
+	CStr& operator+=(const CStr &pString);
 	CStr& operator+=(const char *pString);
 	bool operator==(const char *pString) const;
 
@@ -64,7 +67,7 @@ private:
 class AbstractHandle
 {
 public:
-	AbstractHandle() : m_Handle(INVALID_HANDLE_VALUE) { }
+ 	AbstractHandle() : m_Handle(INVALID_HANDLE_VALUE) { }
 	~AbstractHandle() {}
 
 	operator HANDLE() { return m_Handle; }
@@ -80,7 +83,7 @@ protected:
 class ApiHandle : public AbstractHandle
 {
 public:
-	ApiHandle() {}
+  	ApiHandle() {}
 	ApiHandle(HANDLE hHandle) { m_Handle = hHandle; }
 	~ApiHandle() { if (m_Handle != INVALID_HANDLE_VALUE) CloseHandle(m_Handle); }
 	void operator=(HANDLE hHandle) { if (m_Handle != INVALID_HANDLE_VALUE) CloseHandle(m_Handle); m_Handle = hHandle; }

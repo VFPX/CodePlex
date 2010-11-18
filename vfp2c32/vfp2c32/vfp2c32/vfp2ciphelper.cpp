@@ -2,11 +2,11 @@
 
 #include "pro_ext.h"
 #include "vfp2c32.h"
-#include "vfpmacros.h"
 #include "vfp2ciphelper.h"
 #include "vfp2cwinsock.h"
 #include "vfp2ccppapi.h"
 #include "vfp2chelpers.h"
+#include "vfpmacros.h"
 
 static HMODULE hIpHlpApi = 0;
 static HMODULE hIcmpApi = 0;
@@ -56,7 +56,7 @@ bool IcmpFile::Ping(long Ip)
 	nPackets = fpIcmpSendEcho(m_Handle,Ip,m_Data,m_DataSize,&m_IpOptions,m_Reply,m_ReplySize,m_TimeOut);
 	if (nPackets > 0)
 	{
-		m_pEcho = (LPICMPECHO)(void*)m_Reply;
+		m_pEcho = reinterpret_cast<LPICMPECHO>(m_Reply.Address());
 		return true;
 	}
 	else
@@ -82,8 +82,7 @@ int IcmpFile::Status()
 
 bool IcmpFile::ValidData()
 {
-	char *pReply = (char*)m_pEcho->pData;
-	return memcmp(pReply,m_Data,min(m_pEcho->wDataSize,m_DataSize)) == 0;
+	return memcmp(m_pEcho->pData, m_Data, min(m_pEcho->wDataSize, m_DataSize)) == 0;
 }
 
 bool _stdcall VFP2C_Init_IpHelper()
@@ -164,11 +163,9 @@ catch(int nErrorNo)
 
 void _stdcall Binary2Mac(char *pBuffer, unsigned char *pBinMac)
 {
-	const char *pBuffEx = pBuffer;
 	char pHexDigit;
-	int xj;
 
-	for (xj = 0; xj < 5; xj++)
+	for (int xj = 0; xj < 5; xj++)
 	{
 		pHexDigit = (*pBinMac >> 4) + '0';
 		if (pHexDigit > '9')
@@ -209,12 +206,12 @@ try
 	FoxString pIpBuffer(VFP2C_MAX_IP_LEN);
 	IcmpFile pIcmp;
 
-	BYTE nTTL = PCOUNT() >= 3 && p3.ev_long ? (BYTE)p3.ev_long : 30;
-	BYTE nTos = PCOUNT() >= 4 && p4.ev_long ? (BYTE)p4.ev_long : 0;
+	BYTE nTTL = PCOUNT() >= 3 && p3.ev_long ? static_cast<BYTE>(p3.ev_long) : 30;
+	BYTE nTos = PCOUNT() >= 4 && p4.ev_long ? static_cast<BYTE>(p4.ev_long) : 0;
 	DWORD dwTimeout = PCOUNT() >= 5 && p5.ev_long ? p5.ev_long : 3000;
-	WORD nDataSize = PCOUNT() >= 6 && p6.ev_long ? (WORD)p6.ev_long : 32;
+	WORD nDataSize = PCOUNT() >= 6 && p6.ev_long ? static_cast<WORD>(p6.ev_long) : 32;
 	bool bDontFragment = PCOUNT() >= 7 && p7.ev_length;
-	int nPingCount = PCOUNT() >= 8 && p8.ev_long ? (DWORD)p8.ev_long : 1;
+	int nPingCount = PCOUNT() >= 8 && p8.ev_long ? p8.ev_long : 1;
 
 	unsigned long Ip;
 	LPHOSTENT lpHostEnt;
@@ -234,7 +231,7 @@ try
 	}
 
 	pArray.Dimension(nPingCount,4);
-	pIcmp.SetOptions(nTTL,nTos,dwTimeout,nDataSize,bDontFragment);
+	pIcmp.SetOptions(nTTL,nTos, dwTimeout, nDataSize, bDontFragment);
 
 	for (int xj = 1; xj <= nPingCount; xj++)
 	{
