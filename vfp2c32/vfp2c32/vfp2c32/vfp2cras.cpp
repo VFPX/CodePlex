@@ -4,8 +4,8 @@
 #include "vfp2c32.h"
 #include "vfp2cutil.h"
 #include "vfp2cras.h"
-#include "vfpmacros.h"
 #include "vfp2ccppapi.h"
+#include "vfpmacros.h"
 
 static HMODULE hRasApi32 = 0;
 static HMODULE hRasDlg = 0;
@@ -338,7 +338,7 @@ try
 	RASPBDLG sDialog = {0};
 	sDialog.dwSize = sizeof(RASPBDLG);
 	sDialog.hwndOwner = WTopHwnd();
-	sDialog.dwFlags = PCOUNT() >= 4 ? static_cast<DWORD>(p4.ev_long) : 0;
+	sDialog.dwFlags = PCOUNT() >= 4 ? p4.ev_long : 0;
 
 	RasPhonebookDlgCallback sCallback;
 
@@ -396,7 +396,7 @@ DWORD RasDialCallback::Callback2(DWORD dwSubEntry, HRASCONN hrasconn,
 		if (Vartype(vRetVal) == 'I')
 			return vRetVal.ev_long;
 		else if (Vartype(vRetVal) == 'N')
-			return (DWORD)vRetVal.ev_real;
+			return static_cast<DWORD>(vRetVal.ev_real);
 		else if (Vartype(vRetVal) == 'L')
 			return vRetVal.ev_length;
 		else
@@ -469,7 +469,7 @@ try
 
 	RASDIALEXTENSIONS sDialExtensions = {0};
 	sDialExtensions.dwSize = sizeof(RASDIALEXTENSIONS);
-	sDialExtensions.dwfOptions = PCOUNT() >= 4 ? static_cast<DWORD>(p4.ev_long) : 0;
+	sDialExtensions.dwfOptions = PCOUNT() >= 4 ? p4.ev_long : 0;
 
 	if (pEntry.Len())
 	{
@@ -776,7 +776,7 @@ try
 		throw E_NOENTRYPOINT;
 
 	HRASCONN hConn = reinterpret_cast<HRASCONN>(p1.ev_long);
-	DWORD dwFlags = static_cast<DWORD>(p2.ev_long);
+	DWORD dwFlags = p2.ev_long;
 	FoxString pCallback(p3);
 
 	if (!goThreadManager.Initialized())

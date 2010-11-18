@@ -6,7 +6,6 @@
 
 #include "pro_ext.h"
 #include "vfp2c32.h"
-#include "vfpmacros.h"
 #include "vfp2cutil.h"
 #include "vfp2ccppapi.h"
 
@@ -69,26 +68,6 @@ int _stdcall ASubscripts(Locator *pLoc, int *nRows, int *nDims)
 		return E_NOTANARRAY;
 	*nDims = _ALen(pLoc->l_NTI,AL_SUBSCRIPT2);
 	return 0;
-}
-
-// fills a locator to a variable/or creates it if necessary
-int _stdcall CreateFoxVar(char *pName, Locator *pLoc, int nScope)
-{
-	NTI nVarNti;
-	nVarNti = _NameTableIndex(pName);
-	if (nVarNti == -1)
-	{
-		pLoc->l_subs = 0;
-		return _NewVar(pName,pLoc,nScope);
-	}
-	else
-	{
-		if (_FindVar(nVarNti,-1,pLoc))
-			return nVarNti;
-
-		pLoc->l_subs = 0;
-		return _NewVar(pName,pLoc,nScope);
-	}
 }
 
 // fill a Locator with a reference to a FoxPro variable
@@ -213,35 +192,7 @@ int _stdcall StoreEx(Locator *pLoc, Value *pValue)
 		return _DBReplace(pLoc,pValue);
 }
 
-void _stdcall StoreObjectRef(char *pName, NTI &nVarNti, Value &sObject)
-{
-	Locator lVar;
-	Value vTmpObject = {'0'};
-	if (nVarNti)
-	{
-		FindVar(nVarNti,lVar);
-		// increment reference count by calling evaluate
-		Evaluate(vTmpObject,pName);
-		Store(lVar,sObject);
-		ObjectRelease(sObject);
-	}
-	else
-	{
-		nVarNti = NewVar(pName,lVar,true);
-		Store(lVar,sObject);
-		ObjectRelease(sObject);
-	}
-}
 
-void _stdcall ReleaseObjectRef(char *pName, NTI nVarNti)
-{
-	Value vObject = {'0'};
-	if (nVarNti)
-	{
-		_Evaluate(&vObject, pName);
-		_Release(nVarNti);
-	}
-}
 
 int _stdcall AllocMemo(Locator *pLoc, int nSize, long *nLoc)
 {
@@ -486,7 +437,7 @@ void _stdcall DateTimeToSystemTimeEx(Value *pDateTime, LPSYSTEMTIME pSysTime)
 	double dDays, dSecs;
 
 	dSecs = modf(pDateTime->ev_real,&dDays);
-	lnDays = (DWORD)dDays;
+	lnDays = static_cast<DWORD>(dDays);
 
 	lnA = lnDays + 32044;
 	lnB = (4 * lnA + 3) / 146097;

@@ -7,8 +7,8 @@
 #include "vfp2c32.h"
 #include "vfp2cutil.h"
 #include "vfp2cmarshal.h"
-#include "vfpmacros.h"
 #include "vfp2ccppapi.h"
+#include "vfpmacros.h"
 
 // handle to our default heap which is created at load time
 HANDLE ghHeap = 0;
@@ -71,7 +71,7 @@ try
 	FoxVariable pTempVar("__VFP2C_FLL_FILENAME", false);
 	FoxString pFllFileName(MAX_PATH);
 
-	pFllFileName.Len(GetModuleFileName(ghModule, pFllFileName, MAX_PATH));
+	pFllFileName.Len(GetModuleFileName(ghModule, pFllFileName, pFllFileName.Size()));
 	if (!pFllFileName.Len())
 	{
 		ADDWIN32ERROR(GetModuleFileName,GetLastError());
@@ -162,8 +162,7 @@ int _stdcall Win32HeapExceptionHandler(int nExceptionCode)
 
 void _stdcall AddDebugAlloc(void* pPointer, int nSize)
 {
-	Value vProgInfo;
-	vProgInfo.ev_type = '0';
+	FoxValue vProgInfo;
 	LPDBGALLOCINFO pDbg;	
 	char *pProgInfo = 0;
 
@@ -173,12 +172,9 @@ void _stdcall AddDebugAlloc(void* pPointer, int nSize)
 		if (!pDbg)
 			return;
 
-		_Evaluate(&vProgInfo, "ALLTRIM(STR(LINENO())) + ':' + PROGRAM() + CHR(0)");
-		if (Vartype(vProgInfo) == 'C')
-		{
-			pProgInfo = strdup(HandleToPtr(vProgInfo));
-			FreeHandle(vProgInfo);
-		}
+		_Evaluate(vProgInfo, "ALLTRIM(STR(LINENO())) + ':' + PROGRAM() + CHR(0)");
+		if (vProgInfo.Vartype() == 'C')
+			pProgInfo = strdup(vProgInfo.HandleToPtr());
 
 		pDbg->pPointer = pPointer;
 		pDbg->pProgInfo = pProgInfo;
@@ -217,8 +213,7 @@ void _stdcall RemoveDebugAlloc(void* pPointer)
 void _stdcall ReplaceDebugAlloc(void* pOrig, void* pNew, int nSize)
 {
 	LPDBGALLOCINFO pDbg = gpDbgInfo;
-	Value vProgInfo;
-	vProgInfo.ev_type = '0';
+	FoxValue vProgInfo;
 	char* pProgInfo = 0;
 
 	if (!pNew || !gbTrackAlloc)
@@ -229,12 +224,9 @@ void _stdcall ReplaceDebugAlloc(void* pOrig, void* pNew, int nSize)
 
     if (pDbg)
 	{
-		_Evaluate(&vProgInfo, "ALLTRIM(STR(LINENO())) + ':' + PROGRAM() + CHR(0)");
-		if (Vartype(vProgInfo) == 'C')
-		{
-			pProgInfo = strdup(HandleToPtr(vProgInfo));
-			FreeHandle(vProgInfo);
-		}
+		_Evaluate(vProgInfo, "ALLTRIM(STR(LINENO())) + ':' + PROGRAM() + CHR(0)");
+		if (vProgInfo.Vartype() == 'C')
+			pProgInfo = strdup(vProgInfo.HandleToPtr());
 
 		if (pDbg->pProgInfo)
 			free(pDbg->pProgInfo);
@@ -281,7 +273,7 @@ try
 		nRows++;
 		aMemLeaks.Dimension(nRows, 4);
 
-		aMemLeaks(nRows, 1) = (int)pDbg->pPointer;
+		aMemLeaks(nRows, 1) = pDbg->pPointer;
 		aMemLeaks(nRows, 2) = pDbg->nSize;
 		aMemLeaks(nRows, 3) = vMemInfo = pDbg->pProgInfo;
 
@@ -303,7 +295,7 @@ catch(int nErrorNo)
 
 void _fastcall TrackMem(ParamBlk *parm)
 {
-	gbTrackAlloc = (BOOL)p1.ev_length;
+	gbTrackAlloc = static_cast<BOOL>(p1.ev_length);
 	if (PCOUNT() == 2 && p2.ev_length)
 		FreeDebugAlloc();
 }
@@ -329,17 +321,17 @@ void _fastcall AllocMemTo(ParamBlk *parm)
 {
 	void *pAlloc = 0;
 
-	if (!p1.ev_long)
+	if (p1.ev_long == 0)
 		RaiseError(E_INVALIDPARAMS);
 
 	__try
 	{
-		pAlloc = HeapAlloc(ghHeap,HEAP_ZE_FLAG,p2.ev_long);
+		pAlloc = HeapAlloc(ghHeap, HEAP_ZE_FLAG, p2.ev_long);
 	}
 	__except(SAVEHEAPEXCEPTION()) { }
 	
 	if (pAlloc)
-		*(void**)p1.ev_long = pAlloc;
+		*reinterpret_cast<void**>(p1.ev_long) = pAlloc;
 
 	ADDDEBUGALLOC(pAlloc,p2.ev_long);
 
@@ -353,12 +345,12 @@ void _fastcall ReAllocMem(ParamBlk *parm)
 	{
 		if (p1.ev_long)
 		{
-			pAlloc = HeapReAlloc(ghHeap,HEAP_ZE_FLAG,(void*)p1.ev_long,p2.ev_long);
-			REPLACEDEBUGALLOC(p1.ev_long,pAlloc,p2.ev_long);
+			pAlloc = HeapReAlloc(ghHeap,HEAP_ZE_FLAG,reinterpret_cast<void*>(p1.ev_long), p2.ev_long);
+			REPLACEDEBUGALLOC(p1.ev_long, pAlloc, p2.ev_long);
 		}
 		else
 		{
-			pAlloc = HeapAlloc(ghHeap,HEAP_ZE_FLAG,p2.ev_long);
+			pAlloc = HeapAlloc(ghHeap, HEAP_ZE_FLAG, p2.ev_long);
 			ADDDEBUGALLOC(pAlloc,p2.ev_long);
 		}
     }
@@ -371,7 +363,7 @@ void _fastcall FreeMem(ParamBlk *parm)
 {
 	if (p1.ev_long)
 	{
-		if (HeapFree(ghHeap,0,(void*)p1.ev_long))
+		if (HeapFree(ghHeap,0,reinterpret_cast<void*>(p1.ev_long)))
 		{
 			REMOVEDEBUGALLOC(p1.ev_long);
 		}
@@ -388,7 +380,7 @@ void _fastcall FreePMem(ParamBlk *parm)
 	void* pAlloc;
 	if (p1.ev_long)
 	{
-		if ((pAlloc = *(void**)p1.ev_long))
+		if ((pAlloc = *reinterpret_cast<void**>(p1.ev_long)))
 		{
 			if (HeapFree(ghHeap,0,pAlloc))
 			{
@@ -412,7 +404,7 @@ void _fastcall FreeRefArray(ParamBlk *parm)
 	if (p2.ev_long < 1 || p2.ev_long > p3.ev_long)
 		RaiseError(E_INVALIDPARAMS);
 
-	pAddress = (void**)p1.ev_long;
+	pAddress = reinterpret_cast<void**>(p1.ev_long);
 	nStartElement = --p2.ev_long;
 	nElements = p3.ev_long;
 	pAddress += nStartElement;
@@ -454,7 +446,7 @@ void _fastcall ValidateMem(ParamBlk *parm)
 void _fastcall CompactMem(ParamBlk *parm)
 {
 	if (fpHeapCompact)
-		Return((int)fpHeapCompact(ghHeap,0));
+		Return(fpHeapCompact(ghHeap,0));
 	else
 		Return(0);
 }
@@ -566,13 +558,14 @@ try
 		return;
 	}
 
+	pArray.AutoGrow(16);
 	unsigned int nRow;
 	do 
 	{
 		nRow = pArray.Grow();
-		pArray(nRow,1) = (int)pEntry.lpData;
-		pArray(nRow,2) = (int)pEntry.cbData;
-		pArray(nRow,3) = (int)pEntry.cbOverhead;
+		pArray(nRow,1) = pEntry.lpData;
+		pArray(nRow,2) = pEntry.cbData;
+		pArray(nRow,3) = pEntry.cbOverhead;
 	} while (fpHeapWalk(ghHeap,&pEntry));
 	
 	nLastError = GetLastError();
@@ -1672,7 +1665,7 @@ void _fastcall MarshalArrayCString(ParamBlk *parm)
 	ARRAYLOCALS(char**)
 
 	BEGIN_ARRAYSET()
-		if (VALID_STRING(tmpValue))
+		if (Vartype(tmpValue) == 'C' && Len(tmpValue))
 		{
 			if (*pAddress)
 				*pAddress = (char*)HeapReAlloc(ghHeap,HEAP_FLAG,*pAddress,tmpValue.ev_length+sizeof(char));
@@ -1710,7 +1703,7 @@ void _fastcall MarshalArrayWString(ParamBlk *parm)
 	nCodePage = PCOUNT() == 2 ? gnConvCP : (UINT)p3.ev_long;
 
 	BEGIN_ARRAYSET()
-		if (VALID_STRING(tmpValue))
+		if (Vartype(tmpValue) == 'C' && Len(tmpValue))
 		{
 			if (*pAddress)
                 *pAddress = (wchar_t*)HeapReAlloc(ghHeap,HEAP_FLAG,*pAddress,
@@ -1742,7 +1735,6 @@ void _fastcall MarshalArrayWString(ParamBlk *parm)
 			HeapFree(ghHeap,HEAP_FLAG,*pAddress);
 			*pAddress = 0;
 		}
-
 		ReleaseValue(tmpValue);
 	END_ARRAYSET(++)
 }
@@ -1755,7 +1747,7 @@ void _fastcall MarshalArrayCharArray(ParamBlk *parm)
 	nLength = (unsigned int)p3.ev_long - 1;
 
 	BEGIN_ARRAYSET()
-		if (VALID_STRING(tmpValue))
+		if (Vartype(tmpValue) == 'C' && Len(tmpValue))
 		{
 			nCharCount = min(tmpValue.ev_length,nLength);
 			if (nCharCount)
@@ -1781,7 +1773,7 @@ void _fastcall MarshalArrayWCharArray(ParamBlk *parm)
 	nCodePage = PCOUNT() == 3 ? gnConvCP : (UINT)p4.ev_long;
 	
 	BEGIN_ARRAYSET()
-		if (VALID_STRING(tmpValue))
+		if (Vartype(tmpValue) == 'C' && Len(tmpValue))
 		{
 			nCharsWritten = MultiByteToWideChar(nCodePage,0,HandleToPtr(tmpValue),min((int)tmpValue.ev_length,p3.ev_long),pAddress,p3.ev_long);
 			if (nCharsWritten)
@@ -2016,7 +2008,7 @@ void _fastcall MarshalCursorCString(ParamBlk *parm)
 	char *pNewAddress;
 	COLUMNSETLOCALS(char**)
 	BEGIN_COLUMNSET()
-		if (VALID_STRING(tmpValue))
+		if (Vartype(tmpValue) == 'C' && Len(tmpValue))
 		{
 			if (*pAddress)
 			{
@@ -2076,7 +2068,7 @@ void _fastcall MarshalCursorWString(ParamBlk *parm)
 	nCodePage = PCOUNT() == 3 ? gnConvCP : (UINT)p4.ev_long;
 
 	BEGIN_COLUMNSET()
-		if (VALID_STRING(tmpValue))
+		if (Vartype(tmpValue) == 'C' && Len(tmpValue))
 		{
 			if (*pAddress)
 				*pAddress = (wchar_t*)HeapReAlloc(ghHeap,HEAP_FLAG,*pAddress,
@@ -2119,7 +2111,7 @@ void _fastcall MarshalCursorCharArray(ParamBlk *parm)
 	COLUMNSETLOCALS(char*)
 	nLength = (unsigned int)p4.ev_long - 1;
 	BEGIN_COLUMNSET()
-		if (VALID_STRING(tmpValue))
+		if (Vartype(tmpValue) == 'C' && Len(tmpValue))
 		{
 			nCharCount = min(tmpValue.ev_length,nLength);
 			if (nCharCount)

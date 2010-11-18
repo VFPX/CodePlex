@@ -80,8 +80,6 @@ int _stdcall FindFoxFieldC(char *pName, Locator *pLoc, char *pCursor);
 int _stdcall FindFoxVarOrField(char *pName, Locator *pLoc);
 int _stdcall FindFoxVarOrFieldEx(char *pName, Locator *pLoc);
 int _stdcall StoreEx(Locator *pLoc, Value *pValue);
-void _stdcall StoreObjectRef(char *pName, NTI &nVarNti, Value &sObject);
-void _stdcall ReleaseObjectRef(char *pName, NTI nVarNti);
 int _stdcall AllocMemo(Locator *pLoc, int nSize, long *nLoc);
 int _stdcall GetMemoContent(Value *pValue, char *pData);
 int _stdcall GetMemoContentN(Value *pValue, char *pData, int nLen, int nOffset);

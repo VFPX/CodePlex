@@ -47,7 +47,6 @@ void _fastcall CreatePublicShadowObjReference(ParamBlk *parm);
 void _fastcall ReleasePublicShadowObjReference(ParamBlk *parm);
 
 void _fastcall GetLocaleInfoExLib(ParamBlk *parm);
-void _fastcall StrtranEx(ParamBlk *parm);
 
 #ifdef __cplusplus
 }

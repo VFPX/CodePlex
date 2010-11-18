@@ -181,3 +181,13 @@ IF lnCount >= 1
 		? "Height", laPapers[xj,4]
 	ENDFOR
 ENDIF
+
+lnCount = APAPERSIZES('laPapers', lcPrinter, lcPort, PAPERSIZE_UNIT_INCH)
+IF lnCount >= 1
+	FOR xj = 1 TO lnCount
+		? "No.", laPapers[xj,1]
+		? "Name", laPapers[xj,2]
+		? "Width", laPapers[xj,3]
+		? "Height", laPapers[xj,4]
+	ENDFOR
+ENDIF

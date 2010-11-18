@@ -73,7 +73,6 @@
 #define V_CURRENCY(sValue)				Value sValue = {'Y','\0',0,0,0,0,0,0}
 #define V_STRING(sValue) 					Value sValue = {'C','\0',0,0,0,0,0,0}
 #define V_STRINGN(sValue,nLength) 		Value sValue = {'C','\0',0,nLength,0,0,0,0}
-// #define V_VALUE(sValue) 				Value sValue = {'0'}
 
 // defines for easier 'typeing' an already existing "Value"
 #define SET_LOGICAL(sValue)		sValue.ev_type = 'L'; sValue.ev_length = 0
@@ -90,22 +89,6 @@
 #define SET_DATETIME(sValue)		sValue.ev_type = 'T'
 #define SET_NULL(sValue)			sValue.ev_type = '0'
 
-// is value a string and length > 0
-#define VALID_STRING(sValue) (sValue.ev_type == 'C' && sValue.ev_length)
-#define VALID_STRING_EX(nParm) (PCOUNT() >= nParm && parm->p[nParm-1].val.ev_length)
-
-// array handling macros
-// initializes a Locator for an array to zero and the supplied subscripts 
-#define RESETARRAY(sLocator,nSubscripts)	sLocator.l_subs = ##nSubscripts > 1 ? 2 : 1; \
-									sLocator.l_sub1 = 0; \
-									sLocator.l_sub2 = 0
-
-#define AROW(sLocator) sLocator.l_sub1 // access row subscript of Locator
-#define ADIM(sLocator) sLocator.l_sub2 // access dimension subscript of Locator
-
-#define ALEN(sLocator,nAttribute) _ALen(sLocator.l_NTI,nAttribute) // like ALEN function in VFP
-// #define AROWS(sLocator)		_ALen(sLocator.l_NTI,AL_SUBSCRIPT1)
-#define ADIMS(sLocator)		_ALen(sLocator.l_NTI,AL_SUBSCRIPT2)
-#define VALID_ADIM(nDims,nPassed) ((nPassed <= nDims) || (nPassed == 1 && nDims == 0))
+// #define VALID_ADIM(nDims,nPassed) ((nPassed <= nDims) || (nPassed == 1 && nDims == 0))
 
 #endif // _VFP2CMACROS_H__

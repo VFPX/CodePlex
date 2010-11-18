@@ -1,3 +1,13 @@
+VFP2C32 Version 2.0.0.7 -- 2010-11-16
+- fixed a bug in AAverage - NULL values in the array corrupted the result
+- removed limitation in ASum, AMin, AMax, AAverage - the functions were limited to 65000 elements, now they're limited to 65000 rows
+- ASplitStr now returns a 1 element array with an empty string when an empty string is passed (behaves more like ALINES)
+- internal code cleanup and optimization:
+ optimized FoxArray class - results in a speedup of 10-20% in many functions which return the result in an array - like AProcesses, AWindows, AdirEx etc. 
+ optimized C++ API over LCK
+ replaced C-style casts with C++ casts
+ removed almost all preprocessor macros
+
 VFP2C32 Version 2.0.0.6 -- 2010-11-08
 - changed FCreateEx, FOpenEx, and all other F...Ex functions to use the windows api file handle directly instead of an internal pseudo handle.
  If you already have code written using these functions they work still like the old version, the only two differences are that the 

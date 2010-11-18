@@ -44,7 +44,7 @@ class Service
 {
 public:
 	Service() : m_Handle(NULL), m_Owner(true) {}
-	Service(int hHandle) { m_Handle = reinterpret_cast<SC_HANDLE>(hHandle); m_Owner = false; }
+	Service(SC_HANDLE hService) { m_Handle = hService; m_Owner = false; }
 	Service(SC_HANDLE hSCM, const char* pServiceName, DWORD dwAccess);
 	~Service();
 
@@ -57,14 +57,13 @@ public:
 	void QueryStatus(LPSERVICE_STATUS pStatus);
 	void QueryConfig(CBuffer &pBuffer);
 	void StopDependantServices(SC_HANDLE hSCM);
+	Service& Attach(Value &pVal);
 	SC_HANDLE Detach() { m_Owner = false; return m_Handle; }
 
 	operator SC_HANDLE() { return m_Handle; }
 	operator LPSC_HANDLE() { return &m_Handle; }
 	bool operator!() { return m_Handle == NULL; }
 	operator bool() { return m_Handle != NULL; }
-	Service& operator=(SC_HANDLE hHandle);
-	Service& operator=(int hHandle);
 	int WaitForServiceStatus(DWORD dwState, int nTimeout);
 
 private:

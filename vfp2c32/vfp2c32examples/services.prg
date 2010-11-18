@@ -3,8 +3,8 @@
 
 #INCLUDE vfp2c.h
 
-LOCAL lnCount, lnRet, laServs[1], laStatus[1], lnStatus, lnServiceHandle
-
+LOCAL lnCount, lnRet, laStatus[1], lnStatus, lnServiceHandle
+CD (FULLPATH(JUSTPATH(SYS(16))))
 SET LIBRARY TO vfp2c32.fll ADDITIVE
 INITVFP2C32(VFP2C_INIT_SERVICES)
 
@@ -21,7 +21,7 @@ lnServiceHandle = OpenService('Dhcp')
 IF AServiceStatus('laStatus',lnServiceHandle) = 1
 	? "Service is in : " + laServiceStatus[laStatus[3]] + " state"
 ELSE
-	AERROR('laError')
+	AERROREX('laError')
 	DISPLAY MEMORY LIKE laError
 ENDIF
 

@@ -77,10 +77,10 @@ void _fastcall GetWindowRectEx(ParamBlk *parm)
 {
 try
 {
-	FoxArray pCoords(p2,4,1);
+	FoxArray pCoords(p2, 4, 1);
 	RECT sRect;
 
-	if (!GetWindowRect((HWND)p1.ev_long,&sRect))
+	if (!GetWindowRect(reinterpret_cast<HWND>(p1.ev_long), &sRect))
 	{
 		SAVEWIN32ERROR(GetWindowRect,GetLastError());
 		throw E_APIERROR;
@@ -109,12 +109,12 @@ try
 	MONITORINFO sMonInfo;
 	int nMonitors, nX, nY;
 
-	hSource = (HWND)p1.ev_long;
-	hParent = PCOUNT() == 2 ? (HWND)p2.ev_long : 0;
+	hSource = reinterpret_cast<HWND>(p1.ev_long);
+	hParent = PCOUNT() == 2 ? reinterpret_cast<HWND>(p2.ev_long) : 0;
 
 	if (hParent)
 	{
-		if (!GetWindowRect(hParent,&sParentRect))
+		if (!GetWindowRect(hParent, &sParentRect))
 		{
 			SAVEWIN32ERROR(GetWindowRect,GetLastError());
 			throw E_APIERROR;
@@ -125,7 +125,7 @@ try
 		hParent = GetParent(hSource);
 		if (hParent)
 		{
-			if (!GetWindowRect(hParent,&sParentRect))
+			if (!GetWindowRect(hParent, &sParentRect))
 			{
 				SAVEWIN32ERROR(GetWindowRect,GetLastError());
 				throw E_APIERROR;
@@ -136,7 +136,7 @@ try
 			nMonitors = GetSystemMetrics(SM_CMONITORS);
 			if (nMonitors <= 1)
 			{
-				if (!SystemParametersInfo(SPI_GETWORKAREA,0,(PVOID)&sParentRect,0))
+				if (!SystemParametersInfo(SPI_GETWORKAREA,0,reinterpret_cast<void*>(&sParentRect),0))
 				{
 					SAVEWIN32ERROR(SystemParametersInfo,GetLastError());
 					throw E_APIERROR;
@@ -147,10 +147,10 @@ try
 				if (!fpMonitorFromWindow)
 					throw E_NOENTRYPOINT;
 
-				hMon = fpMonitorFromWindow(hSource,MONITOR_DEFAULTTONEAREST);
+				hMon = fpMonitorFromWindow(hSource, MONITOR_DEFAULTTONEAREST);
 				sMonInfo.cbSize = sizeof(MONITORINFO);
 				
-				if (!fpGetMonitorInfo(hMon,&sMonInfo))
+				if (!fpGetMonitorInfo(hMon, &sMonInfo))
 				{
 					if (IS_WINNT() || IS_WIN2KXP())
 						SAVEWIN32ERROR(GetMonitorInfo,GetLastError());
@@ -167,7 +167,7 @@ try
 		}
 	}
 
-	if (!GetWindowRect(hSource,&sSourceRect))
+	if (!GetWindowRect(hSource, &sSourceRect))
 	{
 		SAVEWIN32ERROR(GetWindowRect,GetLastError());
 		throw E_APIERROR;
@@ -227,23 +227,14 @@ void _fastcall ColorOfPoint(ParamBlk *parm)
 	if (PCOUNT() == 2)
 		hWindow = 0;
 	else
-		hWindow = (HWND)p3.ev_long;
+		hWindow = reinterpret_cast<HWND>(p3.ev_long);
 		
 	hContext = GetDC(hWindow);
 	if (hContext)
 	{
-		nColor = GetPixel(hContext,sPoint.x,sPoint.y);
+		nColor = GetPixel(hContext, sPoint.x, sPoint.y);
 		if (hWindow)
 			ReleaseDC(hWindow,hContext);
 	}
 	Return(nColor);
 }
-
-
-
-/*
-void _fastcall AMonitors(ParamBlk *parm)
-{
-	EnumDisplayMonitors(
-}
-*/

@@ -1,9 +1,10 @@
 #ifndef _VFP2CRAS_H__
 #define _VFP2CRAS_H__
 
-#include "ras.h"
-#include "raserror.h"
-#include "rasdlg.h"
+#include <ras.h>
+#include <raserror.h>
+#include <rasdlg.h>
+
 #include "vfp2chelpers.h"
 #include "vfp2casync.h"
 

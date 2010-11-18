@@ -8,6 +8,7 @@
 #include "vfp2cutil.h"
 #include "vfp2codbc.h"
 #include "vfp2ccppapi.h"
+#include "vfpmacros.h"
 
 static SQLHENV hODBCEnvHandle = 0;
 
@@ -166,6 +167,7 @@ try
 	nApiRet = SQLDataSources(hODBCEnvHandle,nFilter,pDatasource,SQL_MAX_DSN_LENGTH+1,&nDsnLen,
 				pDescription,ODBC_MAX_DESCRIPTION_LEN,&nDescLen);
 
+	pArray.AutoGrow(8);
 	while (nApiRet == SQL_SUCCESS)
 	{
 		nRow = pArray.Grow();
@@ -206,6 +208,7 @@ try
 	nApiRet = SQLDrivers(hODBCEnvHandle,SQL_FETCH_FIRST,pDriver,ODBC_MAX_DRIVER_LEN,&nDriverLen,
 						pAttributes,ODBC_MAX_ATTRIBUTES_LEN,&nAttribLen);
 
+	pArray.AutoGrow(32);
 	while (nApiRet == SQL_SUCCESS)
 	{
 		nRow = pArray.Grow();
@@ -249,7 +252,7 @@ try
 
 	if (Vartype(p1) == 'I' || Vartype(p1) == 'N')
 	{
-		DWORD nHandle = Vartype(p1) == 'I' ? (DWORD)p1.ev_long : (DWORD)p1.ev_real;
+		DWORD nHandle = Vartype(p1) == 'I' ? p1.ev_long : static_cast<DWORD>(p1.ev_real);
 		if (nHandle)
 			sprintfex(aEvalFunc,"INT(SQLGETPROP(%U,'ODBChdbc'))",nHandle);
 		else
@@ -262,7 +265,7 @@ try
 
 	if (bEvalHandle)
 	{
-		Evaluate(vConHandle,aEvalFunc);
+		vConHandle.Evaluate(aEvalFunc);
 		hConHandle = reinterpret_cast<SQLHDBC>(vConHandle->ev_long);
 	}
 
@@ -381,7 +384,7 @@ try
 
 	if (Vartype(p1) == 'I' || Vartype(p1) == 'N')
 	{
-		DWORD nHandle = Vartype(p1) == 'I' ? (DWORD)p1.ev_long : (DWORD)p1.ev_real;
+		DWORD nHandle = Vartype(p1) == 'I' ? p1.ev_long : static_cast<DWORD>(p1.ev_real);
 		if (nHandle)
 	        sprintfex(aEvalFunc, "INT(SQLGETPROP(%U,'ODBChdbc'))", p1.ev_long);
 		else
@@ -394,7 +397,7 @@ try
 
 	if (bEvalHandle)
 	{
-		Evaluate(vConHandle, aEvalFunc);
+		vConHandle.Evaluate(aEvalFunc);
 		hConHandle = reinterpret_cast<SQLHDBC>(vConHandle->ev_long);
 	}
 
@@ -541,7 +544,7 @@ void _fastcall SQLExecEx(ParamBlk *parm)
 	// if statement contained parameters parse them out
 	if (pStmt->nNoOfParms)
 	{
-		pStmt->pSQLSend = (char*)malloc(p2.ev_length+1);
+		pStmt->pSQLSend = (char*)malloc(Len(p2)+1);
 		if (!pStmt->pSQLSend)
 		{
 			nErrorNo = E_INSUFMEMORY;
@@ -576,7 +579,7 @@ void _fastcall SQLExecEx(ParamBlk *parm)
 	else // no parameters in SQL statement .. just send it as it is ..
 	{
 		pStmt->pSQLSend = pStmt->pSQLInput;
-		nSQLLen = p2.ev_length;
+		nSQLLen = Len(p2);
 	}
 
 	// 4.
@@ -634,18 +637,18 @@ SQLResultSetProcessing:
 			}
 
 			// if row is greater than 0 the array has to be redimensioned
-			if (AROW(pStmt->lArrayLoc)++)
+			if (pStmt->lArrayLoc.l_sub1++)
 			{
-				if (nErrorNo = Dimension(pStmt->pArrayName,AROW(pStmt->lArrayLoc),2))
+				if (nErrorNo = Dimension(pStmt->pArrayName,pStmt->lArrayLoc.l_sub1,2))
 					goto ErrorOut;
 			}
 			
-			ADIM(pStmt->lArrayLoc) = 1;
+			pStmt->lArrayLoc.l_sub2 = 1;
 			vCursorName.ev_length = 0;
 			if (nErrorNo = _Store(&pStmt->lArrayLoc, &vCursorName))
 				goto ErrorOut;
 
-			ADIM(pStmt->lArrayLoc) = 2;
+			pStmt->lArrayLoc.l_sub2 = 2;
 			if (nErrorNo = _Store(&pStmt->lArrayLoc, &vRowCount))
 				goto ErrorOut;
 		}
@@ -729,19 +732,19 @@ SQLResultSetProcessing:
 
 		if (pStmt->pArrayName)
 		{
-			if (AROW(pStmt->lArrayLoc)++)
+			if (pStmt->lArrayLoc.l_sub1++)
 			{
-				if (nErrorNo = Dimension(pStmt->pArrayName,AROW(pStmt->lArrayLoc),2))
+				if (nErrorNo = Dimension(pStmt->pArrayName,pStmt->lArrayLoc.l_sub1, 2))
 					goto ErrorOut;
 			}
 
 			vCursorName.ev_length = strnlen(pCursorName,VFP2C_VFP_MAX_CURSOR_NAME);
-			ADIM(pStmt->lArrayLoc) = 1;
+			pStmt->lArrayLoc.l_sub2 = 1;
 			if (nErrorNo = _Store(&pStmt->lArrayLoc, &vCursorName))
 				goto ErrorOut;
 
 			vRowCount.ev_long = pStmt->nRowsFetched;
-			ADIM(pStmt->lArrayLoc) = 2;
+			pStmt->lArrayLoc.l_sub2 = 2;
 			if (nErrorNo = _Store(&pStmt->lArrayLoc, &vRowCount))
 				goto ErrorOut;
 		}
@@ -788,12 +791,12 @@ SQLResultSetChecking:
 	// we're finished .. clean up everything ...
 	Return(pStmt->nResultset);
 	SQLReleaseStatement(parm,pStmt);
-	FreeHandleEx(vCursorName);
+	UnlockFreeHandle(vCursorName);
 	return;
 
 	ErrorOut:
 		SQLReleaseStatement(parm,pStmt);
-		FreeHandleEx(vCursorName);
+		UnlockFreeHandle(vCursorName);
 
 		if (nErrorNo == E_APIERROR)
 			nErrorNo = 0;
@@ -1166,7 +1169,7 @@ LPSQLSTATEMENT _stdcall SQLAllocStatement(ParamBlk *parm, int *nErrorNo)
 	LockHandle(p2);
 	pStmt->pSQLInput = HandleToPtr(p2);
 
-	if (VALID_STRING_EX(3))
+	if (CheckOptionalParameterLen(parm,3))
 	{
 		if (!NullTerminateValue(p3))
 		{
@@ -1177,7 +1180,7 @@ LPSQLSTATEMENT _stdcall SQLAllocStatement(ParamBlk *parm, int *nErrorNo)
 		pStmt->pCursorNames = HandleToPtr(p3);
 	}
 	
-	if (VALID_STRING_EX(4))
+	if (CheckOptionalParameterLen(parm,4))
 	{
 		if (!NullTerminateValue(p4))
 		{
@@ -1193,7 +1196,7 @@ LPSQLSTATEMENT _stdcall SQLAllocStatement(ParamBlk *parm, int *nErrorNo)
 		return pStmt;
 	}
 
-	if (VALID_STRING_EX(6))
+	if (CheckOptionalParameterLen(parm,6))
 	{
 		if (!NullTerminateValue(p6))
 		{
@@ -1204,7 +1207,7 @@ LPSQLSTATEMENT _stdcall SQLAllocStatement(ParamBlk *parm, int *nErrorNo)
 		pStmt->pCursorSchema = HandleToPtr(p6);
 	}
 
-	if (VALID_STRING_EX(7))
+	if (CheckOptionalParameterLen(parm,7))
 	{
 		if (!NullTerminateValue(p7))
 		{
@@ -1215,9 +1218,9 @@ LPSQLSTATEMENT _stdcall SQLAllocStatement(ParamBlk *parm, int *nErrorNo)
 		pStmt->pParamSchema = HandleToPtr(p7);
 	}
 
-	if (VALID_STRING_EX(8))
+	if (CheckOptionalParameterLen(parm,8))
 	{
-		if (p8.ev_length > VFP2C_MAX_CALLBACKFUNCTION)
+		if (Len(p8) > VFP2C_MAX_CALLBACKFUNCTION)
 		{
 			*nErrorNo = E_INVALIDPARAMS;
 			return pStmt;
@@ -1315,7 +1318,7 @@ void _stdcall SQLReleaseStatement(ParamBlk *parm, LPSQLSTATEMENT pStmt)
 		lpCS = pStmt->pColumnData;
 		while(pStmt->nNoOfCols--)
 		{
-			FreeHandleEx(lpCS->vData);
+			UnlockFreeHandle(lpCS->vData);
 			lpCS++;
 		}
 		free(pStmt->pColumnData);
@@ -1325,13 +1328,13 @@ void _stdcall SQLReleaseStatement(ParamBlk *parm, LPSQLSTATEMENT pStmt)
 		lpParms = pStmt->pParamData;
 		while (pStmt->nNoOfParms--)
 		{
-			FreeHandleEx(lpParms->vParmValue);
+			UnlockFreeHandle(lpParms->vParmValue);
 			lpParms++;
 		}
 		free(pStmt->pParamData);
 	}
 
-	FreeHandleEx(pStmt->vGetDataBuffer);
+	UnlockFreeHandle(pStmt->vGetDataBuffer);
 
 	if (pStmt->pSQLInput)
 	{
@@ -2960,15 +2963,15 @@ int _stdcall SQLParseCursorSchemaEx(LPSQLSTATEMENT pStmt, char *pCursor)
 	if (nErrorNo = FindFoxVar(aArrayName,&lArrayLoc))
 		goto ErrorOut;
 
-	RESETARRAY(lArrayLoc,2);
-	nColumns = ALEN(lArrayLoc,AL_SUBSCRIPT1);
+	ResetArrayLocator(lArrayLoc, 2);
+	nColumns = _ALen(lArrayLoc.l_NTI, AL_SUBSCRIPT1);
 	
 	while (nColumns--)
 	{
-		AROW(lArrayLoc)++;
+		lArrayLoc.l_sub1++;
 		
 		// fieldname
-		ADIM(lArrayLoc) = 1;
+		lArrayLoc.l_sub2 = 1;
 		if (nErrorNo = _Load(&lArrayLoc, &vValue))
 			goto ErrorOut;
 		
@@ -2990,7 +2993,7 @@ int _stdcall SQLParseCursorSchemaEx(LPSQLSTATEMENT pStmt, char *pCursor)
 		FreeHandle(vValue);
 
 		// fieldtype
-		ADIM(lArrayLoc) = 2;
+		lArrayLoc.l_sub2 = 2;
 		if (nErrorNo = _Load(&lArrayLoc, &vValue))
 			goto ErrorOut;
 		
@@ -2999,19 +3002,19 @@ int _stdcall SQLParseCursorSchemaEx(LPSQLSTATEMENT pStmt, char *pCursor)
 		FreeHandle(vValue);
 
 		// precision/width
-		ADIM(lArrayLoc) = 3;
+		lArrayLoc.l_sub2 = 3;
 		if (nErrorNo = _Load(&lArrayLoc, &vValue))
 			goto ErrorOut;
 		lpCS->nSize = (SQLUINTEGER)vValue.ev_long;
 
 		// scale
-		ADIM(lArrayLoc) = 4;
+		lArrayLoc.l_sub2 = 4;
 		if (nErrorNo = _Load(&lArrayLoc, &vValue))
 			goto ErrorOut;
 		lpCS->nScale = (SQLSMALLINT)vValue.ev_long;
 
 		// binary
-		ADIM(lArrayLoc) = 6;
+		lArrayLoc.l_sub2 = 6;
 		if (nErrorNo = _Load(&lArrayLoc, &vValue))
 			goto ErrorOut;
 		lpCS->bBinary = (SQLSMALLINT)vValue.ev_length;
@@ -3183,8 +3186,8 @@ int _stdcall SQLCreateCursor(LPSQLSTATEMENT pStmt, char *pCursorName)
 	sprintfex(aArrayName,"__VFP2C_ODBC_ARRAY_%U",pStmt);
 
 	lArrayLoc.l_subs = 2; // 2 dimensional array
-	AROW(lArrayLoc) = pStmt->nNoOfCols; // rows = no of columns
-	ADIM(lArrayLoc) = 6; // we only need the first 6 dimensions of the AFIELDS array
+	lArrayLoc.l_sub1 = pStmt->nNoOfCols; // rows = no of columns
+	lArrayLoc.l_sub2 = 6; // we only need the first 6 dimensions of the AFIELDS array
 
 	nVarNti = _NewVar(aArrayName,&lArrayLoc,NV_PRIVATE);
 	if (nVarNti < 0)
@@ -3193,7 +3196,7 @@ int _stdcall SQLCreateCursor(LPSQLSTATEMENT pStmt, char *pCursorName)
 		goto ErrorOut;
 	}
 
-	RESETARRAY(lArrayLoc,2);
+	ResetArrayLocator(lArrayLoc, 2);
 
 	if (!AllocHandleEx(vChar,VFP2C_ODBC_MAX_COLUMN_NAME))
 	{
@@ -3205,23 +3208,23 @@ int _stdcall SQLCreateCursor(LPSQLSTATEMENT pStmt, char *pCursorName)
 
 	for (nColNo = 1; nColNo <= pStmt->nNoOfCols; nColNo++)
 	{
-		AROW(lArrayLoc)++;
+		lArrayLoc.l_sub1++;
 
 		// store fieldname
-		ADIM(lArrayLoc) = 1;
+		lArrayLoc.l_sub2 = 1;
 		vChar.ev_length = strcpyex(pChar,(char*)lpCS->aColName);
 		if (nErrorNo = _Store(&lArrayLoc, &vChar))
 			goto ErrorOut;
 
 		// store fieldtype
-		ADIM(lArrayLoc) = 2;
+		lArrayLoc.l_sub2 = 2;
 		vChar.ev_length = 1;
 		*pChar = lpCS->aVFPType;
 		if (nErrorNo = _Store(&lArrayLoc, &vChar))
 			goto ErrorOut;
 
 		// store field width/precision
-		ADIM(lArrayLoc) = 3;
+		lArrayLoc.l_sub2 = 3;
 		// if the VFP datatype is none of the below ones .. the field width is unneccesary
 		if (lpCS->aVFPType == 'C' || lpCS->aVFPType == 'V' || lpCS->aVFPType == 'Q' ||
 			lpCS->aVFPType == 'F' || lpCS->aVFPType == 'N')
@@ -3233,7 +3236,7 @@ int _stdcall SQLCreateCursor(LPSQLSTATEMENT pStmt, char *pCursorName)
 			goto ErrorOut;
 
 		// store field scale
-		ADIM(lArrayLoc) = 4;
+		lArrayLoc.l_sub2 = 4;
 		// if the VFP datatype if none of the below ones .. the field scale is unneccesary
 		if (lpCS->aVFPType == 'B' || lpCS->aVFPType == 'N' || lpCS->aVFPType == 'F')
 			vNumeric.ev_long = lpCS->nScale;
@@ -3244,13 +3247,13 @@ int _stdcall SQLCreateCursor(LPSQLSTATEMENT pStmt, char *pCursorName)
 			goto ErrorOut;
 
 		// store if field is nullable
-		ADIM(lArrayLoc) = 5;
+		lArrayLoc.l_sub2 = 5;
 		vLogical.ev_length = lpCS->bNullable;
 		if (nErrorNo = _Store(&lArrayLoc, &vLogical))
 			goto ErrorOut;
 
 		// store if field is binary (NOCPTRANS)
-		ADIM(lArrayLoc) = 6;
+		lArrayLoc.l_sub2 = 6;
 		vLogical.ev_length = lpCS->bBinary;
 		if (nErrorNo = _Store(&lArrayLoc, &vLogical))
 			goto ErrorOut;
@@ -3262,14 +3265,14 @@ int _stdcall SQLCreateCursor(LPSQLSTATEMENT pStmt, char *pCursorName)
 	if (nErrorNo = _Execute(aExeBuffer))
 		goto ErrorOut;
 
-	FreeHandleEx(vChar);
+	UnlockFreeHandle(vChar);
 	_Release(nVarNti);
 	return 0;	
 
 	ErrorOut:
 		if (nVarNti > 0)
 			_Release(nVarNti);
-		FreeHandleEx(vChar);
+		UnlockFreeHandle(vChar);
 		return nErrorNo;
 }
 
@@ -3571,17 +3574,17 @@ int _stdcall SQLEvaluateParams(LPSQLSTATEMENT pStmt)
 					if (!lpPS->bCustomSchema || lpPS->nSQLType == SQL_BINARY || lpPS->nSQLType == SQL_CHAR ||
 						lpPS->nSQLType == SQL_WCHAR)
 					{
-						if (lpPS->vParmValue.ev_length < VFP2C_ODBC_MAX_BUFFER)
+						if (Len(lpPS->vParmValue) < VFP2C_ODBC_MAX_BUFFER)
 						{
 							if (!SetHandleSize(lpPS->vParmValue,VFP2C_ODBC_MAX_BUFFER))
 								return E_INSUFMEMORY;
 						}
 						lpPS->nBufferSize = VFP2C_ODBC_MAX_BUFFER;
-						lpPS->nSize = lpPS->vParmValue.ev_length;
+						lpPS->nSize = Len(lpPS->vParmValue);
 					}
 				}
 				else
-					lpPS->nSize = lpPS->nBufferSize = lpPS->vParmValue.ev_length;
+					lpPS->nSize = lpPS->nBufferSize = Len(lpPS->vParmValue);
 
 				LockHandle(lpPS->vParmValue);
 				lpPS->pParmData = HandleToPtr(lpPS->vParmValue);
@@ -4120,13 +4123,13 @@ int _stdcall SQLInfoCallbackOrStore(LPSQLSTATEMENT pStmt)
 	{
 		if (pStmt->nFlags & SQLEXECEX_STORE_INFO)
 		{
-			if (AROW(pStmt->lArrayLoc)++)
+			if (pStmt->lArrayLoc.l_sub1++)
 			{
-				if (nErrorNo = Dimension(pStmt->pArrayName,AROW(pStmt->lArrayLoc),2))
+				if (nErrorNo = Dimension(pStmt->pArrayName, pStmt->lArrayLoc.l_sub1, 2))
 					return nErrorNo;
 			}
 
-			ADIM(pStmt->lArrayLoc) = 1;
+			pStmt->lArrayLoc.l_sub2 = 1;
 			pStmt->vGetDataBuffer.ev_length = SQLExtractInfo((char*)pStmt->pGetDataBuffer,nMsgLen);
 			if (nErrorNo = _Store(&pStmt->lArrayLoc, &pStmt->vGetDataBuffer))
 				return nErrorNo;
@@ -4649,7 +4652,7 @@ int _stdcall SQLStoreMemoCharVar(LPSQLCOLUMNDATA lpCS)
 			vData.ev_length = lpCS->nIndicator;
 			nRetVal = _Store(&lpCS->lField, &vData);
 		}
-		FreeHandleEx(vData);
+		UnlockFreeHandle(vData);
 		return nRetVal;
 	}
 	else if (nApiRet == SQL_SUCCESS_WITH_INFO)
@@ -4679,13 +4682,13 @@ int _stdcall SQLStoreMemoCharVar(LPSQLCOLUMNDATA lpCS)
 			SAVEODBCSTMTERROR(SQLGetData,lpCS->hStmt);
 			nRetVal = E_APIERROR;
 		}
-		FreeHandleEx(vData);
+		UnlockFreeHandle(vData);
 		return nRetVal;
 	}
 	else
 	{
 		SAVEODBCSTMTERROR(SQLGetData,lpCS->hStmt);
-		FreeHandleEx(vData);
+		UnlockFreeHandle(vData);
 		return E_APIERROR;
 	}
 }
@@ -4761,7 +4764,7 @@ int _stdcall SQLStoreMemoWCharVar(LPSQLCOLUMNDATA lpCS)
 			vData.ev_length = lpCS->nIndicator;
 			nRetVal = _Store(&lpCS->lField, &vData);
 		}
-		FreeHandleEx(vData);
+		UnlockFreeHandle(vData);
 		return nRetVal;
 	}
 	else if (nApiRet == SQL_SUCCESS_WITH_INFO)
@@ -4791,13 +4794,13 @@ int _stdcall SQLStoreMemoWCharVar(LPSQLCOLUMNDATA lpCS)
 			SAVEODBCSTMTERROR(SQLGetData,lpCS->hStmt);
 			nRetVal = E_APIERROR;
 		}
-		FreeHandleEx(vData);
+		UnlockFreeHandle(vData);
 		return nRetVal;
 	}
 	else
 	{
 		SAVEODBCSTMTERROR(SQLGetData,lpCS->hStmt);
-		FreeHandleEx(vData);
+		UnlockFreeHandle(vData);
 		return E_APIERROR;
 	}
 }
@@ -4875,7 +4878,7 @@ int _stdcall SQLStoreMemoBinaryVar(LPSQLCOLUMNDATA lpCS)
 			vData.ev_length = lpCS->nIndicator;
 			nRetVal = _Store(&lpCS->lField, &vData);
 		}
-		FreeHandleEx(vData);
+		UnlockFreeHandle(vData);
 		return nRetVal;
 	}
 	else if (nApiRet == SQL_SUCCESS_WITH_INFO)
@@ -4905,13 +4908,13 @@ int _stdcall SQLStoreMemoBinaryVar(LPSQLCOLUMNDATA lpCS)
 			SAVEODBCSTMTERROR(SQLGetData,lpCS->hStmt);
 			nRetVal = E_APIERROR;
 		}
-		FreeHandleEx(vData);
+		UnlockFreeHandle(vData);
 		return nRetVal;
 	}
 	else
 	{
 		SAVEODBCSTMTERROR(SQLGetData,lpCS->hStmt);
-		FreeHandleEx(vData);
+		UnlockFreeHandle(vData);
 		return E_APIERROR;
 	}
 }
@@ -4933,7 +4936,7 @@ void _stdcall DateTimeToTimestamp_Struct(Value *pDateTime, SQL_TIMESTAMP_STRUCT 
 	double dDays, dSecs;
 
 	dSecs = modf(pDateTime->ev_real,&dDays);
-	lnDays = (DWORD)dDays;
+	lnDays = static_cast<DWORD>(dDays);
 
 	lnA = lnDays + 32044;
 	lnB = (4 * lnA + 3) / 146097;
@@ -4971,7 +4974,7 @@ void _stdcall DateToTimestamp_Struct(Value *pDateTime, SQL_TIMESTAMP_STRUCT *pTi
 	int lnA, lnB, lnC, lnD, lnE, lnM;
 	DWORD lnDays;
 
-	lnDays = (DWORD)pDateTime->ev_real;
+	lnDays = static_cast<DWORD>(pDateTime->ev_real);
 
 	lnA = lnDays + 32044;
 	lnB = (4 * lnA + 3) / 146097;

@@ -96,18 +96,13 @@ void ComCall::MarshalParameter(unsigned int nParmNo, Parameter &pParm, VARTYPE v
 	{
 		bAutoType = ((vType & VT_TYPEMASK) == VT_EMPTY);
 
-		Value sTmp;
-		FoxReference pRef(pParm.loc);
-		pRef.Load(sTmp);
-
+		FoxValue sTmp(pParm.loc);
 		vType |= VT_BYREF;
 
 		if (bAutoType)
 			MarshalVariant(*pArg, sTmp, vType);
 		else
 			MarshalVariantEx(*pArg, sTmp, vType, nBase);
-
-		ReleaseValue(sTmp);
 	}
 	else
 	{
@@ -142,17 +137,14 @@ void ComCall::UnMarshalIDispatchParameters()
 void ComCall::UnMarshalRefParameters(ParamBlk *parm)
 {
 	VARIANTARG* pArg = m_Parameters.rgvarg;
-	FoxReference pRef;
-
 	for (unsigned int xj = m_Parameters.cArgs; xj > 0; xj--)
 	{
 		if (pArg->vt & VT_BYREF)
 		{
-			Value pTmp;
-			pRef = parm->p[xj+VFP2C_COMCALL_PARMOFFSET].loc;
+			FoxValue pTmp;
+			FoxReference pRef(parm->p[xj+VFP2C_COMCALL_PARMOFFSET].loc);
 			UnMarshalVariant(*pArg, pTmp);
 			pRef = pTmp;
-			ReleaseValue(pTmp);
 		}
 		pArg++;
 	}
@@ -301,16 +293,24 @@ void ComCall::CallMethod(Value &vRetVal, ParamBlk *parm)
 void _stdcall MarshalString(VARIANT &pArg, Value &pValue)
 {
 	FoxString pString;
-	pString.Attach(pValue);
-	if (!pString.Binary())
+	try
 	{
-		pArg.bstrVal = pString.ToBSTR();
-		pArg.vt = VT_BSTR;
+		pString.Attach(pValue);
+		if (!pString.Binary())
+		{
+			pArg.bstrVal = pString.ToBSTR();
+			pArg.vt = VT_BSTR;
+		}
+		else
+		{
+			pArg.parray = pString.ToU1SafeArray();
+			pArg.vt = VT_ARRAY | VT_UI1;
+		}
 	}
-	else
+	catch(int nErrorNo)
 	{
-		pArg.parray = pString.ToU1SafeArray();
-		pArg.vt = VT_ARRAY | VT_UI1;
+		pString.Detach();
+		throw nErrorNo;
 	}
 	pString.Detach();
 }
@@ -649,8 +649,8 @@ void _stdcall MarshalSafeArrayVariant(VARIANT &pArg, Value &pArrayName, VARTYPE 
 	SAFEARRAYBOUND *pArrayBounds = 0;
 try
 {
-	FoxArray pArray(pArrayName,false);
-	Value pElement;
+	FoxArray pArray(pArrayName);
+	FoxValue pElement;
 	unsigned int nRows, nDims;
 	nRows = pArray.ALen(nDims);
 
@@ -693,8 +693,8 @@ try
 	{
 		for (unsigned int nRow = 1; nRow <= nRows; nRow++)
 		{
-			pArray(nRow,nDim).Load(pElement);
-			MarshalVariant(*pOleElement,pElement,pOleElement->vt);
+			pElement = pArray(nRow, nDim);
+			MarshalVariant(*pOleElement, pElement, pOleElement->vt);
 			pOleElement++;
 		}
 	}
@@ -721,8 +721,8 @@ void _stdcall MarshalSafeArrayBool(VARIANT &pArg, Value &pArrayName, VARTYPE vTy
 	SAFEARRAYBOUND *pArrayBounds = 0;
 try
 {
-	FoxArray pArray(pArrayName,false);
-	Value pElement;
+	FoxArray pArray(pArrayName);
+	FoxValue pElement;
 	unsigned int nRows, nDims;
 	nRows = pArray.ALen(nDims);
 
@@ -755,12 +755,11 @@ try
 	{
 		for (unsigned int nRow = 1; nRow <= nRows; nRow++)
 		{
-			pArray(nRow,nDim).Load(pElement);
-			if (Vartype(pElement) == 'L')
-				*pOleElement = pElement.ev_length > 0 ? VARIANT_TRUE : VARIANT_FALSE;
+			pElement = pArray(nRow, nDim);
+			if (pElement.Vartype() == 'L')
+				*pOleElement = pElement->ev_length > 0 ? VARIANT_TRUE : VARIANT_FALSE;
 			else
 			{
-				ReleaseValue(pElement);
 				SafeArrayUnaccessData(pArg.parray);
 				SAVECUSTOMERROR("AsyncInvoke","Datatype mismatch during array marshaling!");
 				throw E_APIERROR;
@@ -791,9 +790,9 @@ void _stdcall MarshalSafeArrayInt(VARIANT &pArg, Value &pArrayName, VARTYPE vTyp
 	SAFEARRAYBOUND *pArrayBounds = 0;
 try
 {
-	FoxArray pArray(pArrayName,false);
+	FoxArray pArray(pArrayName);
+	FoxValue pElement;
 	unsigned int nRows, nDims;
-	Value pElement;
 	nRows = pArray.ALen(nDims);
 
 	pArrayBounds = new SAFEARRAYBOUND[nDims];
@@ -825,14 +824,13 @@ try
 	{
 		for (unsigned int nRow = 1; nRow <= nRows; nRow++)
 		{
-			pArray(nRow,nDim).Load(pElement);
-			if (Vartype(pElement) == 'N')
-				*pOleElement = static_cast<int>(pElement.ev_real);
-			else if (Vartype(pElement) == 'I')
-				*pOleElement = pElement.ev_long;
+			pElement = pArray(nRow,nDim);
+			if (pElement.Vartype() == 'N')
+				*pOleElement = static_cast<int>(pElement->ev_real);
+			else if (pElement.Vartype() == 'I')
+				*pOleElement = pElement->ev_long;
 			else
 			{
-				ReleaseValue(pElement);
 				SafeArrayUnaccessData(pArg.parray);
 				SAVECUSTOMERROR("AsyncInvoke","Datatype mismatch during array marshaling!");
 				throw E_APIERROR;
@@ -863,9 +861,9 @@ void _stdcall MarshalSafeArraySingle(VARIANT &pArg, Value &pArrayName, VARTYPE v
 	SAFEARRAYBOUND *pArrayBounds = 0;
 try
 {
-	FoxArray pArray(pArrayName,false);
+	FoxArray pArray(pArrayName);
+	FoxValue pElement;
 	unsigned int nRows, nDims;
-	Value pElement;
 	nRows = pArray.ALen(nDims);
 
 	pArrayBounds = new SAFEARRAYBOUND[nDims];
@@ -897,14 +895,13 @@ try
 	{
 		for (unsigned int nRow = 1; nRow <= nRows; nRow++)
 		{
-			pArray(nRow,nDim).Load(pElement);
-			if (Vartype(pElement) == 'N')
-				*pOleElement = static_cast<float>(pElement.ev_real);
-			else if (Vartype(pElement) == 'I')
-				*pOleElement = static_cast<float>(pElement.ev_long);
+			pElement = pArray(nRow,nDim);
+			if (pElement.Vartype() == 'N')
+				*pOleElement = static_cast<float>(pElement->ev_real);
+			else if (pElement.Vartype() == 'I')
+				*pOleElement = static_cast<float>(pElement->ev_long);
 			else
 			{
-				ReleaseValue(pElement);
 				SafeArrayUnaccessData(pArg.parray);
 				SAVECUSTOMERROR("AsyncInvoke","Datatype mismatch during array marshaling!");
 				throw E_APIERROR;
@@ -935,8 +932,8 @@ void _stdcall MarshalSafeArrayDouble(VARIANT &pArg, Value &pArrayName, VARTYPE v
 	SAFEARRAYBOUND *pArrayBounds = 0;
 try
 {
-	FoxArray pArray(pArrayName,false);
-	Value pElement;
+	FoxArray pArray(pArrayName);
+	FoxValue pElement;
 	unsigned int nRows, nDims;
 	nRows = pArray.ALen(nDims);
 
@@ -969,14 +966,13 @@ try
 	{
 		for (unsigned int nRow = 1; nRow <= nRows; nRow++)
 		{
-			pArray(nRow,nDim).Load(pElement);
-			if (Vartype(pElement) == 'N')
-				*pOleElement = pElement.ev_real;
-			else if (Vartype(pElement) == 'I')
-				*pOleElement = static_cast<double>(pElement.ev_long);
+			pElement = pArray(nRow,nDim);
+			if (pElement.Vartype() == 'N')
+				*pOleElement = pElement->ev_real;
+			else if (pElement.Vartype() == 'I')
+				*pOleElement = static_cast<double>(pElement->ev_long);
 			else
 			{
-				ReleaseValue(pElement);
 				SafeArrayUnaccessData(pArg.parray);
 				SAVECUSTOMERROR("AsyncInvoke","Datatype mismatch during array marshaling!");
 				throw E_APIERROR;
@@ -1007,8 +1003,8 @@ void _stdcall MarshalSafeArrayDate(VARIANT &pArg, Value &pArrayName, VARTYPE vTy
 	SAFEARRAYBOUND *pArrayBounds = 0;
 try
 {
-	FoxArray pArray(pArrayName,false);
-	Value pElement;
+	FoxArray pArray(pArrayName);
+	FoxValue pElement;
 	unsigned int nRows, nDims;
 	nRows = pArray.ALen(nDims);
 
@@ -1041,12 +1037,11 @@ try
 	{
 		for (unsigned int nRow = 1; nRow <= nRows; nRow++)
 		{
-			pArray(nRow,nDim).Load(pElement);
-			if (Vartype(pElement) == 'T' || Vartype(pElement) == 'D')
-				*pOleElement = pElement.ev_real - VFPOLETIMEBASE;
+			pElement = pArray(nRow,nDim);
+			if (pElement.Vartype() == 'T' || pElement.Vartype() == 'D')
+				*pOleElement = pElement->ev_real - VFPOLETIMEBASE;
 			else
 			{
-				ReleaseValue(pElement);
 				SafeArrayUnaccessData(pArg.parray);
 				SAVECUSTOMERROR("AsyncInvoke","Datatype mismatch during array marshaling!");
 				throw E_APIERROR;
@@ -1078,9 +1073,8 @@ void _stdcall MarshalSafeArrayBSTR(VARIANT &pArg, Value &pArrayName, VARTYPE vTy
 	SAFEARRAYBOUND *pArrayBounds = 0;
 try
 {
-	FoxArray pArray(pArrayName,false);
-	Value pElement;
-	FoxString pString;
+	FoxArray pArray(pArrayName);
+	FoxString pElement;
 	unsigned int nRows, nDims;
 	nRows = pArray.ALen(nDims);
 
@@ -1113,11 +1107,10 @@ try
 	{
 		for (unsigned int nRow = 1; nRow <= nRows; nRow++)
 		{
-			pArray(nRow,nDim).Load(pElement);
-			if (Vartype(pElement) == 'C')
+			pElement = pArray(nRow,nDim);
+			if (pElement.Vartype() == 'C')
 			{
-				pString.Attach(pElement);
-				*pData = pString.ToBSTR();
+				*pData = pElement.ToBSTR();
 			}
 			else
 			{
@@ -1202,8 +1195,8 @@ void _stdcall MarshalSafeArrayDecimal(VARIANT &pArg, Value &pArrayName, VARTYPE 
 	SAFEARRAYBOUND *pArrayBounds = 0;
 try
 {
-	FoxArray pArray(pArrayName,false);
-	Value pElement;
+	FoxArray pArray(pArrayName);
+	FoxValue pElement;
 	unsigned int nRows, nDims;
 	nRows = pArray.ALen(nDims);
 
@@ -1236,12 +1229,11 @@ try
 	{
 		for (unsigned int nRow = 1; nRow <= nRows; nRow++)
 		{
-			pArray(nRow,nDim).Load(pElement);
-			if (Vartype(pElement) == 'N' || Vartype(pElement) == 'Y' || Vartype(pElement) == 'I')
-				MarshalDecimal(*pData,pElement);
+			pElement = pArray(nRow,nDim);
+			if (pElement.Vartype() == 'N' || pElement.Vartype() == 'Y' || pElement.Vartype() == 'I')
+				MarshalDecimal(*pData, pElement);
 			else
 			{
-				ReleaseValue(pElement);
 				SafeArrayUnaccessData(pArg.parray);
 				SAVECUSTOMERROR("AsyncInvoke","Datatype mismatch during array marshaling!");
 				throw E_APIERROR;

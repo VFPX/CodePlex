@@ -3,10 +3,10 @@
 #include "pro_ext.h"
 #include "vfp2c32.h"
 #include "vfp2cutil.h"
-#include "vfpmacros.h"
 #include "vfp2cfont.h"
 #include "vfp2ccppapi.h"
 #include "vfp2chelpers.h"
+#include "vfpmacros.h"
 
 void _fastcall AFontInfo(ParamBlk *parm)
 {
@@ -116,18 +116,18 @@ try
 		yStrikeoutSize = SWAPWORD(ttOS2.yStrikeoutSize);
 	}
 
-	pFontInfo("strikeoutposition") = yStrikeoutPosition;
-	pFontInfo("strikeoutsize") = yStrikeoutSize;
-	pFontInfo("italic") = (fStyle & 1) > 0; // italic
-	pFontInfo("underscore") = (fStyle & 2) > 0; // underscore
-	pFontInfo("negative") = (fStyle & 4) > 0; // negative
-	pFontInfo("outline") = (fStyle & 8) > 0; // outline
-	pFontInfo("strikeout") = (fStyle & 16) > 0; // strikeout
-	pFontInfo("bold") = (fStyle & 32) > 0; // bold
-	pFontInfo("regular") = (fStyle & 64) > 0; // regular
-	pFontInfo("typometrics") = (fStyle & 128) > 0; // use typo metrics
-	pFontInfo("wws") = (fStyle & 256) > 0; // wws The font has ‘name’ table strings consistent with a weight/width/slope family without requiring use of ‘name’ IDs 21 and 22. (Please see more detailed description below.)
-	pFontInfo("oblique") = (fStyle & 512) > 0; // oblique
+	pFontInfo("strikeoutposition") << yStrikeoutPosition;
+	pFontInfo("strikeoutsize") << yStrikeoutSize;
+	pFontInfo("italic") << ((fStyle & 1) > 0); // italic
+	pFontInfo("underscore") << ((fStyle & 2) > 0); // underscore
+	pFontInfo("negative") << ((fStyle & 4) > 0); // negative
+	pFontInfo("outline") << ((fStyle & 8) > 0); // outline
+	pFontInfo("strikeout") << ((fStyle & 16) > 0); // strikeout
+	pFontInfo("bold") << ((fStyle & 32) > 0); // bold
+	pFontInfo("regular") << ((fStyle & 64) > 0); // regular
+	pFontInfo("typometrics") << ((fStyle & 128) > 0); // use typo metrics
+	pFontInfo("wws") << ((fStyle & 256) > 0); // wws The font has ‘name’ table strings consistent with a weight/width/slope family without requiring use of ‘name’ IDs 21 and 22. (Please see more detailed description below.)
+	pFontInfo("oblique") << ((fStyle & 512) > 0); // oblique
 
 	// Name table found ?
 	if(OffsetName)
@@ -208,12 +208,12 @@ try
 
 				BigEndianWideCharToMultiByte(pNameRecordBuffer, pNameRecordBuffer.Size() / 2, pNameRecordBufferAnsi, pNameRecordBufferAnsi.Size());
 
-				pFontInfo(nameProps[xj]) = pNameRecordBufferAnsi;
+				pFontInfo(nameProps[xj]) << pNameRecordBufferAnsi;
 			}
 			else
 			{
 				pNameRecordBuffer.Len(0);
-				pFontInfo(nameProps[xj]) = pNameRecordBuffer;
+				pFontInfo(nameProps[xj]) << pNameRecordBuffer;
 			}
 		}
 	}
@@ -237,7 +237,7 @@ try
 		}
 
 		ttHead.unitsPerEm = SWAPWORD(ttHead.unitsPerEm);
-		pFontInfo("unitsperem") = ttHead.unitsPerEm;
+		pFontInfo("unitsperem") << ttHead.unitsPerEm;
 	}
 
 	if (OffsetPost)
@@ -260,8 +260,8 @@ try
 
 		ttPost.underlinePosition = SWAPWORD(ttPost.underlinePosition);
 		ttPost.underlineThickness = SWAPWORD(ttPost.underlineThickness);
-		pFontInfo("underlineposition") = ttPost.underlinePosition;
-		pFontInfo("underlinethickness") = ttPost.underlineThickness;
+		pFontInfo("underlineposition") << ttPost.underlinePosition;
+		pFontInfo("underlinethickness") << ttPost.underlineThickness;
 	}
 
 	pFontInfo.Return();

@@ -1,6 +1,6 @@
 #include <windows.h>
+#include <math.h>
 
-#include "math.h"
 #include "pro_ext.h"
 #include "vfp2c32.h"
 #include "vfpmacros.h"
@@ -8,6 +8,7 @@
 #include "vfp2cprint.h"
 #include "vfp2ccppapi.h"
 #include "vfp2chelpers.h"
+#include "vfpmacros.h"
 
 static PENUMFORMS fpEnumForms = 0;
 
@@ -32,10 +33,10 @@ void _fastcall APrintersEx(ParamBlk *parm)
 {
 try
 {
-	RESETWIN32ERRORS();
+ 	RESETWIN32ERRORS();
 
-	FoxArray pArray(p1);
-	FoxString pName(parm,2);
+ 	FoxArray pArray(p1);
+   	FoxString pName(parm,2);
 	FoxString pData(1024);
 	FoxObject pObject;
 
@@ -46,9 +47,9 @@ try
 	LPPRINTER_INFO_4 pInfo4;
 	LPPRINTER_INFO_5 pInfo5;
 
-	DWORD dwFlags = PCOUNT() >= 3 && p3.ev_long ? (DWORD)p3.ev_long : PRINTER_ENUM_LOCAL;
-	DWORD dwLevel = PCOUNT() >= 4 && p4.ev_long ? (DWORD)p4.ev_long : 2;
-	DWORD dwDest = PCOUNT() >= 5 && p5.ev_long ? (DWORD)p5.ev_long : APRINT_DEST_ARRAY;
+	DWORD dwFlags = PCOUNT() >= 3 && p3.ev_long ? p3.ev_long : PRINTER_ENUM_LOCAL;
+	DWORD dwLevel = PCOUNT() >= 4 && p4.ev_long ? p4.ev_long : 2;
+	DWORD dwDest = PCOUNT() >= 5 && p5.ev_long ? p5.ev_long : APRINT_DEST_ARRAY;
 	DWORD dwBytes, dwCount;
 
 	if (Vartype(p2) != '0' && Vartype(p2) != 'C')
@@ -100,14 +101,13 @@ try
 	switch(dwLevel)
 	{
 		case 1:
-			pInfo1 = (LPPRINTER_INFO_1)pBuffer.Address();
-
+			pInfo1 = reinterpret_cast<LPPRINTER_INFO_1>(pBuffer.Address());
 			if (dwDest == APRINT_DEST_ARRAY)
 			{
 				pArray.Dimension(dwCount,4);
 				for (unsigned int xj = 1; xj <= dwCount; xj++)
 				{
-					pArray(xj,1) = (int)pInfo1->Flags;
+					pArray(xj,1) = pInfo1->Flags;
 					pArray(xj,2) = pData = pInfo1->pDescription;
 					pArray(xj,3) = pData = pInfo1->pName;
 					pArray(xj,4) = pData = pInfo1->pComment;
@@ -120,10 +120,10 @@ try
 				for (unsigned int xj = 1; xj <= dwCount; xj++)
 				{
 					pObject.EmptyObject();
-					pObject("Flags") = (int)pInfo1->Flags;
-					pObject("Description") = pData = pInfo1->pDescription;
-					pObject("Name") = pData = pInfo1->pName;
-					pObject("Comment") = pData = pInfo1->pComment;
+					pObject("Flags") << pInfo1->Flags;
+					pObject("Description") << (pData = pInfo1->pDescription);
+					pObject("Name") << (pData = pInfo1->pName);
+					pObject("Comment") << (pData = pInfo1->pComment);
 					pArray(xj) = pObject;
 					pInfo1++;
 				}
@@ -131,7 +131,7 @@ try
 			break;
 
 		case 2:
-			pInfo2 = (LPPRINTER_INFO_2)pBuffer.Address();
+			pInfo2 = reinterpret_cast<LPPRINTER_INFO_2>(pBuffer.Address());
 			if (dwDest == APRINT_DEST_ARRAY)
 			{
 				pArray.Dimension(dwCount,19);
@@ -148,14 +148,14 @@ try
 					pArray(xj,9) = pData = pInfo2->pPrintProcessor;
 					pArray(xj,10) = pData = pInfo2->pDatatype;
 					pArray(xj,11) = pData = pInfo2->pParameters;
-					pArray(xj,12) = (int)pInfo2->Attributes;
-					pArray(xj,13) = (int)pInfo2->Priority;
-					pArray(xj,14) = (int)pInfo2->DefaultPriority;
-					pArray(xj,15) = (int)pInfo2->StartTime;
-					pArray(xj,16) = (int)pInfo2->UntilTime;
-					pArray(xj,17) = (int)pInfo2->Status;
-					pArray(xj,18) = (int)pInfo2->cJobs;
-					pArray(xj,19) = (int)pInfo2->AveragePPM;
+					pArray(xj,12) = pInfo2->Attributes;
+					pArray(xj,13) = pInfo2->Priority;
+					pArray(xj,14) = pInfo2->DefaultPriority;
+					pArray(xj,15) = pInfo2->StartTime;
+					pArray(xj,16) = pInfo2->UntilTime;
+					pArray(xj,17) = pInfo2->Status;
+					pArray(xj,18) = pInfo2->cJobs;
+					pArray(xj,19) = pInfo2->AveragePPM;
 					pInfo2++;
 				}
 			}
@@ -165,25 +165,25 @@ try
 				for (unsigned int xj = 1; xj <= dwCount; xj++)
 				{
 					pObject.EmptyObject();
-					pObject("ServerName") = pData = pInfo2->pServerName;
-					pObject("PrinterName") = pData = pInfo2->pPrinterName;
-					pObject("ShareName") = pData = pInfo2->pShareName;
-					pObject("PortName") = pData = pInfo2->pPortName;
-					pObject("DriverName") = pData = pInfo2->pDriverName;
-					pObject("Comment") = pData = pInfo2->pComment;
-					pObject("Location") = pData = pInfo2->pLocation;
-					pObject("SepFile") = pData = pInfo2->pSepFile;
-					pObject("PrintProcessor") = pData = pInfo2->pPrintProcessor;
-					pObject("Datatype") = pData = pInfo2->pDatatype;
-					pObject("Parameters") = pData = pInfo2->pParameters;
-					pObject("Attributes") = (int)pInfo2->Attributes;
-					pObject("Priority") = (int)pInfo2->Priority;
-					pObject("DefaultPriority") = (int)pInfo2->DefaultPriority;
-					pObject("StartTime") = (int)pInfo2->StartTime;
-					pObject("UntilTime") = (int)pInfo2->UntilTime;
-					pObject("Status") = (int)pInfo2->Status;
-					pObject("Jobs") = (int)pInfo2->cJobs;
-					pObject("AveragePPM") = (int)pInfo2->AveragePPM;
+					pObject("ServerName") << (pData = pInfo2->pServerName);
+					pObject("PrinterName") << (pData = pInfo2->pPrinterName);
+					pObject("ShareName") << (pData = pInfo2->pShareName);
+					pObject("PortName") << (pData = pInfo2->pPortName);
+					pObject("DriverName") << (pData = pInfo2->pDriverName);
+					pObject("Comment") << (pData = pInfo2->pComment);
+					pObject("Location") << (pData = pInfo2->pLocation);
+					pObject("SepFile") << (pData = pInfo2->pSepFile);
+					pObject("PrintProcessor") << (pData = pInfo2->pPrintProcessor);
+					pObject("Datatype") << (pData = pInfo2->pDatatype);
+					pObject("Parameters") << (pData = pInfo2->pParameters);
+					pObject("Attributes") << pInfo2->Attributes;
+					pObject("Priority") << pInfo2->Priority;
+					pObject("DefaultPriority") << pInfo2->DefaultPriority;
+					pObject("StartTime") << pInfo2->StartTime;
+					pObject("UntilTime") << pInfo2->UntilTime;
+					pObject("Status") << pInfo2->Status;
+					pObject("Jobs") << pInfo2->cJobs;
+					pObject("AveragePPM") << pInfo2->AveragePPM;
 					pArray(xj) = pObject;
 					pInfo2++;
 				}
@@ -191,7 +191,7 @@ try
 			break;
 
 		case 4:
-			pInfo4 = (LPPRINTER_INFO_4)pBuffer.Address();
+			pInfo4 = reinterpret_cast<LPPRINTER_INFO_4>(pBuffer.Address());
 			if (dwDest == APRINT_DEST_ARRAY)
 			{
 				pArray.Dimension(dwCount,3);
@@ -199,7 +199,7 @@ try
 				{
 					pArray(xj,1) = pData = pInfo4->pPrinterName;
 					pArray(xj,2) = pData = pInfo4->pServerName;
-					pArray(xj,3) = (int)pInfo4->Attributes;
+					pArray(xj,3) = pInfo4->Attributes;
 					pInfo4++;
 				}
 			}
@@ -209,9 +209,9 @@ try
 				for (unsigned int xj = 1; xj <= dwCount; xj++)
 				{
 					pObject.EmptyObject();
-					pObject("PrinterName") = pData = pInfo4->pPrinterName;
-					pObject("ServerName") = pData = pInfo4->pServerName;
-					pObject("Attributes") = (int)pInfo4->Attributes;
+					pObject("PrinterName") << (pData = pInfo4->pPrinterName);
+					pObject("ServerName") << (pData = pInfo4->pServerName);
+					pObject("Attributes") << pInfo4->Attributes;
 					pArray(xj) = pObject;
 					pInfo4++;
 				}
@@ -219,7 +219,7 @@ try
 			break;
 
 		case 5:
-			pInfo5 = (LPPRINTER_INFO_5)pBuffer.Address();
+			pInfo5 = reinterpret_cast<LPPRINTER_INFO_5>(pBuffer.Address());
 			if (dwDest == APRINT_DEST_ARRAY)
 			{
 				pArray.Dimension(dwCount,5);
@@ -227,9 +227,9 @@ try
 				{
 					pArray(xj,1) = pData = pInfo5->pPrinterName;
 					pArray(xj,2) = pData = pInfo5->pPortName;
-					pArray(xj,3) = (int)pInfo5->Attributes;
-					pArray(xj,4) = (int)pInfo5->DeviceNotSelectedTimeout;
-					pArray(xj,5) = (int)pInfo5->TransmissionRetryTimeout;
+					pArray(xj,3) = pInfo5->Attributes;
+					pArray(xj,4) = pInfo5->DeviceNotSelectedTimeout;
+					pArray(xj,5) = pInfo5->TransmissionRetryTimeout;
 					pInfo5++;
 				}
 			}
@@ -239,11 +239,11 @@ try
 				for (unsigned int xj = 1; xj <= dwCount; xj++)
 				{
 					pObject.EmptyObject();
-					pObject("PrinterName") = pData = pInfo5->pPrinterName;
-					pObject("PortName") = pData = pInfo5->pPortName;
-					pObject("Attributes") = (int)pInfo5->Attributes;
-					pObject("DeviceNotSelectedTimeout") = (int)pInfo5->DeviceNotSelectedTimeout;
-					pObject("TransmissionRetryTimeout") = (int)pInfo5->TransmissionRetryTimeout;
+					pObject("PrinterName") << (pData = pInfo5->pPrinterName);
+					pObject("PortName") << (pData = pInfo5->pPortName);
+					pObject("Attributes") << pInfo5->Attributes;
+					pObject("DeviceNotSelectedTimeout") << pInfo5->DeviceNotSelectedTimeout;
+					pObject("TransmissionRetryTimeout") << pInfo5->TransmissionRetryTimeout;
 					pArray(xj) = pObject;
 					pInfo5++;
 				}
@@ -275,7 +275,7 @@ try
 	LPJOB_INFO_1 pJobInfo;
 	LPJOB_INFO_2 pJobInfo2;
 
-	dwLevel = PCOUNT() >= 3 ? (DWORD)p3.ev_long : 1;
+	dwLevel = PCOUNT() >= 3 ? p3.ev_long : 1;
 	dwDest = PCOUNT() >= 4 ? p4.ev_long : APRINT_DEST_ARRAY;
 
 	if (dwLevel != 1 && dwLevel != 2)
@@ -284,14 +284,14 @@ try
 	if (dwDest != APRINT_DEST_ARRAY && dwDest != APRINT_DEST_OBJECTARRAY)
 		throw E_INVALIDPARAMS;
 
-	if(!OpenPrinter(pPrinter,hPrinter,NULL))
+	if(!OpenPrinter(pPrinter, hPrinter, NULL))
 	{
 		SAVEWIN32ERROR(OpenPrinter,GetLastError());
 		throw E_APIERROR;
 	}
 
 	// call EnumJobs() to find out how much memory is needed
-	if(!EnumJobs(hPrinter,0,0xFFFFFFFF,dwLevel,NULL,0,&dwBytes,&dwJobs))
+	if(!EnumJobs(hPrinter, 0, 0xFFFFFFFF, dwLevel, 0, 0, &dwBytes, &dwJobs))
 	{
 		DWORD nLastError = GetLastError();
 		if (nLastError != ERROR_INSUFFICIENT_BUFFER)
@@ -309,15 +309,15 @@ try
 
 	CBuffer pBuffer(dwBytes);
 
-	if(!EnumJobs(hPrinter,0,0xFFFFFFFF,dwLevel,pBuffer,dwBytes,&dwBytes,&dwJobs))
+	if(!EnumJobs(hPrinter, 0, 0xFFFFFFFF, dwLevel, pBuffer, dwBytes, &dwBytes, &dwJobs))
 	{
-		SAVEWIN32ERROR(EnumJobs,GetLastError());
+		SAVEWIN32ERROR(EnumJobs, GetLastError());
 		throw E_APIERROR;
 	}
 
 	if (dwLevel == 1)
 	{
-		pJobInfo = (LPJOB_INFO_1)pBuffer.Address();
+		pJobInfo = reinterpret_cast<LPJOB_INFO_1>(pBuffer.Address());
 		if (dwDest == APRINT_DEST_ARRAY)
 		{
 			pArray.Dimension(dwJobs,13);
@@ -345,19 +345,19 @@ try
 			for (unsigned int xj = 1; xj <= dwJobs; xj++)
 			{
 				pObject.EmptyObject();
-				pObject("Document") = pJob = pJobInfo->pDocument;
-				pObject("PrinterName") = pJob = pJobInfo->pPrinterName;
-				pObject("UserName") = pJob = pJobInfo->pUserName;
-				pObject("MachineName") = pJob = pJobInfo->pMachineName;
-				pObject("Datatype") = pJob = pJobInfo->pDatatype;
-				pObject("pStatus") = pJob = pJobInfo->pStatus;
-				pObject("JobId") = pJobInfo->JobId;
-				pObject("Status") = pJobInfo->Status;
-				pObject("Priority") = pJobInfo->Priority;
-				pObject("Position") = pJobInfo->Position;
-				pObject("TotalPages") = pJobInfo->TotalPages;
-				pObject("PagesPrinted") = pJobInfo->PagesPrinted;
-				pObject("Submitted") = pDateTime = pJobInfo->Submitted;
+				pObject("Document") << (pJob = pJobInfo->pDocument);
+				pObject("PrinterName") << (pJob = pJobInfo->pPrinterName);
+				pObject("UserName") << (pJob = pJobInfo->pUserName);
+				pObject("MachineName") << (pJob = pJobInfo->pMachineName);
+				pObject("Datatype") << (pJob = pJobInfo->pDatatype);
+				pObject("pStatus") << (pJob = pJobInfo->pStatus);
+				pObject("JobId") << pJobInfo->JobId;
+				pObject("Status") << pJobInfo->Status;
+				pObject("Priority") << pJobInfo->Priority;
+				pObject("Position") << pJobInfo->Position;
+				pObject("TotalPages") << pJobInfo->TotalPages;
+				pObject("PagesPrinted") << pJobInfo->PagesPrinted;
+				pObject("Submitted") << (pDateTime = pJobInfo->Submitted);
 				pArray(xj) = pObject;
 				pJobInfo++;
 			}
@@ -365,7 +365,7 @@ try
 	}
 	else
 	{
-		pJobInfo2 = (LPJOB_INFO_2)pBuffer.Address();
+		pJobInfo2 = reinterpret_cast<LPJOB_INFO_2>(pBuffer.Address());
 		if (dwDest == APRINT_DEST_ARRAY)
 		{
 			pArray.Dimension(dwJobs,21);
@@ -401,27 +401,27 @@ try
 			for (unsigned int xj = 1; xj <= dwJobs; xj++)
 			{
 				pObject.EmptyObject();
-				pObject("Document") = pJob = pJobInfo2->pDocument;
-				pObject("PrinterName") = pJob = pJobInfo2->pPrinterName;
-				pObject("UserName") = pJob = pJobInfo2->pUserName;
-				pObject("MachineName") = pJob = pJobInfo2->pMachineName;
-				pObject("Datatype") = pJob = pJobInfo2->pDatatype;
-				pObject("pStatus") = pJob = pJobInfo2->pStatus;
-				pObject("JobId") = pJobInfo2->JobId;
-				pObject("Status") = pJobInfo2->Status;
-				pObject("Priority") = pJobInfo2->Priority;
-				pObject("Position") = pJobInfo2->Position;
-				pObject("TotalPages") = pJobInfo2->TotalPages;
-				pObject("PagesPrinted") = pJobInfo2->PagesPrinted;
-				pObject("Submitted") = pDateTime = pJobInfo2->Submitted;
-				pObject("Notifyname") = pJob = pJobInfo2->pNotifyName;
-				pObject("PrintProcessor") = pJob = pJobInfo2->pPrintProcessor;
-				pObject("Parameters") = pJob = pJobInfo2->pParameters;
-				pObject("DriverName") = pJob = pJobInfo2->pDriverName;
-				pObject("Time") = pJobInfo2->Time;
-				pObject("StartTime") = pJobInfo2->StartTime;
-				pObject("UntilTime") = pJobInfo2->UntilTime;
-				pObject("Size") = pJobInfo2->Size;
+				pObject("Document") << (pJob = pJobInfo2->pDocument);
+				pObject("PrinterName") << (pJob = pJobInfo2->pPrinterName);
+				pObject("UserName") << (pJob = pJobInfo2->pUserName);
+				pObject("MachineName") << (pJob = pJobInfo2->pMachineName);
+				pObject("Datatype") << (pJob = pJobInfo2->pDatatype);
+				pObject("pStatus") << (pJob = pJobInfo2->pStatus);
+				pObject("JobId") << pJobInfo2->JobId;
+				pObject("Status") << pJobInfo2->Status;
+				pObject("Priority") << pJobInfo2->Priority;
+				pObject("Position") << pJobInfo2->Position;
+				pObject("TotalPages") << pJobInfo2->TotalPages;
+				pObject("PagesPrinted") << pJobInfo2->PagesPrinted;
+				pObject("Submitted") << (pDateTime = pJobInfo2->Submitted);
+				pObject("Notifyname") << (pJob = pJobInfo2->pNotifyName);
+				pObject("PrintProcessor") << (pJob = pJobInfo2->pPrintProcessor);
+				pObject("Parameters") << (pJob = pJobInfo2->pParameters);
+				pObject("DriverName") << (pJob = pJobInfo2->pDriverName);
+				pObject("Time") << pJobInfo2->Time;
+				pObject("StartTime") << pJobInfo2->StartTime;
+				pObject("UntilTime") << pJobInfo2->UntilTime;
+				pObject("Size") << pJobInfo2->Size;
 				pArray(xj) = pObject;
 				pJobInfo2++;
 			}
@@ -451,15 +451,14 @@ try
 	DWORD dwBytes, dwForms;
 	PFORM_INFO_1 pFormInfo;
 
-
-	if(!OpenPrinter(pPrinter,hPrinter,0))
+	if(!OpenPrinter(pPrinter, hPrinter, 0))
 	{
 		SAVEWIN32ERROR(OpenPrinter,GetLastError());
 		throw E_APIERROR;
 	}
 
 	// First call EnumForms() to find out how much memory we need
-	if (!fpEnumForms(hPrinter,1,0,0,&dwBytes,&dwForms))
+	if (!fpEnumForms(hPrinter, 1, 0, 0, &dwBytes, &dwForms))
 	{
 		DWORD nLastError = GetLastError();
 		if (nLastError != ERROR_INSUFFICIENT_BUFFER)
@@ -477,14 +476,14 @@ try
 
 	CBuffer pBuffer(dwBytes);
 
-	if (!fpEnumForms(hPrinter,1,pBuffer,dwBytes,&dwBytes,&dwForms))
+	if (!fpEnumForms(hPrinter, 1, pBuffer, dwBytes, &dwBytes, &dwForms))
 	{
 		SAVEWIN32ERROR(EnumForms,GetLastError());
 		throw E_APIERROR;
 	}
    
 	pArray.Dimension(dwForms,8);
-	pFormInfo = (PFORM_INFO_1)pBuffer.Address();
+	pFormInfo = reinterpret_cast<PFORM_INFO_1>(pBuffer.Address());
 
 	for (unsigned int xj = 1; xj <= dwForms; xj++)
 	{
@@ -517,7 +516,6 @@ try
 	FoxString pPrinter(p2);
 	FoxString pPort(p3);
 	int nUnit = PCOUNT() == 4 ? p4.ev_long : PAPERSIZE_UNIT_MM;
-	double nTmp;
 
 	if (nUnit < PAPERSIZE_UNIT_MM || nUnit > PAPERSIZE_UNIT_POINT)
 		throw E_INVALIDPARAMS;
@@ -542,9 +540,9 @@ try
    
 	pArray.Dimension(dwCount, 4);
 
-	WORD *pPapers = (WORD*)pPapersBuffer.Address();
-	char *pPapernames = (char*)pPapernamesBuffer.Address();
-	POINT *pPapersize = (POINT*)pPapersizeBuffer.Address();
+	WORD *pPapers = reinterpret_cast<WORD*>(pPapersBuffer.Address());
+	char *pPapernames = reinterpret_cast<char*>(pPapernamesBuffer.Address());
+	POINT *pPapersize = reinterpret_cast<POINT*>(pPapersizeBuffer.Address());
 
 	for (unsigned int xj = 1; xj <= dwCount; xj++)
 	{
@@ -558,16 +556,12 @@ try
 				pArray(xj,4) = pPapersize->y;
 				break;
 			case PAPERSIZE_UNIT_INCH:
-				pArray(xj,3) = nTmp = pPapersize->x * INCH_PER_MM;
-				pArray(xj,4) = nTmp = pPapersize->y * INCH_PER_MM;
+				pArray(xj,3) = pPapersize->x * INCH_PER_MM;
+				pArray(xj,4) = pPapersize->y * INCH_PER_MM;
 				break;
 			case PAPERSIZE_UNIT_POINT:
-				/*
-				nTmp = floor(pPapersize->x * POINTS_PER_MM + 0.5) / 10;
-				nTmp = floor(pPapersize->y * POINTS_PER_MM + 0.5) / 10;
-				*/
-				pArray(xj,3) = (int)floor(pPapersize->x * POINTS_PER_MM + 0.49);
-				pArray(xj,4) = (int)floor(pPapersize->y * POINTS_PER_MM + 0.49);
+				pArray(xj,3) = floor(pPapersize->x * POINTS_PER_MM + 0.49);
+				pArray(xj,4) = floor(pPapersize->y * POINTS_PER_MM + 0.49);
 				break;
 		}
 

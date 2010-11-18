@@ -2,7 +2,7 @@
 
 CD (FULLPATH(JUSTPATH(SYS(16))))
 SET LIBRARY TO vfp2c32.fll ADDITIVE
-INITVFP2C32(VFP2C_INIT_ALL)
+&& no initialisation needed for registry functions
 
 LOCAL lnKey, lnNewKey, lcValue, laError[1], loValues
 

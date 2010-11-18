@@ -1,13 +1,13 @@
-#include "winsock2.h"
-#include "math.h"
+#include <winsock2.h>
+#include <math.h>
 
 #include "pro_ext.h"
 #include "vfp2c32.h"
 #include "vfp2ccppapi.h"
-#include "vfpmacros.h"
 #include "vfp2cwinsock.h"
 #include "vfp2csntp.h"
 #include "vfp2cutil.h"
+#include "vfpmacros.h"
 
 void _fastcall SyncToSNTPServer(ParamBlk *parm)
 {
@@ -184,8 +184,8 @@ void _stdcall DoubleToSNTPTime(double nTime, LPSNTPTIME pSntpTime)
 {
 	double dFractional, dSecs;
 	dFractional = modf(nTime,&dSecs);
-	pSntpTime->dwSeconds = (DWORD)dSecs;
-	pSntpTime->dwFraction = (DWORD)ceil(dFractional * ((double)0xFFFFFFFF));
+	pSntpTime->dwSeconds = static_cast<DWORD>(dSecs);
+	pSntpTime->dwFraction = static_cast<DWORD>(ceil(dFractional * ((double)0xFFFFFFFF)));
 }
 
 void _stdcall SNTPTimeToPacket(LPSNTPTIME pSntpTime)
@@ -213,8 +213,8 @@ void _stdcall SystemTimeToSNTPTime(LPSYSTEMTIME pSysTime, LPSNTPTIME pSntpTime)
 	nSecs = (nSecs * 60) + pSysTime->wMinute;
 	nSecs = (nSecs * 60) + pSysTime->wSecond;
 
-	pSntpTime->dwSeconds = (DWORD)nSecs;
-	pSntpTime->dwFraction = (DWORD)ceil(pSysTime->wMilliseconds * MS_TO_FRACTION);
+	pSntpTime->dwSeconds = static_cast<DWORD>(nSecs);
+	pSntpTime->dwFraction = static_cast<DWORD>(ceil(pSysTime->wMilliseconds * MS_TO_FRACTION));
 }
 
 void _stdcall SNTPTimeToSystemTime(LPSNTPTIME pSntpTime, LPSYSTEMTIME pSysTime)

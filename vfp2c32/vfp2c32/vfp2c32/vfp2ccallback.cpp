@@ -1,14 +1,14 @@
 #include <windows.h>
-#include "stddef.h"
-#include "malloc.h"
+#include <stddef.h>
+#include <malloc.h>
 
 #include "pro_ext.h"
 #include "vfp2c32.h"
 #include "vfp2cutil.h"
 #include "vfp2ccallback.h"
 #include "vfp2cassembly.h"
-#include "vfpmacros.h"
 #include "vfp2ccppapi.h"
+#include "vfpmacros.h"
 
 static HANDLE ghThunkHeap = 0;
 static LPWINDOWSUBCLASS gpWMSubclasses = 0;
@@ -889,7 +889,7 @@ try
 	FoxString pRetVal(p2);
 	FoxString pParams(p3);
 	
-	DWORD nSyncFlag = PCOUNT() == 5 ? static_cast<DWORD>(p5.ev_long) : CALLBACK_SYNCRONOUS;
+	DWORD nSyncFlag = PCOUNT() == 5 ? p5.ev_long : CALLBACK_SYNCRONOUS;
 	bool bCDeclCallConv = (nSyncFlag | CALLBACK_CDECL) > 0; // is CALLBACK_CDECL set?
 	nSyncFlag &= ~CALLBACK_CDECL; // remove CALLBACK_CDECL from nSyncFlag
 	nSyncFlag = nSyncFlag ? nSyncFlag : CALLBACK_SYNCRONOUS; // set nSyncFlag to default CALLBACK_SYNCRONOUS if is 0

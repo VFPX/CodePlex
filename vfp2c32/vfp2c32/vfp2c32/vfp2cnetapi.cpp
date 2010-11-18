@@ -5,8 +5,8 @@
 #include "vfp2cutil.h"
 #include "vfp2cnetapi.h"
 #include "vfp2cnetapiex.h"
-#include "vfpmacros.h"
 #include "vfp2ccppapi.h"
+#include "vfpmacros.h"
 
 static HMODULE hNetApi32 = 0;
 
@@ -96,7 +96,7 @@ try
 			}
 
 			dwRows += dwEntries;
-			pArray.ReDimension(dwRows,5);
+			pArray.Dimension(dwRows,5);
 			pFileInfo3 = (LPFILE_INFO_3)(LPBYTE)pBuffer;
 
 			while (dwEntries--)
@@ -136,7 +136,7 @@ try
 		throw E_NOENTRYPOINT;
 
 	FoxArray pArray(p1);
-	DWORD dwServerType = PCOUNT() >= 2 && p2.ev_long ? (DWORD)p2.ev_long : SV_TYPE_SERVER;
+	DWORD dwServerType = PCOUNT() >= 2 && p2.ev_long ? p2.ev_long : SV_TYPE_SERVER;
 	DWORD dwLevel;
 	FoxWString pDomain(parm,4);
 
@@ -153,7 +153,7 @@ try
 	else
 		dwLevel = 101;
 
-	pArray.Dimension(1,dwLevel == 101 ? 6 : 2);
+	pArray.Dimension(1, dwLevel == 101 ? 6 : 2);
 
 	do
 	{
@@ -171,7 +171,7 @@ try
 
 			if (dwLevel == 101)
 			{
-				pArray.ReDimension(dwRows,6);
+				pArray.Dimension(dwRows,6);
 				pInfo101 = (LPSERVER_INFO_101)(LPBYTE)pBuffer;
 				while(dwEntries--)
 				{
@@ -186,7 +186,7 @@ try
 			}
 			else
 			{
-				pArray.ReDimension(dwRows,2);
+				pArray.Dimension(dwRows,2);
 				pInfo100 = (LPSERVER_INFO_100)(LPBYTE)pBuffer;
 				while(dwEntries--)
 				{

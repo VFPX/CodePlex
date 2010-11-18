@@ -197,7 +197,7 @@ try
 		if (PCOUNT() == 4)
 		{
 			if (Vartype(p4) == 'I' || Vartype(p4) == 'N')
-				hHwnd = Vartype(p4) == 'I' ? (HWND)p4.ev_long : (HWND)(DWORD)p4.ev_real;
+				hHwnd = Vartype(p4) == 'I' ? reinterpret_cast<HWND>(p4.ev_long) : reinterpret_cast<HWND>(static_cast<int>(p4.ev_real));
 			else if (pWindow.Len())
 				hHwnd = WHwndByTitle(pWindow);
 			else
@@ -405,7 +405,7 @@ void _fastcall Int64_Mod(ParamBlk *parm)
 
 void _fastcall Value2Variant(ParamBlk *parm)
 {
-	V_STRINGN(vVariant,sizeof(VALUEEX));
+	V_STRINGN(vVariant, sizeof(VALUEEX));
 	VALUEEX vData = {0};
 	char *pVariant;
 	int nSize = 0;
@@ -449,7 +449,7 @@ void _fastcall Value2Variant(ParamBlk *parm)
 			RaiseError(E_INVALIDPARAMS);
 	}
 
-	if (!AllocHandleEx(vVariant,vVariant.ev_length))
+	if (!AllocHandleEx(vVariant, Len(vVariant)))
 		RaiseError(E_INSUFMEMORY);
 
 	pVariant = HandleToPtr(vVariant);
@@ -539,7 +539,7 @@ catch(int nErrorNo)
 /* its as simple as that :) */
 void _fastcall Decimals(ParamBlk *parm)
 {
-	Return((int)p1.ev_length);
+	Return(static_cast<int>(p1.ev_length));
 }
 
 void _fastcall Num2Binary(ParamBlk *parm)
@@ -607,8 +607,8 @@ try
 	int nApiRet;
 	FoxString pLocaleInfo(256);
 	
-	LCTYPE nType = (LCTYPE)p1.ev_long;
-	LCID nLocale = PCOUNT() >= 2 ? (LCID)p2.ev_long : LOCALE_USER_DEFAULT;
+	LCTYPE nType = p1.ev_long;
+	LCID nLocale = PCOUNT() >= 2 ? p2.ev_long : LOCALE_USER_DEFAULT;
 
 	nApiRet = GetLocaleInfo(nLocale, nType, pLocaleInfo, pLocaleInfo.Size());
 	if (nApiRet == 0)
@@ -619,23 +619,6 @@ try
 
 	pLocaleInfo.Len(nApiRet-1);
 	pLocaleInfo.Return();
-}
-catch(int nErrorNo)
-{
-	RaiseError(nErrorNo);
-}
-}
-
-void _fastcall StrtranEx(ParamBlk *parm)
-{
-try
-{
-	FoxString sSearchIn(p1);
-	FoxString sSearchFor(p2);
-	FoxString sReplacement(p3);
-
-	sSearchIn.Strtran(sSearchFor,sReplacement);
-	sSearchIn.Return();
 }
 catch(int nErrorNo)
 {

@@ -1,19 +1,16 @@
 && enumeration functions
-
-
 #include vfp2c.h
 
 && prerequisites for all functions in this file:
 && InitVFP2C32 must have been called with the VFP2C_INIT_ENUM flag set
-
+CD (FULLPATH(JUSTPATH(SYS(16))))
 SET LIBRARY TO vfp2c32.fll ADDITIVE
-InitVFP2C32( VFP2C_INIT_ENUM )
+InitVFP2C32( VFP2C_INIT_ENUM)
 
 && enumerate running processes into an array
 && on WinNT process name, parent process id & priority class can be empty (0) 
 && if the current user account doesn't has suffiecient rights to query process information
 LOCAL lnCount
-LOCAL laProcs[1]
 lnCount = AProcesses("laProcs")
 IF lnCount > 0
 ? "Process name", laProcs[1,1]

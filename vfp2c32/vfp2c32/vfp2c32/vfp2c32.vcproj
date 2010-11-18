@@ -66,7 +66,7 @@
 				Name="VCMIDLTool"/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				Description="Copying file to VFP-Folder"
+				Description="Copying FLL"
 				CommandLine="copy &quot;$(TargetPath)&quot; &quot;$(SolutionDir)..\vfp2c32examples\$(TargetFileName)&quot;
 "/>
 			<Tool
@@ -97,7 +97,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="3"
 				GlobalOptimizations="TRUE"
-				InlineFunctionExpansion="0"
+				InlineFunctionExpansion="1"
 				EnableIntrinsicFunctions="TRUE"
 				ImproveFloatingPointConsistency="TRUE"
 				FavorSizeOrSpeed="2"
@@ -138,7 +138,7 @@
 				Name="VCMIDLTool"/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				Description="Copying file to VFP-Folder"
+				Description="Copying FLL"
 				CommandLine="copy &quot;$(TargetPath)&quot; &quot;$(SolutionDir)..\vfp2c32front\$(TargetFileName)&quot;
 copy &quot;$(TargetPath)&quot; &quot;$(SolutionDir)..\vfp2c32examples\$(TargetFileName)&quot;
 "/>
@@ -170,10 +170,11 @@ copy &quot;$(TargetPath)&quot; &quot;$(SolutionDir)..\vfp2c32examples\$(TargetFi
 				Name="VCCLCompilerTool"
 				Optimization="3"
 				GlobalOptimizations="TRUE"
-				InlineFunctionExpansion="0"
+				InlineFunctionExpansion="1"
 				EnableIntrinsicFunctions="TRUE"
 				ImproveFloatingPointConsistency="TRUE"
 				FavorSizeOrSpeed="2"
+				OmitFramePointers="FALSE"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
 				BufferSecurityCheck="FALSE"
@@ -201,7 +202,8 @@ copy &quot;$(TargetPath)&quot; &quot;$(SolutionDir)..\vfp2c32examples\$(TargetFi
 				Name="VCMIDLTool"/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="
+				Description="Copying FLL"
+				CommandLine="copy &quot;$(TargetPath)&quot; &quot;$(SolutionDir)..\vfp2c32examples\$(TargetFileName)&quot;
 "/>
 			<Tool
 				Name="VCPreBuildEventTool"/>
@@ -381,27 +383,6 @@ copy &quot;$(TargetPath)&quot; &quot;$(SolutionDir)..\vfp2c32examples\$(TargetFi
 					<Tool
 						Name="VCCLCompilerTool"
 						ExceptionHandling="TRUE"
-						CompileAs="0"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						CompileAs="0"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="ReleaseDebug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
-						CompileAs="0"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath=".\vfp2cdbf.cpp">
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCLCompilerTool"
 						CompileAs="0"/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -823,9 +804,6 @@ copy &quot;$(TargetPath)&quot; &quot;$(SolutionDir)..\vfp2c32examples\$(TargetFi
 				RelativePath=".\vfp2ccppapi.h">
 			</File>
 			<File
-				RelativePath=".\vfp2cdbf.h">
-			</File>
-			<File
 				RelativePath=".\vfp2cenum.h">
 			</File>
 			<File
@@ -893,9 +871,6 @@ copy &quot;$(TargetPath)&quot; &quot;$(SolutionDir)..\vfp2c32examples\$(TargetFi
 			Name="Resource Files"
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx"
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}">
-			<File
-				RelativePath=".\todo.txt">
-			</File>
 			<File
 				RelativePath=".\vfp2c32.rc">
 			</File>
