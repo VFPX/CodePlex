@@ -5,9 +5,9 @@ m.lcPath = FULLPATH(JUSTPATH(SYS(16)))
 CD (m.lcPath)
 
 SET LIBRARY TO vfp2c32.fll ADDITIVE
-INITVFP2C32(VFP2C_INIT_ALL)
+INITVFP2C32(VFP2C_INIT_FILE)
 
-LOCAL lnCount, laFiles[1], xj
+LOCAL lnCount, lnCount2, laFiles[1], xj, xi
 
 ADIRECTORYINFO('laDir', m.lcPath)
 ? "No. of files:", laDir[1]
@@ -20,6 +20,21 @@ FOR xj = 1 TO lnCount
 	? "Type:", laDrives[xj,2] && the same values as returned by native DRIVETYPE() function
 	? "Device No.:", laDrives[xj,3]
 	? "Partition No.:", laDrives[xj,4]
+ENDFOR
+
+lnCount = AVolumes('laVolumes')
+FOR xj = 1 TO lnCount
+	? "Volume:", laVolumes[xj]
+	AVolumeInformation('laInfo', SUBSTR(laVolumes[xj], 1, LEN(laVolumes[xj])-1))
+	DISPLAY MEMORY LIKE laInfo
+	lnCount2 = AVolumeMountPoints('laMountPoints', laVolumes[xj])
+	FOR xi = 1 TO lnCount2
+		? "Mountpoint:", laMountPoints[xi]
+	ENDFOR
+	lnCount2 = AVolumePaths('laPaths', laVolumes[xj])
+	FOR xi = 1 TO lnCount2
+		? "Path:", laPaths[xi]
+	ENDFOR
 ENDFOR
 
 && ---------------

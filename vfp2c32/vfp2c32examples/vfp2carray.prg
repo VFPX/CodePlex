@@ -1,17 +1,26 @@
 #INCLUDE vfp2c.h
 
-DEFINE CLASS CArray AS Relation
+#DEFINE E_INVALIDPARAMS	11
+#DEFINE E_USERERROR		1098	
+
+DEFINE CLASS CArray AS Custom
 
 	Address = 0
-	ArrayOffset = 0
-	bContained = .F.
-	Elements = 0
-	ElementSize = 0
+	Rows = 0
 	DIMENSION Element[1]
 
-	FUNCTION Init(nRows)
+	PROTECTED Contained
+	Contained = .F.
+	PROTECTED ElementSize
+	ElementSize = 0
+	PROTECTED ArrayOffset
+	ArrayOffset = 0
+	PROTECTED CType
+	CType = 0
+
+	FUNCTION Init(lnRows)
 		IF PCOUNT() = 1
-			RETURN THIS.Dimension(nRows)
+			RETURN THIS.Dimension(m.lnRows)
 		ENDIF
 	ENDFUNC
 
@@ -20,124 +29,121 @@ DEFINE CLASS CArray AS Relation
 	ENDFUNC
 	
 	FUNCTION FreeArray
-		IF !THIS.bContained AND THIS.Address != 0
+		IF !THIS.Contained AND THIS.Address != 0
 			FreeMem(THIS.Address)
 		ENDIF
-		THIS.bContained = .F.
+		THIS.Contained = .F.
 		THIS.Address = 0
 	ENDFUNC
 	
-	FUNCTION AttachArray(nBaseAdress,nElements)
-		ASSERT(PCOUNT()=2) MESSAGE 'Not enough parameters to attach array!'
+	FUNCTION AttachArray(lnBaseAddress, lnRows)
+		IF PCOUNT() != 2
+			ERROR E_INVALIDPARAMS, 'Not enough parameters to attach array!'
+		ENDIF
 
 		THIS.FreeArray()
-		
-		THIS.Address = nBaseAdress
-		THIS.bContained = .T.
-				
-		THIS.Elements = nElements
-		THIS.ArrayOffset = THIS.Address - THIS.ElementSize && eases access to the array in Element_Access (for 1 based addressing)
+
+		THIS.Contained = .T.		
+		THIS.Address = m.lnBaseAddress
+		THIS.Rows = m.lnRows
+		THIS.ArrayOffset = m.lnBaseAddress - THIS.ElementSize && eases access to the array in Element_Access (for 1 based addressing)
 	ENDFUNC
-	
-	FUNCTION Dimension(nElements)
-		ASSERT (!THIS.bContained) MESSAGE 'Dimensioning a contained array is a bad idea!'
+
+	FUNCTION Dimension(lnRows)
+		IF THIS.Contained
+			ERROR E_INVALIDPARAMS, 'You cannot dimension a contained array!'
+		ENDIF
 		LOCAL lnAddress
-		THIS.Elements = nElements
-		lnAddress = ReAllocMem(THIS.Address,nElements*THIS.ElementSize)
-		IF lnAddress != 0
-			THIS.Address = lnAddress
-			THIS.ArrayOffset = THIS.Address - THIS.ElementSize
-			RETURN .T.
+		THIS.Rows = MIN(m.lnRows, FLL_MAX_ARRAY_SIZE)
+		m.lnAddress = ReAllocMem(THIS.Address, THIS.Rows * THIS.ElementSize)
+		IF m.lnAddress = 0
+			LOCAL laError[1]
+			AERROREX('laError')
+			ERROR E_USERERROR, m.laError[3]
 		ELSE
-			RETURN .F.
+			THIS.Address = m.lnAddress
+			THIS.ArrayOffset = THIS.Address - THIS.ElementSize
 		ENDIF
 	ENDFUNC
 	
-	FUNCTION AddressOf(nElement)
-		RETURN THIS.ArrayOffSet + nElement * THIS.ElementSize
+	FUNCTION AddressOf(lnRow)
+		RETURN THIS.ArrayOffSet + m.lnRow * THIS.ElementSize
 	ENDFUNC
 	
 	FUNCTION MarshalArray(laSource)
 		EXTERNAL ARRAY laSource
-		IF THIS.Dimension(ALEN(laSource))
-			&& RETURN MarshalArrayDataType(THIS.Address,@laSource)
+		LOCAL lnRows
+		m.lnRows = ALEN(m.laSource,1)
+		IF THIS.Contained
+			IF m.lnRows > THIS.Rows
+				ERROR E_INVALIDPARAMS, 'Array to large for marshaling into a contained C array!'
+			ENDIF
+			RETURN MarshalFoxArray2CArray(THIS.Address, @m.laSource, THIS.CType)
 		ELSE
-			ERROR(INSUFMEMORY)
+			IF m.lnRows > THIS.Rows
+				THIS.Dimension(m.lnRows)
+			ENDIF
+			RETURN MarshalFoxArray2CArray(THIS.Address, @m.laSource, THIS.CType)
 		ENDIF
 	ENDFUNC
 	
 	FUNCTION UnMarshalArray(laDestination)
 		EXTERNAL ARRAY laDestination
-		DIMENSION laDestination[THIS.Elements]
-		&& RETURN UnMarshalArrayDataType(THIS.Address,@laDestination)
+		IF THIS.Address = 0
+			ERROR E_INVALIDPARAMS, 'No C array created yet!'		
+		ENDIF		
+		DIMENSION m.laDestination[THIS.Rows]
+		RETURN MarshalCArray2FoxArray(THIS.Address, @m.laDestination, THIS.CType)
 	ENDFUNC
 	
-	FUNCTION MarshalCursor(lcFieldName)
-		LOCAL lcAlias, lcField
-		lcAlias = JUSTSTEM(lcFieldName)
-		lcField = JUSTEXT(lcFieldName)
-		IF THIS.Dimension(RECCOUNT(lcAlias))
-			&&RETURN MarshalCursorDataType(THIS.Address,lcField,SELECT(lcAlias))
-		ELSE
-			ERROR(INSUFMEMORY)
+	FUNCTION MarshalCursor(lcCursorAndFieldNames)
+		LOCAL lnColumns, lcAlias, lnRows
+		m.lcAlias = GETWORDNUM(m.lcCursorAndFieldNames, 1, '.')
+		m.lnColumns = OCCURS(',', m.lcCursorAndFieldNames) + 1
+		IF m.lnColumns > 1
+			ERROR E_INVALIDPARAMS, 'You can only pass 1 column name!'
 		ENDIF
+		m.lnRows = RECCOUNT(m.lcAlias)
+		IF m.lnRows > THIS.Rows
+			THIS.Dimension(m.lnRows)
+		ENDIF
+		RETURN MarshalCursor2CArray(THIS.Address, m.lcCursorAndFieldNames, THIS.CType, m.lnRows)
 	ENDFUNC
 	
-	FUNCTION UnMarshalCursor(lcFieldName)
-		LOCAL lcAlias, lcField
-		lcAlias = JUSTSTEM(lcFieldName)
-		lcField = JUSTEXT(lcFieldName)
-		&& RETURN UnMarshalCursor(THIS.Address,lcField,SELECT(lcAlias),THIS.Elements)	
+	FUNCTION UnMarshalCursor(lcCursorAndFieldNames)
+		IF THIS.Address = 0
+			ERROR E_INVALIDPARAMS, 'No C array created yet!'		
+		ENDIF		
+		RETURN MarshalCArray2Cursor(THIS.Address, m.lcCursorAndFieldNames, THIS.CType, THIS.Rows)	
 	ENDFUNC
 	
-	PROTECTED FUNCTION MarshalCursorPrepare(lcFieldName,lcField,lnRecCount,lnWorkArea)
-		LOCAL lcOldAlias, lnOldRecNo
-		lcAlias = JUSTSTEM(lcFieldName)
-		IF EMPTY(lcAlias)
-			lcAlias = ALIAS()
-			lcField = lcFieldName
-			lcOldAlias = ""
-		ELSE
-			lcField = JUSTEXT(lcFieldName)
-			lcOldAlias = ALIAS()
-			SELECT &lcAlias			
-		ENDIF
-		lnWorkArea = SELECT(lcAlias)
-		lnOldRecNo = RECNO(lcAlias)		
-		&& count records to marshal
-		COUNT TO lnRecCount
-		&& restore old recno
-		GO (lnOldRecNo) IN (lcAlias)
-		IF !EMPTY(lcOldAlias)
-			SELECT &lcOldAlias
-		ENDIF
-	ENDFUNC
-
 ENDDEFINE
 
-DEFINE CLASS CMultiDimArray AS Relation
+DEFINE CLASS C2DimArray AS Custom
 
 	Address = 0
-	bContained = .F.
 	Elements = 0
-	ElementSize = 0
-	RowSize = 0
 	Rows = 0
-	Dimensions = 0
-	DIMENSION DimensionOffSets[1] = 0
+	Columns = 0
 	DIMENSION Element[1]
 
-	FUNCTION Init(nBaseAddress,nRows,nDimensions)
+	PROTECTED ElementSize
+	ElementSize = 0
+	PROTECTED RowSize
+	RowSize = 0
+	PROTECTED CType
+	CType = 0
+	PROTECTED Contained
+	Contained = .F.
+	PROTECTED ColumnOffSets[1]
+	DIMENSION ColumnOffSets[1] = 0
+
+	FUNCTION Init(lnRows, lnColumns)
 		DO CASE
-			CASE PCOUNT() = 0
 			CASE PCOUNT() = 1
-				THIS.Dimension(nRows,1)
+				THIS.Dimension(m.lnRows, 1)
 			CASE PCOUNT() = 2
-				THIS.Dimesion(nRows,nDimensions)
-			CASE PCOUNT() = 3
-				THIS.Address = nBaseAddress
-				THIS.CalculateOffsets(nRows,nDimension)
-				THIS.bContained = .T.
+				THIS.Dimesion(m.lnRows, m.lnColumns)
 		ENDCASE
 	ENDFUNC
 
@@ -146,471 +152,638 @@ DEFINE CLASS CMultiDimArray AS Relation
 	ENDFUNC
 	
 	FUNCTION FreeArray
-		IF !THIS.bContained AND THIS.Address != 0
+		IF !THIS.Contained AND THIS.Address != 0
 			FreeMem(THIS.Address)
 		ENDIF
 	ENDFUNC
-	
-	FUNCTION Dimension(nRows,nDimensions)
-		IF THIS.Address = 0
-			THIS.Address = ReAllocMem(nRows*nDimensions*THIS.ElementSize)
-			THIS.CalculateOffsets(nRows,nDimensions)
+
+	FUNCTION AttachArray(lnBaseAdress, lnRows, lnColumns)
+		IF PCOUNT() != 3
+			ERROR E_INVALIDPARAMS, 'Not enough parameters to attach array!'
+		ENDIF
+
+		THIS.FreeArray()
+		
+		THIS.Address = m.lnBaseAdress
+		THIS.Contained = .T.
+		
+		m.lnRows = MIN(m.lnRows, FLL_MAX_ARRAY_SIZE)
+		m.lnColumns = MIN(m.lnColumns, FLL_MAX_ARRAY_SIZE)
+		THIS.CalculateOffsets(m.lnRows, m.lnColumns )				
+	ENDFUNC
+
+	FUNCTION Dimension(lnRows, lnColumns)
+		IF THIS.Contained
+			ERROR E_INVALIDPARAMS, 'You cannot dimension a contained array!'
+		ENDIF
+		LOCAL lnAddress
+		m.lnRows = MIN(m.lnRows, FLL_MAX_ARRAY_SIZE)
+		m.lnColumns = MIN(m.lnColumns, FLL_MAX_ARRAY_SIZE)
+		m.lnAddress = ReAllocMem(THIS.Address, m.lnRows * m.lnColumns * THIS.ElementSize)
+		IF m.lnAddress = 0
+			LOCAL laError[1]
+			AERROREX('laError')
+			ERROR E_USERERROR, m.laError[3]
+		ELSE
+			THIS.Address = m.lnAddress
+			THIS.CalculateOffsets(m.lnRows, m.lnColumns)
 		ENDIF
 	ENDFUNC
+
+	FUNCTION AddressOf(lnRow, lnColumn)
+		RETURN THIS.ColumnOffSets[m.lnColumn] + m.lnRow * THIS.ElementSize
+	ENDFUNC
 	
-	PROTECTED FUNCTION CalculateOffSets(nRows, nDimensions)
+	PROTECTED FUNCTION CalculateOffSets(lnRows, lnColumns)
 		LOCAL xj
-		THIS.Rows = nRows
-		THIS.Dimensions = nDimensions
-		THIS.Elements = nRows * nDimensions
-		THIS.RowSize = nRows * THIS.ElementSize
-		DIMENSION THIS.DimensionOffSets[nDimensions]
-		FOR xj = 0 TO nDimensions - 1
-			THIS.DimensionOffSets[xj+1] = THIS.Address + xj * THIS.RowSize - THIS.ElementSize
+		THIS.Rows = m.lnRows
+		THIS.Columns = m.lnColumns
+		THIS.Elements = m.lnRows * m.lnColumns
+		THIS.RowSize = m.lnRows * THIS.ElementSize
+		DIMENSION THIS.ColumnOffSets[m.lnColumns]
+		FOR xj = 0 TO m.lnColumns - 1
+			THIS.ColumnOffSets[m.xj+1] = THIS.Address + m.xj * THIS.RowSize - THIS.ElementSize
 		ENDFOR
+	ENDFUNC
+
+	FUNCTION MarshalArray(laArray)
+		EXTERNAL ARRAY laArray
+		LOCAL lnRows, lnColumns
+		m.lnRows = ALEN(m.laArray, 1)
+		m.lnColumns = ALEN(m.laArray, 2)
+		IF m.lnRows != THIS.Rows OR m.lnColumns != THIS.Columns
+			THIS.Dimension(m.lnRows, m.lnColumns)		
+		ENDIF
+		RETURN MarshalFoxArray2CArray(THIS.Address, @m.laArray, THIS.CType)
+	ENDFUNC
+	
+	FUNCTION UnMarshalArray(laArray)
+		EXTERNAL ARRAY laArray
+		IF THIS.Address = 0
+			ERROR E_INVALIDPARAMS, 'No C array created yet!'		
+		ENDIF			
+		DIMENSION m.laArray[THIS.Rows, THIS.Columns]
+		RETURN MarshalCArray2FoxArray(THIS.Address, @m.laArray, THIS.CType)
+	ENDFUNC
+	
+	FUNCTION MarshalCursor(lcCursorAndFieldNames)
+		LOCAL lcAlias, lnRows, lnColumns
+		m.lcAlias = GETWORDNUM(m.lcCursorAndFieldNames, 1, '.')
+		m.lnColumns = OCCURS(',', m.lcCursorAndFieldNames) + 1
+		m.lnRows = RECCOUNT(m.lcAlias)
+		IF m.lnRows != THIS.Rows OR m.lnColumns != THIS.Columns
+			THIS.Dimension(m.lnRows, m.lnColumns)
+		ENDIF
+		RETURN MarshalCursor2CArray(THIS.Address, m.lcCursorAndFieldNames, THIS.CType)
+	ENDFUNC
+
+	FUNCTION UnMarshalCursor(lcCursorAndFieldNames)
+		LOCAL lnColumns, lcAlias
+		IF THIS.Address = 0
+			ERROR E_INVALIDPARAMS, 'No C array created yet!'		
+		ENDIF			
+		m.lcAlias = GETWORDNUM(m.lcCursorAndFieldNames, 1, '.')
+		m.lnColumns = OCCURS(',', m.lcCursorAndFieldNames) + 1
+		IF m.lnColumns != THIS.Columns
+			ERROR E_INVALIDPARAMS, 'Passed number of fields is not eqaul to columncount of C array!'
+		ENDIF
+		RETURN MarshalCArray2Cursor(THIS.Address, m.lcCursorAndFieldNames, THIS.CType, THIS.Rows)
 	ENDFUNC
 	
 ENDDEFINE
 
 DEFINE CLASS CShortArray AS CArray
 
+	CType = CTYPE_SHORT
 	ElementSize = SIZEOF_SHORT
 
-	FUNCTION Element_Access(nElement)
+	FUNCTION Element_Access(lnRow)
 		ASSERT (THIS.Address != 0) MESSAGE 'Dimension the array first!'
-		ASSERT (nElement <= THIS.Elements) MESSAGE 'Arrayindex out of bounds!'
-		IF VARTYPE(nElement) = 'N'
-			RETURN ReadShort(THIS.ArrayOffset+nElement*SIZEOF_SHORT)
-		ELSE
-			RETURN ReadShort(THIS.Address)
-		ENDIF
+		ASSERT (m.lnRow <= THIS.Rows) MESSAGE 'Arrayindex out of bounds!'
+		RETURN ReadShort(THIS.ArrayOffset + m.lnRow * SIZEOF_SHORT)
 	ENDFUNC
 	
-	FUNCTION Element_Assign(nNewVal,nElement)
+	FUNCTION Element_Assign(lnValue, lnRow)
 		ASSERT (THIS.Address != 0) MESSAGE 'Dimension the array first!'
-		ASSERT (nElement <= THIS.Elements) MESSAGE 'Arrayindex out of bounds!'
-		ASSERT (VARTYPE(nNewVal) = 'N' AND BETWEEN(nNewVal,MIN_SHORT,MAX_SHORT)) ;
-		MESSAGE 'Value out of Range'
-		WriteShort(THIS.ArrayOffset+nElement*SIZEOF_SHORT,nNewVal)
+		ASSERT (m.lnRow <= THIS.Rows) MESSAGE 'Arrayindex out of bounds!'
+		WriteShort(THIS.ArrayOffset + m.lnRow * SIZEOF_SHORT, m.lnValue)
 	ENDFUNC
 	
-	FUNCTION MarshalArray(laSource)
-		EXTERNAL ARRAY laSource
-		IF THIS.Dimension(ALEN(laSource))
-			RETURN MarshalArrayShort(THIS.Address,@laSource)
-		ELSE
-			ERROR(INSUFMEMORY)
-		ENDIF
+ENDDEFINE
+
+DEFINE CLASS C2DimShortArray AS C2DimArray
+
+	CType = CTYPE_SHORT
+	ElementSize = SIZEOF_SHORT
+
+	FUNCTION Element_Access(lnRow, lnColumn)
+		ASSERT (THIS.Address != 0) MESSAGE 'Dimension the array first!'
+		ASSERT (m.lnRow <= THIS.Rows AND m.lnColumns <= THIS.Columns) MESSAGE 'Arrayindex out of bounds!'
+		RETURN ReadShort(THIS.ColumnOffSets[m.lnColumn] + m.lnRow * SIZEOF_INT)
 	ENDFUNC
-	
-	FUNCTION UnMarshalArray(laDestination)
-		EXTERNAL ARRAY laDestination
-		DIMENSION laDestination[MIN(THIS.Elements,MAXARRAYLEN)]
-		RETURN UnMarshalArrayShort(THIS.Address,@laDestination)
+
+	FUNCTION Element_Assign(lnValue, lnRow, lnColumn)
+		ASSERT (THIS.Address != 0) MESSAGE 'Dimension the array first!'
+		ASSERT (m.lnRow <= THIS.Rows AND m.lnColumn <= THIS.Columns) MESSAGE 'Arrayindex out of bounds!'
+		WriteShort(THIS.ColumnOffSets[m.lnColumn] + m.lnRow * SIZEOF_INT, m.lnValue)
 	ENDFUNC
-	
+
 ENDDEFINE
 
 DEFINE CLASS CUShortArray AS CArray
 
+	CType = CTYPE_USHORT
 	ElementSize = SIZEOF_SHORT
 
-	FUNCTION Element_Access(nElement)
+	FUNCTION Element_Access(lnRow)
 		ASSERT (THIS.Address != 0) MESSAGE 'Dimension the array first!'
-		ASSERT (nElement <= THIS.Elements) MESSAGE 'Arrayindex out of bounds!'
-		IF VARTYPE(nElement) = 'N'
-			RETURN ReadUShort(THIS.ArrayOffset+nElement*SIZEOF_SHORT)
-		ELSE
-			RETURN ReadUShort(THIS.Address)
-		ENDIF
+		ASSERT (m.lnRow <= THIS.Rows) MESSAGE 'Arrayindex out of bounds!'
+		RETURN ReadUShort(THIS.ArrayOffset + m.lnRow * SIZEOF_SHORT)
 	ENDFUNC
 	
-	FUNCTION Element_Assign(nNewVal,nElement)
+	FUNCTION Element_Assign(lnValue, lnRow)
 		ASSERT (THIS.Address != 0) MESSAGE 'Dimension the array first!'
-		ASSERT (nElement <= THIS.Elements) MESSAGE 'Arrayindex out of bounds!'
-		ASSERT (VARTYPE(nNewVal) = 'N' AND BETWEEN(nNewVal,MIN_USHORT,MAX_USHORT)) ;
-		MESSAGE 'Value out of Range'
-		WriteUShort(THIS.ArrayOffset+nElement*SIZEOF_SHORT,nNewVal)
+		ASSERT (m.lnRow <= THIS.Rows) MESSAGE 'Arrayindex out of bounds!'
+		WriteUShort(THIS.ArrayOffset + m.lnRow * SIZEOF_SHORT, m.lnValue)
 	ENDFUNC
 
-	FUNCTION MarshalArray(laSource)
-		EXTERNAL ARRAY laSource
-		IF THIS.Dimension(ALEN(laSource))
-			RETURN MarshalArrayUShort(THIS.Address,@laSource)
-		ELSE
-			ERROR(INSUFMEMORY)
-		ENDIF
+ENDDEFINE
+
+DEFINE CLASS C2DimUShortArray AS C2DimArray
+
+	CType = CTYPE_USHORT
+	ElementSize = SIZEOF_SHORT
+
+	FUNCTION Element_Access(lnRow, lnColumn)
+		ASSERT (THIS.Address != 0) MESSAGE 'Dimension the array first!'
+		ASSERT (m.lnRow <= THIS.Rows AND m.lnColumns <= THIS.Columns) MESSAGE 'Arrayindex out of bounds!'
+		RETURN ReadUShort(THIS.ColumnOffSets[m.lnColumn] + m.lnRow * SIZEOF_SHORT)
 	ENDFUNC
-	
-	FUNCTION UnMarshalArray(laDestination)
-		EXTERNAL ARRAY laDestination
-		DIMENSION laDestination[MIN(THIS.Elements,MAXARRAYLEN)]
-		RETURN UnMarshalArrayUShort(THIS.Address,@laDestination)
+
+	FUNCTION Element_Assign(lnValue, lnRow, lnColumn)
+		ASSERT (THIS.Address != 0) MESSAGE 'Dimension the array first!'
+		ASSERT (m.lnRow <= THIS.Rows AND m.lnColumn <= THIS.Columns) MESSAGE 'Arrayindex out of bounds!'
+		WriteUShort(THIS.ColumnOffSets[m.lnColumn] + m.lnRow * SIZEOF_SHORT, m.lnValue)
 	ENDFUNC
-	
+
 ENDDEFINE
 
 DEFINE CLASS CIntArray AS CArray
 
+	CType = CTYPE_INT
 	ElementSize = SIZEOF_INT
 
-	FUNCTION Element_Access(nElement)
+	FUNCTION Element_Access(lnRow)
 		ASSERT (THIS.Address != 0) MESSAGE 'Dimension the array first!'
-		ASSERT (nElement <= THIS.Elements) MESSAGE 'Arrayindex out of bounds!'
-		IF VARTYPE(nElement) = 'N'
-			RETURN ReadInt(THIS.ArrayOffset+nElement*SIZEOF_INT)
-		ELSE
-			RETURN ReadInt(THIS.Address)
-		ENDIF
-	ENDFUNC
-
-	FUNCTION Element_Assign(nNewVal,nElement)
-		ASSERT (THIS.Address != 0) MESSAGE 'Dimension the array first!'
-		ASSERT (nElement <= THIS.Elements) MESSAGE 'Arrayindex out of bounds!'
-		ASSERT (VARTYPE(nNewVal) = 'N' AND BETWEEN(nNewVal,MIN_INT,MAX_INT)) ;
-		MESSAGE 'Value out of Range'
-		WriteInt(THIS.ArrayOffset+nElement*SIZEOF_INT,nNewVal)
-	ENDFUNC
-
-	FUNCTION MarshalArray(laSource)
-		EXTERNAL ARRAY laSource
-		IF THIS.Dimension(ALEN(laSource))
-			RETURN MarshalArrayInt(THIS.Address,@laSource)
-		ELSE
-			ERROR(INSUFMEMORY)
-		ENDIF
+		ASSERT (m.lnRow <= THIS.Rows) MESSAGE 'Arrayindex out of bounds!'
+		RETURN ReadInt(THIS.ArrayOffset + m.lnRow * SIZEOF_INT)
 	ENDFUNC
 	
-	FUNCTION UnMarshalArray(laDestination)
-		EXTERNAL ARRAY laDestination
-		DIMENSION laDestination[MIN(THIS.Elements,MAXARRAYLEN)]
-		RETURN UnMarshalArrayInt(THIS.Address,@laDestination)
+	FUNCTION Element_Assign(lnValue, lnRow)
+		ASSERT (THIS.Address != 0) MESSAGE 'Dimension the array first!'
+		ASSERT (m.lnRow <= THIS.Rows) MESSAGE 'Arrayindex out of bounds!'
+		WriteInt(THIS.ArrayOffset + m.lnRow * SIZEOF_INT, m.lnValue)
 	ENDFUNC
-	
+
 ENDDEFINE
 
-DEFINE CLASS CMultiDimLongArray AS CMultiDimArray
+DEFINE CLASS C2DimIntArray AS C2DimArray
 
+	CType = CTYPE_INT
 	ElementSize = SIZEOF_INT
-	
-	FUNCTION Element_Access(nRow,nDimension)
+
+	FUNCTION Element_Access(lnRow, lnColumn)
 		ASSERT (THIS.Address != 0) MESSAGE 'Dimension the array first!'
-		ASSERT (nRow <= THIS.RowSize AND nDimension <= THIS.Dimensions) MESSAGE 'Arrayindex out of bounds!'
-		RETURN ReadInt(THIS.DimensionOffSets[nDimension]+nRow*SIZEOF_INT)
+		ASSERT (m.lnRow <= THIS.Rows AND m.lnColumns <= THIS.Columns) MESSAGE 'Arrayindex out of bounds!'
+		RETURN ReadInt(THIS.ColumnOffSets[m.lnColumn] + m.lnRow * SIZEOF_INT)
 	ENDFUNC
 
-	FUNCTION Element_Assign(nNewVal,nRow,nDimension)
+	FUNCTION Element_Assign(lnValue, lnRow, lnColumn)
 		ASSERT (THIS.Address != 0) MESSAGE 'Dimension the array first!'
-		ASSERT (nRow <= THIS.RowSize AND nDimension <= THIS.Dimensions) MESSAGE 'Arrayindex out of bounds!'
-		ASSERT (VARTYPE(nNewVal) = 'N' AND BETWEEN(nNewVal,MIN_INT,MAX_INT)) ;
-		MESSAGE 'Value out of Range'
-		WriteInt(THIS.DimensionOffSets[nDimension]+nRow*SIZEOF_INT,nNewVal)
-	ENDFUNC
-	
-	FUNCTION MarshalArray(laSource)
-		EXTERNAL ARRAY laSource
-		THIS.Dimension(ALEN(laSource,1))
-		RETURN MarshalArrayInt(THIS.Address,@laSource)
-	ENDFUNC
-	
-	FUNCTION UnMarshalArray(laDestination)
-		EXTERNAL ARRAY laDestination
-		DIMENSION laDestination[MIN(THIS.Elements,MAXARRAYLEN)]
-		RETURN UnMarshalArrayInt(THIS.Address,@laDestination)
+		ASSERT (m.lnRow <= THIS.Rows AND m.lnColumn <= THIS.Columns) MESSAGE 'Arrayindex out of bounds!'
+		WriteInt(THIS.ColumnOffSets[m.lnColumn] + m.lnRow * SIZEOF_INT, m.lnValue)
 	ENDFUNC
 
 ENDDEFINE
 	
 DEFINE CLASS CUIntArray AS CArray
 
+	CType = CTYPE_UINT
 	ElementSize = SIZEOF_INT
 
-	FUNCTION Element_Access(nElement)
+	FUNCTION Element_Access(lnRow)
 		ASSERT (THIS.Address != 0) MESSAGE 'Dimension the array first!'
-		ASSERT (nElement <= THIS.Elements) MESSAGE 'Arrayindex out of bounds!'		
-		IF VARTYPE(nElement) = 'N'
-			RETURN ReadUInt(THIS.ArrayOffset+nElement*SIZEOF_INT)
-		ELSE
-			RETURN ReadUInt(THIS.Address)
-		ENDIF
+		ASSERT (m.lnRow <= THIS.Rows) MESSAGE 'Arrayindex out of bounds!'
+		RETURN ReadUInt(THIS.ArrayOffset + m.lnRow * SIZEOF_INT)
 	ENDFUNC
 	
-	FUNCTION Element_Assign(nNewVal,nElement)
+	FUNCTION Element_Assign(lnValue, lnRow)
 		ASSERT (THIS.Address != 0) MESSAGE 'Dimension the array first!'
-		ASSERT (nElement <= THIS.Elements) MESSAGE 'Arrayindex out of bounds!'		
-		ASSERT (VARTYPE(nNewVal) = 'N' AND BETWEEN(nNewVal,MIN_UINT,MAX_UINT)) ;
-		MESSAGE 'Value out of Range'
-		WriteUInt(THIS.ArrayOffset+nElement*SIZEOF_INT,nNewVal)
-	ENDFUNC
-
-	FUNCTION MarshalArray(laSource)
-		EXTERNAL ARRAY laSource
-		IF THIS.Dimension(ALEN(laSource))
-			RETURN MarshalArrayUInt(THIS.Address,@laSource)
-		ELSE
-			ERROR(INSUFMEMORY)
-		ENDIF
-	ENDFUNC
-	
-	FUNCTION UnMarshalArray(laDestination)
-		EXTERNAL ARRAY laDestination
-		DIMENSION laDestination[MIN(THIS.Elements,MAXARRAYLEN)]
-		RETURN UnMarshalArrayUInt(THIS.Address,@laDestination)
+		ASSERT (m.lnRow <= THIS.Rows) MESSAGE 'Arrayindex out of bounds!'
+		WriteUInt(THIS.ArrayOffset + m.lnRow * SIZEOF_INT, m.lnValue)
 	ENDFUNC
 
 ENDDEFINE
-	
-DEFINE CLASS CDoubleArray AS CArray
 
-	ElementSize = SIZEOF_DOUBLE
+DEFINE CLASS C2DimUIntArray AS C2DimArray
 
-	FUNCTION Element_Access(nElement)
+	CType = CTYPE_UINT
+	ElementSize = SIZEOF_INT
+
+	FUNCTION Element_Access(lnRow, lnColumn)
 		ASSERT (THIS.Address != 0) MESSAGE 'Dimension the array first!'
-		ASSERT (nElement <= THIS.Elements) MESSAGE 'Arrayindex out of bounds!'		
-		IF VARTYPE(nElement) = 'N'
-			RETURN ReadDouble(THIS.ArrayOffset+nElement*SIZEOF_DOUBLE)
-		ELSE
-			RETURN ReadDouble(THIS.Address)
-		ENDIF
+		ASSERT (m.lnRow <= THIS.Rows AND m.lnColumns <= THIS.Columns) MESSAGE 'Arrayindex out of bounds!'
+		RETURN ReadUInt(THIS.ColumnOffSets[m.lnColumn] + m.lnRow * SIZEOF_INT)
 	ENDFUNC
-	
-	FUNCTION Element_Assign(nNewVal,nElement)
+
+	FUNCTION Element_Assign(lnValue, lnRow, lnColumn)
 		ASSERT (THIS.Address != 0) MESSAGE 'Dimension the array first!'
-		ASSERT (nElement <= THIS.Elements) MESSAGE 'Arrayindex out of bounds!'		
-		WriteDouble(THIS.ArrayOffset+nElement*SIZEOF_DOUBLE,nNewVal)
+		ASSERT (m.lnRow <= THIS.Rows AND m.lnColumn <= THIS.Columns) MESSAGE 'Arrayindex out of bounds!'
+		WriteUInt(THIS.ColumnOffSets[m.lnColumn] + m.lnRow * SIZEOF_INT, m.lnValue)
 	ENDFUNC
-	
-	FUNCTION MarshalArray(laSource)
-		EXTERNAL ARRAY laSource
-		IF THIS.Dimension(ALEN(laSource))
-			RETURN MarshalArrayDouble(THIS.Address,@laSource)
-		ELSE
-			ERROR(INSUFMEMORY)
-		ENDIF
-	ENDFUNC
-	
-	FUNCTION UnMarshalArray(laDestination)
-		EXTERNAL ARRAY laDestination
-		DIMENSION laDestination[MIN(THIS.Elements,MAXARRAYLEN)]
-		RETURN UnMarshalArrayDouble(THIS.Address,@laDestination)
-	ENDFUNC
-	
+
 ENDDEFINE
 
 DEFINE CLASS CFloatArray AS CArray
 
+	CType = CTYPE_FLOAT
 	ElementSize = SIZEOF_FLOAT
 
-	FUNCTION Element_Access(nElement)
+	FUNCTION Element_Access(lnRow)
 		ASSERT (THIS.Address != 0) MESSAGE 'Dimension the array first!'
-		ASSERT (nElement <= THIS.Elements) MESSAGE 'Arrayindex out of bounds!'		
-		IF VARTYPE(nElement) = 'N'
-			RETURN ReadFloat(THIS.ArrayOffset+nElement*SIZEOF_FLOAT)
-		ELSE
-			RETURN ReadFloat(THIS.Address)
-		ENDIF
+		ASSERT (m.lnRow <= THIS.Rows) MESSAGE 'Arrayindex out of bounds!'
+		RETURN ReadFloat(THIS.ArrayOffset + m.lnRow * SIZEOF_FLOAT)
 	ENDFUNC
 	
-	FUNCTION Element_Assign(nNewVal,nElement)
+	FUNCTION Element_Assign(lnValue, lnRow)
 		ASSERT (THIS.Address != 0) MESSAGE 'Dimension the array first!'
-		ASSERT (nElement <= THIS.Elements) MESSAGE 'Arrayindex out of bounds!'		
-		WriteFloat(THIS.ArrayOffset+nElement*SIZEOF_FLOAT,nNewVal)
+		ASSERT (m.lnRow <= THIS.Rows) MESSAGE 'Arrayindex out of bounds!'
+		WriteFloat(THIS.ArrayOffset + m.lnRow * SIZEOF_FLOAT, m.lnValue)
+	ENDFUNC
+
+ENDDEFINE
+
+DEFINE CLASS C2DimFloatArray AS C2DimArray
+
+	CType = CTYPE_FLOAT
+	ElementSize = SIZEOF_FLOAT
+
+	FUNCTION Element_Access(lnRow, lnColumn)
+		ASSERT (THIS.Address != 0) MESSAGE 'Dimension the array first!'
+		ASSERT (m.lnRow <= THIS.Rows AND m.lnColumns <= THIS.Columns) MESSAGE 'Arrayindex out of bounds!'
+		RETURN ReadFloat(THIS.ColumnOffSets[m.lnColumn] + m.lnRow * SIZEOF_FLOAT)
+	ENDFUNC
+
+	FUNCTION Element_Assign(lnValue, lnRow, lnColumn)
+		ASSERT (THIS.Address != 0) MESSAGE 'Dimension the array first!'
+		ASSERT (m.lnRow <= THIS.Rows AND m.lnColumn <= THIS.Columns) MESSAGE 'Arrayindex out of bounds!'
+		WriteFloat(THIS.ColumnOffSets[m.lnColumn] + m.lnRow * SIZEOF_FLOAT, m.lnValue)
+	ENDFUNC
+
+ENDDEFINE
+
+DEFINE CLASS CDoubleArray AS CArray
+
+	CType = CTYPE_DOUBLE
+	ElementSize = SIZEOF_DOUBLE
+
+	FUNCTION Element_Access(lnRow)
+		ASSERT (THIS.Address != 0) MESSAGE 'Dimension the array first!'
+		ASSERT (m.lnRow <= THIS.Rows) MESSAGE 'Arrayindex out of bounds!'
+		RETURN ReadDouble(THIS.ArrayOffset + m.lnRow * SIZEOF_DOUBLE)
 	ENDFUNC
 	
-	FUNCTION MarshalArray(laSource)
-		EXTERNAL ARRAY laSource
-		IF THIS.Dimension(ALEN(laSource))
-			RETURN MarshalArrayFloat(THIS.Address,@laSource)
-		ELSE
-			ERROR(INSUFMEMORY)
-		ENDIF
+	FUNCTION Element_Assign(lnValue, lnRow)
+		ASSERT (THIS.Address != 0) MESSAGE 'Dimension the array first!'
+		ASSERT (m.lnRow <= THIS.Rows) MESSAGE 'Arrayindex out of bounds!'
+		WriteDouble(THIS.ArrayOffset + m.lnRow * SIZEOF_DOUBLE, m.lnValue)
+	ENDFUNC
+
+ENDDEFINE
+
+DEFINE CLASS C2DimDoubleArray AS C2DimArray
+
+	CType = CTYPE_DOUBLE
+	ElementSize = SIZEOF_DOUBLE
+
+	FUNCTION Element_Access(lnRow, lnColumn)
+		ASSERT (THIS.Address != 0) MESSAGE 'Dimension the array first!'
+		ASSERT (m.lnRow <= THIS.Rows AND m.lnColumns <= THIS.Columns) MESSAGE 'Arrayindex out of bounds!'
+		RETURN ReadDouble(THIS.ColumnOffSets[m.lnColumn] + m.lnRow * SIZEOF_DOUBLE)
+	ENDFUNC
+
+	FUNCTION Element_Assign(lnValue, lnRow, lnColumn)
+		ASSERT (THIS.Address != 0) MESSAGE 'Dimension the array first!'
+		ASSERT (m.lnRow <= THIS.Rows AND m.lnColumn <= THIS.Columns) MESSAGE 'Arrayindex out of bounds!'
+		WriteDouble(THIS.ColumnOffSets[m.lnColumn] + m.lnRow * SIZEOF_DOUBLE, m.lnValue)
 	ENDFUNC
 	
-	FUNCTION UnMarshalArray(laDestination)
-		EXTERNAL ARRAY laDestination
-		DIMENSION laDestination[MIN(THIS.Elements,MAXARRAYLEN)]
-		RETURN UnMarshalArrayFloat(THIS.Address,@laDestination)
+ENDDEFINE
+
+DEFINE CLASS CBoolArray AS CArray
+
+	CType = CTYPE_BOOL
+	ElementSize = SIZEOF_INT
+
+	FUNCTION Element_Access(lnRow)
+		ASSERT (THIS.Address != 0) MESSAGE 'Dimension the array first!'
+		ASSERT (m.lnRow <= THIS.Rows) MESSAGE 'Arrayindex out of bounds!'
+		RETURN ReadLogical(THIS.ArrayOffset + m.lnRow * SIZEOF_INT)
+	ENDFUNC
+	
+	FUNCTION Element_Assign(lnValue, lnRow)
+		ASSERT (THIS.Address != 0) MESSAGE 'Dimension the array first!'
+		ASSERT (m.lnRow <= THIS.Rows) MESSAGE 'Arrayindex out of bounds!'
+		WriteLogical(THIS.ArrayOffset + m.lnRow * SIZEOF_INT, m.lnValue)
+	ENDFUNC
+
+ENDDEFINE
+
+DEFINE CLASS C2DimBoolArray AS C2DimArray
+
+	CType = CTYPE_BOOL
+	ElementSize = SIZEOF_INT
+
+	FUNCTION Element_Access(lnRow, lnColumn)
+		ASSERT (THIS.Address != 0) MESSAGE 'Dimension the array first!'
+		ASSERT (m.lnRow <= THIS.Rows AND m.lnColumns <= THIS.Columns) MESSAGE 'Arrayindex out of bounds!'
+		RETURN ReadLogical(THIS.ColumnOffSets[m.lnColumn] + m.lnRow * SIZEOF_INT)
+	ENDFUNC
+
+	FUNCTION Element_Assign(lnValue, lnRow, lnColumn)
+		ASSERT (THIS.Address != 0) MESSAGE 'Dimension the array first!'
+		ASSERT (m.lnRow <= THIS.Rows AND m.lnColumn <= THIS.Columns) MESSAGE 'Arrayindex out of bounds!'
+		WriteLogical(THIS.ColumnOffSets[m.lnColumn] + m.lnRow * SIZEOF_INT, m.lnValue)
 	ENDFUNC
 
 ENDDEFINE
 
 DEFINE CLASS CStringArray AS CArray
 
+	CType = CTYPE_CSTRING
 	ElementSize = SIZEOF_POINTER
 	
 	FUNCTION FreeArray
-		IF !THIS.bContained AND THIS.Address != 0
-			FreeRefArray(THIS.Address,1,THIS.Elements)
-			FreeMem(THIS.Address)
+		IF THIS.Address != 0
+			FreeRefArray(THIS.Address, 1, THIS.Rows)
+			IF !THIS.Contained
+				FreeMem(THIS.Address)			
+			ENDIF
 		ENDIF
-		THIS.bContained = .F.
+		THIS.Contained = .F.
 		THIS.Address = 0
 	ENDFUNC
 
-	FUNCTION Element_Access(nElement)
+	FUNCTION Element_Access(lnRow)
 		ASSERT (THIS.Address != 0) MESSAGE 'Dimension the array first!'
-		ASSERT (nElement <= THIS.Elements) MESSAGE 'Arrayindex out of bounds!'		
-		IF VARTYPE(nElement) = 'N'
-			RETURN ReadPCString(THIS.ArrayOffset+nElement*SIZEOF_POINTER)
-		ELSE
-			RETURN ''
-		ENDIF
+		ASSERT (m.lnRow <= THIS.Rows) MESSAGE 'Arrayindex out of bounds!'
+		RETURN ReadPCString(THIS.ArrayOffset + m.lnRow * SIZEOF_POINTER)
 	ENDFUNC
 	
-	FUNCTION Element_Assign(nNewVal,nElement)
+	FUNCTION Element_Assign(lnValue, lnRow)
 		ASSERT (THIS.Address != 0) MESSAGE 'Dimension the array first!'
-		ASSERT (nElement <= THIS.Elements) MESSAGE 'Arrayindex out of bounds!'		
-		WritePCString(THIS.ArrayOffset+nElement*SIZEOF_POINTER,nNewVal)
-	ENDFUNC
-	
-	FUNCTION MarshalArray(laSource)
-		EXTERNAL ARRAY laSource
-		IF THIS.Dimension(ALEN(laSource))
-			RETURN MarshalArrayCString(THIS.Address,@laSource)
-		ELSE
-			ERROR(INSUFMEMORY)
-		ENDIF
-	ENDFUNC
-	
-	FUNCTION UnMarshalArray(laDestination)
-		EXTERNAL ARRAY laDestination
-		DIMENSION laDestination[MIN(THIS.Elements,MAXARRAYLEN)]
-		RETURN UnMarshalArrayCString(THIS.Address,@laDestination)
-	ENDFUNC
-	
-	FUNCTION MarshalCursor(lcFieldName)
-		LOCAL lnRecCount, lcField, lnWorkArea
-		THIS.MarshalCursorPrepare(lcFieldName,@lcField,@lnRecCount,@lnWorkArea)
-		IF THIS.Dimension(lnRecCount)
-			RETURN MarshalCursorCString(THIS.Address,lcField,lnWorkArea)
-		ELSE
-			ERROR(INSUFMEMORY)
-		ENDIF
-	ENDFUNC
-	
-	FUNCTION UnMarshalCursor(lcFieldName)
-		LOCAL lcAlias, lcField
-		lcAlias = JUSTSTEM(lcFieldName)
-		lcField = JUSTEXT(lcFieldName)
-		&& RETURN UnMarshalCursor(THIS.Address,lcField,SELECT(lcAlias),THIS.Elements)	
+		ASSERT (m.lnRow <= THIS.Rows) MESSAGE 'Arrayindex out of bounds!'
+		WritePCString(THIS.ArrayOffset + m.lnRow * SIZEOF_POINTER, m.lnValue)
 	ENDFUNC
 
 ENDDEFINE
 
+DEFINE CLASS C2DimStringArray AS C2DimArray
 
-DEFINE CLASS CWStringArray AS CArray
-
+	CType = CTYPE_CSTRING
 	ElementSize = SIZEOF_POINTER
 	
 	FUNCTION FreeArray
-		IF !THIS.bContained AND THIS.Address != 0
-			FreeRefArray(THIS.Address,1,THIS.Elements)
-			FreeMem(THIS.Address)
+		IF THIS.Address != 0
+			FreeRefArray(THIS.Address, 1, THIS.Elements)
+			IF !THIS.Contained
+				FreeMem(THIS.Address)			
+			ENDIF
 		ENDIF
-		THIS.bContained = .F.
+		THIS.Contained = .F.
 		THIS.Address = 0
 	ENDFUNC
 
-	FUNCTION Element_Access(nElement)
-		ASSERT (THIS.Address != 0) MESSAGE 'Dimension the array first!'	
-		ASSERT (nElement <= THIS.Elements) MESSAGE 'Arrayindex out of bounds!'		
-		IF VARTYPE(nElement) = 'N'
-			RETURN ReadPWString(THIS.ArrayOffset+nElement*SIZEOF_POINTER)
-		ELSE
-			RETURN ''
-		ENDIF
-	ENDFUNC
-	
-	FUNCTION Element_Assign(nNewVal,nElement)
+	FUNCTION Element_Access(lnRow, lnColumn)
 		ASSERT (THIS.Address != 0) MESSAGE 'Dimension the array first!'
-		ASSERT (nElement <= THIS.Elements) MESSAGE 'Arrayindex out of bounds!'		
-		WritePWString(THIS.ArrayOffset+nElement*SIZEOF_POINTER,nNewVal)
+		ASSERT (m.lnRow <= THIS.Rows AND m.lnColumns <= THIS.Columns) MESSAGE 'Arrayindex out of bounds!'
+		RETURN ReadPCString(THIS.ColumnOffSets[m.lnColumn] + m.lnRow * SIZEOF_POINTER)
 	ENDFUNC
 
-	FUNCTION MarshalArray(laSource)
-		EXTERNAL ARRAY laSource
-		IF THIS.Dimension(ALEN(laSource))
-			RETURN MarshalArrayWString(THIS.Address,@laSource)
-		ELSE
-			ERROR(INSUFMEMORY)
+	FUNCTION Element_Assign(lnValue, lnRow, lnColumn)
+		ASSERT (THIS.Address != 0) MESSAGE 'Dimension the array first!'
+		ASSERT (m.lnRow <= THIS.Rows AND m.lnColumn <= THIS.Columns) MESSAGE 'Arrayindex out of bounds!'
+		WritePCString(THIS.ColumnOffSets[m.lnColumn] + m.lnRow * SIZEOF_POINTER, m.lnValue)
+	ENDFUNC
+
+ENDDEFINE
+
+DEFINE CLASS CWStringArray AS CArray
+
+	CType = CTYPE_WSTRING
+	ElementSize = SIZEOF_POINTER
+	
+	FUNCTION FreeArray
+		IF THIS.Address != 0
+			FreeRefArray(THIS.Address, 1, THIS.Elements)
+			IF !THIS.Contained
+				FreeMem(THIS.Address)			
+			ENDIF
 		ENDIF
+		THIS.Contained = .F.
+		THIS.Address = 0
+	ENDFUNC
+
+	FUNCTION Element_Access(lnRow)
+		ASSERT (THIS.Address != 0) MESSAGE 'Dimension the array first!'
+		ASSERT (m.lnRow <= THIS.Rows) MESSAGE 'Arrayindex out of bounds!'
+		RETURN ReadPWString(THIS.ArrayOffset + m.lnRow * SIZEOF_POINTER)
 	ENDFUNC
 	
-	FUNCTION UnMarshalArray(laDestination)
-		EXTERNAL ARRAY laDestination
-		DIMENSION laDestination[MIN(THIS.Elements,MAXARRAYLEN)]
-		RETURN UnMarshalArrayWString(THIS.Address,@laDestination)
+	FUNCTION Element_Assign(lnValue, lnRow)
+		ASSERT (THIS.Address != 0) MESSAGE 'Dimension the array first!'
+		ASSERT (m.lnRow <= THIS.Rows) MESSAGE 'Arrayindex out of bounds!'
+		WritePWString(THIS.ArrayOffset + m.lnRow * SIZEOF_POINTER, m.lnValue)
+	ENDFUNC
+
+ENDDEFINE
+
+DEFINE CLASS C2DimWStringArray AS C2DimArray
+
+	CType = CTYPE_WSTRING
+	ElementSize = SIZEOF_POINTER
+	
+	FUNCTION FreeArray
+		IF THIS.Address != 0
+			FreeRefArray(THIS.Address, 1, THIS.Elements)
+			IF !THIS.Contained
+				FreeMem(THIS.Address)			
+			ENDIF
+		ENDIF
+		THIS.Contained = .F.
+		THIS.Address = 0
+	ENDFUNC
+
+	FUNCTION Element_Access(lnRow, lnColumn)
+		ASSERT (THIS.Address != 0) MESSAGE 'Dimension the array first!'
+		ASSERT (m.lnRow <= THIS.Rows AND m.lnColumns <= THIS.Columns) MESSAGE 'Arrayindex out of bounds!'
+		RETURN ReadPWString(THIS.ColumnOffSets[m.lnColumn] + m.lnRow * SIZEOF_POINTER)
+	ENDFUNC
+
+	FUNCTION Element_Assign(lnValue, lnRow, lnColumn)
+		ASSERT (THIS.Address != 0) MESSAGE 'Dimension the array first!'
+		ASSERT (m.lnRow <= THIS.Rows AND m.lnColumn <= THIS.Columns) MESSAGE 'Arrayindex out of bounds!'
+		WritePWString(THIS.ColumnOffSets[m.lnColumn] + m.lnRow * SIZEOF_POINTER, m.lnValue)
 	ENDFUNC
 
 ENDDEFINE
 
 DEFINE CLASS CCharArray AS CArray
 
+	CType = CTYPE_CHARARRAY
 	ElementSize = 0
-	
-	FUNCTION AttachArray(nBaseAdress,nElements,nLength)
-		ASSERT (PCOUNT()=3) MESSAGE 'Not enough parameters to attach array'
+
+	FUNCTION AttachArray(lnBaseAddress, lnRows, lnLength)
+		IF PCOUNT() != 3
+			ERROR E_INVALIDPARAMS, 'Not enough parameters to attach array!'
+		ENDIF
 
 		THIS.FreeArray()
 		
-		THIS.Address = nBaseAdress
-		THIS.bContained = .T.
-		THIS.Elements = nElements
-		THIS.ElementSize = nLength
-		THIS.ArrayOffset = THIS.Address - THIS.ElementSize && eases access to the array in Element_Access (for 1 based addressing)
+		THIS.Contained = .T.
+		THIS.Address = m.lnBaseAddress
+		THIS.Rows = m.lnRows
+		THIS.ElementSize = m.lnLength
+		THIS.ArrayOffset = m.lnBaseAddress - m.lnLength && eases access to the array in Element_Access (for 1 based addressing)
+	ENDFUNC
 
+	FUNCTION Dimension(lnRows, lnLength)
+		IF THIS.Contained
+			ERROR E_INVALIDPARAMS, 'You cannot dimension a contained array!'
+		ENDIF
+		LOCAL lnAddress
+		THIS.Rows = MIN(m.lnRows, FLL_MAX_ARRAY_SIZE)
+		THIS.ElementSize = m.lnLength
+		m.lnAddress = ReAllocMem(THIS.Address, m.lnRows * m.lnLength)
+		IF m.lnAddress = 0
+			LOCAL laError[1]
+			AERROREX('laError')
+			ERROR E_USERERROR, m.laError[3]
+		ENDIF
+		THIS.Address = m.lnAddress
+		THIS.ArrayOffset = THIS.Address - m.lnLength
+	ENDFUNC
+
+	FUNCTION Element_Access(lnRow)
+		ASSERT (THIS.Address != 0) MESSAGE 'Dimension the array first!'
+		ASSERT (m.lnRow <= THIS.Rows) MESSAGE 'Arrayindex out of bounds!'
+		RETURN ReadCharArray(THIS.ArrayOffset + m.lnRow * THIS.ElementSize, THIS.ElementSize)
 	ENDFUNC
 	
-	FUNCTION Dimension(nElements, nLength)
-		LOCAL lnAddress
-		THIS.Elements = nElements
-		THIS.ElementSize = nLength
-		lnAddress = ReAllocMem(THIS.Address,nElements*nLength)
-		IF lnAddress != 0
-			THIS.Address = lnAddress
-			THIS.ArrayOffset = THIS.Address - THIS.ElementSize
-			RETURN .T.
+	FUNCTION Element_Assign(lnValue, lnRow)
+		ASSERT (THIS.Address != 0) MESSAGE 'Dimension the array first!'
+		ASSERT (m.lnRow <= THIS.Rows) MESSAGE 'Arrayindex out of bounds!'
+		WriteCharArray(THIS.ArrayOffset + m.lnRow * THIS.ElementSize, m.lnValue, THIS.ElementSize)
+	ENDFUNC
+	
+	FUNCTION MarshalArray(laSource, lnLength)
+		EXTERNAL ARRAY laSource
+		IF THIS.Dimension(ALEN(m.laSource,1), m.lnLength)
+			RETURN MarshalFoxArray2CArray(THIS.Address, @m.laSource, THIS.CType, m.lnLength)
 		ELSE
 			RETURN .F.
 		ENDIF
 	ENDFUNC
 	
-	FUNCTION Element_Access(nElement)
-		ASSERT (THIS.Address != 0) MESSAGE 'Dimension the array first!'	
-		ASSERT (nElement <= THIS.Elements) MESSAGE 'Arrayindex out of bounds!'		
-		IF VARTYPE(nElement) = 'N'
-			RETURN ReadCString(THIS.ArrayOffset+nElement*THIS.ElementSize)
-		ELSE
-			RETURN ''
-		ENDIF
-	ENDFUNC
-	
-	FUNCTION Element_Assign(nNewVal,nElement)
-		ASSERT (THIS.Address != 0) MESSAGE 'Dimension the array first!'
-		ASSERT (nElement <= THIS.Elements) MESSAGE 'Arrayindex out of bounds!'		
-		WriteCharArray(THIS.ArrayOffset+nElement*THIS.ElementSize,nNewVal,THIS.ElementSize)
-	ENDFUNC
-
-	FUNCTION MarshalArray(laSource, lnLength)
-		EXTERNAL ARRAY laSource
-		IF THIS.Dimension(ALEN(laSource),lnLength)
-			RETURN MarshalArrayCharArray(THIS.Address,@laSource,lnLength)
-		ELSE
-			ERROR(INSUFMEMORY)
-		ENDIF
-	ENDFUNC
-	
 	FUNCTION UnMarshalArray(laDestination)
 		EXTERNAL ARRAY laDestination
-		DIMENSION laDestination[MIN(THIS.Elements,MAXARRAYLEN)]
-		RETURN UnMarshalArrayCharArray(THIS.Address,@laDestination,THIS.ElementSize)
+		IF THIS.Address = 0
+			ERROR E_INVALIDPARAMS, 'No C array created yet!'		
+		ENDIF		
+		DIMENSION m.laDestination[THIS.Rows]
+		RETURN MarshalCArray2FoxArray(THIS.Address, @m.laDestination, THIS.CType, THIS.ElementSize)
+	ENDFUNC
+
+ENDDEFINE
+
+DEFINE CLASS C2DimCharArray AS C2DimArray
+
+	CType = CTYPE_CHARARRAY
+	ElementSize = 0
+
+	FUNCTION AttachArray(lnBaseAdress, lnRows, lnColumns, lnLength)
+		IF PCOUNT() != 4
+			ERROR E_INVALIDPARAMS, 'Not enough parameters to attach array!'
+		ENDIF
+
+		THIS.FreeArray()
+		
+		THIS.Address = m.lnBaseAdress
+		THIS.Contained = .T.
+		THIS.ElementSize = m.lnLength
+				
+		m.lnRows = MIN(m.lnRows, FLL_MAX_ARRAY_SIZE)
+		m.lnColumns = MIN(m.lnColumns, FLL_MAX_ARRAY_SIZE)
+		THIS.CalculateOffsets(m.lnRows, m.lnColumns)
+	ENDFUNC
+
+	FUNCTION Dimension(lnRows, lnColumns, lnLength)
+		IF THIS.Contained
+			ERROR E_INVALIDPARAMS, 'You cannot dimension a contained array!'
+		ENDIF
+		LOCAL lnAddress
+		m.lnRows = MIN(m.lnRows, FLL_MAX_ARRAY_SIZE)
+		m.lnColumns = MIN(m.lnColumns, FLL_MAX_ARRAY_SIZE)
+		THIS.ElementSize = m.lnLength
+		m.lnAddress = ReAllocMem(THIS.Address, m.lnRows * m.lnColumns * THIS.ElementSize)
+		IF m.lnAddress = 0
+			LOCAL laError[1]
+			AERROREX('laError')
+			ERROR E_USERERROR, m.laError[3]
+		ELSE
+			THIS.Address = m.lnAddress
+			THIS.CalculateOffsets(m.lnRows, m.lnColumns)
+		ENDIF
+	ENDFUNC
+
+	FUNCTION Element_Access(lnRow, lnColumn)
+		ASSERT (THIS.Address != 0) MESSAGE 'Dimension the array first!'
+		ASSERT (m.lnRow <= THIS.Rows AND m.lnColumns <= THIS.Columns) MESSAGE 'Arrayindex out of bounds!'
+		RETURN ReadCharArray(THIS.ColumnOffSets[m.lnColumn] + m.lnRow * THIS.ElementSize)
+	ENDFUNC
+
+	FUNCTION Element_Assign(lnValue, lnRow, lnColumn)
+		ASSERT (THIS.Address != 0) MESSAGE 'Dimension the array first!'
+		ASSERT (m.lnRow <= THIS.Rows AND m.lnColumn <= THIS.Columns) MESSAGE 'Arrayindex out of bounds!'
+		WriteCharArray(THIS.ColumnOffSets[m.lnColumn] + m.lnRow * THIS.ElementSize, m.lnValue, THIS.ElementSize)
+	ENDFUNC
+
+	FUNCTION MarshalArray(laArray, lnLength)
+		EXTERNAL ARRAY laArray
+		LOCAL lnRows, lnColumns
+		m.lnRows = ALEN(m.laArray, 1)
+		m.lnColumns = ALEN(m.laArray, 2)
+		IF m.lnRows != THIS.Rows OR m.lnColumns != THIS.Columns OR m.lnLength != THIS.ElementSize
+			THIS.Dimension(m.lnRows, m.lnColumns, m.lnLength)
+		ENDIF
+		RETURN MarshalFoxArray2CArray(THIS.Address, @m.laArray, THIS.CType, m.lnLength)
+	ENDFUNC
+
+	FUNCTION UnMarshalArray(laArray)
+		IF THIS.Address = 0
+			ERROR E_INVALIDPARAMS, 'No C array created yet!'		
+		ENDIF
+		DIMENSION m.laArray[THIS.Rows, THIS.Columns]
+		RETURN MarshalCArray2FoxArray(THIS.Address, @m.laArray, THIS.CType, THIS.ElementSize)
 	ENDFUNC
 
 ENDDEFINE
 
 DEFINE CLASS CWCharArray AS CArray
 
+	CType = CTYPE_WCHARARRAY
 	ElementSize = 0
+	CodePage = CP_ACP
 	
 	FUNCTION AttachArray(nBaseAdress,nElements,nLength)
 		ASSERT (PCOUNT()=3) MESSAGE 'Not enough parameters to attach array'
@@ -618,7 +791,7 @@ DEFINE CLASS CWCharArray AS CArray
 		THIS.FreeArray()
 		
 		THIS.Address = nBaseAdress
-		THIS.bContained = .T.
+		THIS.Contained = .T.
 		THIS.Elements = nElements
 		THIS.ElementSize = nLength * SIZEOF_WCHAR
 		THIS.ArrayOffset = THIS.Address - THIS.ElementSize && eases access to the array in Element_Access (for 1 based addressing)
@@ -643,7 +816,7 @@ DEFINE CLASS CWCharArray AS CArray
 		ASSERT (THIS.Address != 0) MESSAGE 'Dimension the array first!'	
 		ASSERT (nElement <= THIS.Elements) MESSAGE 'Arrayindex out of bounds!'		
 		IF VARTYPE(nElement) = 'N'
-			RETURN ReadWString(THIS.ArrayOffset+nElement*THIS.ElementSize)
+			RETURN ReadWCharArray(THIS.ArrayOffset+nElement*THIS.ElementSize, THIS.ElementSize)
 		ELSE
 			RETURN ''
 		ENDIF
@@ -655,23 +828,85 @@ DEFINE CLASS CWCharArray AS CArray
 		WriteWCharArray(THIS.ArrayOffset+nElement*THIS.ElementSize,nNewVal,THIS.ElementSize)
 	ENDFUNC
 
-	FUNCTION MarshalArray(laSource, nLength, nCodePage)
+	FUNCTION MarshalArray(laSource, lnLength)
 		EXTERNAL ARRAY laSource
-		IF THIS.Dimesion(ALEN(laSource),nLength)
-			IF PCOUNT() = 2
-				RETURN MarshalArrayWCharArray(THIS.Address,@laSource,nLength)
-			ELSE
-				RETURN MarshalArrayWCharArray(THIS.Address,@laSource,nLength,nCodePage)
-			ENDIF
+		IF THIS.Dimesion(ALEN(m.laSource,1), m.nLength)
+			RETURN MarshalFoxArray2CArray(THIS.Address, @m.laSource, THIS.CType, m.lnLength, THIS.CodePage)
 		ELSE
-			ERROR(INSUFMEMORY)
+			RETURN .F.
 		ENDIF
 	ENDFUNC
 	
 	FUNCTION UnMarshalArray(laDestination)
 		EXTERNAL ARRAY laDestination
-		DIMENSION laDestination[MIN(THIS.Elements,MAXARRAYLEN)]
-		RETURN UnMarshalArrayWCharArray(THIS.Address,@laDestination,THIS.ElementSize)
+		DIMENSION laDestination[MIN(THIS.Elements,FLL_MAX_ARRAY_SIZE)]
+		RETURN MarshalCArray2FoxArray(THIS.Address, @m.laDestination, THIS.ElementSize, THIS.CodePage)
+	ENDFUNC
+
+ENDDEFINE
+
+DEFINE CLASS C2DimWCharArray AS C2DimArray
+
+	CType = CTYPE_WCHARARRAY
+	ElementSize = 0
+	CodePage = CP_ACP
+	
+	FUNCTION AttachArray(nBaseAdress,nElements,nLength)
+		ASSERT (PCOUNT()=3) MESSAGE 'Not enough parameters to attach array'
+
+		THIS.FreeArray()
+		
+		THIS.Address = nBaseAdress
+		THIS.Contained = .T.
+		THIS.Elements = nElements
+		THIS.ElementSize = nLength * SIZEOF_WCHAR
+		THIS.ArrayOffset = THIS.Address - THIS.ElementSize && eases access to the array in Element_Access (for 1 based addressing)
+
+	ENDFUNC
+	
+	FUNCTION Dimension(nElements, nLength)
+		LOCAL lnAddress
+		THIS.Elements = nElements
+		THIS.ElementSize = nLength * SIZEOFWCHAR
+		lnAddress = ReAllocMem(THIS.Address,nElements*THIS.ElementSize)
+		IF lnAddress != 0
+			THIS.Address = lnAddress
+			THIS.ArrayOffset = THIS.Address - THIS.ElementSize
+			RETURN .T.
+		ELSE
+			RETURN .F.
+		ENDIF
+	ENDFUNC
+	
+	FUNCTION Element_Access(nElement)
+		ASSERT (THIS.Address != 0) MESSAGE 'Dimension the array first!'	
+		ASSERT (nElement <= THIS.Elements) MESSAGE 'Arrayindex out of bounds!'		
+		IF VARTYPE(nElement) = 'N'
+			RETURN ReadWCharArray(THIS.ArrayOffset+nElement*THIS.ElementSize, THIS.ElementSize)
+		ELSE
+			RETURN ''
+		ENDIF
+	ENDFUNC
+	
+	FUNCTION Element_Assign(nNewVal,nElement)
+		ASSERT (THIS.Address != 0) MESSAGE 'Dimension the array first!'
+		ASSERT (nElement <= THIS.Elements) MESSAGE 'Arrayindex out of bounds!'
+		WriteWCharArray(THIS.ArrayOffset+nElement*THIS.ElementSize,nNewVal,THIS.ElementSize)
+	ENDFUNC
+
+	FUNCTION MarshalArray(laSource, lnLength)
+		EXTERNAL ARRAY laSource
+		IF THIS.Dimesion(ALEN(m.laSource,1), m.nLength)
+			RETURN MarshalFoxArray2CArray(THIS.Address, @m.laSource, THIS.CType, m.lnLength, THIS.CodePage)
+		ELSE
+			RETURN .F.
+		ENDIF
+	ENDFUNC
+	
+	FUNCTION UnMarshalArray(laDestination)
+		EXTERNAL ARRAY laDestination
+		DIMENSION laDestination[MIN(THIS.Elements,FLL_MAX_ARRAY_SIZE)]
+		RETURN MarshalCArray2FoxArray(THIS.Address, @m.laDestination, THIS.ElementSize, THIS.CodePage)
 	ENDFUNC
 
 ENDDEFINE

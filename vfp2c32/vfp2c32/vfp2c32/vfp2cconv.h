@@ -1,8 +1,8 @@
 #ifndef _VFP2CCONV_H__
 #define _VFP2CCONV_H__
 
-#define HEX_PREFIX 1
-#define HEX_LEADINGNULLS 2
+const int HEX_PREFIX		= 1;
+const int HEX_LEADINGNULLS	= 2;
 
 #pragma pack(push,1)	// set structure padding to 1
 typedef struct _VALUEEX
@@ -47,6 +47,24 @@ void _fastcall CreatePublicShadowObjReference(ParamBlk *parm);
 void _fastcall ReleasePublicShadowObjReference(ParamBlk *parm);
 
 void _fastcall GetLocaleInfoExLib(ParamBlk *parm);
+void _fastcall OsEx(ParamBlk *parm);
+
+void _fastcall Str2Short(ParamBlk *parm);
+void _fastcall Short2Str(ParamBlk *parm);
+void _fastcall Str2UShort(ParamBlk *parm);
+void _fastcall UShort2Str(ParamBlk *parm);
+void _fastcall Str2Long(ParamBlk *parm);
+void _fastcall Long2Str(ParamBlk *parm);
+void _fastcall Str2ULong(ParamBlk *parm);
+void _fastcall ULong2Str(ParamBlk *parm);
+void _fastcall Str2Double(ParamBlk *parm);
+void _fastcall Double2Str(ParamBlk *parm);
+void _fastcall Str2Float(ParamBlk *parm);
+void _fastcall Float2Str(ParamBlk *parm);
+void _fastcall Int642Str(ParamBlk *parm);
+void _fastcall Str2Int64(ParamBlk *parm);
+void _fastcall UInt642Str(ParamBlk *parm);
+void _fastcall Str2UInt64(ParamBlk *parm);
 
 #ifdef __cplusplus
 }

@@ -9,9 +9,10 @@
 extern "C" {
 #endif
 
+const int NETAPI_INFO_SIZE_EX	= 1024;
+
 // typedef's for runtime dynamic linking
 typedef NET_API_STATUS (_stdcall *PNETFILEENUMEX)(const char*,const char*,short,char*,unsigned short,unsigned short*,unsigned short*); // NetFileEnum
-#define NETAPI_INFO_SIZE_EX		1024
 
 // function forward definitions
 bool _stdcall VFP2C_Init_Netapiex();

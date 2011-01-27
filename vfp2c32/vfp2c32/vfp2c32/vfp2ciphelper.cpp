@@ -21,7 +21,7 @@ IcmpFile::IcmpFile() : m_Handle(INVALID_HANDLE_VALUE), m_pEcho(0), m_DataSize(0)
 	m_Handle = fpIcmpCreateFile();
 	if (m_Handle == INVALID_HANDLE_VALUE)
 	{
-		SAVEWIN32ERROR(IcmpCreateFile,GetLastError());
+		SaveWin32Error("IcmpCreateFile", GetLastError());
 		throw E_APIERROR;
 	}
 	ZeroMemory(&m_IpOptions,sizeof(IPINFO));
@@ -139,14 +139,14 @@ try
 	nIpAddr = inet_addr(vIp);
 	if (nIpAddr == INADDR_NONE)
 	{
-		SAVECUSTOMERROR("inet_addr","Invalid IP address passed.");
+		SaveCustomError("inet_addr","Invalid IP address passed.");
 		throw E_APIERROR;
 	}
 
 	hr = fpSendARP(nIpAddr,0,aMacAddr,&nLen);
 	if (hr != NO_ERROR)
 	{
-		SAVEWIN32ERROR(SendARP,hr);
+		SaveWin32Error("SendARP", hr);
 		throw E_APIERROR;
 	}
 
@@ -196,7 +196,7 @@ void _fastcall IcmpPing(ParamBlk *parm)
 {
 try
 {
-	RESETWIN32ERRORS();
+	ResetWin32Errors();
 
 	if (!fpIcmpCreateFile)
 		throw E_NOENTRYPOINT;
@@ -206,12 +206,12 @@ try
 	FoxString pIpBuffer(VFP2C_MAX_IP_LEN);
 	IcmpFile pIcmp;
 
-	BYTE nTTL = PCOUNT() >= 3 && p3.ev_long ? static_cast<BYTE>(p3.ev_long) : 30;
-	BYTE nTos = PCOUNT() >= 4 && p4.ev_long ? static_cast<BYTE>(p4.ev_long) : 0;
-	DWORD dwTimeout = PCOUNT() >= 5 && p5.ev_long ? p5.ev_long : 3000;
-	WORD nDataSize = PCOUNT() >= 6 && p6.ev_long ? static_cast<WORD>(p6.ev_long) : 32;
-	bool bDontFragment = PCOUNT() >= 7 && p7.ev_length;
-	int nPingCount = PCOUNT() >= 8 && p8.ev_long ? p8.ev_long : 1;
+	BYTE nTTL = PCount() >= 3 && p3.ev_long ? static_cast<BYTE>(p3.ev_long) : 30;
+	BYTE nTos = PCount() >= 4 && p4.ev_long ? static_cast<BYTE>(p4.ev_long) : 0;
+	DWORD dwTimeout = PCount() >= 5 && p5.ev_long ? p5.ev_long : 3000;
+	WORD nDataSize = PCount() >= 6 && p6.ev_long ? static_cast<WORD>(p6.ev_long) : 32;
+	bool bDontFragment = PCount() >= 7 && p7.ev_length;
+	int nPingCount = PCount() >= 8 && p8.ev_long ? p8.ev_long : 1;
 
 	unsigned long Ip;
 	LPHOSTENT lpHostEnt;
@@ -225,7 +225,7 @@ try
 			Ip = ((LPIN_ADDR)lpHostEnt->h_addr)->s_addr;
 		else
 		{
-			SAVECUSTOMERROR("gethostbyname","Host not found.");
+			SaveCustomError("gethostbyname","Host not found.");
 			throw E_APIERROR;
 		}
 	}

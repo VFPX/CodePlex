@@ -15,11 +15,11 @@ void _fastcall DT2FT(ParamBlk *parm)
 	LPFILETIME pFileTime = reinterpret_cast<LPFILETIME>(p2.ev_long);
 	FILETIME sFileTime;
 
-	if (PCOUNT() == 2 || !p3.ev_length)
+	if (PCount() == 2 || !p3.ev_length)
 	{
 		DateTimeToFileTime(&p1,&sFileTime);
 		if (!LocalFileTimeToFileTime(&sFileTime,pFileTime))
-			RAISEWIN32ERROR(LocalFileTimeToFileTime,GetLastError());
+			RaiseWin32Error("LocalFileTimeToFileTime", GetLastError());
 	}
 	else
 		DateTimeToFileTime(&p1,pFileTime);
@@ -33,7 +33,7 @@ try
 	LPFILETIME pFileTime = reinterpret_cast<LPFILETIME>(p1.ev_long);
 	FoxDateTime pTime(*pFileTime);
 
-	if (PCOUNT() == 1 || !p2.ev_length)
+	if (PCount() == 1 || !p2.ev_length)
 		pTime.ToLocal();
 
 	pTime.Return();
@@ -52,18 +52,18 @@ void _fastcall DT2ST(ParamBlk *parm)
 
 	DateTimeToFileTime(&p1,&sFileTime);
 
-	if (PCOUNT() == 2 || !p3.ev_length)
+	if (PCount() == 2 || !p3.ev_length)
 	{
 		if (!LocalFileTimeToFileTime(&sFileTime,&sUTCTime))
-			RAISEWIN32ERROR(LocalFileTimeToFileTime,GetLastError());
+			RaiseWin32Error("LocalFileTimeToFileTime", GetLastError());
 
         if (!FileTimeToSystemTime(&sUTCTime,pSysTime))
-			RAISEWIN32ERROR(FileTimeToSystemTime,GetLastError());
+			RaiseWin32Error("FileTimeToSystemTime", GetLastError());
 	}
 	else
 	{
 		if (!FileTimeToSystemTime(&sFileTime,pSysTime))
-			RAISEWIN32ERROR(FileTimeToSystemTime,GetLastError());
+			RaiseWin32Error("FileTimeToSystemTime", GetLastError());
 	}
 }
 
@@ -75,7 +75,7 @@ try
 	LPSYSTEMTIME pTime = reinterpret_cast<LPSYSTEMTIME>(p1.ev_long);
 	FoxDateTime pDateTime(*pTime);
 
-	if (PCOUNT() == 1 || !p2.ev_length)
+	if (PCount() == 1 || !p2.ev_length)
 		pDateTime.ToLocal();
 
 	pDateTime.Return();
@@ -118,22 +118,20 @@ void _fastcall DT2Timet(ParamBlk *parm)
 
 void _fastcall Timet2DT(ParamBlk *parm)
 {
-	Value vTime;
+	DateTimeValue vTime;
 	LARGE_INTEGER nFileTime;
 	FILETIME ftUTCTime;
-
-	vTime.ev_type = 'T';
 
 	if (p1.ev_long < 0)
 		RaiseError(E_INVALIDPARAMS);
 
-	if (PCOUNT() == 1 || !p2.ev_length) // convert from UCT/GMT to local time?
+	if (PCount() == 1 || !p2.ev_length) // convert from UCT/GMT to local time?
 	{
 		nFileTime.QuadPart = Int32x32To64(p1.ev_long,10000000) + 116444736000000000;
 		ftUTCTime.dwLowDateTime = nFileTime.LowPart;
 		ftUTCTime.dwHighDateTime = nFileTime.HighPart;
 		if (!FileTimeToLocalFileTime(&ftUTCTime,(LPFILETIME)&nFileTime))
-			RAISEWIN32ERROR(FileTimeToLocalFileTime,GetLastError());
+			RaiseWin32Error("FileTimeToLocalFileTime", GetLastError());
 
 		nFileTime.QuadPart /= 10000000; // gives us seconds since 1601/01/01
 		vTime.ev_real = 2305814.0 + (double)(nFileTime.QuadPart / 86400); // 1601/01/01 + number of seconds / 86400 (= number of days)
@@ -159,37 +157,33 @@ void _fastcall Double2DT(ParamBlk *parm)
 	pTime.Return();
 }
 
-void _fastcall SetSystemTimeEx(ParamBlk *parm)
+void _fastcall SetSystemTimeLib(ParamBlk *parm)
 {
 try
 {
-	RESETWIN32ERRORS();
+	ResetWin32Errors();
 
 	FoxDateTime pTime(p1);
 	SYSTEMTIME sSysTime;
 
 	sSysTime = pTime;
 
-	if (PCOUNT() == 1 || !p2.ev_length)
+	if (PCount() == 1 || !p2.ev_length)
 	{
 		if (!SetLocalTime(&sSysTime))
 		{
-			SAVEWIN32ERROR(SetLocalTime,GetLastError());
-			Return(false);
-			return;
+			SaveWin32Error("SetLocalTime", GetLastError());
+			throw E_APIERROR;
 		}
 	}
 	else
 	{
 		if (!SetSystemTime(&sSysTime))
 		{
-			SAVEWIN32ERROR(SetSystemTime,GetLastError());
-			Return(false);
-			return;
+			SaveWin32Error("SetSystemTime", GetLastError());
+			throw E_APIERROR;
 		}
 	}
-
-	Return(true);
 }
 catch(int nErrorNo)
 {
@@ -197,12 +191,12 @@ catch(int nErrorNo)
 }
 }
 
-void _fastcall GetSystemTimeEx(ParamBlk *parm)
+void _fastcall GetSystemTimeLib(ParamBlk *parm)
 {
 	SYSTEMTIME sSysTime;
 	FoxDateTime pTime;
 
-	if (PCOUNT() == 0 || !p1.ev_length)
+	if (PCount() == 0 || !p1.ev_length)
 		GetLocalTime(&sSysTime);
 	else
 		GetSystemTime(&sSysTime);
@@ -217,17 +211,17 @@ try
 {
 	FoxArray pArray(p1);
 	FoxString pTimeZone(VFP2C_MAX_TIMEZONE_NAME);
+	const char* TIMEZONE_REG_KEY = "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Time Zones";
 
 	RegistryKey hRegKey, hTZKey;
 	DWORD nSubKeys, nMaxLen, nLen;
-	int nIndex;
 	bool bRet;	
 	REG_TIMEZONE_INFORMATION sTZInfo;
 	
 	hRegKey.Open(HKEY_LOCAL_MACHINE, TIMEZONE_REG_KEY, KEY_ALL_ACCESS);
 	hRegKey.QueryInfo(0,0,&nSubKeys);
 
-	pArray.Dimension(nSubKeys,16);
+	pArray.Dimension(nSubKeys,15);
 
 	nLen = VFP2C_MAX_TIMEZONE_NAME;
 	bRet = hRegKey.EnumFirstKey(pTimeZone,&nLen);
@@ -245,31 +239,27 @@ try
 		pArray(nRow,2) = pTimeZone.Len(nLen);
 
 		nLen = VFP2C_MAX_TIMEZONE_NAME;
-		hTZKey.QueryValue("Dlt",pTimeZone,&nLen);
+		hTZKey.QueryValue("Std",pTimeZone,&nLen);
 		pArray(nRow,3) = pTimeZone.Len(nLen);
 
 		nLen = VFP2C_MAX_TIMEZONE_NAME;
-		hTZKey.QueryValue("Std",pTimeZone,&nLen);
+		hTZKey.QueryValue("Dlt",pTimeZone,&nLen);
 		pArray(nRow,4) = pTimeZone.Len(nLen);
-
-		nMaxLen = sizeof(int);
-		hTZKey.QueryValue("Index",(LPBYTE)&nIndex,&nMaxLen);
-		pArray(nRow,5) = nIndex;
 
 		nMaxLen = sizeof(sTZInfo);
 		hTZKey.QueryValue("TZI",(LPBYTE)&sTZInfo,&nMaxLen);
 
-		pArray(nRow,6) = sTZInfo.Bias;
-		pArray(nRow,7) = sTZInfo.StandardBias;
-		pArray(nRow,8) = sTZInfo.DayligthBias;
-		pArray(nRow,9) = sTZInfo.StandardDate.wMonth;
-		pArray(nRow,10) = sTZInfo.StandardDate.wDay;
-		pArray(nRow,11) = sTZInfo.StandardDate.wDayOfWeek;
-		pArray(nRow,12) = sTZInfo.StandardDate.wHour;
-		pArray(nRow,13) = sTZInfo.DayligthDate.wMonth;
-		pArray(nRow,14) = sTZInfo.DayligthDate.wDay;
-		pArray(nRow,15) = sTZInfo.DayligthDate.wDayOfWeek;
-		pArray(nRow,16) = sTZInfo.DayligthDate.wHour;
+		pArray(nRow,5) = sTZInfo.Bias;
+		pArray(nRow,6) = sTZInfo.StandardBias;
+		pArray(nRow,7) = sTZInfo.DayligthBias;
+		pArray(nRow,8) = sTZInfo.StandardDate.wMonth;
+		pArray(nRow,9) = sTZInfo.StandardDate.wDay;
+		pArray(nRow,10) = sTZInfo.StandardDate.wDayOfWeek;
+		pArray(nRow,11) = sTZInfo.StandardDate.wHour;
+		pArray(nRow,12) = sTZInfo.DayligthDate.wMonth;
+		pArray(nRow,13) = sTZInfo.DayligthDate.wDay;
+		pArray(nRow,14) = sTZInfo.DayligthDate.wDayOfWeek;
+		pArray(nRow,15) = sTZInfo.DayligthDate.wHour;
 
 		nLen = VFP2C_MAX_TIMEZONE_NAME;
 		bRet = hRegKey.EnumNextKey(pTimeZone,&nLen);

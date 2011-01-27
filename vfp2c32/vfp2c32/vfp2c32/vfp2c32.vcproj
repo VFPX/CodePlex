@@ -70,7 +70,9 @@
 				CommandLine="copy &quot;$(TargetPath)&quot; &quot;$(SolutionDir)..\vfp2c32examples\$(TargetFileName)&quot;
 "/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCPreBuildEventTool"
+				Description="Freeing leacked PDB handles"
+				CommandLine="&quot;$(VCInstallDir)\bin\freepdb.cmd&quot; &quot;$(ProjectName)&quot;"/>
 			<Tool
 				Name="VCPreLinkEventTool"/>
 			<Tool
@@ -206,7 +208,9 @@ copy &quot;$(TargetPath)&quot; &quot;$(SolutionDir)..\vfp2c32examples\$(TargetFi
 				CommandLine="copy &quot;$(TargetPath)&quot; &quot;$(SolutionDir)..\vfp2c32examples\$(TargetFileName)&quot;
 "/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCPreBuildEventTool"
+				Description="Freeing leacked PDB handles"
+				CommandLine="&quot;$(VCInstallDir)\bin\freepdb.cmd&quot; &quot;$(ProjectName)&quot;"/>
 			<Tool
 				Name="VCPreLinkEventTool"/>
 			<Tool
@@ -279,6 +283,33 @@ copy &quot;$(TargetPath)&quot; &quot;$(SolutionDir)..\vfp2c32examples\$(TargetFi
 					<Tool
 						Name="VCCLCompilerTool"
 						CompileAs="0"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\vfp2casmfuncs.asm">
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCustomBuildTool"
+						CommandLine="C:\masm32\bin\ml /Fo $(TargetDir)$(InputName).obj /c /Cx /coff $(inputpath)
+"
+						Outputs="$(OutDir)\$(InputName).obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCustomBuildTool"
+						CommandLine="C:\masm32\bin\ml /Fo $(TargetDir)$(InputName).obj /c /Cx /coff $(inputpath)
+"
+						Outputs="$(OutDir)\$(InputName).obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="ReleaseDebug|Win32">
+					<Tool
+						Name="VCCustomBuildTool"
+						CommandLine="C:\masm32\bin\ml /Fo $(TargetDir)$(InputName).obj /c /Cx /coff $(inputpath)
+"
+						Outputs="$(OutDir)\$(InputName).obj"/>
 				</FileConfiguration>
 			</File>
 			<File
@@ -780,6 +811,9 @@ copy &quot;$(TargetPath)&quot; &quot;$(SolutionDir)..\vfp2c32examples\$(TargetFi
 				RelativePath=".\vfp2carray.h">
 			</File>
 			<File
+				RelativePath=".\vfp2casmfuncs.h">
+			</File>
+			<File
 				RelativePath=".\vfp2cassembly.h">
 			</File>
 			<File
@@ -871,6 +905,9 @@ copy &quot;$(TargetPath)&quot; &quot;$(SolutionDir)..\vfp2c32examples\$(TargetFi
 			Name="Resource Files"
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx"
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}">
+			<File
+				RelativePath=".\vfp2c32.ico">
+			</File>
 			<File
 				RelativePath=".\vfp2c32.rc">
 			</File>

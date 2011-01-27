@@ -2,8 +2,10 @@
 #include "vfp2c32.h"
 #include "vfp2cconv.h"
 #include "vfp2cutil.h"
-#include "vfpmacros.h"
+#include "vfp2chelpers.h"
 #include "vfp2ccppapi.h"
+#include "vfp2casmfuncs.h"
+#include "vfpmacros.h"
 
 void _fastcall PG_ByteA2Str(ParamBlk *parm)
 {
@@ -86,7 +88,7 @@ try
 	FoxString vRetVal;
 	unsigned char *pInput, *pInputEnd, *pRetVal, *pRetValStart;
 	unsigned int nMemoLen = 0;
-	bool bDouble = PCOUNT() == 2 ? p2.ev_length > 0 : false;
+	bool bDouble = PCount() == 2 ? p2.ev_length > 0 : false;
 	int nMemMulti = bDouble == false ? 4 : 5;
 
 	if (Vartype(p1) == 'C')
@@ -154,10 +156,13 @@ try
 	FoxReference rRed(r2);
 	FoxReference rGreen(r3);
 	FoxReference rBlue(r4);
+	FoxReference rAlpha(r5);
 
 	rRed = (p1.ev_long & 0xFF);
 	rGreen = (p1.ev_long >> 8 & 0xFF);
 	rBlue = (p1.ev_long >> 16 & 0xFF);
+	if (PCount() == 5)
+		rAlpha = (p1.ev_long >> 24);
 }
 catch(int nErrorNo)
 {
@@ -168,9 +173,11 @@ catch(int nErrorNo)
 void _fastcall Colors2RGB(ParamBlk *parm)
 {
 	int nRGB;
-	nRGB = p1.ev_long;
-	nRGB += p2.ev_long << 8;
-	nRGB += p3.ev_long << 16;
+	nRGB = (p1.ev_long & 0x000000FF);
+	nRGB |= ((p2.ev_long << 8) & 0x0000FF00);
+	nRGB |= ((p3.ev_long << 16) & 0x00FF0000);
+	if (PCount() == 4)
+		nRGB |= (p4.ev_long << 24);
 	Return(nRGB);
 }
 
@@ -180,7 +187,7 @@ try
 {
 	FoxReference rX(r1);
 	FoxReference rY(r2);
-	bool bRelative = PCOUNT() >= 3 && p3.ev_length;
+	bool bRelative = PCount() >= 3 && p3.ev_length;
 	FoxString pWindow(parm,4);
 
 	HWND hHwnd;
@@ -188,13 +195,13 @@ try
 
 	if (!GetCursorPos(&sPoint))
 	{
-		SAVEWIN32ERROR(GetCursorPos,GetLastError());
+		SaveWin32Error("GetCursorPos", GetLastError());
 		throw E_APIERROR;
 	}
 
 	if (bRelative)
 	{
-		if (PCOUNT() == 4)
+		if (PCount() == 4)
 		{
 			if (Vartype(p4) == 'I' || Vartype(p4) == 'N')
 				hHwnd = Vartype(p4) == 'I' ? reinterpret_cast<HWND>(p4.ev_long) : reinterpret_cast<HWND>(static_cast<int>(p4.ev_real));
@@ -205,7 +212,7 @@ try
 
 			if (!ScreenToClient(hHwnd,&sPoint))
 			{
-				SAVEWIN32ERROR(ScreenToClient,GetLastError());
+				SaveWin32Error("ScreenToClient", GetLastError());
 				throw E_APIERROR;
 			}
 		}
@@ -213,7 +220,7 @@ try
 		{
 			if (!ScreenToClient(WTopHwnd(),&sPoint))
 			{
-				SAVEWIN32ERROR(ScreenToClient,GetLastError());
+				SaveWin32Error("ScreenToClient", GetLastError());
 				throw E_APIERROR;
 			}
 		}
@@ -230,182 +237,146 @@ catch(int nErrorNo)
 
 void _fastcall Int64_Add(ParamBlk *parm)
 {
-	__int64 nOp1, nOp2;
-	char aResult[VFP2C_MAX_BIGINT_LITERAL+1];
+try
+{
+	__int64 Op1, Op2, Result;
+	bool Overflow;
+   	Op1 = Value2Int64(p1);
+	Op2 = Value2Int64(p2);
 
-	if (Vartype(p1) == 'C')
-	{
-		if (!NullTerminateValue(p1))
-			RaiseError(E_INSUFMEMORY);
-		nOp1 = StringToInt64(HandleToPtr(p1));
-	}
-	else if (Vartype(p1) == 'I')
-		nOp1 = (__int64)p1.ev_long;
-	else if (Vartype(p1) == 'N')
-		nOp1 = (__int64)p1.ev_real;
-	else 
-		RaiseError(E_INVALIDPARAMS);
+	Result = Op1 + Op2;
+	__asm seto Overflow;
+	if (Overflow)
+		throw E_NUMERICOVERFLOW;
 
-	if (Vartype(p2) == 'C')
-	{
-		if (!NullTerminateValue(p2))
-			RaiseError(E_INSUFMEMORY);
-		nOp2 = StringToInt64(HandleToPtr(p2));
-	}
-	else if (Vartype(p2) == 'I')
-		nOp2 = (__int64)p2.ev_long;
-	else if (Vartype(p1) == 'N')
-		nOp2 = (__int64)p2.ev_real;
-	else 
-		RaiseError(E_INVALIDPARAMS);
-
-	Int64ToString(aResult,nOp1 + nOp2);
-	_RetChar(aResult);
+	if (PCount() == 2 || p3.ev_long == 1)
+		ReturnInt64AsCurrency(Result);
+	else if (p3.ev_long == 2)
+		ReturnInt64AsString(Result);
+	else
+		ReturnInt64AsBinary(Result);
+}
+catch(int nErrorNo)
+{
+	RaiseError(nErrorNo);
+}
 }
 
 void _fastcall Int64_Sub(ParamBlk *parm)
 {
-	__int64 nOp1, nOp2;
-	char aResult[VFP2C_MAX_BIGINT_LITERAL+1];
+try
+{
+	__int64 Op1, Op2, Result;
+	bool Overflow;
 
-	if (Vartype(p1) == 'C')
-	{
-		if (!NullTerminateValue(p1))
-			RaiseError(E_INSUFMEMORY);
-		nOp1 = StringToInt64(HandleToPtr(p1));
-	}
-	else if (Vartype(p1) == 'I')
-		nOp1 = (__int64)p1.ev_long;
-	else if (Vartype(p1) == 'N')
-		nOp1 = (__int64)p1.ev_real;
-	else 
-		RaiseError(E_INVALIDPARAMS);
+	Op1 = Value2Int64(p1);
+	Op2 = Value2Int64(p2);
 
-	if (Vartype(p2) == 'C')
-	{
-		if (!NullTerminateValue(p2))
-			RaiseError(E_INSUFMEMORY);
-		nOp2 = StringToInt64(HandleToPtr(p2));
-	}
-	else if (Vartype(p2) == 'I')
-		nOp2 = (__int64)p2.ev_long;
-	else if (Vartype(p1) == 'N')
-		nOp2 = (__int64)p2.ev_real;
-	else 
-		RaiseError(E_INVALIDPARAMS);
+	Result = Op1 - Op2;
+	__asm seto Overflow;
+	if (Overflow)
+		throw E_NUMERICOVERFLOW;
 
-	Int64ToString(aResult,nOp1 - nOp2);
-	_RetChar(aResult);
+	if (PCount() == 2 || p3.ev_long == 1)
+		ReturnInt64AsCurrency(Result);
+	else if (p3.ev_long == 2)
+		ReturnInt64AsString(Result);
+	else
+		ReturnInt64AsBinary(Result);
+
+}
+catch(int nErrorNo)
+{
+	RaiseError(nErrorNo);
+}
 }
 
 void _fastcall Int64_Mul(ParamBlk *parm)
 {
-	__int64 nOp1, nOp2;
-	char aResult[VFP2C_MAX_BIGINT_LITERAL+1];
+try
+{
+	__int64 Op1, Op2, Result;
+	bool Overflow;
+	Op1 = Value2Int64(p1);
+	Op2 = Value2Int64(p2);
 
-	if (Vartype(p1) == 'C')
-	{
-		if (!NullTerminateValue(p1))
-			RaiseError(E_INSUFMEMORY);
-		nOp1 = StringToInt64(HandleToPtr(p1));
-	}
-	else if (Vartype(p1) == 'I')
-		nOp1 = (__int64)p1.ev_long;
-	else if (Vartype(p1) == 'N')
-		nOp1 = (__int64)p1.ev_real;
-	else 
-		RaiseError(E_INVALIDPARAMS);
+	Result = Multiply_Int64(Op1, Op2, &Overflow);
+	if (Overflow)
+		throw E_NUMERICOVERFLOW;
 
-	if (Vartype(p2) == 'C')
-	{
-		if (!NullTerminateValue(p2))
-			RaiseError(E_INSUFMEMORY);
-		nOp2 = StringToInt64(HandleToPtr(p2));
-	}
-	else if (Vartype(p2) == 'I')
-		nOp2 = (__int64)p2.ev_long;
-	else if (Vartype(p1) == 'N')
-		nOp2 = (__int64)p2.ev_real;
-	else 
-		RaiseError(E_INVALIDPARAMS);
-
-	Int64ToString(aResult,nOp1 * nOp2);
-	_RetChar(aResult);
+	if (PCount() == 2 || p3.ev_long == 1)
+		ReturnInt64AsCurrency(Result);
+	else if (p3.ev_long == 2)
+		ReturnInt64AsString(Result);
+	else
+		ReturnInt64AsBinary(Result);
+}
+catch(int nErrorNo)
+{
+	RaiseError(nErrorNo);
+}
 }
 
 void _fastcall Int64_Div(ParamBlk *parm)
 {
-	__int64 nOp1, nOp2;
-	char aResult[VFP2C_MAX_BIGINT_LITERAL+1];
+try
+{
+	__int64 Op1, Op2, Result;
+	
+	Op1 = Value2Int64(p1);
+	Op2 = Value2Int64(p2);
 
-	if (Vartype(p1) == 'C')
-	{
-		if (!NullTerminateValue(p1))
-			RaiseError(E_INSUFMEMORY);
-		nOp1 = StringToInt64(HandleToPtr(p1));
-	}
-	else if (Vartype(p1) == 'I')
-		nOp1 = (__int64)p1.ev_long;
-	else if (Vartype(p1) == 'N')
-		nOp1 = (__int64)p1.ev_real;
-	else 
-		RaiseError(E_INVALIDPARAMS);
+	if (Op2 == 0)
+		throw E_DIVIDEBYZERO;
 
-	if (Vartype(p2) == 'C')
-	{
-		if (!NullTerminateValue(p2))
-			RaiseError(E_INSUFMEMORY);
-		nOp2 = StringToInt64(HandleToPtr(p2));
-	}
-	else if (Vartype(p2) == 'I')
-		nOp2 = (__int64)p2.ev_long;
-	else if (Vartype(p1) == 'N')
-		nOp2 = (__int64)p2.ev_real;
-	else 
-		RaiseError(E_INVALIDPARAMS);
+	if (Op1 == MIN_INT64 && Op2 == -1)
+		throw E_NUMERICOVERFLOW;
 
-	Int64ToString(aResult,nOp1 / nOp2);
-	_RetChar(aResult);
+	Result = Op1 / Op2;
+	
+	if (PCount() == 2 || p3.ev_long == 1)
+		ReturnInt64AsCurrency(Result);
+	else if (p3.ev_long == 2)
+		ReturnInt64AsString(Result);
+	else
+		ReturnInt64AsBinary(Result);
+}
+catch(int nErrorNo)
+{
+	RaiseError(nErrorNo);
+}
 }
 
 void _fastcall Int64_Mod(ParamBlk *parm)
 {
-	__int64 nOp1, nOp2;
-	char aResult[VFP2C_MAX_BIGINT_LITERAL+1];
+try
+{
+	__int64 Op1, Op2, Result;
 
-	if (Vartype(p1) == 'C')
-	{
-		if (!NullTerminateValue(p1))
-			RaiseError(E_INSUFMEMORY);
-		nOp1 = StringToInt64(HandleToPtr(p1));
-	}
-	else if (Vartype(p1) == 'I')
-		nOp1 = (__int64)p1.ev_long;
-	else if (Vartype(p1) == 'N')
-		nOp1 = (__int64)p1.ev_real;
-	else 
-		RaiseError(E_INVALIDPARAMS);
+	Op1 = Value2Int64(p1);
+	Op2 = Value2Int64(p2);
 
-	if (Vartype(p2) == 'C')
-	{
-		if (!NullTerminateValue(p2))
-			RaiseError(E_INSUFMEMORY);
-		nOp2 = StringToInt64(HandleToPtr(p2));
-	}
-	else if (Vartype(p2) == 'I')
-		nOp2 = (__int64)p2.ev_long;
-	else if (Vartype(p1) == 'N')
-		nOp2 = (__int64)p2.ev_real;
-	else 
-		RaiseError(E_INVALIDPARAMS);
+	if (Op2 == 0)
+		throw E_DIVIDEBYZERO;
 
-	Int64ToString(aResult,nOp1 % nOp2);
-	_RetChar(aResult);
+	Result = Op1 % Op2;
+
+	if (PCount() == 2 || p3.ev_long == 1)
+		ReturnInt64AsCurrency(Result);
+	else if (p3.ev_long == 2)
+		ReturnInt64AsString(Result);
+	else
+		ReturnInt64AsBinary(Result);
+}
+catch(int nErrorNo)
+{
+	RaiseError(nErrorNo);
+}
 }
 
 void _fastcall Value2Variant(ParamBlk *parm)
 {
-	V_STRINGN(vVariant, sizeof(VALUEEX));
+	StringValue vVariant(sizeof(VALUEEX));
 	VALUEEX vData = {0};
 	char *pVariant;
 	int nSize = 0;
@@ -546,6 +517,9 @@ void _fastcall Num2Binary(ParamBlk *parm)
 {
 try
 {
+	if (p1.ev_real < MIN_INT || p1.ev_real > MAX_UINT)
+		throw E_INVALIDPARAMS;
+
 	int nNum = p1.ev_long;
 	FoxString vBin(32);
 	char *pBin;
@@ -605,23 +579,246 @@ void _fastcall GetLocaleInfoExLib(ParamBlk *parm)
 try
 {
 	int nApiRet;
-	FoxString pLocaleInfo(256);
-	
 	LCTYPE nType = p1.ev_long;
-	LCID nLocale = PCOUNT() >= 2 ? p2.ev_long : LOCALE_USER_DEFAULT;
+	LCID nLocale = PCount() >= 2 ? p2.ev_long : LOCALE_USER_DEFAULT;
 
-	nApiRet = GetLocaleInfo(nLocale, nType, pLocaleInfo, pLocaleInfo.Size());
-	if (nApiRet == 0)
+	if (nType & LOCALE_RETURN_NUMBER)
 	{
-		SAVEWIN32ERROR(GetLocaleInfo,GetLastError());
-		throw E_APIERROR;
+		int nLocaleInfo;
+		nApiRet = GetLocaleInfo(nLocale, nType, reinterpret_cast<LPSTR>(&nLocaleInfo), sizeof(nLocaleInfo));
+		if (nApiRet == 0)
+		{
+			SaveWin32Error("GetLocaleInfo", GetLastError());
+			throw E_APIERROR;
+		}
+		Return(nLocaleInfo);
 	}
-
-	pLocaleInfo.Len(nApiRet-1);
-	pLocaleInfo.Return();
+	else
+	{
+		FoxString pLocaleInfo(256);
+		nApiRet = GetLocaleInfo(nLocale, nType, pLocaleInfo, pLocaleInfo.Size());
+		if (nApiRet == 0)
+		{
+			SaveWin32Error("GetLocaleInfo", GetLastError());
+			throw E_APIERROR;
+		}
+		pLocaleInfo.Len(nApiRet-1);
+		pLocaleInfo.Return();
+	}
 }
 catch(int nErrorNo)
 {
 	RaiseError(nErrorNo);
 }
 }
+
+void _fastcall OsEx(ParamBlk *parm)
+{
+	Return(static_cast<int>(COs::GetVersion()));
+}
+
+void _fastcall Str2Short(ParamBlk *parm)
+{
+	short *pShort;
+	pShort = reinterpret_cast<short*>(HandleToPtr(p1));
+	Return(*pShort);
+}
+
+void _fastcall Short2Str(ParamBlk *parm)
+{
+	StringValue vRetVal(sizeof(short));
+	short *pRetVal;
+	
+	if (!AllocHandleEx(vRetVal,sizeof(short)))
+		RaiseError(E_INSUFMEMORY);
+
+	pRetVal = reinterpret_cast<short*>(HandleToPtr(vRetVal));
+	*pRetVal = static_cast<short>(p1.ev_long);
+
+	Return(vRetVal);
+}
+
+void _fastcall Str2UShort(ParamBlk *parm)
+{
+	unsigned short *pUShort;
+	pUShort = reinterpret_cast<unsigned short*>(HandleToPtr(p1));
+	Return(*pUShort);
+}
+
+void _fastcall UShort2Str(ParamBlk *parm)
+{
+	StringValue vRetVal(sizeof(unsigned short));
+	unsigned short *pRetVal;
+	
+	if (!AllocHandleEx(vRetVal,sizeof(unsigned short)))
+		RaiseError(E_INSUFMEMORY);
+
+	pRetVal = reinterpret_cast<unsigned short*>(HandleToPtr(vRetVal));
+	*pRetVal = static_cast<unsigned short>(p1.ev_long);
+
+	Return(vRetVal);
+}
+
+void _fastcall Str2Long(ParamBlk *parm)
+{
+	long *pLong;
+	pLong = reinterpret_cast<long*>(HandleToPtr(p1));
+	Return(*pLong);
+}
+
+void _fastcall Long2Str(ParamBlk *parm)
+{
+	StringValue vRetVal(sizeof(long));
+	long *pRetVal;
+	
+	if (!AllocHandleEx(vRetVal,sizeof(long)))
+		RaiseError(E_INSUFMEMORY);
+
+	pRetVal = reinterpret_cast<long*>(HandleToPtr(vRetVal));
+	*pRetVal = p1.ev_long;
+
+	Return(vRetVal);
+}
+
+void _fastcall Str2ULong(ParamBlk *parm)
+{
+	unsigned long *pULong;
+	pULong = reinterpret_cast<unsigned long*>(HandleToPtr(p1));
+	Return(*pULong);
+}
+
+void _fastcall ULong2Str(ParamBlk *parm)
+{
+	StringValue vRetVal(sizeof(unsigned long));
+	unsigned long *pRetVal;
+	
+	if (!AllocHandleEx(vRetVal,sizeof(unsigned long)))
+		RaiseError(E_INSUFMEMORY);
+
+	pRetVal = reinterpret_cast<unsigned long*>(HandleToPtr(vRetVal));
+	
+	if (Vartype(p1) == 'I')
+		*pRetVal = p1.ev_long;
+	else if (Vartype(p1) == 'N')
+		*pRetVal = static_cast<unsigned long>(p1.ev_real);
+	else
+	{
+		FreeHandle(vRetVal);
+		RaiseError(E_INVALIDPARAMS);
+	}
+
+	Return(vRetVal);
+}
+
+void _fastcall Str2Double(ParamBlk *parm)
+{
+	double *pDouble;
+	pDouble = reinterpret_cast<double*>(HandleToPtr(p1));
+	Return(*pDouble);
+}
+
+void _fastcall Double2Str(ParamBlk *parm)
+{
+	StringValue vRetVal(sizeof(double));
+	double *pRetVal;
+	
+	if (!AllocHandleEx(vRetVal,sizeof(double)))
+		RaiseError(E_INSUFMEMORY);
+
+	pRetVal = reinterpret_cast<double*>(HandleToPtr(vRetVal));
+	*pRetVal = p1.ev_real;
+
+	Return(vRetVal);	
+}
+
+void _fastcall Str2Float(ParamBlk *parm)
+{
+	float *pFloat;
+	pFloat = reinterpret_cast<float*>(HandleToPtr(p1));
+	Return(*pFloat);
+}
+
+void _fastcall Float2Str(ParamBlk *parm)
+{
+	StringValue vRetVal(sizeof(float));
+	float *pRetVal;
+	
+	if (!AllocHandleEx(vRetVal,sizeof(float)))
+		RaiseError(E_INSUFMEMORY);
+
+	pRetVal = reinterpret_cast<float*>(HandleToPtr(vRetVal));
+	*pRetVal = static_cast<float>(p1.ev_real);
+
+	Return(vRetVal);	
+}
+
+void _fastcall Int642Str(ParamBlk *parm)
+{
+try
+{
+	__int64 nInt64;
+	nInt64 = Value2Int64(p1);
+
+	if (PCount() == 1 || p2.ev_long == 1)
+		ReturnInt64AsBinary(nInt64);
+	else
+		ReturnInt64AsString(nInt64);
+}
+catch(int nErrorNo)
+{
+	RaiseError(nErrorNo);
+}
+}
+
+void _fastcall Str2Int64(ParamBlk *parm)
+{
+	__int64 nInt;
+	if (Len(p1) != 8)
+		RaiseError(E_INVALIDPARAMS);
+	nInt = *reinterpret_cast<__int64*>(HandleToPtr(p1));
+
+	if (PCount() == 1 || p2.ev_long == 1)
+		ReturnInt64AsCurrency(nInt);
+	else if (p2.ev_long == 2)
+		ReturnInt64AsString(nInt);
+	else if (p2.ev_long == 3)
+		ReturnInt64AsDouble(nInt);
+	else
+		RaiseError(E_INVALIDPARAMS);
+}
+
+void _fastcall UInt642Str(ParamBlk *parm)
+{
+try
+{
+	unsigned __int64 nUInt64;
+	nUInt64 = Value2Int64(p1);
+
+	if (PCount() == 1 || p2.ev_long == 1)
+		ReturnInt64AsBinary(nUInt64);
+	else
+		ReturnInt64AsString(nUInt64);
+}
+catch(int nErrorNo)
+{
+	RaiseError(nErrorNo);
+}
+}
+
+void _fastcall Str2UInt64(ParamBlk *parm)
+{
+	unsigned __int64 nInt;
+	if (Len(p1) != 8)
+		RaiseError(E_INVALIDPARAMS);
+	nInt = *reinterpret_cast<unsigned __int64*>(HandleToPtr(p1));
+
+	if (PCount() == 1 || p2.ev_long == 1)
+		ReturnInt64AsCurrency(nInt);
+	else if (p2.ev_long == 2)
+		ReturnInt64AsString(nInt);
+	else if (p2.ev_long == 3)
+		ReturnInt64AsDouble(nInt);
+	else
+		RaiseError(E_INVALIDPARAMS);
+}
+

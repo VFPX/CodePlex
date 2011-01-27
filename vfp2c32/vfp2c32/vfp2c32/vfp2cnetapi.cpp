@@ -2,9 +2,9 @@
 
 #include "pro_ext.h"
 #include "vfp2c32.h"
-#include "vfp2cutil.h"
 #include "vfp2cnetapi.h"
 #include "vfp2cnetapiex.h"
+#include "vfp2chelpers.h"
 #include "vfp2ccppapi.h"
 #include "vfpmacros.h"
 
@@ -34,7 +34,7 @@ bool _stdcall VFP2C_Init_Netapi()
 		hDll = LoadLibrary("netapi32.dll");
 		if (!hDll)
 		{
-			ADDWIN32ERROR(LoadLibrary,GetLastError());
+			AddWin32Error("LoadLibrary", GetLastError());
 			return false;			
 		}
 		hNetApi32 = hDll;
@@ -59,8 +59,9 @@ void _stdcall VFP2C_Destroy_Netapi()
 
 void _fastcall ANetFiles(ParamBlk *parm)
 {
-	RESETWIN32ERRORS();
-	if (IS_WIN9X())
+	ResetWin32Errors();
+
+	if (COs::Is(Windows9x))
 	{
 		ANetFilesEx(parm);
 		return;
@@ -112,7 +113,7 @@ try
 		}
 		else
 		{
-			SAVEWIN32ERROR(NetFileEnum,nApiRet);
+			SaveWin32Error("NetFileEnum", nApiRet);
 			throw E_APIERROR;
 		}
 	} while (nApiRet == ERROR_MORE_DATA);
@@ -130,14 +131,14 @@ void _fastcall ANetServers(ParamBlk *parm)
 
 try
 {
-	RESETWIN32ERRORS();
+	ResetWin32Errors();
 
 	if (!fpNetServerEnum)
 		throw E_NOENTRYPOINT;
 
 	FoxArray pArray(p1);
-	DWORD dwServerType = PCOUNT() >= 2 && p2.ev_long ? p2.ev_long : SV_TYPE_SERVER;
-	DWORD dwLevel;
+	DWORD dwServerType = PCount() >= 2 && p2.ev_long ? p2.ev_long : SV_TYPE_SERVER;
+	DWORD dwLevel = PCount() >= 3 && p3.ev_long ? (p3.ev_long == 1 ? 101 : 100) : 101;
 	FoxWString pDomain(parm,4);
 
 	NetApiBuffer pBuffer;
@@ -147,11 +148,6 @@ try
     NET_API_STATUS nApiRet;
 	LPSERVER_INFO_101 pInfo101;
 	LPSERVER_INFO_100 pInfo100;
-
-	if (PCOUNT() >= 3 && p3.ev_long)
-		dwLevel = p3.ev_long == 1 ? 101 : 100;
-	else
-		dwLevel = 101;
 
 	pArray.Dimension(1, dwLevel == 101 ? 6 : 2);
 
@@ -198,7 +194,7 @@ try
 		}
 		else
 		{
-			SAVEWIN32ERROR(NetServerEnum,nApiRet);
+			SaveWin32Error("NetServerEnum", nApiRet);
 			throw E_APIERROR;
 		}
 	}
@@ -216,41 +212,37 @@ void _fastcall GetServerTime(ParamBlk *parm)
 {
 try
 {
-	RESETWIN32ERRORS();
+	ResetWin32Errors();
 
 	if (!fpNetRemoteTOD)
 		throw E_NOENTRYPOINT;
 
 	FoxWString pServerName(p1);
 	FoxDateTime pTime;
-	bool bToLocalTime = PCOUNT() == 2 && p2.ev_length;
+	TimeZone eTimeZone;
+	if (PCount() == 2)
+	{
+		if (p2.ev_long < 1 || p2.ev_long > 3)
+			throw E_INVALIDPARAMS;
+		eTimeZone = static_cast<TimeZone>(p2.ev_long);
+	}
+	else
+		eTimeZone = UTC;
 
 	NetApiBuffer pBuffer;
 	LPTIME_OF_DAY_INFO pServTime;
-	SYSTEMTIME sSysTime;
 	NET_API_STATUS nApiRet;
 
 	nApiRet = fpNetRemoteTOD(pServerName,pBuffer);
 	if (nApiRet == NERR_Success)
 	{
 		pServTime = pBuffer;
-		sSysTime.wYear = (WORD)pServTime->tod_year;
-		sSysTime.wMonth = (WORD)pServTime->tod_month;
-		sSysTime.wDay = (WORD)pServTime->tod_day;
-		sSysTime.wHour = (WORD)pServTime->tod_hours;
-		sSysTime.wMinute = (WORD)pServTime->tod_mins;
-		sSysTime.wSecond = (WORD)pServTime->tod_secs;
-		//sSysTime.wMilliseconds = (WORD)pServTime->tod_hunds; get's truncated anyway in conversion to datetime.
-	
-		pTime = sSysTime;
-		if (bToLocalTime)
-			pTime.ToLocal();
-
+		pTime = TimeOfDayInfoToDateTime(pServTime, eTimeZone);
 		pTime.Return();
 	}
 	else
 	{
-		SAVEWIN32ERROR(NetRemoteTOD,nApiRet);
+		SaveWin32Error("NetRemoteTOD", nApiRet);
 		throw E_APIERROR;
 	}
 }
@@ -260,62 +252,26 @@ catch(int nErrorNo)
 }
 }
 
-void _fastcall SyncToServerTime(ParamBlk *parm)
+double _stdcall TimeOfDayInfoToDateTime(LPTIME_OF_DAY_INFO pTimeOfDay, TimeZone eTargetTimeZone)
 {
-try
-{
-	RESETWIN32ERRORS();
-
-	if (!fpNetRemoteTOD)
-		throw E_NOENTRYPOINT;
-
-	FoxWString pServer(p1);
-	NetApiBuffer pBuffer;
-
-	LPTIME_OF_DAY_INFO pServTime;
-	SYSTEMTIME sSysTime;
-	bool bToLocalTime = PCOUNT() == 2 && p2.ev_length;
-	NET_API_STATUS nApiRet;
-
-	nApiRet = fpNetRemoteTOD(pServer,pBuffer);
-
-	if (nApiRet == NERR_Success)
+	double dDateTime;
+	int lnA, lnY, lnM, lnJDay, lnSeconds;
+	lnA = (14 - pTimeOfDay->tod_month) / 12;
+	lnY = pTimeOfDay->tod_year + 4800 - lnA;
+	lnM = pTimeOfDay->tod_month + 12 * lnA - 3;
+	lnJDay = pTimeOfDay->tod_day + (153 * lnM + 2) / 5 + lnY * 365 + lnY / 4 - lnY / 100 + lnY / 400 - 32045;
+	lnSeconds = pTimeOfDay->tod_hours * 3600 + pTimeOfDay->tod_mins * 60 + pTimeOfDay->tod_secs;
+	dDateTime = ((double)lnJDay) + ((double)lnSeconds / SECONDSPERDAY);
+	if (eTargetTimeZone == UTC)
 	{
-		pServTime = pBuffer;
-		sSysTime.wYear = (WORD)pServTime->tod_year;
-		sSysTime.wMonth = (WORD)pServTime->tod_month;
-		sSysTime.wDay = (WORD)pServTime->tod_day;
-		sSysTime.wHour = (WORD)pServTime->tod_hours;
-		sSysTime.wMinute = (WORD)pServTime->tod_mins;
-		sSysTime.wSecond = (WORD)pServTime->tod_secs;
-		sSysTime.wMilliseconds = (WORD)pServTime->tod_hunds;
-
-		if (bToLocalTime)
-		{
-			if (!SetLocalTime(&sSysTime))
-			{
-				SAVEWIN32ERROR(SetLocalTime,GetLastError());
-				throw E_APIERROR;
-			}
-		}
-		else
-		{
-			if (!SetSystemTime(&sSysTime))
-			{
-				SAVEWIN32ERROR(SetSystemTime,GetLastError());
-				throw E_APIERROR;
-			}
-		}
+		if (pTimeOfDay->tod_timezone != -1)
+			dDateTime -= (((double)pTimeOfDay->tod_timezone * 60) / SECONDSPERDAY);
 	}
-	else
+	else if (eTargetTimeZone == LocalTimeZone)
 	{
-		SAVEWIN32ERROR(NetRemoteTOD,nApiRet);
-		throw E_APIERROR;
+		if (pTimeOfDay->tod_timezone != -1)
+			dDateTime -= (((double)pTimeOfDay->tod_timezone * 60) / SECONDSPERDAY);
+		dDateTime -= TimeZoneInfo::Bias;
 	}
-	Return(1);
-}
-catch(int nErrorNo)
-{
-	RaiseError(nErrorNo);
-}
+	return dDateTime;
 }

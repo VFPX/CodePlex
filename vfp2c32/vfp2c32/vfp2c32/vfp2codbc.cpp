@@ -12,7 +12,7 @@
 
 static SQLHENV hODBCEnvHandle = 0;
 
-void _stdcall ODBCErrorHandler(char *pFunction, SQLHANDLE hHandle, SQLSMALLINT nHandleType)
+void _stdcall SaveODBCError(char *pFunction, SQLHANDLE hHandle, SQLSMALLINT nHandleType)
 {
 	SQLRETURN nApiRet = SQL_SUCCESS;
 	SQLSMALLINT nErrorLength, nError = 1;
@@ -36,7 +36,7 @@ SQLSaveError:
 	gnErrorCount = nErrorNum - 1;
 }
 
-void _stdcall ODBCInstallerErrorHandler(char *pFunction)
+void _stdcall SaveODBCInstallerError(char *pFunction)
 {
 	WORD nErrorLength, nError = 1;
 	gnErrorCount = 0;
@@ -57,7 +57,7 @@ bool _stdcall VFP2C_Init_Odbc()
 
 	if (nErrorNo = _Evaluate(vODBCHandle, "INT(VAL(SYS(3053)))"))
 	{
-		ADDCUSTOMERROREX("SYS(3053)","Cannot retrieve ODBC environment handle. Error: %I", nErrorNo);
+		AddCustomErrorEx("SYS(3053)", "Cannot retrieve ODBC environment handle.", nErrorNo);
 		return false;
 	}
 
@@ -69,7 +69,7 @@ void _fastcall CreateSQLDataSource(ParamBlk *parm)
 {
 try
 {
-	RESETWIN32ERRORS();
+	ResetWin32Errors();
 
 	FoxString pDsn(p1,2);
 	FoxString pDriver(p2);
@@ -78,7 +78,7 @@ try
 	UINT nDSNType = p3.ev_long & ODBC_SYSTEM_DSN ? ODBC_ADD_SYS_DSN : ODBC_ADD_DSN;
 
 	if (!(bRetVal = SQLConfigDataSource(0,nDSNType,pDriver,pDsn)))
-		SAVEODBCINSTALLERERROR(SQLConfigDataSource);
+		SaveODBCInstallerError("SQLConfigDataSource");
 
 	Return(bRetVal == TRUE);
 }
@@ -92,7 +92,7 @@ void _fastcall DeleteSQLDataSource(ParamBlk *parm)
 {
 try
 {
-	RESETWIN32ERRORS();
+	ResetWin32Errors();
 
 	FoxString pDsn(p1);
 	FoxString pDriver(p2,2);
@@ -107,7 +107,7 @@ try
 	strcat(aDSNName,pDsn);
 
 	if (!(bRetVal = SQLConfigDataSource(0,nDSNType,pDriver,aDSNName)))
-		SAVEODBCINSTALLERERROR(SQLConfigDataSource);
+		SaveODBCInstallerError("SQLConfigDataSource");
 
 	Return(bRetVal == TRUE);
 }
@@ -121,7 +121,7 @@ void _fastcall ChangeSQLDataSource(ParamBlk *parm)
 {
 try
 {
-	RESETWIN32ERRORS();
+	ResetWin32Errors();
 
 	FoxString pDsn(p1,2);
 	FoxString pDriver(p2,2);
@@ -130,7 +130,7 @@ try
 	UINT nDSNType = p3.ev_long == ODBC_SYSTEM_DSN ? ODBC_CONFIG_SYS_DSN : ODBC_CONFIG_DSN;
 
 	if (!(bRetVal = SQLConfigDataSource(0,nDSNType,pDriver,pDsn)))
-		SAVEODBCINSTALLERERROR(SQLConfigDataSource);
+		SaveODBCInstallerError("SQLConfigDataSource");
 
 	Return(bRetVal == TRUE);
 }
@@ -144,7 +144,7 @@ void _fastcall ASQLDataSources(ParamBlk *parm)
 {
 try
 {
-	RESETWIN32ERRORS();
+	ResetWin32Errors();
 
 	FoxArray pArray(p1,1,2);
 	FoxString pDatasource(SQL_MAX_DSN_LENGTH+1);
@@ -154,7 +154,7 @@ try
 	SQLUSMALLINT nFilter = SQL_FETCH_FIRST;
 	unsigned int nRow;
 
-	if (PCOUNT() == 2)
+	if (PCount() == 2)
 	{
 		if (p2.ev_long == ODBC_USER_DSN)
 			nFilter = SQL_FETCH_FIRST_USER;
@@ -180,7 +180,7 @@ try
 
 	if (nApiRet != SQL_NO_DATA)
 	{
-		SAVEODBCENVERROR(SQLDataSources);
+		SaveODBCError("SQLDataSources", hODBCEnvHandle, SQL_HANDLE_ENV);
 		throw E_APIERROR;
 	}
 
@@ -196,7 +196,7 @@ void _fastcall ASQLDrivers(ParamBlk *parm)
 {
 try
 {
-	RESETWIN32ERRORS();
+	ResetWin32Errors();
 
 	FoxArray pArray(p1,1,2);
 	FoxString pDriver(ODBC_MAX_DRIVER_LEN);
@@ -220,7 +220,7 @@ try
 
 	if (nApiRet != SQL_NO_DATA)
 	{
-		SAVEODBCENVERROR(SQLDrivers);
+		SaveODBCError("SQLDrivers", hODBCEnvHandle, SQL_HANDLE_ENV);
 		throw E_APIERROR;
 	}
 
@@ -236,7 +236,7 @@ void _fastcall SQLGetPropEx(ParamBlk *parm)
 {
 try
 {
-	RESETWIN32ERRORS();
+	ResetWin32Errors();
 
 	FoxString pCursor(parm,1);
 	FoxString pConAttribute(p2);
@@ -273,67 +273,30 @@ try
 	{
 		BOOL bTrace;
 		nApiRet = SQLGetConnectAttr(hConHandle, SQL_ATTR_TRACE, &bTrace,0,0);
-		if (nApiRet == SQL_ERROR)
-		{
-			SAVEODBCDBCERROR(SQLGetConnectAttr,hConHandle);
-			throw E_APIERROR;
-		}
-		else if (nApiRet == SQL_SUCCESS_WITH_INFO)
-		{
-			SAVEODBCDBCERROR(SQLGetConnectAttr,hConHandle);
-			nRetVal = 2;
-		}
-		pRef = bTrace > 0;
+		if (nApiRet != SQL_ERROR)
+			pRef = bTrace > 0;
 	}
 	else if (pConAttribute.ICompare("TRACEFILE"))
 	{
 		SQLINTEGER nLen;
 		pBuffer.Size(MAX_PATH);
 		nApiRet = SQLGetConnectAttr(hConHandle,SQL_ATTR_TRACEFILE,pBuffer,MAX_PATH,&nLen);
-		if (nApiRet == SQL_ERROR)
-		{
-			SAVEODBCDBCERROR(SQLGetConnectAttr,hConHandle);
-			throw E_APIERROR;
-		}
-		else if (nApiRet == SQL_SUCCESS_WITH_INFO)
-		{
-			SAVEODBCDBCERROR(SQLGetConnectAttr,hConHandle);
-			nRetVal = 2;
-		}
-		pRef = pBuffer.Len(nLen);
+		if (nApiRet != SQL_ERROR)
+			pRef = pBuffer.Len(nLen);
 	}
 	else if (pConAttribute.ICompare("CONNECTED"))
 	{
 		BOOL bConnected;
 		nApiRet = SQLGetConnectAttr(hConHandle,SQL_ATTR_CONNECTION_DEAD,&bConnected,0,0);
-		if (nApiRet == SQL_ERROR)
-		{
-			SAVEODBCDBCERROR(SQLGetConnectAttr,hConHandle);
-			throw E_APIERROR;
-		}
-		else if (nApiRet == SQL_SUCCESS_WITH_INFO)
-		{
-			SAVEODBCDBCERROR(SQLGetConnectAttr,hConHandle);
-			nRetVal = 2;
-		}
-		// negate result, since we want to return if we're connected, but we query if the connection is dead ..
-		pRef = bConnected == 0;
+		if (nApiRet != SQL_ERROR)
+			pRef = (bConnected == 0); // negate result, since we want to return if we're connected, but we query if the connection is dead ..
 	}
 	else if (pConAttribute.ICompare("ISOLATIONLEVEL"))
 	{
 		int nIsolation;
 		nApiRet = SQLGetConnectAttr(hConHandle,SQL_ATTR_TXN_ISOLATION,&nIsolation,0,0);
-		if (nApiRet == SQL_ERROR)
-		{
-			SAVEODBCDBCERROR(SQLGetConnectAttr,hConHandle);
-			throw E_APIERROR;
-		}
-		else if (nApiRet == SQL_SUCCESS_WITH_INFO)
-		{
-			SAVEODBCDBCERROR(SQLGetConnectAttr,hConHandle);
-			nRetVal = 2;
-		}
-		pRef = nIsolation;
+		if (nApiRet != SQL_ERROR)				
+			pRef = nIsolation;
 	}
 	else if (pConAttribute.ICompare("PERFDATA"))
 	{
@@ -342,20 +305,22 @@ try
 
 		DWORD nPerfData;
 		nApiRet = SQLGetConnectAttr(hConHandle,SQL_COPT_SS_PERF_DATA,&nPerfData,0,0);
-		if (nApiRet == SQL_ERROR)
-		{
-			SAVEODBCDBCERROR(SQLGetConnectAttr,hConHandle);
-			throw E_APIERROR;
-		}
-		else if (nApiRet == SQL_SUCCESS_WITH_INFO)
-		{
-			SAVEODBCDBCERROR(SQLGetConnectAttr,hConHandle);
-			nRetVal = 2;
-		}
-		pRef = nPerfData;
+		if (nApiRet != SQL_ERROR)
+			pRef = nPerfData;
 	}
 	else
 		throw E_INVALIDPARAMS;
+
+	if (nApiRet == SQL_ERROR)
+	{
+		SafeODBCDbcError("SQLGetConnectAttr", hConHandle);
+		throw E_APIERROR;
+	}
+	else if (nApiRet == SQL_SUCCESS_WITH_INFO)
+	{
+		SafeODBCDbcError("SQLGetConnectAttr", hConHandle);
+		nRetVal = 2;
+	}
 
 	Return(nRetVal);
 }
@@ -369,7 +334,7 @@ void _fastcall SQLSetPropEx(ParamBlk *parm)
 {
 try
 {
-	RESETWIN32ERRORS();
+	ResetWin32Errors();
 
 	FoxString pCursor(parm,1);
 	FoxString pConAttribute(p2);
@@ -407,16 +372,6 @@ try
 			throw E_INVALIDPARAMS;
 		
 		nApiRet = SQLSetConnectAttr(hConHandle,SQL_ATTR_TRACE,(SQLPOINTER)p3.ev_length,SQL_IS_UINTEGER);
-		if (nApiRet == SQL_ERROR)
-		{
-			SAVEODBCDBCERROR(SQLSetConnectAttr,hConHandle);
-			throw E_APIERROR;
-		}
-		else if (nApiRet == SQL_SUCCESS_WITH_INFO)
-		{
-			SAVEODBCDBCERROR(SQLSetConnectAttr,hConHandle);
-			nRetVal = 2;
-		}
 	}
 	else if (pConAttribute.ICompare("TRACEFILE"))
 	{
@@ -424,16 +379,6 @@ try
 			throw E_INVALIDPARAMS;
 		
 		nApiRet = SQLSetConnectAttr(hConHandle,SQL_ATTR_TRACEFILE,pProperty,pProperty.Len());
-		if (nApiRet == SQL_ERROR)
-		{
-			SAVEODBCDBCERROR(SQLSetConnectAttr,hConHandle);
-			throw E_APIERROR;
-		}
-		else if (nApiRet == SQL_SUCCESS_WITH_INFO)
-		{
-			SAVEODBCDBCERROR(SQLSetConnectAttr,hConHandle);
-			nRetVal = 2;
-		}
 	}
 	else if (pConAttribute.ICompare("PERFDATA"))
 	{
@@ -441,18 +386,7 @@ try
 			throw E_INVALIDPARAMS;
 		
 		p3.ev_length = p3.ev_length ? SQL_PERF_START : SQL_PERF_STOP;
-
 		nApiRet = SQLSetConnectAttr(hConHandle,SQL_COPT_SS_PERF_DATA,(SQLPOINTER)p3.ev_length,SQL_IS_INTEGER);
-		if (nApiRet == SQL_ERROR)
-		{
-			SAVEODBCDBCERROR(SQLSetConnectAttr,hConHandle);
-			throw E_APIERROR;
-		}
-		else if (nApiRet == SQL_SUCCESS_WITH_INFO)
-		{
-			SAVEODBCDBCERROR(SQLSetConnectAttr,hConHandle);
-			nRetVal = 2;
-		}
 	}
 	else if (pConAttribute.ICompare("PERFDATAFILE"))
 	{
@@ -460,33 +394,24 @@ try
 			throw E_INVALIDPARAMS;
 		
 		nApiRet = SQLSetConnectAttr(hConHandle,SQL_COPT_SS_PERF_DATA_LOG,pProperty,SQL_NTS);
-		if (nApiRet == SQL_ERROR)
-		{
-			SAVEODBCDBCERROR(SQLSetConnectAttr,hConHandle);
-			throw E_APIERROR;
-		}
-		else if (nApiRet == SQL_SUCCESS_WITH_INFO)
-		{
-			SAVEODBCDBCERROR(SQLSetConnectAttr,hConHandle);
-			nRetVal = 2;
-		}
 	}
 	else if (pConAttribute.ICompare("PERFDATALOG"))
 	{
 		nApiRet = SQLSetConnectAttr(hConHandle, SQL_COPT_SS_PERF_DATA_LOG_NOW, NULL, 0);
-		if (nApiRet == SQL_ERROR)
-		{
-			SAVEODBCDBCERROR(SQLSetConnectAttr,hConHandle);
-			throw E_APIERROR;
-		}
-		else if (nApiRet == SQL_SUCCESS_WITH_INFO)
-		{
-			SAVEODBCDBCERROR(SQLSetConnectAttr,hConHandle);
-			nRetVal = 2;
-		}
 	}
 	else
 		throw E_INVALIDPARAMS;
+
+	if (nApiRet == SQL_ERROR)
+	{
+		SafeODBCDbcError("SQLSetConnectAttr", hConHandle);
+		throw E_APIERROR;
+	}
+	else if (nApiRet == SQL_SUCCESS_WITH_INFO)
+	{
+		SafeODBCDbcError("SQLSetConnectAttr", hConHandle);
+		nRetVal = 2;
+	}
 
 	Return(nRetVal);
 }
@@ -516,13 +441,13 @@ void _fastcall SQLExecEx(ParamBlk *parm)
 	SQLINTEGER nSQLLen;
 	SQLRETURN nApiRet;
 	LPSQLSTATEMENT pStmt = 0;
-	Value vRowCount = {'I','\0',11,0};
-	V_STRING(vCursorName);
+	IntValue vRowCount(0);
+	StringValue vCursorName;
 	char *pCursorName;
 	BOOL bAbort = FALSE;
 	int nErrorNo = 0;
 
-	RESETWIN32ERRORS();
+	ResetWin32Errors();
 
 	// 1
 	pStmt = SQLAllocStatement(parm,&nErrorNo);
@@ -586,7 +511,7 @@ void _fastcall SQLExecEx(ParamBlk *parm)
 	nApiRet = SQLExecDirect(pStmt->hStmt,(SQLCHAR*)pStmt->pSQLSend,nSQLLen);
 	if (nApiRet == SQL_ERROR)
 	{
-		SAVEODBCSTMTERROR(SQLExecDirect,pStmt->hStmt);
+		SafeODBCStmtError("SQLExecDirect", pStmt->hStmt);
 		goto ErrorOut;
 	}
 	// 4.1
@@ -607,7 +532,7 @@ SQLResultSetProcessing:
 	// get no of columns in resultset (if 0 the SQL statement didn't produce a resultset)
 	if ((nApiRet = SQLNumResultCols(pStmt->hStmt,&pStmt->nNoOfCols)) == SQL_ERROR)
 	{
-		SAVEODBCSTMTERROR(SQLNumResultCols,pStmt->hStmt);
+		SafeODBCStmtError("SQLNumResultCols", pStmt->hStmt);
 		goto ErrorOut;
 	}
 
@@ -632,7 +557,7 @@ SQLResultSetProcessing:
 			nApiRet = SQLRowCount(pStmt->hStmt,&vRowCount.ev_long);
 			if (nApiRet == SQL_ERROR)
 			{
-				SAVEODBCSTMTERROR(SQLRowCount,pStmt->hStmt);
+				SafeODBCStmtError("SQLRowCount", pStmt->hStmt);
 				goto ErrorOut;
 			}
 
@@ -760,7 +685,7 @@ SQLResultSetProcessing:
 	nApiRet = SQLFreeStmt(pStmt->hStmt,SQL_UNBIND);
 	if (nApiRet == SQL_ERROR)
 	{
-		SAVEODBCSTMTERROR(SQLFreeStmt,pStmt->hStmt);
+		SafeODBCStmtError("SQLFreeStmt", pStmt->hStmt);
 		goto ErrorOut;
 	}
 	// release column buffer's
@@ -772,7 +697,7 @@ SQLResultSetChecking:
 	nApiRet = SQLMoreResults(pStmt->hStmt);
 	if (nApiRet == SQL_ERROR)
 	{
-		SAVEODBCSTMTERROR(SQLMoreResult,pStmt->hStmt);
+		SafeODBCStmtError("SQLMoreResult", pStmt->hStmt);
 		goto ErrorOut;
 	}
 	else if (nApiRet == SQL_SUCCESS_WITH_INFO)
@@ -835,7 +760,7 @@ void _fastcall SQLPrepareEx(ParamBlk *parm)
 	BOOL bAbort = FALSE;
 	int nErrorNo = 0;
 
-	RESETWIN32ERRORS();
+	ResetWin32Errors();
 
 	// 1
 	pStmt = SQLAllocStatement(parm,&nErrorNo);
@@ -1137,7 +1062,7 @@ LPSQLSTATEMENT _stdcall SQLAllocStatement(ParamBlk *parm, int *nErrorNo)
 	}
 	ZeroMemory(pStmt,sizeof(SQLSTATEMENT));
 
-	if (PCOUNT() >= 5 && p5.ev_long)
+	if (PCount() >= 5 && p5.ev_long)
 	{
 		pStmt->nFlags = p5.ev_long;
 		if (!(pStmt->nFlags & (SQLEXECEX_DEST_CURSOR | SQLEXECEX_DEST_VARIABLE | SQLEXECEX_REUSE_CURSOR)))
@@ -1274,7 +1199,7 @@ LPSQLSTATEMENT _stdcall SQLAllocStatement(ParamBlk *parm, int *nErrorNo)
 		}
 	}
 
-	if (PCOUNT() >= 9 && p9.ev_long)
+	if (PCount() >= 9 && p9.ev_long)
 		pStmt->nCallbackInterval = p9.ev_long;
 	else
 		pStmt->nCallbackInterval = 100;
@@ -1297,7 +1222,7 @@ LPSQLSTATEMENT _stdcall SQLAllocStatement(ParamBlk *parm, int *nErrorNo)
 	// 1.3 - allocate statement handle on connection
 	if (SQLAllocHandle(SQL_HANDLE_STMT,pStmt->hConn,&pStmt->hStmt) == SQL_ERROR)
 	{
-		SAVEODBCDBCERROR(SQLAllocHandle,pStmt->hConn);
+		SafeODBCDbcError("SQLAllocHandle", pStmt->hConn);
 		*nErrorNo = E_APIERROR;
 		return pStmt;
 	}
@@ -1403,7 +1328,7 @@ SQLRETURN _stdcall SQLGetMetaData(LPSQLSTATEMENT pStmt)
 								&lpCS->nScale,&lpCS->bNullable);
 		if (nApiRet == SQL_ERROR)
 		{
-			SAVEODBCSTMTERROR(SQLDescribeCol,pStmt->hStmt);
+			SafeODBCStmtError("SQLDescribeCol", pStmt->hStmt);
 			return nApiRet;
 		}
 
@@ -1416,7 +1341,7 @@ SQLRETURN _stdcall SQLGetMetaData(LPSQLSTATEMENT pStmt)
 				nApiRet = SQLColAttribute(pStmt->hStmt,xj,SQL_DESC_UNSIGNED,0,0,0,&lpCS->bUnsigned);
 				if (nApiRet == SQL_ERROR)
 				{
-					SAVEODBCSTMTERROR(SQLColAttribute,pStmt->hStmt);
+					SafeODBCStmtError("SQLColAttribute", pStmt->hStmt);
 					return nApiRet;
 				}
 				break;
@@ -1427,7 +1352,7 @@ SQLRETURN _stdcall SQLGetMetaData(LPSQLSTATEMENT pStmt)
 				nApiRet = SQLColAttribute(pStmt->hStmt,xj,SQL_COLUMN_MONEY,0,0,0,&lpCS->bMoney);
 				if (nApiRet == SQL_ERROR)
 				{
-					SAVEODBCSTMTERROR(SQLColAttribute,pStmt->hStmt);
+					SafeODBCStmtError("SQLColAttribute", pStmt->hStmt);
 					return nApiRet;
 				}
 				if (!lpCS->bMoney)
@@ -1473,7 +1398,7 @@ SQLRETURN _stdcall SQLGetMetaData(LPSQLSTATEMENT pStmt)
 				nApiRet = SQLColAttribute(pStmt->hStmt,xj,SQL_DESC_DISPLAY_SIZE,0,0,0,&lpCS->nDisplaySize);
 				if (nApiRet == SQL_ERROR)
 				{
-					SAVEODBCSTMTERROR(SQLColAttribute,pStmt->hStmt);
+					SafeODBCStmtError("SQLColAttribute", pStmt->hStmt);
 					return nApiRet;
 				}
 				// if no displaysize is returned, force to a memo field
@@ -1514,7 +1439,7 @@ SQLRETURN _stdcall SQLBindColumnsEx(LPSQLSTATEMENT pStmt)
 				lpCS->nBufferSize, &lpCS->nIndicator);
 			if (nApiRet == SQL_ERROR)
 			{
-				SAVEODBCSTMTERROR(SQLBindCol,pStmt->hStmt);
+				SafeODBCStmtError("SQLBindCol", pStmt->hStmt);
 				return nApiRet;
 			}
 		}
@@ -1545,7 +1470,7 @@ int _stdcall SQLPrepareColumnBindings(LPSQLSTATEMENT pStmt)
 		bGetDataExt &= SQL_GD_ANY_COLUMN;
 	else
 	{
-		SAVEODBCDBCERROR(SQLGetInfo,pStmt->hConn);
+		SafeODBCDbcError("SQLGetInfo", pStmt->hConn);
 		return E_APIERROR;
 	}
 
@@ -1554,13 +1479,13 @@ int _stdcall SQLPrepareColumnBindings(LPSQLSTATEMENT pStmt)
 
 	lpCS->nColNo = nColNo;
 	lpCS->hStmt = pStmt->hStmt;
-	SET_NULL(lpCS->vNull);
+	lpCS->vNull.SetNull();
 
 	switch (lpCS->nSQLType)
 	{
 		// character data
 		case SQL_CHAR:
-			SET_STRING(lpCS->vData);
+			lpCS->vData.SetString();
 			lpCS->nCType = SQL_C_CHAR;
 			if (lpCS->bCustomSchema)
 			{
@@ -1623,7 +1548,7 @@ int _stdcall SQLPrepareColumnBindings(LPSQLSTATEMENT pStmt)
 			break;
 
 		case SQL_BINARY:
-			SET_STRING(lpCS->vData);
+			lpCS->vData.SetString();
 			lpCS->nCType = SQL_C_BINARY;
 			if (lpCS->bCustomSchema)
 			{
@@ -1662,7 +1587,7 @@ int _stdcall SQLPrepareColumnBindings(LPSQLSTATEMENT pStmt)
 					LockHandle(lpCS->vData);
 					lpCS->pData = HandleToPtr(lpCS->vData);
 					lpCS->nBufferSize = lpCS->nSize;
-					if (IS_FOX9ORHIGHER())
+					if (CFoxVersion::MajorVersion() >= 9)
 						lpCS->aVFPType = 'Q';
 					else
 					{
@@ -1679,7 +1604,7 @@ int _stdcall SQLPrepareColumnBindings(LPSQLSTATEMENT pStmt)
 				{
 					lpCS->vData.ev_handle = pStmt->vGetDataBuffer.ev_handle;
 					lpCS->pData = pStmt->pGetDataBuffer;
-					if (IS_FOX9ORHIGHER())
+					if (CFoxVersion::MajorVersion() >= 9)
 						lpCS->aVFPType = 'W';
 					else
 					{
@@ -1698,7 +1623,7 @@ int _stdcall SQLPrepareColumnBindings(LPSQLSTATEMENT pStmt)
 			break;
 
 		case SQL_VARCHAR:
-			SET_STRING(lpCS->vData);
+			lpCS->vData.SetString();
 			lpCS->nCType = SQL_C_CHAR;
 			if (lpCS->bCustomSchema)
 			{
@@ -1737,7 +1662,7 @@ int _stdcall SQLPrepareColumnBindings(LPSQLSTATEMENT pStmt)
 					LockHandle(lpCS->vData);
 					lpCS->pData = HandleToPtr(lpCS->vData);
 					lpCS->nBufferSize = lpCS->nSize + 1;
-					if (IS_FOX9ORHIGHER())
+					if (CFoxVersion::MajorVersion() >= 9)
 						lpCS->aVFPType = 'V';
 					else
 						lpCS->aVFPType = 'C';
@@ -1764,7 +1689,7 @@ int _stdcall SQLPrepareColumnBindings(LPSQLSTATEMENT pStmt)
 			break;
 
 		case SQL_VARBINARY:
-			SET_STRING(lpCS->vData);
+			lpCS->vData.SetString();
 			lpCS->nCType = SQL_C_BINARY;
 			if (lpCS->bCustomSchema)
 			{
@@ -1816,7 +1741,7 @@ int _stdcall SQLPrepareColumnBindings(LPSQLSTATEMENT pStmt)
 					lpCS->vData.ev_handle = pStmt->vGetDataBuffer.ev_handle;
 					lpCS->pData = pStmt->pGetDataBuffer;
 					lpCS->nBufferSize = VFP2C_ODBC_MAX_BUFFER;
-					if (IS_FOX9ORHIGHER())
+					if (CFoxVersion::MajorVersion() >= 9)
 						lpCS->aVFPType = 'W';
 					else
 					{
@@ -1834,7 +1759,7 @@ int _stdcall SQLPrepareColumnBindings(LPSQLSTATEMENT pStmt)
 			break;
 
 		case SQL_LONGVARCHAR:
-			SET_STRING(lpCS->vData);
+			lpCS->vData.SetString();
 			lpCS->nCType = SQL_C_CHAR;
 			if (lpCS->bCustomSchema)
 			{
@@ -1879,7 +1804,7 @@ int _stdcall SQLPrepareColumnBindings(LPSQLSTATEMENT pStmt)
 			break;
 
 		case SQL_LONGVARBINARY:
-			SET_STRING(lpCS->vData);
+			lpCS->vData.SetString();
 			lpCS->nCType = SQL_C_BINARY;
 			if (lpCS->bCustomSchema)
 			{
@@ -1914,7 +1839,7 @@ int _stdcall SQLPrepareColumnBindings(LPSQLSTATEMENT pStmt)
 				lpCS->vData.ev_handle = pStmt->vGetDataBuffer.ev_handle;
 				lpCS->pData = pStmt->pGetDataBuffer;
 				lpCS->nBufferSize = VFP2C_ODBC_MAX_BUFFER;
-				if (IS_FOX9ORHIGHER())
+				if (CFoxVersion::MajorVersion() >= 9)
 					lpCS->aVFPType = 'W';
 				else
 				{
@@ -1931,7 +1856,7 @@ int _stdcall SQLPrepareColumnBindings(LPSQLSTATEMENT pStmt)
 			break;
 
 		case SQL_WCHAR:
-			SET_STRING(lpCS->vData);
+			lpCS->vData.SetString();
 			if (lpCS->bCustomSchema)
 			{
 				if (lpCS->aVFPType == 'M' || lpCS->aVFPType == 'W')
@@ -1994,7 +1919,7 @@ int _stdcall SQLPrepareColumnBindings(LPSQLSTATEMENT pStmt)
 			break;
 
 		case SQL_WVARCHAR:
-			SET_STRING(lpCS->vData);
+			lpCS->vData.SetString();
 			if (lpCS->bCustomSchema)
 			{
 				if (lpCS->aVFPType == 'M' || lpCS->aVFPType == 'W')
@@ -2076,7 +2001,7 @@ int _stdcall SQLPrepareColumnBindings(LPSQLSTATEMENT pStmt)
 			break;
 
 		case SQL_WLONGVARCHAR:
-			SET_STRING(lpCS->vData);
+			lpCS->vData.SetString();
 			if (lpCS->bCustomSchema)
 			{
 				if (lpCS->aVFPType == 'M' || lpCS->aVFPType == 'W')
@@ -2144,7 +2069,7 @@ int _stdcall SQLPrepareColumnBindings(LPSQLSTATEMENT pStmt)
 			{
 				if (lpCS->aVFPType == 'C' || lpCS->aVFPType == 'V')
 				{
-					SET_STRING(lpCS->vData);
+					lpCS->vData.SetString();
 					if (!AllocHandleEx(lpCS->vData,lpCS->nSize+1))
 						return E_INSUFMEMORY;
 					LockHandle(lpCS->vData);
@@ -2160,7 +2085,7 @@ int _stdcall SQLPrepareColumnBindings(LPSQLSTATEMENT pStmt)
 				}
 			}
 
-			SET_LOGICAL(lpCS->vData);
+			lpCS->vData.SetLogical();
 			lpCS->pData = &lpCS->vData.ev_length;
 			lpCS->nCType = SQL_C_ULONG;
 			lpCS->aVFPType = 'L';
@@ -2179,7 +2104,7 @@ int _stdcall SQLPrepareColumnBindings(LPSQLSTATEMENT pStmt)
 			{
 				if (lpCS->aVFPType == 'C' || lpCS->aVFPType == 'V' || lpCS->aVFPType == 'Q')
 				{
-					SET_STRING(lpCS->vData);
+					lpCS->vData.SetString();
 					if (!AllocHandleEx(lpCS->vData,lpCS->nSize + 1))
 						return E_INSUFMEMORY;
 					LockHandle(lpCS->vData);
@@ -2193,7 +2118,7 @@ int _stdcall SQLPrepareColumnBindings(LPSQLSTATEMENT pStmt)
 				}
 				else if (lpCS->aVFPType == 'N' || lpCS->aVFPType == 'F' || lpCS->aVFPType == 'B')
 				{
-					SET_NUMERIC(lpCS->vData,(short)lpCS->nSize,lpCS->nScale);
+					lpCS->vData.SetNumeric(lpCS->nSize,lpCS->nScale);
 					lpCS->pData = &lpCS->vData.ev_real;
 					lpCS->nCType = SQL_C_DOUBLE;
 					if (!IsVariableRef(lpCS->lField))
@@ -2203,7 +2128,7 @@ int _stdcall SQLPrepareColumnBindings(LPSQLSTATEMENT pStmt)
 				}
 				else if (lpCS->aVFPType == 'I')
 				{
-					SET_INTEGER(lpCS->vData);
+					lpCS->vData.SetInt();
 					lpCS->pData = &lpCS->vData.ev_long;
 					lpCS->nCType = SQL_C_SLONG;
 					if (!IsVariableRef(lpCS->lField))
@@ -2213,7 +2138,7 @@ int _stdcall SQLPrepareColumnBindings(LPSQLSTATEMENT pStmt)
 				}
 				if (lpCS->aVFPType == 'L')
 				{
-					SET_LOGICAL(lpCS->vData);
+					lpCS->vData.SetLogical();
 					lpCS->pData = &lpCS->vData.ev_length;
 					lpCS->nCType = SQL_C_SLONG;
 					if (!IsVariableRef(lpCS->lField))
@@ -2227,7 +2152,7 @@ int _stdcall SQLPrepareColumnBindings(LPSQLSTATEMENT pStmt)
 			{
 				if (lpCS->nSQLType == SQL_INTEGER && lpCS->bUnsigned)
 				{
-					SET_UINTEGER(lpCS->vData);
+					lpCS->vData.SetUInt();
 					lpCS->nCType = SQL_C_DOUBLE;
 					lpCS->pData = &lpCS->vData.ev_real;
 					lpCS->aVFPType = 'N';
@@ -2236,7 +2161,7 @@ int _stdcall SQLPrepareColumnBindings(LPSQLSTATEMENT pStmt)
 				}
 				else
 				{
-					SET_INTEGER(lpCS->vData);
+					lpCS->vData.SetInt();
 					lpCS->nCType = SQL_C_SLONG;
 					lpCS->pData = &lpCS->vData.ev_long;
 					lpCS->aVFPType = 'I';
@@ -2254,7 +2179,7 @@ int _stdcall SQLPrepareColumnBindings(LPSQLSTATEMENT pStmt)
 			{
 				if (lpCS->aVFPType == 'C' || lpCS->aVFPType == 'V' || lpCS->aVFPType == 'Q')
 				{
-					SET_STRING(lpCS->vData);
+					lpCS->vData.SetString();
 					if (!AllocHandleEx(lpCS->vData,VFP2C_ODBC_MAX_BIGINT_LITERAL+1))
 							return E_INSUFMEMORY;
 					LockHandle(lpCS->vData);
@@ -2270,7 +2195,7 @@ int _stdcall SQLPrepareColumnBindings(LPSQLSTATEMENT pStmt)
 			}
 			else
 			{
-				SET_STRING(lpCS->vData);
+				lpCS->vData.SetString();
 				if (!AllocHandleEx(lpCS->vData,VFP2C_ODBC_MAX_BIGINT_LITERAL+1))
 					return E_INSUFMEMORY;
 				LockHandle(lpCS->vData);
@@ -2293,7 +2218,7 @@ int _stdcall SQLPrepareColumnBindings(LPSQLSTATEMENT pStmt)
 			{
 					if (lpCS->aVFPType == 'C' || lpCS->aVFPType == 'V')
 					{
-						SET_STRING(lpCS->vData);
+						lpCS->vData.SetString();
 						if (!AllocHandleEx(lpCS->vData,lpCS->nSize + 1))
 								return E_INSUFMEMORY;
 						LockHandle(lpCS->vData);
@@ -2308,7 +2233,7 @@ int _stdcall SQLPrepareColumnBindings(LPSQLSTATEMENT pStmt)
 					}
 					else if (lpCS->aVFPType == 'I')
 					{
-						SET_INTEGER(lpCS->vData);
+						lpCS->vData.SetInt();
 						lpCS->pData = &lpCS->vData.ev_long;
 						lpCS->nCType = SQL_C_LONG;
 						lpCS->bBindColumn = bBindCol;
@@ -2319,7 +2244,7 @@ int _stdcall SQLPrepareColumnBindings(LPSQLSTATEMENT pStmt)
 					}
 					else if (lpCS->aVFPType == 'N' || lpCS->aVFPType == 'B' || lpCS->aVFPType == 'F')
 					{
-						SET_NUMERIC(lpCS->vData,lpCS->aVFPType == 'N' ? (short)lpCS->nSize : 20,lpCS->nScale);
+						lpCS->vData.SetNumeric(lpCS->aVFPType == 'N' ? (short)lpCS->nSize : 20, lpCS->nScale);
 						lpCS->pData = &lpCS->vData.ev_real;
 						lpCS->nCType = SQL_DOUBLE;
 						lpCS->bBindColumn = bBindCol;
@@ -2330,7 +2255,7 @@ int _stdcall SQLPrepareColumnBindings(LPSQLSTATEMENT pStmt)
 					}
 					else if (lpCS->aVFPType == 'Y')
 					{
-						SET_CURRENCY(lpCS->vData);
+						lpCS->vData.SetCurrency();
 						lpCS->pData = lpCS->aNumeric;
 						lpCS->nSize = VFP2C_VFP_CURRENCY_PRECISION;
 						lpCS->nScale = VFP2C_VFP_CURRENCY_SCALE;
@@ -2348,7 +2273,7 @@ int _stdcall SQLPrepareColumnBindings(LPSQLSTATEMENT pStmt)
 			{
 				if (!lpCS->bMoney)
 				{
-					SET_NUMERIC(lpCS->vData,(short)lpCS->nSize,lpCS->nScale);
+					lpCS->vData.SetNumeric(lpCS->nSize, lpCS->nScale);
 					lpCS->pData = &lpCS->vData.ev_real;
 					lpCS->nCType = SQL_C_DOUBLE;
 					lpCS->aVFPType = 'N';
@@ -2360,7 +2285,7 @@ int _stdcall SQLPrepareColumnBindings(LPSQLSTATEMENT pStmt)
 				}
 				else
 				{
-					SET_CURRENCY(lpCS->vData);
+					lpCS->vData.SetCurrency();
 					lpCS->pData = lpCS->aNumeric;
 					lpCS->nSize = VFP2C_VFP_CURRENCY_PRECISION;
 					lpCS->nScale = VFP2C_VFP_CURRENCY_SCALE;
@@ -2383,7 +2308,7 @@ int _stdcall SQLPrepareColumnBindings(LPSQLSTATEMENT pStmt)
 			{
 				if (lpCS->aVFPType == 'C' || lpCS->aVFPType == 'V' || lpCS->aVFPType == 'Q')
 				{
-					SET_STRING(lpCS->vData);
+					lpCS->vData.SetString();
 					if (!AllocHandleEx(lpCS->vData,lpCS->nSize + 1))
 						return E_INSUFMEMORY;
 					LockHandle(lpCS->vData);
@@ -2398,7 +2323,7 @@ int _stdcall SQLPrepareColumnBindings(LPSQLSTATEMENT pStmt)
 				}
 				else if (lpCS->aVFPType == 'N' || lpCS->aVFPType == 'B' || lpCS->aVFPType == 'F')
 				{
-					SET_NUMERIC(lpCS->vData,(short)lpCS->nSize,lpCS->nScale);
+					lpCS->vData.SetNumeric(lpCS->nSize, lpCS->nScale);
 					lpCS->pData = &lpCS->vData.ev_real;
 					lpCS->nCType = SQL_C_DOUBLE;
 					lpCS->bBindColumn = bBindCol;
@@ -2410,7 +2335,7 @@ int _stdcall SQLPrepareColumnBindings(LPSQLSTATEMENT pStmt)
 			}
 			else
 			{
-				SET_DOUBLE(lpCS->vData);
+				lpCS->vData.SetDouble();
 				lpCS->pData = &lpCS->vData.ev_real;
 				lpCS->nCType = SQL_C_DOUBLE;
 				lpCS->aVFPType = 'B';
@@ -2456,9 +2381,9 @@ int _stdcall SQLPrepareColumnBindings(LPSQLSTATEMENT pStmt)
 				else if (lpCS->aVFPType == 'T' || lpCS->aVFPType == 'D')
 				{
 					if (lpCS->aVFPType == 'T')
-						SET_DATETIME(lpCS->vData);
+						lpCS->vData.SetDateTime();
 					else
-						SET_DATE(lpCS->vData);
+						lpCS->vData.SetDate();
 					lpCS->pData = &lpCS->sDateTime;
 					lpCS->nCType = SQL_DATE;
 					if (!IsVariableRef(lpCS->lField))
@@ -2470,7 +2395,7 @@ int _stdcall SQLPrepareColumnBindings(LPSQLSTATEMENT pStmt)
 			}
 			else
 			{
-				SET_DATE(lpCS->vData);
+				lpCS->vData.SetDate();
 				lpCS->pData = &lpCS->sDateTime;
 				lpCS->nCType = SQL_C_DATE;
 				lpCS->aVFPType = 'D';
@@ -2488,7 +2413,7 @@ int _stdcall SQLPrepareColumnBindings(LPSQLSTATEMENT pStmt)
 			{
 				if (lpCS->aVFPType == 'D')
 				{
-					SET_DATE(lpCS->vData);
+					lpCS->vData.SetDate();
 					lpCS->pData = &lpCS->sDateTime;
 					lpCS->nCType = SQL_C_TIMESTAMP;
 					if (!IsVariableRef(lpCS->lField))
@@ -2498,7 +2423,7 @@ int _stdcall SQLPrepareColumnBindings(LPSQLSTATEMENT pStmt)
 				}
 				else if (lpCS->aVFPType == 'T')
 				{
-					SET_DATETIME(lpCS->vData);
+					lpCS->vData.SetDateTime();
 					lpCS->pData = &lpCS->sDateTime;
 					lpCS->nCType = SQL_C_TIMESTAMP;
 					if (!IsVariableRef(lpCS->lField))
@@ -2509,7 +2434,7 @@ int _stdcall SQLPrepareColumnBindings(LPSQLSTATEMENT pStmt)
 				else if (lpCS->aVFPType == 'Q' || 
 					((lpCS->aVFPType == 'C' || lpCS->aVFPType == 'V') && lpCS->bBinary))
 				{
-					SET_STRING(lpCS->vData);
+					lpCS->vData.SetString();
 					if (!AllocHandleEx(lpCS->vData,sizeof(SQL_TIMESTAMP_STRUCT)))
 						return E_INSUFMEMORY;
 					LockHandle(lpCS->vData);
@@ -2523,7 +2448,7 @@ int _stdcall SQLPrepareColumnBindings(LPSQLSTATEMENT pStmt)
 				}
 				else if (lpCS->aVFPType == 'C' || lpCS->aVFPType == 'V')
 				{
-					SET_STRING(lpCS->vData);
+					lpCS->vData.SetString();
 					if (!AllocHandleEx(lpCS->vData,lpCS->nSize + 1))
 						return E_INSUFMEMORY;
 					LockHandle(lpCS->vData);
@@ -2539,7 +2464,7 @@ int _stdcall SQLPrepareColumnBindings(LPSQLSTATEMENT pStmt)
 			}
 			else
 			{
-				SET_DATETIME(lpCS->vData);
+				lpCS->vData.SetDateTime();
 				lpCS->pData = &lpCS->sDateTime;
 				lpCS->nCType = SQL_C_TIMESTAMP;
 				lpCS->aVFPType = 'T';
@@ -2552,7 +2477,7 @@ int _stdcall SQLPrepareColumnBindings(LPSQLSTATEMENT pStmt)
 			break;
 
 		case SQL_TIME:
-			SET_STRING(lpCS->vData);
+			lpCS->vData.SetString();
 			if (!AllocHandleEx(lpCS->vData,lpCS->nSize+1))
 				return E_INSUFMEMORY;
 			LockHandle(lpCS->vData);
@@ -2573,7 +2498,7 @@ int _stdcall SQLPrepareColumnBindings(LPSQLSTATEMENT pStmt)
 			{
 				if (lpCS->aVFPType == 'Q')
 				{
-					SET_STRING(lpCS->vData);
+					lpCS->vData.SetString();
 					if (!AllocHandleEx(lpCS->vData,lpCS->nSize + 1))
 						return E_INSUFMEMORY;
 					LockHandle(lpCS->vData);
@@ -2591,7 +2516,7 @@ int _stdcall SQLPrepareColumnBindings(LPSQLSTATEMENT pStmt)
 				}
 			}
 
-			SET_STRING(lpCS->vData);
+			lpCS->vData.SetString();
 			if (!AllocHandleEx(lpCS->vData,VFP2C_ODBC_MAX_GUID_LITERAL + 1))
 				return E_INSUFMEMORY;
 			LockHandle(lpCS->vData);
@@ -2612,7 +2537,7 @@ int _stdcall SQLPrepareColumnBindings(LPSQLSTATEMENT pStmt)
 			{
 				if (lpCS->aVFPType == 'C' || lpCS->aVFPType == 'V' || lpCS->aVFPType == 'Q')
 				{
-					SET_STRING(lpCS->vData);
+					lpCS->vData.SetString();
 					lpCS->vData.ev_handle = pStmt->vGetDataBuffer.ev_handle;
 					lpCS->pData = pStmt->pGetDataBuffer;
 					lpCS->nBufferSize = VFP2C_ODBC_MAX_BUFFER;
@@ -2626,7 +2551,7 @@ int _stdcall SQLPrepareColumnBindings(LPSQLSTATEMENT pStmt)
 				}
 				else if (lpCS->aVFPType == 'M' || lpCS->aVFPType == 'W')
 				{
-					SET_STRING(lpCS->vData);
+					lpCS->vData.SetString();
 					lpCS->vData.ev_handle = pStmt->vGetDataBuffer.ev_handle;
 					lpCS->pData = pStmt->pGetDataBuffer;
 					lpCS->nBufferSize = VFP2C_ODBC_MAX_BUFFER;
@@ -2651,7 +2576,7 @@ int _stdcall SQLPrepareColumnBindings(LPSQLSTATEMENT pStmt)
 				}
 				else if (lpCS->aVFPType == 'I')
 				{
-					SET_INTEGER(lpCS->vData);
+					lpCS->vData.SetInt();
 					lpCS->pData = &lpCS->vData.ev_long;
 					lpCS->nCType = SQL_C_SLONG;
 					lpCS->bBindColumn = bBindCol;
@@ -2662,7 +2587,7 @@ int _stdcall SQLPrepareColumnBindings(LPSQLSTATEMENT pStmt)
 				}
 				else if (lpCS->aVFPType == 'B' || lpCS->aVFPType == 'N' || lpCS->aVFPType == 'F')
 				{
-					SET_NUMERIC(lpCS->vData,(short)lpCS->nSize,lpCS->nScale);
+					lpCS->vData.SetNumeric(lpCS->nSize, lpCS->nScale);
 					lpCS->pData = &lpCS->vData.ev_real;
 					lpCS->nCType = SQL_C_DOUBLE;
 					lpCS->bBindColumn = bBindCol;
@@ -2673,7 +2598,7 @@ int _stdcall SQLPrepareColumnBindings(LPSQLSTATEMENT pStmt)
 				}
 				else if (lpCS->aVFPType == 'Y')
 				{
-					SET_CURRENCY(lpCS->vData);
+					lpCS->vData.SetCurrency();
 					lpCS->pData = lpCS->aNumeric;
 					lpCS->nSize = VFP2C_VFP_CURRENCY_PRECISION;
 					lpCS->nScale = VFP2C_VFP_CURRENCY_SCALE;
@@ -2690,7 +2615,7 @@ int _stdcall SQLPrepareColumnBindings(LPSQLSTATEMENT pStmt)
 			{
 				if (lpCS->nDisplaySize > VFP2C_VFP_MAX_CHARCOLUMN)
 				{
-					SET_STRING(lpCS->vData);
+					lpCS->vData.SetString();
 					lpCS->vData.ev_handle = pStmt->vGetDataBuffer.ev_handle;
 					lpCS->pData = pStmt->pGetDataBuffer;
 					lpCS->nBufferSize = VFP2C_ODBC_MAX_BUFFER;
@@ -2705,7 +2630,7 @@ int _stdcall SQLPrepareColumnBindings(LPSQLSTATEMENT pStmt)
 				}
 				else
 				{
-					SET_STRING(lpCS->vData);
+					lpCS->vData.SetString();
 					if (!AllocHandleEx(lpCS->vData,lpCS->nDisplaySize + 1))
 						return E_INSUFMEMORY;
 					LockHandle(lpCS->vData);
@@ -2811,7 +2736,7 @@ int _stdcall SQLParseCursorSchema(LPSQLSTATEMENT pStmt)
 					SQLFixColumnName(aColName);
 				else
 				{
-					SAVECUSTOMERROREX("SQLExecEx","Cursorschema contained invalid data near '%10S'.",pSchema);
+					SaveCustomError("SQLExecEx","Cursorschema contained invalid data near '%10S'.", pSchema);
 					return E_APIERROR;
 				}
 			}
@@ -2820,24 +2745,24 @@ int _stdcall SQLParseCursorSchema(LPSQLSTATEMENT pStmt)
 			lpCS = SQLFindColumn(pStmt,aColName);
 			if (!lpCS)
 			{
-				SAVECUSTOMERROREX("SQLExecEx","Column '%S' not contained in resultset but specified in cursorschema.",aColName);
+				SaveCustomError("SQLExecEx","Column '%S' not contained in resultset but specified in cursorschema.", aColName);
 				return E_APIERROR;
 			}
 
 			// match the VFP datatype .. upper or lowercase ..
 			if (!match_one_chr(&pSchema,"CcVvQqWwMmNnBbFfIiYyDdTtLl",(char*)&lpCS->aVFPType))
 			{
-				SAVECUSTOMERROREX("SQLExecEx","Datatype in cursorschema for column '%S' is invalid.",lpCS->aColName);
+				SaveCustomError("SQLExecEx", "Datatype in cursorschema for column '%S' is invalid.", lpCS->aColName);
 				return E_APIERROR;
 			}
 
 			// convert to uppercase so we don't have to deal with case anymore ..
-			lpCS->aVFPType = TO_UPPER(lpCS->aVFPType);
+			lpCS->aVFPType = ToUpper(lpCS->aVFPType);
 
 			// check if column is convertable to specified type
 			if (!SQLTypeConvertable(lpCS->nSQLType,lpCS->aVFPType))
 			{
-				SAVECUSTOMERROREX2("SQLExecEx","Datatype conversion for column '%S' to VFP type '%s' not supported.",aColName,lpCS->aVFPType);
+				SaveCustomError("SQLExecEx", "Datatype conversion for column '%S' to VFP type '%s' not supported.", aColName, lpCS->aVFPType);
 				return E_APIERROR;
 			}
 
@@ -2845,17 +2770,17 @@ int _stdcall SQLParseCursorSchema(LPSQLSTATEMENT pStmt)
 			{
 				if (!match_chr(&pSchema,'('))
 				{
-					SAVECUSTOMERROREX("SQLExecEx","Invalid cursorschema for column '%S', expected '('.",aColName);
+					SaveCustomError("SQLExecEx", "Invalid cursorschema for column '%S', expected '('.", aColName);
 					return E_APIERROR;
 				}
 				if (!match_int(&pSchema,(int*)&lpCS->nSize))
 				{
-					SAVECUSTOMERROREX("SQLExecEx","Invalid cursorschema for column '%S', expected column size.",aColName);
+					SaveCustomError("SQLExecEx", "Invalid cursorschema for column '%S', expected column size.", aColName);
 					return E_APIERROR;
 				}
 				if (!match_chr(&pSchema,')'))
 				{
-					SAVECUSTOMERROREX("SQLExecEx","Invalid cursorschema for column '%S', expected ')'.",aColName);
+					SaveCustomError("SQLExecEx", "Invalid cursorschema for column '%S', expected ')'.", aColName);
 					return E_APIERROR;
 				}
 				// set binary flag for varbinary type
@@ -2868,7 +2793,7 @@ int _stdcall SQLParseCursorSchema(LPSQLSTATEMENT pStmt)
 				{
 					if (!match_int(&pSchema,(int*)&lpCS->nSize))
 					{
-						SAVECUSTOMERROREX("SQLExecEx","Invalid cursorschema for column '%S', expected column precision.",aColName);
+						SaveCustomError("SQLExecEx", "Invalid cursorschema for column '%S', expected column precision.", aColName);
 						return E_APIERROR;
 					}
 
@@ -2876,7 +2801,7 @@ int _stdcall SQLParseCursorSchema(LPSQLSTATEMENT pStmt)
 					{
 						if (!match_short(&pSchema,&lpCS->nScale))
 						{
-							SAVECUSTOMERROREX("SQLExecEx","Invalid cursorschema for column '%S', expected column scale.",aColName);
+							SaveCustomError("SQLExecEx","Invalid cursorschema for column '%S', expected column scale.", aColName);
 							return E_APIERROR;
 						}
 					}
@@ -2885,7 +2810,7 @@ int _stdcall SQLParseCursorSchema(LPSQLSTATEMENT pStmt)
 
 					if (!match_chr(&pSchema,')'))
 					{
-						SAVECUSTOMERROREX("SQLExecEx","Invalid cursorschema for column '%S', expected ')'.",aColName);
+						SaveCustomError("SQLExecEx", "Invalid cursorschema for column '%S', expected ')'.", aColName);
 						return E_APIERROR;
 					}
 				}
@@ -2902,12 +2827,12 @@ int _stdcall SQLParseCursorSchema(LPSQLSTATEMENT pStmt)
 				{
 					if (!match_short(&pSchema,&lpCS->nScale))
 					{
-						SAVECUSTOMERROREX("SQLExecEx","Invalid cursorschema for column '%S', expected column size.",aColName);
+						SaveCustomError("SQLExecEx", "Invalid cursorschema for column '%S', expected column size.", aColName);
 						return E_APIERROR;
 					}
 					if (!match_chr(&pSchema,')'))
 					{
-						SAVECUSTOMERROREX("SQLExecEx","Invalid cursorschema for column '%S', expected ')'.",aColName);
+						SaveCustomError("SQLExecEx","Invalid cursorschema for column '%S', expected ')'.", aColName);
 						return E_APIERROR;
 					}
 					lpCS->nSize = VFP2C_VFP_DOUBLE_PRECISION;
@@ -2934,7 +2859,7 @@ int _stdcall SQLParseCursorSchema(LPSQLSTATEMENT pStmt)
 
 		if (!match_chr(&pSchema,'\0')) // if not at end of string the cursor schema is invalid
 		{
-			SAVECUSTOMERROREX("SQLExecEx","Cursorschema contained invalid data near '%20S'.",pSchema);
+			SaveCustomError("SQLExecEx","Cursorschema contained invalid data near '%20S'.",pSchema);
 			return E_APIERROR;
 		}
 	}
@@ -2986,7 +2911,7 @@ int _stdcall SQLParseCursorSchemaEx(LPSQLSTATEMENT pStmt, char *pCursor)
 		if (!lpCS)
 		{
 			FreeHandle(vValue);
-			SAVECUSTOMERROREX("SQLExecEx","Column '%S' not contained in resultset but exists in cursor.",pValue);
+			SaveCustomError("SQLExecEx","Column '%S' not contained in resultset but exists in cursor.",pValue);
 			nErrorNo = E_APIERROR;
 			goto ErrorOut;
 		}
@@ -3043,7 +2968,7 @@ int _stdcall SQLBindVariableLocators(LPSQLSTATEMENT pStmt)
 	pSchema = AtEx(pStmt->pCursorNames,'|',pStmt->nResultset-1);
 	if (!pSchema)
 	{
-		SAVECUSTOMERROREX("SQLExecEx","No variable list specified for resultset '%I'",pStmt->nResultset);
+		SaveCustomError("SQLExecEx", "No variable list specified for resultset '%I'", pStmt->nResultset);
 		return E_APIERROR;
 	}
 	xj = pStmt->nNoOfCols;
@@ -3062,7 +2987,7 @@ int _stdcall SQLBindVariableLocators(LPSQLSTATEMENT pStmt)
 				}
 				else
 				{
-					SAVECUSTOMERROREX("SQLExecEx","Variable list contained invalid data near '%10S', expected columnname.",pSchema);
+					SaveCustomError("SQLExecEx","Variable list contained invalid data near '%10S', expected columnname.", pSchema);
 					return E_APIERROR;
 				}
 			}
@@ -3074,7 +2999,7 @@ int _stdcall SQLBindVariableLocators(LPSQLSTATEMENT pStmt)
 		}
 		else
 		{
-			SAVECUSTOMERROREX("SQLExecEx","Variable list contained invalid data near '%10S', expected columnname.",pSchema);
+			SaveCustomError("SQLExecEx","Variable list contained invalid data near '%10S', expected columnname.", pSchema);
 			return E_APIERROR;
 		}
 
@@ -3089,18 +3014,18 @@ int _stdcall SQLBindVariableLocators(LPSQLSTATEMENT pStmt)
 	{
 		if (!xj)
 		{
-			SAVECUSTOMERROREX("SQLExecEx","Variable list contained invalid data near '%10S'.",pSchema);
+			SaveCustomError("SQLExecEx", "Variable list contained invalid data near '%10S'.", pSchema);
 			return E_APIERROR;
 		}
 		else
 		{
-			SAVECUSTOMERROR("SQLExecEx","Variable list contained more variables than columns present in resultset.");
+			SaveCustomError("SQLExecEx", "Variable list contained more variables than columns present in resultset.");
 			return E_APIERROR;
 		}
 	}
 	else if (xj)
 	{
-		SAVECUSTOMERROR("SQLExecEx","Variable list contained less variables than columns present in resultset.");
+		SaveCustomError("SQLExecEx", "Variable list contained less variables than columns present in resultset.");
 		return E_APIERROR;
 	}
 
@@ -3134,7 +3059,7 @@ LPSQLCOLUMNDATA _stdcall SQLFindColumn(LPSQLSTATEMENT pStmt, char *pColName)
 
 	for (xj = 1; xj <= pStmt->nNoOfCols; xj++)
 	{
-		if (STRIEQUAL((char*)lpCS->aColName,pColName))
+		if (StrIEqual((char*)lpCS->aColName,pColName))
 			return lpCS;
 
 		lpCS++;
@@ -3150,7 +3075,7 @@ void _stdcall SQLFixColumnName(char *pCol)
 	if (!*pCol)
 		return;
 
-	if (!IS_CHARACTER(*pCol) && *pCol != '_')
+	if (!IsCharacter(*pCol) && *pCol != '_')
 	{
 		*pCol++ = '_';
 		nMaxLen--;
@@ -3158,7 +3083,7 @@ void _stdcall SQLFixColumnName(char *pCol)
 
 	while (*pCol && nMaxLen--)
 	{
-		if (IS_CHARACTER(*pCol) || IS_DIGIT(*pCol) || *pCol == '_')
+		if (IsCharacter(*pCol) || IsDigit(*pCol) || *pCol == '_')
 			pCol++;
 		else
 			*pCol++ = '_';
@@ -3174,10 +3099,9 @@ int _stdcall SQLCreateCursor(LPSQLSTATEMENT pStmt, char *pCursorName)
 	NTI nVarNti;
 	int nErrorNo, nColNo;
 	char *pChar;
-	V_STRING(vChar);
-	V_INTEGER(vNumeric);
-	Value vLogical;
-	vLogical.ev_type = 'L';
+	StringValue vChar;
+	IntValue vNumeric;
+	LogicalValue vLogical;
 	char aArrayName[VFP2C_MAX_FUNCTIONBUFFER];
 	char aExeBuffer[VFP2C_MAX_FUNCTIONBUFFER];
 		
@@ -3394,7 +3318,7 @@ int _stdcall SQLExtractParamsAndRewriteStatement(LPSQLSTATEMENT pStmt, SQLINTEGE
 			}
 			if (!nParmLen)
 			{
-				SAVECUSTOMERROREX("SQLExecEx","Parameter expression '%20S...' exceeds limit of 512 characters",lpPS->aParmExpr);
+				SaveCustomError("SQLExecEx", "Parameter expression '%20S...' exceeds limit of 512 characters", lpPS->aParmExpr);
 				return E_APIERROR;
 			}
 			*pParmExpr = '\0'; // nullterminate parameter expression
@@ -3428,12 +3352,12 @@ int _stdcall SQLParseParamSchema(LPSQLSTATEMENT pStmt)
 	{
 		if (!match_int(&pSchema,&nParmNo))
 		{
-			SAVECUSTOMERROREX("SQLExecEx","Parameter schema contained invalid data near '%10S', expected parameter number.",pSchema);
+			SaveCustomError("SQLExecEx", "Parameter schema contained invalid data near '%10S', expected parameter number.", pSchema);
 			return E_APIERROR;
 		}
 		if (nParmNo < 1 || nParmNo > pStmt->nNoOfParms)
 		{
-			SAVECUSTOMERROREX("SQLExecEx","Parameter schema contained invalid data, parameter number '%I' out of bounds.",nParmNo);
+			SaveCustomError("SQLExecEx", "Parameter schema contained invalid data, parameter number '%I' out of bounds.", nParmNo);
 			return E_APIERROR;
 		}
 		// set pointer to parameter number X
@@ -3443,27 +3367,27 @@ int _stdcall SQLParseParamSchema(LPSQLSTATEMENT pStmt)
 
 		if (match_identifier(&pSchema,aSQLType,VFP2C_ODBC_MAX_SQLTYPE))
 		{
-			if (STREQUAL(aSQLType,"SQL_WCHAR"))
+			if (StrEqual(aSQLType,"SQL_WCHAR"))
 			{
 				lpPS->nSQLType = SQL_WCHAR;
 				lpPS->nCType = SQL_C_WCHAR;
 			}
-			else if (STREQUAL(aSQLType,"SQL_BINARY"))
+			else if (StrEqual(aSQLType,"SQL_BINARY"))
 			{
 				lpPS->nSQLType = SQL_BINARY;
 				lpPS->nCType = SQL_C_BINARY;
 			}
-			else if (STREQUAL(aSQLType,"SQL_CHAR"))
+			else if (StrEqual(aSQLType,"SQL_CHAR"))
 			{
 				lpPS->nSQLType = SQL_CHAR;
 				lpPS->nCType = SQL_C_CHAR;
 			}
-			else if (STREQUAL(aSQLType,"SQL_DATE"))
+			else if (StrEqual(aSQLType,"SQL_DATE"))
 			{
 				lpPS->nSQLType = SQL_DATE;
 				lpPS->nCType = SQL_C_DATE;
 			}
-			else if (STREQUAL(aSQLType,"SQL_TIMESTAMP"))
+			else if (StrEqual(aSQLType,"SQL_TIMESTAMP"))
 			{
 				lpPS->nSQLType = SQL_TIMESTAMP;
 				lpPS->nCType = SQL_C_TIMESTAMP;
@@ -3471,60 +3395,60 @@ int _stdcall SQLParseParamSchema(LPSQLSTATEMENT pStmt)
 				{
 					if (!match_int(&pSchema,(int*)&lpPS->nPrecision))
 					{
-						SAVECUSTOMERROREX("SQLExecEx","Parameter schema contained invalid data near '%20S', expected precision.",pSchema);
+						SaveCustomError("SQLExecEx", "Parameter schema contained invalid data near '%20S', expected precision.", pSchema);
 						return E_APIERROR;
 					}
 					if (!match_chr(&pSchema,')'))
 					{
-						SAVECUSTOMERROREX("SQLExecEx","Parameter schema contained invalid data near '%20S', expected ')'.",pSchema);
+						SaveCustomError("SQLExecEx", "Parameter schema contained invalid data near '%20S', expected ')'.", pSchema);
 						return E_APIERROR;
 					}
 					lpPS->nSize = lpPS->nPrecision + 20;
 				}
 			}
-			else if (STREQUAL(aSQLType,"SQL_BIGINT"))
+			else if (StrEqual(aSQLType,"SQL_BIGINT"))
 			{
 				lpPS->nSQLType = SQL_BIGINT;
 				lpPS->nCType = SQL_C_CHAR;
 			}
-			else if (STREQUAL(aSQLType,"SQL_INTEGER"))
+			else if (StrEqual(aSQLType,"SQL_INTEGER"))
 			{
 				lpPS->nSQLType = SQL_INTEGER;
 				lpPS->nCType = SQL_C_LONG;
 			}
-			else if (STREQUAL(aSQLType,"SQL_SMALLINT"))
+			else if (StrEqual(aSQLType,"SQL_SMALLINT"))
 			{
 				lpPS->nSQLType = SQL_SMALLINT;
 				lpPS->nCType = SQL_C_LONG;
 			}
-			else if (STREQUAL(aSQLType,"SQL_DOUBLE"))
+			else if (StrEqual(aSQLType,"SQL_DOUBLE"))
 			{
 				lpPS->nSQLType = SQL_DOUBLE;
 				lpPS->nCType = SQL_C_DOUBLE;
 			}
-			else if (STREQUAL(aSQLType,"SQL_FLOAT"))
+			else if (StrEqual(aSQLType,"SQL_FLOAT"))
 			{
 				lpPS->nSQLType = SQL_FLOAT;
 				lpPS->nCType = SQL_C_DOUBLE;
 			}
-			else if (STREQUAL(aSQLType,"SQL_REAL"))
+			else if (StrEqual(aSQLType,"SQL_REAL"))
 			{
 				lpPS->nSQLType = SQL_REAL;
 				lpPS->nCType = SQL_C_DOUBLE;
 			}
-			else if (STREQUAL(aSQLType,"SQL_NUMERIC"))
+			else if (StrEqual(aSQLType,"SQL_NUMERIC"))
 			{
 				lpPS->nSQLType = SQL_NUMERIC;
 				lpPS->nCType = SQL_C_CHAR;
 			}
-			else if (STREQUAL(aSQLType,"SQL_DECIMAL"))
+			else if (StrEqual(aSQLType,"SQL_DECIMAL"))
 			{
 				lpPS->nSQLType = SQL_DECIMAL;
 				lpPS->nCType = SQL_C_CHAR;
 			}
 			else
 			{
-				SAVECUSTOMERROREX("SQLExecEx","Parameter schema contained invalid data '%S', expected SQL type.",aSQLType);
+				SaveCustomError("SQLExecEx", "Parameter schema contained invalid data '%S', expected SQL type.", aSQLType);
 				return E_APIERROR;
 			}
 
@@ -3533,7 +3457,7 @@ int _stdcall SQLParseParamSchema(LPSQLSTATEMENT pStmt)
 		// if no type identified and also no parameter name was specified the parameter schema is invalid
 		else if (!lpPS->bNamed) 
 		{
-			SAVECUSTOMERROREX("SQLExecEx","Parameter schema contained invalid data near '%20S', expected SQL type.",pSchema);
+			SaveCustomError("SQLExecEx", "Parameter schema contained invalid data near '%20S', expected SQL type.", pSchema);
 			return E_APIERROR;
 		}
 	
@@ -3541,7 +3465,7 @@ int _stdcall SQLParseParamSchema(LPSQLSTATEMENT pStmt)
 	
 	if (!match_chr(&pSchema,'\0'))
 	{
-		SAVECUSTOMERROREX("SQLExecEx","Parameter schema contained invalid data near '%20S'.",pSchema);
+		SaveCustomError("SQLExecEx", "Parameter schema contained invalid data near '%20S'.", pSchema);
 		return E_APIERROR;
 	}
 
@@ -3594,7 +3518,7 @@ int _stdcall SQLEvaluateParams(LPSQLSTATEMENT pStmt)
 					if (lpPS->nSQLType != SQL_BINARY && lpPS->nSQLType != SQL_WCHAR && 
 						lpPS->nSQLType != SQL_TIMESTAMP)
 					{
-						SAVECUSTOMERROREX("SQLExecEx","Invalid datatype conversion specified for parameter '%S'.",lpPS->aParmExpr);
+						SaveCustomError("SQLExecEx", "Invalid datatype conversion specified for parameter '%S'.", lpPS->aParmExpr);
 						return E_APIERROR;
 					}
 
@@ -3652,7 +3576,7 @@ int _stdcall SQLEvaluateParams(LPSQLSTATEMENT pStmt)
 					if (lpPS->nSQLType != SQL_BINARY && lpPS->nSQLType != SQL_WCHAR && 
 						lpPS->nSQLType != SQL_CHAR)
 					{
-						SAVECUSTOMERROREX("SQLExecEx","Invalid datatype conversion specified for parameter '%S'.",lpPS->aParmExpr);
+						SaveCustomError("SQLExecEx", "Invalid datatype conversion specified for parameter '%S'.", lpPS->aParmExpr);
 						return E_APIERROR;
 					}
 					if (lpPS->nSQLType == SQL_BINARY)
@@ -3682,7 +3606,7 @@ int _stdcall SQLEvaluateParams(LPSQLSTATEMENT pStmt)
 						lpPS->nSQLType != SQL_REAL && lpPS->nSQLType != SQL_INTEGER &&
 						lpPS->nSQLType != SQL_SMALLINT && lpPS->nSQLType != SQL_BIGINT)
 					{
-						SAVECUSTOMERROREX("SQLExecEx","Invalid datatype conversion specified for parameter '%S'.",lpPS->aParmExpr);
+						SaveCustomError("SQLExecEx", "Invalid datatype conversion specified for parameter '%S'.", lpPS->aParmExpr);
 						return E_APIERROR;			
 					}
 					lpPS->pParmData = &lpPS->vParmValue.ev_real;
@@ -3703,7 +3627,7 @@ int _stdcall SQLEvaluateParams(LPSQLSTATEMENT pStmt)
 						lpPS->nSQLType != SQL_REAL && lpPS->nSQLType != SQL_INTEGER &&
 						lpPS->nSQLType != SQL_SMALLINT && lpPS->nSQLType != SQL_BIGINT)
 					{
-						SAVECUSTOMERROREX("SQLExecEx","Invalid datatype conversion specified for parameter '%S'.",lpPS->aParmExpr);
+						SaveCustomError("SQLExecEx", "Invalid datatype conversion specified for parameter '%S'.", lpPS->aParmExpr);
 						return E_APIERROR;			
 					}
 					lpPS->pParmData = &lpPS->vParmValue.ev_long;
@@ -3722,7 +3646,7 @@ int _stdcall SQLEvaluateParams(LPSQLSTATEMENT pStmt)
 				{
 					if (lpPS->nSQLType != SQL_DATE && lpPS->nSQLType != SQL_TIMESTAMP)
 					{
-						SAVECUSTOMERROREX("SQLExecEx","Invalid datatype conversion specified for parameter '%S'.",lpPS->aParmExpr);
+						SaveCustomError("SQLExecEx", "Invalid datatype conversion specified for parameter '%S'.", lpPS->aParmExpr);
 						return E_APIERROR;
 					}
 
@@ -3765,7 +3689,7 @@ int _stdcall SQLEvaluateParams(LPSQLSTATEMENT pStmt)
 				{
 					if (lpPS->nSQLType != SQL_DATE && lpPS->nSQLType != SQL_TIMESTAMP)
 					{
-						SAVECUSTOMERROREX("SQLExecEx","Invalid datatype conversion specified for parameter '%S'.",lpPS->aParmExpr);
+						SaveCustomError("SQLExecEx", "Invalid datatype conversion specified for parameter '%S'.", lpPS->aParmExpr);
 						return E_APIERROR;
 					}
 
@@ -3826,21 +3750,21 @@ int _stdcall SQLEvaluateParams(LPSQLSTATEMENT pStmt)
 						{
 							case SQL_INTEGER:
 							case SQL_SMALLINT:
-								SET_INTEGER(lpPS->vParmValue);
+								lpPS->vParmValue.SetInt();
 								lpPS->pParmData = &lpPS->vParmValue.ev_long;
 								break;
 							
 							case SQL_DOUBLE:
 							case SQL_FLOAT:
 							case SQL_REAL:
-								SET_DOUBLE(lpPS->vParmValue);
+								lpPS->vParmValue.SetDouble();
 								lpPS->pParmData = &lpPS->vParmValue.ev_real;
 								break;
 
 							case SQL_CHAR:
 							case SQL_WCHAR:
 							case SQL_BINARY:
-								SET_STRING(lpPS->vParmValue);
+								lpPS->vParmValue.SetString();
 								if (!AllocHandleEx(lpPS->vParmValue,VFP2C_ODBC_MAX_BUFFER))
 									return E_INSUFMEMORY;
 								lpPS->nBufferSize = VFP2C_ODBC_MAX_BUFFER;
@@ -3856,7 +3780,7 @@ int _stdcall SQLEvaluateParams(LPSQLSTATEMENT pStmt)
 								break;
 
 							case SQL_BIGINT:
-								SET_STRING(lpPS->vParmValue);
+								lpPS->vParmValue.SetString();
 								if (!AllocHandleEx(lpPS->vParmValue,VFP2C_ODBC_MAX_BIGINT_LITERAL+1))
 									return E_INSUFMEMORY;
 								LockHandle(lpPS->vParmValue);
@@ -3866,7 +3790,7 @@ int _stdcall SQLEvaluateParams(LPSQLSTATEMENT pStmt)
 							
 							case SQL_NUMERIC:
 							case SQL_DECIMAL:
-								SET_CURRENCY(lpPS->vParmValue);
+								lpPS->vParmValue.SetCurrency();
 								lpPS->pParmData = &lpPS->aNumeric;
 								lpPS->nBufferSize = VFP2C_ODBC_MAX_CURRENCY_LITERAL;
 								break;
@@ -3895,7 +3819,7 @@ SQLRETURN _stdcall SQLBindParameterEx(LPSQLSTATEMENT pStmt)
 				&lpPS->nIndicator);
 			if (nApiRet == SQL_ERROR)
 			{	
-				SAVEODBCSTMTERROR(SQLBindParameter,pStmt->hStmt);
+				SafeODBCStmtError("SQLBindParameter", pStmt->hStmt);
 				return nApiRet;
 			}
 
@@ -3906,7 +3830,7 @@ SQLRETURN _stdcall SQLBindParameterEx(LPSQLSTATEMENT pStmt)
 				nApiRet = SQLGetStmtAttr(pStmt->hStmt,SQL_ATTR_APP_PARAM_DESC,&hDesc,0,0);
 				if (nApiRet == SQL_ERROR)
 				{
-					SAVEODBCSTMTERROR(SQLGetStmtAttr,pStmt->hStmt);
+					SafeODBCStmtError("SQLGetStmtAttr", pStmt->hStmt);
 					return nApiRet;
 				}
 				// set descriptor
@@ -3914,14 +3838,14 @@ SQLRETURN _stdcall SQLBindParameterEx(LPSQLSTATEMENT pStmt)
 					(SQLSMALLINT)lpPS->nPrecision,lpPS->nScale,lpPS->pParmData,&lpPS->nIndicator,&lpPS->nIndicator);
 				if (nApiRet == SQL_ERROR)
 				{
-					SAVEODBCSTMTERROR(SQLSetDescRec,pStmt->hStmt);
+					SafeODBCStmtError("SQLSetDescRec", pStmt->hStmt);
 					return nApiRet;
 				}
 				// get descriptor handle for implementation descriptor's
 				nApiRet = SQLGetStmtAttr(pStmt->hStmt,SQL_ATTR_IMP_PARAM_DESC,&hDesc,0,0);
 				if (nApiRet == SQL_ERROR)
 				{
-					SAVEODBCSTMTERROR(SQLGetStmtAttr,pStmt->hStmt);
+					SafeODBCStmtError("SQLGetStmtAttr", pStmt->hStmt);
 					return nApiRet;
 				}
 				// set descriptor 
@@ -3929,7 +3853,7 @@ SQLRETURN _stdcall SQLBindParameterEx(LPSQLSTATEMENT pStmt)
 					(SQLSMALLINT)lpPS->nPrecision,lpPS->nScale,lpPS->pParmData,&lpPS->nIndicator,&lpPS->nIndicator);
 				if (nApiRet == SQL_ERROR)
 				{
-					SAVEODBCSTMTERROR(SQLSetDescRec,pStmt->hStmt);
+					SafeODBCStmtError("SQLSetDescRec", pStmt->hStmt);
 					return nApiRet;
 				}
 			}
@@ -3941,13 +3865,13 @@ SQLRETURN _stdcall SQLBindParameterEx(LPSQLSTATEMENT pStmt)
 				nApiRet = SQLGetStmtAttr(pStmt->hStmt,SQL_ATTR_IMP_PARAM_DESC,&hDesc,0,0);
 				if (nApiRet == SQL_ERROR)
 				{
-					SAVEODBCSTMTERROR(SQLGetStmtAttr,pStmt->hStmt);
+					SafeODBCStmtError("SQLGetStmtAttr", pStmt->hStmt);
 					return nApiRet;
 				}
 				nApiRet = SQLSetDescField(hDesc,lpPS->nParmNo,SQL_DESC_NAME,lpPS->aParmName,SQL_NTS);
 				if (nApiRet == SQL_ERROR)
 				{
-					SAVEODBCSTMTERROR(SQLSetDescField,pStmt->hStmt);
+					SafeODBCStmtError("SQLSetDescField", pStmt->hStmt);
 					return nApiRet;
 				}
 				SQLSetDescField(hDesc,lpPS->nParmNo,SQL_DESC_UNNAMED,SQL_NAMED,0);
@@ -3978,7 +3902,7 @@ SQLRETURN _stdcall SQLPutDataEx(SQLHSTMT hStmt)
 			nApiRet = SQLPutData(hStmt,lpData,nBufferSize);
 			if (nApiRet == SQL_ERROR)
 			{
-				SAVEODBCSTMTERROR(SQLPutData,hStmt);
+				SafeODBCStmtError("SQLPutData", hStmt);
 				return nApiRet;
 			}
 			
@@ -3991,7 +3915,7 @@ SQLRETURN _stdcall SQLPutDataEx(SQLHSTMT hStmt)
 			nApiRet = SQLParamData(hStmt,(SQLPOINTER*)&lpParm);
 	}
 	if (nApiRet == SQL_ERROR)
-		SAVEODBCSTMTERROR(SQLParamData,hStmt);
+		SafeODBCStmtError("SQLParamData", hStmt);
 
 	return nApiRet;
 }
@@ -4109,7 +4033,7 @@ int _stdcall SQLInfoCallbackOrStore(LPSQLSTATEMENT pStmt)
 	SQLRETURN nApiRet;
 	SQLSMALLINT nMsgLen, nError = 1;
 	SQLINTEGER nNativeError;
-	V_INTEGER(vResultset);
+	IntValue vResultset;
 	int nErrorNo;
 	SQLCHAR aSQLState[16];
 
@@ -4236,7 +4160,7 @@ int _stdcall SQLFetchToCursor(LPSQLSTATEMENT pStmt, BOOL *bAborted)
 
 	if (nApiRet == SQL_ERROR)
 	{
-		SAVEODBCSTMTERROR(SQLFetch,pStmt->hStmt);
+		SafeODBCStmtError("SQLFetch", pStmt->hStmt);
 		return E_APIERROR;
 	}
 	return 0;
@@ -4278,7 +4202,7 @@ int _stdcall SQLFetchToVariables(LPSQLSTATEMENT pStmt)
 	pStmt->nRowsFetched = nRowsFetched;
 	if (nApiRet == SQL_ERROR)
 	{
-		SAVEODBCSTMTERROR(SQLFetch,pStmt->hStmt);
+		SafeODBCStmtError("SQLFetch", pStmt->hStmt);
 		return E_APIERROR;
 	}
 	return 0;
@@ -4325,7 +4249,7 @@ int _stdcall SQLStoreByGetData(LPSQLCOLUMNDATA lpCS)
 		else
 			return _DBReplace(&lpCS->lField, &lpCS->vData);
 	}
-	SAVEODBCSTMTERROR(SQLGetData,lpCS->hStmt);
+	SafeODBCStmtError("SQLGetData", lpCS->hStmt);
 	return E_APIERROR;
 }
 
@@ -4340,7 +4264,7 @@ int _stdcall SQLStoreByGetDataVar(LPSQLCOLUMNDATA lpCS)
 		else
 			return _Store(&lpCS->lField, &lpCS->vData);
 	}
-	SAVEODBCSTMTERROR(SQLGetData,lpCS->hStmt);
+	SafeODBCStmtError("SQLGetData", lpCS->hStmt);
 	return E_APIERROR;
 }
 
@@ -4380,7 +4304,7 @@ int _stdcall SQLStoreCharByGetData(LPSQLCOLUMNDATA lpCS)
 			return _DBReplace(&lpCS->lField, &lpCS->vData);
 		}
 	 }
-	SAVEODBCSTMTERROR(SQLGetData,lpCS->hStmt);
+	SafeODBCStmtError("SQLGetData", lpCS->hStmt);
 	return E_APIERROR;
 }
 
@@ -4398,7 +4322,7 @@ int _stdcall SQLStoreCharByGetDataVar(LPSQLCOLUMNDATA lpCS)
 			return _Store(&lpCS->lField, &lpCS->vData);
 		}
 	}
-	SAVEODBCSTMTERROR(SQLGetData,lpCS->hStmt);
+	SafeODBCStmtError("SQLGetData", lpCS->hStmt);
 	return E_APIERROR;
 }
 
@@ -4439,7 +4363,7 @@ int _stdcall SQLStoreDateByGetData(LPSQLCOLUMNDATA lpCS)
 			return _DBReplace(&lpCS->lField, &lpCS->vData);
 		}
 	}
-	SAVEODBCSTMTERROR(SQLGetData,lpCS->hStmt);
+	SafeODBCStmtError("SQLGetData", lpCS->hStmt);
 	return E_APIERROR;
 }
 
@@ -4458,7 +4382,7 @@ int _stdcall SQLStoreDateByGetDataVar(LPSQLCOLUMNDATA lpCS)
 			return _Store(&lpCS->lField, &lpCS->vData);
 		}
 	}
-	SAVEODBCSTMTERROR(SQLGetData,lpCS->hStmt);
+	SafeODBCStmtError("SQLGetData", lpCS->hStmt);
 	return E_APIERROR;
 }
 
@@ -4499,7 +4423,7 @@ int _stdcall SQLStoreDateTimeByGetData(LPSQLCOLUMNDATA lpCS)
 			return _DBReplace(&lpCS->lField, &lpCS->vData);
 		}
 	}
-	SAVEODBCSTMTERROR(SQLGetData,lpCS->hStmt);
+	SafeODBCStmtError("SQLGetData", lpCS->hStmt);
 	return E_APIERROR;
 }
 
@@ -4518,7 +4442,7 @@ int _stdcall SQLStoreDateTimeByGetDataVar(LPSQLCOLUMNDATA lpCS)
 			return _Store(&lpCS->lField, &lpCS->vData);
 		}
 	}
-	SAVEODBCSTMTERROR(SQLGetData,lpCS->hStmt);
+	SafeODBCStmtError("SQLGetData", lpCS->hStmt);
 	return E_APIERROR;
 }
 
@@ -4558,7 +4482,7 @@ int _stdcall SQLStoreCurrencyByGetData(LPSQLCOLUMNDATA lpCS)
 			return _DBReplace(&lpCS->lField, &lpCS->vData);
 		}
 	}
-	SAVEODBCSTMTERROR(SQLGetData,lpCS->hStmt);
+	SafeODBCStmtError("SQLGetData", lpCS->hStmt);
 	return E_APIERROR;
 }
 
@@ -4576,7 +4500,7 @@ int _stdcall SQLStoreCurrencyByGetDataVar(LPSQLCOLUMNDATA lpCS)
 			return _Store(&lpCS->lField, &lpCS->vData);
 		}
 	}
-	SAVEODBCSTMTERROR(SQLGetData,lpCS->hStmt);
+	SafeODBCStmtError("SQLGetData", lpCS->hStmt);
 	return E_APIERROR;
 }
 
@@ -4616,13 +4540,13 @@ int _stdcall SQLStoreMemoChar(LPSQLCOLUMNDATA lpCS)
 
 		if (nApiRet == SQL_ERROR)
 		{
-			SAVEODBCSTMTERROR(SQLGetData,lpCS->hStmt);
+			SafeODBCStmtError("SQLGetData", lpCS->hStmt);
 			return E_APIERROR;
 		}
 	}
 	else
 	{
-		SAVEODBCSTMTERROR(SQLGetData,lpCS->hStmt);
+		SafeODBCStmtError("SQLGetData", lpCS->hStmt);
 		return E_APIERROR;
 	}
 
@@ -4632,7 +4556,7 @@ int _stdcall SQLStoreMemoChar(LPSQLCOLUMNDATA lpCS)
 int _stdcall SQLStoreMemoCharVar(LPSQLCOLUMNDATA lpCS)
 {
 	SQLRETURN nApiRet;
-	V_STRING(vData);
+	StringValue vData;
 	char *pData;
 	int nRetVal;
 
@@ -4679,7 +4603,7 @@ int _stdcall SQLStoreMemoCharVar(LPSQLCOLUMNDATA lpCS)
 			nRetVal = _Store(&lpCS->lField, &vData);
 		else
 		{
-			SAVEODBCSTMTERROR(SQLGetData,lpCS->hStmt);
+			SafeODBCStmtError("SQLGetData", lpCS->hStmt);
 			nRetVal = E_APIERROR;
 		}
 		UnlockFreeHandle(vData);
@@ -4687,7 +4611,7 @@ int _stdcall SQLStoreMemoCharVar(LPSQLCOLUMNDATA lpCS)
 	}
 	else
 	{
-		SAVEODBCSTMTERROR(SQLGetData,lpCS->hStmt);
+		SafeODBCStmtError("SQLGetData", lpCS->hStmt);
 		UnlockFreeHandle(vData);
 		return E_APIERROR;
 	}
@@ -4729,13 +4653,13 @@ int _stdcall SQLStoreMemoWChar(LPSQLCOLUMNDATA lpCS)
 
 		if (nApiRet == SQL_ERROR)
 		{
-			SAVEODBCSTMTERROR(SQLGetData,lpCS->hStmt);
+			SafeODBCStmtError("SQLGetData", lpCS->hStmt);
 			return E_APIERROR;
 		}
 	}
 	else
 	{
-		SAVEODBCSTMTERROR(SQLGetData,lpCS->hStmt);
+		SafeODBCStmtError("SQLGetData", lpCS->hStmt);
 		return E_APIERROR;
 	}
 	return 0;
@@ -4744,7 +4668,7 @@ int _stdcall SQLStoreMemoWChar(LPSQLCOLUMNDATA lpCS)
 int _stdcall SQLStoreMemoWCharVar(LPSQLCOLUMNDATA lpCS)
 {
 	SQLRETURN nApiRet;
-	V_STRING(vData);
+	StringValue vData;
 	char *pData;
 	int nRetVal;
 
@@ -4791,7 +4715,7 @@ int _stdcall SQLStoreMemoWCharVar(LPSQLCOLUMNDATA lpCS)
 			nRetVal = _Store(&lpCS->lField, &vData);
 		else
 		{
-			SAVEODBCSTMTERROR(SQLGetData,lpCS->hStmt);
+			SafeODBCStmtError("SQLGetData", lpCS->hStmt);
 			nRetVal = E_APIERROR;
 		}
 		UnlockFreeHandle(vData);
@@ -4799,7 +4723,7 @@ int _stdcall SQLStoreMemoWCharVar(LPSQLCOLUMNDATA lpCS)
 	}
 	else
 	{
-		SAVEODBCSTMTERROR(SQLGetData,lpCS->hStmt);
+		SafeODBCStmtError("SQLGetData", lpCS->hStmt);
 		UnlockFreeHandle(vData);
 		return E_APIERROR;
 	}
@@ -4842,13 +4766,13 @@ int _stdcall SQLStoreMemoBinary(LPSQLCOLUMNDATA lpCS)
 
 		if (nApiRet == SQL_ERROR)
 		{
-			SAVEODBCSTMTERROR(SQLGetData,lpCS->hStmt);
+			SafeODBCStmtError("SQLGetData", lpCS->hStmt);
 			return E_APIERROR;
 		}
 	}
 	else
 	{
-		SAVEODBCSTMTERROR(SQLGetData,lpCS->hStmt);
+		SafeODBCStmtError("SQLGetData", lpCS->hStmt);
 		return E_APIERROR;
 	}
 
@@ -4858,7 +4782,7 @@ int _stdcall SQLStoreMemoBinary(LPSQLCOLUMNDATA lpCS)
 int _stdcall SQLStoreMemoBinaryVar(LPSQLCOLUMNDATA lpCS)
 {
 	SQLRETURN nApiRet;
-	V_STRING(vData);
+	StringValue vData;
 	char *pData;
 	int nRetVal;
 
@@ -4905,7 +4829,7 @@ int _stdcall SQLStoreMemoBinaryVar(LPSQLCOLUMNDATA lpCS)
 			nRetVal = _Store(&lpCS->lField, &vData);
 		else
 		{
-			SAVEODBCSTMTERROR(SQLGetData,lpCS->hStmt);
+			SafeODBCStmtError("SQLGetData", lpCS->hStmt);
 			nRetVal = E_APIERROR;
 		}
 		UnlockFreeHandle(vData);
@@ -4913,7 +4837,7 @@ int _stdcall SQLStoreMemoBinaryVar(LPSQLCOLUMNDATA lpCS)
 	}
 	else
 	{
-		SAVEODBCSTMTERROR(SQLGetData,lpCS->hStmt);
+		SafeODBCStmtError("SQLGetData", lpCS->hStmt);
 		UnlockFreeHandle(vData);
 		return E_APIERROR;
 	}
@@ -5237,7 +5161,7 @@ ModifiedCheck:
 
 	if (!vTableUpd.ev_length)
 	{
-		SAVECUSTOMERROR("TableUpdateEx","TABLEUPDATE didn't succeed.");
+		SaveCustomError("TableUpdateEx","TABLEUPDATE didn't succeed.");
 		goto ErrorOut;
 	}
 
@@ -5281,7 +5205,7 @@ int _stdcall SQLCreateDeleteStmt(char *pSQL, char *pTable, char *pKeyFields)
 
 		if (!match_identifier(&pKeyFields,aFieldName,VFP2C_VFP_MAX_COLUMN_NAME))
 		{
-			SAVECUSTOMERROREX("TableUpdateEx","Keyfieldlist contained invalid data near '%20S', expected fieldname.",pKeyFields);
+			SaveCustomError("TableUpdateEx", "Keyfieldlist contained invalid data near '%20S', expected fieldname.", pKeyFields);
 			return -1;
 		}
 		
@@ -5321,7 +5245,7 @@ int _stdcall SQLCreateInsertStmt(char *pSQL, char *pCursor, char *pTable, char *
 	{
 		if (!match_identifier(&pColumns,aFieldName,VFP2C_VFP_MAX_COLUMN_NAME))
 		{
-			SAVECUSTOMERROREX("TableUpdateEx","Columnlist contained invalid data near '%20S', expected fieldname.",pColumns);
+			SaveCustomError("TableUpdateEx", "Columnlist contained invalid data near '%20S', expected fieldname.", pColumns);
 			return -1;
 		}
 
@@ -5382,7 +5306,7 @@ int _stdcall SQLCreateUpdateStmt(char *pSQL, char *pCursor, char *pTable, char *
 
 		if (!match_identifier(&pKeyFields,aFieldName,VFP2C_VFP_MAX_COLUMN_NAME))
 		{
-			SAVECUSTOMERROREX("TableUpdateEx","Keyfieldlist contained invalid data near '%20S', expected fieldname.",pColumns);
+			SaveCustomError("TableUpdateEx", "Keyfieldlist contained invalid data near '%20S', expected fieldname.", pColumns);
 			return -1;
 		}
 

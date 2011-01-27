@@ -18,7 +18,7 @@ static CThreadManager goWinInetThreads;
 
 bool _stdcall VFP2C_Init_WinInet()
 {
-	return goWinInetThreads.Initialize(64);
+	return goWinInetThreads.Initialize();
 }
 
 void _stdcall VFP2C_Destroy_WinInet()
@@ -32,7 +32,7 @@ void _stdcall VFP2C_Destroy_WinInet()
 // WinInet functions
 
 // Errorhandler
-void _stdcall WinInetErrorHandler(char *pFunction, DWORD nLastError)
+void _stdcall SaveWininetError(char *pFunction, DWORD nLastError)
 {
 	gnErrorCount = 0;
 	gaErrorInfo[gnErrorCount].nErrorType = VFP2C_ERRORTYPE_WIN32;
@@ -56,15 +56,15 @@ void _fastcall InitWinInet(ParamBlk *parm)
 {
 try
 {
-	RESETWIN32ERRORS();
+	ResetWin32Errors();;
 
 	FoxString pAgent(parm,1);
-	DWORD dwFlags = PCOUNT() >= 2 ? p2.ev_long : 0;
+	DWORD dwFlags = PCount() >= 2 ? p2.ev_long : 0;
 	FoxString pProxy(parm,3);
 	FoxString pProxyByPass(parm,4);
 	DWORD dwAccess;
 
-	if (PCOUNT() >= 5)
+	if (PCount() >= 5)
 		dwAccess = p5.ev_long;
 	else if (pProxy > 0 || pProxyByPass > 0)
 		dwAccess = INTERNET_OPEN_TYPE_PROXY;
@@ -78,7 +78,7 @@ try
 	{
 		if (!InternetCloseHandle(ghInternet))
 		{
-			SAVEWININETERROR(InternetCloseHandle,GetLastError());
+			SaveWininetError("InternetCloseHandle", GetLastError());
 			throw E_APIERROR;
 		}
 		ghInternet = 0;
@@ -90,7 +90,7 @@ try
 	ghInternet = InternetOpen(pAgent,dwAccess,pProxy,pProxyByPass,dwFlags);
 	if (!ghInternet)
 	{
-		SAVEWININETERROR(InternetOpen,GetLastError());
+		SaveWininetError("InternetOpen", GetLastError());
 		throw E_APIERROR;
 	}
 }
@@ -106,7 +106,7 @@ try
 {
 	if (!ghInternet)
 	{
-		SAVECUSTOMERROR("WinInetOptions","Library not initialized.");
+		SaveCustomError("WinInetOptions", "Library not initialized.");
 		throw E_APIERROR;
 	}
 }
@@ -120,25 +120,25 @@ void _fastcall FTPConnect(ParamBlk *parm)
 {
 try
 {
-	RESETWIN32ERRORS();
+	ResetWin32Errors();;
 
 	if (!ghInternet)
 	{
-		SAVECUSTOMERROR("FTPConnect","Library not initialized.");
+		SaveCustomError("FTPConnect","Library not initialized.");
 		throw E_APIERROR;
 	}
 
 	FoxString pServer(p1);
 	FoxString pUser(parm,2);
 	FoxString pPassword(parm,3);
-	INTERNET_PORT nPort = PCOUNT() >= 4 && p4.ev_long ? (INTERNET_PORT)p4.ev_long : INTERNET_DEFAULT_FTP_PORT;
-	DWORD nFlags = PCOUNT() >= 5 ? p5.ev_long : 0;
+	INTERNET_PORT nPort = PCount() >= 4 && p4.ev_long ? (INTERNET_PORT)p4.ev_long : INTERNET_DEFAULT_FTP_PORT;
+	DWORD nFlags = PCount() >= 5 ? p5.ev_long : 0;
 
 	HINTERNET hConn = InternetConnect(ghInternet,pServer,nPort,pUser,pPassword,INTERNET_SERVICE_FTP,nFlags,0);
 	
 	if (!hConn)
 	{
-		SAVEWININETERROR(InternetOpen,GetLastError());
+		SaveWininetError("InternetOpen", GetLastError());
 		throw E_APIERROR;
 	}
 
@@ -154,18 +154,18 @@ void _fastcall FTPDisconnect(ParamBlk *parm)
 {
 try
 {
-	RESETWIN32ERRORS();
+	ResetWin32Errors();
 
 	if (!ghInternet)
 	{
-		SAVECUSTOMERROR("FTPDisconnect","Library not initialized.");
+		SaveCustomError("FTPDisconnect","Library not initialized.");
 		throw E_APIERROR;
 	}
 
 	HINTERNET hConn = (HINTERNET)p1.ev_long;
 	if (!InternetCloseHandle(hConn))
 	{
-		SAVEWININETERROR(InternetCloseHandle,GetLastError());
+		SaveWininetError("InternetCloseHandle", GetLastError());
 		throw E_APIERROR;
 	}
 }
@@ -179,11 +179,11 @@ void _fastcall FTPGetFileLib(ParamBlk *parm)
 {
 try
 {
-	RESETWIN32ERRORS();
+	ResetWin32Errors();
 
 	if (!ghInternet)
 	{
-		SAVECUSTOMERROR("FTPGetFile","Library not initialized.");
+		SaveCustomError("FTPGetFile","Library not initialized.");
 		throw E_APIERROR;
 	}
 
@@ -200,7 +200,7 @@ try
 	{
 		if (!InternetSetStatusCallback(hConn,WinInetStatusCallback))
 		{
-			SAVEWIN32ERROR(InternetSetStatusCallback,GetLastError());
+			SaveWininetError("InternetSetStatusCallback, GetLastError());
 			throw E_APIERROR;
 		}
 	}
@@ -208,7 +208,7 @@ try
 	{
 		if (!InternetSetStatusCallback(hConn,0))
 		{
-			SAVEWININETERROR(InternetSetStatusCallback,GetLastError());
+			SaveWininetError("InternetSetStatusCallback", GetLastError());
 			throw E_APIERROR;
 		}
 	}
@@ -218,7 +218,7 @@ try
 		if (!FtpGetFile(hConn,pSource,pDest,FALSE,FILE_ATTRIBUTE_NORMAL,
 			FTP_TRANSFER_TYPE_BINARY,(DWORD_PTR)pCallbackStruct))
 		{
-			SAVEWININETERROR(FtpGetFile,GetLastError());
+			SaveWininetError("FtpGetFile", GetLastError());
 			throw E_APIERROR;
 		}
 	}
@@ -240,7 +240,7 @@ try
 {
 	if (!ghInternet)
 	{
-		SAVECUSTOMERROR("FTPGetFile","Library not initialized.");
+		SaveCustomError("FTPGetFile","Library not initialized.");
 		throw E_APIERROR;
 	}
 
@@ -275,11 +275,11 @@ void _fastcall FTPGetDirectory(ParamBlk *parm)
 {
 try
 {
-	RESETWIN32ERRORS();
+	ResetWin32Errors();
 
 	if (!ghInternet)
 	{
-		SAVECUSTOMERROR("FTPGetDirectory","Library not initialized.");
+		SaveCustomError("FTPGetDirectory","Library not initialized.");
 		throw E_APIERROR;
 	}
 
@@ -290,7 +290,7 @@ try
 		pDirectory.Length(dwLen).Return();
 	else
 	{
-		SAVEWININETERROR(FtpGetCurrentDirectory,GetLastError());
+		SaveWininetError("FtpGetCurrentDirectory", GetLastError());
 		throw E_APIERROR;
 	}
 }
@@ -304,11 +304,11 @@ void _fastcall FTPSetDirectory(ParamBlk *parm)
 {
 try
 {
-	RESETWIN32ERRORS();
+	ResetWin32Errors();
 
 	if (!ghInternet)
 	{
-		SAVECUSTOMERROR("FTPSetDirectory","Library not initialized.");
+		SaveCustomError("FTPSetDirectory","Library not initialized.");
 		throw E_APIERROR;
 	}
 
@@ -316,7 +316,7 @@ try
     FoxString pDirectory(p2);
 	if (!FtpSetCurrentDirectory(hConn,pDirectory))
 	{
-		SAVEWININETERROR(FtpSetCurrentDirectory,GetLastError());
+		SaveWininetError("FtpSetCurrentDirectory", GetLastError());
 		throw E_APIERROR;
 	}
 }
@@ -344,7 +344,7 @@ void _fastcall AFTPFiles(ParamBlk *parm)
 	WIN32_FIND_DATA sFiles;
 	char aExeBuffer[VFP2C_MAX_FUNCTIONBUFFER];
 
-	RESETWIN32ERRORS();
+	ResetWin32Errors();
 
 	if (!NullTerminateHandle(p2) || !NullTerminateHandle(p3))
 		RaiseError(E_INSUFMEMORY);
@@ -355,8 +355,8 @@ void _fastcall AFTPFiles(ParamBlk *parm)
 	pDestination = HandleToPtr(p2);
 	pSearchString = HandleToPtr(p3);
 	
-	nFlags = PCOUNT() >= 4 ? p4.ev_long : 0;
-	nDest = PCOUNT() >= 5 ? p5.ev_long : ADIREX_DEST_ARRAY;
+	nFlags = PCount() >= 4 ? p4.ev_long : 0;
+	nDest = PCount() >= 5 ? p5.ev_long : ADIREX_DEST_ARRAY;
 
 	if (!(nDest & (ADIREX_DEST_ARRAY | ADIREX_DEST_CURSOR)))
 		nDest |= ADIREX_DEST_ARRAY;
@@ -420,7 +420,7 @@ void _fastcall AFTPFiles(ParamBlk *parm)
 		if (nLastError == ERROR_NO_MORE_FILES)
 			goto Success;
 
-		SAVEWIN32ERROR(FtpFindFirstFile,nLastError);
+		SaveWininetError("FtpFindFirstFile", nLastError);
 		goto ErrorOut;
 	}
 
@@ -532,14 +532,14 @@ void _fastcall AFTPFiles(ParamBlk *parm)
 	nLastError = GetLastError();
 	if (nLastError != ERROR_NO_MORE_FILES)
 	{
-		SAVEWIN32ERROR(InternetFindNextFile,nLastError);
+		SaveWininetError("InternetFindNextFile", nLastError);
 		goto ErrorOut;
 	}
 
 	if (!InternetCloseHandle(hSearch))
 	{
 		hSearch = 0;
-		SAVEWIN32ERROR(InternetCloseHandle,GetLastError());
+		SaveWininetError("InternetCloseHandle", GetLastError());
 		goto ErrorOut;
 	}
 

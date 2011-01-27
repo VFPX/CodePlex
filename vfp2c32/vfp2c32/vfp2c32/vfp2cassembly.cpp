@@ -266,7 +266,7 @@ void _stdcall Push(REGISTER nReg)
 void _stdcall Push(AVALUE nValue)
 {
 	int nValue2 = (int)nValue;
-	if (IN_BYTERANGE(nValue2))
+	if (InByteRange(nValue2))
 	{
 		*gpCS++ = OP_PUSH_IMM8;
 		*gpCS++ = (CODE)nValue2;
@@ -290,7 +290,7 @@ void _stdcall Push_Ex(TYPE nType, int nOffset)
 {
 	if (nType <= T_UINT || nType == T_FLOAT)
 	{
-		if (IN_BYTERANGE(nOffset))
+		if (InByteRange(nOffset))
 		{
 			*gpCS++ = OP_PUSH_RM32;
 			*gpCS++ = MODRM_DISP8_OP_STACK(MODRM_OP_PUSH);
@@ -306,7 +306,7 @@ void _stdcall Push_Ex(TYPE nType, int nOffset)
 	}
 	else if (nType <= T_INT64 || nType == T_DOUBLE)
 	{
-		if (IN_BYTERANGE(nOffset) && IN_BYTERANGE((nOffset+4)))
+		if (InByteRange(nOffset) && InByteRange((nOffset+4)))
 		{
 			// push upper 32 bit
 			*gpCS++ = OP_PUSH_RM32;
@@ -380,7 +380,7 @@ void _stdcall Sub(REGISTER nReg, int nBytes)
 {
 	if (nReg <= EDI)
 	{
-		if (IN_BYTERANGE(nBytes))
+		if (InByteRange(nBytes))
 		{
 			*gpCS++ = OP_SUB_R32_IMM8;
 			*gpCS++ = MODRM_REG_OP_REG(MODRM_OP_SUB,nReg);
@@ -490,7 +490,7 @@ void _stdcall Add(REGISTER nReg, int nBytes)
 {
 	if (nReg <= EDI)
 	{
-		if (IN_BYTERANGE(nBytes))
+		if (InByteRange(nBytes))
 		{
 			*gpCS++ = OP_ADD_R32_IMM8;
 			*gpCS++ = MODRM_REG_REG(nReg);
@@ -641,7 +641,7 @@ void _stdcall And(REGISTER nReg, int nValue)
 		}
 		else
 		{
-            if (IN_BYTERANGE(nValue))
+            if (InByteRange(nValue))
 			{
 				*gpCS++ = OP_AND_RM32_IMM8;
 				*gpCS++ = MODRM_REG_OP_REG(MODRM_OP_AND,nReg);
@@ -916,7 +916,7 @@ void _stdcall Shr(REGISTER nReg, int nBits)
 void _stdcall Lea_Ex(REGISTER nReg, int nOffset)
 {
 	*gpCS++ = OP_LEA_R32_M;
-	if (IN_BYTERANGE(nOffset))
+	if (InByteRange(nOffset))
 	{
 		*gpCS++ = MODRM_DISP8_REG_STACK(nReg);
 		*(char*)gpCS++ = (char)nOffset;
@@ -958,7 +958,7 @@ void _stdcall Mov_Ex(REGISTER nReg, TYPE nType, int nOffset)
 		else
 		{
 			*gpCS++ = OP_MOV_R32_RM32;
-			if (IN_BYTERANGE(nOffset))
+			if (InByteRange(nOffset))
 			{
 				*gpCS++ = MODRM_DISP8_REG_STACK(nReg);
 				*(char*)gpCS++ = nOffset;
@@ -976,7 +976,7 @@ void _stdcall Mov_Ex(REGISTER nReg, TYPE nType, int nOffset)
 		*gpCS++ = OP_ADRSIZE_16;
 		*gpCS++ = OP_MOV_R32_RM32;
 
-		if (IN_BYTERANGE(nOffset))
+		if (InByteRange(nOffset))
 		{
 			*gpCS++ = MODRM_DISP8_REG_STACK(nReg);
 			*(char*)gpCS++ = nOffset;
@@ -991,7 +991,7 @@ void _stdcall Mov_Ex(REGISTER nReg, TYPE nType, int nOffset)
 	else
 	{
 		*gpCS++ = OP_MOV_R8_RM8;
-		if (IN_BYTERANGE(nOffset))
+		if (InByteRange(nOffset))
 		{
 			*gpCS++ = MODRM_DISP8_REG_STACK(nReg);
 			*gpCS++ = (CODE)nOffset;
@@ -1067,7 +1067,7 @@ void _stdcall Mov(char *pParmOrVar, int nValue)
 	if (lpType->nType <= T_UCHAR)
 	{
 		*gpCS++ = OP_MOV_RM8_IMM8;
-		if (IN_BYTERANGE(lpType->nOffset))
+		if (InByteRange(lpType->nOffset))
 		{
             *gpCS++ = MODRM_DISP8_STACK();
 			*(char*)gpCS++ = lpType->nOffset;
@@ -1084,7 +1084,7 @@ void _stdcall Mov(char *pParmOrVar, int nValue)
 	{
 		*gpCS++ = OP_ADRSIZE_16;
 		*gpCS++ = OP_MOV_RM32_IMM32;
-		if (IN_BYTERANGE(lpType->nOffset))
+		if (InByteRange(lpType->nOffset))
 		{
             *gpCS++ = MODRM_DISP8_STACK();
 			*(char*)gpCS++ = lpType->nOffset;
@@ -1101,7 +1101,7 @@ void _stdcall Mov(char *pParmOrVar, int nValue)
 	else if (lpType->nType <= T_UINT || lpType->nType == T_FLOAT)
 	{
 		*gpCS++ = OP_MOV_RM32_IMM32;
-		if (IN_BYTERANGE(lpType->nOffset))
+		if (InByteRange(lpType->nOffset))
 		{
             *gpCS++ = MODRM_DISP8_STACK();
 			*(char*)gpCS++ = lpType->nOffset;
@@ -1127,7 +1127,7 @@ void _stdcall Mov(char *pParmOrVar, REGISTER nReg)
 	if (lpType->nType <= T_UCHAR)
 	{
 		*gpCS++ = MAKE_OP(OP_MOV_RM8_R8,nReg);
-		if (IN_BYTERANGE(lpType->nOffset))
+		if (InByteRange(lpType->nOffset))
 		{
             *gpCS++ = MODRM_DISP8_STACK();
 			*(char*)gpCS++ = lpType->nOffset;
@@ -1143,7 +1143,7 @@ void _stdcall Mov(char *pParmOrVar, REGISTER nReg)
 	{
 		*gpCS++ = OP_ADRSIZE_16;
 		*gpCS++ = MAKE_OP(OP_MOV_RM32_R32,nReg);
-		if (IN_BYTERANGE(lpType->nOffset))
+		if (InByteRange(lpType->nOffset))
 		{
             *gpCS++ = MODRM_DISP8_STACK();
 			*(char*)gpCS++ = lpType->nOffset;
@@ -1158,7 +1158,7 @@ void _stdcall Mov(char *pParmOrVar, REGISTER nReg)
 	else if (lpType->nType <= T_UINT || lpType->nType == T_FLOAT)
 	{
 		*gpCS++ = MAKE_OP(OP_MOV_RM32_R32,nReg);
-		if (IN_BYTERANGE(lpType->nOffset))
+		if (InByteRange(lpType->nOffset))
 		{
             *gpCS++ = MODRM_DISP8_STACK();
 			*(char*)gpCS++ = lpType->nOffset;
@@ -1230,7 +1230,7 @@ void _stdcall MovZX_Ex(REGISTER nReg, TYPE nType, int nOffset)
 	else
 		*gpCS++ = 0xB7;
 
-	if (IN_BYTERANGE(nOffset))
+	if (InByteRange(nOffset))
 	{
         //*gpCS++ = Asm_Mov_RS[nReg];
 		*gpCS++ = (CODE)nOffset;
@@ -1286,7 +1286,7 @@ void _stdcall Cmp(REGISTER nReg, int nValue)
 {
 	if (nReg <= R_32BIT)
 	{
-		if (IN_BYTERANGE(nValue))
+		if (InByteRange(nValue))
 		{
 			*gpCS++ = 0x83;
 			//*gpCS++ = Asm_Cmp[nReg];
@@ -1308,7 +1308,7 @@ void _stdcall Cmp(REGISTER nReg, int nValue)
 	}
 	else if (nReg <= R_16BIT)
 	{
-		if (IN_BYTERANGE(nValue))
+		if (InByteRange(nValue))
 		{
 			*gpCS++ = OP_ADRSIZE_16;
 			if (nReg != AX)
@@ -1446,7 +1446,7 @@ void _stdcall Fld_Ex(TYPE nType, int nOffset)
 	else
 		return;
 
-	if (IN_BYTERANGE(nOffset))
+	if (InByteRange(nOffset))
 	{
 		*gpCS++ = 0x45;
 		*gpCS++ = (CODE)nOffset;

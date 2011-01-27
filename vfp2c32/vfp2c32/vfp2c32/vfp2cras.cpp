@@ -30,7 +30,7 @@ static PRASCLEARCONNECTIONSTATISTICS fpRasClearConnectionStatistics = 0;
 static RasDialCallback goRasDialCallback;
 
 // RAS error handler
-void _stdcall Ras32ErrorHandler(char *pFunction, DWORD nErrorNo)
+void _stdcall SaveRas32Error(char *pFunction, DWORD nErrorNo)
 {
 	if (gnErrorCount == VFP2C_MAX_ERRORS)
 		return;
@@ -86,7 +86,7 @@ void _fastcall ARasConnections(ParamBlk *parm)
 {
 try
 {
-	RESETWIN32ERRORS();
+	ResetWin32Errors();
 
 	if (!fpRasEnumConnections || !fpRasGetProjectionInfo)
 		throw E_NOENTRYPOINT;
@@ -103,6 +103,14 @@ try
 	lpRas->dwSize = sizeof(RASCONN);
 
 	nApiRet = fpRasEnumConnections(lpRas, &dwBytes, &dwConns);
+	if (nApiRet == ERROR_BUFFER_TOO_SMALL)
+	{
+		pBuffer.Size(dwBytes);
+		lpRas = reinterpret_cast<LPRASCONN>(pBuffer.Address());
+		lpRas->dwSize = sizeof(RASCONN);
+		nApiRet = fpRasEnumConnections(lpRas, &dwBytes, &dwConns);
+	}
+
 	if (nApiRet == ERROR_SUCCESS)
 	{
 		if (dwConns == 0)
@@ -124,7 +132,7 @@ try
 			nApiRet = fpRasGetProjectionInfo(lpRas->hrasconn,RASP_PppIp,&sRasIp,&dwBytes);
 			if (nApiRet != ERROR_SUCCESS)
 			{
-				SAVERAS32ERROR(RasGetProjectionInfo,nApiRet);
+				SaveRas32Error("RasGetProjectionInfo", nApiRet);
 				throw E_APIERROR;
 			}
 			pArray(xj,4) = pEntry = sRasIp.szIpAddress;
@@ -135,9 +143,9 @@ try
 	else
 	{
 		if (nApiRet == ERROR_NOT_ENOUGH_MEMORY)
-			SAVEWIN32ERROR(RasEnumConnections,nApiRet);
+			SaveWin32Error("RasEnumConnections", nApiRet);
 		else
-			SAVERAS32ERROR(RasEnumConnections,nApiRet);
+			SaveRas32Error("RasEnumConnections", nApiRet);
 		
 		throw E_APIERROR;
 	}
@@ -154,7 +162,7 @@ void _fastcall ARasDevices(ParamBlk *parm)
 {
 try
 {
-	RESETWIN32ERRORS();
+	ResetWin32Errors();
 
 	if (!fpRasEnumDevices)
 		throw E_NOENTRYPOINT;
@@ -179,9 +187,9 @@ try
 	if (nApiRet != ERROR_SUCCESS)
 	{
 		if (nApiRet == ERROR_NOT_ENOUGH_MEMORY)
-			SAVEWIN32ERROR(RasEnumDevices,nApiRet);
+			SaveWin32Error("RasEnumDevices", nApiRet);
 		else
-			SAVERAS32ERROR(RasEnumDevices,nApiRet);
+			SaveRas32Error("RasEnumDevices", nApiRet);
 
 		throw E_APIERROR;
 	}
@@ -213,7 +221,7 @@ void _fastcall ARasPhonebookEntries(ParamBlk *parm)
 {
 try
 {
-	RESETWIN32ERRORS();
+	ResetWin32Errors();
 
 	if (!fpRasEnumEntries)
 		throw E_NOENTRYPOINT;
@@ -224,14 +232,14 @@ try
 
 	DWORD dwSize = 2048, dwEntries, nApiRet;
 	CBuffer pBuffer(dwSize);
-	LPRASENTRYNAME lpRasEntry = (LPRASENTRYNAME)pBuffer.Address();
+	LPRASENTRYNAME lpRasEntry = reinterpret_cast<LPRASENTRYNAME>(pBuffer.Address());
 	lpRasEntry->dwSize = sizeof(RASENTRYNAME);
 
 	nApiRet = fpRasEnumEntries(0,pPhonebookFile,lpRasEntry,&dwSize,&dwEntries);
 	if (nApiRet == ERROR_BUFFER_TOO_SMALL)
 	{
 		pBuffer.Size(dwSize);
-		lpRasEntry = (LPRASENTRYNAME)pBuffer.Address();
+		lpRasEntry = reinterpret_cast<LPRASENTRYNAME>(pBuffer.Address());
 		lpRasEntry->dwSize = sizeof(RASENTRYNAME);
 		nApiRet = fpRasEnumEntries(0,pPhonebookFile,lpRasEntry,&dwSize,&dwEntries);
 	}
@@ -239,9 +247,9 @@ try
 	if (nApiRet != ERROR_SUCCESS)
 	{
 		if (nApiRet == ERROR_NOT_ENOUGH_MEMORY)
-			SAVEWIN32ERROR(RasEnumEntries,nApiRet);
+			SaveWin32Error("RasEnumEntries", nApiRet);
 		else
-			SAVERAS32ERROR(RasEnumEntries,nApiRet);
+			SaveRas32Error("RasEnumEntries", nApiRet);
 
 		throw E_APIERROR;
 	}
@@ -256,7 +264,7 @@ try
 	for (unsigned int xj = 0; xj < dwEntries; xj++)
 	{
 		pArray(xj,1) = pEntryName = lpRasEntry->szEntryName;
-		if (IS_WIN9X())
+		if (COs::Is(Windows9x))
 			pArray(xj,2) = 0;
 		else
             pArray(xj,2) = lpRasEntry->dwFlags;
@@ -323,7 +331,7 @@ void _fastcall RasPhonebookDlgEx(ParamBlk *parm)
 {
 try
 {
-	RESETWIN32ERRORS();
+	ResetWin32Errors();
 
 	if (!fpRasPhonebookDlg)
 		throw E_NOENTRYPOINT;
@@ -338,7 +346,7 @@ try
 	RASPBDLG sDialog = {0};
 	sDialog.dwSize = sizeof(RASPBDLG);
 	sDialog.hwndOwner = WTopHwnd();
-	sDialog.dwFlags = PCOUNT() >= 4 ? p4.ev_long : 0;
+	sDialog.dwFlags = PCount() >= 4 ? p4.ev_long : 0;
 
 	RasPhonebookDlgCallback sCallback;
 
@@ -356,7 +364,7 @@ try
 		// an error occured?
 		if (sDialog.dwError)
 		{
-			SAVERAS32ERROR(RasEnumConnections, sDialog.dwError);
+			SaveRas32Error("RasPhonebookDlg", sDialog.dwError);
 			throw E_APIERROR;
 		}
 		Return(false); // else no connection was established
@@ -388,8 +396,7 @@ void RasDialCallback::Callback1(HRASCONN hrasconn, UINT unMsg, RASCONNSTATE rasc
 DWORD RasDialCallback::Callback2(DWORD dwSubEntry, HRASCONN hrasconn,
 								UINT unMsg,	RASCONNSTATE rascs, DWORD dwError, DWORD dwExtendedError)
 {
-	Value vRetVal;
-	vRetVal.ev_type = '0';
+	Value vRetVal = {'0'};
 	m_Buffer.Format(m_Callback, dwSubEntry, hrasconn, unMsg, rascs, dwError, dwExtendedError);
 	if (_Evaluate(&vRetVal,m_Buffer) == 0)
 	{
@@ -435,7 +442,7 @@ void _fastcall RasDialEx(ParamBlk *parm)
 	RASEAPUSERIDENTITY *pUserIdentity = 0;
 try
 {
-	RESETWIN32ERRORS();
+	ResetWin32Errors();
 
 	if (!fpRasDial || !fpRasGetEntryDialParams)
 		throw E_NOENTRYPOINT;
@@ -451,7 +458,7 @@ try
 	FoxString pEntry(parm,1);
 	FoxString pPhonebookFile(parm,2);
 	FoxString pCallback(parm,3);
-	HRASCONN hConn = PCOUNT() >= 5 ? reinterpret_cast<HRASCONN>(p5.ev_long) : 0;
+	HRASCONN hConn = PCount() >= 5 ? reinterpret_cast<HRASCONN>(p5.ev_long) : 0;
 
 	if (pCallback.Len() > VFP2C_MAX_CALLBACKFUNCTION)
 		throw E_INVALIDPARAMS;
@@ -460,7 +467,7 @@ try
 	DWORD nApiRet;
 
 	char *pPhonebook = 0;
-	if (!IS_WIN95())
+	if (!COs::Is(Windows9x))
 		pPhonebook = pPhonebookFile;
 
 	RASDIALPARAMS sDialParams = {0};
@@ -469,7 +476,7 @@ try
 
 	RASDIALEXTENSIONS sDialExtensions = {0};
 	sDialExtensions.dwSize = sizeof(RASDIALEXTENSIONS);
-	sDialExtensions.dwfOptions = PCOUNT() >= 4 ? p4.ev_long : 0;
+	sDialExtensions.dwfOptions = PCount() >= 4 ? p4.ev_long : 0;
 
 	if (pEntry.Len())
 	{
@@ -478,7 +485,7 @@ try
 		nApiRet = fpRasGetEntryDialParams(pEntry,&sDialParams,&bPassword);
 		if (nApiRet != ERROR_SUCCESS)
 		{
-			SAVERAS32ERROR(RasGetEntryDialParams,nApiRet);
+			SaveRas32Error("RasGetEntryDialParams", nApiRet);
 			throw E_APIERROR;
 		}
 
@@ -495,7 +502,7 @@ try
 			else if (nApiRet == ERROR_INVALID_FUNCTION_FOR_ENTRY);
 			else
 			{
-				SAVERAS32ERROR(RasGetEapUserIdentity,nApiRet);
+				SaveRas32Error("RasGetEapUserIdentity", nApiRet);
 				throw E_APIERROR;
 			}
 		}
@@ -507,7 +514,7 @@ try
 	DWORD dwNotifier = 0; LPVOID lpNotifier = 0;
 	if (pCallback.Len())
 	{
-		if (IS_WIN9X())
+		if (COs::Is(Windows9x))
 		{
 			dwNotifier = 1;
 			lpNotifier = reinterpret_cast<LPVOID>(RasDialCallback::RasDialCallbackFunc1);
@@ -538,7 +545,7 @@ try
 	nApiRet = fpRasDial(&sDialExtensions,pPhonebook,&sDialParams,dwNotifier,lpNotifier,&hConn);
 	if (nApiRet != ERROR_SUCCESS)
 	{
-		SAVERAS32ERROR(RasDial,nApiRet);
+		SaveRas32Error("RasDial", nApiRet);
 		
 		// call RasHangUp to cleanup the RAS handle
 		if (hConn && !pCallback.Len())
@@ -583,7 +590,7 @@ void _fastcall RasDialDlgEx(ParamBlk *parm)
 {
 try
 {
-	RESETWIN32ERRORS();
+	ResetWin32Errors();
 
 	if (!fpRasDialDlg)
 		throw E_NOENTRYPOINT;
@@ -594,13 +601,17 @@ try
 
 	RASDIALDLG sDialog = {0};
 	sDialog.dwSize = sizeof(RASDIALDLG);
+	if (PCount() >= 4)
+		sDialog.dwSubEntry = p4.ev_long;
+	if (PCount() >= 5)
+		sDialog.hwndOwner = reinterpret_cast<HWND>(p5.ev_long);
 
 	BOOL bRetVal = fpRasDialDlg(pPhonebook,pEntry,pPhonenumber,&sDialog);
 	if (!bRetVal)
 	{
 		if (sDialog.dwError)
 		{
-			SAVERAS32ERROR(RasDialDlg, sDialog.dwError);
+			SaveRas32Error("RasDialDlg", sDialog.dwError);
 			throw E_APIERROR;
 		}
 		Return(false);
@@ -618,7 +629,7 @@ void _fastcall RasHangUpEx(ParamBlk *parm)
 {
 try
 {
-	RESETWIN32ERRORS();
+	ResetWin32Errors();
 
 	if (!fpRasHangUp || !fpRasGetConnectStatus)
 		throw E_NOENTRYPOINT;
@@ -628,7 +639,7 @@ try
 	DWORD nApiRet = fpRasHangUp(hConn);
 	if (nApiRet != ERROR_SUCCESS)
 	{
-		SAVERAS32ERROR(RasHangUp,nApiRet);
+		SaveRas32Error("RasHangUp", nApiRet);
 		throw E_APIERROR;
 	}
 
@@ -642,9 +653,9 @@ try
 		else if (nApiRet != ERROR_SUCCESS)
 		{
 			if (nApiRet == ERROR_BUFFER_TOO_SMALL || nApiRet == ERROR_NOT_ENOUGH_MEMORY)
-				SAVEWIN32ERROR(RasGetConnectStatus,nApiRet);
+				SaveWin32Error("RasGetConnectStatus", nApiRet);
 			else
-		    	SAVERAS32ERROR(RasGetConnectStatus,nApiRet);
+		    	SaveRas32Error("RasGetConnectStatus", nApiRet);
 			throw E_APIERROR;
 		}
 		else
@@ -661,7 +672,7 @@ void _fastcall RasGetConnectStatusEx(ParamBlk *parm)
 {
 try
 {
-	RESETWIN32ERRORS();
+	ResetWin32Errors();
 
 	if (!fpRasGetConnectStatus)
 		throw E_NOENTRYPOINT;
@@ -677,13 +688,13 @@ try
 	if (nApiRet != ERROR_SUCCESS)
 	{
 		if (nApiRet == ERROR_BUFFER_TOO_SMALL || nApiRet == ERROR_NOT_ENOUGH_MEMORY)
-			SAVEWIN32ERROR(RasGetConnectStatus,nApiRet);
+			SaveWin32Error("RasGetConnectStatus", nApiRet);
 		else
-        	SAVERAS32ERROR(RasGetConnectStatus,nApiRet);
+        	SaveRas32Error("RasGetConnectStatus", nApiRet);
 		throw E_APIERROR;
 	}
 
-	pArray(1) = (int)sStatus.rasconnstate;
+	pArray(1) = static_cast<int>(sStatus.rasconnstate);
 	pArray(2) = sStatus.dwError;
 	pArray(3) = pValue = sStatus.szDeviceType;
 	pArray(4) = pValue = sStatus.szDeviceName;
@@ -770,7 +781,7 @@ void _fastcall RasConnectionNotificationEx(ParamBlk *parm)
 	RasNotifyThread *pNotifyThread = 0;
 try
 {
-	RESETWIN32ERRORS();
+	ResetWin32Errors();
 
 	if (!fpRasConnectionNotification)
 		throw E_NOENTRYPOINT;
@@ -781,7 +792,7 @@ try
 
 	if (!goThreadManager.Initialized())
 	{
-		SAVECUSTOMERROR("RasConnectionNotificationEx","Library not initialized.");
+		SaveCustomError("RasConnectionNotificationEx","Library not initialized.");
 		throw E_APIERROR;
 	}
 
@@ -812,11 +823,11 @@ void _fastcall AbortRasConnectionNotificationEx(ParamBlk *parm)
 {
 try
 {
-	RESETWIN32ERRORS();
+	ResetWin32Errors();
 
 	if (!goThreadManager.Initialized())
 	{
-		SAVECUSTOMERROR("AbortRasConnectionNotificationEx","Library not initialized.");
+		SaveCustomError("AbortRasConnectionNotificationEx","Library not initialized.");
 		throw E_APIERROR;
 	}
 
@@ -833,7 +844,7 @@ void _fastcall RasClearConnectionStatisticsEx(ParamBlk *parm)
 {
 try
 {
-	RESETWIN32ERRORS();
+	ResetWin32Errors();
 
 	if (!fpRasClearConnectionStatistics)
 		throw E_NOENTRYPOINT;
@@ -842,7 +853,7 @@ try
 	DWORD nApiRet = fpRasClearConnectionStatistics(hConn);
 	if (nApiRet != ERROR_SUCCESS)
 	{
-		SAVEWIN32ERROR(RasClearConnectionStatistics,nApiRet);
+		SaveWin32Error("RasClearConnectionStatistics", nApiRet);
 		throw E_APIERROR;
 	}
 }

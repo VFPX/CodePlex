@@ -1,0 +1,67 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252" />
+<title>MoveFileEx</title><link href="/scripts/styles.css" rel="stylesheet" type="text/css" />
+<script src="/scripts/jscript.js" type="text/javascript"></script>
+</head><body>
+<div id="header">
+<p>VFP2C32 2.0.0.8</p>
+<h1 class="function">MoveFileEx</h1>
+</div>
+<div id="content">
+<p class="description">Moves a file, an optional callback function can be passed which receives status while the move operation is in progress.</p>
+
+<div class="block"><pre>MoveFileEx(<a href="#p1">cSourceFile</a>, <a href="#p2">cDestinationFile</a> [, <a href="#p3">cCallback</a>])</pre></div>
+<h3>Parameters</h3>
+<dl class="parm"><dt><a id="p1">cSourceFile</a></dt>
+<dd><p>Fully qualified path of the file to move.</p>
+</dd></dl>
+<dl class="parm"><dt><a id="p2">cDestinationFile</a></dt>
+<dd><p>Fully qualified path of the destination for the move operation.</p>
+</dd></dl>
+<dl class="parm"><dt><a id="p3">cCallback (optional)</a></dt>
+<dd><p>The function to callback with progress information during the move operation.<br />
+The function should have the following prototype:</p>
+<div class="codeheader"><a onclick="CopyCode('code_34W0WTQ32')" onmouseover="ChangeClass(this, 'onhover')" onmouseout="ChangeClass(this, '')">Copy code</a></div>
+<div class="block"><pre id="code_34W0WTQ32">FUNCTION MoveCallback(nBytesCopied, nFileSize, nPercentCopied)
+ENDFUNC
+</pre></div>
+</dd></dl>
+<h2>Return Value</h2>
+<p>.T. if the file was moved to the new destination, .F. otherwise.</p>
+
+<h2>See Also</h2>
+<h4>Reference</h4>
+<p><a href="/pages/ADirectoryInfo.html">ADirectoryInfo</a><br />
+<a href="/pages/ADirEx.html">ADirEx</a><br />
+<a href="/pages/ADriveInfo.html">ADriveInfo</a><br />
+<a href="/pages/AFileAttributes.html">AFileAttributes</a><br />
+<a href="/pages/AFileAttributesEx.html">AFileAttributesEx</a><br />
+<a href="/pages/CancelFileChange.html">CancelFileChange</a><br />
+<a href="/pages/CompareFileTimes.html">CompareFileTimes</a><br />
+<a href="/pages/CopyFileEx.html">CopyFileEx</a><br />
+<a href="/pages/DeleteDirectory.html">DeleteDirectory</a><br />
+<a href="/pages/DeleteFileEx.html">DeleteFileEx</a><br />
+<a href="/pages/FindFileChange.html">FindFileChange</a><br />
+<a href="/pages/GetFileAttributes.html">GetFileAttributes</a><br />
+<a href="/pages/GetFileOwner.html">GetFileOwner</a><br />
+<a href="/pages/GetFileSize.html">GetFileSize</a><br />
+<a href="/pages/GetFileTimes.html">GetFileTimes</a><br />
+<a href="/pages/GetLongPathName.html">GetLongPathName</a><br />
+<a href="/pages/GetShortPathName.html">GetShortPathName</a><br />
+<a href="/pages/SetFileAttributes.html">SetFileAttributes</a><br />
+<a href="/pages/SetFileTimes.html">SetFileTimes</a><br />
+</p>
+<h4>Used WinApi functions</h4>
+<p><a href="http://msdn.microsoft.com/en-us/library/aa365239(VS.85).aspx">MoveFile</a><br />
+<a href="http://msdn.microsoft.com/en-us/library/aa364996(VS.85).aspx">GetVolumePathName</a><br />
+<a href="http://msdn.microsoft.com/en-us/library/bb773687(VS.85).aspx">PathIsSameRoot</a></p>
+
+
+</div>
+<div id="footer">
+<p>&copy; <a href="http://vfpx.codeplex.com/wikipage?title=VFP2C32">VFP2C32</a> - Shared Source License for <a href="http://vfpx.codeplex.com">VFPX</a></p>
+</div>
+</body>
+</html>

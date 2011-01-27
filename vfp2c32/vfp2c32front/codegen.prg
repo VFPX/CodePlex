@@ -116,9 +116,8 @@ DEFINE CLASS oCodeGen AS Exception
 		"#include <windows.h>" + CRLF + ;
 		"#include <stddef.h>" + CRLF + ;
 		"#include <stdio.h>" + CRLF + CRLF + ;
-		"int main(int argc, char argv[])" + CRLF + ;
-		"{" + CRLF + ;
-		"int nInput;" + CRLF
+		"int _tmain(int argc, _TCHAR* argv[])" + CRLF + ;
+		"{" + CRLF
 		
 		FOR xj = 1 TO ALEN(loType.laDeclar)
 			IF loType.laDeclar[xj].Indirect = 0 AND VARTYPE(loType.laDeclar[xj].laSubscripts[1]) = 'L'
@@ -145,7 +144,8 @@ DEFINE CLASS oCodeGen AS Exception
 		lcCode = lcCode + [fprintf(stdout,"Align of ] + lcName + [: %d\n",__alignof(] + ;
 			lcName + [));] + CRLF
 		
-		lcCode = lcCode + "nInput = _fgetchar();" + CRLF + "}"
+		lcCode = lcCode + "int nInput = _fgetchar();" + CRLF 
+		lcCode = lcCode + "return 0;" + CRLF + "}"
 		
 		RETURN lcCode
 
@@ -231,6 +231,10 @@ DEFINE CLASS oVFPCodeGen AS oCodeGen
 		THIS.CreateMemberProcs(loType,@lcCode)
 		THIS.CreateClassFooter(@lcCode)
 
+		IF THIS.nAllocator = 2
+			m.lcCode = STRTRAN(m.lcCode, 'WritePCString', 'WriteGPCString')
+		ENDIF
+
 		RETURN lcCode
 	ENDPROC
 	
@@ -238,10 +242,6 @@ DEFINE CLASS oVFPCodeGen AS oCodeGen
 		lcCode = lcCode + "DEFINE CLASS " + loType.laDeclar[lnIndex].cName + " AS " + THIS.cBaseClass + CRLF + CRLF
 		lcCode = lcCode + OFFSET1 + "Address = 0" + CRLF
 		lcCode = lcCode + OFFSET1 + "SizeOf = " + ALLTRIM(STR(loType.laDeclar[lnIndex].SizeOf)) + CRLF
-		IF THIS.nAllocator = 2 && GlobalAlloc?
-			lcCode = lcCode + OFFSET1 + "hGlobal = 0" + CRLF
-			lcCode = lcCode + OFFSET1 + "Locked = .F." + CRLF
-		ENDIF
 		IF THIS.bArraySupport
 			IF !THIS.bBufferStruct
 				IF THIS.nSubscripts = 1
@@ -327,14 +327,9 @@ DEFINE CLASS oVFPCodeGen AS oCodeGen
 						lcCode = lcCode + OFFSET1 + "PROCEDURE Init()" + CRLF
 						IF THIS.nAllocator = 1
 							lcCode = lcCode + OFFSET2 + "THIS.Address = AllocMem(THIS.SizeOf)" + CRLF
-							lcCode = lcCode + OFFSET2 + "IF THIS.Address = 0" + CRLF
 						ELSE
-							lcCode = lcCode + OFFSET2 + "THIS.hGlobal = AllocHGlobal(THIS.SizeOf)" + CRLF
-							lcCode = lcCode + OFFSET2 + "IF THIS.hGlobal = 0" + CRLF
+							lcCode = lcCode + OFFSET2 + "THIS.Address = AllocHGlobal(THIS.SizeOf, GMEM_FIXED + GMEM_ZEROINIT)" + CRLF
 						ENDIF
-						lcCode = lcCode + OFFSET3 + "ERROR(43)" + CRLF
-						lcCode = lcCode + OFFSET3 + "RETURN .F." + CRLF
-						lcCode = lcCode + OFFSET2 + "ENDIF" + CRLF
 						
 						lcInitCode = THIS.CreateMemberInitProc(loType)
 						IF !EMPTY(lcInitCode)
@@ -343,7 +338,7 @@ DEFINE CLASS oVFPCodeGen AS oCodeGen
 							IF THIS.nAllocator = 1				
 								lcCode = lcCode + OFFSET3 + "FreeMem(THIS.Address)" + CRLF
 							ELSE	
-								lcCode = lcCode + OFFSET3 + "FreeHGlobal(THIS.hGlobal)" + CRLF	
+								lcCode = lcCode + OFFSET3 + "FreeHGlobal(THIS.Address)" + CRLF	
 							ENDIF
 							lcCode = lcCode + OFFSET3 + "RETURN .F." + CRLF
 							lcCode = lcCode + OFFSET2 + "ENDIF" + CRLF
@@ -353,9 +348,13 @@ DEFINE CLASS oVFPCodeGen AS oCodeGen
 						lcCode = lcCode + OFFSET1 + "ENDPROC" + CRLF + CRLF
 						
 					OTHERWISE
-						lcCode = lcCode + OFFSET1 + "PROCEDURE Init()" + CRLF
-						THIS.CreateEmbeddedStructs(loType,@lcCode,2,.F.)
-						lcCode = lcCode + OFFSET1 + "ENDPROC" + CRLF + CRLF
+						
+						THIS.CreateEmbeddedStructs(loType,@lcInitCode, 2, .F.)
+						IF !EMPTY(m.lcInitCode)
+							lcCode = lcCode + OFFSET1 + "PROCEDURE Init()" + CRLF
+							lcCode = lcCode + lcInitCode						
+							lcCode = lcCode + OFFSET1 + "ENDPROC" + CRLF + CRLF
+						ENDIF
 				
 				ENDCASE
 
@@ -380,18 +379,22 @@ DEFINE CLASS oVFPCodeGen AS oCodeGen
 
 				lcCode = lcCode + OFFSET1 + "PROCEDURE Init(lnAddress)" + CRLF
 				lcCode = lcCode + OFFSET2 + "IF PCOUNT() = 0" + CRLF
-				
-				lcCode = lcCode + OFFSET3 + "THIS.Address = AllocMem(THIS.SizeOf)" + CRLF
-				lcCode = lcCode + OFFSET3 + "IF THIS.Address = 0" + CRLF
-				lcCode = lcCode + OFFSET4 + "ERROR(43)" + CRLF
-				lcCode = lcCode + OFFSET4 + "RETURN .F." + CRLF
-				lcCode = lcCode + OFFSET3 + "ENDIF" + CRLF
+
+				IF THIS.nAllocator = 1
+					lcCode = lcCode + OFFSET3 + "THIS.Address = AllocMem(THIS.SizeOf)" + CRLF
+				ELSE
+					lcCode = lcCode + OFFSET3 + "THIS.Address = AllocHGlobal(THIS.SizeOf, GMEM_FIXED + GMEM_ZEROINIT)" + CRLF
+				ENDIF
 
 				lcInitCode = THIS.CreateMemberInitProc(loType)
 				IF !EMPTY(lcInitCode)
 					lcCode = lcCode + OFFSET3 + "IF !THIS.AllocMembers()" + " &" + "& " + "Member allocation successful?" + CRLF
 					lcCode = lcCode + OFFSET4 + "THIS.FreeMembers()" + CRLF
-					lcCode = lcCode + OFFSET4 + "FreeMem(THIS.Address)" + CRLF
+					IF THIS.nAllocator = 1
+						lcCode = lcCode + OFFSET4 + "FreeMem(THIS.Address)" + CRLF
+					ELSE
+						lcCode = lcCode + OFFSET4 + "FreeHGlobal(THIS.Address)" + CRLF
+					ENDIF
 					lcCode = lcCode + OFFSET4 + "RETURN .F." + CRLF
 					lcCode = lcCode + OFFSET3 + "ENDIF" + CRLF
 				ENDIF
@@ -449,8 +452,7 @@ DEFINE CLASS oVFPCodeGen AS oCodeGen
 				IF THIS.nAllocator = 1
 					lcCode = lcCode + OFFSET2 + "FreeMem(THIS.Address)" + CRLF
 				ELSE
-					lcCode = lcCode + OFFSET2 + "ASSERT !THIS.Locked MESSAGE 'Unlock memory first!'" + CRLF
-					lcCode = lcCode + OFFSET2 + "FreeHGlobal(THIS.hGlobal)" + CRLF
+					lcCode = lcCode + OFFSET2 + "FreeHGlobal(THIS.Address)" + CRLF
 				ENDIF
 				lcCode = lcCode + OFFSET1 + "ENDPROC" + CRLF + CRLF
 			
@@ -488,67 +490,32 @@ DEFINE CLASS oVFPCodeGen AS oCodeGen
 					lcCode = lcCode + OFFSET2 + "ASSERT TYPE('lnDims') = 'N' AND lnDims > 0 MESSAGE 'Invalid dimension subscript!'" + CRLF
 				ENDIF
 			ENDIF
-			IF THIS.nAllocator = 1
-				lcCode = lcCode + OFFSET2 + "IF THIS.Address != 0"
-			ELSE
-				lcCode = lcCode + OFFSET2 + "IF THIS.hGlobal != 0"
-			ENDIF
-			lcCode = lcCode + " &" + "& " + "Redimensioning not supported natively" + CRLF
+			lcCode = lcCode + OFFSET2 + "IF THIS.Address != 0" + " &" + "& " + "Redimensioning not supported natively" + CRLF
 			lcCode = lcCode + OFFSET3 + "RETURN .F." + CRLF
 			lcCode = lcCode + OFFSET2 + "ENDIF" + CRLF
 			IF THIS.nSubscripts = 1
 				IF THIS.nAllocator = 1
 					lcCode = lcCode + OFFSET2 + "THIS.Address = AllocMem(THIS.SizeOf*lnRows)" + CRLF
-					lcCode = lcCode + OFFSET2 + "IF THIS.Address = 0" + CRLF
 				ELSE
-					lcCode = lcCode + OFFSET2 + "THIS.hGlobal = AllocHGlobal(THIS.SizeOf*lnRows)" + CRLF
-					lcCode = lcCode + OFFSET2 + "IF THIS.hGlobal = 0" + CRLF
+					lcCode = lcCode + OFFSET2 + "THIS.Address = AllocHGlobal(THIS.SizeOf*lnRows, GMEM_FIXED + GMEM_ZEROINIT)" + CRLF
 				ENDIF
-				lcCode = lcCode + OFFSET3 + "ERROR(43)" + CRLF
-				lcCode = lcCode + OFFSET3 + "RETURN .F." + CRLF
-				lcCode = lcCode + OFFSET2 + "ENDIF" + CRLF
 				lcCode = lcCode + OFFSET2 + "THIS.Rows = lnRows" + CRLF
 			ELSE
 				IF THIS.nAllocator = 1
 					lcCode = lcCode + OFFSET2 + "THIS.Address = AllocMem(THIS.SizeOf*lnRows*lnDims)" + CRLF
-					lcCode = lcCode + OFFSET2 + "IF THIS.Address = 0" + CRLF
 				ELSE
-					lcCode = lcCode + OFFSET2 + "THIS.hGlobal = AllocHGlobal(THIS.SizeOf*lnRows*lnDims)" + CRLF
-					lcCode = lcCode + OFFSET2 + "IF THIS.hGlobal = 0" + CRLF
+					lcCode = lcCode + OFFSET2 + "THIS.Address = AllocHGlobal(THIS.SizeOf*lnRows*lnDims, GMEM_FIXED)" + CRLF
 				ENDIF
-				lcCode = lcCode + OFFSET3 + "ERROR(43)" + CRLF
-				lcCode = lcCode + OFFSET3 + "RETURN .F." + CRLF
-				lcCode = lcCode + OFFSET2 + "ENDIF" + CRLF
 				lcCode = lcCode + OFFSET2 + "THIS.Rows = lnRows" + CRLF
 				lcCode = lcCode + OFFSET2 + "THIS.Dims = lnDims" + CRLF
 				lcCode = lcCode + OFFSET2 + "THIS.RowSize = THIS.SizeOf * lnRows" + CRLF
 			ENDIF
-			IF THIS.nAllocator = 1 AND !THIS.TypeHasSubStructs(loType)
+			IF !THIS.TypeHasSubStructs(loType)
 				lcCode = lcCode + OFFSET2 + "THIS.Offset = THIS.Address" + CRLF
 			ENDIF
 			lcCode = lcCode + OFFSET1 + "ENDPROC" + CRLF + CRLF
 		ENDIF
 
-		&& Lock & Unlock when Allocator is GlobalAlloc		
-		IF THIS.nAllocator = 2
-			lcCode = lcCode + OFFSET1 + "PROCEDURE Lock()" + CRLF
-			lcCode = lcCode + OFFSET2 + "ASSERT !THIS.Locked MESSAGE 'Memory handle already locked!'" + CRLF
-			lcCode = lcCode + OFFSET2 + "THIS.Address = LockHGlobal(THIS.hGlobal)" + CRLF
-			lcCode = lcCode + OFFSET2 + "IF THIS.Address != 0" + CRLF
-			lcCode = lcCode + OFFSET3 + "THIS.Locked = .T." + CRLF
-			lcCode = lcCode + OFFSET2 + "ENDIF" + CRLF
-			lcCode = lcCode + OFFSET2 + "RETURN THIS.Locked" + CRLF
-			lcCode = lcCode + OFFSET1 + "ENDPROC" + CRLF + CRLF
-			
-			lcCode = lcCode + OFFSET1 + "PROCEDURE Unlock()" + CRLF
-			lcCode = lcCode + OFFSET2 + "ASSERT THIS.Locked MESSAGE 'Memory handle not locked!'" + CRLF
-			lcCode = lcCode + OFFSET2 + "IF UnlockHGlobal(THIS.hGlobal) >= 0" + CRLF
-			lcCode = lcCode + OFFSET3 + "THIS.Locked = .F." + CRLF
-			lcCode = lcCode + OFFSET2 + "ENDIF" + CRLF
-			lcCode = lcCode + OFFSET2 + "RETURN !THIS.Locked" + CRLF
-			lcCode = lcCode + OFFSET1 + "ENDPROC" + CRLF + CRLF
-		ENDIF
-		
 		&& AIndex if arraysupport
 		IF THIS.bArraySupport
 			IF THIS.nSubscripts = 1
@@ -614,36 +581,23 @@ DEFINE CLASS oVFPCodeGen AS oCodeGen
 		
 		&& BufferSize_Assign 
 		IF THIS.bBufferStruct
+			lcCode = lcCode + OFFSET1 + "PROCEDURE BufferSize_Assign(lnBufferSize)" + CRLF
+			lcCode = lcCode + OFFSET2 + "LOCAL lnAddress" + CRLF
 			IF THIS.nAllocator = 1
-				lcCode = lcCode + OFFSET1 + "PROCEDURE BufferSize_Assign(lnBufferSize)" + CRLF
-				lcCode = lcCode + OFFSET2 + "LOCAL lnAddress" + CRLF
-				lcCode = lcCode + OFFSET2 + "lnAddress = ReAllocMem(THIS.Address,lnBufferSize)" + CRLF
-				lcCode = lcCode + OFFSET2 + "IF lnAddress != 0" + CRLF
-				lcCode = lcCode + OFFSET3 + "THIS.Address = lnAddress" + CRLF
-				lcCode = lcCode + OFFSET3 + "THIS.BufferSize = lnBufferSize" + CRLF
-				lcCode = lcCode + OFFSET2 +	"ELSE" + CRLF
-				lcCode = lcCode + OFFSET3 + "ERROR(43)" + CRLF
-				lcCode = lcCode + OFFSET2 +	"ENDIF" + CRLF
-				lcCode = lcCode + OFFSET1 + "ENDPROC" + CRLF + CRLF
+				lcCode = lcCode + OFFSET2 + "lnAddress = ReAllocMem(THIS.Address, lnBufferSize)" + CRLF
 			ELSE
-				lcCode = lcCode + OFFSET1 + "PROCEDURE BufferSize_Assign(lnBufferSize)" + CRLF
-				lcCode = lcCode + OFFSET2 + "LOCAL lnHGlobal" + CRLF
-				lcCode = lcCode + OFFSET2 + "lnHGlobal = ReAllocHGlobal(THIS.hGlobal,lnBufferSize)" + CRLF
-				lcCode = lcCode + OFFSET2 + "IF lnHGlobal != 0" + CRLF
-				lcCode = lcCode + OFFSET3 + "THIS.hGlobal = lnHGlobal" + CRLF
-				lcCode = lcCode + OFFSET3 + "THIS.BufferSize = lnBufferSize" + CRLF
-				lcCode = lcCode + OFFSET2 +	"ELSE" + CRLF
-				lcCode = lcCode + OFFSET3 + "ERROR(43)" + CRLF
-				lcCode = lcCode + OFFSET2 +	"ENDIF" + CRLF
-				lcCode = lcCode + OFFSET1 + "ENDPROC" + CRLF + CRLF
+				lcCode = lcCode + OFFSET2 + "lnAddress = ReAllocHGlobal(THIS.Address, lnBufferSize)" + CRLF
 			ENDIF
+			lcCode = lcCode + OFFSET2 + "THIS.Address = lnAddress" + CRLF
+			lcCode = lcCode + OFFSET2 + "THIS.BufferSize = lnBufferSize" + CRLF
+			lcCode = lcCode + OFFSET1 + "ENDPROC" + CRLF + CRLF
 		ENDIF
 
 	ENDPROC
 	
 	PROCEDURE CreateMemberInitProc(loType)
 
-		LOCAL xj, lcInitCode, lbAddress
+		LOCAL xj, lcInitCode
 		lcInitCode = ""
 
 		FOR xj = 1 TO ALEN(loType.laMembers)
@@ -651,9 +605,7 @@ DEFINE CLASS oVFPCodeGen AS oCodeGen
 		ENDFOR
 
 		IF !EMPTY(lcInitCode)
-			lbAddress = AT("lnAddress",lcInitCode) > 0 
 			lcInitCode = OFFSET1 + "PROCEDURE AllocMembers()" + CRLF + ;
-			IIF(lbAddress,OFFSET2 + "LOCAL lnAddress" + CRLF,"") + lcInitCode 
 			lcInitCode = lcInitCode + OFFSET1 + "ENDPROC" + CRLF + CRLF
 		ENDIF
 		
@@ -670,15 +622,21 @@ DEFINE CLASS oVFPCodeGen AS oCodeGen
 			RETURN
 		ENDIF
 		
+		LOCAL lcOffset, lcSize
 		&& allocate pointer members to basic types
 		IF (loType.Indirect = 1 AND BITAND(loType.Typemask,TM_INT8+TM_SHORT+TM_INT+TM_LONG+TM_FLOAT+TM_DOUBLE+TM_INT64) > 0) ;
 			OR (loType.Indirect = 2 AND BITAND(loType.Typemask,TM_VOID) > 0)
-				lcInitCode = lcInitCode + OFFSET2 + "lnAddress = AllocMemTo(THIS.Address" + ;
-				IIF(loType.OffsetOf>0,"+"+ALLTRIM(STR(loType.OffsetOf)),"") + "," + ;
-				IIF(loType.bArray,ALLTRIM(STR(loType.SizeOf)),ALLTRIM(STR(loType.BaseSize))) + ") &" + "& allocate memory for " + loType.cName + CRLF
-				lcInitCode = lcInitCode + OFFSET2 + "IF lnAddress = 0" + CRLF
-				lcInitCode = lcInitCode + OFFSET3 + "RETURN .F." + CRLF
-				lcInitCode = lcInitCode + OFFSET2 + "ENDIF" + CRLF
+
+				lcOffset = IIF(loType.OffsetOf > 0, "+" + ALLTRIM(STR(loType.OffsetOf)), "")
+				lcSize = IIF(loType.bArray, ALLTRIM(STR(loType.SizeOf)), ALLTRIM(STR(loType.BaseSize)))
+
+				IF THIS.nAllocator = 1
+					lcInitCode = lcInitCode + OFFSET2 + "AllocMemTo(THIS.Address" + ;
+					lcOffset + "," + lcSize + ") &" + "& allocate memory for " + loType.cName + CRLF
+				ELSE
+					lcInitCode = lcInitCode + OFFSET2 + "WritePointer(THIS.Address" + ;
+					lcOffset + ", AllocHGlobal(" + lcSize + ", GMEM_FIXED + GMEM_ZEROINIT)) &" + "& allocate memory for " + loType.cName + CRLF
+				ENDIF
 		ENDIF
 	ENDPROC
 	
@@ -686,6 +644,10 @@ DEFINE CLASS oVFPCodeGen AS oCodeGen
 	
 		LOCAL xj, lcDestCode
 		lcDestCode = ""
+
+		IF THIS.bBufferStruct
+			RETURN lcDestCode
+		ENDIF
 
 		FOR xj = 1 TO ALEN(loType.laMembers)
 			THIS.CreateMemberFreeCode(loType.laMembers[xj],@lcDestCode)
@@ -710,10 +672,17 @@ DEFINE CLASS oVFPCodeGen AS oCodeGen
 			RETURN
 		ENDIF
 	
+		LOCAL lcOffset
 		IF (loType.Indirect = 1 AND BITAND(loType.Typemask,TM_INT8+TM_CHAR+TM_WCHAR+TM_SHORT+TM_INT+TM_LONG+TM_FLOAT+TM_DOUBLE+TM_INT64) > 0) ;
 			OR (loType.Indirect = 2 AND BITAND(loType.Typemask,TM_VOID) > 0)
-			lcDestCode= lcDestCode+ OFFSET2 + "FreePMem(" + THIS.cBase + ;
-			IIF(loType.OffsetOf>0,"+"+ALLTRIM(STR(loType.OffsetOf)),"") + ")" + CRLF
+			
+			lcOffset = IIF(loType.OffsetOf>0,"+"+ALLTRIM(STR(loType.OffsetOf)),"") 
+			
+			IF THIS.nAllocator = 1
+				lcDestCode= lcDestCode+ OFFSET2 + "FreePMem(THIS.Address" + lcOffset + ")" + CRLF
+			ELSE
+				lcDestCode= lcDestCode+ OFFSET2 + "FreeHGlobal(THIS.Address" + lcOffset + "))" + CRLF
+			ENDIF
 		ENDIF
 		
 	ENDPROC
@@ -907,7 +876,7 @@ DEFINE CLASS oVFPCodeGen AS oCodeGen
 				
 		ENDCASE
 		
-		IF THIS.bReadOnly
+		IF THIS.bReadOnly OR THIS.bBufferStruct
 			RETURN
 		ENDIF
 		

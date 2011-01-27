@@ -12,26 +12,23 @@
 void _fastcall SyncToSNTPServer(ParamBlk *parm)
 {
 	SOCKET sSock = INVALID_SOCKET;
+try
+{
+	FoxString pServer(p1);
+	unsigned short nPort = (PCount() >= 2 && p2.ev_long) ? static_cast<unsigned short>(p2.ev_long) : SNTP_PORT;
+	DWORD dwTimeout = (PCount() >= 3 && p3.ev_long) ? p3.ev_long : gnDefaultWinsockTimeOut;;
+
 	SOCKADDR_IN sockAddr;
 	SNTPPACKET sPacket;
 	SNTPRESPONSE sResponse;
 	SNTPTIME sReplyTime, sCorrectedTime;
 	LPHOSTENT lphost;
 	SYSTEMTIME sTime;
-	DWORD dwTimeout;
 	TIMEVAL sTimeout;
 	double dClockOffset, dNewTime, dRequestSend, dRequestReceived, dReplySend, dReplyReceived;
-	int nApiRet, nErrorRet = -1;
+	int nApiRet;
 	fd_set fSockets;
-	char *pServer;
 
-	if (!NullTerminateValue(p1))
-		RaiseError(E_INSUFMEMORY);
-
-	LockHandle(p1);
-	pServer = HandleToPtr(p1);
-
-	dwTimeout = (PCOUNT() >= 3 && p3.ev_long) ? p3.ev_long : gnDefaultWinsockTimeOut;
 	sTimeout.tv_sec = dwTimeout / 1000;
 	sTimeout.tv_usec = dwTimeout % 1000;
 	FD_ZERO(&fSockets);
@@ -39,13 +36,10 @@ void _fastcall SyncToSNTPServer(ParamBlk *parm)
 	ZeroMemory(&sockAddr,sizeof(sockAddr));
 	ZeroMemory(&sPacket,sizeof(sPacket));
 	
-	if (PCOUNT() >= 4 && p4.ev_long)
-		sPacket.LiVnMode = (BYTE)SNTP_SET_VERSION(p4.ev_long) | SNTP_MODE_CLIENT;
-	else
-		sPacket.LiVnMode = SNTP_SET_VERSION(2) | SNTP_MODE_CLIENT;
+	sPacket.LiVnMode = SNTP_SET_VERSION(3) | SNTP_MODE_CLIENT;
 
 	sockAddr.sin_family = AF_INET;
-	sockAddr.sin_port = htons((PCOUNT() >= 2 && p2.ev_long) ? (unsigned short)p2.ev_long : SNTP_PORT);
+	sockAddr.sin_port = htons(nPort);
 	sockAddr.sin_addr.s_addr = inet_addr(pServer);
 
 	if (sockAddr.sin_addr.s_addr == INADDR_NONE)
@@ -55,25 +49,25 @@ void _fastcall SyncToSNTPServer(ParamBlk *parm)
 			sockAddr.sin_addr.s_addr = ((LPIN_ADDR)lphost->h_addr)->s_addr;
 		else
 		{
-			SAVECUSTOMERROR("gethostbyname","Host not found.");
-			goto ErrorOut;
+			SaveCustomError("gethostbyname","Host not found.");
+			throw E_APIERROR;
 		}
 	}
 
 	sSock = socket(AF_INET,SOCK_DGRAM,0);
 	if (sSock == INVALID_SOCKET)
 	{
-		SAVECUSTOMERROREX("socket","Winsock last error: %I",WSAGetLastError());
-		goto ErrorOut;
+		SaveCustomError("socket", "Winsock last error: %I", WSAGetLastError());
+		throw E_APIERROR;
 	}
 
 	FD_SET(sSock,&fSockets);
 
-	nApiRet = connect(sSock,(SOCKADDR*)&sockAddr,sizeof(sockAddr));
+	nApiRet = connect(sSock,(SOCKADDR*)&sockAddr, sizeof(sockAddr));
 	if (nApiRet == SOCKET_ERROR)
 	{
-		SAVECUSTOMERROREX("connect","Winsock last error: %I",WSAGetLastError());
-		goto ErrorOut;
+		SaveCustomError("connect", "Winsock last error: %I", WSAGetLastError());
+		throw E_APIERROR;
 	}
 
 	// get current time
@@ -83,62 +77,58 @@ void _fastcall SyncToSNTPServer(ParamBlk *parm)
 	// convert into network byte order
 	SNTPTimeToPacket(&sPacket.OriginateTime);
 
-	nApiRet = send(sSock,(char*)&sPacket,sizeof(sPacket),0);
+	nApiRet = send(sSock, (char*)&sPacket, sizeof(sPacket), 0);
 	if (nApiRet == SOCKET_ERROR)
 	{
-		SAVECUSTOMERROREX("send","Function failed. Winsock last error: %I",WSAGetLastError());
-		goto ErrorOut;		
+		SaveCustomError("send", "Function failed. Winsock last error: %I", WSAGetLastError());
+		throw E_APIERROR;
 	}
 
 	// wait till socket received reply or timed out
-	nApiRet = select(0,&fSockets,0,0,&sTimeout);
+	nApiRet = select(0, &fSockets, 0, 0, &sTimeout);
 	GetSystemTime(&sTime); // call this directly after to increase acuracy
 
 	if (nApiRet == SOCKET_ERROR)
 	{
-		SAVECUSTOMERROREX("select","Function failed. Winsock last error %I",WSAGetLastError());
-		goto ErrorOut;		
+		SaveCustomError("select", "Function failed. Winsock last error %I", WSAGetLastError());
+		throw E_APIERROR;
 	}
 	if (!nApiRet) // timed out
 	{
-		SAVECUSTOMERROR("select","SNTP request time out.");
-		goto ErrorOut;
+		SaveCustomError("select", "SNTP request time out.");
+		throw E_APIERROR;
 	}
 
 	nApiRet = recv(sSock,(char*)&sResponse,sizeof(sResponse),0);
 	if (nApiRet == SOCKET_ERROR)
 	{
-		SAVECUSTOMERROREX("recv","Function failed with Errorcode %I",WSAGetLastError());
-		goto ErrorOut;
+		SaveCustomError("recv", "Function failed with errorcode %I", WSAGetLastError());
+		throw E_APIERROR;
 	}
 
 	nApiRet = closesocket(sSock);
 	if (nApiRet == SOCKET_ERROR)
 	{
-		SAVECUSTOMERROREX("closesocket","Function failed with errorcode %I",WSAGetLastError());
-		goto ErrorOut;
+		SaveCustomError("closesocket", "Function failed with errorcode %I", WSAGetLastError());
+		throw E_APIERROR;
 	}
 	sSock = INVALID_SOCKET; // set to INVALID_SOCKET .. so if an error occurs later on the socket is not closed again in the ErrorOut path
 
 	// check SNTP response from server
 	if (SNTP_GET_LEAP(sResponse.LiVnMode) == 3)
 	{
-		SAVECUSTOMERROR("SyncToSNTPServer","Response from SNTP server had warning leap indicator.");
-		nErrorRet = -2;
-		goto ErrorOut;
+		SaveCustomError("SyncToSNTPServer", "Response from SNTP server had warning leap indicator.");
+		throw E_APIERROR;
 	}
 	else if (!(sResponse.Stratum >= 1 && sResponse.Stratum <= 15))
 	{
-
-		SAVECUSTOMERROR("SyncToSNTPServer","Response from SNTP server had illegal stratum field.");
-		nErrorRet = -3;
-		goto ErrorOut;
+		SaveCustomError("SyncToSNTPServer", "Response from SNTP server had illegal stratum field.");
+		throw E_APIERROR;
 	}
 	else if (sResponse.TransmitTime.dwSeconds == 0)
 	{
-		SAVECUSTOMERROR("SyncToSNTPServer","Response from SNTP server had no valid time.");
-		nErrorRet = -4;
-		goto ErrorOut;
+		SaveCustomError("SyncToSNTPServer", "Response from SNTP server had no valid time.");
+		throw E_APIERROR;
 	}
 
 	// convert times from network to host byte order
@@ -160,19 +150,17 @@ void _fastcall SyncToSNTPServer(ParamBlk *parm)
 
 	if (!SetSystemTime(&sTime))
 	{
-		SAVEWIN32ERROR(SetSystemTime,GetLastError());
-		goto ErrorOut;
+		SaveWin32Error("SetSystemTime", GetLastError());
+		throw E_APIERROR;
 	}
+}
+catch(int nErrorNo)
+{
+	if (sSock != INVALID_SOCKET)
+		closesocket(sSock);
 
-	UnlockHandle(p1);
-	Return(1);
-	return;
-
-	ErrorOut:
-		UnlockHandle(p1);
-		if (sSock != INVALID_SOCKET)
-			closesocket(sSock);
-        Return(nErrorRet);
+	RaiseError(nErrorNo);
+}
 }
 
 double _stdcall SNTPTimeToDouble(LPSNTPTIME pSntpTime)

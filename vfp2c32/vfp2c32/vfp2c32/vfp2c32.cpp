@@ -41,17 +41,13 @@ HMODULE ghModule = 0;
 /* array of VFP2CERROR structs for storing Win32, custom & ODBC errors */
 VFP2CERROR gaErrorInfo[VFP2C_MAX_ERRORS] = {0};
 /* No. of error messages in gaErrorInfo */
-DWORD gnErrorCount = -1; 
-/* holds OS version information */
-OSVERSIONINFOEX gsOSVerInfo;
-/* holds version of FoxPro */
-DWORD gnFoxVersion;
+int gnErrorCount = -1; 
 /* Initialization status */
 static DWORD gnInitStatus = 0;
 
 /* error handling routine to store the last error occurred in a Win32 API call 
  called through the macros SAVEWIN32ERROR, ADDWIN32ERROR or RAISEWIN32ERROR */
-void _stdcall Win32ErrorHandler(char *pFunction, DWORD nErrorNo, BOOL bAddError, BOOL bRaise)
+void _stdcall Win32ErrorHandler(char *pFunction, DWORD nErrorNo, bool bAddError, bool bRaise)
 {
 	if (bAddError)
 	{
@@ -69,9 +65,8 @@ void _stdcall Win32ErrorHandler(char *pFunction, DWORD nErrorNo, BOOL bAddError,
 	if (bRaise)
 		_UserError(gaErrorInfo[gnErrorCount].aErrorMessage);
 }
-/* error handling routine to store a custom error description
-   called through the macros SAVECUSTOMERROR, ADDCUSTOMERROR or RAISECUSTOMERROR */
-void _stdcall Win32ErrorHandlerEx(char *pFunction, char* pErrorMessage, BOOL bAddError, BOOL bRaise)
+
+void _stdcall CustomErrorHandler(char *pFunction, char* pErrorMessage, bool bAddError, bool bRaise, va_list lpArgs)
 {
 	if (bAddError)
 	{
@@ -85,14 +80,12 @@ void _stdcall Win32ErrorHandlerEx(char *pFunction, char* pErrorMessage, BOOL bAd
 	gaErrorInfo[gnErrorCount].nErrorType = VFP2C_ERRORTYPE_WIN32;
 	gaErrorInfo[gnErrorCount].nErrorNo = E_CUSTOMERROR;
 	strncpy(gaErrorInfo[gnErrorCount].aErrorFunction,pFunction,VFP2C_ERROR_FUNCTION_LEN);
-    strncpy(gaErrorInfo[gnErrorCount].aErrorMessage,pErrorMessage,VFP2C_ERROR_MESSAGE_LEN);
+	printfex(gaErrorInfo[gnErrorCount].aErrorMessage, pErrorMessage, lpArgs);
 	if (bRaise)
 		_UserError(gaErrorInfo[gnErrorCount].aErrorMessage);
 }
 
-/* error handling routine to store a custom error description with a parameter (passed to sprintfex)
-   called through the macros SAVECUSTOMERROREX, ADDCUSTOMERROREX or RAISECUSTOMERROREX */
-void _stdcall Win32ErrorHandlerExEx(char *pFunction, char *pErrorMessage, DWORD nErrorNo, BOOL bAddError, BOOL bRaise)
+void _stdcall CustomErrorHandlerEx(char *pFunction, char *pErrorMessage, int nErrorNo, bool bAddError, bool bRaise, va_list lpArgs)
 {
 	if (bAddError)
 	{
@@ -105,30 +98,58 @@ void _stdcall Win32ErrorHandlerExEx(char *pFunction, char *pErrorMessage, DWORD 
 
 	gaErrorInfo[gnErrorCount].nErrorType = VFP2C_ERRORTYPE_WIN32;
 	gaErrorInfo[gnErrorCount].nErrorNo = nErrorNo;
-	strncpy(gaErrorInfo[gnErrorCount].aErrorFunction,pFunction,VFP2C_ERROR_FUNCTION_LEN);
-	sprintfex(gaErrorInfo[gnErrorCount].aErrorMessage,pErrorMessage,nErrorNo);
+	strncpy(gaErrorInfo[gnErrorCount].aErrorFunction, pFunction,VFP2C_ERROR_FUNCTION_LEN);
+	printfex(gaErrorInfo[gnErrorCount].aErrorMessage, pErrorMessage, lpArgs);
 	if (bRaise)
 		_UserError(gaErrorInfo[gnErrorCount].aErrorMessage);
 }
 
-void _stdcall Win32ErrorhandlerExEx2(char *pFunction, char *pErrorMessage, void *nParm1, void *nParm2)
-{
-	if (gnErrorCount == VFP2C_MAX_ERRORS)
-		return;
-	gnErrorCount++;
-
-	gaErrorInfo[gnErrorCount].nErrorType = VFP2C_ERRORTYPE_WIN32;
-	gaErrorInfo[gnErrorCount].nErrorNo = 0;
-	strncpy(gaErrorInfo[gnErrorCount].aErrorFunction,pFunction,VFP2C_ERROR_FUNCTION_LEN);
-	sprintfex(gaErrorInfo[gnErrorCount].aErrorMessage,pErrorMessage,nParm1,nParm2);
+void _cdecl SaveCustomError(char *pFunction, char *pMessage, ...)
+{ 
+	va_list lpArgs;
+	va_start(lpArgs, pMessage);
+	CustomErrorHandler(pFunction, pMessage, false, false, lpArgs);
+	va_end(lpArgs);
 }
 
-void _stdcall RaiseError(int nErrorNo)
+void _cdecl AddCustomError(char *pFunction, char *pMessage, ...)
 {
-	if (nErrorNo == E_APIERROR)
-		_UserError(gaErrorInfo[gnErrorCount].aErrorMessage);
+	va_list lpArgs;
+	va_start(lpArgs, pMessage);
+	CustomErrorHandler(pFunction, pMessage, true, false, lpArgs);
+	va_end(lpArgs);
+}
 
-	_Error(nErrorNo);
+void _cdecl RaiseCustomError(char *pFunction, char *pMessage, ...)
+{
+	va_list lpArgs;
+	va_start(lpArgs, pMessage);
+	CustomErrorHandler(pFunction, pMessage, false, true, lpArgs);
+	va_end(lpArgs);
+}
+
+void _cdecl SaveCustomErrorEx(char *pFunction, char *pMessage, int nErrorNo, ...)
+{
+	va_list lpArgs;
+	va_start(lpArgs, nErrorNo);
+	CustomErrorHandlerEx(pFunction, pMessage, nErrorNo, false, false, lpArgs);
+	va_end(lpArgs);
+}
+
+void _cdecl AddCustomErrorEx(char *pFunction, char *pMessage, int nErrorNo, ...)
+{ 
+	va_list lpArgs;
+	va_start(lpArgs, nErrorNo);
+	CustomErrorHandlerEx(pFunction, pMessage, nErrorNo, true, false, lpArgs);
+	va_end(lpArgs);
+}
+
+void _cdecl RaiseCustomErrorEx(char *pFunction, char *pMessage, int nErrorNo, ...)
+{ 
+	va_list lpArgs;
+	va_start(lpArgs, nErrorNo);
+	CustomErrorHandlerEx(pFunction, pMessage, nErrorNo, false, true, lpArgs);
+	va_end(lpArgs);
 }
 
 void _fastcall InitVFP2C32(ParamBlk *parm)
@@ -136,7 +157,7 @@ void _fastcall InitVFP2C32(ParamBlk *parm)
 	DWORD dwFlags = p1.ev_long;
 	dwFlags &= ~gnInitStatus;
 
-	RESETWIN32ERRORS();
+	ResetWin32Errors();
 
 	if (dwFlags & VFP2C_INIT_MARSHAL)
 	{
@@ -182,7 +203,7 @@ void _fastcall InitVFP2C32(ParamBlk *parm)
 
 	if (dwFlags & VFP2C_INIT_NETAPI)
 	{
-		if (IS_WIN9X())
+		if (COs::Is(Windows9x))
 		{
 			if (VFP2C_Init_Netapiex())
 				gnInitStatus |= VFP2C_INIT_NETAPI;
@@ -250,17 +271,8 @@ void _fastcall OnLoad()
 {
 	/* get module handle - _GetAPIHandle() doesn't work (unresolved external error from linker) */
 	ghModule = GetModuleHandle(FLLFILENAME);
-	/* get OS information, first try to get EX info, it that fails get normal version */
-	gsOSVerInfo.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
-	if (!GetVersionEx((LPOSVERSIONINFO)&gsOSVerInfo))
-	{
-		gsOSVerInfo.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-		GetVersionEx((LPOSVERSIONINFO)&gsOSVerInfo);
-	}
-
-	FoxValue vFoxVer;
-	_Evaluate(vFoxVer, "INT(VERSION(5))");
-	gnFoxVersion = vFoxVer->ev_long;
+	/* get OS information */
+	COs::Init();
 }
 
 void _fastcall OnUnload()
@@ -271,7 +283,7 @@ void _fastcall OnUnload()
 	VFP2C_Destroy_Callback();
 	VFP2C_Destroy_Winsock();
 	VFP2C_Destroy_File();
-	if (IS_WIN9X())
+	if (COs::Is(Windows9x))
 		VFP2C_Destroy_Netapiex();
 	else
 		VFP2C_Destroy_Netapi();
@@ -289,17 +301,17 @@ try
 	switch (p1.ev_long)
 	{
 		case 1: /* library's HINSTANCE/HMODULE */
-			if (PCOUNT() == 2)
+			if (PCount() == 2)
 				throw E_INVALIDPARAMS;
 			Return(ghModule);
 			break;
 		case 2: /* library heap HANDLE */
-			if (PCOUNT() == 2)
+			if (PCount() == 2)
 				throw E_INVALIDPARAMS;
 			Return(ghHeap);
 			break;
 		case 3: /* set or return Unicode conversion codepage */
-			if (PCOUNT() == 2)
+			if (PCount() == 2)
 			{
 				if (Vartype(p2) == 'I' || Vartype(p2) == 'N')
 				{
@@ -333,13 +345,13 @@ void _fastcall FormatMessageEx(ParamBlk *parm)
 try
 {
 	DWORD nLanguage = 0;
-	DWORD nFlags = FORMAT_MESSAGE_FROM_SYSTEM;
+	DWORD nFlags = FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS;
 	LPCVOID lpModule = 0;
 	FoxString pMessage(VFP2C_ERROR_MESSAGE_LEN);
 	
-	if (PCOUNT() == 2)
+	if (PCount() == 2)
 		nLanguage = p2.ev_long;
-	else if (PCOUNT() == 3)
+	else if (PCount() == 3)
 	{
 		nLanguage = p2.ev_long;
 		lpModule = reinterpret_cast<LPCVOID>(p3.ev_long);
@@ -352,7 +364,7 @@ try
 		pMessage.Return();
 	else
 	{
-		SAVEWIN32ERROR(FormatMessage, GetLastError());
+		SaveWin32Error("FormatMessage", GetLastError());
 		throw E_APIERROR;
 	}
 }
@@ -377,7 +389,7 @@ try
 	FoxValue vNullValue;
 
 	unsigned int nRow = 0;
-	for (unsigned int xj = 0; xj <= gnErrorCount; xj++)
+	for (int xj = 0; xj <= gnErrorCount; xj++)
 	{
 		nRow++;
 		pArray(nRow,1) = gaErrorInfo[xj].nErrorNo;
@@ -396,31 +408,6 @@ catch(int nErrorNo)
 	RaiseError(nErrorNo);
 }
 }
-/*
-void _fastcall InternalError(ParamBlk *parm)
-{
-	char *pMes;
-	Value vMes, vNumber;
-
-	vNumber.ev_type = 'I';
-	vMes.ev_type = 'C';
-
-	vMes.ev_handle = _AllocHand(4096);
-	pMes = _HandToPtr(vMes.ev_handle);
-
-	vNumber.ev_long = _ErrorInfo(p1.ev_long,pMes);
-	vMes.ev_length = lstrlen(pMes);
-
-	_Store(&r2,&vMes);
-	_FreeHand(vMes.ev_handle);
-	_Store(&r3,&vNumber);
-}
-
-void _fastcall ErrorTest(ParamBlk *parm)
-{
-	_Error(p1.ev_long);
-}
-*/
 
 #ifdef __cplusplus
 extern "C" {
@@ -433,7 +420,7 @@ FoxInfo VFP2CFuncs[] =
 	{"OnUnload", (FPFI) OnUnload, CALLONUNLOAD, ""},
 	{"InitVFP2C32", (FPFI) InitVFP2C32, 1, "I"},
 	{"VFP2CSys", (FPFI) VFP2CSys, 2, "I.?"},
-
+	
 	/* memory management routines */
 	{"AllocMem", (FPFI) AllocMem, 1, "I"},
 	{"AllocMemTo", (FPFI) AllocMemTo, 2, "II"},
@@ -447,15 +434,40 @@ FoxInfo VFP2CFuncs[] =
 	{"AMemBlocks", (FPFI) AMemBlocks, 1, "C"},
 
 	/* wrappers around Global memory functions */
-	{"AllocHGlobal", (FPFI) AllocHGlobal, 1, "I"},
+	{"AllocHGlobal", (FPFI) AllocHGlobal, 2, "I.I"},
 	{"FreeHGlobal", (FPFI) FreeHGlobal, 1, "I"},
-	{"ReAllocHGlobal", (FPFI) ReAllocHGlobal, 2, "II"},
+	{"ReAllocHGlobal", (FPFI) ReAllocHGlobal, 3, "II.I"},
 	{"LockHGlobal", (FPFI) LockHGlobal, 1, "I"},
 	{"UnlockHGlobal", (FPFI) UnlockHGlobal, 1, "I"},
 
-	/* memory read/write & array/cursor marshaling routines */
+	/* read/write C types from/to memory */
+	{"WriteChar", (FPFI) WriteChar, 2, "IC"},
+	{"WritePChar", (FPFI) WritePChar, 2, "IC"},
+	{"WriteInt8", (FPFI) WriteInt8, 2, "II"},
+	{"WritePInt8", (FPFI) WritePInt8, 2, "II"},
+	{"WriteUInt8", (FPFI) WriteUInt8, 2, "II"},
+	{"WritePUInt8", (FPFI) WritePUInt8, 2, "II"},
+	{"WriteShort", (FPFI) WriteShort, 2, "II"},
+	{"WritePShort", (FPFI) WritePShort, 2, "II"},
+	{"WriteUShort", (FPFI) WriteUShort, 2, "II"},
+	{"WritePUShort", (FPFI) WritePUShort, 2, "II"},
+	{"WriteInt", (FPFI) WriteInt, 2, "II"},
+	{"WritePInt", (FPFI) WritePInt, 2, "II"},
+	{"WriteUInt", (FPFI) WriteUInt, 2, "IN"},
+	{"WritePUInt", (FPFI) WritePUInt, 2, "IN"},
+	{"WriteInt64", (FPFI) WriteInt64, 2, "I?"},
+	{"WritePInt64", (FPFI) WritePInt64, 2, "I?"},
+	{"WriteUInt64", (FPFI) WriteUInt64, 2, "I?"},
+	{"WritePUInt64", (FPFI) WritePUInt64, 2, "I?"},
+	{"WritePointer", (FPFI) WritePointer, 2, "IN"},
+	{"WritePPointer", (FPFI) WritePPointer, 2, "IN"},
+	{"WriteFloat", (FPFI) WriteFloat, 2, "IN"},
+	{"WritePFloat", (FPFI) WritePFloat, 2, "IN"},
+	{"WriteDouble", (FPFI) WriteDouble, 2, "IN"},
+	{"WritePDouble", (FPFI) WritePDouble, 2, "IN"},
 	{"WriteCString", (FPFI) WriteCString, 2, "IC"},
 	{"WritePCString", (FPFI) WritePCString, 2, "I?"},
+	{"WriteGPCString", (FPFI) WriteGPCString, 2, "I?"},
 	{"WriteCharArray", (FPFI) WriteCharArray, 3, "IC.I"},
 	{"WriteWString", (FPFI) WriteWString, 3, "IC.I"},
 	{"WritePWString", (FPFI) WritePWString, 3, "I?.I"},
@@ -465,73 +477,48 @@ FoxInfo VFP2CFuncs[] =
 	{"WriteBytes", (FPFI) WriteBytes, 3, "IC.I"},
 	{"WriteLogical", (FPFI) WriteLogical, 2, "IL"},
 	{"WritePLogical", (FPFI) WritePLogical, 2, "IL"},
-	{"WriteInt64", (FPFI) WriteInt64, 2, "I?"},
-	{"WritePInt64", (FPFI) WritePInt64, 2, "I?"},
-	{"WriteUInt64", (FPFI) WriteUInt64, 2, "I?"},
-	{"WritePUInt64", (FPFI) WritePUInt64, 2, "I?"},
+
 	{"ReadChar", (FPFI) ReadChar, 1, "I"},
-	{"ReadPChar", (FPFI) ReadPChar, 1, "I"},
+	{"ReadPChar", (FPFI) ReadPChar, 2, "I.?"},
+	{"ReadInt8", (FPFI) ReadInt8, 1, "I"},
+	{"ReadPInt8", (FPFI) ReadPInt8, 1, "I"},
+	{"ReadUInt8", (FPFI) ReadUInt8, 1, "I"},
+	{"ReadPUInt8", (FPFI) ReadPUInt8, 1, "I"},
+	{"ReadShort", (FPFI) ReadShort, 1, "I"},
+	{"ReadPShort", (FPFI) ReadPShort, 1, "I"},
+	{"ReadUShort", (FPFI) ReadUShort, 1, "I"},
+	{"ReadPUShort", (FPFI) ReadPUShort, 1, "I"},
+	{"ReadInt", (FPFI) ReadInt, 1, "I"},
+	{"ReadPInt", (FPFI) ReadPInt, 1, "I"},
 	{"ReadUInt", (FPFI) ReadUInt, 1, "I"},
 	{"ReadPUInt", (FPFI) ReadPUInt, 1, "I"},
-	{"ReadPointer",(FPFI) ReadUInt, 1, "I"},
-	{"ReadPPointer",(FPFI) ReadPUInt, 1, "I"},
-	{"ReadInt64AsDouble", (FPFI) ReadInt64AsDouble, 1, "I"},
-	{"ReadPInt64AsDouble", (FPFI) ReadPInt64AsDouble, 1, "I"},
-	{"ReadUInt64AsDouble", (FPFI) ReadUInt64AsDouble, 1, "I"},
-	{"ReadPUInt64AsDouble", (FPFI) ReadPUInt64AsDouble, 1, "I"},
-	{"ReadCString", (FPFI) ReadCString, 1, "I"},
-	{"ReadPCString", (FPFI) ReadPCString, 1, "I"},
-	{"ReadCharArray", (FPFI) ReadCharArray, 2, "II"},
-	{"ReadWString", (FPFI) ReadWString, 2, "I.I"},
-	{"ReadPWString", (FPFI) ReadPWString, 2, "I.I"},
-	{"ReadWCharArray", (FPFI) ReadWCharArray, 3, "II.I"},
-	{"ReadBytes", (FPFI) ReadBytes, 2, "II"},
+	{"ReadInt64", (FPFI) ReadInt64, 2, "I.I"},
+	{"ReadPInt64", (FPFI) ReadPInt64, 2, "I.I"},
+	{"ReadUInt64", (FPFI) ReadUInt64, 2, "I.I"},
+	{"ReadPUInt64", (FPFI) ReadPUInt64, 2, "I.I"},
+	{"ReadFloat", (FPFI) ReadFloat, 1, "I"},
+	{"ReadPFloat", (FPFI) ReadPFloat, 1, "I"},
+	{"ReadDouble", (FPFI) ReadDouble, 1, "I"},
+	{"ReadPDouble", (FPFI) ReadPDouble, 1, "I"},
 	{"ReadLogical", (FPFI) ReadLogical, 1, "I"},
 	{"ReadPLogical", (FPFI) ReadPLogical, 1, "I"},
-	{"MarshalArrayShort", (FPFI) MarshalArrayShort, 2 ,"IR"},
-	{"MarshalArrayUShort", (FPFI) MarshalArrayUShort, 2 ,"IR"},
-	{"MarshalArrayInt", (FPFI) MarshalArrayInt, 2,"IR"},
-	{"MarshalArrayUInt", (FPFI) MarshalArrayUInt, 2,"IR"},
-	{"MarshalArrayFloat", (FPFI) MarshalArrayFloat, 2,"IR"},
-	{"MarshalArrayDouble", (FPFI) MarshalArrayDouble, 2,"IR"},
-	{"MarshalArrayLogical", (FPFI) MarshalArrayLogical, 2, "IR"},
-	{"MarshalArrayCString", (FPFI) MarshalArrayCString, 2,"IR"},
-	{"MarshalArrayWString", (FPFI) MarshalArrayWString, 3,"IR.I"},
-	{"MarshalArrayCharArray", (FPFI) MarshalArrayCharArray, 3,"IRI"},
-	{"MarshalArrayWCharArray", (FPFI) MarshalArrayWCharArray, 4,"IRI.I"},
-	{"UnMarshalArrayShort", (FPFI) UnMarshalArrayShort, 2 ,"IR"},
-	{"UnMarshalArrayUShort", (FPFI) UnMarshalArrayUShort, 2 ,"IR"},
-	{"UnMarshalArrayInt", (FPFI) UnMarshalArrayInt, 2,"IR"},
-	{"UnMarshalArrayUInt", (FPFI) UnMarshalArrayUInt, 2,"IR"},
-	{"UnMarshalArrayFloat", (FPFI) UnMarshalArrayFloat, 2,"IR"},
-	{"UnMarshalArrayDouble", (FPFI) UnMarshalArrayDouble, 2,"IR"},
-	{"UnMarshalArrayLogical", (FPFI) UnMarshalArrayLogical, 2, "IR"},
-	{"UnMarshalArrayCString", (FPFI) UnMarshalArrayCString, 2,"IR"},
-	{"UnMarshalArrayWString", (FPFI) UnMarshalArrayWString, 3,"IR.I"},
-	{"UnMarshalArrayCharArray", (FPFI) UnMarshalArrayCharArray, 3, "IRI"},
-	{"UnMarshalArrayWCharArray", (FPFI) UnMarshalArrayWCharArray, 4, "IRI.I"},
-	{"MarshalCursorShort", (FPFI) MarshalCursorShort, 3,"ICI"},
-	{"MarshalCursorUShort", (FPFI) MarshalCursorUShort, 3,"ICI"},
-	{"MarshalCursorInt", (FPFI) MarshalCursorInt, 3,"ICI"},
-	{"MarshalCursorUInt", (FPFI) MarshalCursorUInt, 3,"ICI"},
-	{"MarshalCursorFloat", (FPFI) MarshalCursorFloat, 3,"ICI"},
-	{"MarshalCursorDouble", (FPFI) MarshalCursorDouble, 3,"ICI"},
-	{"MarshalCursorLogical", (FPFI) MarshalCursorLogical, 3, "ICI"},
-	{"MarshalCursorCString", (FPFI) MarshalCursorCString, 3,"ICI"},
-	{"MarshalCursorWString", (FPFI) MarshalCursorWString, 4,"ICI.I"},
-	{"MarshalCursorCharArray", (FPFI) MarshalCursorCharArray, 4,"ICII"},
-	{"MarshalCursorWCharArray", (FPFI) MarshalCursorWCharArray, 5,"ICII.I"},
-	{"UnMarshalCursorShort", (FPFI) UnMarshalCursorShort, 4,"ICII"},
-	{"UnMarshalCursorUShort", (FPFI) UnMarshalCursorUShort, 4,"ICII"},
-	{"UnMarshalCursorInt", (FPFI) UnMarshalCursorInt, 4,"ICII"},
-	{"UnMarshalCursorUInt", (FPFI) UnMarshalCursorUInt, 4,"ICII"},
-	{"UnMarshalCursorFloat", (FPFI) UnMarshalCursorFloat, 4,"ICII"},
-	{"UnMarshalCursorDouble", (FPFI) UnMarshalCursorDouble, 4,"ICII"},
-	{"UnMarshalCursorLogical", (FPFI) UnMarshalCursorLogical, 4, "ICII"},
-	{"UnMarshalCursorCString", (FPFI) UnMarshalCursorCString, 4,"ICII"},
-	{"UnMarshalCursorWString", (FPFI) UnMarshalCursorWString, 5,"ICII.I"},
-	{"UnMarshalCursorCharArray", (FPFI) UnMarshalCursorCharArray, 5, "ICIII"},
-	{"UnMarshalCursorWCharArray", (FPFI) UnMarshalCursorWCharArray, 6, "ICIII.I"},
+	{"ReadPointer",(FPFI) ReadPointer, 1, "I"},
+	{"ReadPPointer",(FPFI) ReadPPointer, 1, "I"},
+	{"ReadCString", (FPFI) ReadCString, 1, "I"},
+	{"ReadPCString", (FPFI) ReadPCString, 2, "I.?"},
+	{"ReadCharArray", (FPFI) ReadCharArray, 2, "II"},
+	{"ReadWString", (FPFI) ReadWString, 2, "I.I"},
+	{"ReadPWString", (FPFI) ReadPWString, 3, "I.I.?"},
+	{"ReadWCharArray", (FPFI) ReadWCharArray, 3, "II.I"},
+	{"ReadBytes", (FPFI) ReadBytes, 2, "II"},
+
+	/* convert FoxPro to C array and vice versa */
+	{"MarshalFoxArray2CArray", (FPFI) MarshalFoxArray2CArray, 5 ,"IRI.I.I"},
+	{"MarshalCArray2FoxArray", (FPFI) MarshalCArray2FoxArray, 5 ,"IRI.I.I"},
+
+	/* convert FoxPro fields in cursor to C array and vice versa */
+	{"MarshalCursor2CArray", (FPFI) MarshalCursor2CArray, 5,"ICI.I.I"},
+	{"MarshalCArray2Cursor", (FPFI) MarshalCArray2Cursor, 5,"ICI.I.I"},
 
 	/* numeric to binary & vice versa conversion routines */
 	{"Str2Short", (FPFI) Str2Short, 1, "C"},
@@ -546,6 +533,10 @@ FoxInfo VFP2CFuncs[] =
 	{"Double2Str", (FPFI) Double2Str, 1, "N"},
 	{"Str2Float", (FPFI) Str2Float, 1, "C"},
 	{"Float2Str", (FPFI) Float2Str, 1, "N"},
+	{"Str2Int64", (FPFI) Str2Int64, 2, "C.I"},
+	{"Int642Str", (FPFI) Int642Str, 2, "?.I"},
+	{"Str2UInt64", (FPFI) Str2UInt64, 2, "C.I"},
+	{"UInt642Str", (FPFI) UInt642Str, 2, "?.I"},
 
 	/* toolhelp32 api wrappers */
 	{"AProcesses", (FPFI) AProcesses, 1, "C"},
@@ -562,7 +553,7 @@ FoxInfo VFP2CFuncs[] =
 	{"AWindowsEx", (FPFI) AWindowsEx, 4, "CCI.I"},
 	{"AWindowProps", (FPFI) AWindowProps, 2, "CI"},
 	{"AResourceTypes", (FPFI) AResourceTypes, 2, "CI"},
-	{"AResourceNames", (FPFI) AResourceNames, 3, "CIC"},
+	{"AResourceNames", (FPFI) AResourceNames, 3, "CI?"},
 	{"AResourceLanguages", (FPFI) AResourceLanguages, 4, "CI??"},
 	{"AResolutions", (FPFI) AResolutions, 2, "C.C"},
 	{"ADisplayDevices", (FPFI) ADisplayDevices, 2, "C.C"},
@@ -591,7 +582,7 @@ FoxInfo VFP2CFuncs[] =
 	{"DeleteRegistryKey", (FPFI) DeleteRegistryKey, 3, "IC.I"},
 	{"OpenRegistryKey", (FPFI) OpenRegistryKey, 3, "IC.I"},
 	{"CloseRegistryKey", (FPFI) CloseRegistryKey, 1, "I"},
-	{"ReadRegistryKey", (FPFI) ReadRegistryKey, 4, "I.C.C.I"},
+	{"ReadRegistryKey", (FPFI) ReadRegistryKey, 4, "I.C.C.C"},
 	{"WriteRegistryKey", (FPFI) WriteRegistryKey, 5, "I?.C.C.I"},
 	{"ARegistryKeys", (FPFI) ARegistryKeys, 4, "CIC.I"},
 	{"ARegistryValues", (FPFI) ARegistryValues, 4, "CIC.I"},
@@ -618,8 +609,10 @@ FoxInfo VFP2CFuncs[] =
 	{"GetOpenFileName", (FPFI) GetOpenFileNameLib, 8, ".I.C.C.C.C.I.C.C"},
 	{"GetSaveFileName", (FPFI) GetSaveFileNameLib, 7, ".I.C.C.C.C.I.C"},
 	{"ADriveInfo", (FPFI) ADriveInfo, 1, "C"},
-	//{"AVolumeInformation", (FPFI) AVolumeInformation, 1, "C"},
-
+	{"AVolumes", (FPFI) AVolumes, 1, "C"},
+	{"AVolumeMountPoints", (FPFI) AVolumeMountPoints, 2, "CC"},
+	{"AVolumePaths", (FPFI) AVolumePaths, 2, "CC"},
+	{"AVolumeInformation", (FPFI) AVolumeInformation, 2, "CC"},
 	{"CopyFileEx", (FPFI) CopyFileExLib, 5, "CC.C.I.I"},
 	{"MoveFileEx", (FPFI) MoveFileExLib, 5, "CC.C.I.I"},
 	{"CompareFileTimes", (FPFI) CompareFileTimes, 2, "CC"},
@@ -663,6 +656,7 @@ FoxInfo VFP2CFuncs[] =
 	{"GetWindowRectEx", (FPFI) GetWindowRectEx, 2, "IC"},
 	{"CenterWindowEx", (FPFI) CenterWindowEx, 2, "I.I"},
 	{"ADesktopArea", (FPFI) ADesktopArea, 1, "C"},
+	{"MessageBoxEx", (FPFI) MessageBoxExLib, 8, "C.I.C.?.?.?.?.I"},
 
 	/* asynchronous notification functions */
 	{"FindFileChange", (FPFI) FindFileChange, 4, "CLIC"},
@@ -683,17 +677,17 @@ FoxInfo VFP2CFuncs[] =
 	{"Timet2DT", (FPFI) Timet2DT, 2, "I.L" },
 	{"DT2Double", (FPFI) DT2Double, 1, "T"},
 	{"Double2DT", (FPFI) Double2DT, 1, "N"},
-	{"SetSystemTime", (FPFI) SetSystemTimeEx, 2, "T.L"},
-	{"GetSystemTime", (FPFI) GetSystemTimeEx, 1, ".L"},
-	{"SetSystemTimeEx", (FPFI) SetSystemTimeEx, 1, "T"},
+	{"SetSystemTime", (FPFI) SetSystemTimeLib, 2, "T.L"},
+	{"GetSystemTime", (FPFI) GetSystemTimeLib, 1, ".L"},
 	{"ATimeZones", (FPFI) ATimeZones, 1, "C"},
 
 	/* netapi32 wrappers */
 	{"ANetFiles", (FPFI) ANetFiles, 4, "C.C.C.C"},
 	{"ANetServers", (FPFI) ANetServers, 4, "C.I.I.C"},
-	{"GetServerTime", (FPFI) GetServerTime, 2, "C.L"},
-	{"SyncToServerTime", (FPFI) SyncToServerTime, 2, "C.L"},
-	{"SyncToSNTPServer", (FPFI) SyncToSNTPServer, 4, "C.I.I.I"},
+	{"GetServerTime", (FPFI) GetServerTime, 2, "C.I"},
+
+	/* SNTP */
+	{"SyncToSNTPServer", (FPFI) SyncToSNTPServer, 3, "C.I.I"},
 
 	/* COM routines */
 	{"GetIUnknown", (FPFI) GetIUnknown, 1, "C"},
@@ -750,19 +744,21 @@ FoxInfo VFP2CFuncs[] =
 	{"AServices", (FPFI) AServices, 5, "C.C.C.I.I"},
 	{"ADependentServices", (FPFI) ADependentServices, 4, "C?.C.C"},
 	{"WaitForServiceStatus", (FPFI) WaitForServiceStatus, 5, "?I.I.C.C"},
+	{"CreateService", (FPFI) CreateServiceLib, 12, "CC.?.?.?.C.C.C.C.C.C.C"},
+	{"DeleteService", (FPFI) DeleteServiceLib, 3, "?.C.C"},
 
 	/* misc data conversion/string functions */
 	{"PG_ByteA2Str", (FPFI) PG_ByteA2Str, 1, "?"},
 	{"PG_Str2ByteA", (FPFI) PG_Str2ByteA, 2, "?.L"},
-	{"RGB2Colors", (FPFI) RGB2Colors, 4, "IRRR"},
-	{"Colors2RGB", (FPFI) Colors2RGB, 3, "III"},
+	{"RGB2Colors", (FPFI) RGB2Colors, 5, "IRRR.R"},
+	{"Colors2RGB", (FPFI) Colors2RGB, 4, "III.I"},
 	{"GetCursorPosEx", (FPFI) GetCursorPosEx, 4, "RR.L.?"},
 	//{"ColorOfPoint", (FPFI) ColorOfPoint, 3, "II.I"},
-	{"Int64_Add", (FPFI) Int64_Add, 2, "??"},
-	{"Int64_Sub", (FPFI) Int64_Sub, 2, "??"},
-	{"Int64_Mul", (FPFI) Int64_Mul, 2, "??"},
-	{"Int64_Div", (FPFI) Int64_Div, 2, "??"},
-	{"Int64_Mod", (FPFI) Int64_Mod, 2, "??"},
+	{"Int64_Add", (FPFI) Int64_Add, 3, "??.I"},
+	{"Int64_Sub", (FPFI) Int64_Sub, 3, "??.I"},
+	{"Int64_Mul", (FPFI) Int64_Mul, 3, "??.I"},
+	{"Int64_Div", (FPFI) Int64_Div, 3, "??.I"},
+	{"Int64_Mod", (FPFI) Int64_Mod, 3, "??.I"},
 	{"Value2Variant", (FPFI) Value2Variant, 1, "?"},
 	{"Variant2Value", (FPFI) Variant2Value, 1, "?"},
 	{"Decimals", (FPFI) Decimals, 1, "N"},
@@ -770,6 +766,7 @@ FoxInfo VFP2CFuncs[] =
 	{"CreatePublicShadowObjReference", (FPFI) CreatePublicShadowObjReference, 2, "CO"},
 	{"ReleasePublicShadowObjReference", (FPFI) ReleasePublicShadowObjReference, 1, "C"},
 	{"GetLocaleInfoEx", (FPFI) GetLocaleInfoExLib, 2, "I.I"},
+	{"OsEx", (FPFI) OsEx, 0, ""},
 
 	/* array routines */
 	{"ASum", (FPFI) ASum, 2, "R.I"},
@@ -786,7 +783,7 @@ FoxInfo VFP2CFuncs[] =
 	{"RasDialEx",(FPFI) RasDialEx, 5, ".?.C.C.I.I"},
 	{"RasHangUpEx", (FPFI) RasHangUpEx, 1, "I"},
 	{"RasGetConnectStatusEx", (FPFI) RasGetConnectStatusEx, 2, "IC"},
-	{"RasDialDlgEx", (FPFI) RasDialDlgEx, 3, ".C.C.C"},
+	{"RasDialDlgEx", (FPFI) RasDialDlgEx, 5, ".C.C.C.I.I"},
 	{"RasConnectionNotificationEx", (FPFI) RasConnectionNotificationEx, 3, "IIC"},
 	{"AbortRasConnectionNotificationEx", (FPFI) AbortRasConnectionNotificationEx, 1, "I"},
 	{"RasClearConnectionStatisticsEx", (FPFI) RasClearConnectionStatisticsEx, 1, "I"},

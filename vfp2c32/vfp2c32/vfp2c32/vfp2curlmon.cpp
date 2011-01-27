@@ -211,12 +211,12 @@ void _fastcall UrlDownloadToFileEx(ParamBlk *parm)
 	UrlDownloadThread *pDownload = 0;
 try
 {
-	RESETWIN32ERRORS();
+	ResetWin32Errors();
 
 	FoxString pUrl(p1);
 	FoxString pFile(p2);
 	FoxString pCallback(parm,3);
-	bool bAsync = PCOUNT() == 4 && p4.ev_length > 0;
+	bool bAsync = PCount() == 4 && p4.ev_length > 0;
 
 	if (bAsync && !pCallback.Len())
 		throw E_INVALIDPARAMS;
@@ -232,19 +232,19 @@ try
 		hr = URLDownloadToFile(0,pUrl,pFile,0,&pStatus);
 
 		if (FAILED(hr) && hr != E_ABORT)
-			SAVEWIN32ERROR(UrlDownloadToFile,hr);			
-
+			SaveWin32Error("UrlDownloadToFile", hr);			
+	
 		Return(hr);
 	}
 	else
 	{
 		if (!goUrlThreads.Initialized())
 		{
-			SAVECUSTOMERROR("UrlDownloadToFileEx","Library not initialized!");
+			SaveCustomError("UrlDownloadToFileEx","Library not initialized!");
 			throw E_APIERROR;
 		}
 
-		UrlDownloadThread *pDownload = new UrlDownloadThread(goUrlThreads);
+		pDownload = new UrlDownloadThread(goUrlThreads);
 		if (!pDownload)
 			throw E_INSUFMEMORY;
 
@@ -268,7 +268,7 @@ try
 {
 	if (!goUrlThreads.Initialized())
 	{
-		SAVECUSTOMERROR("AbortUrlDownloadToFileEx","Library not initialized!");
+		SaveCustomError("AbortUrlDownloadToFileEx","Library not initialized!");
 		throw E_APIERROR;
 	}
 

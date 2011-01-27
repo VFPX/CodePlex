@@ -1,0 +1,51 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252" />
+<title>AFontInfo</title><link href="/scripts/styles.css" rel="stylesheet" type="text/css" />
+<script src="/scripts/jscript.js" type="text/javascript"></script>
+</head><body>
+<div id="header">
+<p>VFP2C32 2.0.0.8</p>
+<h1 class="function">AFontInfo</h1>
+</div>
+<div id="content">
+<p class="description">Retrieves information about  the included fonts from a true type font file into an object.</p>
+
+<div class="block"><pre>AFontInfo(<a href="#p1">cFileName</a> [, <a href="#p2">nLanguageId</a> [, <a href="#p3">nPlatformId</a>]])</pre></div>
+<h3>Parameters</h3>
+<dl class="parm"><dt><a id="p1">cFileName</a></dt>
+<dd><p>The fully qualified filename of a TTF (true type font) file.</p>
+</dd></dl>
+<dl class="parm"><dt><a id="p2">nLanguageId (optional)</a></dt>
+<dd><p>default = <a href="http://msdn.microsoft.com/en-us/library/cc250698(v=prot.13).aspx">GetSystemDefaultLangID</a>()<br />
+<br />
+the language for which to retrieve the information.</p>
+</dd></dl>
+<dl class="parm"><dt><a id="p3">nPlatformId (optional)</a></dt>
+<dd><p>default = PLATFORMID_WINDOWS</p>
+</dd></dl>
+<h2>Return Value</h2>
+<p>An object with properties containing information about the font file.</p>
+
+<h2>See Also</h2>
+<h4>Reference</h4>
+<p><a href="/pages/ASplitStr.html">ASplitStr</a><br />
+<a href="/pages/Decimals.html">Decimals</a><br />
+<a href="/pages/GetCursorPosEx.html">GetCursorPosEx</a><br />
+<a href="/pages/Int64_Add.html">Int64_Add</a><br />
+<a href="/pages/Int64_Div.html">Int64_Div</a><br />
+<a href="/pages/Int64_Mod.html">Int64_Mod</a><br />
+<a href="/pages/Int64_Mul.html">Int64_Mul</a><br />
+<a href="/pages/Int64_Sub.html">Int64_Sub</a><br />
+</p>
+<h4>Used WinApi functions</h4>
+<p><a href="http://msdn.microsoft.com/en-us/library/cc250698(v=prot.13).aspx">GetSystemDefaultLangID</a></p>
+
+
+</div>
+<div id="footer">
+<p>&copy; <a href="http://vfpx.codeplex.com/wikipage?title=VFP2C32">VFP2C32</a> - Shared Source License for <a href="http://vfpx.codeplex.com">VFPX</a></p>
+</div>
+</body>
+</html>

@@ -7,8 +7,12 @@
 #include "vfp2cutil.h"
 #include "vfp2ccallback.h"
 #include "vfp2cassembly.h"
+#include "vfp2chelpers.h"
 #include "vfp2ccppapi.h"
 #include "vfpmacros.h"
+
+const char* BINDEVENTSEX_OBJECT_SCHEME	= "__VFP2C_WCBO%U_%U_%U";
+const char* CALLBACKFUNC_OBJECT_SCHEME	= "__VFP2C_CBO_%U";
 
 static HANDLE ghThunkHeap = 0;
 static LPWINDOWSUBCLASS gpWMSubclasses = 0;
@@ -20,10 +24,11 @@ static ATOM gnCallbackAtom = 0;
 bool _stdcall VFP2C_Init_Callback()
 {
 	WNDCLASSEX wndClass = {0}; /* MO - message only */
+	const char* CALLBACK_WINDOW_CLASS = "__VFP2C_CBWC";
 
 	if (!(ghThunkHeap = HeapCreate(0,MAX_USHORT,0)))
 	{
-		ADDWIN32ERROR(HeapCreate,GetLastError());
+		AddWin32Error("HeapCreate", GetLastError());
 		return false;
 	}
 
@@ -40,20 +45,20 @@ bool _stdcall VFP2C_Init_Callback()
 	if (gnCallbackAtom)
 	{
 		// message only windows are only available on Win2000 or WinXP
-		if (IS_WIN2KXP())
+		if (COs::GreaterOrEqual(Windows2000))
 			ghCallbackHwnd = CreateWindowEx(0,(LPCSTR)gnCallbackAtom,0,0,0,0,0,0,HWND_MESSAGE,0,ghModule,0);
 		else
 			ghCallbackHwnd = CreateWindowEx(0,(LPCSTR)gnCallbackAtom,0,WS_POPUP,0,0,0,0,0,0,ghModule,0);
 
 		if (!ghCallbackHwnd)
 		{
-			ADDWIN32ERROR(CreateWindowEx,GetLastError());
+			AddWin32Error("CreateWindowEx", GetLastError());
 			return false;
 		}
 	}
 	else
 	{
-		ADDWIN32ERROR(RegisterClassEx,GetLastError());
+		AddWin32Error("RegisterClassEx", GetLastError());
 		return false;
 	}
 
@@ -81,10 +86,10 @@ void _fastcall BindEventsEx(ParamBlk *parm)
 {
 	LPWINDOWSUBCLASS lpSubclass = 0;
 	LPMSGCALLBACK lpMsg = 0;
-	UINT uMsg = (UINT)p2.ev_long;
+	UINT uMsg = p2.ev_long;
 try
 {
-	RESETWIN32ERRORS();
+	ResetWin32Errors();
 
 	HWND hHwnd = reinterpret_cast<HWND>(p1.ev_long);
 	FoxString pCallback(p4);
@@ -103,10 +108,10 @@ try
 	if (Vartype(p3) != 'O' && Vartype(p3) != '0')
 		throw E_INVALIDPARAMS;
 
-	if (!pParameters.Len() && Vartype(p5) != '0')
+	if (PCount() >= 5 && Vartype(p5) != 'C' && Vartype(p5) != '0')
 		throw E_INVALIDPARAMS;
 
-	if (PCOUNT() >= 6 && p6.ev_long)
+	if (PCount() >= 6 && p6.ev_long)
 	{
 		nFlags = p6.ev_long;
 		if (!(nFlags & (BINDEVENTSEX_CALL_BEFORE | BINDEVENTSEX_CALL_AFTER | BINDEVENTSEX_RETURN_VALUE)))
@@ -158,28 +163,28 @@ void _fastcall UnbindEventsEx(ParamBlk *parm)
 {
 try
 {
-	RESETWIN32ERRORS();
+	ResetWin32Errors();
 
 	HWND hHwnd = reinterpret_cast<HWND>(p1.ev_long);
 	UINT uMsg = static_cast<UINT>(p2.ev_long);
 	LPWINDOWSUBCLASS lpSubclass;
 	LPMSGCALLBACK lpMsg = 0;
-	bool bClassProc = PCOUNT() == 3 && p3.ev_length;
+	bool bClassProc = PCount() == 3 && p3.ev_length;
 
 	// get reference to struct for the hWnd, if none is found - the window was not subclassed
 	lpSubclass = FindWindowSubclass(hHwnd, bClassProc);
 	if (!lpSubclass)
 	{
-		SAVECUSTOMERROREX("UnbindEventsEx","There are no message bindings for window %I",hHwnd);
+		SaveCustomError("UnbindEventsEx", "There are no message bindings for window %I", hHwnd);
 		throw E_APIERROR;
 	}
 
 	// remove a message hook
-	if (PCOUNT() >= 2 && uMsg)
+	if (PCount() >= 2 && uMsg)
 	{
 		if (!RemoveMsgCallback(lpSubclass,uMsg))
 		{
-			SAVECUSTOMERROREX("UnbindEventsEx","There is no message binding for message no. %I",uMsg);
+			SaveCustomError("UnbindEventsEx", "There is no message binding for message no. %I", uMsg);
 			throw E_APIERROR;
 		}
 		// if no more hooks are present, unsubclass window
@@ -194,8 +199,6 @@ try
 		UnsubclassWindow(lpSubclass);
 		RemoveWindowSubclass(lpSubclass);
 	}
-
-	Return(1);
 }
 catch(int nErrorNo)
 {
@@ -381,7 +384,7 @@ void _stdcall SubclassWindow(LPWINDOWSUBCLASS lpSubclass) throw(int)
 		lpSubclass->pDefaultWndProc = (WNDPROC)GetWindowLong(lpSubclass->hHwnd,GWL_WNDPROC);
 		if (!lpSubclass->pDefaultWndProc)
 		{
-			SAVEWIN32ERROR(GetWindowLong,GetLastError());
+			SaveWin32Error("GetWindowLong", GetLastError());
 			throw E_APIERROR;
 		}
 		
@@ -389,7 +392,7 @@ void _stdcall SubclassWindow(LPWINDOWSUBCLASS lpSubclass) throw(int)
 
 		if (!SetWindowLong(lpSubclass->hHwnd,GWL_WNDPROC,(LONG)lpSubclass->pWindowThunk))
 		{
-			SAVEWIN32ERROR(SetWindowLong,GetLastError());
+			SaveWin32Error("SetWindowLong", GetLastError());
 			throw E_APIERROR;
 		}
 	}
@@ -398,7 +401,7 @@ void _stdcall SubclassWindow(LPWINDOWSUBCLASS lpSubclass) throw(int)
 		lpSubclass->pDefaultWndProc = (WNDPROC)GetClassLong(lpSubclass->hHwnd,GCL_WNDPROC);
 		if (!lpSubclass->pDefaultWndProc)
 		{
-			SAVEWIN32ERROR(GetClassLong,GetLastError());
+			SaveWin32Error("GetClassLong", GetLastError());
 			throw E_APIERROR;
 		}
 		
@@ -406,7 +409,7 @@ void _stdcall SubclassWindow(LPWINDOWSUBCLASS lpSubclass) throw(int)
 
 		if (!SetClassLong(lpSubclass->hHwnd,GCL_WNDPROC,(LONG)lpSubclass->pWindowThunk))
 		{
-			SAVEWIN32ERROR(SetClassLong,GetLastError());
+			SaveWin32Error("SetClassLong", GetLastError());
 			throw E_APIERROR;
 		}
 	}
@@ -418,7 +421,7 @@ void _stdcall UnsubclassWindow(LPWINDOWSUBCLASS lpSubclass)
 	{
 		if (!SetWindowLong(lpSubclass->hHwnd,GWL_WNDPROC,(LONG)lpSubclass->pDefaultWndProc))
 		{
-			SAVEWIN32ERROR(SetWindowLong,GetLastError());
+			SaveWin32Error("SetWindowLong", GetLastError());
 			throw E_APIERROR;
 		}
 	}
@@ -426,7 +429,7 @@ void _stdcall UnsubclassWindow(LPWINDOWSUBCLASS lpSubclass)
 	{
 		if (!SetClassLong(lpSubclass->hHwnd,GCL_WNDPROC,(LONG)lpSubclass->pDefaultWndProc))
 		{
-			SAVEWIN32ERROR(SetClassLong,GetLastError());
+			SaveWin32Error("SetClassLong", GetLastError());
 			throw E_APIERROR;
 		}
 		UnsubclassWindowEx(lpSubclass);
@@ -448,7 +451,7 @@ void _stdcall UnsubclassWindowExCallback(HWND hHwnd, LPARAM lParam)
 	{
 		if (!SetWindowLong(hHwnd,GWL_WNDPROC,(LONG)lpSubclass->pDefaultWndProc))
 		{
-			SAVEWIN32ERROR(SetWindowLong,GetLastError());
+			SaveWin32Error("SetWindowLong", GetLastError());
 			throw E_APIERROR;
 		}
 	}
@@ -457,7 +460,7 @@ void _stdcall UnsubclassWindowExCallback(HWND hHwnd, LPARAM lParam)
 	{
 		if (GetLastError() != NO_ERROR)
 		{
-			SAVEWIN32ERROR(EnumChildWindows,GetLastError());
+			SaveWin32Error("EnumChildWindows", GetLastError());
 			throw E_APIERROR;
 		}
 	}
@@ -473,7 +476,7 @@ void _stdcall UnsubclassWindowExCallbackChild(HWND hHwnd, LPARAM lParam)
 	{
 		if (!SetWindowLong(hHwnd,GWL_WNDPROC,(LONG)lpSubclass->pDefaultWndProc))
 		{
-			SAVEWIN32ERROR(SetWindowLong,GetLastError());
+			SaveWin32Error("SetWindowLong", GetLastError());
 			throw E_APIERROR;
 		}
 	}
@@ -555,8 +558,10 @@ void _stdcall CreateSubclassMsgThunkProc(LPWINDOWSUBCLASS lpSubclass, LPMSGCALLB
 	Emit_LocalVar("vAutoYield",sizeof(Value),__alignof(Value));
 
 	if (bObjectCall)
-		sprintfex(lpMsg->pCallbackFunction,BINDEVENTSEX_OBJECT_SCHEME".",
-		lpSubclass->bClassProc,lpSubclass->hHwnd,lpMsg->uMsg);
+	{
+		sprintfex(lpMsg->pCallbackFunction, BINDEVENTSEX_OBJECT_SCHEME, lpSubclass->bClassProc, lpSubclass->hHwnd, lpMsg->uMsg);
+		strcat(lpMsg->pCallbackFunction, ".");
+	}
 	else
 		*lpMsg->pCallbackFunction = '\0';
 
@@ -609,98 +614,98 @@ void _stdcall CreateSubclassMsgThunkProc(LPWINDOWSUBCLASS lpSubclass, LPMSGCALLB
 			GetWordNumN(aParmValue,pParmDef,',',xj,VFP2C_MAX_TYPE_LEN);
            	Alltrim(aParmValue);
 
-			if (STRIEQUAL("wParam",aParmValue))
+			if (StrIEqual("wParam",aParmValue))
 			{
 				*pConvertFlags++ = 'I';
 				Push("wParam");
 			}
-			else if (STRIEQUAL("lParam",aParmValue))
+			else if (StrIEqual("lParam",aParmValue))
 			{
 				*pConvertFlags++ = 'I';
 				Push("lParam");
 			}
-			else if (STRIEQUAL("uMsg",aParmValue))
+			else if (StrIEqual("uMsg",aParmValue))
 			{
 				*pConvertFlags++ = 'U';
 				Push("uMsg");
 			}
-			else if (STRIEQUAL("hWnd",aParmValue))
+			else if (StrIEqual("hWnd",aParmValue))
 			{
 				*pConvertFlags++ = 'U';
 				Push("hWnd");
 			}
-			else if (STRIEQUAL("UNSIGNED(wParam)",aParmValue))
+			else if (StrIEqual("UNSIGNED(wParam)",aParmValue))
 			{
 				*pConvertFlags++ = 'U';
 				Push("wParam");
 			}
-			else if (STRIEQUAL("UNSIGNED(lParam)",aParmValue))
+			else if (StrIEqual("UNSIGNED(lParam)",aParmValue))
 			{
 				*pConvertFlags++ = 'U';
 				Push("lParam");
 			}
-			else if (STRIEQUAL("HIWORD(wParam)",aParmValue))
+			else if (StrIEqual("HIWORD(wParam)",aParmValue))
 			{
 				*pConvertFlags++ = 'i';
 				Mov(nReg,"wParam");
 				Shr(nReg,16);
 				Push(nReg);
 			}
-			else if (STRIEQUAL("LOWORD(wParam)",aParmValue))
+			else if (StrIEqual("LOWORD(wParam)",aParmValue))
 			{
 				*pConvertFlags++ = 'i';
 				Mov(nReg,"wParam");
 				And(nReg,MAX_USHORT);
 				Push(nReg);
 			}
-			else if (STRIEQUAL("HIWORD(lParam)",aParmValue))
+			else if (StrIEqual("HIWORD(lParam)",aParmValue))
 			{
 				*pConvertFlags++ = 'i';
 				Mov(nReg,"lParam");
 				Shr(nReg,16);
 				Push(nReg);
 			}
-			else if (STRIEQUAL("LOWORD(lParam)",aParmValue))
+			else if (StrIEqual("LOWORD(lParam)",aParmValue))
 			{
 				*pConvertFlags++ = 'i';
 				Mov(nReg,"lParam");
 				And(nReg,MAX_USHORT);
 				Push(nReg);
 			}
-			else if (STRIEQUAL("UNSIGNED(HIWORD(wParam))",aParmValue))
+			else if (StrIEqual("UNSIGNED(HIWORD(wParam))",aParmValue))
 			{
 				*pConvertFlags++ = 'u';
 				Mov(nReg,"wParam");
 				Shr(nReg,16);
 				Push(nReg);
 			}
-			else if (STRIEQUAL("UNSIGNED(LOWORD(wParam))",aParmValue))
+			else if (StrIEqual("UNSIGNED(LOWORD(wParam))",aParmValue))
 			{
 				*pConvertFlags++ = 'u';
 				Mov(nReg,"wParam");
 				And(nReg,MAX_USHORT);
 				Push(nReg);
 			}
-			else if (STRIEQUAL("UNSIGNED(HIWORD(lParam))",aParmValue))
+			else if (StrIEqual("UNSIGNED(HIWORD(lParam))",aParmValue))
 			{
 				*pConvertFlags++ = 'u';
 				Mov(nReg,"lParam");
 				Shr(nReg,16);
 				Push(nReg);
 			}
-			else if (STRIEQUAL("UNSIGNED(LOWORD(lParam))",aParmValue))
+			else if (StrIEqual("UNSIGNED(LOWORD(lParam))",aParmValue))
 			{
 				*pConvertFlags++ = 'u';
 				Mov(nReg,"lParam");
 				And(nReg,MAX_USHORT);
 				Push(nReg);
 			}
-			else if (STRIEQUAL("BOOL(wParam)",aParmValue))
+			else if (StrIEqual("BOOL(wParam)",aParmValue))
 			{
 				*pConvertFlags++ = 'L';
 				Push("wParam");
 			}
-			else if (STRIEQUAL("BOOL(lParam)",aParmValue))
+			else if (StrIEqual("BOOL(lParam)",aParmValue))
 			{
 				*pConvertFlags++ = 'L';
 				Push("lParam");
@@ -889,14 +894,12 @@ try
 	FoxString pRetVal(p2);
 	FoxString pParams(p3);
 	
-	DWORD nSyncFlag = PCOUNT() == 5 ? p5.ev_long : CALLBACK_SYNCRONOUS;
-	bool bCDeclCallConv = (nSyncFlag | CALLBACK_CDECL) > 0; // is CALLBACK_CDECL set?
+	DWORD nSyncFlag = PCount() == 5 ? p5.ev_long : CALLBACK_SYNCRONOUS;
+	bool bCDeclCallConv = (nSyncFlag & CALLBACK_CDECL) > 0; // is CALLBACK_CDECL set?
 	nSyncFlag &= ~CALLBACK_CDECL; // remove CALLBACK_CDECL from nSyncFlag
 	nSyncFlag = nSyncFlag ? nSyncFlag : CALLBACK_SYNCRONOUS; // set nSyncFlag to default CALLBACK_SYNCRONOUS if is 0
 
-	int nParmCount, nParmLen, nPrecision, nParmNo;
-	
-	char aParmFormat[128] = {0};
+	int nParmCount, nWordCount, nPrecision, nParmNo;
 	char aParmType[VFP2C_MAX_TYPE_LEN];
 	char aParmPrec[VFP2C_MAX_TYPE_LEN];
 	char aObjectName[VFP2C_MAX_FUNCTIONBUFFER];
@@ -911,7 +914,7 @@ try
 
 	pFunc = NewCallbackFunc();
 
-	if (PCOUNT() >= 4 && Vartype(p4) == 'O')
+	if (PCount() >= 4 && Vartype(p4) == 'O')
 	{
 		sprintfex(aObjectName,CALLBACKFUNC_OBJECT_SCHEME,pFunc);
 		StoreObjectRef(aObjectName,pFunc->nObject,p4);
@@ -934,8 +937,6 @@ try
 
 	Emit_Prolog();
 	Push(EBX);
-	//Push(ECX);
-	//Push(EDX);
 
 	if (nSyncFlag & (CALLBACK_ASYNCRONOUS_POST|CALLBACK_ASYNCRONOUS_SEND))
 	{
@@ -986,16 +987,16 @@ try
 	
 	for (nParmNo = 1; nParmNo <= nParmCount; nParmNo++)
 	{
-		GetWordNumN(aParmType,pParams,',',nParmNo,VFP2C_MAX_TYPE_LEN);
+		GetWordNumN(aParmType, pParams, ',', nParmNo, VFP2C_MAX_TYPE_LEN);
 		Alltrim(aParmType);
 
-		nParmLen = GetWordCount(aParmType,' ');
-		if (nParmLen == 2)
+		nWordCount = GetWordCount(aParmType, ' ');
+		if (nWordCount == 2)
 		{
-			GetWordNumN(aParmPrec,aParmType,' ',2,VFP2C_MAX_TYPE_LEN);
-			GetWordNumN(aParmType,aParmType,' ',1,VFP2C_MAX_TYPE_LEN);
+			GetWordNumN(aParmPrec, aParmType, ' ', 2, VFP2C_MAX_TYPE_LEN);
+			GetWordNumN(aParmType, aParmType, ' ', 1, VFP2C_MAX_TYPE_LEN);
 		}
-		else if (nParmLen > 2)
+		else if (nWordCount > 2)
 			throw E_INVALIDPARAMS;
 
 		if (nParmNo > 1)
@@ -1004,46 +1005,89 @@ try
 			Add(EAX,1);
 		}
 
-		if (STRIEQUAL(aParmType,"INTEGER") || STRIEQUAL(aParmType,"LONG"))
+		if (StrIEqual(aParmType,"INTEGER") || StrIEqual(aParmType,"LONG"))
 		{
 			Emit_Parameter(T_INT);
 			Push((PARAMNO)nParmNo);
 			Push(EAX);
 			Call(EBX,(FUNCPTR)IntToStr);
 		}
-		else if (STRIEQUAL(aParmType,"UINTEGER") || STRIEQUAL(aParmType,"ULONG") || STRIEQUAL(aParmType,"STRING"))
+		else if (StrIEqual(aParmType,"UINTEGER") || StrIEqual(aParmType,"ULONG"))
 		{
 			Emit_Parameter(T_UINT);
 			Push((PARAMNO)nParmNo);
 			Push(EAX);
 			Call(EBX,(FUNCPTR)UIntToStr);
 		}
-		else if (STRIEQUAL(aParmType,"SHORT"))
+		else if (StrIEqual(aParmType,"STRING"))
+		{
+			Emit_Parameter(T_UINT);
+			if (nWordCount == 1)
+			{
+				Push((PARAMNO)nParmNo);
+				Push(EAX);
+				Call(EBX,(FUNCPTR)UIntToStr);
+			}
+			else
+			{
+				char *pFunc;
+				if (StrIEqual(aParmPrec, "ANSI"))
+					pFunc = "ReadCString";
+				else if (StrIEqual(aParmPrec, "UNICODE"))
+					pFunc = "ReadWString";
+				else
+					throw E_INVALIDPARAMS;
+				
+				// copy function name to into buffer
+				int nStringLen = strlen(pFunc);
+				Push(nStringLen);
+				Push((AVALUE)pFunc);
+				Push(EAX);
+				Call((FUNCPTR)memcpy);
+				Add(ESP, 3 * sizeof(int));
+
+				// adjust EAX (end of string)
+				Add(EAX, nStringLen);
+				// copy '(' to end of buffer
+				Mov(REAX, sizeof(char), '(');
+				Add(EAX,1);
+
+				// add pointer parameter to buffer
+				Push((PARAMNO)nParmNo);
+				Push(EAX);
+				Call(EBX,(FUNCPTR)UIntToStr);
+				
+				// copy ')' to end of buffer
+				Mov(REAX, sizeof(char), ')');
+				Add(EAX,1);
+			}
+		}
+		else if (StrIEqual(aParmType,"SHORT"))
 		{
 			Emit_Parameter(T_SHORT);
 			Push((PARAMNO)nParmNo);
 			Push(EAX);
 			Call(EBX,(FUNCPTR)IntToStr);
 		}
-		else if (STRIEQUAL(aParmType,"USHORT"))
+		else if (StrIEqual(aParmType,"USHORT"))
 		{
 			Emit_Parameter(T_USHORT);
 			Push((PARAMNO)nParmNo);
 			Push(EAX);
 			Call(EBX,(FUNCPTR)UIntToStr);
 		}
-		else if (STRIEQUAL(aParmType,"BOOL"))
+		else if (StrIEqual(aParmType,"BOOL"))
 		{
 			Emit_Parameter(T_INT);
 			Push((PARAMNO)nParmNo);
 			Push(EAX);
 			Call(EBX,(FUNCPTR)BoolToStr);
 		}
-		else if (STRIEQUAL(aParmType,"SINGLE"))
+		else if (StrIEqual(aParmType,"SINGLE"))
 		{
 			Emit_Parameter(T_FLOAT);
 
-			if (nParmLen == 2)
+			if (nWordCount == 2)
 			{
 				nPrecision = atoi(aParmPrec);
 				if (nPrecision < 0 || nPrecision > 6)
@@ -1057,11 +1101,11 @@ try
 			Push(EAX);
 			Call(EBX,(FUNCPTR)FloatToStr);
 		}
-		else if (STRIEQUAL(aParmType,"DOUBLE"))
+		else if (StrIEqual(aParmType,"DOUBLE"))
 		{
 			Emit_Parameter(T_DOUBLE);
 
-			if (nParmLen == 2)
+			if (nWordCount == 2)
 			{
 				nPrecision = atoi(aParmPrec);
 				if (nPrecision < 0 || nPrecision > 16)
@@ -1075,19 +1119,79 @@ try
 			Push(EAX);
 			Call(EBX,(FUNCPTR)DoubleToStr);
 		}
-		else if (STRIEQUAL(aParmType,"INT64"))
+		else if (StrIEqual(aParmType,"INT64"))
 		{
 			Emit_Parameter(T_INT64);
-			Push((PARAMNO)nParmNo);			
-			Push(EAX);
-			Call(EBX,(FUNCPTR)Int64ToStr);
+			if (nWordCount == 1)
+			{
+				Push((PARAMNO)nParmNo);			
+				Push(EAX);
+				Call(EBX,(FUNCPTR)Int64ToStr);
+			}
+			else
+			{
+				if (StrIEqual(aParmPrec, "BINARY"))
+				{
+					Push((PARAMNO)nParmNo);			
+					Push(EAX);
+					Call(EBX,(FUNCPTR)Int64ToVarbinary);
+				}
+				else if (StrIEqual(aParmPrec, "LITERAL"))
+				{
+					Mov(REAX,sizeof(char),'"');
+					Add(EAX, 1);
+					Push((PARAMNO)nParmNo);			
+					Push(EAX);
+					Call(EBX,(FUNCPTR)Int64ToStr);
+					Mov(REAX,sizeof(char),'"');
+					Add(EAX, 1);
+				}
+				else if (StrIEqual(aParmPrec, "CURRENCY"))
+				{
+					Push((PARAMNO)nParmNo);			
+					Push(EAX);
+					Call(EBX,(FUNCPTR)Int64ToCurrency);
+				}
+				else
+					throw E_INVALIDPARAMS;
+			}
 		}
-		else if (STRIEQUAL(aParmType,"UINT64"))
+		else if (StrIEqual(aParmType,"UINT64"))
 		{
 			Emit_Parameter(T_UINT64);
-			Push((PARAMNO)nParmNo);			
-			Push(EAX);
-			Call(EBX,(FUNCPTR)UInt64ToStr);
+			if (nWordCount == 1)
+			{
+				Push((PARAMNO)nParmNo);			
+				Push(EAX);
+				Call(EBX,(FUNCPTR)UInt64ToStr);
+			}
+			else
+			{
+				if (StrIEqual(aParmPrec, "BINARY"))
+				{
+					Push((PARAMNO)nParmNo);			
+					Push(EAX);
+					Call(EBX,(FUNCPTR)Int64ToVarbinary);
+				}
+				else if (StrIEqual(aParmPrec, "LITERAL"))
+				{
+					Mov(REAX,sizeof(char),'"');
+					Add(EAX, 1);
+					Push((PARAMNO)nParmNo);			
+					Push(EAX);
+					Call(EBX,(FUNCPTR)UInt64ToStr);
+					Mov(REAX,sizeof(char),'"');
+					Add(EAX, 1);
+				}
+				else if (StrIEqual(aParmPrec, "CURRENCY"))
+				{
+					Push((PARAMNO)nParmNo);			
+					Push(EAX);
+					Call(EBX,(FUNCPTR)Int64ToCurrency);
+				}
+				else
+					throw E_INVALIDPARAMS;
+			}
 		}
 		else
 			throw E_INVALIDPARAMS;
@@ -1127,9 +1231,9 @@ try
 		Call((FUNCPTR)_Evaluate);
 
 		// return value
-		if (STRIEQUAL(pRetVal,"INTEGER") || STRIEQUAL(pRetVal,"LONG"))
+		if (StrIEqual(pRetVal,"INTEGER") || StrIEqual(pRetVal,"LONG"))
 			Mov(EAX,"vRetVal",T_INT,offsetof(Value,ev_long));
-		else if (STRIEQUAL(pRetVal,"UINTEGER") || STRIEQUAL(pRetVal,"ULONG"))
+		else if (StrIEqual(pRetVal,"UINTEGER") || StrIEqual(pRetVal,"ULONG"))
 		{
 			Mov(AL,"vRetVal",T_CHAR,offsetof(Value,ev_type));
 			Cmp(AL,'N');
@@ -1141,15 +1245,15 @@ try
 			Call((FUNCPTR)DoubleToUInt);
 			Emit_Label("End");
 		}
-		else if (STRIEQUAL(pRetVal,"SHORT"))
+		else if (StrIEqual(pRetVal,"SHORT"))
 			Mov(AX,"vRetVal",T_INT,offsetof(Value,ev_long));
-		else if (STRIEQUAL(pRetVal,"USHORT"))
+		else if (StrIEqual(pRetVal,"USHORT"))
 			Mov(AX,"vRetVal",T_UINT,offsetof(Value,ev_long));
-		else if (STRIEQUAL(pRetVal,"SINGLE") || STRIEQUAL(pRetVal,"DOUBLE"))
+		else if (StrIEqual(pRetVal,"SINGLE") || StrIEqual(pRetVal,"DOUBLE"))
 			Fld("vRetVal",T_DOUBLE,offsetof(Value,ev_real));
-		else if (STRIEQUAL(pRetVal,"BOOL"))
+		else if (StrIEqual(pRetVal,"BOOL"))
 			Mov(EAX,"vRetVal",T_UINT,offsetof(Value,ev_length));
-		else if (STRIEQUAL(pRetVal,"INT64"))
+		else if (StrIEqual(pRetVal,"INT64"))
 		{
 			Mov(AL,"vRetVal",T_CHAR,offsetof(Value,ev_type));
 			Cmp(AL,'N');
@@ -1162,7 +1266,7 @@ try
 			Call((FUNCPTR)DoubleToInt64);
 			Emit_Label("End");
 		}
-		else if (STRIEQUAL(pRetVal,"UINT64"))
+		else if (StrIEqual(pRetVal,"UINT64"))
 		{
 			Mov(AL,"vRetVal",T_CHAR,offsetof(Value,ev_type));
 			Cmp(AL,'N');
@@ -1180,8 +1284,6 @@ try
 	}
 
 	Emit_Label("ErrorOut");
-	//Pop(EDX);
-	//Pop(ECX);
 	Pop(EBX);
 	Emit_Epilog(bCDeclCallConv);
 
@@ -1242,7 +1344,7 @@ void* _stdcall AllocThunk(int nSize) throw(int)
 			return pThunk;
 		else
 		{
-			SAVEWIN32ERROR(VirtualProtect,GetLastError());
+			SaveWin32Error("VirtualProtect", GetLastError());
 			HeapFree(ghThunkHeap,0,pThunk);
 			throw E_APIERROR;
 		}

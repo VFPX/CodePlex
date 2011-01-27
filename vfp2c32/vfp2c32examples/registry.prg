@@ -1,47 +1,42 @@
 #INCLUDE vfp2c.h
 
 CD (FULLPATH(JUSTPATH(SYS(16))))
-SET LIBRARY TO vfp2c32.fll ADDITIVE
+SET LIBRARY TO vfp2c32d.fll ADDITIVE
 && no initialisation needed for registry functions
 
 LOCAL lnKey, lnNewKey, lcValue, laError[1], loValues
 
 && creatine registry value's
 TRY
-	STORE 0 TO lnKey, lnNewKey
-	&& one can only create direct subkey's of already open keys
-	lnKey = OPENREGISTRYKEY(HKEY_LOCAL_MACHINE,'SOFTWARE')
-	lnNewKey = CREATEREGISTRYKEY(lnKey,'YourFirmName') && create HKEY_LOCAL_MACHINE\SOFTWARE\YourFirmName
-	WRITEREGISTRYKEY(lnNewKey,'Hello') && write Hello to the standard value
-	WRITEREGISTRYKEY(lnNewKey,25,'SomeNumber')
-	WRITEREGISTRYKEY(lnNewKey,34.345,'SomeFractional')
-	WRITEREGISTRYKEY(lnNewKey,DATE(),'InstallDate')
-	WRITEREGISTRYKEY(lnNewKey,DATETIME(),'InstallTime')
-	WRITEREGISTRYKEY(lnNewKey,'A Multi_SZ_Value'+CHR(0)+'Second Value','SomeValue','',REG_MULTI_SZ)
-	WRITEREGISTRYKEY(lnNewKey,'somebinary_variable_here_aasdfasdfkdjfkajdkfjalkjdfjadksfjlkajsdfj','SomeValue2','',REG_BINARY)
-	WRITEREGISTRYKEY(lnNewKey,DATETIME(),'InstallTime 2')
+	STORE 0 TO lnKey
+	lnKey = CREATEREGISTRYKEY(HKEY_LOCAL_MACHINE, 'SOFTWARE\YourFirmName') && create HKEY_LOCAL_MACHINE\SOFTWARE\YourFirmName
+	WRITEREGISTRYKEY(lnKey, 'Hello\Test') && write Hello to the standard value
+	WRITEREGISTRYKEY(lnKey, 25, 'SomeNumber')
+	WRITEREGISTRYKEY(lnKey, 34.345, 'SomeFractional')
+	WRITEREGISTRYKEY(lnKey, DATE(), 'InstallDate')
+	WRITEREGISTRYKEY(lnKey, DATETIME(), 'InstallTime')
+	WRITEREGISTRYKEY(lnKey, 'A Multi_SZ_Value'+CHR(0)+'Second Value','SomeValue', '', REG_MULTI_SZ)
+	WRITEREGISTRYKEY(lnKey, 0h304985309845098304859348508809803849508394850, 'SomeBinary')
+	WRITEREGISTRYKEY(lnKey, DATETIME(), 'InstallTime 2')
 CATCH TO loExp
 	AERROREX('laError')
 	DISPLAY MEMORY LIKE laError
 FINALLY 
-	IF lnNewKey != 0
-		CLOSEREGISTRYKEY(lnNewKey)
-	ENDIF
 	IF lnKey != 0
 		CLOSEREGISTRYKEY(lnKey)
 	ENDIF
 ENDTRY
 
-SET STEP ON
-
-
 && store all values of a registry key to object properties
 loValues = CREATEOBJECT('Empty')
 ?RegistryValuesToObject(HKEY_LOCAL_MACHINE,'SOFTWARE\YourFirmName',loValues)
-?loValues.Standard
+?LEN(loValues.Standard), LEN('Hello\Test')
 ?loValues.SomeNumber
+?loValues.SomeFractional
 ?loValues.InstallDate
 ?loValues.InstallTime
+?loValues.SomeValue
+?loValues.SomeBinary
 && !!
 ?loValues.InstallTime_2
 && since value names can contain characters that are not valid for a property name
@@ -52,7 +47,6 @@ loValues = CREATEOBJECT('Empty')
 && examples:
 && "2.SomeName" -> "_2_SomeName"
 && "{HelloWorld}" -> "_HelloWorld_"
-
 
 && store a complete hive including subkeys into a object hierarchie
 && !!! don't use this for really large hives, e.g to retrieve the complete HKEY_LOCAL_MACHINE\SOFTWARE 

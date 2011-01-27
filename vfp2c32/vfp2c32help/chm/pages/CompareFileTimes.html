@@ -1,0 +1,60 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252" />
+<title>CompareFileTimes</title><link href="/scripts/styles.css" rel="stylesheet" type="text/css" />
+<script src="/scripts/jscript.js" type="text/javascript"></script>
+</head><body>
+<div id="header">
+<p>VFP2C32 2.0.0.8</p>
+<h1 class="function">CompareFileTimes</h1>
+</div>
+<div id="content">
+<p class="description">Compares the last write times of two files.</p>
+
+<div class="block"><pre>CompareFileTimes(<a href="#p1">cFileName1</a>, <a href="#p2">cFileName2</a>)</pre></div>
+<h3>Parameters</h3>
+<dl class="parm"><dt><a id="p1">cFileName1</a></dt>
+<dd><p>Fully qualified path to the first file.</p>
+</dd></dl>
+<dl class="parm"><dt><a id="p2">cFileName2</a></dt>
+<dd><p>Fully qualified path to the second file.</p>
+</dd></dl>
+<h2>Return Value</h2>
+<p>If the last write times are equal: 0<br />
+If the last write time of the first file is greater then the second: 1<br />
+If the last write time of the first file is smaller then the second: 2</p>
+
+<h2>See Also</h2>
+<h4>Reference</h4>
+<p><a href="/pages/ADirectoryInfo.html">ADirectoryInfo</a><br />
+<a href="/pages/ADirEx.html">ADirEx</a><br />
+<a href="/pages/ADriveInfo.html">ADriveInfo</a><br />
+<a href="/pages/AFileAttributes.html">AFileAttributes</a><br />
+<a href="/pages/AFileAttributesEx.html">AFileAttributesEx</a><br />
+<a href="/pages/CancelFileChange.html">CancelFileChange</a><br />
+<a href="/pages/CopyFileEx.html">CopyFileEx</a><br />
+<a href="/pages/DeleteDirectory.html">DeleteDirectory</a><br />
+<a href="/pages/DeleteFileEx.html">DeleteFileEx</a><br />
+<a href="/pages/FindFileChange.html">FindFileChange</a><br />
+<a href="/pages/GetFileAttributes.html">GetFileAttributes</a><br />
+<a href="/pages/GetFileOwner.html">GetFileOwner</a><br />
+<a href="/pages/GetFileSize.html">GetFileSize</a><br />
+<a href="/pages/GetFileTimes.html">GetFileTimes</a><br />
+<a href="/pages/GetLongPathName.html">GetLongPathName</a><br />
+<a href="/pages/GetShortPathName.html">GetShortPathName</a><br />
+<a href="/pages/MoveFileEx.html">MoveFileEx</a><br />
+<a href="/pages/SetFileAttributes.html">SetFileAttributes</a><br />
+<a href="/pages/SetFileTimes.html">SetFileTimes</a><br />
+</p>
+<h4>Used WinApi functions</h4>
+<p><a href="http://msdn.microsoft.com/en-us/library/aa363858(VS.85).aspx">CreateFile</a><br />
+<a href="http://msdn.microsoft.com/en-us/library/ms724320(VS.85).aspx">GetFileTime</a></p>
+
+
+</div>
+<div id="footer">
+<p>&copy; <a href="http://vfpx.codeplex.com/wikipage?title=VFP2C32">VFP2C32</a> - Shared Source License for <a href="http://vfpx.codeplex.com">VFPX</a></p>
+</div>
+</body>
+</html>

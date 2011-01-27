@@ -7,7 +7,19 @@ SET LIBRARY TO vfp2c32.fll ADDITIVE
 INITVFP2C32(VFP2C_INIT_ALL)
 
 LOCAL lnCon, lValue, lnRet, laInfo[1]
-lnCon = SQLCONNECT('yourSQLServer','username','password')
+lnCon = SQLCONNECT('mysql','root','*******')
+
+lnRet = SQLEXECEX(lnCon,'USE cms')
+lnRet = SQLEXECEX(lnCon,'SELECT * FROM cms_css', 'cCursor', '', 0, 'css_id I')
+?lnRet
+IF lnRet = -1
+	AERROREX('laError')
+	DISPLAY MEMORY LIKE laError
+ENDIF
+
+SQLDISCONNECT(lnCon)
+RETURN
+
 
 && enable/disable ODBC tracing 
 ? SQLSETPROPEX(lnCon,"TRACE",.F.)

@@ -4,8 +4,8 @@
 #include "urlmon.h"
 #include "vfp2chelpers.h"
 
-#define BINDSTATUS_DOWNLOAD_FINISHED 99
-#define BINDSTATUS_DOWNLOAD_ABORTED 100
+const int BINDSTATUS_DOWNLOAD_FINISHED	= 99;
+const int BINDSTATUS_DOWNLOAD_ABORTED	= 100;
 
 class UrlDownload : public IBindStatusCallback
 {

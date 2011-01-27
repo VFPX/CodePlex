@@ -39,12 +39,12 @@ bool _stdcall VFP2C_Init_Marshal()
 	{
 		if (!(ghHeap = HeapCreate(0,HEAP_INITIAL_SIZE,0)))
 		{
-			ADDWIN32ERROR(HeapCreate,GetLastError());
+			AddWin32Error("HeapCreate", GetLastError());
 			return false;
 		}
 	}
 
-	// we can use GetModuleHandle instead of LoadLibrary since kernel32.dll is loaded already by VFP for sure
+	// we can use GetModuleHandle instead of LoadLibrary since kernel32.dll is loaded already by VFP
 	if (fpHeapCompact == 0)
 	{
 		hDll = GetModuleHandle("kernel32.dll");
@@ -61,66 +61,10 @@ bool _stdcall VFP2C_Init_Marshal()
 		}
 		else
 		{
-			ADDWIN32ERROR(GetModuleHandle,GetLastError());
+			AddWin32Error("GetModuleHandle", GetLastError());
 			return false;
 		}
 	}
-
-try
-{
-	FoxVariable pTempVar("__VFP2C_FLL_FILENAME", false);
-	FoxString pFllFileName(MAX_PATH);
-
-	pFllFileName.Len(GetModuleFileName(ghModule, pFllFileName, pFllFileName.Size()));
-	if (!pFllFileName.Len())
-	{
-		ADDWIN32ERROR(GetModuleFileName,GetLastError());
-		return false;
-	}
-
-	pTempVar = pFllFileName;
-
-	// declare additional functions not nativly exported by the FLL
-	Execute("DECLARE WriteChar IN (m.__VFP2C_FLL_FILENAME) INTEGER, STRING");
-	Execute("DECLARE WritePChar IN (m.__VFP2C_FLL_FILENAME) INTEGER, STRING");
-    Execute("DECLARE WriteInt8 IN (m.__VFP2C_FLL_FILENAME) INTEGER, INTEGER");
-	Execute("DECLARE WritePInt8 IN (m.__VFP2C_FLL_FILENAME) INTEGER, INTEGER");
-	Execute("DECLARE WriteUInt8 IN (m.__VFP2C_FLL_FILENAME) INTEGER, INTEGER");
-	Execute("DECLARE WritePUInt8 IN (m.__VFP2C_FLL_FILENAME) INTEGER, INTEGER");
-	Execute("DECLARE WriteShort IN (m.__VFP2C_FLL_FILENAME) INTEGER, SHORT");
-	Execute("DECLARE WritePShort IN (m.__VFP2C_FLL_FILENAME) INTEGER, SHORT");
-	Execute("DECLARE WriteUShort IN (m.__VFP2C_FLL_FILENAME) INTEGER, SHORT");
-	Execute("DECLARE WritePUShort IN (m.__VFP2C_FLL_FILENAME) INTEGER, SHORT");
-	Execute("DECLARE WriteInt IN (m.__VFP2C_FLL_FILENAME) INTEGER, INTEGER");
-    Execute("DECLARE WritePInt IN (m.__VFP2C_FLL_FILENAME) INTEGER, INTEGER");
-	Execute("DECLARE WriteUInt IN (m.__VFP2C_FLL_FILENAME) INTEGER, INTEGER");
-	Execute("DECLARE WritePUInt IN (m.__VFP2C_FLL_FILENAME) INTEGER, INTEGER");
-	Execute("DECLARE WritePointer IN (m.__VFP2C_FLL_FILENAME) INTEGER, INTEGER");
-	Execute("DECLARE WritePPointer IN (m.__VFP2C_FLL_FILENAME) INTEGER, INTEGER");
-	Execute("DECLARE WriteFloat IN (m.__VFP2C_FLL_FILENAME) INTEGER, SINGLE");
-	Execute("DECLARE WritePFloat IN (m.__VFP2C_FLL_FILENAME) INTEGER, SINGLE");
-	Execute("DECLARE WriteDouble IN (m.__VFP2C_FLL_FILENAME) INTEGER, DOUBLE");
-	Execute("DECLARE WritePDouble IN (m.__VFP2C_FLL_FILENAME) INTEGER, DOUBLE");
-	Execute("DECLARE SHORT ReadInt8 IN (m.__VFP2C_FLL_FILENAME) INTEGER");
-	Execute("DECLARE SHORT ReadPInt8 IN (m.__VFP2C_FLL_FILENAME) INTEGER");
-	Execute("DECLARE SHORT ReadUInt8 IN (m.__VFP2C_FLL_FILENAME) INTEGER");
-	Execute("DECLARE SHORT ReadPUInt8 IN (m.__VFP2C_FLL_FILENAME) INTEGER");
-	Execute("DECLARE SHORT ReadShort IN (m.__VFP2C_FLL_FILENAME) INTEGER");
-	Execute("DECLARE SHORT ReadPShort IN (m.__VFP2C_FLL_FILENAME) INTEGER");
-	Execute("DECLARE INTEGER ReadUShort IN (m.__VFP2C_FLL_FILENAME) INTEGER");
-	Execute("DECLARE INTEGER ReadPUShort IN (m.__VFP2C_FLL_FILENAME) INTEGER");
-	Execute("DECLARE INTEGER ReadInt IN (m.__VFP2C_FLL_FILENAME) INTEGER");
-    Execute("DECLARE INTEGER ReadPInt IN (m.__VFP2C_FLL_FILENAME) INTEGER");
-    Execute("DECLARE SINGLE ReadFloat IN (m.__VFP2C_FLL_FILENAME) INTEGER");
-    Execute("DECLARE SINGLE ReadPFloat IN (m.__VFP2C_FLL_FILENAME) INTEGER");
-	Execute("DECLARE DOUBLE ReadDouble IN (m.__VFP2C_FLL_FILENAME) INTEGER");
-	Execute("DECLARE DOUBLE ReadPDouble IN (m.__VFP2C_FLL_FILENAME) INTEGER");
-}
-catch(int nErrorNo)
-{
-	ADDCUSTOMERROREX("_Execute","Failed to DECLARE function. Error %I",nErrorNo);
-	return false;
-}
 	return true;
 }
 
@@ -132,12 +76,6 @@ void _stdcall VFP2C_Destroy_Marshal()
 #ifdef _DEBUG
 	FreeDebugAlloc();
 #endif
-
-	_Execute("CLEAR DLLS 'WriteChar','WritePChar','WriteInt8','WritePInt8','WriteUInt8','WritePUInt8','WriteShort',"
-	"'WritePShort','WriteUShort','WritePUShort','WriteInt','WritePInt','WriteUInt','WritePUInt','WritePointer','WritePPointer',"
-	"'WriteFloat','WritePFloat','WriteDouble','WritePDouble',"
-	"'ReadInt8','ReadPInt8','ReadUInt8','ReadPUInt8','ReadShort','ReadPShort','ReadUShort','ReadPUShort','ReadInt','ReadPInt',"
-	"'ReadFloat','ReadPFloat','ReadDouble','ReadPDouble'");
 }
 
 int _stdcall Win32HeapExceptionHandler(int nExceptionCode)
@@ -296,7 +234,7 @@ catch(int nErrorNo)
 void _fastcall TrackMem(ParamBlk *parm)
 {
 	gbTrackAlloc = static_cast<BOOL>(p1.ev_length);
-	if (PCOUNT() == 2 && p2.ev_length)
+	if (PCount() == 2 && p2.ev_length)
 		FreeDebugAlloc();
 }
 
@@ -308,68 +246,82 @@ void _fastcall AllocMem(ParamBlk *parm)
 	void *pAlloc = 0;
 	__try
 	{
-		pAlloc = HeapAlloc(ghHeap,HEAP_ZE_FLAG,p1.ev_long);
+		pAlloc = HeapAlloc(ghHeap, HEAP_ZERO_MEMORY | HEAP_GENERATE_EXCEPTIONS, p1.ev_long);
 	}
 	__except(SAVEHEAPEXCEPTION()) { }
 
-	ADDDEBUGALLOC(pAlloc,p1.ev_long);
-
-	Return(pAlloc);
+	if (pAlloc)
+	{
+		ADDDEBUGALLOC(pAlloc, p1.ev_long);
+		Return(pAlloc);
+	}
+	else
+		RaiseError(E_APIERROR);
 }
 
 void _fastcall AllocMemTo(ParamBlk *parm)
 {
+	void **pPointer = reinterpret_cast<void**>(p1.ev_long);
 	void *pAlloc = 0;
 
-	if (p1.ev_long == 0)
-		RaiseError(E_INVALIDPARAMS);
-
-	__try
+	if (pPointer)
 	{
-		pAlloc = HeapAlloc(ghHeap, HEAP_ZE_FLAG, p2.ev_long);
-	}
-	__except(SAVEHEAPEXCEPTION()) { }
+		__try
+		{
+			pAlloc = HeapAlloc(ghHeap, HEAP_ZERO_MEMORY | HEAP_GENERATE_EXCEPTIONS, p2.ev_long);
+		}
+		__except(SAVEHEAPEXCEPTION()) { }
 	
-	if (pAlloc)
-		*reinterpret_cast<void**>(p1.ev_long) = pAlloc;
-
-	ADDDEBUGALLOC(pAlloc,p2.ev_long);
-
-	Return(pAlloc);
+		if (pAlloc)
+		{
+			*pPointer = pAlloc;
+			ADDDEBUGALLOC(pAlloc,p2.ev_long);
+			Return(pAlloc);
+		}
+		else
+			RaiseError(E_APIERROR);
+	}
+	else
+		RaiseError(E_INVALIDPARAMS);
 }
 
 void _fastcall ReAllocMem(ParamBlk *parm)
 {
+	void *pPointer = reinterpret_cast<void*>(p1.ev_long);
 	void *pAlloc = 0;
 	__try
 	{
-		if (p1.ev_long)
+		if (pPointer)
 		{
-			pAlloc = HeapReAlloc(ghHeap,HEAP_ZE_FLAG,reinterpret_cast<void*>(p1.ev_long), p2.ev_long);
-			REPLACEDEBUGALLOC(p1.ev_long, pAlloc, p2.ev_long);
+			pAlloc = HeapReAlloc(ghHeap, HEAP_ZERO_MEMORY | HEAP_GENERATE_EXCEPTIONS, pPointer, p2.ev_long);
+			REPLACEDEBUGALLOC(pPointer, pAlloc, p2.ev_long);
 		}
 		else
 		{
-			pAlloc = HeapAlloc(ghHeap, HEAP_ZE_FLAG, p2.ev_long);
-			ADDDEBUGALLOC(pAlloc,p2.ev_long);
+			pAlloc = HeapAlloc(ghHeap, HEAP_ZERO_MEMORY | HEAP_GENERATE_EXCEPTIONS, p2.ev_long);
+			ADDDEBUGALLOC(pAlloc, p2.ev_long);
 		}
     }
 	__except(SAVEHEAPEXCEPTION()) { }
 
-	Return(pAlloc);
+	if (pAlloc)
+		Return(pAlloc);
+	else
+		RaiseError(E_APIERROR);
 }
 
 void _fastcall FreeMem(ParamBlk *parm)
 {
-	if (p1.ev_long)
+	void *pPointer = reinterpret_cast<void*>(p1.ev_long);
+	if (pPointer)
 	{
-		if (HeapFree(ghHeap,0,reinterpret_cast<void*>(p1.ev_long)))
+		if (HeapFree(ghHeap,0, pPointer))
 		{
-			REMOVEDEBUGALLOC(p1.ev_long);
+			REMOVEDEBUGALLOC(pPointer);
 		}
 		else
 		{
-			SAVEWIN32ERROR(HeapFree,GetLastError());
+			SaveWin32Error("HeapFree", GetLastError());
 			RaiseError(E_APIERROR);
 		}
 	}
@@ -388,7 +340,7 @@ void _fastcall FreePMem(ParamBlk *parm)
 			}
 			else
 			{
-				SAVEWIN32ERROR(HeapFree,GetLastError());
+				SaveWin32Error("HeapFree", GetLastError());
 				RaiseError(E_APIERROR);
 			}
 		}
@@ -410,7 +362,7 @@ void _fastcall FreeRefArray(ParamBlk *parm)
 	pAddress += nStartElement;
 	nElements -= nStartElement;
 	
-	RESETWIN32ERRORS();
+	ResetWin32Errors();
 
 	while(nElements--)
 	{
@@ -418,7 +370,7 @@ void _fastcall FreeRefArray(ParamBlk *parm)
 		{
 			if (!HeapFree(ghHeap,0,*pAddress))
 			{
-				ADDWIN32ERROR(HeapFree,GetLastError());
+				AddWin32Error("HeapFree", GetLastError());
 				bApiRet = FALSE;
 			}
 		}
@@ -430,7 +382,7 @@ void _fastcall FreeRefArray(ParamBlk *parm)
 void _fastcall SizeOfMem(ParamBlk *parm)
 {
 	if (p1.ev_long)
-		Return((int)HeapSize(ghHeap,0,(void*)p1.ev_long));
+		Return((int)HeapSize(ghHeap, 0, reinterpret_cast<void*>(p1.ev_long)));
 	else
 		Return(0);
 }
@@ -438,9 +390,9 @@ void _fastcall SizeOfMem(ParamBlk *parm)
 void _fastcall ValidateMem(ParamBlk *parm)
 {
 	if (fpHeapValidate)
-		Return(fpHeapValidate(ghHeap,0,(void*)p1.ev_long) > 0);
+		Return(fpHeapValidate(ghHeap, 0, reinterpret_cast<void*>(p1.ev_long)) > 0);
 	else
-		Return(false);
+		RaiseError(E_NOENTRYPOINT);
 }
 
 void _fastcall CompactMem(ParamBlk *parm)
@@ -448,75 +400,83 @@ void _fastcall CompactMem(ParamBlk *parm)
 	if (fpHeapCompact)
 		Return(fpHeapCompact(ghHeap,0));
 	else
-		Return(0);
+		RaiseError(E_NOENTRYPOINT);
 }
 
 // wrappers around GlobalAlloc, GlobalFree etc .. for movable memory objects ..
 void _fastcall AllocHGlobal(ParamBlk *parm)
 {
 	HGLOBAL hMem;
-	hMem = GlobalAlloc(GMEM_MOVEABLE|GMEM_ZEROINIT,(SIZE_T)p1.ev_long);
+	UINT nFlags = PCount() == 2 ? p2.ev_long : GMEM_MOVEABLE | GMEM_ZEROINIT;
+	hMem = GlobalAlloc(nFlags, p1.ev_long);
 	if (hMem)
 	{
-		ADDDEBUGALLOC(hMem,p1.ev_long);
+		ADDDEBUGALLOC(hMem, p1.ev_long);
 		Return(hMem);
 	}
 	else
 	{
-		SAVEWIN32ERROR(GlobalAlloc,GetLastError());
+		SaveWin32Error("GlobalAlloc", GetLastError());
 		RaiseError(E_APIERROR);
 	}
 }
 
 void _fastcall FreeHGlobal(ParamBlk *parm)
 {
-	if (!GlobalFree((HGLOBAL)p1.ev_long)) /* returns NULL on success */
+	HGLOBAL hHandle = reinterpret_cast<HGLOBAL>(p1.ev_long);
+	if (hHandle)
 	{
-		REMOVEDEBUGALLOC(p1.ev_long);
-	}
-	else
-	{
-		SAVEWIN32ERROR(GlobalFree,GetLastError());
-		RaiseError(E_APIERROR);
+		if (GlobalFree(hHandle) == 0)
+		{
+			REMOVEDEBUGALLOC(hHandle);
+		}
+		else
+		{
+			SaveWin32Error("GlobalFree", GetLastError());
+			RaiseError(E_APIERROR);
+		}
 	}
 }
 
 void _fastcall ReAllocHGlobal(ParamBlk *parm)
 {
+	HGLOBAL hHandle = reinterpret_cast<HGLOBAL>(p1.ev_long);
+	UINT nFlags = PCount() == 2 ? GMEM_ZEROINIT : p3.ev_long;
 	HGLOBAL hMem;
-	hMem = GlobalReAlloc((HGLOBAL)p1.ev_long,(SIZE_T)p2.ev_long,GMEM_MOVEABLE|GMEM_ZEROINIT);
+	hMem = GlobalReAlloc(hHandle, p2.ev_long, nFlags);
 	if (hMem)
 	{
-		REPLACEDEBUGALLOC(p1.ev_long,hMem,p2.ev_long);		
+		REPLACEDEBUGALLOC(p1.ev_long, hMem, p2.ev_long);
 		Return(hMem);
 	}
 	else
 	{
-		SAVEWIN32ERROR(GlobalReAlloc,GetLastError());
+		SaveWin32Error("GlobalReAlloc", GetLastError());
 		RaiseError(E_APIERROR);
 	}
 }
 
 void _fastcall LockHGlobal(ParamBlk *parm)
 {
+	HGLOBAL hHandle = reinterpret_cast<HGLOBAL>(p1.ev_long);
 	LPVOID pMem;
-	pMem = GlobalLock((HGLOBAL)p1.ev_long);
+	pMem = GlobalLock(hHandle);
 	if (pMem)
 		Return(pMem);
 	else
 	{
-		SAVEWIN32ERROR(GlobalLock,GetLastError());
+		SaveWin32Error("GlobalLock", GetLastError());
 		RaiseError(E_APIERROR);
 	}
 }
 
 void _fastcall UnlockHGlobal(ParamBlk *parm)
 {
+	HGLOBAL hHandle = reinterpret_cast<HGLOBAL>(p1.ev_long);
 	BOOL bRet;
 	DWORD nLastError;
 	
-	bRet = GlobalUnlock((HGLOBAL)p1.ev_long);
-
+	bRet = GlobalUnlock(hHandle);
 	if (!bRet)
 	{
 		nLastError = GetLastError();
@@ -524,7 +484,7 @@ void _fastcall UnlockHGlobal(ParamBlk *parm)
 			Return(1);
 		else
 		{
-			SAVEWIN32ERROR(GlobalUnlock,nLastError);
+			SaveWin32Error("GlobalUnlock", nLastError);
 			RaiseError(E_APIERROR);
 		}
 	}
@@ -552,7 +512,7 @@ try
 			Return(0);
 		else
 		{
-			SAVEWIN32ERROR(HeapWalk,nLastError);
+			SaveWin32Error("HeapWalk", nLastError);
 			throw E_APIERROR;
 		}
 		return;
@@ -571,7 +531,7 @@ try
 	nLastError = GetLastError();
     if (nLastError != ERROR_NO_MORE_ITEMS)
 	{
-		SAVEWIN32ERROR(HeapWalk,nLastError);
+		SaveWin32Error("HeapWalk", nLastError);
 		throw E_APIERROR;
 	}
 	else
@@ -583,220 +543,363 @@ catch(int nErrorNo)
 }
 }
 
-void _stdcall WriteChar(char *pAddress, char* nNewVal)
+void _fastcall WriteInt8(ParamBlk *parm)
 {
-	*pAddress = *nNewVal;
+	__int8 *pPointer = reinterpret_cast<__int8*>(p1.ev_long);
+	if (pPointer)
+		*pPointer = static_cast<__int8>(p2.ev_long);
+	else
+		RaiseError(E_INVALIDPARAMS);
 }
 
-void _stdcall WritePChar(char **pAddress, char* nNewVal)
+void _fastcall WritePInt8(ParamBlk *parm)
 {
-	**pAddress = *nNewVal;
-}
-
-void _fastcall WriteWChar(ParamBlk *parm)
-{
-	if (p2.ev_length)
+	__int8 **pPointer = reinterpret_cast<__int8**>(p1.ev_long);
+	if (pPointer)
 	{
-		MultiByteToWideChar(PCOUNT() == 2 ? gnConvCP : (UINT)p3.ev_long,0,HandleToPtr(p2),1,(wchar_t*)p1.ev_long,1);
+		if ((*pPointer))
+            **pPointer = static_cast<__int8>(p2.ev_long);
 	}
 	else
-		*(wchar_t*)p1.ev_long = L'\0';
+		RaiseError(E_INVALIDPARAMS);
 }
 
-void _fastcall WritePWChar(ParamBlk *parm)
+void _fastcall WriteUInt8(ParamBlk *parm)
 {
-	if (p2.ev_length)
+	unsigned __int8 *pPointer = reinterpret_cast<unsigned __int8*>(p1.ev_long);
+	if (pPointer)
+		*pPointer = static_cast<unsigned __int8>(p2.ev_long);
+	else
+		RaiseError(E_INVALIDPARAMS);
+}
+
+void _fastcall WritePUInt8(ParamBlk *parm)
+{
+	unsigned __int8 **pPointer = reinterpret_cast<unsigned __int8**>(p1.ev_long);
+	if (pPointer)
 	{
-		MultiByteToWideChar(PCOUNT() == 2 ? gnConvCP : (UINT)p3.ev_long,0,HandleToPtr(p2),1,*(wchar_t**)p1.ev_long,1);
+		if ((*pPointer))
+            **pPointer = static_cast<unsigned __int8>(p2.ev_long);
 	}
 	else
-		**(wchar_t**)p1.ev_long = L'\0';
+		RaiseError(E_INVALIDPARAMS);
 }
 
-void _stdcall WriteInt8(__int8 *pAddress, int nNewVal)
+void _fastcall WriteShort(ParamBlk *parm)
 {
-	*pAddress = (__int8)nNewVal;
+	short *pPointer = reinterpret_cast<short*>(p1.ev_long);
+	if (pPointer)
+		*pPointer = static_cast<short>(p2.ev_long);
+	else
+		RaiseError(E_INVALIDPARAMS);
 }
 
-void _stdcall WritePInt8(__int8 **pAddress, int nNewVal)
+void _fastcall WritePShort(ParamBlk *parm)
 {
-	**pAddress = (__int8)nNewVal;
+	short **pPointer = reinterpret_cast<short**>(p1.ev_long);
+	if (pPointer)
+	{
+		if ((*pPointer))
+            **pPointer = static_cast<short>(p2.ev_long);
+	}
+	else
+		RaiseError(E_INVALIDPARAMS);
 }
 
-void _stdcall WriteUInt8(unsigned __int8 *pAddress, unsigned int nNewVal)
+void _fastcall WriteUShort(ParamBlk *parm)
 {
-	*pAddress = (unsigned __int8)nNewVal;
+	unsigned short *pPointer = reinterpret_cast<unsigned short*>(p1.ev_long);
+	if (pPointer)
+		*pPointer = static_cast<unsigned short>(p2.ev_long);
+	else
+		RaiseError(E_INVALIDPARAMS);
 }
 
-void _stdcall WritePUInt8(unsigned __int8 **pAddress, unsigned int nNewVal)
+void _fastcall WritePUShort(ParamBlk *parm)
 {
-	**pAddress = (unsigned __int8)nNewVal;
+	unsigned short **pPointer = reinterpret_cast<unsigned short**>(p1.ev_long);
+	if (pPointer)
+	{
+		if ((*pPointer))
+            **pPointer = static_cast<unsigned short>(p2.ev_long);
+	}
+	else
+		RaiseError(E_INVALIDPARAMS);
 }
 
-void _stdcall WriteShort(short *pAddress, short nNewVal)
+void _fastcall WriteInt(ParamBlk *parm)
 {
-	*pAddress = nNewVal;
+	int *pPointer = reinterpret_cast<int*>(p1.ev_long);
+	if (pPointer)
+		*pPointer = p2.ev_long;
+	else
+		RaiseError(E_INVALIDPARAMS);
 }
 
-void _stdcall WritePShort(short **pAddress, short nNewVal)
+void _fastcall WritePInt(ParamBlk *parm)
 {
-	**pAddress = nNewVal;
+	int **pPointer = reinterpret_cast<int**>(p1.ev_long);
+	if (pPointer)
+	{
+		if ((*pPointer))
+            **pPointer = p2.ev_long;
+	}
+	else
+		RaiseError(E_INVALIDPARAMS);
 }
 
-void _stdcall WriteUShort(unsigned short *pAddress, unsigned short nNewVal)
+void _fastcall WriteUInt(ParamBlk *parm)
 {
-	*pAddress = nNewVal;
+	unsigned int *pPointer = reinterpret_cast<unsigned int*>(p1.ev_long);
+	if (pPointer)
+		*pPointer = static_cast<unsigned int>(p2.ev_real);
+	else
+		RaiseError(E_INVALIDPARAMS);
 }
 
-void _stdcall WritePUShort(unsigned short **pAddress, unsigned short nNewVal)
+void _fastcall WritePUInt(ParamBlk *parm)
 {
-	**pAddress = nNewVal;
-}
-
-void _stdcall WriteInt(int *pAddress, int nNewVal)
-{
-	*pAddress = nNewVal;
-}
-
-void _stdcall WritePInt(int **pAddress, int nNewVal)
-{
-	**pAddress = nNewVal;
-}
-
-void _stdcall WriteUInt(unsigned int *pAddress, unsigned int nNewVal)
-{
-	*pAddress = nNewVal;
-}
-
-void _stdcall WritePUInt(unsigned int **pAddress, unsigned int nNewVal)
-{
-	**pAddress = nNewVal;
-}
-
-void _stdcall WritePointer(void **pAddress, void *nNewVal)
-{
-	*pAddress = nNewVal;
-}
-
-void _stdcall WritePPointer(void ***pAddress, void *nNewVal)
-{
-	**pAddress = nNewVal;
-}
-
-void _stdcall WriteFloat(float *pAddress, float nNewVal)
-{
-	*pAddress = nNewVal;
-}
-
-void _stdcall WritePFloat(float **pAddress, float nNewVal)
-{
-	**pAddress = nNewVal;
-}
-
-void _stdcall WriteDouble(double *pAddress, double nNewVal)
-{
-	*pAddress = nNewVal;
-}
-
-void _stdcall WritePDouble(double **pAddress, double nNewVal)
-{
-	**pAddress = nNewVal;
+	unsigned int **pPointer = reinterpret_cast<unsigned int**>(p1.ev_long);
+	if (pPointer)
+	{
+		if ((*pPointer))
+            **pPointer = static_cast<unsigned int>(p2.ev_real);
+	}
+	else
+		RaiseError(E_INVALIDPARAMS);
 }
 
 void _fastcall WriteInt64(ParamBlk *parm)
 {
-	__int64 *pAddress = (__int64*)p1.ev_long;
-
-	if (Vartype(p1) == 'C')
-	{
-		if (!NullTerminateValue(p2))
-			RaiseError(E_INSUFMEMORY);
-		*pAddress = StringToInt64(HandleToPtr(p2));
-	}
-	else if (Vartype(p2) == 'I')
-		*pAddress = (__int64)p2.ev_long;
-	else if (Vartype(p1) == 'N')
-		*pAddress = (__int64)p2.ev_real;
-	else 
-		RaiseError(E_INVALIDPARAMS);
+try
+{
+	__int64 *pPointer = reinterpret_cast<__int64*>(p1.ev_long);
+	if (pPointer)
+		*pPointer = Value2Int64(p2);
+	else
+		throw E_INVALIDPARAMS;
+}
+catch(int nErrorNo)
+{
+	RaiseError(nErrorNo);
+}
 }
 
 void _fastcall WritePInt64(ParamBlk *parm)
 {
-	__int64 **pAddress = (__int64**)p1.ev_long;
-
-	if (Vartype(p1) == 'C')
+try
+{
+	__int64 **pPointer = reinterpret_cast<__int64**>(p1.ev_long);
+	if (pPointer)
 	{
-		if (!NullTerminateValue(p2))
-			RaiseError(E_INSUFMEMORY);
-		**pAddress = StringToInt64(HandleToPtr(p2));
+		if ((*pPointer))
+            **pPointer = Value2Int64(p2);
 	}
-	else if (Vartype(p2) == 'I')
-		**pAddress = (__int64)p2.ev_long;
-	else if (Vartype(p1) == 'N')
-		**pAddress = (__int64)p2.ev_real;
-	else 
-		RaiseError(E_INVALIDPARAMS);
+	else
+		throw E_INVALIDPARAMS;
+}
+catch(int nErrorNo)
+{
+	RaiseError(nErrorNo);
+}
 }
 
 void _fastcall WriteUInt64(ParamBlk *parm)
 {
-	unsigned __int64 *pAddress = (unsigned __int64*)p1.ev_long;
-
-	if (Vartype(p1) == 'C')
-	{
-		if (!NullTerminateValue(p2))
-			RaiseError(E_INSUFMEMORY);
-		*pAddress = StringToUInt64(HandleToPtr(p2));
-	}
-	else if (Vartype(p2) == 'I')
-		*pAddress = (unsigned __int64)p2.ev_long;
-	else if (Vartype(p1) == 'N')
-		*pAddress = (unsigned __int64)p2.ev_real;
-	else 
-		RaiseError(E_INVALIDPARAMS);
+try
+{
+	unsigned __int64 *pPointer = reinterpret_cast<unsigned __int64*>(p1.ev_long);
+	if (pPointer)
+		*pPointer = Value2UInt64(p2);
+	else
+		throw E_INVALIDPARAMS;
+}
+catch(int nErrorNo)
+{
+	RaiseError(nErrorNo);
+}
 }
 
 void _fastcall WritePUInt64(ParamBlk *parm)
 {
-	unsigned __int64 **pAddress = (unsigned __int64**)p1.ev_long;
-
-	if (Vartype(p1) == 'C')
+try
+{
+	unsigned __int64 **pPointer = reinterpret_cast<unsigned __int64**>(p1.ev_long);
+	if (pPointer)
 	{
-		if (!NullTerminateValue(p2))
-			RaiseError(E_INSUFMEMORY);
-		**pAddress = StringToUInt64(HandleToPtr(p2));
+		if ((*pPointer))
+            **pPointer = Value2UInt64(p2);
 	}
-	else if (Vartype(p2) == 'I')
-		**pAddress = (unsigned __int64)p2.ev_long;
-	else if (Vartype(p1) == 'N')
-		**pAddress = (unsigned __int64)p2.ev_real;
-	else 
+	else
+		throw E_INVALIDPARAMS;
+}
+catch(int nErrorNo)
+{
+	RaiseError(nErrorNo);
+}
+}
+
+void _fastcall WriteFloat(ParamBlk *parm)
+{
+	float *pPointer = reinterpret_cast<float*>(p1.ev_long);
+	if (pPointer)
+		*pPointer = static_cast<float>(p2.ev_real);
+	else
 		RaiseError(E_INVALIDPARAMS);
+}
+
+void _fastcall WritePFloat(ParamBlk *parm)
+{
+	float **pPointer = reinterpret_cast<float**>(p1.ev_long);
+	if (pPointer)
+	{
+		if ((*pPointer))
+            **pPointer = static_cast<float>(p2.ev_real);
+	}
+	else
+		RaiseError(E_INVALIDPARAMS);
+}
+
+void _fastcall WriteDouble(ParamBlk *parm)
+{
+	double *pPointer = reinterpret_cast<double*>(p1.ev_long);
+	if (pPointer)
+		*pPointer = p2.ev_real;
+	else
+		RaiseError(E_INVALIDPARAMS);
+}
+
+void _fastcall WritePDouble(ParamBlk *parm)
+{
+	double **pPointer = reinterpret_cast<double**>(p1.ev_long);
+	if (pPointer)
+	{
+		if ((*pPointer))
+            **pPointer = p2.ev_real;
+	}
+	else
+		RaiseError(E_INVALIDPARAMS);
+}
+
+void _fastcall WriteLogical(ParamBlk *parm)
+{
+	unsigned int *pPointer = reinterpret_cast<unsigned int*>(p1.ev_long);
+	if (pPointer)
+        *pPointer = p2.ev_length;
+	else
+		RaiseError(E_INVALIDPARAMS);
+}
+
+void _fastcall WritePLogical(ParamBlk *parm)
+{
+	unsigned int **pPointer = reinterpret_cast<unsigned int**>(p1.ev_long);
+	if (pPointer)
+	{
+		if ((*pPointer))
+            **pPointer = p2.ev_length;
+	}
+	else
+		RaiseError(E_INVALIDPARAMS);
+}
+
+void _fastcall WritePointer(ParamBlk *parm)
+{
+	void **pPointer = reinterpret_cast<void**>(p1.ev_long);
+	unsigned int nPointer = static_cast<unsigned int>(p2.ev_real);
+	if (pPointer)
+		*pPointer = reinterpret_cast<void*>(nPointer);
+	else
+		RaiseError(E_INVALIDPARAMS);
+}
+
+void _fastcall WritePPointer(ParamBlk *parm)
+{
+	void ***pPointer = reinterpret_cast<void***>(p1.ev_long);
+	unsigned int nPointer = static_cast<unsigned int>(p2.ev_real);
+	if (pPointer)
+	{
+		if ((*pPointer))
+            **pPointer = reinterpret_cast<void*>(nPointer);
+	}
+	else
+		RaiseError(E_INVALIDPARAMS);
+}
+
+void _fastcall WriteChar(ParamBlk *parm)
+{
+	char *pChar = reinterpret_cast<char*>(p1.ev_long);
+	if (pChar)
+		*pChar = *HandleToPtr(p2);
+	else
+		RaiseError(E_INVALIDPARAMS);
+}
+
+void _fastcall WritePChar(ParamBlk *parm)
+{
+	char **pChar = reinterpret_cast<char**>(p1.ev_long);
+	if (pChar)
+	{
+		if ((*pChar))
+            **pChar = *HandleToPtr(p2);
+	}
+	else
+		RaiseError(E_INVALIDPARAMS);
+}
+
+void _fastcall WriteWChar(ParamBlk *parm)
+{
+	wchar_t *pString = reinterpret_cast<wchar_t*>(p1.ev_long);
+	unsigned int nCodePage = PCount() == 2 ? gnConvCP : p3.ev_long;
+	if (pString)
+	{
+		if (p2.ev_length)
+			MultiByteToWideChar(nCodePage, 0, HandleToPtr(p2), 1, pString, 1);
+		else
+			*pString = L'\0';
+	}
+	else
+		RaiseError(E_INVALIDPARAMS);
+}
+
+void _fastcall WritePWChar(ParamBlk *parm)
+{
+	wchar_t **pString = reinterpret_cast<wchar_t**>(p1.ev_long);
+	unsigned int nCodePage = PCount() == 2 ? gnConvCP : p3.ev_long;
+	if (pString)
+	{
+		if ((*pString))
+		{
+			if (p2.ev_length)
+				MultiByteToWideChar(nCodePage, 0, HandleToPtr(p2), 1, *pString, 1);
+			else
+				**pString = L'\0';
+		}
+	}
 }
 
 void _fastcall WriteCString(ParamBlk *parm)
 {
+	char *pPointer = reinterpret_cast<char*>(p1.ev_long);
 	char *pNewAddress = 0;
 
 	__try
 	{
-		if (p1.ev_long)
+		if (pPointer)
 		{
-			pNewAddress = (char*)HeapReAlloc(ghHeap,HEAP_E_FLAG,(void*)p1.ev_long,p2.ev_length+1);
-			REPLACEDEBUGALLOC(p1.ev_long,pNewAddress,p2.ev_length+1);
+			pNewAddress = (char*)HeapReAlloc(ghHeap, HEAP_GENERATE_EXCEPTIONS, pPointer, p2.ev_length+1);
+			REPLACEDEBUGALLOC(pPointer, pNewAddress, p2.ev_length+1);
 		}
 		else
 		{
-			pNewAddress = (char*)HeapAlloc(ghHeap,HEAP_E_FLAG,p2.ev_length+1);
-			ADDDEBUGALLOC(pNewAddress,p2.ev_length+1);
+			pNewAddress = (char*)HeapAlloc(ghHeap, HEAP_GENERATE_EXCEPTIONS, p2.ev_length+1);
+			ADDDEBUGALLOC(pNewAddress, p2.ev_length+1);
 		}
 	}
 	__except(SAVEHEAPEXCEPTION()) { }
 
 	if (pNewAddress)
 	{
-		memcpy(pNewAddress,HandleToPtr(p2),p2.ev_length);
+		memcpy(pNewAddress, HandleToPtr(p2), p2.ev_length);
 		pNewAddress[p2.ev_length] = '\0';
 		Return((void*)pNewAddress);
 	}
@@ -804,37 +907,67 @@ void _fastcall WriteCString(ParamBlk *parm)
 		RaiseError(E_APIERROR);
 }
 
-/*
-void _fastcall WriteGCString(ParamBlk *parm)
+void _fastcall WriteGPCString(ParamBlk *parm)
 {
-	HGLOBAL hHandle;
-	char *pAddress, *pString;
+	char *pNewAddress = 0;
+	HGLOBAL *pOldAddress = reinterpret_cast<HGLOBAL*>(p1.ev_long);
+	SIZE_T dwLen = p2.ev_length + 1;
 
-	if (!EXPANDHAND(p2,1))
-		RaiseError(E_E_INSUFMEMORY);
-
-	if (p1.ev_long)
-		hHandle = GlobalAlloc(GMEM_MOVEABLE,p2.ev_length+1);
-	else
-		hHandle = GlobalReAlloc((HGLOBAL)p1.ev_long,p2.ev_length+1,GMEM_MOVEABLE); 
-
-	if (hHandle)
+	if (Vartype(p2) == 'C' && pOldAddress)
 	{
-		pAddress = GlobalLock(hHandle);
-		memcpy(pAddress,HandleToPtr(p2),p2.ev_length);
-		pAddress[p2.ev_length] = '\0';
-		GlobalUnlock(hHandle);
-		RET_POINTER(hHandle);
+		if ((*pOldAddress))
+		{
+			pNewAddress = (char*)GlobalReAlloc(*pOldAddress, dwLen, GMEM_FIXED);
+			if (pNewAddress == 0)
+			{
+				SaveWin32Error("GlobalReAlloc", GetLastError());
+				RaiseError(E_APIERROR);
+			}
+			REPLACEDEBUGALLOC(pOldAddress, pNewAddress, dwLen);
+		}
+		else
+		{
+			pNewAddress = (char*)GlobalAlloc(GMEM_FIXED, dwLen);
+			if (pNewAddress == 0)
+			{
+				SaveWin32Error("GlobalAlloc", GetLastError());
+				RaiseError(E_APIERROR);
+			}
+			ADDDEBUGALLOC(pNewAddress, dwLen);
+		}
+
+		*pOldAddress = pNewAddress;
+		memcpy(pNewAddress, HandleToPtr(p2),p2.ev_length);
+		pNewAddress[p2.ev_length] = '\0';		
+		Return((void*)pNewAddress);
 	}
-	else 
-		RAISEWIN32ERROR(p1.ev_long ? "GlobalAlloc" : "GlobalReAlloc");
+	else if (Vartype(p2) == '0' && pOldAddress)
+	{
+		if ((*pOldAddress))
+		{
+			if (GlobalFree(*pOldAddress) == 0)
+			{
+				REMOVEDEBUGALLOC(*pOldAddress);
+				*pOldAddress = 0;
+				Return(0);
+			}
+			else
+			{
+				SaveWin32Error("GlobalFree", GetLastError());
+				RaiseError(E_APIERROR);
+			}
+		}
+		else
+			Return(0);
+	}
+	else
+		RaiseError(E_INVALIDPARAMS);
 }
-*/
 
 void _fastcall WritePCString(ParamBlk *parm)
 {
 	char *pNewAddress = 0;
-	char **pOldAddress = (char**)p1.ev_long;
+	char **pOldAddress = reinterpret_cast<char**>(p1.ev_long);
 
 	if (Vartype(p2) == 'C' && pOldAddress)
 	{
@@ -842,12 +975,12 @@ void _fastcall WritePCString(ParamBlk *parm)
 		{
 			if ((*pOldAddress))
 			{
-				pNewAddress = (char*)HeapReAlloc(ghHeap,HEAP_E_FLAG,(*pOldAddress),p2.ev_length+1);
-				REPLACEDEBUGALLOC(*pOldAddress,pNewAddress,p2.ev_length);
+				pNewAddress = (char*)HeapReAlloc(ghHeap, HEAP_GENERATE_EXCEPTIONS, (*pOldAddress), p2.ev_length+1);
+				REPLACEDEBUGALLOC(*pOldAddress, pNewAddress, p2.ev_length);
 			}
 			else
 			{
-				pNewAddress = (char*)HeapAlloc(ghHeap,HEAP_E_FLAG,p2.ev_length+1);
+				pNewAddress = (char*)HeapAlloc(ghHeap, HEAP_GENERATE_EXCEPTIONS, p2.ev_length+1);
 				ADDDEBUGALLOC(pNewAddress,p2.ev_length);
 			}
 		}
@@ -859,7 +992,6 @@ void _fastcall WritePCString(ParamBlk *parm)
 			memcpy(pNewAddress,HandleToPtr(p2),p2.ev_length);
 			pNewAddress[p2.ev_length] = '\0';		
 			Return((void*)pNewAddress);
-			return;
 		}
 		else
 			RaiseError(E_APIERROR);
@@ -872,16 +1004,36 @@ void _fastcall WritePCString(ParamBlk *parm)
 			{
 				REMOVEDEBUGALLOC(*pOldAddress);
 				*pOldAddress = 0;
-				Return(1);
+				Return(0);
 			}
 			else
 			{
-				SAVEWIN32ERROR(HeapFree,GetLastError());
+				SaveWin32Error("HeapFree", GetLastError());
 				RaiseError(E_APIERROR);
 			}
 		}
 		else
-			Return(1);
+			Return(0);
+	}
+	else
+		RaiseError(E_INVALIDPARAMS);
+}
+
+void _fastcall WriteCharArray(ParamBlk *parm)
+{
+	char *pPointer = reinterpret_cast<char*>(p1.ev_long);
+	if (pPointer)
+	{
+		if (PCount() == 2 || (long)p2.ev_length < p3.ev_long)
+		{
+			memcpy(pPointer, HandleToPtr(p2),p2.ev_length);
+			pPointer[p2.ev_length] = '\0';
+		}
+		else
+		{
+			memcpy(pPointer, HandleToPtr(p2), p3.ev_long);
+			pPointer[p3.ev_long-1] = '\0';
+		}
 	}
 	else
 		RaiseError(E_INVALIDPARAMS);
@@ -889,23 +1041,24 @@ void _fastcall WritePCString(ParamBlk *parm)
 
 void _fastcall WriteWString(ParamBlk *parm)
 {
-	int nStringLen, nBytesNeeded, nBytesWritten;
-    wchar_t *pDest = 0;
-	
-	nStringLen = (int)p2.ev_length;
+	wchar_t *pString = reinterpret_cast<wchar_t*>(p1.ev_long);
+	unsigned int nCodePage = PCount() == 2 ? gnConvCP : p3.ev_long;
+	wchar_t *pDest = 0;
+	int nStringLen, nBytesNeeded, nBytesWritten;	
+	nStringLen = p2.ev_length;
 	nBytesNeeded = nStringLen * sizeof(wchar_t) + sizeof(wchar_t);
 
 	__try
 	{
-		if (p1.ev_long)
+		if (pString)
 		{
-			pDest = (wchar_t*)HeapReAlloc(ghHeap,HEAP_E_FLAG,(wchar_t*)p1.ev_long,nBytesNeeded);
-			REPLACEDEBUGALLOC(p1.ev_long,pDest,nBytesNeeded);
+			pDest = (wchar_t*)HeapReAlloc(ghHeap, HEAP_GENERATE_EXCEPTIONS, pString, nBytesNeeded);
+			REPLACEDEBUGALLOC(pString, pDest, nBytesNeeded);
 		}
 		else
 		{
-			pDest = (wchar_t*)HeapAlloc(ghHeap,HEAP_E_FLAG,nBytesNeeded);
-			ADDDEBUGALLOC(pDest,nBytesNeeded);
+			pDest = (wchar_t*)HeapAlloc(ghHeap, HEAP_GENERATE_EXCEPTIONS, nBytesNeeded);
+			ADDDEBUGALLOC(pDest, nBytesNeeded);
 		}
 	}
 	__except(SAVEHEAPEXCEPTION()) { }
@@ -914,14 +1067,15 @@ void _fastcall WriteWString(ParamBlk *parm)
 	{
 		if (nStringLen)
 		{
-			nBytesWritten = MultiByteToWideChar(PCOUNT() == 2 ? gnConvCP : (UINT)p3.ev_long,0,HandleToPtr(p2),nStringLen,pDest,nBytesNeeded);
+			nBytesWritten = MultiByteToWideChar(nCodePage, 0, HandleToPtr(p2), nStringLen, pDest, nBytesNeeded);
 			if (nBytesWritten)
 				pDest[nBytesWritten] = L'\0';
 			else
-				RAISEWIN32ERROR(MultiByteToWideChar,GetLastError());
+				RaiseWin32Error("MultiByteToWideChar", GetLastError());
 		}
 		else
-			pDest[0] = L'\0';
+			*pDest = L'\0';
+
 		Return((void*)pDest);
 	}
 	else
@@ -930,25 +1084,26 @@ void _fastcall WriteWString(ParamBlk *parm)
 
 void _fastcall WritePWString(ParamBlk *parm)
 {
-	int nStringLen, nBytesNeeded, nBytesWritten;
+	wchar_t **pOld = reinterpret_cast<wchar_t**>(p1.ev_long);
 	wchar_t *pDest = 0;
-	wchar_t **pOld = (wchar_t**)p1.ev_long;
+	unsigned int nCodePage = PCount() == 2 ? gnConvCP : p3.ev_long;
+	int nStringLen, nBytesNeeded, nBytesWritten;
 
 	if (Vartype(p2) == 'C' && pOld)
 	{
-		nStringLen = (int)p2.ev_length;
+		nStringLen = p2.ev_length;
 		nBytesNeeded = nStringLen * sizeof(wchar_t) + sizeof(wchar_t);
 
 		__try
 		{
 			if ((*pOld))
 			{
-				pDest = (wchar_t*)HeapReAlloc(ghHeap,HEAP_ZE_FLAG,*pOld,nBytesNeeded);
+				pDest = (wchar_t*)HeapReAlloc(ghHeap,HEAP_ZERO_MEMORY | HEAP_GENERATE_EXCEPTIONS,*pOld,nBytesNeeded);
 				REPLACEDEBUGALLOC(*pOld,pDest,nBytesNeeded);
 			}
 			else
 			{
-				pDest = (wchar_t*)HeapAlloc(ghHeap,HEAP_ZE_FLAG,nBytesNeeded);
+				pDest = (wchar_t*)HeapAlloc(ghHeap,HEAP_ZERO_MEMORY | HEAP_GENERATE_EXCEPTIONS,nBytesNeeded);
 				ADDDEBUGALLOC(pDest,nBytesNeeded);
 			}
 		}
@@ -956,14 +1111,14 @@ void _fastcall WritePWString(ParamBlk *parm)
 
 		if (pDest)
 		{
-			nBytesWritten = MultiByteToWideChar(PCOUNT() == 2 ? gnConvCP : (UINT)p3.ev_long,0,HandleToPtr(p2),nStringLen,pDest,nBytesNeeded);
+			nBytesWritten = MultiByteToWideChar(nCodePage, 0, HandleToPtr(p2), nStringLen, pDest, nBytesNeeded);
 			if (nBytesWritten)
 			{
 				pDest[nBytesWritten] = L'\0';
 				*pOld = pDest;
 			}
 			else
-				RAISEWIN32ERROR(MultiByteToWideChar,GetLastError());
+				RaiseWin32Error("MultiByteToWideChar", GetLastError());
 		}
 		else
 			RaiseError(E_APIERROR);
@@ -980,7 +1135,7 @@ void _fastcall WritePWString(ParamBlk *parm)
 			}
 			else
 			{
-				SAVEWIN32ERROR(HeapFree,GetLastError());
+				SaveWin32Error("HeapFree", GetLastError());
 				RaiseError(E_APIERROR);
 			}
 		}
@@ -991,1279 +1146,1709 @@ void _fastcall WritePWString(ParamBlk *parm)
 		RaiseError(E_INVALIDPARAMS);
 }
 
-void _fastcall WriteCharArray(ParamBlk *parm)
-{
-	char *pDest = (char*)p1.ev_long;
-
-	if (PCOUNT() == 2 || (long)p2.ev_length < p3.ev_long)
-	{
-		memcpy(pDest,HandleToPtr(p2),p2.ev_length);
-		pDest[p2.ev_length] = '\0';
-	}
-	else
-	{
-		memcpy(pDest,HandleToPtr(p2),p3.ev_long);
-		pDest[p3.ev_long-1] = '\0';
-	}
-}
-
 void _fastcall WriteWCharArray(ParamBlk *parm)
 {
+	wchar_t *pString = reinterpret_cast<wchar_t*>(p1.ev_long);
+	unsigned int nCodePage = PCount() == 3 ? gnConvCP : p4.ev_long;
 	int nBytesWritten, nArrayWidth, nStringLen;
-	wchar_t *pDest = (wchar_t*)p1.ev_long;
 	nArrayWidth = p3.ev_long - 1; // -1 for null terminator
-	nStringLen = (int)p2.ev_length;
+	nStringLen = p2.ev_length;
 
-	if (nStringLen)
+	if (pString)
 	{
-		nBytesWritten = MultiByteToWideChar(PCOUNT() == 3 ? gnConvCP : (UINT)p4.ev_long,0,HandleToPtr(p2),min(nStringLen,nArrayWidth),pDest,nArrayWidth);
-		if (nBytesWritten)
-			pDest[nBytesWritten] = L'\0';
+		if (nStringLen)
+		{
+			nBytesWritten = MultiByteToWideChar(nCodePage, 0, HandleToPtr(p2), min(nStringLen,nArrayWidth), pString, nArrayWidth);
+			if (nBytesWritten)
+				pString[nBytesWritten] = L'\0';
+			else
+				RaiseWin32Error("MultiByteToWideChar", GetLastError());
+		}
 		else
-			RAISEWIN32ERROR(MultiByteToWideChar,GetLastError());
+			*pString = L'\0';
 	}
 	else
-		*pDest = L'\0';
+		RaiseError(E_INVALIDPARAMS);
 }
 
 void _fastcall WriteBytes(ParamBlk *parm)
 {
-	memcpy((void*)p1.ev_long,HandleToPtr(p2),PCOUNT() == 3 ? min(p2.ev_length,(UINT)p3.ev_long) : p2.ev_length);
+	void *pPointer = reinterpret_cast<void*>(p1.ev_long);
+	if (pPointer)
+		memcpy(pPointer, HandleToPtr(p2), PCount() == 3 ? min(p2.ev_length, (UINT)p3.ev_long) : p2.ev_length);
+	else
+		RaiseError(E_INVALIDPARAMS);
 }
 
-void _fastcall WriteLogical(ParamBlk *parm)
+void _fastcall ReadInt8(ParamBlk *parm)
 {
-	*(unsigned int*)p1.ev_long = p2.ev_length;
+	__int8 *pPointer = reinterpret_cast<__int8*>(p1.ev_long);
+	if (pPointer)
+		Return(*pPointer);
+	else
+		RaiseError(E_INVALIDPARAMS);
 }
 
-void _fastcall WritePLogical(ParamBlk *parm)
+void _fastcall ReadPInt8(ParamBlk *parm)
 {
-	**(unsigned int**)p1.ev_long = p2.ev_length;
-}
-
-void _fastcall ReadChar(ParamBlk *parm)
-{
-	char *pChar;
-	V_STRINGN(cChar,1);
-	if (AllocHandleEx(cChar,1))
+	__int8 **pPointer = reinterpret_cast<__int8**>(p1.ev_long);
+	if (pPointer)
 	{
-		pChar = HandleToPtr(cChar);
-		if (p1.ev_long)
-			*pChar = *(char*)p1.ev_long;
+		if ((*pPointer))
+            Return(**pPointer);
 		else
-			*pChar = '\0';
-		
-		Return(cChar);
-		return;
+			ReturnNull();
 	}
 	else
-		RaiseError(E_INSUFMEMORY);
+		RaiseError(E_INVALIDPARAMS);
 }
 
-void _fastcall ReadPChar(ParamBlk *parm)
+void _fastcall ReadUInt8(ParamBlk *parm)
 {
-	char *pChar;
-	V_STRINGN(cChar,1);
+	unsigned __int8 *pPointer = reinterpret_cast<unsigned __int8*>(p1.ev_long);
+	if (pPointer)
+		Return(*pPointer);
+	else
+		RaiseError(E_INVALIDPARAMS);
+}
 
-	if (AllocHandleEx(cChar,1))
+void _fastcall ReadPUInt8(ParamBlk *parm)
+{
+	unsigned __int8 **pPointer = reinterpret_cast<unsigned __int8**>(p1.ev_long);
+	if (pPointer)
 	{
-		pChar = HandleToPtr(cChar);
-		if (p1.ev_long && *(char**)p1.ev_long)
-			*pChar = **(char**)p1.ev_long;
+		if ((*pPointer))
+            Return(**pPointer);
 		else
-			*pChar = '\0';
-
-		Return(cChar);
-		return;
+			ReturnNull();
 	}
 	else
-		RaiseError(E_INSUFMEMORY);
+		RaiseError(E_INVALIDPARAMS);
 }
 
-short _stdcall ReadInt8(__int8 *pAddress)
+void _fastcall ReadShort(ParamBlk *parm)
 {
-	return (short)*pAddress;
+	short *pPointer = reinterpret_cast<short*>(p1.ev_long);
+	if (pPointer)
+		Return(*pPointer);
+	else
+		RaiseError(E_INVALIDPARAMS);
 }
 
-short _stdcall ReadPInt8(__int8 **pAddress)
+void _fastcall ReadPShort(ParamBlk *parm)
 {
-	return (short)**pAddress;
+	short **pPointer = reinterpret_cast<short**>(p1.ev_long);
+	if (pPointer)
+	{
+		if ((*pPointer))
+            Return(**pPointer);
+		else
+			ReturnNull();
+	}
+	else
+		RaiseError(E_INVALIDPARAMS);
 }
 
-unsigned short _stdcall ReadUInt8(unsigned __int8 *pAddress)
+void _fastcall ReadUShort(ParamBlk *parm)
 {
-	return (unsigned short)*pAddress;
+	unsigned short *pPointer = reinterpret_cast<unsigned short*>(p1.ev_long);
+	if (pPointer)
+		Return(*pPointer);
+	else
+		RaiseError(E_INVALIDPARAMS);
 }
 
-unsigned short _stdcall ReadPUInt8(unsigned __int8 **pAddress)
+void _fastcall ReadPUShort(ParamBlk *parm)
 {
-	return (unsigned short)**pAddress;
+	unsigned short **pPointer = reinterpret_cast<unsigned short**>(p1.ev_long);
+	if (pPointer)
+	{
+		if ((*pPointer))
+            Return(**pPointer);
+		else
+			ReturnNull();
+	}
+	else
+		RaiseError(E_INVALIDPARAMS);
 }
 
-short _stdcall ReadShort(short *pAddress)
+void _fastcall ReadInt(ParamBlk *parm)
 {
-	return *pAddress;
+	int *pPointer = reinterpret_cast<int*>(p1.ev_long);
+	if (pPointer)
+		Return(*pPointer);
+	else
+		RaiseError(E_INVALIDPARAMS);
 }
 
-short _stdcall ReadPShort(short **pAddress)
+void _fastcall ReadPInt(ParamBlk *parm)
 {
-	return **pAddress;
+	int **pPointer = reinterpret_cast<int**>(p1.ev_long);
+	if (pPointer)
+	{
+		if ((*pPointer))
+            Return(**pPointer);
+		else
+			ReturnNull();
+	}
+	else
+		RaiseError(E_INVALIDPARAMS);
 }
 
-// Cast unsigned short's to next bigger type cause "DECLARE SHORT .." in VFP is limited to signed short's
-// this problem only occurs when returning unsigned values from C to VFP not when they are passed
-// e.g "DECLARE WriteUShort INTERGER, SHORT" works nicely cause VFP converts the value correctly to an
-// unsigned short. But when returning values back to VFP it always assumes them to be signed, which
-// makes this workaround neccessary. (the same is true for INTEGER/LONG) 
-unsigned int _stdcall ReadUShort(unsigned short *pAddress)
-{
-	return (unsigned int)*pAddress;
-}
-
-unsigned int _stdcall ReadPUShort(unsigned short **pAddress)
-{
-	return (unsigned int)**pAddress;
-}
-
-int _stdcall ReadInt(int *pAddress)
-{
-	return *pAddress;
-}
-
-int _stdcall ReadPInt(int **pAddress)
-{
-	return **pAddress;
-}
-
-// Cast to double (float is not big enough to hold an unsigned long)
-// cause of sign problem (see ReadUShort for an explanation)
 void _fastcall ReadUInt(ParamBlk *parm)
 {
-	if (*(int*)p1.ev_long >= 0)
-		Return(*(int*)p1.ev_long);
+	unsigned int *pPointer = reinterpret_cast<unsigned int*>(p1.ev_long);
+	if (pPointer)
+		Return(*pPointer);
 	else
-		Return(*(unsigned int*)p1.ev_long);
+		RaiseError(E_INVALIDPARAMS);
 }
 
 void _fastcall ReadPUInt(ParamBlk *parm)
 {
-	if (**(int**)p1.ev_long >= 0)
-		Return(**(int**)p1.ev_long);
-	else
-		Return(**(unsigned int**)p1.ev_long);
-}
-
-void _fastcall ReadInt64AsDouble(ParamBlk *parm)
-{
-	Return(*(__int64*)p1.ev_long);
-}
-
-void _fastcall ReadPInt64AsDouble(ParamBlk *parm)
-{
-	Return(**(__int64**)p1.ev_long);
-}
-
-void _fastcall ReadUInt64AsDouble(ParamBlk *parm)
-{
-	Return(*(unsigned __int64*)p1.ev_long);
-}
-
-void _fastcall ReadPUInt64AsDouble(ParamBlk *parm)
-{
-	Return(**(unsigned __int64**)p1.ev_long);
-}
-
-float _stdcall ReadFloat(float *pAddress)
-{
-	return *pAddress;
-}
-
-float _stdcall ReadPFloat(float **pAddress)
-{
-	return **pAddress;
-}
-
-double _stdcall ReadDouble(double *pAddress)
-{
-	return *pAddress;
-}
-
-double _stdcall ReadPDouble(double **pAddress)
-{
-	return **pAddress;
-}
-
-void _fastcall ReadCString(ParamBlk *parm)
-{
-	char aNothing[1];
-	if (p1.ev_long)
+	unsigned int **pPointer = reinterpret_cast<unsigned int**>(p1.ev_long);
+	if (pPointer)
 	{
-		Return((char*)p1.ev_long);
-		return;
+		if ((*pPointer))
+            Return(**pPointer);
+		else
+			ReturnNull();
 	}
 	else
-	{
-		aNothing[0] = '\0';
-		Return((char*)aNothing);
-	}
+		RaiseError(E_INVALIDPARAMS);
 }
 
-void _fastcall ReadCharArray(ParamBlk *parm)
+void _fastcall ReadInt64(ParamBlk *parm)
 {
-	V_STRING(cBuffer);
-	char* pDest;
-
-	if (AllocHandleEx(cBuffer,p2.ev_long))
+	__int64 *pPointer = reinterpret_cast<__int64*>(p1.ev_long);
+	if (pPointer)
 	{
-		pDest = HandleToPtr(cBuffer);
-		cBuffer.ev_length = strncpyex(pDest,(const char*)p1.ev_long,p2.ev_long);
-		Return(cBuffer);
+		if (PCount() == 1 || p2.ev_long == 1)
+			ReturnInt64AsBinary(*pPointer);
+		else if (p2.ev_long == 2)
+			ReturnInt64AsString(*pPointer);
+		else
+			ReturnInt64AsDouble(*pPointer);
 	}
 	else
-		RaiseError(E_INSUFMEMORY);
+		RaiseError(E_INVALIDPARAMS);
 }
 
-void _fastcall ReadPCString(ParamBlk *parm)
+void _fastcall ReadPInt64(ParamBlk *parm)
 {
-	char aNothing[1];
-	if (*(char**)p1.ev_long)
-		_RetChar(*(char**)p1.ev_long);
-	else
+	__int64 **pPointer = reinterpret_cast<__int64**>(p1.ev_long);
+	if (pPointer)
 	{
-		aNothing[0] = '\0';
-		_RetChar((char*)aNothing);
-	}
-}
-
-void _fastcall ReadWString(ParamBlk *parm)
-{
-	V_STRING(cBuffer);
-	int nStringLen, nBufferLen;
-
-	nStringLen = lstrlenW((wchar_t*)p1.ev_long);
-	if (nStringLen)
-	{
-		nBufferLen = nStringLen * sizeof(wchar_t);
-		if (AllocHandleEx(cBuffer,nBufferLen))
+		if ((*pPointer))
 		{
-			nBufferLen = WideCharToMultiByte(PCOUNT() == 1 ? gnConvCP : (UINT)p2.ev_long,0,(wchar_t*)p1.ev_long,nStringLen,HandleToPtr(cBuffer),nBufferLen,0,0);
-			if (nBufferLen)
-			{
-				cBuffer.ev_length = (unsigned int)nBufferLen;
-				Return(cBuffer);
-				return;
-			}
+			if (PCount() == 1 || p2.ev_long == 1)
+				ReturnInt64AsBinary(**pPointer);
+			else if (p2.ev_long == 2)
+				ReturnInt64AsString(**pPointer);
 			else
-				RAISEWIN32ERROR(WideCharToMultiByte,GetLastError());
+				ReturnInt64AsDouble(**pPointer);
 		}
 		else
-			RaiseError(E_INSUFMEMORY);
-	}
-	cBuffer.ev_length = 0;
-	Return(cBuffer);
-}
-
-void _fastcall ReadPWString(ParamBlk *parm)
-{
-	V_STRING(cBuffer);
-	int nStringLen, nBufferLen;
-
-	if (*(wchar_t**)p1.ev_long)
-	{
-		nStringLen = lstrlenW(*(wchar_t**)p1.ev_long);
-		if (nStringLen)
-		{
-			nBufferLen = nStringLen * sizeof(wchar_t);
-			if (AllocHandleEx(cBuffer,nBufferLen))
-			{
-				nBufferLen = WideCharToMultiByte(PCOUNT() == 1 ? gnConvCP : (UINT)p2.ev_long,0,*(wchar_t**)p1.ev_long,nStringLen,HandleToPtr(cBuffer),nBufferLen,0,0);
-				if (nBufferLen)
-				{
-					cBuffer.ev_length = (unsigned int)nBufferLen;
-					Return(cBuffer);
-					return;
-				}
-				else
-					RAISEWIN32ERROR(WideCharToMultiByte,GetLastError());
-			}
-			else
-				RaiseError(E_INSUFMEMORY);
-		}
-	}
-	cBuffer.ev_length = 0;
-	Return(cBuffer);
-}
-
-void _fastcall ReadWCharArray(ParamBlk *parm)
-{
-	V_STRING(cBuffer);
-	int nBufferLen, nStringLen;
-	nBufferLen = p2.ev_long * sizeof(wchar_t);
-
-	if (AllocHandleEx(cBuffer,nBufferLen))
-	{
-		nStringLen = wstrnlen((wchar_t*)p1.ev_long,p2.ev_long);
-		if (nStringLen)
-		{
-			nBufferLen = WideCharToMultiByte(PCOUNT() == 2 ? gnConvCP : (UINT)p3.ev_long,0,(wchar_t*)p1.ev_long,nStringLen,HandleToPtr(cBuffer),nBufferLen,0,0);
-			if (nBufferLen)
-			{
-				cBuffer.ev_length = (unsigned int)nBufferLen;
-				Return(cBuffer);
-				return;
-			}
-			else
-				RAISEWIN32ERROR(WideCharToMultiByte,GetLastError());
-		}
-		else
-		{
-			cBuffer.ev_length = 0;
-			Return(cBuffer);
-			return;
-		}
+			ReturnNull();
 	}
 	else
-		RaiseError(E_INSUFMEMORY);
+		RaiseError(E_INVALIDPARAMS);
+}
+
+void _fastcall ReadUInt64(ParamBlk *parm)
+{
+	unsigned __int64 *pPointer = reinterpret_cast<unsigned __int64*>(p1.ev_long);
+	if (pPointer)
+	{
+		if (PCount() == 1 || p2.ev_long == 1)
+			ReturnInt64AsBinary(*pPointer);
+		else if (p2.ev_long == 2)
+			ReturnInt64AsString(*pPointer);
+		else
+			ReturnInt64AsDouble(*pPointer);
+	}
+	else
+		RaiseError(E_INVALIDPARAMS);
+}
+
+void _fastcall ReadPUInt64(ParamBlk *parm)
+{
+	unsigned __int64 **pPointer = reinterpret_cast<unsigned __int64**>(p1.ev_long);
+	if (pPointer)
+	{
+		if ((*pPointer))
+		{
+			if (PCount() == 1 || p2.ev_long == 1)
+				ReturnInt64AsBinary(**pPointer);
+			else if (p2.ev_long == 2)
+				ReturnInt64AsString(**pPointer);
+			else
+				ReturnInt64AsDouble(**pPointer);
+		}
+		else
+			ReturnNull();
+	}
+	else
+		RaiseError(E_INVALIDPARAMS);
+}
+
+void _fastcall ReadFloat(ParamBlk *parm)
+{
+	float *pPointer = reinterpret_cast<float*>(p1.ev_long);
+	if (pPointer)
+		Return(*pPointer);
+	else
+		RaiseError(E_INVALIDPARAMS);
+}
+
+void _fastcall ReadPFloat(ParamBlk *parm)
+{
+	float **pPointer = reinterpret_cast<float**>(p1.ev_long);
+	if (pPointer)
+	{
+		if ((*pPointer))
+            Return(**pPointer);
+		else
+			ReturnNull();
+	}
+	else
+		RaiseError(E_INVALIDPARAMS);
+}
+
+void _fastcall ReadDouble(ParamBlk *parm)
+{
+	double *pPointer = reinterpret_cast<double*>(p1.ev_long);
+	if (pPointer)
+		Return(*pPointer);
+	else
+		RaiseError(E_INVALIDPARAMS);
+}
+
+void _fastcall ReadPDouble(ParamBlk *parm)
+{
+	double **pPointer = reinterpret_cast<double**>(p1.ev_long);
+	if (pPointer)
+	{
+		if ((*pPointer))
+            Return(**pPointer);
+		else
+			ReturnNull();
+	}
+	else
+		RaiseError(E_INVALIDPARAMS);
 }
 
 void _fastcall ReadLogical(ParamBlk *parm)
 {
-	_RetLogical(*(int*)p1.ev_long);
+	BOOL *pPointer = reinterpret_cast<BOOL*>(p1.ev_long);
+	if (pPointer)
+		_RetLogical(*pPointer);
+	else
+		RaiseError(E_INVALIDPARAMS);
 }
 
 void _fastcall ReadPLogical(ParamBlk *parm)
 {
-	_RetLogical(**(int**)p1.ev_long);
+	BOOL **pPointer = reinterpret_cast<BOOL**>(p1.ev_long);
+	if (pPointer)
+	{
+		if ((*pPointer))
+            _RetLogical(**pPointer);
+		else
+			ReturnNull();
+	}
+	else
+		RaiseError(E_INVALIDPARAMS);
 }
+
+void _fastcall ReadPointer(ParamBlk *parm)
+{
+	void **pPointer = reinterpret_cast<void**>(p1.ev_long);
+	if (pPointer)
+		Return(*pPointer);
+	else
+		RaiseError(E_INVALIDPARAMS);
+}
+
+void _fastcall ReadPPointer(ParamBlk *parm)
+{
+	void ***pPointer = reinterpret_cast<void***>(p1.ev_long);
+	if (pPointer)
+	{
+		if ((*pPointer))
+			Return(**pPointer);
+		else
+			ReturnNull();
+	}
+	else
+		RaiseError(E_INVALIDPARAMS);
+}
+
+void _fastcall ReadChar(ParamBlk *parm)
+{
+	StringValue cChar(1);
+	char *pPointer = reinterpret_cast<char*>(p1.ev_long);
+	char *pChar;
+	if (pPointer)
+	{
+		if (AllocHandleEx(cChar,1))
+		{
+			pChar = HandleToPtr(cChar);
+			*pChar = *pPointer;
+			Return(cChar);
+		}
+		else
+			RaiseError(E_INSUFMEMORY);
+	}
+	else
+		RaiseError(E_INVALIDPARAMS);
+}
+
+void _fastcall ReadPChar(ParamBlk *parm)
+{
+	StringValue cChar(1);
+	char **pPointer = reinterpret_cast<char**>(p1.ev_long);
+	char *pChar;
+
+	if (pPointer)
+	{
+		if ((*pPointer))
+		{
+			if (AllocHandleEx(cChar,1))
+			{
+				pChar = HandleToPtr(cChar);
+				*pChar = **pPointer;
+				Return(cChar);
+			}
+			else
+				RaiseError(E_INSUFMEMORY);
+		}
+		else if (PCount() == 1)
+			ReturnNull();
+		else
+			Return(p2);
+	}
+	else
+		RaiseError(E_INVALIDPARAMS);
+}
+
+void _fastcall ReadCString(ParamBlk *parm)
+{
+	char *pPointer = reinterpret_cast<char*>(p1.ev_long);
+	if (pPointer)
+		Return(pPointer);
+	else
+		RaiseError(E_INVALIDPARAMS);
+}
+
+void _fastcall ReadPCString(ParamBlk *parm)
+{
+	char **pPointer = reinterpret_cast<char**>(p1.ev_long);
+	if (pPointer)
+	{
+		if ((*pPointer))
+            Return(*pPointer);
+		else if (PCount() == 1)
+		{
+			char aNothing[1] = {'\0'};
+			Return(aNothing);
+		}
+		else
+			Return(p2);
+	}
+	else
+		RaiseError(E_INVALIDPARAMS);
+}
+
+void _fastcall ReadCharArray(ParamBlk *parm)
+{
+	StringValue vBuffer;
+	const char *pPointer = reinterpret_cast<const char*>(p1.ev_long);
+
+	if (pPointer)
+	{
+		if (AllocHandleEx(vBuffer, p2.ev_long))
+		{
+			vBuffer.ev_length = strncpyex(HandleToPtr(vBuffer), pPointer, p2.ev_long);
+			Return(vBuffer);
+		}
+		else
+			RaiseError(E_INSUFMEMORY);
+	}
+	else
+		RaiseError(E_INVALIDPARAMS);
+}
+
+
+
+void _fastcall ReadWString(ParamBlk *parm)
+{
+	StringValue vBuffer;
+	int nStringLen, nBufferLen;
+	wchar_t* pString = reinterpret_cast<wchar_t*>(p1.ev_long);
+	unsigned int nCodePage = PCount() == 1 ? gnConvCP : p2.ev_long;
+
+	if (pString)
+	{
+		nStringLen = lstrlenW(pString);
+		if (nStringLen)
+		{
+			nBufferLen = nStringLen * sizeof(wchar_t) + sizeof(wchar_t);
+			if (AllocHandleEx(vBuffer, nBufferLen))
+			{
+				nBufferLen = WideCharToMultiByte(nCodePage, 0, pString, nStringLen, HandleToPtr(vBuffer), nBufferLen, 0, 0);
+				if (nBufferLen)
+				{
+					vBuffer.ev_length = (unsigned int)nBufferLen;
+					Return(vBuffer);
+					return;
+				}
+				else
+					RaiseWin32Error("WideCharToMultiByte", GetLastError());
+			}
+			else
+				RaiseError(E_INSUFMEMORY);
+		}
+		vBuffer.ev_length = 0;
+		Return(vBuffer);
+	}
+	else
+		RaiseError(E_INVALIDPARAMS);
+}
+
+void _fastcall ReadPWString(ParamBlk *parm)
+{
+	StringValue vBuffer;
+	wchar_t **pString = reinterpret_cast<wchar_t**>(p1.ev_long);
+	unsigned int nCodePage = PCount() > 1 && p2.ev_long ? p2.ev_long : gnConvCP;
+	int nStringLen, nBufferLen;
+
+	if (pString)
+	{
+		if ((*pString))
+		{
+			nStringLen = lstrlenW(*pString);
+			if (nStringLen)
+			{
+				nBufferLen = nStringLen * sizeof(wchar_t);
+				if (AllocHandleEx(vBuffer, nBufferLen))
+				{
+					nBufferLen = WideCharToMultiByte(nCodePage, 0, *pString, nStringLen, HandleToPtr(vBuffer), nBufferLen, 0, 0);
+					if (nBufferLen)
+						vBuffer.ev_length = nBufferLen;
+					else
+						RaiseWin32Error("WideCharToMultiByte", GetLastError());
+				}
+				else
+					RaiseError(E_INSUFMEMORY);
+			}
+			Return(vBuffer);
+		}
+		else if (PCount() < 3)
+			Return(vBuffer);
+		else
+			Return(p3);
+	}
+	else
+		RaiseError(E_INVALIDPARAMS);
+}
+
+void _fastcall ReadWCharArray(ParamBlk *parm)
+{
+	StringValue vBuffer;
+	wchar_t *pString = reinterpret_cast<wchar_t*>(p1.ev_long);
+	unsigned int nCodePage = PCount() == 2 ? gnConvCP : p3.ev_long;
+	int nBufferLen, nStringLen;
+
+	if (pString)
+	{
+		nStringLen = wstrnlen(pString, p2.ev_long);
+		if (nStringLen)
+		{
+			nBufferLen = nStringLen * sizeof(wchar_t);
+			if (AllocHandleEx(vBuffer, nBufferLen))
+			{
+				nBufferLen = WideCharToMultiByte(nCodePage, 0, pString, nStringLen, HandleToPtr(vBuffer), nBufferLen, 0, 0);
+				if (nBufferLen)
+					vBuffer.ev_length = nBufferLen;
+				else
+					RaiseWin32Error("WideCharToMultiByte", GetLastError());
+			}
+			else
+				RaiseError(E_INSUFMEMORY);
+		}
+		Return(vBuffer);
+	}
+	else
+		RaiseError(E_INVALIDPARAMS);
+}
+
+
 
 void _fastcall ReadBytes(ParamBlk *parm)
 {
-	V_STRINGN(cBuffer,p2.ev_long);
-	if (AllocHandleEx(cBuffer,p2.ev_long))
+	StringValue vBuffer(p2.ev_long);
+	void *pPointer = reinterpret_cast<void*>(p1.ev_long);
+	if (pPointer)
 	{
-		memcpy(HandleToPtr(cBuffer),(void*)p1.ev_long,p2.ev_long);
-		Return(cBuffer);
-		return;
+		if (AllocHandleEx(vBuffer,p2.ev_long))
+		{
+			memcpy(HandleToPtr(vBuffer), pPointer, p2.ev_long);
+			Return(vBuffer);
+			return;
+		}
+		else
+			RaiseError(E_INSUFMEMORY);
 	}
 	else
-		RaiseError(E_INSUFMEMORY);
-}
-
-void _fastcall UnMarshalArrayShort(ParamBlk *parm)
-{
-	Value tmpValue;
-	tmpValue.ev_type = 'I';
-	tmpValue.ev_width = 6;
-	ARRAYLOCALS(short*)
-
-	BEGIN_ARRAYGET()
-		tmpValue.ev_long = (long)*pAddress;
-	END_ARRAYGET(++)
-}
-
-void _fastcall UnMarshalArrayUShort(ParamBlk *parm)
-{
-	Value tmpValue;
-	tmpValue.ev_type = 'I';
-	tmpValue.ev_width = 6;
-	ARRAYLOCALS(unsigned short*)
-
-	BEGIN_ARRAYGET()
-		tmpValue.ev_long = (long)*pAddress;
-	END_ARRAYGET(++)
-}
-
-void _fastcall UnMarshalArrayInt(ParamBlk *parm)
-{
-	V_INTEGER(tmpValue);
-	ARRAYLOCALS(long*)
-
-	BEGIN_ARRAYGET()
-		tmpValue.ev_long = *pAddress;
-	END_ARRAYGET(++)
-}
-
-void _fastcall UnMarshalArrayUInt(ParamBlk *parm)
-{
-	V_UINTEGER(tmpValue);
-	ARRAYLOCALS(unsigned long*)
-	
-	BEGIN_ARRAYGET()
-		tmpValue.ev_real = (double)*pAddress;
-	END_ARRAYGET(++)
-}
-
-void _fastcall UnMarshalArrayFloat(ParamBlk *parm)
-{
-	V_FLOAT(tmpValue);
-	ARRAYLOCALS(float*)
-	
-	BEGIN_ARRAYGET()
-		tmpValue.ev_real = (double)*pAddress;
-	END_ARRAYGET(++)
-}
-
-void _fastcall UnMarshalArrayDouble(ParamBlk *parm)
-{
-	V_DOUBLE(tmpValue);
-	ARRAYLOCALS(double*)
-
-	BEGIN_ARRAYGET()
-		tmpValue.ev_real = *pAddress;
-	END_ARRAYGET(++)
-}
-
-void _fastcall UnMarshalArrayLogical(ParamBlk *parm)
-{
-	Value tmpValue;
-	tmpValue.ev_type = 'L';
-	ARRAYLOCALS(BOOL*)
-
-	BEGIN_ARRAYGET()
-		tmpValue.ev_length = *pAddress;
-	END_ARRAYGET(++)
-}
-
-void _fastcall UnMarshalArrayCString(ParamBlk *parm)
-{
-	void* pDest;
-	int nStringLen, nBufferLen = 256;
-	V_STRING(tmpValue);
-	ARRAYLOCALS(char**)
-
-	if (!AllocHandleEx(tmpValue,nBufferLen))
-		RaiseError(E_INSUFMEMORY);
-
-	pDest = HandleToPtr(tmpValue);
-
-	BEGIN_ARRAYGET()
-		if (*pAddress)
-		{
-			nStringLen = lstrlen(*pAddress);
-			if (nStringLen > nBufferLen)
-			{
-				if (!SetHandleSize(tmpValue,nStringLen))
-				{
-					FreeHandle(tmpValue);
-					RaiseError(E_INSUFMEMORY);
-				}
-				else
-				{
-					pDest = HandleToPtr(tmpValue);
-					nBufferLen = nStringLen;
-				}
-			}
-			if (nStringLen)
-			{
-				tmpValue.ev_length = nStringLen;
-				memcpy(pDest,*pAddress,nStringLen);
-			}
-			else
-				tmpValue.ev_length = 0;
-		}
-		else
-			tmpValue.ev_length = 0;
-	END_ARRAYGET(++)
-
-	FreeHandle(tmpValue);
-}
-
-void _fastcall UnMarshalArrayWString(ParamBlk *parm)
-{
-	char* pDest;
-	int nByteCount, nWCharCount, nCharsWritten, nBufferLen = 256;
-	UINT nCodePage;
-	V_STRING(tmpValue);
-	ARRAYLOCALS(wchar_t**)
-	
-	nCodePage = PCOUNT() == 2 ? gnConvCP : (UINT)p4.ev_long;
-
-	if (!AllocHandleEx(tmpValue,nBufferLen))
-		RaiseError(E_INSUFMEMORY);
-
-	pDest = HandleToPtr(tmpValue);
-
-	BEGIN_ARRAYGET()
-		if (*pAddress)
-		{
-			nWCharCount = lstrlenW(*pAddress);
-			nByteCount = nWCharCount * sizeof(wchar_t);
-			if (nByteCount > nBufferLen)
-			{
-				if (!SetHandleSize(tmpValue,nByteCount))
-				{
-					FreeHandle(tmpValue);
-					RaiseError(E_INSUFMEMORY); // "Insufficient memory"
-				}
-				else
-				{
-					pDest = (char*)HandleToPtr(tmpValue);
-					nBufferLen = nByteCount;
-				}
-			}
-            if (nByteCount)
-			{
-				nCharsWritten = WideCharToMultiByte(nCodePage,0,*pAddress,nWCharCount,pDest,nBufferLen,0,0);
-				if (nCharsWritten)
-					tmpValue.ev_length = nCharsWritten;
-				else
-				{
-					FreeHandle(tmpValue);
-					RAISEWIN32ERROR(WideCharToMultiByte,GetLastError());
-				}
-			}
-			else
-				tmpValue.ev_length = 0;
-		}
-		else
-			tmpValue.ev_length = 0;
-	END_ARRAYGET(++)
-
-	FreeHandle(tmpValue);
-}
-
-void _fastcall UnMarshalArrayCharArray(ParamBlk *parm)
-{
-	char* pDest;
-	V_STRING(tmpValue);
-	ARRAYLOCALS(char*)
-
-	if (!AllocHandleEx(tmpValue,p3.ev_long))
-		RaiseError(E_INSUFMEMORY);
-
-	pDest = HandleToPtr(tmpValue);
-
-	BEGIN_ARRAYGET()
-		tmpValue.ev_length = strncpyex(pDest,pAddress,p3.ev_long);
-	END_ARRAYGET(+= p3.ev_long)
-
-	FreeHandle(tmpValue);
-}
-
-void _fastcall UnMarshalArrayWCharArray(ParamBlk *parm)
-{
-	char* pDest;
-	int nCharCount, nLength;
-	UINT nCodePage;
-	V_STRING(tmpValue);
-	ARRAYLOCALS(wchar_t*)
-	nLength = (unsigned int)p3.ev_long / sizeof(wchar_t);
-	
-	nCodePage = PCOUNT() == 3 ? gnConvCP : (UINT)p4.ev_long;
-
-	if (!AllocHandleEx(tmpValue,p3.ev_long))
-		RaiseError(E_INSUFMEMORY);
-
-	pDest = HandleToPtr(tmpValue);
-
-	BEGIN_ARRAYGET()
-		nCharCount = WideCharToMultiByte(nCodePage,0,pAddress,-1,pDest,p3.ev_long,0,0);
-		if (nCharCount)
-    		tmpValue.ev_length = nCharCount;
-		else
-		{
-			FreeHandle(tmpValue);
-			RAISEWIN32ERROR(WideCharToMultiByte,GetLastError());
-		}
-	END_ARRAYGET(+= nLength)
-
-	FreeHandle(tmpValue);
-}
-
-void _fastcall MarshalArrayShort(ParamBlk *parm)
-{
-	Value tmpValue = {'0'};
-	ARRAYLOCALS(short*)
-
-	BEGIN_ARRAYSET()
-		if (Vartype(tmpValue) == 'I')
-			*pAddress = (short)tmpValue.ev_long;
-		else
-			ReleaseValue(tmpValue);
-	END_ARRAYSET(++)
-}
-
-void _fastcall MarshalArrayUShort(ParamBlk *parm)
-{
-	Value tmpValue = {'0'};
-	ARRAYLOCALS(unsigned short*)
-
-	BEGIN_ARRAYSET()
-		if (Vartype(tmpValue) == 'N')
-			*pAddress = (unsigned short)tmpValue.ev_long;
-		else
-			ReleaseValue(tmpValue);
-	END_ARRAYSET(++)
-}
-void _fastcall MarshalArrayInt(ParamBlk *parm)
-{
-	Value tmpValue = {'0'};
-	ARRAYLOCALS(long*)
-
-	BEGIN_ARRAYSET()
-		if (Vartype(tmpValue) == 'N')
-			*pAddress = tmpValue.ev_long;
-		else 
-			ReleaseValue(tmpValue);
-	END_ARRAYSET(++)
-}
-void _fastcall MarshalArrayUInt(ParamBlk *parm)
-{
-	Value tmpValue = {'0'};
-	ARRAYLOCALS(unsigned long*)
-
-	BEGIN_ARRAYSET()
-		if (Vartype(tmpValue) == 'N')
-			*pAddress = (unsigned long)tmpValue.ev_real;
-		else
-			ReleaseValue(tmpValue);
-	END_ARRAYSET(++)
-}
-
-void _fastcall MarshalArrayFloat(ParamBlk *parm)
-{
-	Value tmpValue = {'0'};
-	ARRAYLOCALS(float*)
-
-	BEGIN_ARRAYSET()
-		if (Vartype(tmpValue) == 'N')
-			*pAddress = (float)tmpValue.ev_real;
-		else
-			ReleaseValue(tmpValue);
-	END_ARRAYSET(++)
-}
-
-void _fastcall MarshalArrayDouble(ParamBlk *parm)
-{
-	Value tmpValue = {'0'};
-	ARRAYLOCALS(double*)
-
-	BEGIN_ARRAYSET()
-		if (Vartype(tmpValue) == 'N')
-			*pAddress = tmpValue.ev_real;
-		else
-			ReleaseValue(tmpValue);
-	END_ARRAYSET(++)
-}
-
-void _fastcall MarshalArrayLogical(ParamBlk *parm)
-{
-	Value tmpValue = {'0'};
-	ARRAYLOCALS(BOOL*)
-
-	BEGIN_ARRAYSET()
-		if (Vartype(tmpValue) == 'L')
-			*pAddress = (BOOL)tmpValue.ev_length;
-		else
-			ReleaseValue(tmpValue);
-	END_ARRAYSET(++)
-}
-
-void _fastcall MarshalArrayCString(ParamBlk *parm)
-{
-	Value tmpValue = {'0'};
-	ARRAYLOCALS(char**)
-
-	BEGIN_ARRAYSET()
-		if (Vartype(tmpValue) == 'C' && Len(tmpValue))
-		{
-			if (*pAddress)
-				*pAddress = (char*)HeapReAlloc(ghHeap,HEAP_FLAG,*pAddress,tmpValue.ev_length+sizeof(char));
-			else
-				*pAddress = (char*)HeapAlloc(ghHeap,HEAP_FLAG,tmpValue.ev_length+sizeof(char));
-
-			if (*pAddress)
-			{
-				memcpy(*pAddress,HandleToPtr(tmpValue),tmpValue.ev_length);
-				(*pAddress)[tmpValue.ev_length] = '\0';
-			}
-			else
-			{
-				FreeHandle(tmpValue);
-				RaiseError(E_INSUFMEMORY);
-			}
-		}
-		else if (*pAddress)
-		{
-			HeapFree(ghHeap,HEAP_FLAG,*pAddress);
-			*pAddress = 0;
-		}
-
-		ReleaseValue(tmpValue);
-	END_ARRAYSET(++)
-}
-
-void _fastcall MarshalArrayWString(ParamBlk *parm)
-{
-	Value tmpValue = {'0'};
-	int nCharsWritten;
-	UINT nCodePage;
-	ARRAYLOCALS(wchar_t**)
-
-	nCodePage = PCOUNT() == 2 ? gnConvCP : (UINT)p3.ev_long;
-
-	BEGIN_ARRAYSET()
-		if (Vartype(tmpValue) == 'C' && Len(tmpValue))
-		{
-			if (*pAddress)
-                *pAddress = (wchar_t*)HeapReAlloc(ghHeap,HEAP_FLAG,*pAddress,
-				tmpValue.ev_length*sizeof(wchar_t)+sizeof(wchar_t));
-			else
-				*pAddress = (wchar_t*)HeapAlloc(ghHeap,HEAP_FLAG,tmpValue.ev_length*sizeof(wchar_t)+sizeof(wchar_t));
-
-			if (*pAddress)
-			{
-				nCharsWritten = MultiByteToWideChar(nCodePage,0,HandleToPtr(tmpValue),tmpValue.ev_length,*pAddress,tmpValue.ev_length);
-				if (nCharsWritten)
-				{
-					(*pAddress)[nCharsWritten] = L'\0';
-				}
-				else
-				{
-					FreeHandle(tmpValue);
-					RAISEWIN32ERROR(MultiByteToWideChar,GetLastError());
-				}
-			}
-			else
-			{
-				FreeHandle(tmpValue);
-				RaiseError(E_INSUFMEMORY);
-			}
-		}
-		else if (*pAddress)
-		{
-			HeapFree(ghHeap,HEAP_FLAG,*pAddress);
-			*pAddress = 0;
-		}
-		ReleaseValue(tmpValue);
-	END_ARRAYSET(++)
-}
-
-void _fastcall MarshalArrayCharArray(ParamBlk *parm)
-{
-	Value tmpValue = {'0'};
-	SIZE_T nLength, nCharCount;
-	ARRAYLOCALS(char*)
-	nLength = (unsigned int)p3.ev_long - 1;
-
-	BEGIN_ARRAYSET()
-		if (Vartype(tmpValue) == 'C' && Len(tmpValue))
-		{
-			nCharCount = min(tmpValue.ev_length,nLength);
-			if (nCharCount)
-			{
-				memcpy(pAddress,HandleToPtr(tmpValue),nCharCount);
-			}
-			pAddress[nCharCount] = '\0';
-		}
-		else
-			*pAddress = '\0';
-
-		ReleaseValue(tmpValue);
-	END_ARRAYSET(+= nLength)
-}
-
-void _fastcall MarshalArrayWCharArray(ParamBlk *parm)
-{
-	Value tmpValue = {'0'};
-	int nCharsWritten;
-	UINT nCodePage;
-	ARRAYLOCALS(wchar_t*)
-
-	nCodePage = PCOUNT() == 3 ? gnConvCP : (UINT)p4.ev_long;
-	
-	BEGIN_ARRAYSET()
-		if (Vartype(tmpValue) == 'C' && Len(tmpValue))
-		{
-			nCharsWritten = MultiByteToWideChar(nCodePage,0,HandleToPtr(tmpValue),min((int)tmpValue.ev_length,p3.ev_long),pAddress,p3.ev_long);
-			if (nCharsWritten)
-			{
-				pAddress[nCharsWritten] = L'\0';
-			}
-			else
-			{
-				FreeHandle(tmpValue);
-				RAISEWIN32ERROR(MultiByteToWideChar,GetLastError());
-			}
-		}
-		else
-			*pAddress = L'\0';
-
-		ReleaseValue(tmpValue);
-	END_ARRAYSET(+= p3.ev_long)
-}
-
-void _fastcall UnMarshalCursorShort(ParamBlk *parm)
-{
-	Value tmpValue = {'I', '\0', 6};
-	COLUMNGETLOCALS(short*)
-
-	BEGIN_COLUMNGET()
-		tmpValue.ev_long = (long)*pAddress;
-	END_COLUMNGET(++)
-}
-
-void _fastcall UnMarshalCursorUShort(ParamBlk *parm)
-{
-	Value tmpValue;
-	tmpValue.ev_type = 'I';
-	tmpValue.ev_length = 6;
-
-	COLUMNGETLOCALS(unsigned short*)
-
-	BEGIN_COLUMNGET()
-		tmpValue.ev_long = (long)*pAddress;
-	END_COLUMNGET(++)
-}
-
-void _fastcall UnMarshalCursorInt(ParamBlk *parm)
-{
-	V_INTEGER(tmpValue);
-	COLUMNGETLOCALS(long*)
-
-	BEGIN_COLUMNGET()
-		tmpValue.ev_long = *pAddress;
-	END_COLUMNGET(++)
-}
-
-void _fastcall UnMarshalCursorUInt(ParamBlk *parm)
-{
-	V_UINTEGER(tmpValue);
-	COLUMNGETLOCALS(unsigned long*)
-
-	BEGIN_COLUMNGET()
-		tmpValue.ev_real = (double)*pAddress;
-	END_COLUMNGET(++)
-}
-
-void _fastcall UnMarshalCursorFloat(ParamBlk *parm)
-{
-	V_FLOAT(tmpValue);
-	COLUMNGETLOCALS(float*)
-	
-	BEGIN_COLUMNGET()
-		tmpValue.ev_real = (double)*pAddress;
-	END_COLUMNGET(++)
-}
-
-void _fastcall UnMarshalCursorDouble(ParamBlk *parm)
-{
-	V_DOUBLE(tmpValue);
-	COLUMNGETLOCALS(double*)
-
-	BEGIN_COLUMNGET()
-		tmpValue.ev_real = *pAddress;
-	END_COLUMNGET(++)
-}
-
-void _fastcall UnMarshalCursorLogical(ParamBlk *parm)
-{
-	Value tmpValue;
-	tmpValue.ev_type = 'L';
-	COLUMNGETLOCALS(BOOL*)
-
-	BEGIN_COLUMNGET()
-		tmpValue.ev_length = *pAddress;
-	END_COLUMNGET(++)
-}
-
-void _fastcall UnMarshalCursorCString(ParamBlk *parm)
-{
-	V_STRING(tmpValue);
-	COLUMNGETLOCALS(char**)
-
-	BEGIN_COLUMNGET()
-		
-	END_COLUMNGET(++)
-}
-
-void _fastcall UnMarshalCursorWString(ParamBlk *parm)
-{
-	V_STRING(tmpValue);
-	COLUMNGETLOCALS(wchar_t**)
-
-	BEGIN_COLUMNGET()
-		
-	END_COLUMNGET(++)
-}
-
-void _fastcall UnMarshalCursorCharArray(ParamBlk *parm)
-{
-	V_STRING(tmpValue);
-	COLUMNGETLOCALS(char*)
-
-	BEGIN_COLUMNGET()
-
-	END_COLUMNGET(++)
-}
-
-void _fastcall UnMarshalCursorWCharArray(ParamBlk *parm)
-{
-	char *pDest;
-	int nCharCount, nLength;
-	UINT nCodePage;
-	V_STRING(tmpValue);
-	COLUMNGETLOCALS(wchar_t*)
-	
-	nLength = (UINT)p4.ev_long / sizeof(wchar_t);
-	nCodePage = PCOUNT() == 4 ? gnConvCP : (UINT)p5.ev_long;
-
-	if (!AllocHandleEx(tmpValue,p3.ev_long))
-		RaiseError(E_INSUFMEMORY);
-
-	pDest = HandleToPtr(tmpValue);
-
-	BEGIN_COLUMNGET()
-		nCharCount = wstrnlen(pAddress,nLength);
-		if (nCharCount)
-		{
-			nCharCount = WideCharToMultiByte(nCodePage,0,pAddress,-1,pDest,p3.ev_long,0,0);
-			if (nCharCount)
-    			tmpValue.ev_length = nCharCount;
-			else
-			{
-				FreeHandle(tmpValue);
-				RAISEWIN32ERROR(WideCharToMultiByte,GetLastError());
-			}
-		}
-		else
-			tmpValue.ev_length = 0;
-	END_COLUMNGET(+= nLength)
-
-	FreeHandle(tmpValue);
-}
-
-void _fastcall MarshalCursorShort(ParamBlk *parm)
-{
-	COLUMNSETLOCALS(short*)
-
-	BEGIN_COLUMNSET()
-		if (Vartype(tmpValue) == 'N')
-			*pAddress = (short)tmpValue.ev_real;
-	END_COLUMNSET(++)
-}
-
-void _fastcall MarshalCursorUShort(ParamBlk *parm)
-{
-	COLUMNSETLOCALS(unsigned short*)
-
-	BEGIN_COLUMNSET()
-		if (Vartype(tmpValue) == 'N')
-			*pAddress = (unsigned short)tmpValue.ev_real;
-	END_COLUMNSET(++)
-}
-
-void _fastcall MarshalCursorInt(ParamBlk *parm)
-{
-	COLUMNSETLOCALS(long*)
-
-	BEGIN_COLUMNSET()
-		if (Vartype(tmpValue) == 'N')
-			*pAddress = (long)tmpValue.ev_real;
-	END_COLUMNSET(++)
-}
-
-void _fastcall MarshalCursorUInt(ParamBlk *parm)
-{
-	COLUMNSETLOCALS(unsigned long*)
-	BEGIN_COLUMNSET()
-		if (Vartype(tmpValue) == 'N')
-			*pAddress = (unsigned long)tmpValue.ev_real;
-	END_COLUMNSET(++)
-}
-
-void _fastcall MarshalCursorFloat(ParamBlk *parm)
-{
-	COLUMNSETLOCALS(float*)
-	BEGIN_COLUMNSET()
-		if (Vartype(tmpValue) == 'N')
-			*pAddress = (float)tmpValue.ev_real;
-	END_COLUMNSET(++)
-}
-
-void _fastcall MarshalCursorDouble(ParamBlk *parm)
-{
-	COLUMNSETLOCALS(double*)
-	BEGIN_COLUMNSET()
-		if (Vartype(tmpValue) == 'N')
-			*pAddress = tmpValue.ev_real;
-	END_COLUMNSET(++)
-}
-
-void _fastcall MarshalCursorLogical(ParamBlk *parm)
-{
-	COLUMNSETLOCALS(BOOL*)
-	BEGIN_COLUMNSET()
-		if (Vartype(tmpValue) == 'L')
-			*pAddress = (BOOL)tmpValue.ev_length;
-		else if (Vartype(tmpValue) == 'N')
-			*pAddress = (BOOL)tmpValue.ev_real;
-		else if (Vartype(tmpValue) == 'I')
-			*pAddress = (BOOL)tmpValue.ev_long;
-	END_COLUMNSET(++)
-}
-
-void _fastcall MarshalCursorCString(ParamBlk *parm)
-{
-	char *pNewAddress;
-	COLUMNSETLOCALS(char**)
-	BEGIN_COLUMNSET()
-		if (Vartype(tmpValue) == 'C' && Len(tmpValue))
-		{
-			if (*pAddress)
-			{
-				pNewAddress = (char*)HeapReAlloc(ghHeap,HEAP_FLAG,*pAddress,tmpValue.ev_length+sizeof(char));
-				if (pNewAddress)
-				{
-					REPLACEDEBUGALLOC(*pAddress,pNewAddress,tmpValue.ev_length);
-					*pAddress = pNewAddress;
-				}
-				else
-				{
-					nErrorNo = E_INSUFMEMORY;
-					goto ErrorOut;
-				}
-			}
-			else
-			{
-				pNewAddress = (char*)HeapAlloc(ghHeap,HEAP_FLAG,tmpValue.ev_length+sizeof(char));
-				if (pNewAddress)
-				{
-					ADDDEBUGALLOC(*pAddress,tmpValue.ev_length);
-					*pAddress = pNewAddress;
-				}
-				else
-				{
-					nErrorNo = E_INSUFMEMORY;
-					goto ErrorOut;
-				}
-			}
-
-			memcpy(pNewAddress,HandleToPtr(tmpValue),tmpValue.ev_length);
-			pNewAddress[tmpValue.ev_length] = '\0';
-		}
-		else if (*pAddress)
-		{
-			HeapFree(ghHeap,HEAP_FLAG,*pAddress);
-			*pAddress = 0;
-		}
-		if (Vartype(tmpValue) == 'C')
-			FreeHandle(tmpValue);
-	END_COLUMNSET(++)
-	Return(true);
-	return;
-
-	ErrorOut:
-		if (Vartype(tmpValue) == 'C')
-			FreeHandle(tmpValue);
-		RaiseError(nErrorNo);
-}
-
-void _fastcall MarshalCursorWString(ParamBlk *parm)
-{
-	int nCharsWritten;
-	UINT nCodePage;
-	COLUMNSETLOCALS(wchar_t**)
-
-	nCodePage = PCOUNT() == 3 ? gnConvCP : (UINT)p4.ev_long;
-
-	BEGIN_COLUMNSET()
-		if (Vartype(tmpValue) == 'C' && Len(tmpValue))
-		{
-			if (*pAddress)
-				*pAddress = (wchar_t*)HeapReAlloc(ghHeap,HEAP_FLAG,*pAddress,
-				tmpValue.ev_length+sizeof(wchar_t)+sizeof(wchar_t));
-			else
-				*pAddress = (wchar_t*)HeapAlloc(ghHeap,HEAP_FLAG,tmpValue.ev_length*sizeof(wchar_t)+sizeof(wchar_t));
-
-			if (*pAddress)
-			{
-				nCharsWritten = MultiByteToWideChar(nCodePage,0,HandleToPtr(tmpValue),tmpValue.ev_length,*pAddress,tmpValue.ev_length);
-				if (nCharsWritten)
-				{
-					(*pAddress)[tmpValue.ev_length] = L'\0';
-				}
-				else
-				{
-					FreeHandle(tmpValue);
-					RAISEWIN32ERROR(MultiByteToWideChar,GetLastError());
-				}
-			}
-			else
-			{
-				FreeHandle(tmpValue);
-				RaiseError(E_INSUFMEMORY);
-			}
-		}
-		else
-		{
-			if (Vartype(tmpValue) == 'C')
-				FreeHandle(tmpValue);
-			HeapFree(ghHeap,HEAP_FLAG,*pAddress);
-			*pAddress = 0;
-		}
-	END_COLUMNSET(++)
-}
-
-void _fastcall MarshalCursorCharArray(ParamBlk *parm)
-{
-	unsigned int nLength, nCharCount;
-	COLUMNSETLOCALS(char*)
-	nLength = (unsigned int)p4.ev_long - 1;
-	BEGIN_COLUMNSET()
-		if (Vartype(tmpValue) == 'C' && Len(tmpValue))
-		{
-			nCharCount = min(tmpValue.ev_length,nLength);
-			if (nCharCount)
-				memcpy(pAddress,HandleToPtr(tmpValue),nCharCount);
-			pAddress[nCharCount] = '\0';
-		}
-		else
-			*pAddress = '\0';
-		if (Vartype(tmpValue) == 'C')
-			FreeHandle(tmpValue);
-	END_COLUMNSET(++)
-}
-
-void _fastcall MarshalCursorWCharArray(ParamBlk *parm)
-{
-	COLUMNSETLOCALS(wchar_t*)
-	BEGIN_COLUMNSET()
-
-	END_COLUMNSET(++)
-}
-
-void _fastcall Str2Short(ParamBlk *parm)
-{
-	short *pString;
-	pString = (short*)HandleToPtr(p1);
-	Return(*pString);
-}
-
-void _fastcall Short2Str(ParamBlk *parm)
-{
-	V_STRINGN(vRetVal,sizeof(short));
-	short *pRetVal;
-	
-	if (!AllocHandleEx(vRetVal,sizeof(short)))
-		RaiseError(E_INSUFMEMORY);
-
-	pRetVal = (short*)HandleToPtr(vRetVal);
-	*pRetVal = (short)p1.ev_long;
-
-	Return(vRetVal);
-}
-
-void _fastcall Str2UShort(ParamBlk *parm)
-{
-	unsigned short *pString;
-	pString = (unsigned short*)HandleToPtr(p1);
-	Return(*pString);
-}
-
-void _fastcall UShort2Str(ParamBlk *parm)
-{
-	V_STRINGN(vRetVal,sizeof(unsigned short));
-	unsigned short *pRetVal;
-	
-	if (!AllocHandleEx(vRetVal,sizeof(unsigned short)))
-		RaiseError(E_INSUFMEMORY);
-
-	pRetVal = (unsigned short*)HandleToPtr(vRetVal);
-	*pRetVal = (unsigned short)p1.ev_long;
-
-	Return(vRetVal);
-}
-
-void _fastcall Str2Long(ParamBlk *parm)
-{
-	long *pString;
-	pString = (long*)HandleToPtr(p1);
-	Return(*pString);
-}
-
-void _fastcall Long2Str(ParamBlk *parm)
-{
-	V_STRINGN(vRetVal,sizeof(long));
-	long *pRetVal;
-	
-	if (!AllocHandleEx(vRetVal,sizeof(long)))
-		RaiseError(E_INSUFMEMORY);
-
-	pRetVal = (long*)HandleToPtr(vRetVal);
-	*pRetVal = p1.ev_long;
-
-	Return(vRetVal);
-}
-
-void _fastcall Str2ULong(ParamBlk *parm)
-{
-	unsigned long *pString;
-	pString = (unsigned long*)HandleToPtr(p1);
-	Return(*pString);
-}
-
-void _fastcall ULong2Str(ParamBlk *parm)
-{
-	V_STRINGN(vRetVal,sizeof(unsigned long));
-	unsigned long *pRetVal;
-	
-	if (!AllocHandleEx(vRetVal,sizeof(unsigned long)))
-		RaiseError(E_INSUFMEMORY);
-
-	pRetVal = (unsigned long*)HandleToPtr(vRetVal);
-	
-	if (Vartype(p1) == 'I')
-		*pRetVal = p1.ev_long;
-	else if (Vartype(p1) == 'N')
-		*pRetVal = (unsigned long)p1.ev_real;
-	else
-	{
-		FreeHandle(vRetVal);
 		RaiseError(E_INVALIDPARAMS);
+}
+
+#define BEGIN_ARRAYLOOP() \
+	while(++vfpArray.CurrentDim() <= vfpArray.ADims()) \
+	{ \
+		vfpArray.CurrentRow() = 0; \
+		while(++vfpArray.CurrentRow() <= vfpArray.ARows()) \
+		{ 
+
+#define END_ARRAYLOOP() \
+		} \
 	}
 
-	Return(vRetVal);
+void _fastcall MarshalFoxArray2CArray(ParamBlk *parm)
+{
+try
+{
+	FoxArray vfpArray(r2);
+	MarshalType Type = static_cast<MarshalType>(p3.ev_long);
+	FoxValue pValue;
+
+	switch(Type)
+	{
+		case CTYPE_SHORT:
+			{
+				short *CArray = reinterpret_cast<short*>(p1.ev_long);
+				BEGIN_ARRAYLOOP()
+					pValue = vfpArray;
+					if (pValue.Vartype() == 'N')
+						*CArray = static_cast<short>(pValue->ev_long);
+					else if (pValue.Vartype() != '0')
+						throw E_INVALIDPARAMS;
+					CArray++;
+				END_ARRAYLOOP()
+			}
+			break;
+
+		case CTYPE_USHORT:
+			{
+				unsigned short *CArray = reinterpret_cast<unsigned short*>(p1.ev_long);
+				BEGIN_ARRAYLOOP()
+					pValue = vfpArray;
+					if (pValue.Vartype() == 'N')
+						*CArray = static_cast<unsigned short>(pValue->ev_long);
+					else if (pValue.Vartype() != '0')
+						throw E_INVALIDPARAMS;
+					CArray++;
+				END_ARRAYLOOP()
+			}
+			break;
+
+		case CTYPE_INT:
+			{
+				int *CArray = reinterpret_cast<int*>(p1.ev_long);
+				BEGIN_ARRAYLOOP()
+					pValue = vfpArray;
+					if (pValue.Vartype() == 'N')
+						*CArray = pValue->ev_long;
+					else if (pValue.Vartype() != '0')
+						throw E_INVALIDPARAMS;
+					CArray++;
+				END_ARRAYLOOP()
+			}
+			break;
+
+		case CTYPE_UINT:
+			{
+				unsigned int *CArray = reinterpret_cast<unsigned int*>(p1.ev_long);
+				BEGIN_ARRAYLOOP()
+					pValue = vfpArray;
+					if (pValue.Vartype() == 'N')
+						*CArray = static_cast<unsigned int>(pValue->ev_long);
+					else if (pValue.Vartype() != '0')
+						throw E_INVALIDPARAMS;
+					CArray++;
+				END_ARRAYLOOP()
+			}
+			break;
+
+		case CTYPE_FLOAT:
+			{
+				float *CArray = reinterpret_cast<float*>(p1.ev_long);
+				BEGIN_ARRAYLOOP()
+					pValue = vfpArray;
+					if (pValue.Vartype() == 'N')
+						*CArray = static_cast<float>(pValue->ev_long);
+					else if (pValue.Vartype() != '0')
+						throw E_INVALIDPARAMS;
+					CArray++;
+				END_ARRAYLOOP()
+			}
+			break;
+
+		case CTYPE_DOUBLE:
+			{
+				double *CArray = reinterpret_cast<double*>(p1.ev_long);
+				BEGIN_ARRAYLOOP()
+					pValue = vfpArray;
+					if (pValue.Vartype() == 'N')
+						*CArray = pValue->ev_real;
+					else if (pValue.Vartype() != '0')
+						throw E_INVALIDPARAMS;
+					CArray++;
+				END_ARRAYLOOP()
+			}
+			break;
+
+		case CTYPE_BOOL:
+			{
+				BOOL *CArray = reinterpret_cast<BOOL*>(p1.ev_long);
+				BEGIN_ARRAYLOOP()
+					pValue = vfpArray;
+					if (pValue.Vartype() == 'L')
+						*CArray = pValue->ev_length;
+					else if (pValue.Vartype() != '0')
+						throw E_INVALIDPARAMS;
+					CArray++;
+				END_ARRAYLOOP()
+			}
+			break;
+
+		case CTYPE_CSTRING:
+			{
+				char **CArray = reinterpret_cast<char**>(p1.ev_long);
+				BEGIN_ARRAYLOOP()
+					pValue = vfpArray;
+					if (pValue.Vartype() == 'C')
+					{
+						if (*CArray)
+							*CArray = (char*)HeapReAlloc(ghHeap, 0, *CArray, pValue->ev_length + sizeof(char));
+						else
+							*CArray = (char*)HeapAlloc(ghHeap, 0, pValue->ev_length + sizeof(char));
+			
+						if (*CArray)
+						{
+							memcpy(*CArray, pValue.HandleToPtr(), pValue->ev_length);
+							(*CArray)[pValue->ev_length] = '\0';
+						}
+						else
+							throw E_INSUFMEMORY;
+					}
+					else if (pValue.Vartype() == '0')
+					{
+						if (*CArray)
+						{
+							HeapFree(ghHeap, 0, *CArray);
+							*CArray = 0;
+						}
+					}
+					else 
+						throw E_INVALIDPARAMS;
+
+					CArray++;
+				END_ARRAYLOOP()
+			}
+			break;
+
+		case CTYPE_WSTRING:
+			{
+				wchar_t **CArray = reinterpret_cast<wchar_t**>(p1.ev_long);
+				int nCharsWritten;
+				unsigned int nCodePage = PCount() == 3 ? gnConvCP : p4.ev_long;
+				BEGIN_ARRAYLOOP()
+					pValue = vfpArray;
+					if (pValue.Vartype() == 'C')
+					{
+						if (*CArray)
+							*CArray = (wchar_t*)HeapReAlloc(ghHeap, 0, *CArray, pValue->ev_length * sizeof(wchar_t) + sizeof(wchar_t));
+						else
+							*CArray = (wchar_t*)HeapAlloc(ghHeap, 0, pValue->ev_length * sizeof(wchar_t) + sizeof(wchar_t));
+
+						if (*CArray)
+						{
+							nCharsWritten = MultiByteToWideChar(nCodePage, 0, pValue.HandleToPtr(), pValue->ev_length, *CArray, pValue->ev_length);
+							if (nCharsWritten)
+							{
+								(*CArray)[nCharsWritten] = L'\0';
+							}
+							else
+							{
+								SaveWin32Error("MultiByteToWideChar", GetLastError());
+								throw E_APIERROR;
+							}
+						}
+						else
+							throw E_INSUFMEMORY;
+					}
+					else if (pValue.Vartype() == '0')
+					{
+						if (*CArray)
+						{
+							HeapFree(ghHeap, 0, *CArray);
+							*CArray = 0;
+						}
+					}
+					else
+						throw E_INVALIDPARAMS;
+
+					CArray++;
+				END_ARRAYLOOP()
+			}
+			break;
+
+		case CTYPE_CHARARRAY:
+			{
+				if (PCount() < 4)
+					throw E_INVALIDPARAMS;
+
+				char *CArray = reinterpret_cast<char*>(p1.ev_long);
+				unsigned int nCharCount, nLength = p4.ev_long;
+				BEGIN_ARRAYLOOP()
+					pValue = vfpArray;
+                	if (pValue.Vartype() == 'C')
+					{
+						nCharCount = min(pValue->ev_length, nLength);
+						if (nCharCount)
+							memcpy(CArray, pValue.HandleToPtr(), nCharCount);
+						if (nCharCount < nLength)
+							CArray[nCharCount] = '\0';
+					}
+					else if (pValue.Vartype() == '0')
+						memset(CArray, 0, nLength);
+					else
+						throw E_INVALIDPARAMS;
+
+					CArray += nLength;
+				END_ARRAYLOOP()
+			}
+			break;
+
+		case CTYPE_WCHARARRAY:
+			{
+				if (PCount() < 4)
+					throw E_INVALIDPARAMS;
+
+				wchar_t *CArray = reinterpret_cast<wchar_t*>(p1.ev_long);
+				unsigned int nCodePage, nCharsWritten, nLength = p4.ev_long;
+				nCodePage = PCount() == 4 ? gnConvCP : p5.ev_long;
+				BEGIN_ARRAYLOOP()
+					pValue = vfpArray;
+					if (pValue.Vartype() == 'C')
+					{
+						nCharsWritten = MultiByteToWideChar(nCodePage, 0, pValue.HandleToPtr(), min(pValue->ev_length, nLength), CArray, nLength);
+						if (nCharsWritten)
+						{
+							if (nCharsWritten < nLength)
+								CArray[nCharsWritten] = L'\0';
+						}
+						else
+						{
+							SaveWin32Error("MultiByteToWideChar", GetLastError());
+							throw E_APIERROR;
+						}
+					}
+					else if (pValue.Vartype() == '0')
+						memset(CArray, 0, nLength * 2);
+					else
+						throw E_INVALIDPARAMS;
+
+					CArray += nLength;
+				END_ARRAYLOOP()
+			}
+			break;
+
+		case CTYPE_INT64:
+			{
+				__int64 *CArray = reinterpret_cast<__int64*>(p1.ev_long);
+				BEGIN_ARRAYLOOP()
+					pValue = vfpArray;
+					if (pValue.Vartype() == 'Y')
+						*CArray = pValue->ev_currency.QuadPart;
+					else if (pValue.Vartype() == 'C' && pValue->ev_length == 8)
+						*CArray = *reinterpret_cast<__int64*>(pValue.HandleToPtr());
+					if (pValue.Vartype() == 'N')
+						*CArray = static_cast<__int64>(pValue->ev_real);
+					else if (pValue.Vartype() != '0')
+						throw E_INVALIDPARAMS;
+					CArray++;
+				END_ARRAYLOOP()
+			}
+			break;
+
+		case CTYPE_UINT64:
+			{
+				unsigned __int64 *CArray = reinterpret_cast<unsigned __int64*>(p1.ev_long);
+				BEGIN_ARRAYLOOP()
+					pValue = vfpArray;
+					if (pValue.Vartype() == 'Y')
+						*CArray = static_cast<unsigned __int64>(pValue->ev_currency.QuadPart);
+					else if (pValue.Vartype() == 'C' && pValue->ev_length == 8)
+						*CArray = *reinterpret_cast<unsigned __int64*>(pValue.HandleToPtr());
+					if (pValue.Vartype() == 'N')
+						*CArray = static_cast<unsigned __int64>(pValue->ev_real);
+					else if (pValue.Vartype() != '0')
+						throw E_INVALIDPARAMS;
+					CArray++;
+				END_ARRAYLOOP()
+			}
+			break;
+
+		default:
+			throw E_INVALIDPARAMS;
+	}
+}
+catch(int nErrorNo)
+{
+	RaiseError(nErrorNo);
+}
 }
 
-void _fastcall Str2Double(ParamBlk *parm)
+void _fastcall MarshalCArray2FoxArray(ParamBlk *parm)
 {
-	double *pDouble;
-	pDouble = (double*)HandleToPtr(p1);
-	Return(*pDouble);
+try
+{
+	FoxArray vfpArray(r2);
+	MarshalType Type = static_cast<MarshalType>(p3.ev_long);
+
+	switch(Type)
+	{
+		case CTYPE_SHORT:
+			{
+				short *CArray = reinterpret_cast<short*>(p1.ev_long);
+				FoxShort pValue;
+				BEGIN_ARRAYLOOP()
+					vfpArray = pValue = *CArray++;
+				END_ARRAYLOOP()
+			}
+			break;
+
+		case CTYPE_USHORT:
+			{
+				unsigned short *CArray = reinterpret_cast<unsigned short*>(p1.ev_long);
+				FoxUShort pValue;
+				BEGIN_ARRAYLOOP()
+					vfpArray = pValue = *CArray++;
+				END_ARRAYLOOP()
+			}
+			break;
+
+		case CTYPE_INT:
+			{
+				int *CArray = reinterpret_cast<int*>(p1.ev_long);
+				FoxInt pValue;
+				BEGIN_ARRAYLOOP()
+					vfpArray = pValue = *CArray++;
+				END_ARRAYLOOP()
+			}
+			break;
+
+		case CTYPE_UINT:
+			{
+				unsigned int *CArray = reinterpret_cast<unsigned int*>(p1.ev_long);
+				FoxUInt pValue;
+				BEGIN_ARRAYLOOP()
+					vfpArray = pValue = *CArray++;
+				END_ARRAYLOOP()
+			}
+			break;
+
+		case CTYPE_FLOAT:
+			{
+				float *CArray = reinterpret_cast<float*>(p1.ev_long);
+				FoxFloat pValue;
+				BEGIN_ARRAYLOOP()
+					vfpArray = pValue = *CArray++;
+				END_ARRAYLOOP()
+			}
+			break;
+
+		case CTYPE_DOUBLE:
+			{
+				double *CArray = reinterpret_cast<double*>(p1.ev_long);
+				FoxDouble pValue;
+				BEGIN_ARRAYLOOP()
+					vfpArray = pValue = *CArray++;
+				END_ARRAYLOOP()
+			}
+			break;
+
+		case CTYPE_BOOL:
+			{
+				BOOL *CArray = reinterpret_cast<BOOL*>(p1.ev_long);
+				FoxLogical pValue;
+				BEGIN_ARRAYLOOP()
+					vfpArray = pValue = *CArray++;
+				END_ARRAYLOOP()
+			}
+			break;
+
+		case CTYPE_CSTRING:
+			{
+				char **CArray = reinterpret_cast<char**>(p1.ev_long);
+				unsigned int nStringLen;
+				FoxString pValue(256);
+				FoxValue pNull;
+
+				BEGIN_ARRAYLOOP()
+					if (*CArray)
+					{
+						nStringLen = lstrlen(*CArray);
+						if (nStringLen > pValue.Size())
+							pValue.Size(nStringLen);
+						if (nStringLen)
+							memcpy(pValue, *CArray, nStringLen);
+						pValue.Len(nStringLen);
+						vfpArray = pValue;
+					}
+					else
+						vfpArray = pNull;
+					
+					CArray++;
+				END_ARRAYLOOP()
+			}
+			break;
+
+		case CTYPE_WSTRING:
+			{
+				wchar_t **CArray = reinterpret_cast<wchar_t**>(p1.ev_long);
+				unsigned int nByteCount, nWCharCount, nCharsWritten;
+				unsigned int nCodePage = PCount() == 3 ? gnConvCP : p4.ev_long;;
+				FoxString pValue(512);
+				FoxValue pNull;
+
+				BEGIN_ARRAYLOOP()
+					if (*CArray)
+					{
+						nWCharCount = lstrlenW(*CArray);
+						nByteCount = nWCharCount * sizeof(wchar_t);
+						if (nByteCount > pValue.Size())
+							pValue.Size(nByteCount);
+						if (nByteCount)
+						{
+							nCharsWritten = WideCharToMultiByte(nCodePage, 0, *CArray, nWCharCount, pValue, pValue.Size(), 0, 0);
+							if (nCharsWritten)
+								pValue.Len(nCharsWritten);
+							else
+							{
+								SaveWin32Error("WideCharToMultiByte", GetLastError());
+								throw E_APIERROR;
+							}
+						}
+						else
+							pValue.Len(0);
+
+						vfpArray = pValue;
+					}
+					else
+						vfpArray = pNull;
+				
+					CArray++;
+				END_ARRAYLOOP()
+			}
+			break;
+
+		case CTYPE_CHARARRAY:
+			{
+				if (PCount() != 4)
+					throw E_INVALIDPARAMS;
+				
+				char *CArray = reinterpret_cast<char*>(p1.ev_long);
+				unsigned int nLen = p4.ev_long;
+				FoxString pValue(nLen);
+				BEGIN_ARRAYLOOP()
+					vfpArray = pValue.StrnCpy(CArray, nLen);
+					CArray += nLen;
+				END_ARRAYLOOP()
+			}
+			break;
+
+		case CTYPE_WCHARARRAY:
+			{
+				if (PCount() < 4)
+					throw E_INVALIDPARAMS;
+
+				wchar_t *CArray = reinterpret_cast<wchar_t*>(p1.ev_long);
+				int nCharCount, nLen = p4.ev_long;
+				unsigned int nCodePage = PCount() == 4 ? gnConvCP : p5.ev_long;
+				FoxString pValue(nLen);
+				
+				BEGIN_ARRAYLOOP()
+					nCharCount = WideCharToMultiByte(nCodePage, 0, CArray, nLen, pValue, pValue.Size(), 0, 0);
+					if (nCharCount)
+						pValue.Len(nCharCount);
+					else
+					{
+						SaveWin32Error("WideCharToMultiByte", GetLastError());
+						throw E_APIERROR;
+					}
+					vfpArray = pValue;
+					CArray += nLen;
+				END_ARRAYLOOP()
+			}
+			break;
+
+		case CTYPE_INT64:
+			{
+				__int64 *CArray = reinterpret_cast<__int64*>(p1.ev_long);
+				FoxCurrency pValue;
+				BEGIN_ARRAYLOOP()
+					vfpArray = pValue = *CArray++;
+				END_ARRAYLOOP()
+			}
+			break;
+
+		case CTYPE_UINT64:
+			{
+				unsigned __int64 *CArray = reinterpret_cast<unsigned __int64*>(p1.ev_long);
+				FoxCurrency pValue;
+				BEGIN_ARRAYLOOP()
+					vfpArray = pValue = *CArray++;
+				END_ARRAYLOOP()
+			}
+			break;
+
+		default:
+			throw E_INVALIDPARAMS;
+	}
+}
+catch(int nErrorNo)
+{
+	RaiseError(nErrorNo);
+}
 }
 
-void _fastcall Double2Str(ParamBlk *parm)
+#undef BEGIN_ARRAYLOOP
+#undef END_ARRAYLOOP
+
+#define BEGIN_CURSORLOOP() \
+	for (int nRecNo = 0; nRecNo < nRecCount; nRecNo++) \
+	{
+
+#define END_CURSORLOOP() \
+		pCursor.Skip(); \
+	}
+
+#define BEGIN_FIELDLOOP() \
+	for (unsigned int nFieldNo = 0; nFieldNo < nFieldCount; nFieldNo++) \
+	{
+
+#define END_FIELDLOOP() \
+	}
+
+void _fastcall MarshalCursor2CArray(ParamBlk *parm)
 {
-	V_STRINGN(vRetVal,sizeof(double));
-	double *pRetVal;
+try
+{
+	FoxValue pValue;
+	FoxString pCursorAndFields(p2);
+	MarshalType Type = static_cast<MarshalType>(p3.ev_long);
+	FoxCursor pCursor;
+
+	char CursorName[VFP_MAX_CURSOR_NAME];
+	char *pFieldNames = pCursorAndFields;
+	pFieldNames += GetWordNumN(CursorName, pCursorAndFields, '.', 1, VFP_MAX_CURSOR_NAME) + 1;
+	pCursor.Attach(CursorName, pFieldNames);
+	pCursor.GoTop();
+	int nRecCount = pCursor.RecCount();
+	unsigned int nFieldCount = pCursor.FCount();
 	
-	if (!AllocHandleEx(vRetVal,sizeof(double)))
-		RaiseError(E_INSUFMEMORY);
+	switch(Type)
+	{
+		case CTYPE_SHORT:
+			{
+				short *CArray = reinterpret_cast<short*>(p1.ev_long);
+				BEGIN_CURSORLOOP()
+					BEGIN_FIELDLOOP()
+						pValue = pCursor(nFieldNo);
+						if (pValue.Vartype() == 'N')
+							CArray[nRecNo + (nRecCount * nFieldNo)] = static_cast<short>(pValue->ev_real);
+						else if (pValue.Vartype() != '0')
+							throw E_INVALIDPARAMS;
+					END_FIELDLOOP()
+				END_CURSORLOOP()
+			}
+			break;
 
-	pRetVal = (double*)HandleToPtr(vRetVal);
-	*pRetVal = p1.ev_real;
+		case CTYPE_USHORT:
+			{
+				unsigned short *CArray = reinterpret_cast<unsigned short*>(p1.ev_long);
+				BEGIN_CURSORLOOP()
+					BEGIN_FIELDLOOP()
+						pValue = pCursor(nFieldNo);
+						if (pValue.Vartype() == 'N')
+							CArray[nRecNo + (nRecCount * nFieldNo)] = static_cast<unsigned short>(pValue->ev_real);
+						else if (pValue.Vartype() != '0')
+							throw E_INVALIDPARAMS;
+					END_FIELDLOOP()
+				END_CURSORLOOP()
+			}
+			break;
 
-	Return(vRetVal);	
+		case CTYPE_INT:
+			{
+				int *CArray = reinterpret_cast<int*>(p1.ev_long);
+				BEGIN_CURSORLOOP()
+					BEGIN_FIELDLOOP()
+						pValue = pCursor(nFieldNo);
+						if (pValue.Vartype() == 'N')
+							CArray[nRecNo + (nRecCount * nFieldNo)] = static_cast<int>(pValue->ev_real);
+						else if (pValue.Vartype() != '0')
+							throw E_INVALIDPARAMS;
+					END_FIELDLOOP()
+				END_CURSORLOOP()
+			}
+			break;
+
+		case CTYPE_UINT:
+			{
+				unsigned int *CArray = reinterpret_cast<unsigned int*>(p1.ev_long);
+				BEGIN_CURSORLOOP()
+					BEGIN_FIELDLOOP()
+						pValue = pCursor(nFieldNo);
+						if (pValue.Vartype() == 'N')
+							CArray[nRecNo + (nRecCount * nFieldNo)] = static_cast<unsigned int>(pValue->ev_real);
+						else if (pValue.Vartype() != '0')
+							throw E_INVALIDPARAMS;
+					END_FIELDLOOP()
+				END_CURSORLOOP()
+			}
+			break;
+
+		case CTYPE_FLOAT:
+			{
+				float *CArray = reinterpret_cast<float*>(p1.ev_long);
+				BEGIN_CURSORLOOP()
+					BEGIN_FIELDLOOP()
+						pValue = pCursor(nFieldNo);
+						if (pValue.Vartype() == 'N')
+							CArray[nRecNo + (nRecCount * nFieldNo)] = static_cast<float>(pValue->ev_real);
+						else if (pValue.Vartype() != '0')
+							throw E_INVALIDPARAMS;
+					END_FIELDLOOP()
+				END_CURSORLOOP()
+			}
+			break;
+
+		case CTYPE_DOUBLE:
+			{
+				double *CArray = reinterpret_cast<double*>(p1.ev_long);
+				BEGIN_CURSORLOOP()
+					BEGIN_FIELDLOOP()
+						pValue = pCursor(nFieldNo);
+						if (pValue.Vartype() == 'N')
+							CArray[nRecNo + (nRecCount * nFieldNo)] = pValue->ev_real;
+						else if (pValue.Vartype() != '0')
+							throw E_INVALIDPARAMS;
+					END_FIELDLOOP()
+				END_CURSORLOOP()
+			}
+			break;
+
+		case CTYPE_BOOL:
+			{
+				BOOL *CArray = reinterpret_cast<BOOL*>(p1.ev_long);
+				BEGIN_CURSORLOOP()
+					BEGIN_FIELDLOOP()										
+						pValue = pCursor(nFieldNo);
+						if (pValue.Vartype() == 'L')
+							CArray[nRecNo + (nRecCount * nFieldNo)] = pValue->ev_length;
+						else if (pValue.Vartype() != '0')
+							throw E_INVALIDPARAMS;
+					END_FIELDLOOP()
+				END_CURSORLOOP()
+			}
+			break;
+
+		case CTYPE_CSTRING:
+			{
+				char **CArray = reinterpret_cast<char**>(p1.ev_long);
+				char **pString;
+				BEGIN_CURSORLOOP()
+					BEGIN_FIELDLOOP()
+						pValue = pCursor(nFieldNo);
+						pString = &CArray[nRecNo + (nRecCount * nFieldNo)];
+						if (pValue.Vartype() == 'C')
+						{
+							if (*pString)
+								*pString = (char*)HeapReAlloc(ghHeap, 0, *pString, pValue->ev_length + sizeof(char));
+							else
+								*pString = (char*)HeapAlloc(ghHeap, 0, pValue->ev_length + sizeof(char));
+				
+							if (*pString)
+							{
+								memcpy(*pString, pValue.HandleToPtr(), pValue->ev_length);
+								(*pString)[pValue->ev_length] = '\0';
+							}
+							else
+								throw E_INSUFMEMORY;
+						}
+						else if (pValue.Vartype() == '0')
+						{
+							if (*pString)
+							{
+								HeapFree(ghHeap, 0, *CArray);
+								*pString = 0;
+							}
+						}
+						else 
+							throw E_INVALIDPARAMS;
+					END_FIELDLOOP()
+				END_CURSORLOOP()
+			}
+			break;
+
+		case CTYPE_WSTRING:
+			{
+				wchar_t **CArray = reinterpret_cast<wchar_t**>(p1.ev_long);
+				wchar_t **pString;
+				int nCharsWritten;
+				unsigned int nCodePage = PCount() == 3 ? gnConvCP : p4.ev_long;
+				BEGIN_CURSORLOOP()
+					BEGIN_FIELDLOOP()
+						pValue = pCursor(nFieldNo);
+						pString = &CArray[nRecNo + (nRecCount * nFieldNo)];
+						if (pValue.Vartype() == 'C')
+						{
+							if (*pString)
+								*pString = (wchar_t*)HeapReAlloc(ghHeap, 0, *pString, pValue->ev_length * sizeof(wchar_t) + sizeof(wchar_t));
+							else
+								*pString = (wchar_t*)HeapAlloc(ghHeap, 0, pValue->ev_length * sizeof(wchar_t) + sizeof(wchar_t));
+
+							if (*pString)
+							{
+								nCharsWritten = MultiByteToWideChar(nCodePage, 0, pValue.HandleToPtr(), pValue->ev_length, *pString, pValue->ev_length);
+								if (nCharsWritten)
+								{
+									(*pString)[nCharsWritten] = L'\0';
+								}
+								else
+								{
+									SaveWin32Error("MultiByteToWideChar", GetLastError());
+									throw E_APIERROR;
+								}
+							}
+							else
+								throw E_INSUFMEMORY;
+						}
+						else if (pValue.Vartype() == '0')
+						{
+							if (*pString)
+							{
+								HeapFree(ghHeap, 0, *pString);
+								*pString = 0;
+							}
+						}
+						else
+							throw E_INVALIDPARAMS;
+					END_FIELDLOOP()
+				END_CURSORLOOP()
+			}
+			break;
+
+		case CTYPE_CHARARRAY:
+			{
+				char *CArray = reinterpret_cast<char*>(p1.ev_long);
+				char *pString;
+				unsigned int nCharCount, nDimensionSize, nLength = p4.ev_long;
+				nDimensionSize = nRecCount * nLength;
+				BEGIN_CURSORLOOP()
+					BEGIN_FIELDLOOP()
+						pValue = pCursor(nFieldNo);
+						pString = CArray + (nFieldNo * nDimensionSize);
+                		if (pValue.Vartype() == 'C')
+						{
+							nCharCount = min(pValue->ev_length, nLength);
+							if (nCharCount)
+								memcpy(pString, pValue.HandleToPtr(), nCharCount);
+							if (nCharCount < nLength)
+								pString[nCharCount] = '\0';
+						}
+						else if (pValue.Vartype() == '0')
+							memset(CArray, 0, nLength);
+						else
+							throw E_INVALIDPARAMS;
+
+						CArray += nLength;
+					END_FIELDLOOP()
+				END_CURSORLOOP()
+			}
+			break;
+
+		case CTYPE_WCHARARRAY:
+			{
+				if (PCount() < 4)
+					throw E_INVALIDPARAMS;
+
+				wchar_t *CArray = reinterpret_cast<wchar_t*>(p1.ev_long);
+				wchar_t *pString;
+				unsigned int nByteLen, nCharsWritten, nDimensionSize, nLen = p4.ev_long;
+				unsigned int nCodePage = PCount() == 4 ? gnConvCP : p5.ev_long;
+				nByteLen = nLen * sizeof(wchar_t);
+				nDimensionSize = nRecCount * nByteLen;
+				BEGIN_CURSORLOOP()
+					BEGIN_FIELDLOOP()
+						pValue = pCursor(nFieldNo);
+						pString = CArray + (nFieldNo * nDimensionSize);
+						if (pValue.Vartype() == 'C')
+						{
+							nCharsWritten = MultiByteToWideChar(nCodePage, 0, pValue.HandleToPtr(), min(pValue->ev_length, nLen), pString, nLen);
+							if (nCharsWritten)
+							{
+								if (nCharsWritten < nLen)
+									pString[nCharsWritten] = L'\0';
+							}
+							else
+							{
+								SaveWin32Error("MultiByteToWideChar", GetLastError());
+								throw E_APIERROR;
+							}
+						}
+						else if (pValue.Vartype() == '0')
+							memset(pString, 0, nByteLen);
+						else
+							throw E_INVALIDPARAMS;
+
+						CArray += nLen;
+					END_FIELDLOOP()
+				END_CURSORLOOP()
+			}
+			break;
+
+		case CTYPE_INT64:
+			{
+				__int64 *CArray = reinterpret_cast<__int64*>(p1.ev_long);
+				BEGIN_CURSORLOOP()
+					BEGIN_FIELDLOOP()
+						pValue = pCursor(nFieldNo);
+						if (pValue.Vartype() == 'Y')
+							CArray[nRecNo + (nRecCount * nFieldNo)] = pValue->ev_currency.QuadPart;
+						else if (pValue.Vartype() == 'C' && pValue->ev_length == 8)
+							CArray[nRecNo + (nRecCount * nFieldNo)] = *reinterpret_cast<__int64*>(pValue.HandleToPtr());
+						if (pValue.Vartype() == 'N')
+							CArray[nRecNo + (nRecCount * nFieldNo)] = static_cast<__int64>(pValue->ev_real);
+						else if (pValue.Vartype() != '0')
+							throw E_INVALIDPARAMS;
+					END_FIELDLOOP()
+				END_CURSORLOOP()
+			}
+			break;
+
+		case CTYPE_UINT64:
+			{
+				unsigned __int64 *CArray = reinterpret_cast<unsigned __int64*>(p1.ev_long);
+				BEGIN_CURSORLOOP()
+					BEGIN_FIELDLOOP()
+						pValue = pCursor(nFieldNo);
+						if (pValue.Vartype() == 'Y')
+							CArray[nRecNo + (nRecCount * nFieldNo)] = static_cast<unsigned __int64>(pValue->ev_currency.QuadPart);
+						else if (pValue.Vartype() == 'C' && pValue->ev_length == 8)
+							CArray[nRecNo + (nRecCount * nFieldNo)] = *reinterpret_cast<unsigned __int64*>(pValue.HandleToPtr());
+						if (pValue.Vartype() == 'N')
+							CArray[nRecNo + (nRecCount * nFieldNo)] = static_cast<unsigned __int64>(pValue->ev_real);
+						else if (pValue.Vartype() != '0')
+							throw E_INVALIDPARAMS;
+					END_FIELDLOOP()
+				END_CURSORLOOP()
+			}
+			break;
+
+		default:
+			throw E_INVALIDPARAMS;
+	}
 }
-
-void _fastcall Str2Float(ParamBlk *parm)
+catch(int nErrorNo)
 {
-	float *pFloat;
-	pFloat = (float*)HandleToPtr(p1);
-	Return(*pFloat);
+	RaiseError(nErrorNo);
+}
 }
 
-void _fastcall Float2Str(ParamBlk *parm)
+#undef BEGIN_CURSORLOOP
+#undef END_CURSORLOOP
+#undef BEGIN_FIELDLOOP
+#undef BEGIN_FIELDLOOP
+
+#define BEGIN_CURSORLOOP() \
+	for(unsigned int nRow = 0; nRow < nRowCount; nRow++) \
+	{ \
+		if (pCursor.Eof()) \
+			pCursor.AppendBlank(); 
+
+#define END_CURSORLOOP() \
+		pCursor.Skip(); \
+	}
+
+#define BEGIN_FIELDLOOP() \
+	for(unsigned int nFieldNo = 0; nFieldNo < nFieldCount; nFieldNo++) \
+	{
+
+#define END_FIELDLOOP() \
+	}
+
+void _fastcall MarshalCArray2Cursor(ParamBlk *parm)
 {
-	V_STRINGN(vRetVal,sizeof(float));
-	float *pRetVal;
-	
-	if (!AllocHandleEx(vRetVal,sizeof(float)))
-		RaiseError(E_INSUFMEMORY);
+try
+{
+	FoxString pCursorAndFields(p2);
+	MarshalType Type = static_cast<MarshalType>(p3.ev_long);
+	FoxCursor pCursor;
+	unsigned int nFieldCount;
+	unsigned int nRowCount = p4.ev_long;
+	char CursorName[VFP_MAX_CURSOR_NAME];
+	char *pFieldNames = pCursorAndFields;
+	pFieldNames += GetWordNumN(CursorName, pCursorAndFields, '.', 1, VFP_MAX_CURSOR_NAME) + 1;
+	pCursor.Attach(CursorName, pFieldNames);
+	pCursor.GoTop();
+	nFieldCount = pCursor.FCount();
 
-	pRetVal = (float*)HandleToPtr(vRetVal);
-	*pRetVal = (float)p1.ev_real;
+	switch(Type)
+	{
+		case CTYPE_SHORT:
+			{
+				short *CArray = reinterpret_cast<short*>(p1.ev_long);
+				FoxShort pValue;
+				BEGIN_CURSORLOOP()
+					BEGIN_FIELDLOOP()
+						pCursor(nFieldNo) = pValue = CArray[nRow + (nRowCount * nFieldNo)];
+					END_FIELDLOOP()
+				END_CURSORLOOP()
+			}
+			break;
 
-	Return(vRetVal);	
+		case CTYPE_USHORT:
+			{
+				unsigned short *CArray = reinterpret_cast<unsigned short*>(p1.ev_long);
+				FoxUShort pValue;
+				BEGIN_CURSORLOOP()
+					BEGIN_FIELDLOOP()
+						pCursor(nFieldNo) = pValue = CArray[nRow + (nRowCount * nFieldNo)];
+					END_FIELDLOOP()
+				END_CURSORLOOP()
+			}
+			break;
+
+		case CTYPE_INT:
+			{
+				int *CArray = reinterpret_cast<int*>(p1.ev_long);
+				FoxInt pValue;
+				BEGIN_CURSORLOOP()
+					BEGIN_FIELDLOOP()
+						pCursor(nFieldNo) = pValue = CArray[nRow + (nRowCount * nFieldNo)];
+					END_FIELDLOOP()
+				END_CURSORLOOP()
+			}
+			break;
+
+		case CTYPE_UINT:
+			{
+				unsigned int *CArray = reinterpret_cast<unsigned int*>(p1.ev_long);
+				FoxUInt pValue;
+				BEGIN_CURSORLOOP()
+					BEGIN_FIELDLOOP()
+						pCursor(nFieldNo) = pValue = CArray[nRow + (nRowCount * nFieldNo)];
+					END_FIELDLOOP()
+				END_CURSORLOOP()
+			}
+			break;
+
+		case CTYPE_FLOAT:
+			{
+				float *CArray = reinterpret_cast<float*>(p1.ev_long);
+				FoxFloat pValue;
+				BEGIN_CURSORLOOP()
+					BEGIN_FIELDLOOP()
+						pCursor(nFieldNo) = pValue = CArray[nRow + (nRowCount * nFieldNo)];
+					END_FIELDLOOP()
+				END_CURSORLOOP()
+			}
+			break;
+
+		case CTYPE_DOUBLE:
+			{
+				double *CArray = reinterpret_cast<double*>(p1.ev_long);
+				FoxDouble pValue;
+				BEGIN_CURSORLOOP()
+					BEGIN_FIELDLOOP()
+						pCursor(nFieldNo) = pValue = CArray[nRow + (nRowCount * nFieldNo)];
+					END_FIELDLOOP()
+				END_CURSORLOOP()
+			}
+			break;
+
+		case CTYPE_BOOL:
+			{
+				BOOL *CArray = reinterpret_cast<BOOL*>(p1.ev_long);
+				FoxLogical pValue;
+				BEGIN_CURSORLOOP()
+					BEGIN_FIELDLOOP()
+						pCursor(nFieldNo) = pValue = CArray[nRow + (nRowCount * nFieldNo)];
+					END_FIELDLOOP()
+				END_CURSORLOOP()
+			}
+			break;
+
+		case CTYPE_CSTRING:
+			{
+				char **CArray = reinterpret_cast<char**>(p1.ev_long);
+				char *pString;
+				unsigned int nStringLen;
+				FoxString pValue(256);
+				FoxValue pNull;
+
+				BEGIN_CURSORLOOP()
+					BEGIN_FIELDLOOP()
+						pString = CArray[nRow + (nRowCount * nFieldNo)];
+						if (pString)
+						{
+							nStringLen = lstrlen(pString);
+							if (nStringLen > pValue.Size())
+								pValue.Size(nStringLen);
+							if (nStringLen)
+								memcpy(pValue, pString, nStringLen);
+							pCursor(nFieldNo) = pValue.Len(nStringLen);
+						}
+						else
+							pCursor(nFieldNo) = pNull;
+					END_FIELDLOOP()
+				END_CURSORLOOP()
+			}
+			break;
+
+		case CTYPE_WSTRING:
+			{
+				wchar_t **CArray = reinterpret_cast<wchar_t**>(p1.ev_long);
+				wchar_t *pString;
+				unsigned int nByteCount, nWCharCount, nCharsWritten;
+				UINT nCodePage = PCount() == 4 ? gnConvCP : p5.ev_long;;
+				FoxString pValue(512);
+				FoxValue pNull;
+
+				BEGIN_CURSORLOOP()
+					BEGIN_FIELDLOOP()
+						pString = CArray[nRow + (nRowCount * nFieldNo)];
+						if (pString)
+						{
+							nWCharCount = lstrlenW(pString);
+							nByteCount = nWCharCount * sizeof(wchar_t);
+							if (nByteCount > pValue.Size())
+								pValue.Size(nByteCount);
+							if (nByteCount)
+							{
+								nCharsWritten = WideCharToMultiByte(nCodePage, 0, pString, nWCharCount, pValue, pValue.Size(), 0, 0);
+								if (nCharsWritten)
+									pValue.Len(nCharsWritten);
+								else
+								{
+									SaveWin32Error("WideCharToMultiByte", GetLastError());
+									throw E_APIERROR;
+								}
+							}
+							else
+								pValue.Len(0);
+							pCursor(nFieldNo) = pValue;
+						}
+						else
+							pCursor(nFieldNo) = pNull;
+					END_FIELDLOOP()
+				END_CURSORLOOP()
+			}
+			break;
+
+		case CTYPE_CHARARRAY:
+			{
+				if (PCount() != 5)
+					throw E_INVALIDPARAMS;
+				
+				char *CArray = reinterpret_cast<char*>(p1.ev_long);
+				char *pString;
+				unsigned int nLen = p5.ev_long;
+				unsigned int nDimensionSize = nLen * nRowCount;
+				FoxString pValue(nLen);
+				BEGIN_CURSORLOOP()
+					BEGIN_FIELDLOOP()
+						pString = CArray + (nFieldNo * nDimensionSize);
+						pCursor(nFieldNo) = pValue.StrnCpy(pString, nLen);
+						CArray += nLen;
+					END_FIELDLOOP()
+				END_CURSORLOOP()
+			}
+			break;
+
+		case CTYPE_WCHARARRAY:
+			{
+				if (PCount() < 5)
+					throw E_INVALIDPARAMS;
+
+				wchar_t *CArray = reinterpret_cast<wchar_t*>(p1.ev_long);
+				wchar_t *pString;
+				int nCharCount, nByteLen;
+				unsigned int nLen = p5.ev_long;
+				nByteLen = nLen * sizeof(wchar_t);
+				unsigned int nDimensionSize = nByteLen * nRowCount;
+				UINT nCodePage = PCount() == 5 ? gnConvCP : p6.ev_long;
+				FoxString pValue(nByteLen);
+				
+				BEGIN_CURSORLOOP()
+					BEGIN_FIELDLOOP()
+						pString = CArray + (nFieldNo * nDimensionSize);
+						nCharCount = WideCharToMultiByte(nCodePage,0, pString, -1, pValue, pValue.Size(), 0, 0);
+						if (nCharCount)
+							pValue.Len(nCharCount);
+						else
+						{
+							SaveWin32Error("WideCharToMultiByte", GetLastError());
+							throw E_APIERROR;
+						}
+						pCursor(nFieldNo) = pValue;
+						CArray += nLen;
+					END_FIELDLOOP()
+				END_CURSORLOOP()
+			}
+			break;
+
+		case CTYPE_INT64:
+			{
+				__int64 *CArray = reinterpret_cast<__int64*>(p1.ev_long);
+				FoxCurrency pValue;
+				BEGIN_CURSORLOOP()
+					BEGIN_FIELDLOOP()
+						pCursor(nFieldNo) = pValue = CArray[nRow + (nRowCount * nFieldNo)];
+					END_FIELDLOOP()
+				END_CURSORLOOP()
+			}
+			break;
+
+		case CTYPE_UINT64:
+			{
+				unsigned __int64 *CArray = reinterpret_cast<unsigned __int64*>(p1.ev_long);
+				FoxCurrency pValue;
+				BEGIN_CURSORLOOP()
+					BEGIN_FIELDLOOP()
+						pCursor(nFieldNo) = pValue = CArray[nRow + (nRowCount * nFieldNo)];
+					END_FIELDLOOP()
+				END_CURSORLOOP()
+			}
+			break;
+
+		default:
+			throw E_INVALIDPARAMS;
+	}
 }
+catch(int nErrorNo)
+{
+	RaiseError(nErrorNo);
+}
+}
+
+#undef BEGIN_CURSORLOOP
+#undef END_CURSORLOOP
+#undef BEGIN_FIELDLOOP
+#undef BEGIN_FIELDLOOP

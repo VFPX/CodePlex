@@ -9,6 +9,135 @@
 #include "vfp2cutil.h"
 #include "vfp2chelpers.h"
 
+WindowsVersion COs::m_Version;
+OSVERSIONINFOEX COs::m_osver;
+
+void COs::Init()
+{
+	PGETNATIVESYSTEMINFO pGetNativeSystemInfo = 0;
+	SYSTEM_INFO sysInfo;
+	bool bVersionEx = true;
+
+	m_osver.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
+	if (!GetVersionEx(reinterpret_cast<LPOSVERSIONINFO>(&m_osver)))
+	{
+		bVersionEx = false;
+		m_osver.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+		GetVersionEx(reinterpret_cast<LPOSVERSIONINFO>(&m_osver));
+	}
+
+	pGetNativeSystemInfo = (PGETNATIVESYSTEMINFO)GetProcAddress(GetModuleHandle("kernel32.dll"), "GetNativeSystemInfo");
+	if (pGetNativeSystemInfo)
+		pGetNativeSystemInfo(&sysInfo);
+	else
+        GetSystemInfo(&sysInfo);
+
+	if(bVersionEx)
+	{
+		if (m_osver.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS)
+		{
+			switch(m_osver.dwMajorVersion)
+			{
+				case 4:
+				{
+					switch(m_osver.dwMinorVersion)
+					{
+						case 0:
+							if (m_osver.szCSDVersion[0] == 'B' || m_osver.szCSDVersion[0] == 'C')
+								m_Version = Windows95OSR2;
+							else
+								m_Version = Windows95;
+							break;
+						case 10:
+							if (m_osver.szCSDVersion[0] == 'A')
+								m_Version = Windows98SE;
+							else
+								m_Version = Windows98;
+							break;
+						case 90:
+							m_Version = WindowsMillennium;
+							break;       
+					}
+				}
+			}
+		}
+		else if (m_osver.dwPlatformId == VER_PLATFORM_WIN32_NT)
+		{
+			switch (m_osver.dwMajorVersion)
+			{
+				case 3:
+					m_Version = WindowsNT351;
+					break;
+
+				case 4:
+					switch (m_osver.wProductType)
+					{
+						case 1:
+							m_Version = WindowsNT40;
+							break;
+						case 3:
+							m_Version = WindowsNT40Server;
+							break;
+					}
+					break;
+
+				case 5:
+					switch (m_osver.dwMinorVersion)
+					{
+						case 0:
+							m_Version = Windows2000;
+							break;
+						case 1:
+							m_Version = WindowsXP;
+							break;
+						case 2:
+							if (m_osver.wSuiteMask == VER_SUITE_WH_SERVER)
+								m_Version = WindowsHomeServer;
+							else if (m_osver.wProductType == VER_NT_WORKSTATION && sysInfo.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_AMD64)
+								m_Version = WindowsXPProfessionalx64;
+							else
+								m_Version = GetSystemMetrics(89) == 0 ? WindowsServer2003 : WindowsServer2003R2;
+							break;
+					}
+					break;
+
+				case 6:
+					switch (m_osver.dwMinorVersion)
+					{
+						case 0:
+							m_Version = m_osver.wProductType == VER_NT_WORKSTATION ? WindowsVista : WindowsServer2008;
+							break;
+
+						case 1:
+							m_Version = m_osver.wProductType == VER_NT_WORKSTATION ? Windows7 : WindowsServer2008R2;
+							break;
+
+						default:
+							m_Version = WindowsX;
+					}
+					break;
+
+				default:
+					m_Version = WindowsX;
+			}
+		}
+	}
+	else // Test for specific product on Windows NT 4.0 SP5 and earlier
+	{
+		if (m_osver.dwMajorVersion == 3)
+			m_Version = WindowsNT351;
+		else if (m_osver.dwMajorVersion == 4)
+			m_Version = WindowsNT40;
+		else if (m_osver.dwMajorVersion == 5)
+		{
+			if (m_osver.dwMinorVersion == 0)
+				m_Version = Windows2000;
+			else if (m_osver.dwMinorVersion == 2)
+				m_Version = WindowsServer2003;
+		}
+	}
+}
+
 CStr::CStr(unsigned int nSize)
 {
 	m_String = new char[nSize];
@@ -195,7 +324,7 @@ unsigned int CStr::Format(const char *lpFormat,...)
                   
     lpFormat++; 
 
-	if (nUseLength = IS_DIGIT(*lpFormat))
+	if (nUseLength = IsDigit(*lpFormat))
 		nPrecision = skip_atoi(&lpFormat);
 	else
 		nPrecision = 6;
@@ -344,7 +473,7 @@ bool RegistryKey::Create(HKEY hKey, LPCSTR lpKey, LPSTR lpClass, DWORD nOptions,
 	LONG nApiRet;
 	DWORD bCreated;
 
-	if (m_Handle != 0 && m_Owner)
+	if (m_Handle && m_Owner)
 	{
 		RegCloseKey(m_Handle);
 		m_Handle = 0;
@@ -354,7 +483,7 @@ bool RegistryKey::Create(HKEY hKey, LPCSTR lpKey, LPSTR lpClass, DWORD nOptions,
 	nApiRet = RegCreateKeyEx(hKey,lpKey,0,lpClass,nOptions,samDesired,0,&m_Handle,&bCreated);
 	if (nApiRet != ERROR_SUCCESS)
 	{
-		SAVEWIN32ERROR(RegCreateKeyEx,nApiRet);
+		SaveWin32Error("RegCreateKeyEx", nApiRet);
 		throw E_APIERROR;
 	}
 
@@ -365,7 +494,7 @@ void RegistryKey::Open(HKEY hKey, LPCSTR lpKey, REGSAM samDesired, DWORD ulOptio
 {
 	LONG nApiRet;
 
-	if (m_Handle != 0 && m_Owner)
+	if (m_Handle && m_Owner)
 	{
 		RegCloseKey(m_Handle);
 		m_Handle = 0;
@@ -373,10 +502,10 @@ void RegistryKey::Open(HKEY hKey, LPCSTR lpKey, REGSAM samDesired, DWORD ulOptio
 	
 	if (lpKey)
 	{
-		nApiRet = RegOpenKeyEx(hKey,lpKey,ulOptions,samDesired,&m_Handle);
+		nApiRet = RegOpenKeyEx(hKey, lpKey, ulOptions, samDesired, &m_Handle);
 		if (nApiRet != ERROR_SUCCESS)
 		{
-			SAVEWIN32ERROR(RegOpenKeyEx,nApiRet);
+			SaveWin32Error("RegOpenKeyEx", nApiRet);
 			throw E_APIERROR;
 		}
 		m_Owner = true;
@@ -391,10 +520,10 @@ void RegistryKey::Open(HKEY hKey, LPCSTR lpKey, REGSAM samDesired, DWORD ulOptio
 HKEY RegistryKey::OpenSubKey(LPCSTR lpSubKey, REGSAM samDesired, DWORD ulOptions)
 {
 	LONG nApiRet; HKEY hSubKey;
-	nApiRet = RegOpenKeyEx(m_Handle,lpSubKey,ulOptions,samDesired,&hSubKey);
+	nApiRet = RegOpenKeyEx(m_Handle, lpSubKey, ulOptions, samDesired, &hSubKey);
 	if (nApiRet != ERROR_SUCCESS)
 	{
-		SAVEWIN32ERROR(RegOpenKeyEx,nApiRet);
+		SaveWin32Error("RegOpenKeyEx", nApiRet);
 		throw E_APIERROR;
 	}
 	return hSubKey;
@@ -408,7 +537,7 @@ bool RegistryKey::Delete(HKEY hKey, LPCSTR lpKeyName, bool bShellVersion)
 	{
 		if ((nApiRet = RegDeleteKey(hKey,lpKeyName)) != ERROR_SUCCESS)
 		{
-			SAVEWIN32ERROR(RegDeleteKey,nApiRet);
+			SaveWin32Error("RegDeleteKey", nApiRet);
 			return false;
 		}
 	}
@@ -416,7 +545,7 @@ bool RegistryKey::Delete(HKEY hKey, LPCSTR lpKeyName, bool bShellVersion)
 	{
 		if ((nApiRet = SHDeleteKey(hKey,lpKeyName)) != ERROR_SUCCESS)
 		{
-			SAVEWIN32ERROR(SHDeleteKey,nApiRet);
+			SaveWin32Error("SHDeleteKey", nApiRet);
 			return false;
 		}
 	}
@@ -433,7 +562,7 @@ void RegistryKey::QueryInfo(LPSTR lpClass, LPDWORD lpcbClass, LPDWORD lpSubKeys,
 		lpcValues,lpcbMaxValueNameLen,lpcbMaxValueLen,lpcbSecurityDescriptor,lpftLastWriteTime);
 	if (nApiRet != ERROR_SUCCESS)
 	{
-		SAVEWIN32ERROR(RegQueryInfoKey,nApiRet);
+		SaveWin32Error("RegQueryInfoKey", nApiRet);
 		throw E_APIERROR;
 	}
 	if (lpcbMaxSubKeyLen)
@@ -457,7 +586,7 @@ bool RegistryKey::EnumFirstKey(LPSTR lpKey, LPDWORD lpKeyLen, LPSTR lpClass, LPD
 		return false;
 	else
 	{
-		SAVEWIN32ERROR(RegEnumKeyEx,nApiRet);
+		SaveWin32Error("RegEnumKeyEx", nApiRet);
 		throw E_APIERROR;
 	}
 }
@@ -475,7 +604,7 @@ bool RegistryKey::EnumNextKey(LPSTR lpKey, LPDWORD lpKeyLen, LPSTR lpClass, LPDW
 		return false;
 	else
 	{
-		SAVEWIN32ERROR(RegEnumKeyEx,nApiRet);
+		SaveWin32Error("RegEnumKeyEx", nApiRet);
 		throw E_APIERROR;
 	}
 }
@@ -495,7 +624,7 @@ bool RegistryKey::EnumFirstValue(LPSTR lpValueName, LPDWORD lpcbValueName, LPBYT
 		return false;
 	else
 	{
-		SAVEWIN32ERROR(RegEnumValue,nApiRet);
+		SaveWin32Error("RegEnumValue", nApiRet);
 		throw E_APIERROR;
 	}
 }
@@ -515,7 +644,7 @@ bool RegistryKey::EnumNextValue(LPSTR lpValueName, LPDWORD lpcbValueName, LPBYTE
 		return false;
 	else
 	{
-		SAVEWIN32ERROR(RegEnumValue,nApiRet);
+		SaveWin32Error("RegEnumValue", nApiRet);
 		throw E_APIERROR;
 	}
 }
@@ -527,7 +656,7 @@ DWORD RegistryKey::QueryValueInfo(LPSTR lpValue, DWORD &lpType)
 	nApiRet = RegQueryValueEx(m_Handle,lpValue,0,&lpType,0,&dwLen);
 	if (nApiRet != ERROR_SUCCESS)
 	{
-		SAVEWIN32ERROR(RegQueryValueEx,nApiRet);
+		SaveWin32Error("RegQueryValueEx", nApiRet);
 		throw E_APIERROR;
 	}
 	return dwLen;
@@ -544,7 +673,7 @@ void RegistryKey::QueryValue(LPSTR lpValue, LPBYTE lpData, LPDWORD lpDataLen, LP
 	nApiRet = RegQueryValueEx(m_Handle,lpValue,0,lpType,lpData,lpDataLen);
 	if (nApiRet != ERROR_SUCCESS)
 	{
-		SAVEWIN32ERROR(RegQueryValueEx,nApiRet);
+		SaveWin32Error("RegQueryValueEx", nApiRet);
 		throw E_APIERROR;
 	}
 	if (*lpType == REG_SZ || *lpType == REG_MULTI_SZ || *lpType == REG_EXPAND_SZ)
@@ -557,7 +686,7 @@ void RegistryKey::SetValue(LPCSTR lpValueName, LPBYTE lpData, DWORD dwDataLen, D
 	nApiRet = RegSetValueEx(m_Handle,lpValueName,0,dwType,lpData,dwDataLen);
 	if (nApiRet != ERROR_SUCCESS)
 	{
-		SAVEWIN32ERROR(RegSetValueEx,nApiRet);
+		SaveWin32Error("RegSetValueEx", nApiRet);
 		throw E_APIERROR;
 	}
 }
@@ -579,7 +708,7 @@ bool CCriticalSection::Initialize()
 	}
 	__except(EXCEPTION_EXECUTE_HANDLER)
 	{
-		ADDCUSTOMERROR("InitializeCriticalSection","There's not enough memory to complete the operation.");
+		AddCustomError("InitializeCriticalSection","There's not enough memory to complete the operation.");
 		return false;
 	}
 	m_Inited = true;
@@ -619,7 +748,7 @@ bool CEvent::Create(bool bManualReset, bool bInitalState, char *pName, LPSECURIT
 	m_Event = CreateEvent(pSecurityAttributes, bManualReset ? TRUE : FALSE, bInitalState ? TRUE : FALSE, pName);
 	if (m_Event == 0)
 	{
-		SAVEWIN32ERROR(CreateEvent, GetLastError());
+		SaveWin32Error("CreateEvent", GetLastError());
 		return false;
 	}
 	return true;
@@ -662,7 +791,7 @@ void CThread::StartThread()
 	m_ThreadHandle = CreateThread(0, THREAD_STACKSIZE, ThreadProc, (LPVOID)this, 0, &dwThreadId);
 	if (m_ThreadHandle == 0)
 	{
-		SAVEWIN32ERROR(CreateThread, GetLastError());
+		SaveWin32Error("CreateThread", GetLastError());
 		throw E_APIERROR;
 	}
 	m_ThreadManager->AddThread(this);

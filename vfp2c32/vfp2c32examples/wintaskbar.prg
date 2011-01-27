@@ -1,6 +1,9 @@
 #INCLUDE vfp2c.h
 
+CD (FULLPATH(JUSTPATH(SYS(16))))
+
 SET LIBRARY TO vfp2c32.fll ADDITIVE
+SET PROCEDURE TO winapi_structs.prg ADDITIVE
 INITVFP2C32(VFP2C_INIT_MARSHAL) && we only need marshaling support 
 
 #DEFINE ABM_NEW				0
@@ -38,12 +41,12 @@ INITVFP2C32(VFP2C_INIT_MARSHAL) && we only need marshaling support
 *!*	&& END TEST
 
 && TEST 2
-? "Autohide is ", IIF(GetAutoHideStateX(),'ON','OFF')
-? "Setting Autohide ON", SetAutoHideStateX(.T.)
-? "Autohide is ", IIF(GetAutoHideStateX(),'ON','OFF')
+? "Autohide is ", IIF(GetAutoHideState(),'ON','OFF')
+? "Setting Autohide ON", SetAutoHideState(.T.)
+? "Autohide is ", IIF(GetAutoHideState(),'ON','OFF')
 INKEY(5,'H')
-? "Setting Autohide OFF", SetAutoHideStateX(.F.)
-? "Autohide is ", IIF(GetAutoHideStateX(),'ON','OFF')
+? "Setting Autohide OFF", SetAutoHideState(.F.)
+? "Autohide is ", IIF(GetAutoHideState(),'ON','OFF')
 && END TEST 2
 
 
@@ -152,69 +155,3 @@ DEFINE CLASS APPBARDATA AS Exception
 	ENDPROC
 
 ENDDEFINE
-
-DEFINE CLASS RECT AS Exception
-	
-	Address = 0 
-	SizeOf = 16
-	PROTECTED Embedded	
-	Embedded = .F.
-	mLeft = 0
-	mTop = 0
-	mRigth = 0
-	mBottom = 0
-	
-	PROCEDURE Init(lnAddress)
-		IF PCOUNT() = 0
-			THIS.Address = AllocMem(THIS.SizeOf)
-			IF THIS.Address = 0
-				ERROR(43)
-				RETURN .F.
-			ENDIF
-		ELSE
-			ASSERT TYPE('lnAddress') = 'N' AND lnAddress != 0 MESSAGE 'Address of structure must be specified!'
-			THIS.Address = lnAddress
-			THIS.Embedded = .T.
-		ENDIF
-	ENDFUNC
-	
-	PROCEDURE Destroy
-		IF !THIS.Embedded
-			FreeMem(THIS.Address)
-		ENDIF
-	ENDPROC
-	
-	PROCEDURE mLeft_Access
-		RETURN ReadInt(THIS.Address)
-	ENDPROC
-	
-	PROCEDURE mLeft_Assign(lnNewVal)
-		WriteInt(THIS.Address,lnNewVal)
-	ENDPROC
-	
-	PROCEDURE mTop_Access
-		RETURN ReadInt(THIS.Address+4)
-	ENDPROC
-	
-	PROCEDURE mTop_Assign(lnNewVal)
-		WriteInt(THIS.Address+4,lnNewVal)
-	ENDPROC
-
-	PROCEDURE mRigth_Access
-		RETURN ReadInt(THIS.Address+8)
-	ENDPROC
-	
-	PROCEDURE mRigth_Assign(lnNewVal)
-		WriteInt(THIS.Address+8,lnNewVal)			
-	ENDPROC
-
-	PROCEDURE mBottom_Access
-		RETURN ReadInt(THIS.Address+12)
-	ENDPROC
-	
-	PROCEDURE mBottom_Assign(lnNewVal)
-		WriteInt(THIS.Address+12,lnNewVal)						
-	ENDPROC
-
-ENDDEFINE
-

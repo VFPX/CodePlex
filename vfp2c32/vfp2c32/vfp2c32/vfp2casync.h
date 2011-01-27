@@ -3,12 +3,8 @@
 
 #include "vfp2chelpers.h"
 
-// stack size of created threads
-#define VFP2C_STACKSIZE		8192
-
-// custom defines and types for file/directory, registry & printer monitoring functions
-#define ASYNC_WINDOW_CLASS		"__VFP2C_ASWC"
-#define WM_CALLBACK				(WM_USER+1)
+const UINT WM_CALLBACK			= (WM_USER+1);
+const UINT WM_CALLBACKRESULT	= (WM_USER+2);
 
 class FindFileChangeThread : public CThread
 {

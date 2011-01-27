@@ -1,9 +1,8 @@
 #ifndef _VFP2CWINSOCK_H__
 #define _VFP2CWINSOCK_H__
 
-#define SAVEWINSOCKERROR(cFunc) SaveWinsockError(#cFunc)
-#define DEFAULT_WINSOCK_TIMEOUT 4000
-#define VFP2C_MAX_IP_LEN	16
+const int DEFAULT_WINSOCK_TIMEOUT	= 4000;
+const int VFP2C_MAX_IP_LEN			= 16;
 
 #ifdef __cplusplus
 extern "C" {

@@ -18,7 +18,8 @@ CThreadManager goThreadManager;
 bool _stdcall VFP2C_Init_Async()
 {
 	WNDCLASSEX wndClass = {0}; /* MO - message only */
-	
+	const char* ASYNC_WINDOW_CLASS	= "__VFP2C_ASWC";
+
 	gnAsyncAtom = (ATOM)GetClassInfoEx(ghModule,ASYNC_WINDOW_CLASS,&wndClass);
 	if (!gnAsyncAtom)
 	{
@@ -31,21 +32,21 @@ bool _stdcall VFP2C_Init_Async()
 
 	if (gnAsyncAtom)
 	{
-		/* message only windows are only available on Win2000 or WinXP */
-		if (IS_WIN2KXP())
+		/* message only windows are only available from Win2000 or later */
+		if (COs::GreaterOrEqual(Windows2000))
 			ghAsyncHwnd = CreateWindowEx(0,(LPCSTR)gnAsyncAtom,0,0,0,0,0,0,HWND_MESSAGE,0,ghModule,0);
 		else
 			ghAsyncHwnd = CreateWindowEx(0,(LPCSTR)gnAsyncAtom,0,WS_POPUP,0,0,0,0,0,0,ghModule,0);
 
 		if (!ghAsyncHwnd)
 		{
-			ADDWIN32ERROR(CreateWindowEx,GetLastError());
+			AddWin32Error("CreateWindowEx", GetLastError());
 			return false;
 		}
 	}
 	else
 	{
-		ADDWIN32ERROR(RegisterClassEx,GetLastError());
+		AddWin32Error("RegisterClassEx", GetLastError());
 		return false;
 	}
 
@@ -69,7 +70,7 @@ void _fastcall FindFileChange(ParamBlk *parm)
 	FindFileChangeThread *pThread = 0;
 try
 {
-	RESETWIN32ERRORS();
+	ResetWin32Errors();
 
 	FoxString pPath(p1);
 	bool bWatchSubtree = p2.ev_length > 0;
@@ -78,7 +79,7 @@ try
 
 	if (!goThreadManager.Initialized())
 	{
-		SAVECUSTOMERROR("FindFileChange","Library not initialized!");
+		SaveCustomError("FindFileChange","Library not initialized!");
 		throw E_APIERROR;
 	}
 
@@ -113,11 +114,11 @@ void _fastcall CancelFileChange(ParamBlk *parm)
 {
 try
 {
-	RESETWIN32ERRORS();
+	ResetWin32Errors();
 
 	if (!goThreadManager.Initialized())
 	{
-		SAVECUSTOMERROR("CancelFileChange","Library not initialized.");
+		SaveCustomError("CancelFileChange","Library not initialized.");
 		throw E_APIERROR;
 	}
 
@@ -135,7 +136,7 @@ void _fastcall FindRegistryChange(ParamBlk *parm)
 	FindRegistryChangeThread *pThread = 0;
 try
 {
-	RESETWIN32ERRORS();
+	ResetWin32Errors();
 
 	HKEY hRoot = reinterpret_cast<HKEY>(p1.ev_long);
 	FoxString pKey(p2);
@@ -145,7 +146,7 @@ try
 
 	if (!goThreadManager.Initialized())
 	{
-		SAVECUSTOMERROR("FindRegistryChange","Library not initialized!");
+		SaveCustomError("FindRegistryChange","Library not initialized!");
 		throw E_APIERROR;
 	}
 
@@ -176,11 +177,11 @@ void _fastcall CancelRegistryChange(ParamBlk *parm)
 {
 try
 {
-	RESETWIN32ERRORS();
+	ResetWin32Errors();
 
 	if (!goThreadManager.Initialized())
 	{
-		SAVECUSTOMERROR("CancelRegistryChange","Library not initialized.");
+		SaveCustomError("CancelRegistryChange","Library not initialized.");
 		throw E_APIERROR;
 	}
 
@@ -198,14 +199,14 @@ void _fastcall AsyncWaitForObject(ParamBlk *parm)
 	WaitForObjectThread *pThread = 0;
 try
 {
-	RESETWIN32ERRORS();
+	ResetWin32Errors();
 
 	HANDLE hObject = reinterpret_cast<HANDLE>(p1.ev_long);
 	FoxString pCallback(p2);
 
 	if (!goThreadManager.Initialized())
 	{
-		SAVECUSTOMERROR("AsyncWaitForObject","Library not initialized!");
+		SaveCustomError("AsyncWaitForObject","Library not initialized!");
 		throw E_APIERROR;
 	}
 
@@ -236,11 +237,11 @@ void _fastcall CancelWaitForObject(ParamBlk *parm)
 {
 try
 {
-	RESETWIN32ERRORS();
+	ResetWin32Errors();
 
 	if (!goThreadManager.Initialized())
 	{
-		SAVECUSTOMERROR("CancelWaitForObject","Library not initialized.");
+		SaveCustomError("CancelWaitForObject","Library not initialized.");
 		throw E_APIERROR;
 	}
 
@@ -263,14 +264,43 @@ LRESULT _stdcall FindChangeWindowProc(HWND nHwnd, UINT uMsg, WPARAM wParam, LPAR
 			char *pCommand = reinterpret_cast<char*>(wParam);
 			if (pCommand)
 			{
-				nErrorNo = _Execute(pCommand);
+				_Execute(pCommand);
 				delete[] pCommand;
 			}
-			return 0;
 		}
 		__except (EXCEPTION_EXECUTE_HANDLER) {}
+		return 0;
 	}
-	return DefWindowProc(nHwnd,uMsg,wParam,lParam);
+	else if (uMsg == WM_CALLBACKRESULT)
+	{
+		Value vRetVal;
+		vRetVal.ev_type = '0';
+		LRESULT retval = 0;
+		__try
+		{
+			char *pCommand = reinterpret_cast<char*>(wParam);
+			if (pCommand)
+			{
+				nErrorNo = _Evaluate(&vRetVal, pCommand);
+				delete[] pCommand;
+				if (nErrorNo == 0)
+				{
+					if (Vartype(vRetVal) == 'I')
+						retval = vRetVal.ev_long;
+					else if (Vartype(vRetVal) == 'N')
+						retval = static_cast<LRESULT>(vRetVal.ev_real);
+					else if (Vartype(vRetVal) == 'L')
+						retval = vRetVal.ev_width;
+					else 
+						ReleaseValue(vRetVal);
+				}
+			}
+		}
+		__except (EXCEPTION_EXECUTE_HANDLER) {}
+		return retval;
+	}
+	else
+		return DefWindowProc(nHwnd,uMsg,wParam,lParam);
 }
 
 
@@ -298,7 +328,7 @@ bool FindFileChangeThread::Setup(char *pPath, bool bWatchSubtree, DWORD nFilter,
 	m_FileEvent = FindFirstChangeNotification(pPath, bWatchSubtree ? TRUE : FALSE, nFilter);
 	if (m_FileEvent == INVALID_HANDLE_VALUE)
 	{
-		SAVEWIN32ERROR(FindFirstChangeNotification,GetLastError());
+		SaveWin32Error("FindFirstChangeNotification", GetLastError());
 		return false;
 	}
 	return true;
@@ -378,7 +408,7 @@ bool FindRegistryChangeThread::Setup(HKEY hRoot, char *pKey, bool bWatchSubtree,
 	nRetVal = RegOpenKeyEx(hRoot, pKey, 0, KEY_NOTIFY, &m_RegKey);
 	if (nRetVal != ERROR_SUCCESS)
 	{
-		SAVEWIN32ERROR(RegOpenKeyEx,nRetVal);
+		SaveWin32Error("RegOpenKeyEx", nRetVal);
 		return false;
 	}
 
@@ -393,7 +423,7 @@ bool FindRegistryChangeThread::Setup(HKEY hRoot, char *pKey, bool bWatchSubtree,
 	nRetVal = RegNotifyChangeKeyValue(m_RegKey, m_WatchSubtree ? TRUE : FALSE, m_Filter, m_RegistryEvent, TRUE);
 	if (nRetVal != ERROR_SUCCESS)
 	{
-		SAVEWIN32ERROR(RegNotifyChangeKeyValue,nRetVal);
+		SaveWin32Error("RegNotifyChangeKeyValue", nRetVal);
 		return false;
 	}
 

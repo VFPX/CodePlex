@@ -40,7 +40,7 @@ try
 	}
 
 	if (nRemain)
-		pArray(++xj) = pBuffer.CopyBytes(pSubString, nRemain);
+		pArray(xj) = pBuffer.CopyBytes(pSubString, nRemain);
 
 	pArray.ReturnRows();
 }
@@ -60,8 +60,9 @@ try
 	CCY SumCur;
 	unsigned int Rows, Dims, TargetDim, StartDim, StopDim;
 	char Type = '0';
+	bool Overflow = false;
 
-	if (PCOUNT() == 1)
+	if (PCount() == 1)
         TargetDim = 1;
 	else if (p2.ev_long < 0)
 		throw E_INVALIDPARAMS;
@@ -109,7 +110,12 @@ try
 					if (Type == 'N')
 						Sum += vValue->ev_real;
 					else
+					{
 						SumCur.QuadPart += vValue->ev_currency.QuadPart;
+						__asm seto Overflow;
+						if (Overflow)
+							throw E_CURRENCYOVERFLOW;
+					}
 				}
 				else if (vValue.Vartype() == '0');
 				else
@@ -131,18 +137,23 @@ catch(int nErrorNo)
 }
 }
 
+union __AAverageValues
+{
+	double Double;
+	__int64 Currency;
+};
+
 void _fastcall AAverage(ParamBlk *parm)
 {
+	union __AAverageValues* pValues = 0;
 try
 {
 	FoxArray vArray(r1);
 	FoxValue vValue;
-	double Sum;
-	CCY SumCur;
-	unsigned int Rows, Dims, TargetDim, StartDim, StopDim, ValueCount = 0;
+	unsigned int Rows, Dims, TargetDim, StartDim, StopDim, MaxElements, ValueCount = 0;
 	char Type = '0';
 
-	if (PCOUNT() == 1)
+	if (PCount() == 1)
         TargetDim = 1;
 	else if (p2.ev_long < 0)
 		throw E_INVALIDPARAMS;
@@ -163,6 +174,9 @@ try
 		StopDim = TargetDim;
 	}
 
+	MaxElements = (StopDim - StartDim + 1) * Rows;
+	union __AAverageValues* pValues = new union __AAverageValues[MaxElements];
+
 	unsigned int CurrentRow, CurrentDim;
 	for (CurrentDim = StartDim; CurrentDim <= StopDim; CurrentDim++)
 	{
@@ -171,16 +185,15 @@ try
 			vValue = vArray(CurrentRow, CurrentDim);
 			if (Type == '0')
 			{
-				if (vValue.Vartype() == 'N' || vValue.Vartype() == 'Y')
+				Type = vValue.Vartype();
+				if (Type == 'N' || Type == 'Y')
 				{
-					Type = vValue.Vartype();
 					if (Type == 'N')
-						Sum = vValue->ev_real;
+						pValues[ValueCount++].Double = vValue->ev_real;
 					else
-						SumCur.QuadPart = vValue->ev_currency.QuadPart;
-					ValueCount++;
+						pValues[ValueCount++].Currency = vValue->ev_currency.QuadPart;
 				}
-				else if (vValue.Vartype() == '0');
+				else if (Type == '0');
 				else
 					throw E_INVALIDPARAMS;
 			}
@@ -189,10 +202,9 @@ try
 				if (vValue.Vartype() == Type)
 				{
 					if (Type == 'N')
-						Sum += vValue->ev_real;
+						pValues[ValueCount++].Double = vValue->ev_real;
 					else
-						SumCur.QuadPart += vValue->ev_currency.QuadPart;
-					ValueCount++;
+						pValues[ValueCount++].Currency = vValue->ev_currency.QuadPart;
 				}
 				else if (vValue.Vartype() == '0');
 				else
@@ -204,15 +216,36 @@ try
 	if (Type == '0')
 		vValue.Return();
 	else if (Type == 'N')
-		Return(Sum / ValueCount);
+	{
+		double Average = 0;
+		for (unsigned int xj = 0; xj < ValueCount; xj++)
+			Average += pValues[xj].Double / ValueCount;
+		Return(Average);
+	}
 	else
 	{
-		SumCur.QuadPart /= ValueCount;
-		Return(SumCur);
+		CCY Result;
+		__int64 Sum = 0;
+		__int64 Rem = 0;
+		__int64 tmp;
+		for (unsigned int xj = 0; xj < ValueCount; xj++)
+		{
+			tmp = pValues[xj].Currency;
+			Sum += tmp / ValueCount;
+			Rem += tmp % ValueCount;
+		}
+		Sum += Rem / ValueCount;
+		Rem = Rem % ValueCount;
+		Result.QuadPart = Sum + Rem / ValueCount;
+		Return(Result);
 	}
+
+	delete[] pValues;
 }
 catch(int nErrorNo)
 {
+	if (pValues)
+		delete[] pValues;
 	RaiseError(nErrorNo);
 }
 }
@@ -228,7 +261,7 @@ try
 	unsigned int Rows, Dims, TargetDim, StartDim, StopDim;
 	char Type = '0';
 
-	if (PCOUNT() == 1)
+	if (PCount() == 1)
         TargetDim = 1;
 	else if (p2.ev_long < 0)
 		throw E_INVALIDPARAMS;
@@ -323,7 +356,7 @@ try
 	unsigned int Rows, Dims, TargetDim, StartDim, StopDim;
 	char Type = '0';
 
-	if (PCOUNT() == 1)
+	if (PCount() == 1)
         TargetDim = 1;
 	else if (p2.ev_long < 0)
 		throw E_INVALIDPARAMS;

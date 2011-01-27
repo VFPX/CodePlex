@@ -59,7 +59,7 @@ typedef HANDLE (_stdcall *PICMPCREATEFILE)(void); // IcmpCreateFile
 typedef BOOL (_stdcall *PICMPCLOSEHANDLE)(HANDLE); // IcmpCloseHandle
 typedef DWORD (_stdcall *PICMPSENDECHO)(HANDLE, long, LPVOID, WORD, PIPINFO, LPVOID, DWORD, DWORD);
 
-#define MAC_ADDRESS_LEN		17 // FF:00:FF:00:FF:00
+const int MAC_ADDRESS_LEN	= 17; // FF:00:FF:00:FF:00
 
 bool _stdcall VFP2C_Init_IpHelper();
 void _stdcall VFP2C_Destroy_IpHelper();
