@@ -12,7 +12,7 @@ void _fastcall AFontInfo(ParamBlk *parm)
 {
 try
 {
-	RESETWIN32ERRORS();
+	ResetWin32Errors();
 
 	FoxString pFileName(p1);
 	FoxObject pFontInfo;
@@ -21,11 +21,11 @@ try
 	LANGID dwLanguage;
 	USHORT dwPlatform;
 
-	if (PCOUNT() < 2 || Vartype(p2) == '0')
+	if (PCount() < 2 || Vartype(p2) == '0')
 		dwLanguage = GetSystemDefaultLangID();
 
-	if (PCOUNT() < 3 || Vartype(p3) == '0')
-		dwPlatform = 3; // default to Windows platform
+	if (PCount() < 3 || Vartype(p3) == '0')
+		dwPlatform = PLATFORMID_WINDOWS; // default to Windows platform
 
 	BOOL bApiRet;
 	DWORD dwRetVal, dwRead;
@@ -34,7 +34,7 @@ try
 	hFile = CreateFile(pFileName, GENERIC_READ, FILE_SHARE_READ, 0, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, 0);
 	if (!hFile)
 	{
-		SAVEWIN32ERROR(CreateFile,GetLastError());
+		SaveWin32Error("CreateFile", GetLastError());
 		throw E_APIERROR;
 	}
 
@@ -42,7 +42,7 @@ try
 	bApiRet = ReadFile(hFile, &ttOffsetTable, sizeof(TT_TABLE_OFFSET), &dwRead, 0);
 	if (!bApiRet)
 	{
-		SAVEWIN32ERROR(ReadFile,GetLastError());
+		SaveWin32Error("ReadFile", GetLastError());
 		throw E_APIERROR;
 	}
 
@@ -66,7 +66,7 @@ try
 	bApiRet = ReadFile(hFile, pTableBuffer, pTableBuffer.Size(), &dwRead, 0);
 	if (!bApiRet)
 	{
-		SAVEWIN32ERROR(ReadFile,GetLastError());
+		SaveWin32Error("ReadFile", GetLastError());
 		throw E_APIERROR;
 	}
 
@@ -99,7 +99,7 @@ try
         dwRetVal = SetFilePointer(hFile, OffsetOS2, 0, FILE_BEGIN);
         if (dwRetVal == INVALID_SET_FILE_POINTER && GetLastError() != NO_ERROR)
 		{
-			SAVEWIN32ERROR(SetFilePointer,GetLastError());
+			SaveWin32Error("SetFilePointer", GetLastError());
 			throw E_APIERROR;
 		}
 
@@ -107,7 +107,7 @@ try
 		bApiRet = ReadFile(hFile, &ttOS2, sizeof(TT_OS2_TABLE), &dwRead, 0);
 		if (!bApiRet)
 		{
-			SAVEWIN32ERROR(ReadFile,GetLastError());
+			SaveWin32Error("ReadFile", GetLastError());
 			throw E_APIERROR;
 		}
 
@@ -136,7 +136,7 @@ try
 		dwRetVal = SetFilePointer(hFile, OffsetName, 0, FILE_BEGIN);
         if (dwRetVal == INVALID_SET_FILE_POINTER && GetLastError() != NO_ERROR)
 		{
-			SAVEWIN32ERROR(SetFilePointer,GetLastError());
+			SaveWin32Error("SetFilePointer", GetLastError());
 			throw E_APIERROR;
 		}
 
@@ -144,7 +144,7 @@ try
 		bApiRet = ReadFile(hFile, &ttNTHeader, sizeof(TT_NAME_HEADER_TABLE), &dwRead, 0);
 		if (!bApiRet)
 		{
-			SAVEWIN32ERROR(ReadFile,GetLastError());
+			SaveWin32Error("ReadFile", GetLastError());
 			throw E_APIERROR;
 		}
 
@@ -158,7 +158,7 @@ try
 		bApiRet = ReadFile(hFile, pRecordBuffer, pRecordBuffer.Size(), &dwRead, 0);
 		if (!bApiRet)
 		{
-			SAVEWIN32ERROR(ReadFile,GetLastError());
+			SaveWin32Error("ReadFile", GetLastError());
 			throw E_APIERROR;
 		}
 
@@ -192,14 +192,14 @@ try
 				dwRetVal = SetFilePointer(hFile, OffsetName + pName->uStringOffset + ttNTHeader.uStorageOffset, 0, FILE_BEGIN);
 				if (dwRetVal == INVALID_SET_FILE_POINTER && GetLastError() != NO_ERROR)
 				{
-					SAVEWIN32ERROR(SetFilePointer,GetLastError());
+					SaveWin32Error("SetFilePointer", GetLastError());
 					throw E_APIERROR;
 				}
 
 				bApiRet = ReadFile(hFile, pNameRecordBuffer, pNameRecordBuffer.Size(), &dwRead, 0);
 				if (!bApiRet)
 				{
-					SAVEWIN32ERROR(ReadFile,GetLastError());
+					SaveWin32Error("ReadFile", GetLastError());
 					throw E_APIERROR;
 				}
 
@@ -224,7 +224,7 @@ try
 		dwRetVal = SetFilePointer(hFile, OffsetHead, 0, FILE_BEGIN);
         if (dwRetVal == INVALID_SET_FILE_POINTER && GetLastError() != NO_ERROR)
 		{
-			SAVEWIN32ERROR(SetFilePointer,GetLastError());
+			SaveWin32Error("SetFilePointer", GetLastError());
 			throw E_APIERROR;
 		}
 
@@ -232,7 +232,7 @@ try
 		bApiRet = ReadFile(hFile, &ttHead, sizeof(TT_HEAD_TABLE), &dwRead, 0);
 		if (!bApiRet)
 		{
-			SAVEWIN32ERROR(ReadFile,GetLastError());
+			SaveWin32Error("ReadFile", GetLastError());
 			throw E_APIERROR;
 		}
 
@@ -246,7 +246,7 @@ try
 		dwRetVal = SetFilePointer(hFile, OffsetPost, 0, FILE_BEGIN);
         if (dwRetVal == INVALID_SET_FILE_POINTER && GetLastError() != NO_ERROR)
 		{
-			SAVEWIN32ERROR(SetFilePointer,GetLastError());
+			SaveWin32Error("SetFilePointer", GetLastError());
 			throw E_APIERROR;
 		}
 
@@ -254,7 +254,7 @@ try
 		bApiRet = ReadFile(hFile, &ttPost, sizeof(TT_POST_TABLE), &dwRead, 0);
 		if (!bApiRet)
 		{
-			SAVEWIN32ERROR(ReadFile,GetLastError());
+			SaveWin32Error("ReadFile", GetLastError());
 			throw E_APIERROR;
 		}
 

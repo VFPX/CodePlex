@@ -2,8 +2,8 @@
 
 #include "pro_ext.h"
 #include "vfp2c32.h"
-#include "vfp2cutil.h"
 #include "vfp2cwindows.h"
+#include "vfp2chelpers.h"
 #include "vfpmacros.h"
 #include "vfp2ccppapi.h"
 
@@ -24,7 +24,7 @@ bool _stdcall VFP2C_Init_Windows()
 	}
 	else
 	{
-		ADDWIN32ERROR(GetModuleHandle,GetLastError());
+		AddWin32Error("GetModuleHandle", GetLastError());
 		return false;
 	}
 	return true;
@@ -34,10 +34,10 @@ void _fastcall GetWindowTextEx(ParamBlk *parm)
 {
 try
 {
-	RESETWIN32ERRORS();
+	ResetWin32Errors();
 
 	FoxString pRetVal;
-	HWND hHwnd = (HWND)p1.ev_long;
+	HWND hHwnd = reinterpret_cast<HWND>(p1.ev_long);
 	DWORD nLen, nApiRet, nLastError;
 
 	nApiRet = SendMessageTimeout(hHwnd,WM_GETTEXTLENGTH,0,0,SMTO_BLOCK,1000,&nLen);
@@ -49,7 +49,7 @@ try
 			pRetVal.Return();
 			return;
 		}
-		SAVEWIN32ERROR(SendMessageTimeout,nLastError);
+		SaveWin32Error("SendMessageTimeout",nLastError);
 		throw E_APIERROR;
 	}
 
@@ -61,7 +61,7 @@ try
 		nLastError = GetLastError();
 		if (nLastError != NO_ERROR)
 		{
-			SAVEWIN32ERROR(SendMessageTimeout,nLastError);
+			SaveWin32Error("SendMessageTimeout",nLastError);
 			throw E_APIERROR;
 		}
 	}
@@ -82,7 +82,7 @@ try
 
 	if (!GetWindowRect(reinterpret_cast<HWND>(p1.ev_long), &sRect))
 	{
-		SAVEWIN32ERROR(GetWindowRect,GetLastError());
+		SaveWin32Error("GetWindowRect",GetLastError());
 		throw E_APIERROR;
 	}
 
@@ -90,8 +90,6 @@ try
 	pCoords(2) = sRect.right;
 	pCoords(3) = sRect.top;
 	pCoords(4) = sRect.bottom;
-
-	Return(1);
 }
 catch(int nErrorNo)
 {
@@ -110,13 +108,13 @@ try
 	int nMonitors, nX, nY;
 
 	hSource = reinterpret_cast<HWND>(p1.ev_long);
-	hParent = PCOUNT() == 2 ? reinterpret_cast<HWND>(p2.ev_long) : 0;
+	hParent = PCount() == 2 ? reinterpret_cast<HWND>(p2.ev_long) : 0;
 
 	if (hParent)
 	{
 		if (!GetWindowRect(hParent, &sParentRect))
 		{
-			SAVEWIN32ERROR(GetWindowRect,GetLastError());
+			SaveWin32Error("GetWindowRect",GetLastError());
 			throw E_APIERROR;
 		}
 	}
@@ -127,7 +125,7 @@ try
 		{
 			if (!GetWindowRect(hParent, &sParentRect))
 			{
-				SAVEWIN32ERROR(GetWindowRect,GetLastError());
+				SaveWin32Error("GetWindowRect",GetLastError());
 				throw E_APIERROR;
 			}
 		}
@@ -138,7 +136,7 @@ try
 			{
 				if (!SystemParametersInfo(SPI_GETWORKAREA,0,reinterpret_cast<void*>(&sParentRect),0))
 				{
-					SAVEWIN32ERROR(SystemParametersInfo,GetLastError());
+					SaveWin32Error("SystemParametersInfo",GetLastError());
 					throw E_APIERROR;
 				}
 			}
@@ -152,10 +150,10 @@ try
 				
 				if (!fpGetMonitorInfo(hMon, &sMonInfo))
 				{
-					if (IS_WINNT() || IS_WIN2KXP())
-						SAVEWIN32ERROR(GetMonitorInfo,GetLastError());
+					if (COs::Is(Windows9x))
+						SaveCustomError("GetMonitorInfo","Function failed.");
 					else
-						SAVECUSTOMERROR("GetMonitorInfo","Function failed.");
+						SaveWin32Error("GetMonitorInfo", GetLastError());						
 					throw E_APIERROR;
 				}
 				
@@ -169,7 +167,7 @@ try
 
 	if (!GetWindowRect(hSource, &sSourceRect))
 	{
-		SAVEWIN32ERROR(GetWindowRect,GetLastError());
+		SaveWin32Error("GetWindowRect",GetLastError());
 		throw E_APIERROR;
 	}
 
@@ -178,7 +176,7 @@ try
 
 	if (!SetWindowPos(hSource,0,nX,nY,0,0,SWP_NOSIZE|SWP_NOZORDER|SWP_NOACTIVATE))
 	{
-		SAVEWIN32ERROR(SetWindowPos,GetLastError());
+		SaveWin32Error("SetWindowPos",GetLastError());
 		throw E_APIERROR;
 	}
 }
@@ -197,7 +195,7 @@ try
 	
 	if (!SystemParametersInfo(SPI_GETWORKAREA,0,(PVOID)&sRect,0))
 	{
-		SAVEWIN32ERROR(SystemParametersInfo,GetLastError());
+		SaveWin32Error("SystemParametersInfo",GetLastError());
 		throw E_APIERROR;
 	}
 
@@ -205,8 +203,6 @@ try
 	pCoords(2) = sRect.right;
 	pCoords(3) = sRect.top;
 	pCoords(4) = sRect.bottom;
-	
-	Return(1);
 }
 catch (int nErrorNo)
 {
@@ -224,7 +220,7 @@ void _fastcall ColorOfPoint(ParamBlk *parm)
 	sPoint.x = p1.ev_long;
 	sPoint.y = p2.ev_long;
 
-	if (PCOUNT() == 2)
+	if (PCount() == 2)
 		hWindow = 0;
 	else
 		hWindow = reinterpret_cast<HWND>(p3.ev_long);
@@ -237,4 +233,107 @@ void _fastcall ColorOfPoint(ParamBlk *parm)
 			ReleaseDC(hWindow,hContext);
 	}
 	Return(nColor);
+}
+
+void _fastcall MessageBoxExLib(ParamBlk *parm)
+{
+try
+{
+	FoxString pText(p1);
+	FoxString pCaption(parm, 3);
+	FoxString pIcon(parm, 5);
+
+	MSGBOXPARAMS sParms = {0};
+	sParms.cbSize = sizeof(MSGBOXPARAMS);
+	sParms.lpszText = pText;
+	sParms.dwStyle = PCount() >= 2 ? p2.ev_long : 0;
+
+	if (PCount() >= 3)
+	{
+		if (Vartype(p3) == 'C')
+			sParms.lpszCaption = pCaption;
+		else if (Vartype(p3) != '0')
+			throw E_INVALIDPARAMS;
+	}
+
+	if (PCount() >= 4)
+	{
+		if (Vartype(p4) == 'I')
+			sParms.hwndOwner = reinterpret_cast<HWND>(p4.ev_long);
+		else if (Vartype(p4) == 'N')
+			sParms.hwndOwner = reinterpret_cast<HWND>(static_cast<DWORD>(p4.ev_real));
+		else if (Vartype(p4) == '0')
+			sParms.hwndOwner = WTopHwnd();
+		else
+			throw E_INVALIDPARAMS;
+	}
+	else
+		sParms.hwndOwner = WTopHwnd();
+
+
+	if (PCount() >= 5)
+	{
+		DWORD dwStyleAdd = MB_USERICON;
+		DWORD dwStyleRemove = MB_ICONSTOP | MB_ICONQUESTION | MB_ICONEXCLAMATION | MB_ICONINFORMATION;
+
+		if (Vartype(p5) == 'I')
+			sParms.lpszIcon = MAKEINTRESOURCE(p5.ev_long);
+		else if (Vartype(p5) == 'N')
+			sParms.lpszIcon = MAKEINTRESOURCE(static_cast<DWORD>(p5.ev_real));
+		else if (Vartype(p5) == 'C')
+			sParms.lpszIcon = pIcon;
+		else if (Vartype(p5) == '0')
+		{
+			dwStyleAdd = 0;
+			dwStyleRemove = 0;
+		}
+		else
+			throw E_INVALIDPARAMS;
+
+		sParms.dwStyle |= dwStyleAdd;
+		sParms.dwStyle &= ~dwStyleRemove;
+	}
+
+	if (PCount() >= 6)
+	{	
+		if (Vartype(p6) == 'I')
+			sParms.hInstance = reinterpret_cast<HINSTANCE>(p6.ev_long);
+		else if (Vartype(p6) == 'N')
+			sParms.hInstance = reinterpret_cast<HINSTANCE>(static_cast<DWORD>(p6.ev_long));
+		else if (Vartype(p6) == '0')
+		{
+			if (sParms.dwStyle & MB_USERICON)
+				sParms.hInstance = GetModuleHandle(NULL);
+		}
+		else
+			throw E_INVALIDPARAMS;
+	}
+	else if (sParms.dwStyle & MB_USERICON)
+		sParms.hInstance = GetModuleHandle(NULL);
+
+	if (PCount() >= 7)
+	{
+		if (Vartype(p7) == 'I')
+			sParms.dwContextHelpId = p7.ev_long;
+		else if (Vartype(p7) == 'N')
+			sParms.dwContextHelpId = static_cast<DWORD>(p7.ev_long);
+		else if (Vartype(p7) != '0')
+			throw E_INVALIDPARAMS;
+	}
+
+	if (PCount() == 8)
+		sParms.dwLanguageId = p8.ev_long;
+	else
+		sParms.dwLanguageId = GetUserDefaultUILanguage();
+
+	int nResult = MessageBoxIndirect(&sParms);
+	if (nResult == 0)
+		throw E_INSUFMEMORY;
+
+	Return(nResult);
+}
+catch (int nErrorNo)
+{
+	RaiseError(nErrorNo);
+}
 }

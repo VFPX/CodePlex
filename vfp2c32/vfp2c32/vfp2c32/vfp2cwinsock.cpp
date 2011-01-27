@@ -46,7 +46,7 @@ bool _stdcall VFP2C_Init_Winsock()
  	nError = WSAStartup(wWinsockVer,&wsaData);
 	if (nError != ERROR_SUCCESS)
 	{
-		ADDWIN32ERROR(WSAStartup,nError);
+		AddWin32Error("WSAStartup", nError);
 		return false;
 	}
 	gbWinsockInited = true;
@@ -74,14 +74,14 @@ try
 	nApiRet = gethostname(aHostname,MAX_PATH);
 	if (nApiRet == SOCKET_ERROR)
 	{
-		SAVEWINSOCKERROR(gethostname);
+		SaveWinsockError("gethostname");
 		throw E_APIERROR;
 	}
 
 	lpHost = gethostbyname(aHostname);
 	if (!lpHost)
 	{
-		SAVEWINSOCKERROR(gethostbyname);
+		SaveWinsockError("gethostbyname");
 		throw E_APIERROR;
 	}
 
@@ -96,12 +96,10 @@ try
 	}
 
 	pArray.Dimension(nCount);
-
-	unsigned int nRow = 1;
 	for (unsigned int xj = 0; xj < nCount; xj++)
 	{
 		memcpy(&sInetAdr,lpHost->h_addr_list[xj],sizeof(int)); 
-		pArray(nRow++) = pIp = inet_ntoa(sInetAdr);
+		pArray(xj+1) = pIp = inet_ntoa(sInetAdr);
 	}
 
 	pArray.ReturnRows();
@@ -126,15 +124,15 @@ try
 	// host not found?
 	if (!lpHost)
 	{
-		SAVEWINSOCKERROR(gethostbyname);
-		if (PCOUNT() == 1)
+		SaveWinsockError("gethostbyname");
+		if (PCount() == 1)
 			Return("");
 		else
 			Return(0);
 		return;
 	}
 
-	if (PCOUNT() == 1)
+	if (PCount() == 1)
 	{
 		memcpy(&sInetAdr,lpHost->h_addr_list[0],4); 
 		pBuffer = inet_ntoa(sInetAdr);

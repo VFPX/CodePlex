@@ -1,9 +1,7 @@
 #ifndef _VFP2CTIME_H__
 #define _VFP2CTIME_H__
 
-#define VFP2C_MAX_TIMEZONE_NAME	512
-#define TIMEZONE_REG_KEY "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Time Zones"
-#define TIMEZONE_REG_KEY_EX "SYSTEM\\CurrentControlSet\\Control\\TimeZoneInformation"
+const int VFP2C_MAX_TIMEZONE_NAME	= 512;
 
 typedef struct _REG_TIMEZONE_INFORMATION
 {
@@ -28,8 +26,8 @@ void _fastcall DT2Timet(ParamBlk *parm);
 void _fastcall Timet2DT(ParamBlk *parm);
 void _fastcall DT2Double(ParamBlk *parm);
 void _fastcall Double2DT(ParamBlk *parm);
-void _fastcall SetSystemTimeEx(ParamBlk *parm);
-void _fastcall GetSystemTimeEx(ParamBlk *parm);
+void _fastcall SetSystemTimeLib(ParamBlk *parm);
+void _fastcall GetSystemTimeLib(ParamBlk *parm);
 void _fastcall ATimeZones(ParamBlk *parm);
 
 #ifdef __cplusplus

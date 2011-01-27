@@ -2,9 +2,9 @@
 
 && BindEventsEx/UnBindEventsEx
 && prerequisites: InitVFP2C32 must have been called with the VFP2C_INIT_CALLBACK flag set
+CD (FULLPATH(JUSTPATH(SYS(16))))
 
 SET PROCEDURE TO windowevents ADDITIVE
-SET PROCEDURE TO structs ADDITIVE
 SET LIBRARY TO vfp2c32.fll ADDITIVE
 
 INITVFP2C32(VFP2C_INIT_CALLBACK)

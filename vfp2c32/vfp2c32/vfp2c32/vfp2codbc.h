@@ -4,71 +4,65 @@
 #include <odbcinst.h>
 #include <sqlext.h>
 #include <odbcss.h> // MS-SQL Server specific include file
+#include "vfp2ccppapi.h"
 
 // odbc datasource enumeration
-#define ODBC_USER_DSN 1
-#define ODBC_SYSTEM_DSN 2
-#define ODBC_MAX_DESCRIPTION_LEN 512
-#define ODBC_MAX_DRIVER_LEN 512
-#define ODBC_MAX_ATTRIBUTES_LEN 2048
+const int ODBC_MAX_DESCRIPTION_LEN	= 512;
+const int ODBC_MAX_DRIVER_LEN		= 512;
+const int ODBC_MAX_ATTRIBUTES_LEN	= 2048;
 
-#define SQL_MAX_DSN_LENGTH_EX SQL_MAX_DSN_LENGTH+5	// +5 to prepend 'DSN=' (1 for null terminator)
+const int SQL_MAX_DSN_LENGTH_EX		= SQL_MAX_DSN_LENGTH + 5; // +5 to prepend 'DSN=' (+1 for null terminator)
 
-#define SAVEODBCENVERROR(cFunc) ODBCErrorHandler(#cFunc,hODBCEnvHandle,SQL_HANDLE_ENV)
-#define SAVEODBCDBCERROR(cFunc,hHandle) ODBCErrorHandler(#cFunc,hHandle,SQL_HANDLE_DBC)
-#define SAVEODBCSTMTERROR(cFunc,hHandle) ODBCErrorHandler(#cFunc,hHandle,SQL_HANDLE_STMT)
-#define SAVEODBCINSTALLERERROR(cFunc) ODBCInstallerErrorHandler(#cFunc)
+// constants for SQLExecEx
+const int VFP2C_ODBC_MAX_BUFFER				= 8192;
+const int VFP2C_ODBC_MAX_PARAMETER_EXPR		= 256;
+const int VFP2C_ODBC_MAX_PARAMETER_NAME		= 128;
+const int VFP2C_ODBC_MAX_SCHEMA_NAME		= 256;
+const int VFP2C_ODBC_MAX_COLUMN_NAME		= 256;
+const int VFP2C_ODBC_MAX_TABLE_NAME			= 256;
+const int VFP2C_ODBC_MAX_FIELD_NAME			= VFP2C_ODBC_MAX_SCHEMA_NAME + 1 + VFP2C_ODBC_MAX_TABLE_NAME + 1 + VFP2C_ODBC_MAX_COLUMN_NAME;
+const int VFP2C_ODBC_MAX_CHAR_LEN			= 255;
+const int VFP2C_ODBC_MAX_VARCHAR			= 8000;
+const int VFP2C_ODBC_DEFAULT_BUFFER			= 256;
+const int VFP2C_ODBC_MAX_SQLTYPE			= 32;
+const int VFP2C_ODBC_MAX_BIGINT_LITERAL		= 20;
+const int VFP2C_ODBC_MAX_CURRENCY_LITERAL	= 22;
+const int VFP2C_ODBC_MAX_GUID_LITERAL		= 36;
+const int VFP2C_ODBC_MAX_SERVER_NAME		= 128;
 
-// custom defines for SQLExecEx
-#define VFP2C_ODBC_MAX_BUFFER			8192
-#define VFP2C_ODBC_MAX_PARAMETER_EXPR	256
-#define VFP2C_ODBC_MAX_PARAMETER_NAME	128
-#define VFP2C_ODBC_MAX_SCHEMA_NAME		256
-#define VFP2C_ODBC_MAX_COLUMN_NAME		256
-#define	VFP2C_ODBC_MAX_TABLE_NAME		256
-#define VFP2C_ODBC_MAX_FIELD_NAME		(VFP2C_ODBC_MAX_SCHEMA_NAME + 1 + VFP2C_ODBC_MAX_TABLE_NAME + 1 + VFP2C_ODBC_MAX_COLUMN_NAME)
-#define VFP2C_ODBC_MAX_CHAR_LEN			255
-#define VFP2C_ODBC_MAX_VARCHAR			8000
-#define VFP2C_ODBC_DEFAULT_BUFFER		256
-#define VFP2C_ODBC_MAX_SQLTYPE			32
-#define VFP2C_ODBC_MAX_BIGINT_LITERAL	20
-#define VFP2C_ODBC_MAX_CURRENCY_LITERAL	22
-#define VFP2C_ODBC_MAX_GUID_LITERAL		36
-#define VFP2C_ODBC_MAX_SERVER_NAME		128
-
-#define VFP2C_VFP_DOUBLE_PRECISION		18
-#define VFP2C_VFP_CURRENCY_PRECISION	19
-#define VFP2C_VFP_CURRENCY_SCALE		4
+const int VFP2C_VFP_DOUBLE_PRECISION	= 18;
+const int VFP2C_VFP_CURRENCY_PRECISION	= 19;
+const int VFP2C_VFP_CURRENCY_SCALE		= 4;
 
 // flags for SQLExecEx
-#define SQLEXECEX_DEST_CURSOR			0x00000001
-#define SQLEXECEX_DEST_VARIABLE			0x00000002
-#define SQLEXECEX_REUSE_CURSOR			0x00000004
-#define SQLEXECEX_NATIVE_SQL			0x00000008
-#define SQLEXECEX_CALLBACK_PROGRESS		0x00000010
-#define SQLEXECEX_CALLBACK_INFO			0x00000020
-#define SQLEXECEX_STORE_INFO			0x00000040
+const unsigned int SQLEXECEX_DEST_CURSOR		= 0x00000001;
+const unsigned int SQLEXECEX_DEST_VARIABLE		= 0x00000002;
+const unsigned int SQLEXECEX_REUSE_CURSOR		= 0x00000004;
+const unsigned int SQLEXECEX_NATIVE_SQL			= 0x00000008;
+const unsigned int SQLEXECEX_CALLBACK_PROGRESS	= 0x00000010;
+const unsigned int SQLEXECEX_CALLBACK_INFO		= 0x00000020;
+const unsigned int SQLEXECEX_STORE_INFO			= 0x00000040;
 
 // defines for TableUpdateEx
-#define	VFP2C_ODBC_MAX_SQLSTATEMENT		16384
+const int VFP2C_ODBC_MAX_SQLSTATEMENT	= 16384;
 
 // flags for TableUpdateEx
-#define TABLEUPDATEEX_CURRENT_ROW		0x00000001
-#define TABLEUPDATEEX_ALL_ROWS			0x00000002
-#define TABLEUPDATEEX_KEY_ONLY			0x00000004
-#define TABLEUPDATEEX_KEY_AND_MODIFIED	0x00000008
+const int TABLEUPDATEEX_CURRENT_ROW			= 0x00000001;
+const int TABLEUPDATEEX_ALL_ROWS			= 0x00000002;
+const int TABLEUPDATEEX_KEY_ONLY			= 0x00000004;
+const int TABLEUPDATEEX_KEY_AND_MODIFIED	= 0x00000008;
 
-#define VFP_FLDSTATE_CHANGED			1
-#define VFP_FLDSTATE_DELETED			2
-#define VFP_FLDSTATE_APPENDED			3
+const int VFP_FLDSTATE_CHANGED	= 1;
+const int VFP_FLDSTATE_DELETED	= 2;
+const int VFP_FLDSTATE_APPENDED	= 3;
 
 // function typedef for indirect funtion call's in SQLCOLUMNDATA
 typedef int (_stdcall *LPSQLSTOREFUNC)(struct _SQLCOLUMNDATA*);
 
 // holds data for each column in a SQL resultset
 typedef struct _SQLCOLUMNDATA {
-	Value vData;
-	Value vNull;
+	ValueEx vData;
+	ValueEx vNull;
 	Locator lField;
 	SQLHSTMT hStmt;
 	SQLPOINTER pData;
@@ -100,7 +94,7 @@ typedef struct _SQLPARAMDATA {
 	char aParmExpr[VFP2C_ODBC_MAX_PARAMETER_EXPR]; // buffer into which the parameter expression is stored
 	char aParmName[VFP2C_ODBC_MAX_PARAMETER_NAME]; // name of parameter, if it's a named parameter
 	Locator lVarOrField;		// for output parameters on can only pass variables or fieldnames of course, this will hold the Locator referencing the variable/field
-	Value vParmValue;			// Value structure into which the parameter is stored
+	ValueEx vParmValue;			// Value structure into which the parameter is stored
 	SQLPOINTER pParmData;		// pointer to the data of the parameter
 	SQLUSMALLINT nParmNo;		// number of parameter (1 based)
 	SQLUINTEGER nSize;			// size of parameter
@@ -153,8 +147,11 @@ extern "C" {
 #endif
 
 // function forward definitions
-void _stdcall ODBCErrorHandler(char *pFunction, SQLHANDLE hHandle, SQLSMALLINT nHandleType);
+void _stdcall SaveODBCError(char *pFunction, SQLHANDLE hHandle, SQLSMALLINT nHandleType);
 void _stdcall ODBCInstallerErrorHandler(char *pFunction);
+
+inline void SafeODBCDbcError(char *pFunction, SQLHANDLE hHandle) { SaveODBCError(pFunction, hHandle, SQL_HANDLE_DBC); }
+inline void SafeODBCStmtError(char *pFunction, SQLHANDLE hHandle) { SaveODBCError(pFunction, hHandle, SQL_HANDLE_STMT); }
 
 bool _stdcall VFP2C_Init_Odbc();
 

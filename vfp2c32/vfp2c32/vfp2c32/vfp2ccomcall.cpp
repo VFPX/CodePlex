@@ -44,7 +44,7 @@ void ComCall::SetCallInfo(LPOLESTR pClass, LPOLESTR pMethod, DWORD dwContext, LC
 	HRESULT hr = CLSIDFromProgID(pClass,&m_ClsId);
 	if (FAILED(hr))
 	{
-		SAVEWIN32ERROR(CLSIDFromProgID,hr);
+		SaveWin32Error("CLSIDFromProgID", hr);
 		throw E_APIERROR;
 	}
 }
@@ -63,7 +63,7 @@ void ComCall::SetResultInfo(IUnknown *pResObj, LPOLESTR pMethod)
 	HRESULT hr = CoMarshalInterThreadInterfaceInStream(IID_IDispatch,pResObj,&m_ResultObj);
 	if (FAILED(hr))
 	{
-		SAVEWIN32ERROR(CoMarshalInterThreadInterfaceInStream,hr);
+		SaveWin32Error("CoMarshalInterThreadInterfaceInStream", hr);
 		throw E_APIERROR;
 	}
 }
@@ -189,8 +189,7 @@ try
 		throw E_APIERROR;
 	}
 
-	hr = pDisp->Invoke(nID,IID_NULL,m_Locale,DISPATCH_METHOD,
-				&m_Parameters,&vReturnValue,&sException,&nArgError);
+	hr = pDisp->Invoke(nID, IID_NULL, m_Locale, DISPATCH_METHOD, &m_Parameters, &vReturnValue, &sException, &nArgError);
 
 	if (FAILED(hr))
 		throw E_APIERROR;
@@ -269,7 +268,7 @@ void ComCall::CallMethod(Value &vRetVal, ParamBlk *parm)
 	hr = m_Disp->GetIDsOfNames(IID_NULL,&m_Method,1,m_Locale,&nID);
 	if (FAILED(hr))
 	{
-		SAVEWIN32ERROR("IDispatch.GetIDsOfNames",hr);
+		SaveWin32Error("IDispatch.GetIDsOfNames",hr);
 		throw E_APIERROR;
 	}
 
@@ -280,8 +279,8 @@ void ComCall::CallMethod(Value &vRetVal, ParamBlk *parm)
 	{
 		FoxString pSource(sException.bstrSource);
 		FoxString pDesc(sException.bstrDescription);
-		unsigned int nError = sException.wCode ? sException.wCode : sException.scode;
-		SAVECUSTOMERROREX(pSource,pDesc,nError);
+		int nError = sException.wCode ? sException.wCode : sException.scode;
+		SaveCustomErrorEx(pSource, pDesc, nError);
 		throw E_APIERROR;
 	}
 
@@ -329,8 +328,7 @@ void _stdcall MarshalDate(VARIANT &pArg, Value &pValue)
 void _stdcall MarshalIDispatch(VARIANT &pArg, Value &pValue)
 {
 	IDispatch *pDisp;
-	Value vDispatch;
-	vDispatch.ev_type = '0';
+	Value vDispatch = {'0'};
 	FoxString pObject;
 	pObject.Attach(pValue,1);
 	if (pObject.Len() > VFP_MAX_VARIABLE_NAME)
@@ -349,8 +347,7 @@ void _stdcall MarshalIDispatchCrossThread(VARIANT &pArg, Value &pValue)
 	HRESULT hr;
 	IUnknown *pUnk;
 	LPSTREAM pStream = 0;
-	Value vUnknown;
-	vUnknown.ev_type = '0';
+	Value vUnknown = {'0'};
 	FoxString pObject;
 	pObject.Attach(pValue,1);
 	char aCommand[256];
@@ -362,7 +359,7 @@ void _stdcall MarshalIDispatchCrossThread(VARIANT &pArg, Value &pValue)
 	hr = CoMarshalInterThreadInterfaceInStream(IID_IDispatch,pUnk,&pStream);
 	if (FAILED(hr))
 	{
-		SAVEWIN32ERROR(CoMarshalInterThreadInterfaceInStream,hr);
+		SaveWin32Error("CoMarshalInterThreadInterfaceInStream", hr);
 		throw E_APIERROR;
 	}
 	pArg.vt = VT_STREAM;
@@ -452,13 +449,13 @@ void _stdcall MarshalVariantEx(VARIANT &pArg, Value &pValue, VARTYPE vType, int 
 				MarshalSafeArrayEmpty(pArg, vType, nBase);
 				break;
 			default:
-				SAVECUSTOMERROREX("(Async)Invoke","Invalid parameter type: %I", vType);
+				SaveCustomError("IDispatch_(Async)Invoke", "Invalid parameter type: %I", vType);
 				throw E_APIERROR;
 		}
 	}
 	/*	else if (bReference)
 	{
-		SAVECUSTOMERROR("AsyncInvoke","Cannot marshal reference parameters in an asyncronous call!");
+		SaveCustomError("AsyncInvoke","Cannot marshal reference parameters in an asyncronous call!");
 		throw E_APIERROR;
 	}*/
 	else
@@ -479,7 +476,7 @@ void _stdcall MarshalVariantEx(VARIANT &pArg, Value &pValue, VARTYPE vType, int 
 					pArg.iVal = (short)pValue.ev_long;
 				else
 				{
-					SAVECUSTOMERROREX("AsyncInvoke","Cannot convert from type %C to VT_I4",Vartype(pValue));
+					SaveCustomError("IDispatch_AsyncInvoke", "Cannot convert from type %C to VT_I4", Vartype(pValue));
 					throw E_APIERROR;
 				}
 				break;
@@ -491,7 +488,7 @@ void _stdcall MarshalVariantEx(VARIANT &pArg, Value &pValue, VARTYPE vType, int 
 					pArg.lVal = pValue.ev_long;
 				else
 				{
-					SAVECUSTOMERROREX("AsyncInvoke","Cannot convert from type %C to VT_I4",Vartype(pValue));
+					SaveCustomError("IDispatch_AsyncInvoke", "Cannot convert from type %C to VT_I4", Vartype(pValue));
 					throw E_APIERROR;
 				}
 				break;
@@ -503,7 +500,7 @@ void _stdcall MarshalVariantEx(VARIANT &pArg, Value &pValue, VARTYPE vType, int 
 					pArg.fltVal = static_cast<float>(pValue.ev_long);
 				else
 				{
-					SAVECUSTOMERROREX("AsyncInvoke","Cannot convert from type %C to VT_R4",Vartype(pValue));
+					SaveCustomError("IDispatch_AsyncInvoke", "Cannot convert from type %C to VT_R4", Vartype(pValue));
 					throw E_APIERROR;
 				}
 				break;
@@ -515,7 +512,7 @@ void _stdcall MarshalVariantEx(VARIANT &pArg, Value &pValue, VARTYPE vType, int 
 					pArg.dblVal = (double)pValue.ev_long;
                 else
 				{
-					SAVECUSTOMERROREX("AsyncInvoke","Cannot convert from type %C to VT_R8",Vartype(pValue));
+					SaveCustomError("IDispatch_AsyncInvoke", "Cannot convert from type %C to VT_R8", Vartype(pValue));
 					throw E_APIERROR;
 				}
 				break;
@@ -540,22 +537,22 @@ void _stdcall MarshalVariantEx(VARIANT &pArg, Value &pValue, VARTYPE vType, int 
 				pArg.boolVal = pValue.ev_length ? VARIANT_TRUE : VARIANT_FALSE;
 				break;
 			case VT_VARIANT:
-				MarshalVariant(pArg,pValue,pArg.vt);
+				MarshalVariant(pArg, pValue, pArg.vt);
 				break;
 			case VT_UNKNOWN:
-				SAVECUSTOMERROR("AsyncInvoke","Parameter type VT_UNKNOWN not supported!");
+				SaveCustomError("IDispatch_AsyncInvoke", "Parameter type VT_UNKNOWN not supported!");
 				throw E_APIERROR;
 			case VT_DECIMAL:
 				MarshalDecimal(pArg,pValue);
 				break;
 			case VT_I1:
-				SAVECUSTOMERROR("AsyncInvoke","Parameter type VT_I1 not supported!");
+				SaveCustomError("IDispatch_AsyncInvoke", "Parameter type VT_I1 not supported!");
 				throw E_APIERROR;
 			case VT_UI1:
-				SAVECUSTOMERROR("AsyncInvoke","Parameter type VT_UI1 not supported!");
+				SaveCustomError("IDispatch_AsyncInvoke", "Parameter type VT_UI1 not supported!");
 				throw E_APIERROR;
 			case VT_UI2:
-				SAVECUSTOMERROR("AsyncInvoke","Parameter type VT_UI2 not supported!");
+				SaveCustomError("IDispatch_AsyncInvoke", "Parameter type VT_UI2 not supported!");
 				throw E_APIERROR;
 			case VT_UI4:
 				pArg.vt = VT_UI4;
@@ -565,7 +562,7 @@ void _stdcall MarshalVariantEx(VARIANT &pArg, Value &pValue, VARTYPE vType, int 
 					pArg.ulVal = static_cast<unsigned long>(pValue.ev_long);
 				else
 				{
-					SAVECUSTOMERROREX("AsyncInvoke","Cannot convert from type %C to VT_UI4",Vartype(pValue));
+					SaveCustomError("IDispatch_AsyncInvoke", "Cannot convert from type %C to VT_UI4", Vartype(pValue));
 					throw E_APIERROR;
 				}
 				break;
@@ -577,7 +574,7 @@ void _stdcall MarshalVariantEx(VARIANT &pArg, Value &pValue, VARTYPE vType, int 
 					pArg.intVal = pValue.ev_long;
 				else
 				{
-					SAVECUSTOMERROREX("AsyncInvoke","Cannot convert from type %C to VT_INT",Vartype(pValue));
+					SaveCustomError("IDispatch_AsyncInvoke", "Cannot convert from type %C to VT_INT", Vartype(pValue));
 					throw E_APIERROR;
 				}
 				break;
@@ -589,15 +586,15 @@ void _stdcall MarshalVariantEx(VARIANT &pArg, Value &pValue, VARTYPE vType, int 
 					pArg.uintVal = static_cast<unsigned int>(pValue.ev_long);
 				else
 				{
-					SAVECUSTOMERROREX("AsyncInvoke","Cannot convert from type %C to VT_UINT",Vartype(pValue));
+					SaveCustomError("IDispatch_AsyncInvoke", "Cannot convert from type %C to VT_UINT", Vartype(pValue));
 					throw E_APIERROR;
 				}
 				break;
 			case VT_RECORD:
-				SAVECUSTOMERROR("AsyncInvoke","Parameter type VT_RECORD not supported!");
+				SaveCustomError("IDispatch_AsyncInvoke", "Parameter type VT_RECORD not supported!");
 				throw E_APIERROR;
 			default:
-				SAVECUSTOMERROREX("AsyncInvoke","Invalid parameter type %I",vType);
+				SaveCustomError("IDispatch_AsyncInvoke", "Invalid parameter type %I", vType);
 				throw E_APIERROR;
 		}
 	}
@@ -616,7 +613,7 @@ void _stdcall MarshalDecimal(DECIMAL &pDec, Value &pValue)
 		HRESULT hr = VarDecFromR8(pValue.ev_real,&pDec);
 		if (FAILED(hr))
 		{
-			SAVEWIN32ERROR(VarDecFromR8,hr);
+			SaveWin32Error("VarDecFromR8", hr);
 			throw E_APIERROR;
 		}
 	}
@@ -633,13 +630,13 @@ void _stdcall MarshalDecimal(DECIMAL &pDec, Value &pValue)
 		HRESULT hr = VarDecFromI4(pValue.ev_long,&pDec);
 		if (FAILED(hr))
 		{
-			SAVEWIN32ERROR(VarDecFromI8,hr);
+			SaveWin32Error("VarDecFromI8", hr);
 			throw E_APIERROR;
 		}
 	}
 	else
 	{
-		SAVECUSTOMERROREX("AsyncInvoke","Cannot conver from type '%C' to VT_DECIMAL.",Vartype(pValue));
+		SaveCustomError("IDispatch_AsyncInvoke", "Cannot conver from type '%C' to VT_DECIMAL.", Vartype(pValue));
 		throw E_APIERROR;
 	}
 }
@@ -675,7 +672,7 @@ try
 	hr = SafeArrayAccessData(pArg.parray,(void**)&pOleElement);
 	if (FAILED(hr))
 	{
-		SAVEWIN32ERROR(SafeArrayAccessData,hr);
+		SaveWin32Error("SafeArrayAccessData", hr);
 		throw E_APIERROR;
 	}
 
@@ -702,7 +699,7 @@ try
 	hr = SafeArrayUnaccessData(pArg.parray);
 	if (FAILED(hr))
 	{
-		SAVEWIN32ERROR(SafeArrayUnaccessData,hr);
+		SaveWin32Error("SafeArrayUnaccessData", hr);
 		throw E_APIERROR;
 	}
 	
@@ -747,7 +744,7 @@ try
 	hr = SafeArrayAccessData(pArg.parray,(void**)&pOleElement);
 	if (FAILED(hr))
 	{
-		SAVEWIN32ERROR(SafeArrayAccessData,hr);
+		SaveWin32Error("SafeArrayAccessData", hr);
 		throw E_APIERROR;
 	}
 
@@ -761,7 +758,7 @@ try
 			else
 			{
 				SafeArrayUnaccessData(pArg.parray);
-				SAVECUSTOMERROR("AsyncInvoke","Datatype mismatch during array marshaling!");
+				SaveCustomError("AsyncInvoke","Datatype mismatch during array marshaling!");
 				throw E_APIERROR;
 			}
 			pOleElement++;
@@ -771,7 +768,7 @@ try
 	hr = SafeArrayUnaccessData(pArg.parray);
 	if (FAILED(hr))
 	{
-		SAVEWIN32ERROR(SafeArrayUnaccessData,hr);
+		SaveWin32Error("SafeArrayUnaccessData", hr);
 		throw E_APIERROR;
 	}
 	
@@ -816,7 +813,7 @@ try
 	hr = SafeArrayAccessData(pArg.parray,(void**)&pOleElement);
 	if (FAILED(hr))
 	{
-		SAVEWIN32ERROR(SafeArrayAccessData,hr);
+		SaveWin32Error("SafeArrayAccessData", hr);
 		throw E_APIERROR;
 	}
 
@@ -832,7 +829,7 @@ try
 			else
 			{
 				SafeArrayUnaccessData(pArg.parray);
-				SAVECUSTOMERROR("AsyncInvoke","Datatype mismatch during array marshaling!");
+				SaveCustomError("AsyncInvoke","Datatype mismatch during array marshaling!");
 				throw E_APIERROR;
 			}
 			pOleElement++;
@@ -842,7 +839,7 @@ try
 	hr = SafeArrayUnaccessData(pArg.parray);
 	if (FAILED(hr))
 	{
-		SAVEWIN32ERROR(SafeArrayUnaccessData,hr);
+		SaveWin32Error("SafeArrayUnaccessData", hr);
 		throw E_APIERROR;
 	}
 	
@@ -887,7 +884,7 @@ try
 	hr = SafeArrayAccessData(pArg.parray,(void**)&pOleElement);
 	if (FAILED(hr))
 	{
-		SAVEWIN32ERROR(SafeArrayAccessData,hr);
+		SaveWin32Error("SafeArrayAccessData", hr);
 		throw E_APIERROR;
 	}
 
@@ -903,7 +900,7 @@ try
 			else
 			{
 				SafeArrayUnaccessData(pArg.parray);
-				SAVECUSTOMERROR("AsyncInvoke","Datatype mismatch during array marshaling!");
+				SaveCustomError("AsyncInvoke","Datatype mismatch during array marshaling!");
 				throw E_APIERROR;
 			}
 			pOleElement++;
@@ -913,7 +910,7 @@ try
 	hr = SafeArrayUnaccessData(pArg.parray);
 	if (FAILED(hr))
 	{
-		SAVEWIN32ERROR(SafeArrayUnaccessData,hr);
+		SaveWin32Error("SafeArrayUnaccessData", hr);
 		throw E_APIERROR;
 	}
 	
@@ -958,7 +955,7 @@ try
 	hr = SafeArrayAccessData(pArg.parray,(void**)&pOleElement);
 	if (FAILED(hr))
 	{
-		SAVEWIN32ERROR(SafeArrayAccessData,hr);
+		SaveWin32Error("SafeArrayAccessData", hr);
 		throw E_APIERROR;
 	}
 
@@ -974,7 +971,7 @@ try
 			else
 			{
 				SafeArrayUnaccessData(pArg.parray);
-				SAVECUSTOMERROR("AsyncInvoke","Datatype mismatch during array marshaling!");
+				SaveCustomError("AsyncInvoke","Datatype mismatch during array marshaling!");
 				throw E_APIERROR;
 			}
 			pOleElement++;
@@ -984,7 +981,7 @@ try
 	hr = SafeArrayUnaccessData(pArg.parray);
 	if (FAILED(hr))
 	{
-		SAVEWIN32ERROR(SafeArrayUnaccessData,hr);
+		SaveWin32Error("SafeArrayUnaccessData", hr);
 		throw E_APIERROR;
 	}
 	
@@ -1029,7 +1026,7 @@ try
 	hr = SafeArrayAccessData(pArg.parray,(void**)&pOleElement);
 	if (FAILED(hr))
 	{
-		SAVEWIN32ERROR(SafeArrayAccessData,hr);
+		SaveWin32Error("SafeArrayAccessData", hr);
 		throw E_APIERROR;
 	}
 
@@ -1043,7 +1040,7 @@ try
 			else
 			{
 				SafeArrayUnaccessData(pArg.parray);
-				SAVECUSTOMERROR("AsyncInvoke","Datatype mismatch during array marshaling!");
+				SaveCustomError("AsyncInvoke","Datatype mismatch during array marshaling!");
 				throw E_APIERROR;
 			}
 			pOleElement++;
@@ -1053,7 +1050,7 @@ try
 	hr = SafeArrayUnaccessData(pArg.parray);
 	if (FAILED(hr))
 	{
-		SAVEWIN32ERROR(SafeArrayUnaccessData,hr);
+		SaveWin32Error("SafeArrayUnaccessData", hr);
 		throw E_APIERROR;
 	}
 	
@@ -1099,7 +1096,7 @@ try
 	hr = SafeArrayAccessData(pArg.parray,(void**)&pData);
 	if (FAILED(hr))
 	{
-		SAVEWIN32ERROR(SafeArrayAccessData,hr);
+		SaveWin32Error("SafeArrayAccessData", hr);
 		throw E_APIERROR;
 	}
 
@@ -1115,7 +1112,7 @@ try
 			else
 			{
 				SafeArrayUnaccessData(pArg.parray);
-				SAVECUSTOMERROR("AsyncInvoke","Datatype mismatch during array marshaling!");
+				SaveCustomError("AsyncInvoke","Datatype mismatch during array marshaling!");
 				throw E_APIERROR;
 			}
 			pData++;
@@ -1125,7 +1122,7 @@ try
 	hr = SafeArrayUnaccessData(pArg.parray);
 	if (FAILED(hr))
 	{
-		SAVEWIN32ERROR(SafeArrayUnaccessData,hr);
+		SaveWin32Error("SafeArrayUnaccessData", hr);
 		throw E_APIERROR;
 	}
 	
@@ -1221,7 +1218,7 @@ try
 	hr = SafeArrayAccessData(pArg.parray,(void**)&pData);
 	if (FAILED(hr))
 	{
-		SAVEWIN32ERROR(SafeArrayAccessData,hr);
+		SaveWin32Error("SafeArrayAccessData", hr);
 		throw E_APIERROR;
 	}
 
@@ -1235,7 +1232,7 @@ try
 			else
 			{
 				SafeArrayUnaccessData(pArg.parray);
-				SAVECUSTOMERROR("AsyncInvoke","Datatype mismatch during array marshaling!");
+				SaveCustomError("AsyncInvoke","Datatype mismatch during array marshaling!");
 				throw E_APIERROR;
 			}
 			pData++;
@@ -1245,7 +1242,7 @@ try
 	hr = SafeArrayUnaccessData(pArg.parray);
 	if (FAILED(hr))
 	{
-		SAVEWIN32ERROR(SafeArrayUnaccessData,hr);
+		SaveWin32Error("SafeArrayUnaccessData", hr);
 		throw E_APIERROR;
 	}
 	
@@ -1378,7 +1375,6 @@ void _stdcall UnMarshalVariant(VARIANT &vVar, Value &pVal)
 
 void _stdcall UnMarshalBSTR(VARIANT &vVar, Value &pVal)
 {
-	
 	FoxString pString((vVar.vt & VT_BYREF) > 0 ? *vVar.pbstrVal : vVar.bstrVal);
 	pString.Detach(pVal);
 }
@@ -1402,7 +1398,7 @@ void _stdcall UnMarshalIUnknown(VARIANT &vVar, Value &pVal)
 	hr = pUnk->QueryInterface(IID_IDispatch,(void**)&pDisp);
 	if (FAILED(hr))
 	{
-		SAVEWIN32ERROR("IUnknown.QueryInterface",hr);
+		SaveWin32Error("IUnknown.QueryInterface", hr);
 		throw E_APIERROR;
 	}
 

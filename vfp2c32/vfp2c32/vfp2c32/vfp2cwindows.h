@@ -15,6 +15,7 @@ void _fastcall GetWindowRectEx(ParamBlk *parm);
 void _fastcall CenterWindowEx(ParamBlk *parm);
 void _fastcall ADesktopArea(ParamBlk *parm);
 void _fastcall ColorOfPoint(ParamBlk *parm);
+void _fastcall MessageBoxExLib(ParamBlk *parm);
 
 #ifdef __cplusplus
 }

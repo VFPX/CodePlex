@@ -22,7 +22,7 @@ bool _stdcall VFP2C_Init_Print()
 	}
 	else
 	{
-		ADDWIN32ERROR(GetModuleHandle,GetLastError());
+		AddWin32Error("GetModuleHandle", GetLastError());
 		return false;
 	}
 
@@ -33,7 +33,7 @@ void _fastcall APrintersEx(ParamBlk *parm)
 {
 try
 {
- 	RESETWIN32ERRORS();
+ 	ResetWin32Errors();
 
  	FoxArray pArray(p1);
    	FoxString pName(parm,2);
@@ -47,15 +47,15 @@ try
 	LPPRINTER_INFO_4 pInfo4;
 	LPPRINTER_INFO_5 pInfo5;
 
-	DWORD dwFlags = PCOUNT() >= 3 && p3.ev_long ? p3.ev_long : PRINTER_ENUM_LOCAL;
-	DWORD dwLevel = PCOUNT() >= 4 && p4.ev_long ? p4.ev_long : 2;
-	DWORD dwDest = PCOUNT() >= 5 && p5.ev_long ? p5.ev_long : APRINT_DEST_ARRAY;
+	DWORD dwFlags = PCount() >= 3 && p3.ev_long ? p3.ev_long : PRINTER_ENUM_LOCAL;
+	DWORD dwLevel = PCount() >= 4 && p4.ev_long ? p4.ev_long : 2;
+	DWORD dwDest = PCount() >= 5 && p5.ev_long ? p5.ev_long : APRINT_DEST_ARRAY;
 	DWORD dwBytes, dwCount;
 
 	if (Vartype(p2) != '0' && Vartype(p2) != 'C')
 		throw E_INVALIDPARAMS;
 
-	if (IS_WIN9X())
+	if (COs::Is(Windows9x))
 	{
 		if (dwLevel != 1 && dwLevel != 2 && dwLevel != 5)
 			throw E_INVALIDPARAMS;
@@ -81,13 +81,13 @@ try
 			pBuffer.Size(dwBytes);
 			if (!EnumPrinters(dwFlags,pName,dwLevel,pBuffer,pBuffer.Size(),&dwBytes,&dwCount))
 			{
-				SAVEWIN32ERROR(EnumPrinters,nLastError);
+				SaveWin32Error("EnumPrinters", nLastError);
 				throw E_APIERROR;
 			}
 		}
 		else
 		{
-			SAVEWIN32ERROR(EnumPrinters,nLastError);
+			SaveWin32Error("EnumPrinters", nLastError);
 			throw E_APIERROR;
 		}
 	}
@@ -262,7 +262,7 @@ void _fastcall APrintJobs(ParamBlk *parm)
 {
 try
 {
-	RESETWIN32ERRORS();
+	ResetWin32Errors();
 
 	FoxArray pArray(p1);
 	FoxString pPrinter(p2);
@@ -275,8 +275,8 @@ try
 	LPJOB_INFO_1 pJobInfo;
 	LPJOB_INFO_2 pJobInfo2;
 
-	dwLevel = PCOUNT() >= 3 ? p3.ev_long : 1;
-	dwDest = PCOUNT() >= 4 ? p4.ev_long : APRINT_DEST_ARRAY;
+	dwLevel = PCount() >= 3 ? p3.ev_long : 1;
+	dwDest = PCount() >= 4 ? p4.ev_long : APRINT_DEST_ARRAY;
 
 	if (dwLevel != 1 && dwLevel != 2)
 		throw E_INVALIDPARAMS;
@@ -286,7 +286,7 @@ try
 
 	if(!OpenPrinter(pPrinter, hPrinter, NULL))
 	{
-		SAVEWIN32ERROR(OpenPrinter,GetLastError());
+		SaveWin32Error("OpenPrinter", GetLastError());
 		throw E_APIERROR;
 	}
 
@@ -296,7 +296,7 @@ try
 		DWORD nLastError = GetLastError();
 		if (nLastError != ERROR_INSUFFICIENT_BUFFER)
 		{
-			SAVEWIN32ERROR(EnumJobs,nLastError);
+			SaveWin32Error("EnumJobs", nLastError);
 			throw E_APIERROR;
 		}
 	}
@@ -311,7 +311,7 @@ try
 
 	if(!EnumJobs(hPrinter, 0, 0xFFFFFFFF, dwLevel, pBuffer, dwBytes, &dwBytes, &dwJobs))
 	{
-		SAVEWIN32ERROR(EnumJobs, GetLastError());
+		SaveWin32Error("EnumJobs", GetLastError());
 		throw E_APIERROR;
 	}
 
@@ -439,7 +439,7 @@ void _fastcall APrinterForms(ParamBlk *parm)
 {
 try
 {
-	RESETWIN32ERRORS();
+	ResetWin32Errors();
 
 	if (!fpEnumForms)
 		throw E_NOENTRYPOINT;
@@ -453,7 +453,7 @@ try
 
 	if(!OpenPrinter(pPrinter, hPrinter, 0))
 	{
-		SAVEWIN32ERROR(OpenPrinter,GetLastError());
+		SaveWin32Error("OpenPrinter", GetLastError());
 		throw E_APIERROR;
 	}
 
@@ -463,9 +463,21 @@ try
 		DWORD nLastError = GetLastError();
 		if (nLastError != ERROR_INSUFFICIENT_BUFFER)
 		{
-			SAVEWIN32ERROR(EnumForms,nLastError);
+			SaveWin32Error("EnumForms", nLastError);
 			throw E_APIERROR;
 		}
+	}
+	else
+	{
+		Return(0);
+		return;
+	}
+
+	CBuffer pBuffer(dwBytes);
+	if (!fpEnumForms(hPrinter, 1, pBuffer, dwBytes, &dwBytes, &dwForms))
+	{
+		SaveWin32Error("EnumForms", GetLastError());
+		throw E_APIERROR;
 	}
 
 	if (dwForms == 0)
@@ -474,14 +486,6 @@ try
 		return;
 	}
 
-	CBuffer pBuffer(dwBytes);
-
-	if (!fpEnumForms(hPrinter, 1, pBuffer, dwBytes, &dwBytes, &dwForms))
-	{
-		SAVEWIN32ERROR(EnumForms,GetLastError());
-		throw E_APIERROR;
-	}
-   
 	pArray.Dimension(dwForms,8);
 	pFormInfo = reinterpret_cast<PFORM_INFO_1>(pBuffer.Address());
 
@@ -510,12 +514,13 @@ void _fastcall APaperSizes(ParamBlk *parm)
 {
 try
 {
-	RESETWIN32ERRORS();
+	ResetWin32Errors();
 
 	FoxArray pArray(p1);
 	FoxString pPrinter(p2);
 	FoxString pPort(p3);
-	int nUnit = PCOUNT() == 4 ? p4.ev_long : PAPERSIZE_UNIT_MM;
+	FoxDouble pDouble(4);
+	int nUnit = PCount() == 4 ? p4.ev_long : PAPERSIZE_UNIT_MM;
 
 	if (nUnit < PAPERSIZE_UNIT_MM || nUnit > PAPERSIZE_UNIT_POINT)
 		throw E_INVALIDPARAMS;
@@ -556,12 +561,12 @@ try
 				pArray(xj,4) = pPapersize->y;
 				break;
 			case PAPERSIZE_UNIT_INCH:
-				pArray(xj,3) = pPapersize->x * INCH_PER_MM;
-				pArray(xj,4) = pPapersize->y * INCH_PER_MM;
+				pArray(xj,3) = pDouble = (pPapersize->x * INCH_PER_MM / 10);
+				pArray(xj,4) = pDouble = (pPapersize->y * INCH_PER_MM / 10);
 				break;
 			case PAPERSIZE_UNIT_POINT:
-				pArray(xj,3) = floor(pPapersize->x * POINTS_PER_MM + 0.49);
-				pArray(xj,4) = floor(pPapersize->y * POINTS_PER_MM + 0.49);
+				pArray(xj,3) = pDouble = (floor(pPapersize->x * POINTS_PER_MM + 0.49) / 10);
+				pArray(xj,4) = pDouble = (floor(pPapersize->y * POINTS_PER_MM + 0.49) / 10);
 				break;
 		}
 
@@ -594,10 +599,10 @@ try
 	nBins = DeviceCapabilities(pPrinter,pPort,DC_BINS,0,0);
 	if (nBins == -1)
 	{
-		if (IS_WIN9X())
-			SAVECUSTOMERROR("DeviceCapabilities","Function failed.");
+		if (COs::Is(Windows9x))
+			SaveCustomError("DeviceCapabilities","Function failed.");
 		else
-			SAVEWIN32ERROR(DeviceCapabilities,GetLastError());
+			SaveWin32Error("DeviceCapabilities", GetLastError());
 		throw E_APIERROR;
 	}
 	else if (nBins == 0)
@@ -612,16 +617,16 @@ try
 	if (DeviceCapabilities(pPrinter,pPort,DC_BINS,pBins,0) == -1 ||
 		DeviceCapabilities(pPrinter,pPort,DC_BINNAMES,pNames,0) == -1)
 	{
-		if (IS_WIN9X())
-			SAVECUSTOMERROR("DeviceCapabilities","Function failed.");
+		if (COs::Is(Windows9x))
+			SaveCustomError("DeviceCapabilities","Function failed.");
 		else
-			SAVEWIN32ERROR(DeviceCapabilities,GetLastError());
+			SaveWin32Error("DeviceCapabilities", GetLastError());
 		throw E_APIERROR;
 	}
 
 	pArray.Dimension(nBins,2);
 
-	pBinPtr = (LPWORD)pBins.Address();
+	pBinPtr = reinterpret_cast<LPWORD>(pBins.Address());
 	pBinNamesPtr = pNames;
 
 	for (unsigned int xj = 1; xj <= nBins; xj++)

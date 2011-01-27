@@ -20,7 +20,7 @@ bool _stdcall VFP2C_Init_Netapiex()
 		hDll = LoadLibrary("netapi32.dll");
 		if (!hDll)
 		{
-			ADDWIN32ERROR(LoadLibrary,GetLastError());
+			AddWin32Error("LoadLibrary", GetLastError());
 			return false;			
 		}
 		hNetApi32 = hDll;
@@ -40,7 +40,8 @@ void _fastcall ANetFilesEx(ParamBlk *parm)
 {
 try
 {
-	RESETWIN32ERRORS();
+	ResetWin32Errors();
+
 	// entry point valid?
 	if (!fpNetFileEnum)
 		throw E_NOENTRYPOINT;
@@ -81,7 +82,7 @@ try
 	}
 	else
 	{
-		SAVEWIN32ERROR(NetFileEnum,nApiRet);
+		SaveWin32Error("NetFileEnum", nApiRet);
 		throw E_APIERROR;
 	}
 

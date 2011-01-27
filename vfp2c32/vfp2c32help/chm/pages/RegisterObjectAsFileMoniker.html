@@ -1,0 +1,67 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252" />
+<title>RegisterObjectAsFileMoniker</title><link href="/scripts/styles.css" rel="stylesheet" type="text/css" />
+<script src="/scripts/jscript.js" type="text/javascript"></script>
+</head><body>
+<div id="header">
+<p>VFP2C32 2.0.0.8</p>
+<h1 class="function">RegisterObjectAsFileMoniker</h1>
+</div>
+<div id="content">
+<p class="description">Creates a file moniker for the passed object.</p>
+
+<div class="block"><pre>RegisterObjectAsFileMoniker(<a href="#p1">cObjectReference</a>, <a href="#p2">cProgID</a>, <a href="#p3">cFileName</a>)</pre></div>
+<h3>Parameters</h3>
+<dl class="parm"><dt><a id="p1">cObjectReference</a></dt>
+<dd><p>A reference to the COM object you want to register in the ROT (running object table) in stringified form.</p>
+</dd></dl>
+<dl class="parm"><dt><a id="p2">cProgID</a></dt>
+<dd><p>The ProgID of your COM object - the same string you used in <a href="its:dv_foxhelp.chm::/html/932a73fb-6354-402b-bbb2-08386d41fdae.htm">CREATEOBJECT</a>.</p>
+</dd></dl>
+<dl class="parm"><dt><a id="p3">cFileName</a></dt>
+<dd><p>The name of a file.</p>
+</dd></dl>
+<h2>Return Value</h2>
+<p>A numeric handle representing the registered object.</p>
+
+<h2>Remarks</h2>
+<p>File monikers can be used to identify any object that is stored in its own file. A file moniker acts as a wrapper for the path name the native file system assigns to the file.  The source of the object named by the moniker must provide an implementation of the IPersistFile interface to support binding a file moniker. File monikers can represent either a complete or a relative path.</p>
+
+<h2>Example</h2>
+<div class="codeheader"><a onclick="CopyCode('code_34W0WTR00')" onmouseover="ChangeClass(this, 'onhover')" onmouseout="ChangeClass(this, '')">Copy code</a></div>
+<div class="block"><pre id="code_34W0WTR00">nObjectHandle= RegisterObjectAsFileMoniker(cObjectReference, cProgId, cFilename)
+? nObjectHandle
+</pre></div>
+<h2>See Also</h2>
+<h4>Reference</h4>
+<p><a href="/pages/CLSIDFromProgID.html">CLSIDFromProgID</a><br />
+<a href="/pages/CLSIDFromString.html">CLSIDFromString</a><br />
+<a href="/pages/CreateGuid.html">CreateGuid</a><br />
+<a href="/pages/GetIUnknown.html">GetIUnknown</a><br />
+<a href="/pages/IDispatch_AsyncInvoke.html">IDispatch_AsyncInvoke</a><br />
+<a href="/pages/IDispatch_Invoke.html">IDispatch_Invoke</a><br />
+<a href="/pages/IsEqualGuid.html">IsEqualGuid</a><br />
+<a href="/pages/ProgIDFromCLSID.html">ProgIDFromCLSID</a><br />
+<a href="/pages/RegisterActiveObject.html">RegisterActiveObject</a><br />
+<a href="/pages/RevokeActiveObject.html">RevokeActiveObject</a><br />
+<a href="/pages/StringFromCLSID.html">StringFromCLSID</a><br />
+</p>
+<h4>Used WinApi functions</h4>
+<p><a href="http://msdn.microsoft.com/en-us/library/ms688386(VS.85).aspx">CLSIDFromProgID</a><br />
+<a href="http://msdn.microsoft.com/en-us/library/ms684004(VS.85).aspx">GetRunningObjectTable</a><br />
+<a href="http://msdn.microsoft.com/en-us/library/aa380341(VS.85).aspx">StgOpenStorage</a><br />
+<a href="http://msdn.microsoft.com/en-us/library/aa380323(VS.85).aspx">StgCreateDocfile</a><br />
+<a href="http://msdn.microsoft.com/en-us/library/aa380384(VS.85).aspx">WriteClassStg</a><br />
+<a href="http://msdn.microsoft.com/en-us/library/aa380302(v=vs.85).aspx">ReadClassStg</a><br />
+<a href="http://msdn.microsoft.com/en-us/library/ms693465(VS.85).aspx">CreateFileMoniker</a><br />
+<a href="http://msdn.microsoft.com/en-us/library/ms695276(VS.85).aspx">IRunningObjectTable</a> Register</p>
+
+
+</div>
+<div id="footer">
+<p>&copy; <a href="http://vfpx.codeplex.com/wikipage?title=VFP2C32">VFP2C32</a> - Shared Source License for <a href="http://vfpx.codeplex.com">VFPX</a></p>
+</div>
+</body>
+</html>

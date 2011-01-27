@@ -17,15 +17,15 @@ public:
 };
 
 // custom types and defines for window enumeration & window property enumeration functions 
-#define WINDOW_ENUM_CLASSLEN	128
-#define WINDOW_ENUM_TEXTLEN		4096
-#define WINDOW_ENUM_TOPLEVEL	1
-#define WINDOW_ENUM_CHILD		2
-#define WINDOW_ENUM_THREAD		4
-#define WINDOW_ENUM_DESKTOP		8
-#define WINDOW_ENUM_CALLBACK	16
-#define WINDOW_ENUM_FLAGS		15
-#define WINDOWPROP_ENUM_LEN	1024
+const int WINDOW_ENUM_CLASSLEN	= 128;
+const int WINDOW_ENUM_TEXTLEN	= 4096;
+const int WINDOW_ENUM_TOPLEVEL	= 1;
+const int WINDOW_ENUM_CHILD		= 2;
+const int WINDOW_ENUM_THREAD	= 4;
+const int WINDOW_ENUM_DESKTOP	= 8;
+const int WINDOW_ENUM_CALLBACK	= 16;
+const int WINDOW_ENUM_FLAGS		= 15;
+const int WINDOWPROP_ENUM_LEN	= 1024;
 
 class WindowEnumParam
 {
@@ -45,8 +45,8 @@ public:
 };
 
 // custom types and defines for resource enumeration functions
-#define RESOURCE_ENUM_TYPELEN 512
-#define RESOURCE_ENUM_NAMELEN 2048
+const int RESOURCE_ENUM_TYPELEN	= 512;
+const int RESOURCE_ENUM_NAMELEN	= 2048;
 
 typedef struct _RESOURCEENUMPARAM {
 	FoxArray pArray;
@@ -62,7 +62,7 @@ typedef struct _PROCESS_BASIC_INFORMATION_EX {
     ULONG InheritedFromUniqueProcessId;
 } PROCESS_BASIC_INFORMATION_EX, *LPPROCESS_BASIC_INFORMATION_EX;
 
-#define DISPLAYDEVICE_ENUM_LEN	128
+const int DISPLAYDEVICE_ENUM_LEN = 128;
 
 // typedef's for runtime dynamic linking to some functions that might not be available on all Windows platforms
 

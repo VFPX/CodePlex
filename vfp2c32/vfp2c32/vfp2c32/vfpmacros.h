@@ -59,36 +59,6 @@
 #define r26 (parm->p[25].loc)
 
 // count of parameters passed
-#define PCOUNT() (parm->pCount)
-
-// defines for easier declaration of typed Value's
-// #define V_LOGICAL(sValue)					Value sValue = {'L','\0',0,0}
-// #define V_SHORT(sValue) 					Value sValue = {'I','\0',6,0}
-#define V_INTEGER(sValue) 				Value sValue = {'I','\0',11,0}
-#define V_UINTEGER(sValue)				Value sValue = {'N','\0',10,0}
-#define V_DOUBLE(sValue) 					Value sValue = {'N','\0',20,16}
-#define V_FLOAT(sValue) 					Value sValue = {'N','\0',20,7}
-#define V_NUMERIC(sValue,nWidth,nLength)	Value sValue = {'N','\0',nWidth,nLength}
-#define V_INT64DOUBLE(sValue)				Value sValue = {'N','\0',20,0}
-#define V_CURRENCY(sValue)				Value sValue = {'Y','\0',0,0,0,0,0,0}
-#define V_STRING(sValue) 					Value sValue = {'C','\0',0,0,0,0,0,0}
-#define V_STRINGN(sValue,nLength) 		Value sValue = {'C','\0',0,nLength,0,0,0,0}
-
-// defines for easier 'typeing' an already existing "Value"
-#define SET_LOGICAL(sValue)		sValue.ev_type = 'L'; sValue.ev_length = 0
-#define SET_SHORT(sValue) 		sValue.ev_type = 'I'; sValue.ev_width = 6
-#define SET_INTEGER(sValue)		sValue.ev_type = 'I'; sValue.ev_width = 11
-#define SET_UINTEGER(sValue)		sValue.ev_type = 'N'; sValue.ev_width = 10; sValue.ev_length = 0
-#define SET_DOUBLE(sValue)		sValue.ev_type = 'N'; sValue.ev_width = 20; sValue.ev_length = 16
-#define SET_FLOAT(sValue)		sValue.ev_type = 'N'; sValue.ev_width = 20; sValue.ev_length = 7
-#define SET_NUMERIC(sValue,nWidth,nLength) sValue.ev_type = 'N'; sValue.ev_width = nWidth; sValue.ev_length = nLength
-#define SET_INT64DOUBLE(sValue) sValue.ev_type = 'N'; sValue.ev_width = 20; sValue.ev_length = 0
-#define SET_CURRENCY(sValue) sValue.ev_type = 'Y'; sValue.ev_currency.QuadPart = 0
-#define SET_STRING(sValue)		sValue.ev_type = 'C'; sValue.ev_length = 0; sValue.ev_handle = 0
-#define SET_DATE(sValue)			sValue.ev_type = 'D'
-#define SET_DATETIME(sValue)		sValue.ev_type = 'T'
-#define SET_NULL(sValue)			sValue.ev_type = '0'
-
-// #define VALID_ADIM(nDims,nPassed) ((nPassed <= nDims) || (nPassed == 1 && nDims == 0))
+#define PCount() (parm->pCount)
 
 #endif // _VFP2CMACROS_H__

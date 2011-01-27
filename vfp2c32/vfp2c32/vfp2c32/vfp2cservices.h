@@ -16,13 +16,14 @@ typedef BOOL (_stdcall *PCONTROLSERVICE)(SC_HANDLE,DWORD,LPSERVICE_STATUS); // C
 typedef BOOL (_stdcall *PQUERYSERVICESTATUS)(SC_HANDLE,LPSERVICE_STATUS); // QueryServiceStatus
 typedef BOOL (_stdcall *PQUERYSERVICECONFIG)(SC_HANDLE,LPQUERY_SERVICE_CONFIG,DWORD,LPDWORD); // QueryServiceConfig
 typedef BOOL (_stdcall *PENUMDEPENDENTSERVICES)(SC_HANDLE,DWORD,LPENUM_SERVICE_STATUS,DWORD,LPDWORD,LPDWORD);
+typedef SC_HANDLE (_stdcall *PCREATESERVICE)(SC_HANDLE, LPCTSTR, LPCTSTR, DWORD, DWORD, DWORD, DWORD, LPCTSTR, LPCTSTR, LPDWORD, LPCTSTR, LPCTSTR, LPCTSTR); // CreateService
+typedef BOOL (_stdcall *PDELETESERVICE)(SC_HANDLE); // DeleteService
 
 // EnumDependentServices
-
-#define SERVICE_ENUM_BUFFER 8192 
-#define SERVICE_MAX_ENUM_BUFFER 32768 
-#define SERVICE_INFINITE_TIMEOUT -1
-#define SERVICE_DEFAULT_TIMEOUT -2
+const int SERVICE_ENUM_BUFFER		= 8192;
+const int SERVICE_MAX_ENUM_BUFFER	= 32768;
+const int SERVICE_INFINITE_TIMEOUT	= -1;
+const int SERVICE_DEFAULT_TIMEOUT	= -2;
 
 class ServiceManager
 {
@@ -89,6 +90,8 @@ void _fastcall AServiceStatus(ParamBlk *parm);
 void _fastcall AServiceConfig(ParamBlk *parm);
 void _fastcall ADependentServices(ParamBlk *parm);
 void _fastcall WaitForServiceStatus(ParamBlk *parm);
+void _fastcall CreateServiceLib(ParamBlk *parm);
+void _fastcall DeleteServiceLib(ParamBlk *parm);
 
 #ifdef __cplusplus
 }

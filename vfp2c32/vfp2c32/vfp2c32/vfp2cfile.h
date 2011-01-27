@@ -3,7 +3,44 @@
 
 #include <shlwapi.h>
 #include <shlobj.h>
+
 #include "vfp2chelpers.h"
+#include "vfp2ccppapi.h"
+
+const int ADIREX_DEST_ARRAY		= 0x01;
+const int ADIREX_DEST_CURSOR	= 0x02;
+const int ADIREX_DEST_CALLBACK	= 0x04;
+const int ADIREX_FILTER_ALL		= 0x08;
+const int ADIREX_FILTER_NONE	= 0x10;
+const int ADIREX_FILTER_EXACT	= 0x20;
+const int ADIREX_UTC_TIMES		= 0x40;
+
+const int FILE_OVERWRITE_ASK		= 0;
+const int FILE_OVERWRITE_YES		= 1;
+const int FILE_OVERWRITE_YESALL		= 2;
+const int FILE_OVERWRITE_NO			= 3;
+const int FILE_OVERWRITE_NOALL		= 4;
+const int FILE_OVERWRITE_IFNEWER	= 5;
+const int FILE_OVERWRITE_ABORT		= 6;
+
+const int CALLBACK_FILE_PROGRESS	= 1;
+const int CALLBACK_FILE_CHANGE		= 2;
+const int CALLBACK_FILE_OVERWRITE	= 3;
+
+const int MAX_OPENFILENAME_BUFFER	= 32768;
+const int MAX_ENVSTRING_BUFFER		= 4096;
+
+const int VFP2C_MAX_VOLUME_NAME		= 128;
+const int VFP2C_MAX_MOUNTPOINT_NAME	= 512;
+const int VFP2C_MAX_DEVICE_NAME		= 1024;
+
+const int VFP2C_FILE_LINE_BUFFER	= 32;
+
+const int MAXFILESEARCHPARAM		= MAX_PATH - 3;
+
+// additional file attribute to filter "." & ".." directory's
+const int FILE_ATTRIBUTE_FAKEDIRECTORY	= 0x80000000;
+const int SECURITY_DESCRIPTOR_LEN		= 256;
 
 class FileSearch
 {
@@ -18,9 +55,76 @@ public:
 	unsigned __int64 Filesize() const;
 
 	WIN32_FIND_DATA File;
+private:
+	HANDLE m_Handle;
+};
+
+inline const char* FileSearch::Filename() const
+{
+	if (File.cFileName[0] != '\0')
+		return &File.cFileName[0];
+	else
+		return &File.cAlternateFileName[0];
+}
+
+inline unsigned __int64 FileSearch::Filesize() const
+{
+	ULARGE_INTEGER nSize;
+	nSize.HighPart = File.nFileSizeHigh;
+	nSize.LowPart = File.nFileSizeLow;
+	return nSize.QuadPart;
+}
+
+class SwitchErrorMode
+{
+public:
+	SwitchErrorMode(unsigned int nMode);
+	~SwitchErrorMode();
+private:
+	UINT m_Errormode;
+};
+
+inline SwitchErrorMode::SwitchErrorMode(unsigned int nMode) : m_Errormode(0xFFFFFFFF)
+{
+	m_Errormode = SetErrorMode(0);
+	SetErrorMode(m_Errormode | nMode);
+}
+
+inline SwitchErrorMode::~SwitchErrorMode()
+{
+	if (m_Errormode != 0xFFFFFFFF)
+		SetErrorMode(m_Errormode);
+}
+
+class VolumeSearch
+{
+public:
+	VolumeSearch() : m_Handle(INVALID_HANDLE_VALUE), m_Volume(VFP2C_MAX_VOLUME_NAME) { }
+	~VolumeSearch();
+
+	bool FindFirst();
+	bool FindNext();
+	FoxString& Volume() { return m_Volume; }
+
+private:
+	FoxString m_Volume;
+	HANDLE m_Handle;
+};
+
+class VolumeMountPointSearch
+{
+public:
+	VolumeMountPointSearch() :  m_Handle(INVALID_HANDLE_VALUE), m_Mode(SEM_FAILCRITICALERRORS), m_MountPoint(VFP2C_MAX_MOUNTPOINT_NAME) { }
+	~VolumeMountPointSearch();
+
+	bool FindFirst(char *pVolume);
+	bool FindNext();
+	FoxString& MountPoint() { return m_MountPoint; }
 
 private:
 	HANDLE m_Handle;
+	SwitchErrorMode m_Mode;
+	FoxString m_MountPoint;
 };
 
 // custom defines and types for file operations
@@ -65,42 +169,6 @@ public:
 	CStr pBuffer;
 };
 
-#define ADIREX_DEST_ARRAY		0x01
-#define ADIREX_DEST_CURSOR		0x02
-#define ADIREX_DEST_CALLBACK	0x04
-#define ADIREX_FILTER_ALL		0x08
-#define ADIREX_FILTER_NONE		0x10
-#define ADIREX_FILTER_EXACT		0x20
-#define ADIREX_UTC_TIMES		0x40
-
-#define FILE_OVERWRITE_ASK		0
-#define FILE_OVERWRITE_YES		1
-#define FILE_OVERWRITE_YESALL	2
-#define FILE_OVERWRITE_NO		3
-#define FILE_OVERWRITE_NOALL	4
-#define FILE_OVERWRITE_IFNEWER	5
-#define FILE_OVERWRITE_ABORT	6
-
-#define CALLBACK_FILE_PROGRESS 1
-#define CALLBACK_FILE_CHANGE 2
-#define CALLBACK_FILE_OVERWRITE	3
-
-#define MAX_OPENFILENAME_BUFFER 32768
-#define MAX_ENVSTRING_BUFFER	4096
-
-#define VFP2C_MAX_VOLUME_NAME			128
-#define VFP2C_MAX_MOUNTPOINT_NAME		512
-#define VFP2C_MAX_DEVICE_NAME			1024
-
-#define VFP2C_FILE_LINE_BUFFER		32
-
-#define MAXFILESEARCHPARAM (MAX_PATH-3)
-
-// additional file attribute to filter "." & ".." directory's
-#define FILE_ATTRIBUTE_FAKEDIRECTORY	0x80000000
-
-#define SECURITY_DESCRIPTOR_LEN 256
-
 // typedef's for runtime dynamic linking
 typedef BOOL (_stdcall *PGETFILESIZEEX)(HANDLE,PLARGE_INTEGER); // GetFileSizeEx
 typedef DWORD (_stdcall *PGETLONGPATHNAME)(LPSTR,LPSTR,DWORD); // GetLongPathName
@@ -111,7 +179,7 @@ typedef BOOL (_stdcall *PGETFILEATTRIBUTESEX)(LPCTSTR,GET_FILEEX_INFO_LEVELS,LPV
 typedef BOOL (_stdcall *PGETSPECIALFOLDER)(HWND,LPSTR,int,BOOL); // SHGetSpecialFolderPathA (shell32.dll)
 typedef HRESULT (_stdcall *PSHILCREATEFROMPATH)(LPCWSTR,LPITEMIDLIST*,DWORD*); // SHILCreateFromPath (shell32.dll)
 typedef LPITEMIDLIST (_stdcall *PSHILCREATEFROMPATHEX)(LPCWSTR); // undocumented func #162 on shell32.dll
-#define SHILCREATEFROMPATHEXID 162
+const int SHILCREATEFROMPATHEXID = 162;
 
 typedef BOOL (_stdcall *PGETKERNELOBJECTSECURITY)(HANDLE,SECURITY_INFORMATION,PSECURITY_DESCRIPTOR,DWORD,LPDWORD); // GetKernelObjectSecurity (advapi32.dll)
 typedef BOOL (_stdcall *PGETSECURITYDESCRIPTOROWNER)(PSECURITY_DESCRIPTOR,PSID *,LPBOOL); // GetSecurityDescriptorOwner (advapi32.dll)
@@ -124,11 +192,19 @@ typedef HANDLE (_stdcall *FINDFIRSTVOLUMEMOUNTPOINT)(LPTSTR, LPTSTR, DWORD); // 
 typedef BOOL (_stdcall *PFINDNEXTVOLUMEMOUNTPOINT)(HANDLE, LPTSTR, DWORD); // FindNextVolumeMountPoint
 typedef BOOL (_stdcall *PFINDVOLUMEMOUNTPOINTCLOSE)(HANDLE); // FindVolumeMountPointClose
 typedef BOOL (_stdcall *PGETVOLUMENAMEFORVOLUMEMOUNTPOINT)(LPCTSTR, LPTSTR, DWORD); // GetVolumeNameForVolumeMountPoint
+typedef BOOL (_stdcall *PGETVOLUMEPATHNAMESFORVOLUMENAME)(LPCTSTR, LPTSTR, DWORD, PDWORD); // GetVolumePathNamesForVolumeName
+typedef BOOL (_stdcall *PGETVOLUMEINFORMATION)(LPCTSTR, LPTSTR, DWORD, LPDWORD, LPDWORD, LPDWORD, LPTSTR, DWORD); // GetVolumeInformation
+
 typedef DWORD (_stdcall *PQUERYDOSDEVICE)(LPCTSTR, LPTSTR, DWORD); // QueryDosDevice
 typedef BOOL (_stdcall *PDEVICEIOCONTROL)(HANDLE, DWORD, LPVOID, DWORD, LPVOID, DWORD, LPDWORD, LPOVERLAPPED); // DeviceIoControl
 typedef BOOL (_stdcall *PGETVOLUMEPATHNAME)(LPCTSTR, LPTSTR, DWORD); // GetVolumePathName
 
 typedef bool (_stdcall *PADIREXFILTER)(DWORD, DWORD);
+
+typedef HANDLE (_stdcall *CREATETRANSACTION)(LPSECURITY_ATTRIBUTES, LPGUID, DWORD, DWORD, DWORD, DWORD, LPWSTR); // CreateTransaction
+typedef BOOL (_stdcall *COMMITTRANSACTION)(HANDLE); // CommitTransaction
+typedef BOOL (_stdcall *ROLLBACKTRANSACTION)(HANDLE);  // RollbackTransaction(
+
 
 #ifdef __cplusplus
 extern "C" {
@@ -161,6 +237,9 @@ void _fastcall GetOpenFileNameLib(ParamBlk *parm);
 void _fastcall GetSaveFileNameLib(ParamBlk *parm);
 UINT_PTR _stdcall GetFileNameCallback(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
 void _fastcall ADriveInfo(ParamBlk *parm);
+void _fastcall AVolumes(ParamBlk *parm);
+void _fastcall AVolumeMountPoints(ParamBlk *parm);
+void _fastcall AVolumePaths(ParamBlk *parm);
 void _fastcall AVolumeInformation(ParamBlk *parm);
 void _fastcall GetWindowsDirectoryLib(ParamBlk *parm);
 void _fastcall GetSystemDirectoryLib(ParamBlk *parm);
@@ -208,7 +287,9 @@ void _stdcall CreateDirectoryExEx(const char *pDirectory) throw(int);
 void _stdcall RemoveDirectoryEx(const char *pDirectory) throw(int);
 void _stdcall DeleteDirectoryEx(const char *pDirectory) throw(int);
 void _stdcall RemoveReadOnlyAttrib(const char *pFileName, DWORD nFileAttribs) throw(int);
+void _stdcall RemoveReadOnlyAttribW(const wchar_t *pFileName, DWORD nFileAttribs) throw(int);
 void _stdcall DeleteFileExEx(const char *pFileName, DWORD nFileAttribs) throw(int);
+void _stdcall DeleteFileExExW(const wchar_t *pFileName, DWORD nFileAttribs) throw(int);
 int _stdcall CompareFileTimesEx(const char *pSourceFile, const char *pDestFile)  throw(int);
 
 #ifdef __cplusplus

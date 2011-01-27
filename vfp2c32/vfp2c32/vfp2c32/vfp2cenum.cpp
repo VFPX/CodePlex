@@ -54,7 +54,7 @@ bool _stdcall VFP2C_Init_Enum()
 	HMODULE hDll;
 	bool bRetVal = true;
 
-	if (IS_WINNT())
+	if (COs::Is(WindowsNT))
 	{
 		ghPsApi = LoadLibrary("psapi.dll");
 		if (ghPsApi)
@@ -96,7 +96,7 @@ bool _stdcall VFP2C_Init_Enum()
 	}
 	else
 	{
-		ADDWIN32ERROR(GetModuleHandle,GetLastError());
+		AddWin32Error("GetModuleHandle", GetLastError());
 		bRetVal = false;
 	}
 
@@ -113,7 +113,7 @@ bool _stdcall VFP2C_Init_Enum()
 	}
 	else
 	{
-		ADDWIN32ERROR(GetModuleHandle,GetLastError());
+		AddWin32Error("GetModuleHandle", GetLastError());
 		bRetVal = false;
 	}
 
@@ -130,7 +130,7 @@ void _fastcall AWindowStations(ParamBlk *parm)
 {
 try
 {
-	RESETWIN32ERRORS();
+	ResetWin32Errors();
 
 	// entry point to EnumWindowStations valid?
 	if (!fpEnumWindowStations)
@@ -142,7 +142,7 @@ try
 
 	if (!fpEnumWindowStations(WindowStationEnumCallback,reinterpret_cast<LPARAM>(&sEnum)))
 	{
-		SAVEWIN32ERROR(EnumWindowStations,GetLastError());
+		SaveWin32Error("EnumWindowStations", GetLastError());
 		throw E_APIERROR;
 	}
 
@@ -166,7 +166,7 @@ void _fastcall ADesktops(ParamBlk *parm)
 {
 try
 {
-	RESETWIN32ERRORS();
+	ResetWin32Errors();
 
 	if (!fpEnumDesktops)
 		throw E_NOENTRYPOINT;
@@ -175,11 +175,11 @@ try
 	HWINSTA hWinSta;
 
 	sEnum.pArray.Dimension(p1,1);
-	hWinSta = PCOUNT() == 1 ? fpGetProcessWindowStation() : reinterpret_cast<HWINSTA>(p2.ev_long);
+	hWinSta = PCount() == 1 ? fpGetProcessWindowStation() : reinterpret_cast<HWINSTA>(p2.ev_long);
 	
 	if (!fpEnumDesktops(hWinSta,(DESKTOPENUMPROC)DesktopEnumCallback, reinterpret_cast<LPARAM>(&sEnum)))
 	{
-		SAVEWIN32ERROR(EnumDesktops,GetLastError());
+		SaveWin32Error("EnumDesktops", GetLastError());
 		throw E_APIERROR;
 	}
 
@@ -203,7 +203,7 @@ void _fastcall AWindows(ParamBlk *parm)
 {
 try
 {
-	RESETWIN32ERRORS();
+	ResetWin32Errors();
 
 	WindowEnumParam sEnum;
 	FoxString pArrayOrCallback(p1);
@@ -211,7 +211,7 @@ try
 	DWORD nLastError = ERROR_SUCCESS;
 
 	// are parameters valid?
-	if (PCOUNT() == 2 && !(nEnumFlag & WINDOW_ENUM_TOPLEVEL))
+	if (PCount() == 2 && !(nEnumFlag & WINDOW_ENUM_TOPLEVEL))
 		throw E_INVALIDPARAMS;
 	else if (!(nEnumFlag & (WINDOW_ENUM_TOPLEVEL|WINDOW_ENUM_CHILD|WINDOW_ENUM_THREAD|WINDOW_ENUM_DESKTOP)))
 		throw E_INVALIDPARAMS;
@@ -257,7 +257,7 @@ try
 
 	if (nLastError != ERROR_SUCCESS)
 	{
-		SAVEWIN32ERROR(EnumWindowsX,nLastError);
+		SaveWin32Error("EnumWindowsX", nLastError);
 		throw E_APIERROR;
 	}
 
@@ -296,13 +296,13 @@ void _fastcall AWindowsEx(ParamBlk *parm)
 {
 try
 {
-	RESETWIN32ERRORS();
+	ResetWin32Errors();
 
 	FoxString pFlags(p2);
 	WindowEnumParamEx sEnum;
 	
 	// are parameters valid?
-	if (PCOUNT() == 3 && p3.ev_long != WINDOW_ENUM_TOPLEVEL)
+	if (PCount() == 3 && p3.ev_long != WINDOW_ENUM_TOPLEVEL)
 		throw E_INVALIDPARAMS;
 	else if (p3.ev_long < WINDOW_ENUM_TOPLEVEL || p3.ev_long > WINDOW_ENUM_DESKTOP)
 		throw E_INVALIDPARAMS;
@@ -361,7 +361,7 @@ try
 
 	if (nLastError != ERROR_SUCCESS)
 	{
-		SAVEWIN32ERROR(EnumXWindows,nLastError);
+		SaveWin32Error("EnumXWindows", nLastError);
 		throw E_APIERROR;
 	}
 
@@ -465,9 +465,9 @@ BOOL _stdcall WindowPropEnumCallback(HWND nHwnd, LPCSTR pPropName, HANDLE hData,
 
 void _fastcall AProcesses(ParamBlk *parm)
 {
-	RESETWIN32ERRORS();
+	ResetWin32Errors();
 
- 	if (IS_WINNT())
+	if (COs::Is(WindowsNT))
 	{
 		AProcessesPSAPI(parm);
 		return;
@@ -486,7 +486,7 @@ try
 	hProcSnap = fpCreateToolhelp32Snapshot(TH32CS_SNAPPROCESS,0);
 	if(!hProcSnap)
 	{
-		SAVEWIN32ERROR(CreateToolhelp32Snapshot,GetLastError());
+		SaveWin32Error("CreateToolhelp32Snapshot", GetLastError());
 		throw E_APIERROR;
 	}
 	
@@ -502,7 +502,7 @@ try
 		}
 		else
 		{
-			SAVEWIN32ERROR(Process32First,nLastError);
+			SaveWin32Error("Process32First", nLastError);
 			throw E_APIERROR;
 		}
 	}
@@ -522,7 +522,7 @@ try
 	nLastError = GetLastError();
 	if (nLastError != ERROR_NO_MORE_FILES)
 	{
-		SAVEWIN32ERROR(Process32Next,nLastError);
+		SaveWin32Error("Process32Next", nLastError);
 		throw E_APIERROR;
 	}
 
@@ -557,7 +557,7 @@ try
  
 		if (!fpEnumProcesses(lpProcIds, dwProcesses * sizeof(DWORD), &dwBytes))
 		{
-			SAVEWIN32ERROR(EnumProcesses,GetLastError());
+			SaveWin32Error("EnumProcesses", GetLastError());
 			throw E_APIERROR;
 		}
 
@@ -579,14 +579,14 @@ try
         {
             if(!fpEnumProcessModules(hProcess,&hModule,sizeof(HMODULE),&dwBytes))
             {
-				SAVEWIN32ERROR(EnumProcessModules,GetLastError());
+				SaveWin32Error("EnumProcessModules", GetLastError());
 				throw E_APIERROR;
 			}
 	
 			pExeName.Len(fpGetModuleBaseName(hProcess,hModule,pExeName,MAX_PATH+1));
 			if (!pExeName.Len())
 			{
-				SAVEWIN32ERROR(GetModuleBaseName,GetLastError());
+				SaveWin32Error("GetModuleBaseName", GetLastError());
 				throw E_APIERROR;
 			}
 			pArray(xj,1) = pExeName;
@@ -627,7 +627,7 @@ void _fastcall AProcessThreads(ParamBlk *parm)
 {
 try
 {
-	RESETWIN32ERRORS();
+	ResetWin32Errors();
 
 	FoxArray pArray(p1,1,3);
 	ApiHandle hThreadSnap;
@@ -642,7 +642,7 @@ try
 	hThreadSnap = fpCreateToolhelp32Snapshot(TH32CS_SNAPTHREAD,0); 
 	if(!hThreadSnap)
 	{
-        SAVEWIN32ERROR(CreateToolhelp32SnapShot,GetLastError());
+        SaveWin32Error("CreateToolhelp32SnapShot", GetLastError());
 		throw E_APIERROR;
 	}
      
@@ -657,7 +657,7 @@ try
 		}
 		else
 		{
-			SAVEWIN32ERROR(Thread32First,nLastError);
+			SaveWin32Error("Thread32First", nLastError);
 			throw E_APIERROR;
 		}
 	}
@@ -678,7 +678,7 @@ try
 	nLastError = GetLastError();
 	if (nLastError != ERROR_NO_MORE_FILES)
 	{
-		SAVEWIN32ERROR(Thread32Next,nLastError);
+		SaveWin32Error("Thread32Next", nLastError);
 		throw E_APIERROR;
 	}
 
@@ -694,7 +694,7 @@ void _fastcall AProcessModules(ParamBlk *parm)
 {
 try
 {
-	RESETWIN32ERRORS();
+	ResetWin32Errors();
 
 	FoxArray pArray(p1,1,5);
 	FoxString pBuffer(MAX_PATH+1);
@@ -707,12 +707,20 @@ try
 		throw E_NOENTRYPOINT;
 
 	pModules.dwSize = sizeof(MODULEENTRY32);
-	// Take a snapshot of all running threads
-	hModuleSnap = fpCreateToolhelp32Snapshot(TH32CS_SNAPMODULE,nProcId); 
-	if(!hModuleSnap)
+	while (true)
 	{
-		SAVEWIN32ERROR(CreateToolhelp32SnapShot,GetLastError());
-		throw E_APIERROR;
+		// Take a snapshot of all running threads
+		hModuleSnap = fpCreateToolhelp32Snapshot(TH32CS_SNAPMODULE,nProcId); 
+		if(!hModuleSnap)
+		{
+			nLastError = GetLastError();
+			if (nLastError == ERROR_BAD_LENGTH)
+				continue;
+			SaveWin32Error("CreateToolhelp32SnapShot", nLastError);
+			throw E_APIERROR;
+		}
+		else
+			break;
 	}
 
 	if(!fpModule32First(hModuleSnap,&pModules))
@@ -725,7 +733,7 @@ try
 		}
 		else
 		{
-			SAVEWIN32ERROR(Module32First,nLastError);
+			SaveWin32Error("Module32First", nLastError);
 			throw E_APIERROR;
 		}
 	}
@@ -745,7 +753,7 @@ try
 	nLastError = GetLastError();
 	if (nLastError != ERROR_NO_MORE_FILES)
 	{
-		SAVEWIN32ERROR(Module32Next,nLastError);
+		SaveWin32Error("Module32Next", nLastError);
 		throw E_APIERROR;
 	}
 
@@ -761,7 +769,7 @@ void _fastcall AProcessHeaps(ParamBlk *parm)
 {
 try
 {
-	RESETWIN32ERRORS();
+	ResetWin32Errors();
 
 	if (!gbHeapEnumFuncs)
 		throw E_NOENTRYPOINT;
@@ -778,7 +786,7 @@ try
 	hHeapSnap = fpCreateToolhelp32Snapshot(TH32CS_SNAPHEAPLIST,nProcId); 
 	if(!hHeapSnap)
 	{
-		SAVEWIN32ERROR(CreateToolhelp32SnapShot,GetLastError());
+		SaveWin32Error("CreateToolhelp32SnapShot", GetLastError());
 		throw E_APIERROR;
 	}
 
@@ -792,7 +800,7 @@ try
 		}
 		else
 		{
-			SAVEWIN32ERROR(HeapList32First,nLastError);
+			SaveWin32Error("HeapList32First", nLastError);
 			throw E_APIERROR;
 		}
 	}
@@ -809,7 +817,7 @@ try
 	nLastError = GetLastError();
 	if (nLastError != ERROR_NO_MORE_FILES)
 	{
-		SAVEWIN32ERROR(Heap32ListNext,nLastError);
+		SaveWin32Error("Heap32ListNext", nLastError);
 		throw E_APIERROR;
 	}
 
@@ -825,12 +833,12 @@ void _fastcall AHeapBlocks(ParamBlk *parm)
 {
 try
 {
-	RESETWIN32ERRORS();
+	ResetWin32Errors();
 
 	if (!gbHeapBlockEnumFuncs)
 		throw E_NOENTRYPOINT;
 
-	FoxArray pArray(p1,1,6);
+	FoxArray pArray(p1,1,4);
 	HEAPENTRY32 pHeapEntry;
 	DWORD nLastError;
 
@@ -846,7 +854,7 @@ try
 		}
 		else
 		{
-            SAVEWIN32ERROR(Heap32First,nLastError);
+            SaveWin32Error("Heap32First", nLastError);
 			throw E_APIERROR;
 		}
 	}
@@ -856,18 +864,16 @@ try
 	do
 	{
 		nRow = pArray.Grow();
-		pArray(nRow,1) = pHeapEntry.dwSize;
-		pArray(nRow,2) = pHeapEntry.hHandle;
-		pArray(nRow,3) = pHeapEntry.dwAddress;
-		pArray(nRow,4) = pHeapEntry.dwBlockSize;
-		pArray(nRow,5) = pHeapEntry.dwFlags;
-		pArray(nRow,6) = pHeapEntry.dwLockCount;
+		pArray(nRow,1) = pHeapEntry.hHandle;
+		pArray(nRow,2) = pHeapEntry.dwAddress;
+		pArray(nRow,3) = pHeapEntry.dwBlockSize;
+		pArray(nRow,4) = pHeapEntry.dwFlags;
 	} while(fpHeap32Next(&pHeapEntry));
 
 	nLastError = GetLastError();
 	if (nLastError != ERROR_NO_MORE_FILES)
 	{
-		SAVEWIN32ERROR(Heap32Next,nLastError);
+		SaveWin32Error("Heap32Next", nLastError);
 		throw E_APIERROR;
 	}
 	
@@ -906,7 +912,7 @@ void _fastcall AResourceTypes(ParamBlk *parm)
 {
 try
 {
-	RESETWIN32ERRORS();
+	ResetWin32Errors();
 
 	RESOURCEENUMPARAM sEnum;
 
@@ -915,7 +921,7 @@ try
 
 	if (!EnumResourceTypes(reinterpret_cast<HMODULE>(p2.ev_long),(ENUMRESTYPEPROC)ResourceTypesEnumCallback, reinterpret_cast<LONG>(&sEnum)))
 	{
-		SAVEWIN32ERROR(EnumResourceTypes,GetLastError());
+		SaveWin32Error("EnumResourceTypes", GetLastError());
 		throw E_APIERROR;
 	}
 
@@ -942,7 +948,7 @@ void _fastcall AResourceNames(ParamBlk *parm)
 {
 try
 {
-	RESETWIN32ERRORS();
+	ResetWin32Errors();
 
 	RESOURCEENUMPARAM sEnum;
 	FoxString pType(parm,3);
@@ -954,15 +960,15 @@ try
 	if (Vartype(p3) == 'C')
 		pResourceType = pType;
 	else if (Vartype(p3) == 'I')
-        pResourceType = reinterpret_cast<char*>(p3.ev_long); 
+        pResourceType = MAKEINTRESOURCE(p3.ev_long); 
 	else if (Vartype(p3) == 'N')
-		pResourceType = reinterpret_cast<char*>(static_cast<int>(p3.ev_real));
+		pResourceType = MAKEINTRESOURCE(static_cast<int>(p3.ev_real));
 	else
 		throw E_INVALIDPARAMS;
 
 	if (!EnumResourceNames(reinterpret_cast<HMODULE>(p2.ev_long), pResourceType, (ENUMRESNAMEPROC)ResourceNamesEnumCallback, reinterpret_cast<LONG_PTR>(&sEnum)))
 	{
-		SAVEWIN32ERROR(EnumResourceNames,GetLastError());
+		SaveWin32Error("EnumResourceNames", GetLastError());
 		throw E_APIERROR;
 	}
 
@@ -989,7 +995,7 @@ void _fastcall AResourceLanguages(ParamBlk *parm)
 {
 try
 {
-	RESETWIN32ERRORS();
+	ResetWin32Errors();
 
 	RESOURCEENUMPARAM sEnum;
 	FoxString pType(parm,3);
@@ -1019,7 +1025,7 @@ try
 
 	if (!EnumResourceLanguages(reinterpret_cast<HMODULE>(p2.ev_long), pResourceType, pResourceName, (ENUMRESLANGPROC)ResourceLangEnumCallback, reinterpret_cast<LONG>(&sEnum)))
 	{
-		SAVEWIN32ERROR(EnumResourceLanguages,GetLastError());
+		SaveWin32Error("EnumResourceLanguages", GetLastError());
 		throw E_APIERROR;
 	}
 
@@ -1043,7 +1049,8 @@ void _fastcall AResolutions(ParamBlk *parm)
 {
 try
 {
-	RESETWIN32ERRORS();
+	ResetWin32Errors();
+
 	FoxArray pArray(p1,1,4);
 	FoxString pDevice(parm,2);
 	DWORD nLastError = ERROR_SUCCESS;
@@ -1067,12 +1074,12 @@ try
 		pArray(nRow,4) = sDevMode.dmDisplayFrequency;
 	}
 
-	if (IS_WIN2KXP())
+	if (COs::GreaterOrEqual(Windows2000))
 		nLastError = GetLastError();
 
 	if (nLastError != ERROR_SUCCESS)
 	{
-		SAVEWIN32ERROR(EnumDisplaySettings,nLastError);
+		SaveWin32Error("EnumDisplaySettings", nLastError);
 		throw E_APIERROR;
 	}
 

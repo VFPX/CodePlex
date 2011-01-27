@@ -122,9 +122,9 @@ unsigned long maxMemType1;
 #define SWAPWORD(x) MAKEWORD(HIBYTE(x), LOBYTE(x))
 #define SWAPLONG(x) MAKELONG(SWAPWORD(HIWORD(x)),SWAPWORD(LOWORD(x)))
 
-#define PLATFORMID_UNICODE 0
-#define PLATFORMID_WINDOWS 3
-#define LANGID_ENGLISH_US 1033
+const int PLATFORMID_UNICODE	= 0;
+const int PLATFORMID_WINDOWS	= 3;
+const int LANGID_ENGLISH_US		= 1033;
 
 #ifdef __cplusplus
 extern "C" {

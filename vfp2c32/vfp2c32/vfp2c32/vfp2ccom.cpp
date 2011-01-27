@@ -28,6 +28,7 @@ bool _stdcall VFP2C_Init_Com()
 			fpLoadTypeLibEx = (PLOADTYPELIBEX)GetProcAddress(hDll,"LoadTypeLibEx");
 		}
 	}
+
 try
 {
 	FoxVariable pTempVar("__VFP2C_FLL_FILENAME", false);
@@ -36,7 +37,7 @@ try
 	pFllFileName.Len(GetModuleFileName(ghModule, pFllFileName, pFllFileName.Size()));
 	if (!pFllFileName.Len())
 	{
-		ADDWIN32ERROR(GetModuleFileName,GetLastError());
+		AddWin32Error("GetModuleFileName", GetLastError());
 		return false;
 	}
 
@@ -46,7 +47,7 @@ try
 }
 catch(int nErrorNo)
 {
-	ADDCUSTOMERROREX("_Execute","Failed to DECLARE function. Error %I",nErrorNo);
+	AddCustomErrorEx("_Execute", "Failed to DECLARE function.", nErrorNo);
 	return false;
 }
 	return true;
@@ -71,7 +72,7 @@ void _fastcall GetIUnknown(ParamBlk *parm)
 {
 try
 {
-	RESETWIN32ERRORS();
+	ResetWin32Errors();
 
 	FoxString pObject(p1);
 	HRESULT hr;
@@ -90,7 +91,7 @@ try
 	hr = pDisp->QueryInterface(IID_IUnknown,(void**)&pUnk);
 	if (FAILED(hr))
 	{
-		SAVEWIN32ERROR(QueryInterface,hr);
+		SaveWin32Error("IDispatch.QueryInterface", hr);
 		throw E_APIERROR;
 	}
 
@@ -112,7 +113,7 @@ void _fastcall CLSIDFromProgIDLib(ParamBlk *parm)
 {
 try
 {
-	RESETWIN32ERRORS();
+	ResetWin32Errors();
 
 	FoxWString pProgId(p1);
 	FoxString pClsId(sizeof(GUID));
@@ -121,7 +122,7 @@ try
 	hr = CLSIDFromProgID(pProgId,(LPCLSID)(void*)pClsId);
 	if (FAILED(hr))
 	{
-		SAVEWIN32ERROR(CLSIDFromProgID,hr);
+		SaveWin32Error("CLSIDFromProgID", hr);
 		throw E_APIERROR;
 	}
 	
@@ -139,7 +140,7 @@ void _fastcall ProgIDFromCLSIDLib(ParamBlk *parm)
 {
 try
 {
-	RESETWIN32ERRORS();
+	ResetWin32Errors();
 
 	FoxString pClsId(parm,1);
 	FoxWString pWideClsId;
@@ -160,7 +161,7 @@ try
 			hr = CLSIDFromString(pWideClsId,&sGuid);
 			if (FAILED(hr))
 			{
-				SAVEWIN32ERROR(CLSIDFromString,hr);
+				SaveWin32Error("CLSIDFromString", hr);
 				throw E_APIERROR;
 			}
 			pGuid = &sGuid;
@@ -176,7 +177,7 @@ try
 	hr = ProgIDFromCLSID((REFCLSID)*pGuid,pWideProgId);
 	if (FAILED(hr))
 	{
-		SAVEWIN32ERROR(ProgIDFromCLSID,hr);
+		SaveWin32Error("ProgIDFromCLSID", hr);
 		throw E_APIERROR;
 	}
 
@@ -194,7 +195,7 @@ void _fastcall CLSIDFromStringLib(ParamBlk *parm)
 {
 try
 {
-	RESETWIN32ERRORS();
+	ResetWin32Errors();
 
 	FoxWString pString(p1);
 	FoxString pClsId(sizeof(GUID));
@@ -203,7 +204,7 @@ try
 	hr = CLSIDFromString(pString,(LPCLSID)(void*)pClsId);
 	if (FAILED(hr))
 	{
-		SAVEWIN32ERROR(CLSIDFromString,hr);
+		SaveWin32Error("CLSIDFromString", hr);
 		throw E_APIERROR;
 	}
 
@@ -252,7 +253,7 @@ void _fastcall IsEqualGUIDLib(ParamBlk *parm)
 {
 try
 {
-	RESETWIN32ERRORS();
+	ResetWin32Errors();
 
 	FoxString pGuidParm1(parm,1,0);
 	FoxString pGuidParm2(parm,2,0);
@@ -268,12 +269,12 @@ try
 			pGuid1 = (LPGUID)(void*)pGuidParm1;
 		else
 		{
-			pGuidParm1.Expand();
+			pGuidParm1.NullTerminate();
 			pWideGuid = pGuidParm1;
 			hr = CLSIDFromString(pWideGuid,&sGuid1);
 			if (FAILED(hr))
 			{
-				SAVEWIN32ERROR(CLSIDFromString,hr);
+				SaveWin32Error("CLSIDFromString", hr);
 				throw E_APIERROR;
 			}
 			pGuid1 = &sGuid1;
@@ -298,7 +299,7 @@ try
 			hr = CLSIDFromString(pWideGuid,&sGuid2);
 			if (FAILED(hr))
 			{
-				SAVEWIN32ERROR(CLSIDFromString,hr);
+				SaveWin32Error("CLSIDFromString", hr);
 				throw E_APIERROR;
 			}
 			pGuid2 = &sGuid2;
@@ -324,7 +325,7 @@ void _fastcall CreateGuid(ParamBlk *parm)
 {
 try
 {
-	RESETWIN32ERRORS();
+	ResetWin32Errors();
 
 	FoxString pGuidString;
 	HRESULT hr;
@@ -336,11 +337,11 @@ try
 	hr = CoCreateGuid(pGuid);
 	if (FAILED(hr))
 	{
-		SAVEWIN32ERROR(CoCreateGuid,hr);
+		SaveWin32Error("CoCreateGuid", hr);
 		throw E_APIERROR;
 	}
 
-	if (PCOUNT() == 0 || p1.ev_long == CREATE_GUID_ANSI)
+	if (PCount() == 0 || p1.ev_long == CREATE_GUID_ANSI)
 	{
 		pGuidString.Size(GUID_STRING_LEN);
 		nRetVal = StringFromGUID2((REFGUID)*pGuid,aGuidString,GUID_STRING_LEN);
@@ -388,21 +389,21 @@ try
 
 	if (!pUnk)
 	{
-		SAVECUSTOMERROR("SYS(3095)","Function failed to return a valid IDispatch pointer.");
+		SaveCustomError("SYS(3095)","Function failed to return a valid IDispatch pointer.");
 		throw E_APIERROR;
 	}
 
 	hr = CLSIDFromProgID(pProgId,&sClsId);
 	if (FAILED(hr))
 	{
-		SAVEWIN32ERROR(CLSIDFromProgID,hr);
+		SaveWin32Error("CLSIDFromProgID", hr);
 		throw E_APIERROR;
 	}
 
 	hr = RegisterActiveObject(pUnk, sClsId, ACTIVEOBJECT_STRONG, &nRotKey);
 	if (FAILED(hr))
 	{
-		SAVEWIN32ERROR(RegisterActiveObject,hr);
+		SaveWin32Error("RegisterActiveObject", hr);
 		throw E_APIERROR;
 	}
 
@@ -420,7 +421,7 @@ void _fastcall RevokeActiveObjectLib(ParamBlk *parm)
 	hr = RevokeActiveObject(p1.ev_long, 0);
 	if (FAILED(hr))
 	{
-		SAVEWIN32ERROR(RevokeActiveObject, hr);
+		SaveWin32Error("RevokeActiveObject", hr);
 		RaiseError(E_APIERROR);
 	}
 }
@@ -450,21 +451,21 @@ try
 	
 	if (!pUnk)
 	{
-		SAVECUSTOMERROR("SYS(3095)","Function failed to return a valid IDispatch pointer.");
+		SaveCustomError("SYS(3095)","Function failed to return a valid IDispatch pointer.");
 		throw E_APIERROR;
 	}
 
 	hr = CLSIDFromProgID(pProgId,&spClsId);
 	if (FAILED(hr))
 	{
-		SAVEWIN32ERROR(CLSIDFromProgID,hr);
+		SaveWin32Error("CLSIDFromProgID", hr);
 		throw E_APIERROR;
 	}
 
 	hr = GetRunningObjectTable(0,pIRot);
 	if (hr != S_OK)
 	{
-		SAVEWIN32ERROR(GetRunningObjectTable,hr);
+		SaveWin32Error("GetRunningObjectTable", hr);
 		throw E_APIERROR;
 	}
 
@@ -478,14 +479,14 @@ try
 							NULL, pIStorage);
 		if (FAILED(hr))
 		{
-			SAVEWIN32ERROR(StgCreateDocfile,hr);
+			SaveWin32Error("StgCreateDocfile", hr);
 			throw E_APIERROR;
 		}
 		// Since this is a new file we must set the associated CLSID
 		hr = WriteClassStg(pIStorage,spClsId);
 		if (FAILED(hr))
 		{
-			SAVEWIN32ERROR(WriteClassStg,hr);
+			SaveWin32Error("WriteClassStg", hr);
 			throw E_APIERROR;
 		}
 	}
@@ -496,12 +497,12 @@ try
 		hr = ReadClassStg(pIStorage,&sClsId);
 		if (FAILED(hr))
 		{
-			SAVEWIN32ERROR(ReadClassStg,hr);
+			SaveWin32Error("ReadClassStg", hr);
 			throw E_APIERROR;
 		}
 		if (spClsId != sClsId)
 		{
-			SAVECUSTOMERROR("RegisterActiveObjectEx","File contained invalid CLSID.");
+			SaveCustomError("RegisterActiveObjectEx","File contained invalid CLSID.");
 			throw E_APIERROR;
 		}
 	}
@@ -510,7 +511,7 @@ try
 	hr = CreateFileMoniker(pFileName, pIFileMoniker);
 	if (FAILED(hr))
 	{
-		SAVEWIN32ERROR(CreateFileMoniker,hr);
+		SaveWin32Error("CreateFileMoniker", hr);
 		throw E_APIERROR;
 	}
 	
@@ -523,7 +524,7 @@ try
 						pIFileMoniker, &nRotKey);
 	if (FAILED(hr))
 	{
-		SAVEWIN32ERROR(ROT.Register,hr);
+		SaveWin32Error("ROT.Register", hr);
 		throw E_APIERROR;
 	}
 
@@ -552,7 +553,7 @@ try
 	hr = CreateBindCtx(0,pIBind);
 	if (FAILED(hr))
 	{
-		SAVEWIN32ERROR(CreateBindCtx,hr);
+		SaveWin32Error("CreateBindCtx,hr);
 		throw E_APIERROR;
 	}
 
@@ -561,14 +562,14 @@ try
 		hr = MkParseDisplayName(pIBind,pMoniker,&nEaten,pIMoniker);
 		if (FAILED(hr))
 		{
-			SAVEWIN32ERROR(MkParseDisplayName,hr);
+			SaveWin32Error("MkParseDisplayName,hr);
 			throw E_APIERROR;
 		}
 
 		hr = GetRunningObjectTable(0,pIRot);
 		if (FAILED(hr))
 		{
-			SAVEWIN32ERROR(GetRunningObjectTable,hr);
+			SaveWin32Error("GetRunningObjectTable,hr);
 			throw E_APIERROR;
 		}
 
@@ -582,7 +583,7 @@ try
 		hr = CLSIDFromString(pClassNameW,&pClsId);
 		if (FAILED(hr))
 		{
-			SAVEWIN32ERROR(CLSIDFromString,hr);
+			SaveWin32Error("CLSIDFromString,hr);
 			throw E_APIERROR;
 		}
 
@@ -593,7 +594,7 @@ try
 		hr = CreateItemMoniker(L"!",aGuidString,pIMoniker);
 		if (FAILED(hr))
 		{
-			SAVEWIN32ERROR(CLSIDFromString,hr);
+			SaveWin32Error("CLSIDFromString,hr);
 			throw E_APIERROR;
 		}
 
@@ -637,7 +638,7 @@ try
 		hDll = CoLoadLibrary(pWDllName,TRUE);
 		if (!hDll)
 		{
-			SAVEWIN32ERROR(LoadLibrary,GetLastError());
+			SaveWin32Error("LoadLibrary,GetLastError());
 			throw E_APIERROR;
 		}
 	}
@@ -645,7 +646,7 @@ try
 	fpDllGetClassObject = (PDLLGETCLASSOBJECT)GetProcAddress(hDll,"DllGetClassObject");
 	if (!fpDllGetClassObject)
 	{
-		SAVECUSTOMERROR("CoCreateInstanceEx","Function 'DllGetClassObject' not found in dll, it seems not to be a COM dll.");
+		SaveCustomError("CoCreateInstanceEx","Function 'DllGetClassObject' not found in dll, it seems not to be a COM dll.");
 		throw E_APIERROR;
 	}
 
@@ -653,7 +654,7 @@ try
 	hr = fpLoadTypeLibEx(pWDllName,REGKIND_NONE,pLib);
 	if (FAILED(hr))
 	{
-		SAVEWIN32ERROR(LoadTypeLibEx,hr);
+		SaveWin32Error("LoadTypeLibEx,hr);
 		throw E_APIERROR;
 	}
 
@@ -664,7 +665,7 @@ try
 	hr = pLib->FindName(pCoClass,0,pInfo,nMembers,&nTypesFound);
 	if (FAILED(hr))
 	{
-		SAVECUSTOMERROREX("CoCreateInstanceEx, ITypeLib.FindName","Error: %I",hr);
+		SaveCustomError("CoCreateInstanceEx, ITypeLib.FindName", "Error: %I", hr);
 		throw E_APIERROR;
 	}
 	
@@ -675,7 +676,7 @@ try
 
 		if (FAILED(hr))
 		{
-			SAVECUSTOMERROREX("CoCreateInstanceEx, ITypeInfo.GetTypeAttr","Error: %I",hr);
+			SaveCustomError("CoCreateInstanceEx, ITypeInfo.GetTypeAttr", "Error: %I", hr);
 			throw E_APIERROR;
 		}
 		
@@ -690,21 +691,21 @@ try
 
 	if (!bTypeFound)
 	{
-		SAVECUSTOMERROR("CoCreateInstanceEx","CoClass not found in Typelibrary!");
+		SaveCustomError("CoCreateInstanceEx","CoClass not found in Typelibrary!");
 		throw E_APIERROR;
 	}
 
 	hr = fpDllGetClassObject(sCoClassGuid,IID_IClassFactory,(LPVOID *)&pFactory);
 	if (FAILED(hr))
 	{
-		SAVEWIN32ERROR(DllGetClassObject,hr);
+		SaveWin32Error("DllGetClassObject,hr);
 		throw E_APIERROR;
 	}
 
 	hr = pFactory->CreateInstance(0,IID_IDispatch,(void**)&pDisp);
 	if (FAILED(hr))
 	{
-		SAVECUSTOMERROREX("CoCreateInstanceEx, IClassFactory.CreateInstance","Error: %I",hr);
+		SaveCustomError("CoCreateInstanceEx, IClassFactory.CreateInstance", "Error: %I", hr);
 		throw E_APIERROR;
 	}
 
@@ -799,7 +800,7 @@ void RegisteredComDll::RegisterDll(const char *pDllName, wchar_t *pWDllName)
 		m_hDll = CoLoadLibrary(pWDllName,TRUE);
 		if (!m_hDll)
 		{
-			SAVEWIN32ERROR(LoadLibrary,GetLastError());
+			SaveWin32Error("LoadLibrary,GetLastError());
 			throw E_APIERROR;
 		}
 	}
@@ -807,7 +808,7 @@ void RegisteredComDll::RegisterDll(const char *pDllName, wchar_t *pWDllName)
 	fpDllGetClassObject = (PDLLGETCLASSOBJECT)GetProcAddress(m_hDll,"DllGetClassObject");
 	if (!fpDllGetClassObject)
 	{
-		SAVECUSTOMERROR("CoRegisterComDll","Function 'DllGetClassObject' not found in dll, it seems not to be a COM dll.");
+		SaveCustomError("CoRegisterComDll","Function 'DllGetClassObject' not found in dll, it seems not to be a COM dll.");
 		throw E_APIERROR;
 	}
 
@@ -815,7 +816,7 @@ void RegisteredComDll::RegisterDll(const char *pDllName, wchar_t *pWDllName)
 	hr = LoadTypeLibEx(pWDllName,REGKIND_NONE,pTypeLib);
 	if (FAILED(hr))
 	{
-		SAVEWIN32ERROR(LoadTypeLibEx,hr);
+		SaveWin32Error("LoadTypeLibEx,hr);
 		throw E_APIERROR;
 	}
 
@@ -828,7 +829,7 @@ void RegisteredComDll::RegisterDll(const char *pDllName, wchar_t *pWDllName)
 		hr = pTypeLib->GetTypeInfoType(xj,&nKind);
 		if (FAILED(hr))
 		{
-			SAVECUSTOMERROREX("CoRegisterComDll, ITypeLib.GetTypeInfoType","Error: %I",hr);
+			SaveCustomError("CoRegisterComDll, ITypeLib.GetTypeInfoType", "Error: %I", hr);
 			throw E_APIERROR;
 		}
 
@@ -837,14 +838,14 @@ void RegisteredComDll::RegisterDll(const char *pDllName, wchar_t *pWDllName)
 			hr = pTypeLib->GetTypeInfo(xj,pTypeInfo);
 			if (FAILED(hr))
 			{
-				SAVECUSTOMERROREX("CoRegisterComDll, ITypeLib.GetTypeInfo","Error: %I",hr);
+				SaveCustomError("CoRegisterComDll, ITypeLib.GetTypeInfo", "Error: %I", hr);
 				throw E_APIERROR;
 			}
 
 			hr = pTypeInfo->GetTypeAttr(&pTypeAttr);
 			if (FAILED(hr))
 			{
-				SAVECUSTOMERROREX("CoRegisterComDll, ITypeInfo.GetTypeAttr","Error: %I",hr);
+				SaveCustomError("CoRegisterComDll, ITypeInfo.GetTypeAttr", "Error: %I", hr);
 				throw E_APIERROR;
 			}
 
@@ -860,7 +861,7 @@ void RegisteredComDll::RegisterDll(const char *pDllName, wchar_t *pWDllName)
 					hr = CoRegisterClassObject(pTypeAttr->guid,pUnk,CLSCTX_INPROC_SERVER,REGCLS_MULTIPLEUSE,&hToken);
 					if (FAILED(hr))
 					{
-						SAVEWIN32ERROR(CoRegisterClassObject,hr);
+						SaveWin32Error("CoRegisterClassObject,hr);
 						throw E_APIERROR;
 					}
 					m_CoClasses.push_back(hToken);
@@ -881,7 +882,7 @@ try
 {
 	FoxWString pMethod(p2);
 	FoxArray pParmTypes(parm, 3, '0');
-	LCID nLocale = PCOUNT() >= 4 && Vartype(p4) == 'N' && p4.ev_long ? (LCID)p4.ev_long : LOCALE_USER_DEFAULT;
+	LCID nLocale = PCount() >= 4 && Vartype(p4) == 'N' && p4.ev_long ? (LCID)p4.ev_long : LOCALE_USER_DEFAULT;
 
 	IDispatch *pDisp;
 
@@ -896,10 +897,9 @@ try
 		char aCommand[VFP2C_MAX_CALLBACKBUFFER];
 		sprintfex(aCommand,"INT(SYS(3095,%S))",(char*)pObject);
 
-		Value vDisp;
-		vDisp.ev_type = '0';
-		Evaluate(vDisp,aCommand);
-		pDisp = (IDispatch*)vDisp.ev_long;
+		FoxValue vDisp;
+		vDisp.Evaluate(aCommand);
+		pDisp = reinterpret_cast<IDispatch*>(vDisp->ev_long);
 	}
 	else
 		throw E_INVALIDPARAMS;
@@ -907,7 +907,7 @@ try
 	ComCall pCall;
 	pCall.SetCallInfo(pDisp, pMethod.Detach(), nLocale);
 
-	unsigned int nParmCount = PCOUNT() - 4;
+	unsigned int nParmCount = PCount() - 4;
 	pCall.SetParameterCount(nParmCount);
 
 	if (nParmCount)
@@ -975,21 +975,19 @@ try
 	FoxArray pParameters(parm,3,'0');
 	FoxString pResultObject(p4);
 	FoxWString pResultMethod(p5);
-	LCID nLocale = PCOUNT() >= 6 && p6.ev_long ? (LCID)p6.ev_long : LOCALE_USER_DEFAULT;
-	DWORD dwContext = PCOUNT() == 7 ? p7.ev_long : CLSCTX_INPROC_SERVER | CLSCTX_LOCAL_SERVER;
-	
+	LCID nLocale = PCount() >= 6 && p6.ev_long ? (LCID)p6.ev_long : LOCALE_USER_DEFAULT;
+	DWORD dwContext = PCount() == 7 ? p7.ev_long : CLSCTX_INPROC_SERVER | CLSCTX_LOCAL_SERVER;
+
+	FoxValue vUnk;	
 	IUnknown *pUnk;
 	char aCommand[VFP2C_MAX_CALLBACKBUFFER];
 
 	if (pResultObject.Len() > VFP2C_MAX_CALLBACKFUNCTION)
 		throw E_INVALIDPARAMS;
 
-	Value vUnk;
-	vUnk.ev_type = '0';
-
 	sprintfex(aCommand,"INT(SYS(3095,%S))",(char*)pResultObject);
-	Evaluate(vUnk,aCommand);
-	pUnk = (IUnknown*)vUnk.ev_long;
+	vUnk.Evaluate(aCommand);
+	pUnk = reinterpret_cast<IUnknown*>(vUnk->ev_long);
 
 	pCall = new ComCall;
 	if (!pCall)
@@ -1047,7 +1045,7 @@ try
 
 	if (hThread == NULL) 
 	{
-		SAVEWIN32ERROR(CreateThread,GetLastError());
+		SaveWin32Error("CreateThread", GetLastError());
 		throw E_APIERROR;
 	}
 	CloseHandle(hThread);

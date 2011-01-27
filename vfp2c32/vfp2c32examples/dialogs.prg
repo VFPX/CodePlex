@@ -4,6 +4,8 @@ CD (FULLPATH(JUSTPATH(SYS(16))))
 SET LIBRARY TO vfp2c32.fll ADDITIVE
 INITVFP2C32(VFP2C_INIT_ALL)
 
+MESSAGEBOXEX('Hello VFP', 0, 'The Caption', _VFP.hWnd, 102, VFP2CSYS(1))
+
 LOCAL lcFolder
 IF SHBROWSEFOLDER('Choose a Folder',0,@lcFolder)
 	? "Folder", lcFolder
@@ -52,6 +54,9 @@ DO CASE
 		AERROREX('laError')
 		DISPLAY MEMORY LIKE laError
 ENDCASE
+
+
+
 
 #DEFINE CDN_FIRST			-601
 #DEFINE CDN_LAST			-699

@@ -4,8 +4,6 @@
 #include "wininet.h"
 #include "vfp2chelpers.h"
 
-#define SAVEWININETERROR(cFunc,nErrorNo)	WinInetErrorHandler(#cFunc,nErrorNo)
-
 class FTPDownloadThread : public CThread
 {
 public:

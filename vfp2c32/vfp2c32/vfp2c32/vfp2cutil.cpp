@@ -199,7 +199,7 @@ int _stdcall AllocMemo(Locator *pLoc, int nSize, long *nLoc)
 	*nLoc = _AllocMemo(pLoc,nSize);
 	if (*nLoc == -1)
 	{
-		SAVECUSTOMERROR("_AllocMemo","Function failed.");
+		SaveCustomError("_AllocMemo","Function failed.");
 		return E_APIERROR;
 	}
 	return 0;
@@ -210,7 +210,7 @@ int _stdcall MemoChan(int nWorkarea, FCHAN *nChan)
 	*nChan = _MemoChan(nWorkarea);
 	if (*nChan == -1)
 	{
-		SAVECUSTOMERROR("_MemoChan","Function failed.");
+		SaveCustomError("_MemoChan","Function failed.");
 		return E_APIERROR;
 	}
 	return 0;
@@ -253,7 +253,7 @@ int _stdcall GetMemoContentEx(Locator *pLoc, char **pData, int *nErrorNo)
 	hFile = _MemoChan(pLoc->l_where);
 	if (hFile == -1)
 	{
-		SAVECUSTOMERROREX("_MemoChan","Function failed for workarea %I.",pLoc->l_where);
+		SaveCustomError("_MemoChan", "Function failed for workarea %I.", pLoc->l_where);
 		return -1;
 	}
 
@@ -329,14 +329,6 @@ int _stdcall Zap(char *pCursor)
 	return _Execute(aExeBuffer);
 }
 
-int _stdcall EmptyObject(Value *vObject)
-{
-	if (IS_FOX8ORHIGHER())
-		return _Evaluate(vObject,"CREATEOBJECT('Empty')");
-	else
-		return _Evaluate(vObject,"CREATEOBJECT('Relation')");
-}
-
 //converts a filetime value to a datetime value .. milliseconds are truncated ..
 void _stdcall FileTimeToDateTime(LPFILETIME pFileTime, Value *pDateTime)
 {
@@ -391,7 +383,7 @@ BOOL _stdcall FileTimeToDateTimeEx(LPFILETIME pFileTime, Value *pDateTime, BOOL 
 	{
 		if (!FileTimeToLocalFileTime(pFileTime,&sFileTime))
 		{
-			SAVEWIN32ERROR(FileTimeToLocalFileTime,GetLastError());
+			SaveWin32Error("FileTimeToLocalFileTime",GetLastError());
 			return FALSE;
 		}
 		FileTimeToDateTime(&sFileTime,pDateTime);
@@ -410,7 +402,7 @@ BOOL _stdcall DateTimeToFileTimeEx(Value *pDateTime, LPFILETIME pFileTime, BOOL 
 		DateTimeToFileTime(pDateTime,&sTime);
 		if (!LocalFileTimeToFileTime(&sTime,pFileTime))
 		{
-			SAVEWIN32ERROR(LocalFileTimeToFileTime,GetLastError());
+			SaveWin32Error("LocalFileTimeToFileTime",GetLastError());
 			return FALSE;
 		}
 	}
@@ -470,7 +462,7 @@ void _stdcall DateTimeToLocalDateTime(Value *pDateTime)
 	nApiRet = GetTimeZoneInformation(&gsTimeZone);
 	if (nApiRet == TIME_ZONE_ID_INVALID)
 	{
-		SAVEWIN32ERROR(GetTimeZoneInformation,GetLastError());
+		SaveWin32Error("GetTimeZoneInformation",GetLastError());
 		return;
 	}
 
@@ -490,7 +482,7 @@ void _stdcall LocalDateTimeToDateTime(Value *pDateTime)
 	nApiRet = GetTimeZoneInformation(&gsTimeZone);
 	if (nApiRet == TIME_ZONE_ID_INVALID)
 	{
-		SAVEWIN32ERROR(GetTimeZoneInformation,GetLastError());
+		SaveWin32Error("GetTimeZoneInformation",GetLastError());
 		return;
 	}
 
@@ -508,7 +500,7 @@ BOOL _stdcall SystemTimeToDateTime(LPSYSTEMTIME pSysTime, Value *pDateTime, BOOL
 
 	if (!SystemTimeToFileTime(pSysTime,&sUTCTime))
 	{
-		SAVEWIN32ERROR(SystemTimeToFileTime,GetLastError());
+		SaveWin32Error("SystemTimeToFileTime",GetLastError());
 		return FALSE;
 	}
 
@@ -516,7 +508,7 @@ BOOL _stdcall SystemTimeToDateTime(LPSYSTEMTIME pSysTime, Value *pDateTime, BOOL
 	{
 		if (!FileTimeToLocalFileTime(&sUTCTime,&sFileTime))
 		{
-			SAVEWIN32ERROR(FileTimeToLocalFileTime,GetLastError());
+			SaveWin32Error("FileTimeToLocalFileTime",GetLastError());
 			return FALSE;
 		}
 		FileTimeToDateTime(&sFileTime,pDateTime);
@@ -537,12 +529,12 @@ BOOL _stdcall DateTimeToSystemTime(Value *pDateTime, LPSYSTEMTIME pSysTime, BOOL
 	{
 		if (!LocalFileTimeToFileTime(&sFileTime,&sUTCTime))
 		{
-			SAVEWIN32ERROR(LocalFileTimeToFileTime,GetLastError());
+			SaveWin32Error("LocalFileTimeToFileTime", GetLastError());
 			return FALSE;
 		}
         if (!FileTimeToSystemTime(&sUTCTime,pSysTime))
 		{
-            SAVEWIN32ERROR(FileTimeToSystemTime,GetLastError());
+            SaveWin32Error("FileTimeToSystemTime", GetLastError());
 			return FALSE;
 		}
 	}
@@ -550,7 +542,7 @@ BOOL _stdcall DateTimeToSystemTime(Value *pDateTime, LPSYSTEMTIME pSysTime, BOOL
 	{
 		if (!FileTimeToSystemTime(&sFileTime,pSysTime))
 		{
-			SAVEWIN32ERROR(FileTimeToSystemTime,GetLastError());
+			SaveWin32Error("FileTimeToSystemTime", GetLastError());
 			return FALSE;
 		}
 	}
@@ -566,18 +558,18 @@ BOOL _stdcall FileTimeToDateLiteral(LPFILETIME pFileTime, char *pBuffer, BOOL bT
 	{
 		if (!FileTimeToLocalFileTime(pFileTime,&sFileTime))
 		{
-			SAVEWIN32ERROR(FileTimeToLocalFileTime,GetLastError());
+			SaveWin32Error("FileTimeToLocalFileTime", GetLastError());
 			return FALSE;
 		}
 		if (!FileTimeToSystemTime(&sFileTime,&sSysTime))
 		{
-			SAVEWIN32ERROR(FileTimeToSystemTime,GetLastError());
+			SaveWin32Error("FileTimeToSystemTime", GetLastError());
 			return FALSE;
 		}
 	}
 	else if (!FileTimeToSystemTime(pFileTime,&sSysTime))
 	{
-		SAVEWIN32ERROR(FileTimeToSystemTime,GetLastError());
+		SaveWin32Error("FileTimeToSystemTime", GetLastError());
 		return FALSE;
 	}
 
@@ -593,17 +585,17 @@ BOOL _stdcall SystemTimeToDateLiteral(LPSYSTEMTIME pSysTime, char *pBuffer, BOOL
 	{
 		if (!SystemTimeToFileTime(pSysTime,&sFileTime))
 		{
-			SAVEWIN32ERROR(SystemTimeToFileTime,GetLastError());
+			SaveWin32Error("SystemTimeToFileTime", GetLastError());
 			return FALSE;
 		}
 		if (!FileTimeToLocalFileTime(&sFileTime,&sLocalFTime))
 		{
-			SAVEWIN32ERROR(FileTimeToLocalFileTime,GetLastError());
+			SaveWin32Error("FileTimeToLocalFileTime", GetLastError());
 			return FALSE;
 		}
 		if (!FileTimeToSystemTime(&sLocalFTime,&sSysTime))
 		{
-			SAVEWIN32ERROR(FileTimeToSystemTime,GetLastError());
+			SaveWin32Error("FileTimeToSystemTime", GetLastError());
 			return FALSE;
 		}
 		pSysTime = &sSysTime;
@@ -690,7 +682,7 @@ BOOL _stdcall AnsiToUnicodePtr(char *pString, DWORD nStrLen, LPWSTR *pUnicodePtr
 	nWChars = MultiByteToWideChar(CP_ACP,MB_PRECOMPOSED,pString,nStrLen,pUnicodeStr,nWChars);
 	if (!nWChars)
 	{
-		SAVEWIN32ERROR(MultiByteToWideChar,GetLastError());
+		SaveWin32Error("MultiByteToWideChar", GetLastError());
 		return FALSE;	
 	}
 
@@ -715,7 +707,7 @@ BOOL _stdcall AnsiToUnicodeBuf(char *pString, DWORD nStrLen, LPWSTR pUnicodeBuf,
 	nWChars = MultiByteToWideChar(CP_ACP,MB_PRECOMPOSED,pString,nStrLen,pUnicodeBuf,nBufferLen);
 	if (!nWChars)
 	{
-		SAVEWIN32ERROR(MultiByteToWideChar,GetLastError());
+		SaveWin32Error("MultiByteToWideChar", GetLastError());
 		return FALSE;	
 	}
 
@@ -739,7 +731,7 @@ BOOL _stdcall UnicodeToAnsiBuf(LPWSTR pWString, DWORD nStrLen, char *pBuffer, DW
 	*nConverted = WideCharToMultiByte(CP_ACP,0,pWString,nStrLen,pBuffer,nBufferLen,0,0);
 	if (!*nConverted)
 	{
-		SAVEWIN32ERROR(MultiByteToWideChar,GetLastError());
+		SaveWin32Error("MultiByteToWideChar", GetLastError());
 		return FALSE;
 	}
 	return TRUE;
@@ -1050,6 +1042,88 @@ char* _stdcall Int64ToStr(char *pString, __int64 nNumber)
 	return pString;
 }
 
+union __Int64ToVarbinary
+{
+	char aBinary[8];
+	__int64 nNumber;
+};
+
+char* _stdcall Int64ToVarbinary(char *pString, __int64 nNumber)
+{
+	union __Int64ToVarbinary nInt;
+	nInt.nNumber = nNumber;
+
+	const char *HexTable = "0123456789ABCDEF";
+	register char *pSource = nInt.aBinary;
+	register int xj;
+	register char c;
+
+	*pString++ = '0';
+	*pString = 'h';
+
+	pString += 16;
+	for (xj = 8; xj; xj--)
+	{
+		c = *pSource++;
+		*pString-- = HexTable[(c & 0xF)];
+		*pString-- = HexTable[((c >> 4) & 0xF)];
+	}
+	return pString + 17;
+} 
+
+char* _stdcall Int64ToCurrency(char *pString, __int64 nNumber)
+{
+	char aBuffer[VFP2C_MAX_BIGINT_LITERAL];
+	char *pTmp = aBuffer;
+
+	if (nNumber == MIN_INT64)
+	{
+		int nSize = sizeof("STR2INT64(0h0000000000000080)");
+		memcpy(pString, "STR2INT64(0h0000000000000080)", nSize);
+		return pString + nSize;
+	}
+
+	*pString++ = '$';
+	if (nNumber < 0)
+	{
+		*pString++ = '-';
+		nNumber = -nNumber;
+	}
+
+	if (nNumber)
+	{
+		unsigned __int64 nNum = (unsigned __int64)nNumber;
+		do 
+		{
+			*pTmp++ = '0' + (char)(nNum % 10);
+			nNum /= 10;
+		}
+		while (nNum != 0);
+
+		int nLen = pTmp - aBuffer;
+		if (nLen <= 4)
+		{
+			*pString++ = '0';
+			*pString++ = '.';
+			while (nLen++ != 4) *pString++ = '0';
+			while (pTmp != aBuffer) *pString++ = *--pTmp;
+		}
+		else
+		{
+			while (pTmp != aBuffer+4) *pString++ = *--pTmp;
+			*pString++ = '.';
+			*pString++ = *--pTmp;
+			*pString++ = *--pTmp;
+			*pString++ = *--pTmp;
+			*pString++ = *--pTmp;
+		}
+	}
+	else
+		*pString++ = '0';
+	
+	return pString;
+}
+
 char* _stdcall UInt64ToStr(char *pString, unsigned __int64 nNumber)
 {
 	char aBuffer[VFP2C_MAX_BIGINT_LITERAL];
@@ -1194,31 +1268,92 @@ void _stdcall Int64ToString(char *pString, __int64 nNumber)
 	*pString = '\0';
 }
 
-__int64 _stdcall StringToInt64(char *pString)
+__int64 _stdcall StringToInt64(char *pString, unsigned int nLen) throw(int)
 {
 	__int64 nInt = 0;
-	BOOL bNegative;
+	char cDigit;
+	bool bPositive;
 
-	while (*pString == ' ') pString++;
+	if (nLen == 0)
+		return nInt;
+
+ 	while (*pString == ' ' && nLen--) pString++;
+	
+	if (nLen == 0)
+		return nInt;
+
 	if (*pString == '-')
 	{
-		bNegative = TRUE;
+		if (--nLen == 0)
+			return nInt;
+ 		bPositive = false;
 		pString++;
 	}
 	else if (*pString == '+')
 	{
-		bNegative = FALSE;
+		if (--nLen == 0)
+			return nInt;
+		bPositive = true;
 		pString++;
 	}
 	else
-		bNegative = FALSE;
+		bPositive = true;
 
-	while (IS_DIGIT(*pString))
+	if (nLen < 19)
 	{
-		nInt = nInt * 10 + (*pString - '0');
-		pString++;
+		do
+		{
+			cDigit = *pString++;
+			if (IsDigit(cDigit))
+				nInt = nInt * 10 + (cDigit - '0');
+			else if (cDigit == ' ')
+				break;
+			else 
+				throw E_INVALIDPARAMS;
+		} while (--nLen);
+		return bPositive ? nInt : -nInt;
 	}
-	return nInt;
+
+	for (int xj = 1; xj < 19; xj++)
+	{
+		cDigit = *pString++;
+		if (IsDigit(cDigit))
+			nInt = nInt * 10 + (cDigit - '0');
+		else if (cDigit == ' ')
+			break;
+		else 
+			throw E_INVALIDPARAMS;
+	}
+
+	cDigit = *pString++;
+	if (IsDigit(cDigit))
+	{
+		nInt = nInt * 10 + (cDigit - '0');
+		if (bPositive)
+		{
+			if (static_cast<unsigned __int64>(nInt) > MAX_INT64)
+				throw E_NUMERICOVERFLOW;
+		}
+		else
+		{
+			if (static_cast<unsigned __int64>(nInt) > 0x8000000000000000)
+				throw E_NUMERICOVERFLOW;
+		}
+	}
+	else if (cDigit != ' ')
+		throw E_INVALIDPARAMS;
+
+	nLen -= 19;
+	if (nLen)
+	{	
+		cDigit = *pString;
+		if (IsDigit(cDigit))
+			throw E_NUMERICOVERFLOW;
+		else if (cDigit != ' ')
+			throw E_INVALIDPARAMS;
+	}
+
+	return bPositive ? nInt : -nInt;
 }
 
 void _stdcall UInt64ToString(char *pString, unsigned __int64 nNumber)
@@ -1241,15 +1376,70 @@ void _stdcall UInt64ToString(char *pString, unsigned __int64 nNumber)
 		*pString++ = '0';
 }
 
-unsigned __int64 _stdcall StringToUInt64(char *pString)
+unsigned __int64 _stdcall StringToUInt64(char *pString, unsigned int nLen) throw(int)
 {
+	const unsigned __int64 nMax = MAX_UINT / 10;
+	int nMaxRem = MAX_UINT % 10;
+
 	unsigned __int64 nUInt = 0;
-	while (*pString == ' ') pString++;
-	while (IS_DIGIT(*pString))
+	char cDigit;
+	int  nNum;
+
+	if (nLen == 0)
+		return nUInt;
+
+	while (*pString == ' ' && nLen--) pString++;
+	if (nLen == 0)
+		return nUInt;
+
+	if (nLen < 20)
 	{
-		nUInt = nUInt * 10 + (*pString - '0');
-		pString++;
+		while (nLen--)
+		{
+			cDigit = *pString++;
+			if (IsDigit(cDigit))
+				nUInt = nUInt * 10 + (cDigit - '0');
+			else if (cDigit == ' ')
+				break;
+			else
+				throw E_INVALIDPARAMS;
+		}
+		return nUInt;	
 	}
+	
+	for (int xj = 1; xj < 20; xj++)
+	{
+		cDigit = *pString++;
+		if (IsDigit(cDigit))
+			nUInt = nUInt * 10 + (cDigit - '0');
+		else if (cDigit == ' ')
+			break;
+		else
+			throw E_INVALIDPARAMS;
+	}
+
+	cDigit = *pString++;
+	if (IsDigit(cDigit))
+	{
+		nNum = cDigit - '0';
+		if (nUInt < nMax || (nUInt == nMax && nNum <= nMaxRem))
+			nUInt = nUInt * 10 + nNum;
+		else
+			throw E_NUMERICOVERFLOW;
+	}
+	else if (cDigit != ' ')
+		throw E_INVALIDPARAMS;
+
+	nLen -= 20;
+	if (nLen)
+	{	
+		cDigit = *pString;
+		if (IsDigit(cDigit))
+			throw E_NUMERICOVERFLOW;
+		else if (cDigit != ' ')
+			throw E_INVALIDPARAMS;
+	}
+
 	return nUInt;
 }
 
@@ -1295,7 +1485,7 @@ unsigned int _stdcall strdblcount(const char *pString, unsigned long nMaxLen)
 int _stdcall skip_atoi(const char **s)
 {
   int i = 0;
-  while (IS_DIGIT(**s)) i = i*10 + *((*s)++) - '0';
+  while (IsDigit(**s)) i = i*10 + *((*s)++) - '0';
   return i;
 }
 
@@ -1380,14 +1570,21 @@ static char* _stdcall cvt(double arg, int ndigits, int *decpt, int *sign, char *
 
 unsigned int _cdecl sprintfex(char *lpBuffer, const char *lpFormat, ...)
 {
+	unsigned int nRet;
+	va_list lpArgs;
+	va_start(lpArgs, lpFormat);
+	nRet = printfex(lpBuffer, lpFormat, lpArgs);
+	va_end(lpArgs);
+	return nRet;
+}
+
+unsigned int _stdcall printfex(char *lpBuffer, const char *lpFormat, va_list lpArgs)
+{
 	char *lpString;
 	char *lpStringParm;
 	double nDouble;
 	int nPrecision, nUseLength;
 	
-	va_list lpArgs;
-	va_start(lpArgs, lpFormat);
-
 	for (lpString = lpBuffer ; *lpFormat ; lpFormat++)
 	{
 		if (*lpFormat != '%')
@@ -1398,7 +1595,7 @@ unsigned int _cdecl sprintfex(char *lpBuffer, const char *lpFormat, ...)
                   
     lpFormat++; 
 
-	if (nUseLength = IS_DIGIT(*lpFormat))
+	if (nUseLength = IsDigit(*lpFormat))
 		nPrecision = skip_atoi(&lpFormat);
 	else
 		nPrecision = 6;
@@ -1469,8 +1666,6 @@ unsigned int _cdecl sprintfex(char *lpBuffer, const char *lpFormat, ...)
    }
 
   *lpString = '\0';
-  va_end(lpArgs);
-
   return lpString - lpBuffer;
 }
 
@@ -1490,7 +1685,7 @@ BOOL _stdcall match_identifier(char **pString, char *pBuffer, int nMaxLen)
 	skip_ws(pString);
 	pStringEx = *pString;
 
-	if (!IS_CHARACTER(*pStringEx) && *pStringEx != '_')
+	if (!IsCharacter(*pStringEx) && *pStringEx != '_')
 		return FALSE;
 
 	*pBuffer++ = *pStringEx++;
@@ -1498,7 +1693,7 @@ BOOL _stdcall match_identifier(char **pString, char *pBuffer, int nMaxLen)
 
 	while (*pStringEx && --nMaxLen)
 	{
-		if (IS_CHARACTER(*pStringEx) || IS_DIGIT(*pStringEx) || *pStringEx == '_')
+		if (IsCharacter(*pStringEx) || IsDigit(*pStringEx) || *pStringEx == '_')
 			*pBuffer++ = *pStringEx++;
 		else
 			break;
@@ -1516,7 +1711,7 @@ BOOL _stdcall match_dotted_identifier(char **pString, char *pBuffer, int nMaxLen
 	skip_ws(pString);
 	pStringEx = *pString;
 
-	if (!IS_CHARACTER(*pStringEx) && *pStringEx != '_')
+	if (!IsCharacter(*pStringEx) && *pStringEx != '_')
 		return FALSE;
 
 	*pBuffer++ = *pStringEx++;
@@ -1524,7 +1719,7 @@ BOOL _stdcall match_dotted_identifier(char **pString, char *pBuffer, int nMaxLen
 
 	while (*pStringEx && --nMaxLen)
 	{
-		if (IS_CHARACTER(*pStringEx) || IS_DIGIT(*pStringEx) || *pStringEx == '_' || *pStringEx == '.')
+		if (IsCharacter(*pStringEx) || IsDigit(*pStringEx) || *pStringEx == '_' || *pStringEx == '.')
 			*pBuffer++ = *pStringEx++;
 		else
 			break;
@@ -1619,7 +1814,7 @@ BOOL _stdcall match_istr(char **pString, char *pSearch)
 
 	while (*pSearch)
 	{
-		if (TO_UPPER(*pStringEx) != TO_UPPER(*pSearch))
+		if (ToUpper(*pStringEx) != ToUpper(*pSearch))
 			return FALSE;
 		else
 		{
@@ -1677,10 +1872,10 @@ BOOL _stdcall match_int(char **pString, int *nInt)
 	if (*pStringEx == '-')
 		*pTmp++ = *pStringEx++;
 	
-	if (!IS_DIGIT(*pStringEx))
+	if (!IsDigit(*pStringEx))
 		return FALSE;
 
-	while (IS_DIGIT(*pStringEx) && --nBuffLen)
+	while (IsDigit(*pStringEx) && --nBuffLen)
 		*pTmp++ = *pStringEx++;
 	*pTmp = '\0';
 
@@ -1703,10 +1898,10 @@ BOOL _stdcall match_short(char **pString, short *nShort)
 	if (*pStringEx == '-')
 		*pTmp++ = *pStringEx++;
 
-	if (!IS_DIGIT(*pStringEx))
+	if (!IsDigit(*pStringEx))
 		return FALSE;
 
-	while (IS_DIGIT(*pStringEx) && --nBuffLen)
+	while (IsDigit(*pStringEx) && --nBuffLen)
 		*pTmp++ = *pStringEx++;
 	*pTmp = '\0';
 

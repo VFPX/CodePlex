@@ -81,13 +81,11 @@ private:
 	DWORD m_Flags;
 };
 
-#define SAVERAS32ERROR(cFunc,nErrorNo)	Ras32ErrorHandler(#cFunc,nErrorNo)
-
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-void _stdcall Ras32ErrorHandler(char *pFunction, DWORD nErrorNo);
+void _stdcall SaveRas32Error(char *pFunction, DWORD nErrorNo);
 
 bool _stdcall VFP2C_Init_Ras();
 void _stdcall VFP2C_Destroy_Ras();

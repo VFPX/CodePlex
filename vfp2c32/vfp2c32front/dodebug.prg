@@ -1,5 +1,5 @@
 CLEAR ALL
-CD d:\stuff\vfp2c32front
+CD (FULLPATH(JUSTPATH(SYS(16))))
 COMPILE codegen
 COMPILE cparser
 COMPILE cparsetypes

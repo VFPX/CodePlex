@@ -103,6 +103,17 @@ IF lnCount > 0
 ?"Display frequency", laRes[1,4]
 ENDIF
 
+lnCount = ADISPLAYDEVICES('laDevices')
+IF lnCount > 0
+	FOR xj = 1 TO lnCount
+		? 'DeviceString', laDevices[xj,1]
+		? 'DeviceName', laDevices[xj,2]
+		? 'DeviceID', laDevices[xj,3]
+		? 'DeviceKey', laDevices[xj,4]
+		? 'StateFlags', laDevices[xj,5]
+	ENDFOR	
+ENDIF
+
 FUNCTION WindowEnumCallback(tnHwnd)
 	&& do something here :)
 	RETURN .T. && return .F. to stop enumeration

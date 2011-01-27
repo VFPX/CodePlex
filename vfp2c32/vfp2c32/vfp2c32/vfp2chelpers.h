@@ -1,10 +1,85 @@
 #ifndef _VFP2CHELPERS_H__
 #define _VFP2CHELPERS_H__
 
+#include <windows.h>
 #include <shlwapi.h>
 #include <list>
 #include <algorithm>
 #include <assert.h>
+
+#define VER_SUITE_WH_SERVER 0x8000
+
+typedef void (_stdcall *PGETNATIVESYSTEMINFO)(LPSYSTEM_INFO);
+
+typedef enum WindowsVersion
+{
+	Windows,
+	Windows95,
+	Windows95OSR2,
+	Windows98,
+	Windows98SE,
+	WindowsMillennium,
+	WindowsNT351,
+	WindowsNT40,
+	WindowsNT40Server,
+	Windows2000,
+	WindowsXP,
+	WindowsXPProfessionalx64,
+	WindowsHomeServer,
+	WindowsVista,
+	WindowsServer2003,
+	WindowsServer2003R2,
+	Windows7,
+	WindowsServer2008,
+	WindowsServer2008R2,
+	WindowsX
+};
+
+typedef enum WindowsGenericVersion
+{
+	Windows9x, // Win95 upto Windows Millenium
+	WindowsNT // any WindowsNT version
+};
+
+class COs
+{
+public:
+	COs();
+	~COs();
+
+	static void Init();
+	static WindowsVersion GetVersion();
+	static bool Is(WindowsVersion vVersion);
+	static bool Is(WindowsGenericVersion vVersion);
+	static bool GreaterOrEqual(WindowsVersion vVersion);
+
+private:
+	static WindowsVersion m_Version;
+	static OSVERSIONINFOEX m_osver;
+};
+
+inline WindowsVersion COs::GetVersion()
+{
+	return m_Version;
+}
+
+inline bool COs::Is(WindowsVersion vVersion)
+{
+	return m_Version == vVersion;
+}
+
+inline bool COs::Is(WindowsGenericVersion vVersion)
+{
+	if (vVersion == Windows9x)
+		return m_osver.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS;
+	else // if (vVersion == WindowsNT)
+		return m_osver.dwPlatformId == VER_PLATFORM_WIN32_NT && m_osver.dwMajorVersion <= 4;
+}
+
+inline bool COs::GreaterOrEqual(WindowsVersion vVersion)
+{
+	return m_Version >= vVersion;
+}
 
 /* Some helper classes */
 class CStr
@@ -219,9 +294,9 @@ private:
 	HANDLE m_Event;
 };
 
-#define THREAD_STACKSIZE		(1024 * 32) /* 32 KB should be sufficient stackspace per thread */
-#define THREAD_ABORT_FLAG		1
-#define THREAD_SHUTDOWN_FLAG	2
+const int THREAD_STACKSIZE		= 1024 * 32; /* 32 KB should be sufficient stackspace per thread */
+const int THREAD_ABORT_FLAG		= 1;
+const int THREAD_SHUTDOWN_FLAG	= 2;
 
 class CThreadManager;
 

@@ -165,14 +165,14 @@ void IDynamicComWrapper::CreateComObject(wchar_t *pComClass, REFCLSID rInterface
 	hr = CLSIDFromProgID(pComClass,&pClsId);
 	if (FAILED(hr))
 	{
-		SAVEWIN32ERROR(CLSIDFromProgID,hr);
+		SaveWin32Error("CLSIDFromProgID", hr);
 		throw E_APIERROR;
 	}
 	
 	hr = CoCreateInstance(pClsId, NULL, CLSCTX_INPROC_SERVER, rInterface,(void**)&m_pUnk);
 	if (FAILED(hr))
 	{
-		SAVEWIN32ERROR(CoCreateInstance,hr);
+		SaveWin32Error("CoCreateInstance", hr);
 		throw E_APIERROR;
 	}
 }
@@ -202,7 +202,7 @@ try
 		hr = CLSIDFromString(pWInterface,&clsid);
 		if (FAILED(hr))
 		{
-			SAVEWIN32ERROR(CLSIDFromString,hr);
+			SaveWin32Error("CLSIDFromString", hr);
 			throw E_APIERROR;
 		}
 		pClsId = &clsid;
@@ -210,8 +210,7 @@ try
 
 	pProxy->CreateComObject(pComClass,*pClsId);
 
-	Value vObject;
-	vObject.ev_type = '0';
+	Value vObject = {'0'};
 	char aCommand[VFP2C_MAX_CALLBACKBUFFER];
 
 	sprintfex(aCommand,"SYS(3096,%I)",pProxy);

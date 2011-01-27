@@ -1,0 +1,58 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252" />
+<title>ValidateMem</title><link href="/scripts/styles.css" rel="stylesheet" type="text/css" />
+<script src="/scripts/jscript.js" type="text/javascript"></script>
+</head><body>
+<div id="header">
+<p>VFP2C32 2.0.0.8</p>
+<h1 class="function">ValidateMem</h1><p class="initflag"><a href="/pages/InitVFP2C32.html" title="Needed initialization">VFP2C_INIT_MARSHAL</a></p>
+
+</div>
+<div id="content">
+<p class="description">Validates the library internal heap. The function scans all the memory blocks in the heap and verifies that the heap control structures maintained by the heap manager are in a consistent state. You can also use the ValidateMem function to validate a single memory block without checking the validity of the entire heap.</p>
+
+<div class="block"><pre>ValidateMem(<a href="#p1">nAddress</a>)</pre></div>
+<h3>Parameters</h3>
+<dl class="parm"><dt><a id="p1">nAddress</a></dt>
+<dd><p>A pointer to a memory block returned from <a href="/pages/AllocMem.html">AllocMem</a>.  This parameter may be 0. <br />
+<br />
+If this parameter is 0, the function attempts to validate the entire heap.<br />
+<br />
+If this parameter is not 0, the function attempts to validate the memory block pointed to by <em>nAddress</em>.<br />
+It does not attempt to validate the rest of the heap.</p>
+</dd></dl>
+<h2>Return Value</h2>
+<p>Returns .T. if the specified heap or memory block is valid, .F. otherwise.</p>
+
+<h2>Remarks</h2>
+<p>When you use ValidateMem to validate a single memory block within a heap, it checks only the control structures pertaining to that element. <a href="http://msdn.microsoft.com/en-us/library/aa366708(VS.85).aspx">HeapValidate</a> can only validate allocated memory blocks. Calling ValidateMem on a freed memory block will return .F. because there are no control structures to validate.</p>
+
+<h2>See Also</h2>
+<h4>Reference</h4>
+<p><a href="/pages/AllocHGlobal.html">AllocHGlobal</a><br />
+<a href="/pages/AllocMem.html">AllocMem</a><br />
+<a href="/pages/AllocMemTo.html">AllocMemTo</a><br />
+<a href="/pages/AMemBlocks.html">AMemBlocks</a><br />
+<a href="/pages/CompactMem.html">CompactMem</a><br />
+<a href="/pages/FreeHGlobal.html">FreeHGlobal</a><br />
+<a href="/pages/FreeMem.html">FreeMem</a><br />
+<a href="/pages/FreePMem.html">FreePMem</a><br />
+<a href="/pages/FreeRefArray.html">FreeRefArray</a><br />
+<a href="/pages/LockHGlobal.html">LockHGlobal</a><br />
+<a href="/pages/ReAllocHGlobal.html">ReAllocHGlobal</a><br />
+<a href="/pages/ReAllocMem.html">ReAllocMem</a><br />
+<a href="/pages/SizeOfMem.html">SizeOfMem</a><br />
+<a href="/pages/UnlockHGlobal.html">UnlockHGlobal</a><br />
+</p>
+<h4>Used WinApi functions</h4>
+<p><a href="http://msdn.microsoft.com/en-us/library/aa366708(VS.85).aspx">HeapValidate</a></p>
+
+
+</div>
+<div id="footer">
+<p>&copy; <a href="http://vfpx.codeplex.com/wikipage?title=VFP2C32">VFP2C32</a> - Shared Source License for <a href="http://vfpx.codeplex.com">VFPX</a></p>
+</div>
+</body>
+</html>
