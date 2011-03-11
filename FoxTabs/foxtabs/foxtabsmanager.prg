@@ -25,13 +25,10 @@ Define Class FoxTabsManager As Custom
 	* Define class members	
 
 	Function Init()
-
 		* Declare Win32 API functions 
-		Declare Integer FindWindowEx In Win32API Integer hWndParent, Integer hwndChildAfter, String lpszClass, String lpszWindow
-		Declare Integer GetWindowInfo In Win32API Integer hWnd, String @ pwindowinfo
-		Declare Integer GetWindowText In Win32API Integer hWnd, String @szText, Integer nLen
-		Declare Integer GetAncestor In Win32API Integer hWnd, Integer gaFlags 
-	
+		IF !('FoxTabsDeclareAPI' $ SET( 'Procedure' ))
+			SET PROCEDURE TO FoxTabsDeclareAPI ADDITIVE
+		ENDIF
 	EndFunc 
 
 	Function SetBindings()
@@ -624,10 +621,10 @@ Define Class FoxTabsEventHandler As Custom
 	* Define class members	
 	Function Init()
 		
-		* Declare Win32 API functions 
-		Declare Integer CallWindowProc In Win32API Integer lpPrevWndFunc, Integer hWnd, Integer Msg, Integer wParam, Integer lParam
-		Declare Integer GetWindowLong In Win32API Integer hWnd, Integer nIndex
-		    
+		IF !('FoxTabsDeclareAPI' $ SET( 'Procedure' ))
+			SET PROCEDURE TO FoxTabsDeclareAPI ADDITIVE
+		ENDIF
+
 		* Store handle for use in CallWindowProc
 		This.PrevWndFunc = GetWindowLong(_Vfp.hWnd, GWL_WNDPROC)
 
