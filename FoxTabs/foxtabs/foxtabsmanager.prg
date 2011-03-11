@@ -668,13 +668,31 @@ Define Class FoxTabsEventHandler As Custom
 					* different memory space which can't even recognise our parent
 					* so just let it fall through with out trying to bind to the events
 				
-				Case Msg = WM_CREATE
+				Case lcWindowTitle = "work area"
+					* Work around issue with Work Area Properties window (Browse then select Table->Properties from the menu)
+					* Clicking on a button on this screen that opens another dialog can cause and Out of Memory error.
+					* In my testing, this only happens on 64-bit Windows when -C (config file) command-line 
+					*	switch is used to open VFP. 
+					* The fix is to turn off WM_CREATE binding while the window is open, and rebind when it closes.
+					* See http://vfpx.codeplex.com/workitem/30286
+					Do Case 
+					Case Msg = WM_CREATE
+						UnBindWinEvents(0, WM_CREATE, This, "WMEventHandler")
+						BindWinEvent(hWnd, WM_DESTROY, This, "WMEventHandler", 4)
+					Case Msg = WM_DESTROY
+						BindWinEvent(0, WM_CREATE, This, "WMEventHandler")	
+						UnBindWinEvents(hWnd, WM_DESTROY, This, "WMEventHandler")
+					Otherwise 
+						* Not expecting other events, but do nothing if they fire
+					EndCase 
 				
+				Case Msg = WM_CREATE
+
 					*JAL* VFP crashes if bound to WM_CREATE when Call Stack window is opened manually after 
 					*	a program is suspended. This code temporarily unbinds WM_CREATE and turns it back on 
 					*	in the WM_ACTIVATE event below.
 					* See http://www.codeplex.com/VFPX/WorkItem/View.aspx?WorkItemId=19307
-					If lcWindowTitle =  "call stack" and Program(0) <> "FOXTABS"
+					If lcWindowTitle = "call stack" and Program(0) <> "FOXTABS"
 						UnBindWinEvents(0, WM_CREATE, This, "WMEventHandler")
 						BindWinEvent(0, WM_ACTIVATE, This, "WMEventHandler")
 					EndIf 
