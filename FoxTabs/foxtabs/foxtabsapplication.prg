@@ -47,7 +47,7 @@ Return
 
 Define Class FoxTabsApplication As Custom
 
-	Version		= "1.0 Release Candidate"
+	Version		= "1.1"
 	ConfigFile 	= ""
 	LogFile		= ""
 	PrevDataSession = .f.
@@ -94,7 +94,11 @@ Define Class FoxTabsApplication As Custom
 		This.FoxTabsToolbar.Visible = .T.
 
 		* Reactivate top window and make sure tab highlighted
-		Activate Window screen
+		*JAL* 3/19/2011 I can't remember why I used the command below. It causes dockable/undocked
+		*JAL*	window to be Wontop().  Without this command, VFP ignores the dockable windows like it should.
+		*JAL*	I'm taking it out to fix issue http://vfpx.codeplex.com/workitem/30340, but there may be other scenarios
+		*JAL*	where it is required.  So, I may need another strategy if this comes back.
+		*JAL* Activate Window screen
 		lcWontop = Wontop()
 		If !Empty(lcWontop)
 			Hide Window (lcWonTop)
