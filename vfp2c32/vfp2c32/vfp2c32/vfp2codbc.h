@@ -153,7 +153,7 @@ void _stdcall ODBCInstallerErrorHandler(char *pFunction);
 inline void SafeODBCDbcError(char *pFunction, SQLHANDLE hHandle) { SaveODBCError(pFunction, hHandle, SQL_HANDLE_DBC); }
 inline void SafeODBCStmtError(char *pFunction, SQLHANDLE hHandle) { SaveODBCError(pFunction, hHandle, SQL_HANDLE_STMT); }
 
-bool _stdcall VFP2C_Init_Odbc();
+bool _stdcall VFP2C_Init_Odbc(VFP2CTls& tls);
 
 void _fastcall CreateSQLDataSource(ParamBlk *parm);
 void _fastcall DeleteSQLDataSource(ParamBlk *parm);

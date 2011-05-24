@@ -3,7 +3,6 @@
 
 #include <windows.h>
 #include <stdio.h>
-#include <list>
 
 #include "pro_ext.h"
 #include "vfp2c32.h"
@@ -15,10 +14,11 @@
 #include "vfpmacros.h"
 
 // static list<RegisteredComDll*> glRegisteredComDlls;
-static PLOADTYPELIBEX fpLoadTypeLibEx = 0;
+// static PLOADTYPELIBEX fpLoadTypeLibEx = 0;
 
-bool _stdcall VFP2C_Init_Com()
+bool _stdcall VFP2C_Init_Com(VFP2CTls& tls)
 {
+	/*
 	if (!fpLoadTypeLibEx)
 	{
 		HMODULE hDll;
@@ -28,6 +28,7 @@ bool _stdcall VFP2C_Init_Com()
 			fpLoadTypeLibEx = (PLOADTYPELIBEX)GetProcAddress(hDll,"LoadTypeLibEx");
 		}
 	}
+	*/
 
 try
 {
@@ -53,55 +54,80 @@ catch(int nErrorNo)
 	return true;
 }
 
-void _stdcall VFP2C_Destroy_Com()
+STDMETHODIMP CGetIDispatch::QueryInterface(REFIID riid, void **ppvObject)
 {
-/*	RegisteredComDll* pDll;
-	list<RegisteredComDll*>::iterator iDllIterator;
+	return E_NOTIMPL;
+}
 
-	for (iDllIterator = glRegisteredComDlls.begin();
-		iDllIterator != glRegisteredComDlls.end();
-		iDllIterator++)
+STDMETHODIMP_(ULONG) CGetIDispatch::AddRef()
+{
+	return 1;
+}
+
+STDMETHODIMP_(ULONG) CGetIDispatch::Release()
+{
+	return 1;
+}
+
+STDMETHODIMP CGetIDispatch::GetTypeInfoCount(UINT* pctinfo)
+{
+	return E_NOTIMPL;
+}
+
+STDMETHODIMP CGetIDispatch::GetTypeInfo(UINT itinfo, LCID lcid, ITypeInfo** pptinfo)
+{
+	return E_NOTIMPL;
+}
+
+STDMETHODIMP CGetIDispatch::GetIDsOfNames(REFIID riid, LPOLESTR* rgszNames, UINT cNames, LCID lcid, DISPID* rgdispid)
+{
+	*rgdispid = 0;
+	return S_OK;
+}
+
+STDMETHODIMP CGetIDispatch::Invoke(DISPID dispidMember, REFIID riid, LCID lcid, WORD wFlags, 
+										DISPPARAMS* pdispparams, VARIANT* pvarResult, EXCEPINFO* pexcepinfo, UINT* puArgErr)
+{
+	pdispparams->rgvarg[0].pdispVal->AddRef();
+	pvarResult->vt = VT_I4;
+	pvarResult->lVal = (LONG)pdispparams->rgvarg[0].pdispVal;
+	return S_OK;
+}
+
+void _stdcall GetIDispatchFromObject(Value &pVal, void** pDisp)
+{
+	char* VarName = "__VFP2C32_TEMP_COMOBJECT";
+	char aCommand[128];
+	FoxVariable pTmpObject(VarName, false);
+	FoxValue vObject;
+	pTmpObject = pVal;
+	sprintfex(aCommand,"INT(SYS(3095,m.%S))", VarName);
+	Evaluate(vObject, aCommand);
+	if (vObject->ev_long)
+		*pDisp = reinterpret_cast<void*>(vObject->ev_long);
+	else
 	{
-		pDll = *iDllIterator;
-		delete pDll;
+		CGetIDispatch* pObject = new CGetIDispatch;
+		try
+		{
+			if (!pObject)
+				throw E_INSUFMEMORY;
+			char *ComObjectName = "__VFP2C32_TEMP_GETIDISPATCH";
+			FoxVariable TmpComObject(ComObjectName, false);
+			FoxValue vTmpComObjectRef;
+			sprintfex(aCommand,"SYS(3096,%I)", pObject);
+			vTmpComObjectRef.Evaluate(aCommand);
+			TmpComObject = vTmpComObjectRef;
+			vObject.Evaluate("m.__VFP2C32_TEMP_GETIDISPATCH.Get(m.__VFP2C32_TEMP_COMOBJECT)");
+			*pDisp = reinterpret_cast<void*>(vObject->ev_long);
+		}
+		catch(int nErrorNo)
+		{
+			if (pObject)
+				delete pObject;
+			throw nErrorNo;
+		}
 	}
-*/
-}
-
-void _fastcall GetIUnknown(ParamBlk *parm)
-{
-try
-{
-	ResetWin32Errors();
-
-	FoxString pObject(p1);
-	HRESULT hr;
-	IUnknown *pUnk;
-	IDispatch *pDisp;
-	FoxValue vDisp;
-	char aCommand[VFP2C_MAX_CALLBACKBUFFER];
-
-	if (pObject.Len() > VFP2C_MAX_CALLBACKFUNCTION)
-		throw E_INVALIDPARAMS;
-
-	sprintfex(aCommand,"INT(SYS(3095,%S))",(char*)pObject);
-	vDisp.Evaluate(aCommand);
-	pDisp = reinterpret_cast<IDispatch*>(vDisp->ev_long);
-
-	hr = pDisp->QueryInterface(IID_IUnknown,(void**)&pUnk);
-	if (FAILED(hr))
-	{
-		SaveWin32Error("IDispatch.QueryInterface", hr);
-		throw E_APIERROR;
-	}
-
-	pUnk->Release();
-	Return(pUnk);
-}
-catch(int nErrorNo)
-{
-	RaiseError(nErrorNo);	
-}
 }
 
 IDispatch * _stdcall GetIDispatch(IDispatch *pObject)
@@ -109,12 +135,42 @@ IDispatch * _stdcall GetIDispatch(IDispatch *pObject)
 	return pObject;
 }
 
+/*
+void _fastcall Sys3095Ex(ParamBlk *parm)
+{
+	CGetIDispatch* pObject;
+try
+{
+	pObject = new CGetIDispatch();
+	char *ComObjectName = "__VFP2C32_TEMP_GETIDISPATCH";
+	char *VfpObjectName = "__VFP2C32_TEMP_VFPOBJECT";
+	char aCommand[128];
+	Value vObject = {'0'};
+	FoxVariable TmpVfpObject(VfpObjectName, false);
+	FoxVariable TmpComObject(ComObjectName, false);
+
+	TmpVfpObject = p1;
+	sprintfex(aCommand,"SYS(3096,%I)", pObject);
+	Evaluate(vObject, aCommand);
+	TmpComObject = vObject;
+	vObject.ev_type = '0';
+	Evaluate(vObject, "m.__VFP2C32_TEMP_GETIDISPATCH.Get(m.__VFP2C32_TEMP_VFPOBJECT)");
+	Return(vObject);
+	delete pObject;
+}
+catch(int nErrorNo)
+{
+	if (pObject)
+		delete pObject;
+	RaiseError(nErrorNo);
+}
+}
+*/
+
 void _fastcall CLSIDFromProgIDLib(ParamBlk *parm)
 {
 try
 {
-	ResetWin32Errors();
-
 	FoxWString pProgId(p1);
 	FoxString pClsId(sizeof(GUID));
 	HRESULT hr;
@@ -140,8 +196,6 @@ void _fastcall ProgIDFromCLSIDLib(ParamBlk *parm)
 {
 try
 {
-	ResetWin32Errors();
-
 	FoxString pClsId(parm,1);
 	FoxWString pWideClsId;
 	FoxString pProgId;
@@ -195,8 +249,6 @@ void _fastcall CLSIDFromStringLib(ParamBlk *parm)
 {
 try
 {
-	ResetWin32Errors();
-
 	FoxWString pString(p1);
 	FoxString pClsId(sizeof(GUID));
 	HRESULT hr;
@@ -222,7 +274,7 @@ void _fastcall StringFromCLSIDLib(ParamBlk *parm)
 {
 try
 {
-	FoxString pClsId(parm,1,0);
+	FoxString pClsId(parm, 1, 0);
 	FoxString pString;
 
 	int nRetVal;
@@ -253,8 +305,6 @@ void _fastcall IsEqualGUIDLib(ParamBlk *parm)
 {
 try
 {
-	ResetWin32Errors();
-
 	FoxString pGuidParm1(parm,1,0);
 	FoxString pGuidParm2(parm,2,0);
 	FoxWString pWideGuid;
@@ -325,8 +375,6 @@ void _fastcall CreateGuid(ParamBlk *parm)
 {
 try
 {
-	ResetWin32Errors();
-
 	FoxString pGuidString;
 	HRESULT hr;
 	GUID sGuid;
@@ -373,25 +421,15 @@ void _fastcall RegisterActiveObjectLib(ParamBlk *parm)
 {
 try
 {
-	FoxString pObject(p1);
 	FoxWString pProgId(p2);
 
 	HRESULT hr;
 	DWORD nRotKey = 0;
-	IUnknown *pUnk = 0;
+	IUnknown *pUnk;
 	FoxValue vUnk;
 	CLSID sClsId;
-	char aCommand[VFP2C_MAX_CALLBACKBUFFER];
 
-	sprintfex(aCommand,"INT(SYS(3095,%S))",(char*)pObject);
-	vUnk.Evaluate(aCommand);
-	pUnk = reinterpret_cast<IUnknown*>(vUnk->ev_long);
-
-	if (!pUnk)
-	{
-		SaveCustomError("SYS(3095)","Function failed to return a valid IDispatch pointer.");
-		throw E_APIERROR;
-	}
+	GetIDispatchFromObject(p1, (void**)&pUnk);
 
 	hr = CLSIDFromProgID(pProgId,&sClsId);
 	if (FAILED(hr))
@@ -430,7 +468,6 @@ void _fastcall RegisterObjectAsFileMoniker(ParamBlk *parm)
 {
 try
 {
-	FoxString pObject(p1);
 	FoxWString pProgId(p2);
 	FoxWString pFileName(p3);
 
@@ -443,17 +480,8 @@ try
 	IUnknown *pUnk;
 	FoxValue vUnk;
 	IID sClsId, spClsId;
-	char aCommand[VFP2C_MAX_CALLBACKBUFFER];
 
-	sprintfex(aCommand,"INT(SYS(3095,%S))",(char*)pObject);
-	vUnk.Evaluate(aCommand);
-	pUnk = reinterpret_cast<IUnknown*>(vUnk->ev_long);
-	
-	if (!pUnk)
-	{
-		SaveCustomError("SYS(3095)","Function failed to return a valid IDispatch pointer.");
-		throw E_APIERROR;
-	}
+	GetIDispatchFromObject(p1, (void**)&pUnk);
 
 	hr = CLSIDFromProgID(pProgId,&spClsId);
 	if (FAILED(hr))
@@ -876,6 +904,7 @@ void RegisteredComDll::RegisterDll(const char *pDllName, wchar_t *pWDllName)
 }
 */
 
+/*
 void _fastcall IDispatch_Invoke(ParamBlk *parm)
 {
 try
@@ -964,7 +993,9 @@ catch(int nErrorNo)
 	RaiseError(nErrorNo);
 }
 }
+*/
 
+/*
 void _fastcall IDispatch_AsyncInvoke(ParamBlk *parm)
 {
 	ComCall *pCall = 0;
@@ -1083,3 +1114,4 @@ catch(int nErrorNo)
 	return nErrorNo;
 }
 }
+*/

@@ -16,7 +16,7 @@ try
 {
 	FoxString pServer(p1);
 	unsigned short nPort = (PCount() >= 2 && p2.ev_long) ? static_cast<unsigned short>(p2.ev_long) : SNTP_PORT;
-	DWORD dwTimeout = (PCount() >= 3 && p3.ev_long) ? p3.ev_long : gnDefaultWinsockTimeOut;;
+	DWORD dwTimeout = (PCount() >= 3 && p3.ev_long) ? p3.ev_long : VFP2CTls::Tls().DefaultWinsockTimeout;
 
 	SOCKADDR_IN sockAddr;
 	SNTPPACKET sPacket;

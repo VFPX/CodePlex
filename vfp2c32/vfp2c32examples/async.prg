@@ -7,15 +7,16 @@ CD (FULLPATH(JUSTPATH(SYS(16))))
 SET LIBRARY TO vfp2c32.fll ADDITIVE
 INITVFP2C32(VFP2C_INIT_ASYNC)
 
-
-&& monitor RAS connnections
-PUBLIC loFileMonitor, loFileMonitor2
-loFileMonitor = CREATEOBJECT('FileSystemWatcher')
-loFileMonitor2 = CREATEOBJECT('FileSystemWatcher')
-&& 
-loFileMonitor.Watch('D:\Stuff', .T., FILE_NOTIFY_CHANGE_FILE_NAME + FILE_NOTIFY_CHANGE_DIR_NAME + FILE_NOTIFY_CHANGE_ATTRIBUTES + FILE_NOTIFY_CHANGE_SIZE)
-loFileMonitor2.Watch('D:\Stuff2008', .T., FILE_NOTIFY_CHANGE_FILE_NAME + FILE_NOTIFY_CHANGE_DIR_NAME + FILE_NOTIFY_CHANGE_ATTRIBUTES + FILE_NOTIFY_CHANGE_SIZE)
-
+&& monitor a directory for changes
+LOCAL lcDir
+m.lcDir = GETDIR('', '', 'Select directory to watch for changes')
+IF !EMPTY(m.lcDir)
+	PUBLIC loFileMonitor
+	loFileMonitor = CREATEOBJECT('FileSystemWatcher')
+	&& 
+	loFileMonitor.Watch(m.lcDir, .T., FILE_NOTIFY_CHANGE_FILE_NAME + FILE_NOTIFY_CHANGE_DIR_NAME + FILE_NOTIFY_CHANGE_ATTRIBUTES + FILE_NOTIFY_CHANGE_SIZE)
+ENDIF
+	
 PUBLIC loRegMonitor
 loRegMonitor = CREATEOBJECT('RegistryKeyWatcher')
 

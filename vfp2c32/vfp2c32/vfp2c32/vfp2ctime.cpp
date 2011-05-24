@@ -161,8 +161,6 @@ void _fastcall SetSystemTimeLib(ParamBlk *parm)
 {
 try
 {
-	ResetWin32Errors();
-
 	FoxDateTime pTime(p1);
 	SYSTEMTIME sSysTime;
 

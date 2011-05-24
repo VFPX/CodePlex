@@ -1,3 +1,5 @@
+#ifndef _THREADSAFE
+
 #define _WINSOCKAPI_ // we're using winsock2 .. so this is neccessary to exclude winsock.h 
 
 #include <windows.h>
@@ -195,12 +197,12 @@ HRESULT UrlDownload::Download()
 }
 
 /* initialisation & cleanup */
-bool _stdcall VFP2C_Init_Urlmon()
+bool _stdcall VFP2C_Init_Urlmon(VFP2CTls& tls)
 {
 	return goUrlThreads.Initialize();
 }
 
-void _stdcall VFP2C_Destroy_Urlmon()
+void _stdcall VFP2C_Destroy_Urlmon(VFP2CTls& tls)
 {
 	goUrlThreads.ShutdownThreads();
 }
@@ -211,8 +213,6 @@ void _fastcall UrlDownloadToFileEx(ParamBlk *parm)
 	UrlDownloadThread *pDownload = 0;
 try
 {
-	ResetWin32Errors();
-
 	FoxString pUrl(p1);
 	FoxString pFile(p2);
 	FoxString pCallback(parm,3);
@@ -280,3 +280,5 @@ catch(int nErrorNo)
 	RaiseError(nErrorNo);
 }
 }
+
+#endif // _THREADSAFE

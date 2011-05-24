@@ -53,17 +53,6 @@ private:
 	bool m_Async;
 };
 
-class ComException : public EXCEPINFO
-{
-public:
-    ComException() { ZeroMemory(this,sizeof(EXCEPINFO)); }
-    ~ComException()
-	{
-        if ( bstrSource ) SysFreeString(bstrSource);
-        if ( bstrDescription ) SysFreeString(bstrDescription);
-        if ( bstrHelpFile ) SysFreeString(bstrHelpFile);
-    }
-}; 
 
 
 void _stdcall MarshalVariant(VARIANT &pArg, Value &pValue, VARTYPE vType);

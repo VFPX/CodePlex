@@ -1,11 +1,25 @@
 #ifndef _VFP2C32_H__
 #define _VFP2C32_H__
 
+#include "vfp2ctls.h"
+
 // filename of FLL
 #ifndef _DEBUG
+
+#ifdef _THREADSAFE
+	#define FLLFILENAME "vfp2c32t.fll"
+#else
 	#define FLLFILENAME "vfp2c32.fll"
+#endif
+
+#else
+
+#ifdef _THREADSAFE
+	#define FLLFILENAME "vfp2c32dt.fll"
 #else
 	#define FLLFILENAME "vfp2c32d.fll"
+#endif
+
 #endif
 
 const unsigned int VFP2C_INIT_MARSHAL	= 0x00000001;
@@ -29,35 +43,7 @@ const unsigned int VFP2C_MAX_CALLBACKFUNCTION	= 1024;
 const unsigned int VFP2C_MAX_CALLBACKBUFFER		= 2048;
 const unsigned int VFP2C_MAX_FUNCTIONBUFFER		= 256;
 
-const int VFP2C_MAX_ERRORS					= 24;
-const unsigned int VFP2C_ERROR_MESSAGE_LEN	= 4096;
-const unsigned int VFP2C_ERROR_FUNCTION_LEN	= 128;
-
-const unsigned int VFP2C_ERRORTYPE_WIN32	= 1;
-const unsigned int VFP2C_ERRORTYPE_ODBC		= 2;
-const int VFP2C_ODBC_STATE_LEN				= 6;
-
 const int E_APIERROR	= 12345678;
-
-typedef struct _VFP2CERROR {
-	unsigned int nErrorType; // one of VFP2C_ERRORTYPE_ constants
-	unsigned long nErrorNo;
-	char aErrorFunction[VFP2C_ERROR_FUNCTION_LEN];
-	char aErrorMessage[VFP2C_ERROR_MESSAGE_LEN];
-	char aSqlState[VFP2C_ODBC_STATE_LEN];
-} VFP2CERROR, *LPVFP2CERROR;
-
-// defines for error handling
-// #define SAVEWIN32ERROR(cFunc,nErrorNo)		Win32ErrorHandler(#cFunc,nErrorNo,FALSE,FALSE)
-// #define ADDWIN32ERROR(cFunc,nErrorNo)		Win32ErrorHandler(#cFunc,nErrorNo,TRUE,FALSE)
-// #define RAISEWIN32ERROR(cFunc,nErrorNo)		Win32ErrorHandler(#cFunc,nErrorNo,FALSE,TRUE)
-// #define SAVECUSTOMERROR(cFunc,cMessage)		Win32ErrorHandlerEx(cFunc,cMessage,FALSE,FALSE)
-// #define ADDCUSTOMERROR(cFunc,cMessage)		Win32ErrorHandlerEx(cFunc,cMessage,TRUE,FALSE)
-// #define RAISECUSTOMERROR(cFunc,cMessage)	Win32ErrorHandlerEx(cFunc,cMessage,FALSE,TRUE)
-// #define SAVECUSTOMERROREX(cFunc,cMessage,nErrorNo)	Win32ErrorHandlerExEx(cFunc,cMessage,(DWORD)nErrorNo,FALSE,FALSE)
-// #define ADDCUSTOMERROREX(cFunc,cMessage,nErrorNo)	Win32ErrorHandlerExEx(cFunc,cMessage,(DWORD)nErrorNo,TRUE,FALSE)
-// #define RAISECUSTOMERROREX(cFunc,cMessage,nErrorNo) Win32ErrorHandlerExEx(cFunc,cMessage,(DWORD)nErrorNo,FALSE,TRUE)
-// #define SAVECUSTOMERROREX2(cFunc,cMessage,nParm1,nParm2) Win32ErrorhandlerExEx2(cFunc,cMessage,(void*)nParm1,(void*)nParm2)
 
 #ifdef __cplusplus
 extern "C" {
@@ -85,8 +71,6 @@ void _cdecl RaiseCustomErrorEx(char *pFunction, char *pMessage, int nErrorNo, ..
 
 // extern definitions
 extern HMODULE ghModule;
-extern VFP2CERROR gaErrorInfo[VFP2C_MAX_ERRORS];
-extern int gnErrorCount;
 
 #ifdef __cplusplus
 }
@@ -95,11 +79,14 @@ extern int gnErrorCount;
 inline void _stdcall RaiseError(int nErrorNo)
 {
 	if (nErrorNo == E_APIERROR)
-		_UserError(gaErrorInfo[gnErrorCount].aErrorMessage);
+	{
+		VFP2CTls& tls = VFP2CTls::Tls();
+		_UserError(tls.ErrorInfo[tls.ErrorCount].aErrorMessage);
+	}
 	_Error(nErrorNo);
 }
 
-inline void ResetWin32Errors() { gnErrorCount = -1; }
+inline void ResetWin32Errors() { VFP2CTls::Tls().ErrorCount = -1; }
 
 inline void SaveWin32Error(char *pFunction, unsigned long nErrorNo) { Win32ErrorHandler(pFunction, nErrorNo, false, false); }
 inline void AddWin32Error(char *pFunction, unsigned long nErrorNo) { Win32ErrorHandler(pFunction, nErrorNo, true, false); }

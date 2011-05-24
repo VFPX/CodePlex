@@ -170,49 +170,28 @@ public:
 };
 
 // typedef's for runtime dynamic linking
-typedef BOOL (_stdcall *PGETFILESIZEEX)(HANDLE,PLARGE_INTEGER); // GetFileSizeEx
-typedef DWORD (_stdcall *PGETLONGPATHNAME)(LPSTR,LPSTR,DWORD); // GetLongPathName
-typedef BOOL (_stdcall *PLOCKFILEEX)(HANDLE,DWORD,DWORD,DWORD,DWORD,LPOVERLAPPED); // LockFileEx
-typedef BOOL (_stdcall *PUNLOCKFILEEX)(HANDLE,DWORD,DWORD,DWORD,LPOVERLAPPED); // UnlockFileEx
-
-typedef BOOL (_stdcall *PGETFILEATTRIBUTESEX)(LPCTSTR,GET_FILEEX_INFO_LEVELS,LPVOID); // GetFileAttributesEx
 typedef BOOL (_stdcall *PGETSPECIALFOLDER)(HWND,LPSTR,int,BOOL); // SHGetSpecialFolderPathA (shell32.dll)
 typedef HRESULT (_stdcall *PSHILCREATEFROMPATH)(LPCWSTR,LPITEMIDLIST*,DWORD*); // SHILCreateFromPath (shell32.dll)
 typedef LPITEMIDLIST (_stdcall *PSHILCREATEFROMPATHEX)(LPCWSTR); // undocumented func #162 on shell32.dll
 const int SHILCREATEFROMPATHEXID = 162;
 
-typedef BOOL (_stdcall *PGETKERNELOBJECTSECURITY)(HANDLE,SECURITY_INFORMATION,PSECURITY_DESCRIPTOR,DWORD,LPDWORD); // GetKernelObjectSecurity (advapi32.dll)
-typedef BOOL (_stdcall *PGETSECURITYDESCRIPTOROWNER)(PSECURITY_DESCRIPTOR,PSID *,LPBOOL); // GetSecurityDescriptorOwner (advapi32.dll)
-typedef BOOL (_stdcall *PLOOKUPACCOUNTSIDA)(LPCSTR,PSID,LPSTR,LPDWORD,LPSTR,LPDWORD,PSID_NAME_USE); // LookupAccountSidA (advapi32.dll)
-
-typedef HANDLE (_stdcall *PFINDFIRSTVOLUME)(LPTSTR, DWORD); // FindFirstVolume
-typedef BOOL (_stdcall *PFINDNEXTVOLUME)(HANDLE, LPTSTR, DWORD); // FindNextVolume
-typedef BOOL (_stdcall *PFINDVOLUMECLOSE)(HANDLE); // FindVolumeClose
-typedef HANDLE (_stdcall *FINDFIRSTVOLUMEMOUNTPOINT)(LPTSTR, LPTSTR, DWORD); // FindFirstVolumeMountPoint
-typedef BOOL (_stdcall *PFINDNEXTVOLUMEMOUNTPOINT)(HANDLE, LPTSTR, DWORD); // FindNextVolumeMountPoint
-typedef BOOL (_stdcall *PFINDVOLUMEMOUNTPOINTCLOSE)(HANDLE); // FindVolumeMountPointClose
-typedef BOOL (_stdcall *PGETVOLUMENAMEFORVOLUMEMOUNTPOINT)(LPCTSTR, LPTSTR, DWORD); // GetVolumeNameForVolumeMountPoint
 typedef BOOL (_stdcall *PGETVOLUMEPATHNAMESFORVOLUMENAME)(LPCTSTR, LPTSTR, DWORD, PDWORD); // GetVolumePathNamesForVolumeName
-typedef BOOL (_stdcall *PGETVOLUMEINFORMATION)(LPCTSTR, LPTSTR, DWORD, LPDWORD, LPDWORD, LPDWORD, LPTSTR, DWORD); // GetVolumeInformation
-
-typedef DWORD (_stdcall *PQUERYDOSDEVICE)(LPCTSTR, LPTSTR, DWORD); // QueryDosDevice
-typedef BOOL (_stdcall *PDEVICEIOCONTROL)(HANDLE, DWORD, LPVOID, DWORD, LPVOID, DWORD, LPDWORD, LPOVERLAPPED); // DeviceIoControl
-typedef BOOL (_stdcall *PGETVOLUMEPATHNAME)(LPCTSTR, LPTSTR, DWORD); // GetVolumePathName
 
 typedef bool (_stdcall *PADIREXFILTER)(DWORD, DWORD);
 
+/*
 typedef HANDLE (_stdcall *CREATETRANSACTION)(LPSECURITY_ATTRIBUTES, LPGUID, DWORD, DWORD, DWORD, DWORD, LPWSTR); // CreateTransaction
 typedef BOOL (_stdcall *COMMITTRANSACTION)(HANDLE); // CommitTransaction
 typedef BOOL (_stdcall *ROLLBACKTRANSACTION)(HANDLE);  // RollbackTransaction(
-
+*/
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 // function prototypes of vfp2cfile.c
-bool _stdcall VFP2C_Init_File();
-void _stdcall VFP2C_Destroy_File();
+bool _stdcall VFP2C_Init_File(VFP2CTls& tls);
+void _stdcall VFP2C_Destroy_File(VFP2CTls& tls);
 
 void _fastcall ADirEx(ParamBlk *parm);
 bool _stdcall AdirExFilter_All(DWORD nAttributes, DWORD nFilter);

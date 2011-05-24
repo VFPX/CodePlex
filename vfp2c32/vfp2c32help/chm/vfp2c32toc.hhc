@@ -12,2556 +12,2569 @@
 		<param name="Name" value="VFP2C32">
 		<param name="Local" value="pages\static\Mainpage.html">
 		</OBJECT>
-	<UL>
-		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Error handling">
-			<param name="Local" value="pages\static\Errorhandling.html">
-			</OBJECT>
-		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Distribution">
-			<param name="Local" value="pages\static\Distribution.html">
-			</OBJECT>
-		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Intellisense &amp; Context Help">
-			<param name="Local" value="pages\static\Intellisense.html">
-			</OBJECT>
-		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Version history">
-			<param name="Local" value="pages\static\VersionHistory.html">
-			</OBJECT>
-		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Developers and collaborators">
-			<param name="Local" value="pages\static\Developers.html">
-			</OBJECT>
-	</UL>
+		<UL>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Error handling">
+				<param name="Local" value="pages\static\Errorhandling.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Distribution">
+				<param name="Local" value="pages\static\Distribution.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Intellisense &amp; Context Help">
+				<param name="Local" value="pages\static\Intellisense.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Version history">
+				<param name="Local" value="pages\static\VersionHistory.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Developers and collaborators">
+				<param name="Local" value="pages\static\Developers.html">
+				</OBJECT>
+		</UL>
 	<LI> <OBJECT type="text/sitemap">
 		<param name="Name" value="VFP2C32Front">
 		<param name="Local" value="pages\static\VFP2C32Front.html">
 		</OBJECT>
-	<UL>
-		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Translation options">
-			<param name="Local" value="pages\static\VFP2C32Front_Options.html">
-			</OBJECT>
-		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Common errors">
-			<param name="Local" value="pages\static\VFP2C32Front_Errors.html">
-			</OBJECT>
-		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Examples">
-			</OBJECT>
 		<UL>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="GlobalMemoryStatus">
-				<param name="Local" value="pages\static\VFP2C32Front_GlobalMemoryStatus.html">
+				<param name="Name" value="Translation options">
+				<param name="Local" value="pages\static\VFP2C32Front_Options.html">
 				</OBJECT>
 			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="RegisterPowerSettingNotification">
-				<param name="Local" value="pages\static\VFP2C32Front_RegisterPowerSettingNotification.html">
+				<param name="Name" value="Common errors">
+				<param name="Local" value="pages\static\VFP2C32Front_Errors.html">
 				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Examples">
+				</OBJECT>
+				<UL>
+					<LI> <OBJECT type="text/sitemap">
+						<param name="Name" value="GlobalMemoryStatus">
+						<param name="Local" value="pages\static\VFP2C32Front_GlobalMemoryStatus.html">
+						</OBJECT>
+					<LI> <OBJECT type="text/sitemap">
+						<param name="Name" value="RegisterPowerSettingNotification">
+						<param name="Local" value="pages\static\VFP2C32Front_RegisterPowerSettingNotification.html">
+						</OBJECT>
+				</UL>
 		</UL>
-	</UL>
 	<LI> <OBJECT type="text/sitemap">
 		<param name="Name" value="Reference">
 		</OBJECT>
+		<UL>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Functions A-Z">
+				<param name="Local" value="pages\FunctionsA-Z.html">
+				</OBJECT>
+				<UL>
+				
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="AAverage">
+			<param name="Local" value="pages\AAverage.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="AbortRasConnectionNotification">
+			<param name="Local" value="pages\AbortRasConnectionNotification.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="AbortUrlDownloadToFileEx">
+			<param name="Local" value="pages\AbortUrlDownloadToFileEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ADependentServices">
+			<param name="Local" value="pages\ADependentServices.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ADesktopArea">
+			<param name="Local" value="pages\ADesktopArea.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ADesktops">
+			<param name="Local" value="pages\ADesktops.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ADirectoryInfo">
+			<param name="Local" value="pages\ADirectoryInfo.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ADirEx">
+			<param name="Local" value="pages\ADirEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ADisplayDevices">
+			<param name="Local" value="pages\ADisplayDevices.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ADriveInfo">
+			<param name="Local" value="pages\ADriveInfo.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="AErrorEx">
+			<param name="Local" value="pages\AErrorEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="AFHandlesEx">
+			<param name="Local" value="pages\AFHandlesEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="AFileAttributes">
+			<param name="Local" value="pages\AFileAttributes.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="AFileAttributesEx">
+			<param name="Local" value="pages\AFileAttributesEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="AFontInfo">
+			<param name="Local" value="pages\AFontInfo.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="AHeapBlocks">
+			<param name="Local" value="pages\AHeapBlocks.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="AIpAddresses">
+			<param name="Local" value="pages\AIpAddresses.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="AllocHGlobal">
+			<param name="Local" value="pages\AllocHGlobal.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="AllocMem">
+			<param name="Local" value="pages\AllocMem.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="AllocMemTo">
+			<param name="Local" value="pages\AllocMemTo.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="AMax">
+			<param name="Local" value="pages\AMax.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="AMemBlocks">
+			<param name="Local" value="pages\AMemBlocks.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="AMin">
+			<param name="Local" value="pages\AMin.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ANetFiles">
+			<param name="Local" value="pages\ANetFiles.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ANetServers">
+			<param name="Local" value="pages\ANetServers.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="APaperSizes">
+			<param name="Local" value="pages\APaperSizes.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="APrinterForms">
+			<param name="Local" value="pages\APrinterForms.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="APrintersEx">
+			<param name="Local" value="pages\APrintersEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="APrinterTrays">
+			<param name="Local" value="pages\APrinterTrays.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="APrintJobs">
+			<param name="Local" value="pages\APrintJobs.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="AProcesses">
+			<param name="Local" value="pages\AProcesses.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="AProcessHeaps">
+			<param name="Local" value="pages\AProcessHeaps.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="AProcessModules">
+			<param name="Local" value="pages\AProcessModules.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="AProcessThreads">
+			<param name="Local" value="pages\AProcessThreads.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ARasConnections">
+			<param name="Local" value="pages\ARasConnections.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ARasDevices">
+			<param name="Local" value="pages\ARasDevices.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ARasPhonebookEntries">
+			<param name="Local" value="pages\ARasPhonebookEntries.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ARegistryKeys">
+			<param name="Local" value="pages\ARegistryKeys.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ARegistryValues">
+			<param name="Local" value="pages\ARegistryValues.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="AResolutions">
+			<param name="Local" value="pages\AResolutions.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="AResourceLanguages">
+			<param name="Local" value="pages\AResourceLanguages.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="AResourceNames">
+			<param name="Local" value="pages\AResourceNames.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="AResourceTypes">
+			<param name="Local" value="pages\AResourceTypes.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="AServiceConfig">
+			<param name="Local" value="pages\AServiceConfig.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="AServices">
+			<param name="Local" value="pages\AServices.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="AServiceStatus">
+			<param name="Local" value="pages\AServiceStatus.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ASplitStr">
+			<param name="Local" value="pages\ASplitStr.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ASQLDataSources">
+			<param name="Local" value="pages\ASQLDataSources.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ASQLDrivers">
+			<param name="Local" value="pages\ASQLDrivers.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ASum">
+			<param name="Local" value="pages\ASum.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="AsyncWaitForObject">
+			<param name="Local" value="pages\AsyncWaitForObject.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ATimeZones">
+			<param name="Local" value="pages\ATimeZones.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="AVolumeInformation">
+			<param name="Local" value="pages\AVolumeInformation.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="AVolumeMountPoints">
+			<param name="Local" value="pages\AVolumeMountPoints.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="AVolumePaths">
+			<param name="Local" value="pages\AVolumePaths.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="AVolumes">
+			<param name="Local" value="pages\AVolumes.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="AWindowProps">
+			<param name="Local" value="pages\AWindowProps.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="AWindows">
+			<param name="Local" value="pages\AWindows.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="AWindowsEx">
+			<param name="Local" value="pages\AWindowsEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="AWindowStations">
+			<param name="Local" value="pages\AWindowStations.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="BindEventsEx">
+			<param name="Local" value="pages\BindEventsEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="CancelFileChange">
+			<param name="Local" value="pages\CancelFileChange.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="CancelRegistryChange">
+			<param name="Local" value="pages\CancelRegistryChange.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="CancelWaitForObject">
+			<param name="Local" value="pages\CancelWaitForObject.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="CenterWindowEx">
+			<param name="Local" value="pages\CenterWindowEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ChangeSQLDataSource">
+			<param name="Local" value="pages\ChangeSQLDataSource.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="CloseRegistryKey">
+			<param name="Local" value="pages\CloseRegistryKey.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="CloseServiceHandle">
+			<param name="Local" value="pages\CloseServiceHandle.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="CLSIDFromProgID">
+			<param name="Local" value="pages\CLSIDFromProgID.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="CLSIDFromString">
+			<param name="Local" value="pages\CLSIDFromString.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Colors2RGB">
+			<param name="Local" value="pages\Colors2RGB.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="CompactMem">
+			<param name="Local" value="pages\CompactMem.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="CompareFileTimes">
+			<param name="Local" value="pages\CompareFileTimes.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ContinueService">
+			<param name="Local" value="pages\ContinueService.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ControlService">
+			<param name="Local" value="pages\ControlService.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="CopyFileEx">
+			<param name="Local" value="pages\CopyFileEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="CreateCallbackFunc">
+			<param name="Local" value="pages\CreateCallbackFunc.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="CreateGuid">
+			<param name="Local" value="pages\CreateGuid.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="CreatePublicShadowObjReference">
+			<param name="Local" value="pages\CreatePublicShadowObjReference.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="CreateRegistryKey">
+			<param name="Local" value="pages\CreateRegistryKey.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="CreateService">
+			<param name="Local" value="pages\CreateService.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="CreateSQLDataSource">
+			<param name="Local" value="pages\CreateSQLDataSource.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="CreateThreadObject">
+			<param name="Local" value="pages\CreateThreadObject.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Decimals">
+			<param name="Local" value="pages\Decimals.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="DeleteDirectory">
+			<param name="Local" value="pages\DeleteDirectory.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="DeleteFileEx">
+			<param name="Local" value="pages\DeleteFileEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="DeleteRegistryKey">
+			<param name="Local" value="pages\DeleteRegistryKey.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="DeleteSQLDataSource">
+			<param name="Local" value="pages\DeleteSQLDataSource.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="DestroyCallbackFunc">
+			<param name="Local" value="pages\DestroyCallbackFunc.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Double2DT">
+			<param name="Local" value="pages\Double2DT.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Double2Str">
+			<param name="Local" value="pages\Double2Str.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="DT2Double">
+			<param name="Local" value="pages\DT2Double.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="DT2FT">
+			<param name="Local" value="pages\DT2FT.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="DT2ST">
+			<param name="Local" value="pages\DT2ST.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="DT2Timet">
+			<param name="Local" value="pages\DT2Timet.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="DT2UTC">
+			<param name="Local" value="pages\DT2UTC.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ExpandEnvironmentStrings">
+			<param name="Local" value="pages\ExpandEnvironmentStrings.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="FChSizeEx">
+			<param name="Local" value="pages\FChSizeEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="FCloseEx">
+			<param name="Local" value="pages\FCloseEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="FCreateEx">
+			<param name="Local" value="pages\FCreateEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="FEoFEx">
+			<param name="Local" value="pages\FEoFEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="FFlushEx">
+			<param name="Local" value="pages\FFlushEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="FGetsEx">
+			<param name="Local" value="pages\FGetsEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="FindFileChange">
+			<param name="Local" value="pages\FindFileChange.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="FindRegistryChange">
+			<param name="Local" value="pages\FindRegistryChange.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Float2Str">
+			<param name="Local" value="pages\Float2Str.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="FLockFile">
+			<param name="Local" value="pages\FLockFile.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="FLockFileEx">
+			<param name="Local" value="pages\FLockFileEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="FOpenEx">
+			<param name="Local" value="pages\FOpenEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="FormatMessageEx">
+			<param name="Local" value="pages\FormatMessageEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="FPutsEx">
+			<param name="Local" value="pages\FPutsEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="FReadEx">
+			<param name="Local" value="pages\FReadEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="FreeHGlobal">
+			<param name="Local" value="pages\FreeHGlobal.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="FreeMem">
+			<param name="Local" value="pages\FreeMem.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="FreePMem">
+			<param name="Local" value="pages\FreePMem.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="FreeRefArray">
+			<param name="Local" value="pages\FreeRefArray.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="FSeekEx">
+			<param name="Local" value="pages\FSeekEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="FT2DT">
+			<param name="Local" value="pages\FT2DT.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="FUnlockFile">
+			<param name="Local" value="pages\FUnlockFile.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="FUnlockFileEx">
+			<param name="Local" value="pages\FUnlockFileEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="FWriteEx">
+			<param name="Local" value="pages\FWriteEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="GetCursorPosEx">
+			<param name="Local" value="pages\GetCursorPosEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="GetFileAttributes">
+			<param name="Local" value="pages\GetFileAttributes.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="GetFileOwner">
+			<param name="Local" value="pages\GetFileOwner.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="GetFileSize">
+			<param name="Local" value="pages\GetFileSize.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="GetFileTimes">
+			<param name="Local" value="pages\GetFileTimes.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="GetIUnknown">
+			<param name="Local" value="pages\GetIUnknown.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="GetLocaleInfoEx">
+			<param name="Local" value="pages\GetLocaleInfoEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="GetLongPathName">
+			<param name="Local" value="pages\GetLongPathName.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="GetOpenFileName">
+			<param name="Local" value="pages\GetOpenFileName.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="GetSaveFileName">
+			<param name="Local" value="pages\GetSaveFileName.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="GetServerTime">
+			<param name="Local" value="pages\GetServerTime.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="GetShortPathName">
+			<param name="Local" value="pages\GetShortPathName.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="GetSystemDirectory">
+			<param name="Local" value="pages\GetSystemDirectory.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="GetSystemTime">
+			<param name="Local" value="pages\GetSystemTime.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="GetWindowRectEx">
+			<param name="Local" value="pages\GetWindowRectEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="GetWindowsDirectory">
+			<param name="Local" value="pages\GetWindowsDirectory.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="GetWindowTextEx">
+			<param name="Local" value="pages\GetWindowTextEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="IcmpPing">
+			<param name="Local" value="pages\IcmpPing.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="InitVFP2C32">
+			<param name="Local" value="pages\InitVFP2C32.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Int642Str">
+			<param name="Local" value="pages\Int642Str.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Int64_Add">
+			<param name="Local" value="pages\Int64_Add.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Int64_Div">
+			<param name="Local" value="pages\Int64_Div.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Int64_Mod">
+			<param name="Local" value="pages\Int64_Mod.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Int64_Mul">
+			<param name="Local" value="pages\Int64_Mul.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Int64_Sub">
+			<param name="Local" value="pages\Int64_Sub.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Ip2MacAddress">
+			<param name="Local" value="pages\Ip2MacAddress.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="IsEqualGuid">
+			<param name="Local" value="pages\IsEqualGuid.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="LockHGlobal">
+			<param name="Local" value="pages\LockHGlobal.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Long2Str">
+			<param name="Local" value="pages\Long2Str.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="MarshalCArray2Cursor">
+			<param name="Local" value="pages\MarshalCArray2Cursor.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="MarshalCArray2FoxArray">
+			<param name="Local" value="pages\MarshalCArray2FoxArray.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="MarshalCursor2CArray">
+			<param name="Local" value="pages\MarshalCursor2CArray.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="MarshalFoxArray2CArray">
+			<param name="Local" value="pages\MarshalFoxArray2CArray.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="MessageBoxEx">
+			<param name="Local" value="pages\MessageBoxEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="MoveFileEx">
+			<param name="Local" value="pages\MoveFileEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Num2Binary">
+			<param name="Local" value="pages\Num2Binary.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="OpenRegistryKey">
+			<param name="Local" value="pages\OpenRegistryKey.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="OpenService">
+			<param name="Local" value="pages\OpenService.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="OsEx">
+			<param name="Local" value="pages\OsEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="PauseService">
+			<param name="Local" value="pages\PauseService.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="PG_ByteA2Str">
+			<param name="Local" value="pages\PG_ByteA2Str.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="PG_Str2ByteA">
+			<param name="Local" value="pages\PG_Str2ByteA.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ProgIDFromCLSID">
+			<param name="Local" value="pages\ProgIDFromCLSID.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="RasClearConnectionStatistics">
+			<param name="Local" value="pages\RasClearConnectionStatistics.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="RasConnectionNotificationEx">
+			<param name="Local" value="pages\RasConnectionNotificationEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="RasDialDlgEx">
+			<param name="Local" value="pages\RasDialDlgEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="RasDialEx">
+			<param name="Local" value="pages\RasDialEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="RasGetConnectStatusEx">
+			<param name="Local" value="pages\RasGetConnectStatusEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="RasHangUpEx">
+			<param name="Local" value="pages\RasHangUpEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="RasPhonebookDlgEx">
+			<param name="Local" value="pages\RasPhonebookDlgEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ReadBytes">
+			<param name="Local" value="pages\ReadBytes.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ReadChar">
+			<param name="Local" value="pages\ReadChar.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ReadCharArray">
+			<param name="Local" value="pages\ReadCharArray.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ReadCString">
+			<param name="Local" value="pages\ReadCString.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ReadDouble">
+			<param name="Local" value="pages\ReadDouble.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ReadFloat">
+			<param name="Local" value="pages\ReadFloat.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ReadInt">
+			<param name="Local" value="pages\ReadInt.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ReadInt64">
+			<param name="Local" value="pages\ReadInt64.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ReadInt8">
+			<param name="Local" value="pages\ReadInt8.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ReadLogical">
+			<param name="Local" value="pages\ReadLogical.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ReadPChar">
+			<param name="Local" value="pages\ReadPChar.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ReadPCString">
+			<param name="Local" value="pages\ReadPCString.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ReadPDouble">
+			<param name="Local" value="pages\ReadPDouble.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ReadPFloat">
+			<param name="Local" value="pages\ReadPFloat.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ReadPInt">
+			<param name="Local" value="pages\ReadPInt.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ReadPInt64">
+			<param name="Local" value="pages\ReadPInt64.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ReadPInt8">
+			<param name="Local" value="pages\ReadPInt8.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ReadPLogical">
+			<param name="Local" value="pages\ReadPLogical.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ReadPointer">
+			<param name="Local" value="pages\ReadPointer.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ReadPPointer">
+			<param name="Local" value="pages\ReadPPointer.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ReadProcessMemoryEx">
+			<param name="Local" value="pages\ReadProcessMemoryEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ReadPShort">
+			<param name="Local" value="pages\ReadPShort.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ReadPUInt">
+			<param name="Local" value="pages\ReadPUInt.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ReadPUInt64">
+			<param name="Local" value="pages\ReadPUInt64.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ReadPUInt8">
+			<param name="Local" value="pages\ReadPUInt8.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ReadPUShort">
+			<param name="Local" value="pages\ReadPUShort.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ReadPWString">
+			<param name="Local" value="pages\ReadPWString.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ReadRegistryKey">
+			<param name="Local" value="pages\ReadRegistryKey.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ReadShort">
+			<param name="Local" value="pages\ReadShort.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ReadUInt">
+			<param name="Local" value="pages\ReadUInt.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ReadUInt64">
+			<param name="Local" value="pages\ReadUInt64.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ReadUInt8">
+			<param name="Local" value="pages\ReadUInt8.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ReadUShort">
+			<param name="Local" value="pages\ReadUShort.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ReadWCharArray">
+			<param name="Local" value="pages\ReadWCharArray.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ReadWString">
+			<param name="Local" value="pages\ReadWString.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ReAllocHGlobal">
+			<param name="Local" value="pages\ReAllocHGlobal.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ReAllocMem">
+			<param name="Local" value="pages\ReAllocMem.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="RegisterActiveObject">
+			<param name="Local" value="pages\RegisterActiveObject.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="RegisterObjectAsFileMoniker">
+			<param name="Local" value="pages\RegisterObjectAsFileMoniker.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="RegistryHiveToObject">
+			<param name="Local" value="pages\RegistryHiveToObject.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="RegistryValuesToObject">
+			<param name="Local" value="pages\RegistryValuesToObject.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ReleasePublicShadowObjReference">
+			<param name="Local" value="pages\ReleasePublicShadowObjReference.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ResolveHostToIp">
+			<param name="Local" value="pages\ResolveHostToIp.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="RevokeActiveObject">
+			<param name="Local" value="pages\RevokeActiveObject.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="RGB2Colors">
+			<param name="Local" value="pages\RGB2Colors.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="SetFileAttributes">
+			<param name="Local" value="pages\SetFileAttributes.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="SetFileTimes">
+			<param name="Local" value="pages\SetFileTimes.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="SetSystemTime">
+			<param name="Local" value="pages\SetSystemTime.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="SHBrowseFolder">
+			<param name="Local" value="pages\SHBrowseFolder.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="SHCopyFiles">
+			<param name="Local" value="pages\SHCopyFiles.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="SHDeleteFiles">
+			<param name="Local" value="pages\SHDeleteFiles.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="SHMoveFiles">
+			<param name="Local" value="pages\SHMoveFiles.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Short2Str">
+			<param name="Local" value="pages\Short2Str.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="SHRenameFiles">
+			<param name="Local" value="pages\SHRenameFiles.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="SHSpecialFolder">
+			<param name="Local" value="pages\SHSpecialFolder.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="SizeOfMem">
+			<param name="Local" value="pages\SizeOfMem.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="SQLExecEx">
+			<param name="Local" value="pages\SQLExecEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="SQLGetPropEx">
+			<param name="Local" value="pages\SQLGetPropEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="SQLSetPropEx">
+			<param name="Local" value="pages\SQLSetPropEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ST2DT">
+			<param name="Local" value="pages\ST2DT.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="StartService">
+			<param name="Local" value="pages\StartService.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="StopService">
+			<param name="Local" value="pages\StopService.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Str2Double">
+			<param name="Local" value="pages\Str2Double.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Str2Float">
+			<param name="Local" value="pages\Str2Float.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Str2Int64">
+			<param name="Local" value="pages\Str2Int64.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Str2Long">
+			<param name="Local" value="pages\Str2Long.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Str2Short">
+			<param name="Local" value="pages\Str2Short.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Str2UInt64">
+			<param name="Local" value="pages\Str2UInt64.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Str2ULong">
+			<param name="Local" value="pages\Str2ULong.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Str2UShort">
+			<param name="Local" value="pages\Str2UShort.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="StringFromCLSID">
+			<param name="Local" value="pages\StringFromCLSID.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="SyncToSNTPServer">
+			<param name="Local" value="pages\SyncToSNTPServer.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Timet2DT">
+			<param name="Local" value="pages\Timet2DT.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="UInt642Str">
+			<param name="Local" value="pages\UInt642Str.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ULong2Str">
+			<param name="Local" value="pages\ULong2Str.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="UnbindEventsEx">
+			<param name="Local" value="pages\UnbindEventsEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="UnlockHGlobal">
+			<param name="Local" value="pages\UnlockHGlobal.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="UrlDownloadToFileEx">
+			<param name="Local" value="pages\UrlDownloadToFileEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="UShort2Str">
+			<param name="Local" value="pages\UShort2Str.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="UTC2DT">
+			<param name="Local" value="pages\UTC2DT.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ValidateMem">
+			<param name="Local" value="pages\ValidateMem.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Value2Variant">
+			<param name="Local" value="pages\Value2Variant.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Variant2Value">
+			<param name="Local" value="pages\Variant2Value.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="VFP2CSys">
+			<param name="Local" value="pages\VFP2CSys.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="WaitForServiceStatus">
+			<param name="Local" value="pages\WaitForServiceStatus.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="WriteBytes">
+			<param name="Local" value="pages\WriteBytes.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="WriteChar">
+			<param name="Local" value="pages\WriteChar.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="WriteCharArray">
+			<param name="Local" value="pages\WriteCharArray.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="WriteCString">
+			<param name="Local" value="pages\WriteCString.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="WriteDouble">
+			<param name="Local" value="pages\WriteDouble.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="WriteFloat">
+			<param name="Local" value="pages\WriteFloat.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="WriteGPCString">
+			<param name="Local" value="pages\WriteGPCString.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="WriteInt">
+			<param name="Local" value="pages\WriteInt.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="WriteInt64">
+			<param name="Local" value="pages\WriteInt64.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="WriteInt8">
+			<param name="Local" value="pages\WriteInt8.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="WriteLogical">
+			<param name="Local" value="pages\WriteLogical.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="WritePChar">
+			<param name="Local" value="pages\WritePChar.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="WritePCString">
+			<param name="Local" value="pages\WritePCString.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="WritePDouble">
+			<param name="Local" value="pages\WritePDouble.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="WritePFloat">
+			<param name="Local" value="pages\WritePFloat.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="WritePInt">
+			<param name="Local" value="pages\WritePInt.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="WritePInt64">
+			<param name="Local" value="pages\WritePInt64.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="WritePInt8">
+			<param name="Local" value="pages\WritePInt8.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="WritePLogical">
+			<param name="Local" value="pages\WritePLogical.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="WritePointer">
+			<param name="Local" value="pages\WritePointer.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="WritePPointer">
+			<param name="Local" value="pages\WritePPointer.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="WritePShort">
+			<param name="Local" value="pages\WritePShort.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="WritePUInt">
+			<param name="Local" value="pages\WritePUInt.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="WritePUInt64">
+			<param name="Local" value="pages\WritePUInt64.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="WritePUInt8">
+			<param name="Local" value="pages\WritePUInt8.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="WritePUShort">
+			<param name="Local" value="pages\WritePUShort.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="WritePWChar">
+			<param name="Local" value="pages\WritePWChar.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="WritePWString">
+			<param name="Local" value="pages\WritePWString.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="WriteRegistryKey">
+			<param name="Local" value="pages\WriteRegistryKey.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="WriteShort">
+			<param name="Local" value="pages\WriteShort.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="WriteUInt">
+			<param name="Local" value="pages\WriteUInt.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="WriteUInt64">
+			<param name="Local" value="pages\WriteUInt64.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="WriteUInt8">
+			<param name="Local" value="pages\WriteUInt8.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="WriteUShort">
+			<param name="Local" value="pages\WriteUShort.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="WriteWChar">
+			<param name="Local" value="pages\WriteWChar.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="WriteWCharArray">
+			<param name="Local" value="pages\WriteWCharArray.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="WriteWString">
+			<param name="Local" value="pages\WriteWString.html">
+			</OBJECT>
+
+				</UL>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Functions by Category">
+				<param name="Local" value="pages\FunctionsCategory.html">
+				</OBJECT>
+				<UL>
+					<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Array">
+		<param name="Local" value="pages\group_33114A805.html">
+		</OBJECT>
 	<UL>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Functions A-Z">
-			<param name="Local" value="pages\FunctionsA-Z.html">
+			<param name="Name" value="AAverage">
+			<param name="Local" value="pages\AAverage.html">
 			</OBJECT>
-		<UL>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="AAverage">
-				<param name="Local" value="pages\AAverage.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="AbortRasConnectionNotification">
-				<param name="Local" value="pages\AbortRasConnectionNotification.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="AbortUrlDownloadToFileEx">
-				<param name="Local" value="pages\AbortUrlDownloadToFileEx.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ADependentServices">
-				<param name="Local" value="pages\ADependentServices.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ADesktopArea">
-				<param name="Local" value="pages\ADesktopArea.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ADesktops">
-				<param name="Local" value="pages\ADesktops.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ADirectoryInfo">
-				<param name="Local" value="pages\ADirectoryInfo.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ADirEx">
-				<param name="Local" value="pages\ADirEx.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ADisplayDevices">
-				<param name="Local" value="pages\ADisplayDevices.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ADriveInfo">
-				<param name="Local" value="pages\ADriveInfo.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="AErrorEx">
-				<param name="Local" value="pages\AErrorEx.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="AFHandlesEx">
-				<param name="Local" value="pages\AFHandlesEx.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="AFileAttributes">
-				<param name="Local" value="pages\AFileAttributes.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="AFileAttributesEx">
-				<param name="Local" value="pages\AFileAttributesEx.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="AFontInfo">
-				<param name="Local" value="pages\AFontInfo.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="AHeapBlocks">
-				<param name="Local" value="pages\AHeapBlocks.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="AIpAddresses">
-				<param name="Local" value="pages\AIpAddresses.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="AllocHGlobal">
-				<param name="Local" value="pages\AllocHGlobal.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="AllocMem">
-				<param name="Local" value="pages\AllocMem.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="AllocMemTo">
-				<param name="Local" value="pages\AllocMemTo.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="AMax">
-				<param name="Local" value="pages\AMax.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="AMemBlocks">
-				<param name="Local" value="pages\AMemBlocks.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="AMin">
-				<param name="Local" value="pages\AMin.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ANetFiles">
-				<param name="Local" value="pages\ANetFiles.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ANetServers">
-				<param name="Local" value="pages\ANetServers.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="APaperSizes">
-				<param name="Local" value="pages\APaperSizes.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="APrinterForms">
-				<param name="Local" value="pages\APrinterForms.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="APrintersEx">
-				<param name="Local" value="pages\APrintersEx.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="APrinterTrays">
-				<param name="Local" value="pages\APrinterTrays.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="APrintJobs">
-				<param name="Local" value="pages\APrintJobs.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="AProcesses">
-				<param name="Local" value="pages\AProcesses.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="AProcessHeaps">
-				<param name="Local" value="pages\AProcessHeaps.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="AProcessModules">
-				<param name="Local" value="pages\AProcessModules.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="AProcessThreads">
-				<param name="Local" value="pages\AProcessThreads.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ARasConnections">
-				<param name="Local" value="pages\ARasConnections.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ARasDevices">
-				<param name="Local" value="pages\ARasDevices.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ARasPhonebookEntries">
-				<param name="Local" value="pages\ARasPhonebookEntries.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ARegistryKeys">
-				<param name="Local" value="pages\ARegistryKeys.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ARegistryValues">
-				<param name="Local" value="pages\ARegistryValues.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="AResolutions">
-				<param name="Local" value="pages\AResolutions.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="AResourceLanguages">
-				<param name="Local" value="pages\AResourceLanguages.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="AResourceNames">
-				<param name="Local" value="pages\AResourceNames.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="AResourceTypes">
-				<param name="Local" value="pages\AResourceTypes.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="AServiceConfig">
-				<param name="Local" value="pages\AServiceConfig.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="AServices">
-				<param name="Local" value="pages\AServices.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="AServiceStatus">
-				<param name="Local" value="pages\AServiceStatus.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ASplitStr">
-				<param name="Local" value="pages\ASplitStr.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ASQLDataSources">
-				<param name="Local" value="pages\ASQLDataSources.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ASQLDrivers">
-				<param name="Local" value="pages\ASQLDrivers.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ASum">
-				<param name="Local" value="pages\ASum.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="AsyncWaitForObject">
-				<param name="Local" value="pages\AsyncWaitForObject.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ATimeZones">
-				<param name="Local" value="pages\ATimeZones.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="AVolumeInformation">
-				<param name="Local" value="pages\AVolumeInformation.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="AVolumeMountPoints">
-				<param name="Local" value="pages\AVolumeMountPoints.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="AVolumePaths">
-				<param name="Local" value="pages\AVolumePaths.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="AVolumes">
-				<param name="Local" value="pages\AVolumes.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="AWindowProps">
-				<param name="Local" value="pages\AWindowProps.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="AWindows">
-				<param name="Local" value="pages\AWindows.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="AWindowsEx">
-				<param name="Local" value="pages\AWindowsEx.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="AWindowStations">
-				<param name="Local" value="pages\AWindowStations.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="BindEventsEx">
-				<param name="Local" value="pages\BindEventsEx.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="CancelFileChange">
-				<param name="Local" value="pages\CancelFileChange.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="CancelRegistryChange">
-				<param name="Local" value="pages\CancelRegistryChange.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="CancelWaitForObject">
-				<param name="Local" value="pages\CancelWaitForObject.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="CenterWindowEx">
-				<param name="Local" value="pages\CenterWindowEx.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ChangeSQLDataSource">
-				<param name="Local" value="pages\ChangeSQLDataSource.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="CloseRegistryKey">
-				<param name="Local" value="pages\CloseRegistryKey.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="CloseServiceHandle">
-				<param name="Local" value="pages\CloseServiceHandle.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="CLSIDFromProgID">
-				<param name="Local" value="pages\CLSIDFromProgID.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="CLSIDFromString">
-				<param name="Local" value="pages\CLSIDFromString.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Colors2RGB">
-				<param name="Local" value="pages\Colors2RGB.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="CompactMem">
-				<param name="Local" value="pages\CompactMem.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="CompareFileTimes">
-				<param name="Local" value="pages\CompareFileTimes.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ContinueService">
-				<param name="Local" value="pages\ContinueService.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ControlService">
-				<param name="Local" value="pages\ControlService.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="CopyFileEx">
-				<param name="Local" value="pages\CopyFileEx.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="CreateCallbackFunc">
-				<param name="Local" value="pages\CreateCallbackFunc.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="CreateGuid">
-				<param name="Local" value="pages\CreateGuid.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="CreatePublicShadowObjReference">
-				<param name="Local" value="pages\CreatePublicShadowObjReference.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="CreateRegistryKey">
-				<param name="Local" value="pages\CreateRegistryKey.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="CreateSQLDataSource">
-				<param name="Local" value="pages\CreateSQLDataSource.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Decimals">
-				<param name="Local" value="pages\Decimals.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="DeleteDirectory">
-				<param name="Local" value="pages\DeleteDirectory.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="DeleteFileEx">
-				<param name="Local" value="pages\DeleteFileEx.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="DeleteRegistryKey">
-				<param name="Local" value="pages\DeleteRegistryKey.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="DeleteSQLDataSource">
-				<param name="Local" value="pages\DeleteSQLDataSource.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="DestroyCallbackFunc">
-				<param name="Local" value="pages\DestroyCallbackFunc.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Double2DT">
-				<param name="Local" value="pages\Double2DT.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Double2Str">
-				<param name="Local" value="pages\Double2Str.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="DT2Double">
-				<param name="Local" value="pages\DT2Double.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="DT2FT">
-				<param name="Local" value="pages\DT2FT.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="DT2ST">
-				<param name="Local" value="pages\DT2ST.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="DT2Timet">
-				<param name="Local" value="pages\DT2Timet.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="DT2UTC">
-				<param name="Local" value="pages\DT2UTC.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ExpandEnvironmentStrings">
-				<param name="Local" value="pages\ExpandEnvironmentStrings.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="FChSizeEx">
-				<param name="Local" value="pages\FChSizeEx.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="FCloseEx">
-				<param name="Local" value="pages\FCloseEx.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="FCreateEx">
-				<param name="Local" value="pages\FCreateEx.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="FEoFEx">
-				<param name="Local" value="pages\FEoFEx.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="FFlushEx">
-				<param name="Local" value="pages\FFlushEx.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="FGetsEx">
-				<param name="Local" value="pages\FGetsEx.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="FindFileChange">
-				<param name="Local" value="pages\FindFileChange.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="FindRegistryChange">
-				<param name="Local" value="pages\FindRegistryChange.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Float2Str">
-				<param name="Local" value="pages\Float2Str.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="FLockFile">
-				<param name="Local" value="pages\FLockFile.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="FLockFileEx">
-				<param name="Local" value="pages\FLockFileEx.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="FOpenEx">
-				<param name="Local" value="pages\FOpenEx.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="FormatMessageEx">
-				<param name="Local" value="pages\FormatMessageEx.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="FPutsEx">
-				<param name="Local" value="pages\FPutsEx.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="FReadEx">
-				<param name="Local" value="pages\FReadEx.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="FreeHGlobal">
-				<param name="Local" value="pages\FreeHGlobal.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="FreeMem">
-				<param name="Local" value="pages\FreeMem.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="FreePMem">
-				<param name="Local" value="pages\FreePMem.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="FreeRefArray">
-				<param name="Local" value="pages\FreeRefArray.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="FSeekEx">
-				<param name="Local" value="pages\FSeekEx.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="FT2DT">
-				<param name="Local" value="pages\FT2DT.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="FUnlockFile">
-				<param name="Local" value="pages\FUnlockFile.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="FUnlockFileEx">
-				<param name="Local" value="pages\FUnlockFileEx.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="FWriteEx">
-				<param name="Local" value="pages\FWriteEx.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="GetCursorPosEx">
-				<param name="Local" value="pages\GetCursorPosEx.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="GetFileAttributes">
-				<param name="Local" value="pages\GetFileAttributes.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="GetFileOwner">
-				<param name="Local" value="pages\GetFileOwner.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="GetFileSize">
-				<param name="Local" value="pages\GetFileSize.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="GetFileTimes">
-				<param name="Local" value="pages\GetFileTimes.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="GetIUnknown">
-				<param name="Local" value="pages\GetIUnknown.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="GetLocaleInfoEx">
-				<param name="Local" value="pages\GetLocaleInfoEx.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="GetLongPathName">
-				<param name="Local" value="pages\GetLongPathName.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="GetOpenFileName">
-				<param name="Local" value="pages\GetOpenFileName.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="GetSaveFileName">
-				<param name="Local" value="pages\GetSaveFileName.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="GetServerTime">
-				<param name="Local" value="pages\GetServerTime.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="GetShortPathName">
-				<param name="Local" value="pages\GetShortPathName.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="GetSystemDirectory">
-				<param name="Local" value="pages\GetSystemDirectory.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="GetSystemTime">
-				<param name="Local" value="pages\GetSystemTime.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="GetWindowRectEx">
-				<param name="Local" value="pages\GetWindowRectEx.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="GetWindowsDirectory">
-				<param name="Local" value="pages\GetWindowsDirectory.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="GetWindowTextEx">
-				<param name="Local" value="pages\GetWindowTextEx.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="IcmpPing">
-				<param name="Local" value="pages\IcmpPing.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="IDispatch_AsyncInvoke">
-				<param name="Local" value="pages\IDispatch_AsyncInvoke.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="IDispatch_Invoke">
-				<param name="Local" value="pages\IDispatch_Invoke.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="InitVFP2C32">
-				<param name="Local" value="pages\InitVFP2C32.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Int642Str">
-				<param name="Local" value="pages\Int642Str.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Int64_Add">
-				<param name="Local" value="pages\Int64_Add.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Int64_Div">
-				<param name="Local" value="pages\Int64_Div.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Int64_Mod">
-				<param name="Local" value="pages\Int64_Mod.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Int64_Mul">
-				<param name="Local" value="pages\Int64_Mul.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Int64_Sub">
-				<param name="Local" value="pages\Int64_Sub.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Ip2MacAddress">
-				<param name="Local" value="pages\Ip2MacAddress.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="IsEqualGuid">
-				<param name="Local" value="pages\IsEqualGuid.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="LockHGlobal">
-				<param name="Local" value="pages\LockHGlobal.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Long2Str">
-				<param name="Local" value="pages\Long2Str.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="MarshalCArray2Cursor">
-				<param name="Local" value="pages\MarshalCArray2Cursor.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="MarshalCArray2FoxArray">
-				<param name="Local" value="pages\MarshalCArray2FoxArray.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="MarshalCursor2CArray">
-				<param name="Local" value="pages\MarshalCursor2CArray.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="MarshalFoxArray2CArray">
-				<param name="Local" value="pages\MarshalFoxArray2CArray.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="MessageBoxEx">
-				<param name="Local" value="pages\MessageBoxEx.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="MoveFileEx">
-				<param name="Local" value="pages\MoveFileEx.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Num2Binary">
-				<param name="Local" value="pages\Num2Binary.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="OpenRegistryKey">
-				<param name="Local" value="pages\OpenRegistryKey.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="OpenService">
-				<param name="Local" value="pages\OpenService.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="OsEx">
-				<param name="Local" value="pages\OsEx.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="PauseService">
-				<param name="Local" value="pages\PauseService.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="PG_ByteA2Str">
-				<param name="Local" value="pages\PG_ByteA2Str.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="PG_Str2ByteA">
-				<param name="Local" value="pages\PG_Str2ByteA.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ProgIDFromCLSID">
-				<param name="Local" value="pages\ProgIDFromCLSID.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="RasClearConnectionStatistics">
-				<param name="Local" value="pages\RasClearConnectionStatistics.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="RasConnectionNotificationEx">
-				<param name="Local" value="pages\RasConnectionNotificationEx.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="RasDialDlgEx">
-				<param name="Local" value="pages\RasDialDlgEx.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="RasDialEx">
-				<param name="Local" value="pages\RasDialEx.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="RasGetConnectStatusEx">
-				<param name="Local" value="pages\RasGetConnectStatusEx.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="RasHangUpEx">
-				<param name="Local" value="pages\RasHangUpEx.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="RasPhonebookDlgEx">
-				<param name="Local" value="pages\RasPhonebookDlgEx.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ReadBytes">
-				<param name="Local" value="pages\ReadBytes.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ReadChar">
-				<param name="Local" value="pages\ReadChar.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ReadCharArray">
-				<param name="Local" value="pages\ReadCharArray.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ReadCString">
-				<param name="Local" value="pages\ReadCString.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ReadDouble">
-				<param name="Local" value="pages\ReadDouble.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ReadFloat">
-				<param name="Local" value="pages\ReadFloat.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ReadInt">
-				<param name="Local" value="pages\ReadInt.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ReadInt64">
-				<param name="Local" value="pages\ReadInt64.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ReadInt8">
-				<param name="Local" value="pages\ReadInt8.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ReadLogical">
-				<param name="Local" value="pages\ReadLogical.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ReadPChar">
-				<param name="Local" value="pages\ReadPChar.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ReadPCString">
-				<param name="Local" value="pages\ReadPCString.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ReadPDouble">
-				<param name="Local" value="pages\ReadPDouble.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ReadPFloat">
-				<param name="Local" value="pages\ReadPFloat.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ReadPInt">
-				<param name="Local" value="pages\ReadPInt.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ReadPInt64">
-				<param name="Local" value="pages\ReadPInt64.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ReadPInt8">
-				<param name="Local" value="pages\ReadPInt8.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ReadPLogical">
-				<param name="Local" value="pages\ReadPLogical.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ReadPointer">
-				<param name="Local" value="pages\ReadPointer.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ReadPPointer">
-				<param name="Local" value="pages\ReadPPointer.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ReadProcessMemoryEx">
-				<param name="Local" value="pages\ReadProcessMemoryEx.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ReadPShort">
-				<param name="Local" value="pages\ReadPShort.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ReadPUInt">
-				<param name="Local" value="pages\ReadPUInt.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ReadPUInt64">
-				<param name="Local" value="pages\ReadPUInt64.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ReadPUInt8">
-				<param name="Local" value="pages\ReadPUInt8.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ReadPUShort">
-				<param name="Local" value="pages\ReadPUShort.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ReadPWString">
-				<param name="Local" value="pages\ReadPWString.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ReadRegistryKey">
-				<param name="Local" value="pages\ReadRegistryKey.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ReadShort">
-				<param name="Local" value="pages\ReadShort.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ReadUInt">
-				<param name="Local" value="pages\ReadUInt.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ReadUInt64">
-				<param name="Local" value="pages\ReadUInt64.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ReadUInt8">
-				<param name="Local" value="pages\ReadUInt8.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ReadUShort">
-				<param name="Local" value="pages\ReadUShort.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ReadWCharArray">
-				<param name="Local" value="pages\ReadWCharArray.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ReadWString">
-				<param name="Local" value="pages\ReadWString.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ReAllocHGlobal">
-				<param name="Local" value="pages\ReAllocHGlobal.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ReAllocMem">
-				<param name="Local" value="pages\ReAllocMem.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="RegisterActiveObject">
-				<param name="Local" value="pages\RegisterActiveObject.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="RegisterObjectAsFileMoniker">
-				<param name="Local" value="pages\RegisterObjectAsFileMoniker.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="RegistryHiveToObject">
-				<param name="Local" value="pages\RegistryHiveToObject.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="RegistryValuesToObject">
-				<param name="Local" value="pages\RegistryValuesToObject.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ReleasePublicShadowObjReference">
-				<param name="Local" value="pages\ReleasePublicShadowObjReference.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ResolveHostToIp">
-				<param name="Local" value="pages\ResolveHostToIp.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="RevokeActiveObject">
-				<param name="Local" value="pages\RevokeActiveObject.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="RGB2Colors">
-				<param name="Local" value="pages\RGB2Colors.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="SetFileAttributes">
-				<param name="Local" value="pages\SetFileAttributes.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="SetFileTimes">
-				<param name="Local" value="pages\SetFileTimes.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="SetSystemTime">
-				<param name="Local" value="pages\SetSystemTime.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="SHBrowseFolder">
-				<param name="Local" value="pages\SHBrowseFolder.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="SHCopyFiles">
-				<param name="Local" value="pages\SHCopyFiles.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="SHDeleteFiles">
-				<param name="Local" value="pages\SHDeleteFiles.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="SHMoveFiles">
-				<param name="Local" value="pages\SHMoveFiles.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Short2Str">
-				<param name="Local" value="pages\Short2Str.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="SHRenameFiles">
-				<param name="Local" value="pages\SHRenameFiles.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="SHSpecialFolder">
-				<param name="Local" value="pages\SHSpecialFolder.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="SizeOfMem">
-				<param name="Local" value="pages\SizeOfMem.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="SQLExecEx">
-				<param name="Local" value="pages\SQLExecEx.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="SQLGetPropEx">
-				<param name="Local" value="pages\SQLGetPropEx.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="SQLSetPropEx">
-				<param name="Local" value="pages\SQLSetPropEx.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ST2DT">
-				<param name="Local" value="pages\ST2DT.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="StartService">
-				<param name="Local" value="pages\StartService.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="StopService">
-				<param name="Local" value="pages\StopService.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Str2Double">
-				<param name="Local" value="pages\Str2Double.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Str2Float">
-				<param name="Local" value="pages\Str2Float.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Str2Int64">
-				<param name="Local" value="pages\Str2Int64.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Str2Long">
-				<param name="Local" value="pages\Str2Long.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Str2Short">
-				<param name="Local" value="pages\Str2Short.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Str2UInt64">
-				<param name="Local" value="pages\Str2UInt64.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Str2ULong">
-				<param name="Local" value="pages\Str2ULong.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Str2UShort">
-				<param name="Local" value="pages\Str2UShort.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="StringFromCLSID">
-				<param name="Local" value="pages\StringFromCLSID.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="SyncToSNTPServer">
-				<param name="Local" value="pages\SyncToSNTPServer.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Timet2DT">
-				<param name="Local" value="pages\Timet2DT.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="UInt642Str">
-				<param name="Local" value="pages\UInt642Str.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ULong2Str">
-				<param name="Local" value="pages\ULong2Str.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="UnbindEventsEx">
-				<param name="Local" value="pages\UnbindEventsEx.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="UnlockHGlobal">
-				<param name="Local" value="pages\UnlockHGlobal.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="UrlDownloadToFileEx">
-				<param name="Local" value="pages\UrlDownloadToFileEx.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="UShort2Str">
-				<param name="Local" value="pages\UShort2Str.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="UTC2DT">
-				<param name="Local" value="pages\UTC2DT.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ValidateMem">
-				<param name="Local" value="pages\ValidateMem.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Value2Variant">
-				<param name="Local" value="pages\Value2Variant.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Variant2Value">
-				<param name="Local" value="pages\Variant2Value.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="VFP2CSys">
-				<param name="Local" value="pages\VFP2CSys.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="WaitForServiceStatus">
-				<param name="Local" value="pages\WaitForServiceStatus.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="WriteBytes">
-				<param name="Local" value="pages\WriteBytes.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="WriteChar">
-				<param name="Local" value="pages\WriteChar.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="WriteCharArray">
-				<param name="Local" value="pages\WriteCharArray.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="WriteCString">
-				<param name="Local" value="pages\WriteCString.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="WriteDouble">
-				<param name="Local" value="pages\WriteDouble.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="WriteFloat">
-				<param name="Local" value="pages\WriteFloat.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="WriteInt">
-				<param name="Local" value="pages\WriteInt.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="WriteInt64">
-				<param name="Local" value="pages\WriteInt64.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="WriteInt8">
-				<param name="Local" value="pages\WriteInt8.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="WriteLogical">
-				<param name="Local" value="pages\WriteLogical.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="WritePChar">
-				<param name="Local" value="pages\WritePChar.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="WritePCString">
-				<param name="Local" value="pages\WritePCString.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="WritePDouble">
-				<param name="Local" value="pages\WritePDouble.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="WritePFloat">
-				<param name="Local" value="pages\WritePFloat.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="WritePInt">
-				<param name="Local" value="pages\WritePInt.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="WritePInt64">
-				<param name="Local" value="pages\WritePInt64.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="WritePInt8">
-				<param name="Local" value="pages\WritePInt8.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="WritePLogical">
-				<param name="Local" value="pages\WritePLogical.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="WritePointer">
-				<param name="Local" value="pages\WritePointer.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="WritePPointer">
-				<param name="Local" value="pages\WritePPointer.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="WritePShort">
-				<param name="Local" value="pages\WritePShort.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="WritePUInt">
-				<param name="Local" value="pages\WritePUInt.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="WritePUInt64">
-				<param name="Local" value="pages\WritePUInt64.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="WritePUInt8">
-				<param name="Local" value="pages\WritePUInt8.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="WritePUShort">
-				<param name="Local" value="pages\WritePUShort.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="WritePWChar">
-				<param name="Local" value="pages\WritePWChar.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="WritePWString">
-				<param name="Local" value="pages\WritePWString.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="WriteRegistryKey">
-				<param name="Local" value="pages\WriteRegistryKey.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="WriteShort">
-				<param name="Local" value="pages\WriteShort.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="WriteUInt">
-				<param name="Local" value="pages\WriteUInt.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="WriteUInt64">
-				<param name="Local" value="pages\WriteUInt64.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="WriteUInt8">
-				<param name="Local" value="pages\WriteUInt8.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="WriteUShort">
-				<param name="Local" value="pages\WriteUShort.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="WriteWChar">
-				<param name="Local" value="pages\WriteWChar.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="WriteWCharArray">
-				<param name="Local" value="pages\WriteWCharArray.html">
-				</OBJECT>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="WriteWString">
-				<param name="Local" value="pages\WriteWString.html">
-				</OBJECT>
-		</UL>
 		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Functions by Category">
-			<param name="Local" value="pages\FunctionsCategory.html">
+			<param name="Name" value="AMax">
+			<param name="Local" value="pages\AMax.html">
 			</OBJECT>
-		<UL>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Array">
-				<param name="Local" value="pages\group_33114A805.html">
-				</OBJECT>
-			<UL>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="AAverage">
-					<param name="Local" value="pages\AAverage.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="AMax">
-					<param name="Local" value="pages\AMax.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="AMin">
-					<param name="Local" value="pages\AMin.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="ASum">
-					<param name="Local" value="pages\ASum.html">
-					</OBJECT>
-			</UL>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="C array emulation">
-				<param name="Local" value="pages\group_332131Z1W.html">
-				</OBJECT>
-			<UL>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="MarshalCArray2Cursor">
-					<param name="Local" value="pages\MarshalCArray2Cursor.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="MarshalCArray2FoxArray">
-					<param name="Local" value="pages\MarshalCArray2FoxArray.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="MarshalCursor2CArray">
-					<param name="Local" value="pages\MarshalCursor2CArray.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="MarshalFoxArray2CArray">
-					<param name="Local" value="pages\MarshalFoxArray2CArray.html">
-					</OBJECT>
-			</UL>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="C callback and events">
-				<param name="Local" value="pages\group_33114FFKB.html">
-				</OBJECT>
-			<UL>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="AsyncWaitForObject">
-					<param name="Local" value="pages\AsyncWaitForObject.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="BindEventsEx">
-					<param name="Local" value="pages\BindEventsEx.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="CancelWaitForObject">
-					<param name="Local" value="pages\CancelWaitForObject.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="CreateCallbackFunc">
-					<param name="Local" value="pages\CreateCallbackFunc.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="CreatePublicShadowObjReference">
-					<param name="Local" value="pages\CreatePublicShadowObjReference.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="DestroyCallbackFunc">
-					<param name="Local" value="pages\DestroyCallbackFunc.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="ReleasePublicShadowObjReference">
-					<param name="Local" value="pages\ReleasePublicShadowObjReference.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="UnbindEventsEx">
-					<param name="Local" value="pages\UnbindEventsEx.html">
-					</OBJECT>
-			</UL>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="C struct emulation">
-				<param name="Local" value="pages\group_33212WJOV.html">
-				</OBJECT>
-			<UL>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="ReadBytes">
-					<param name="Local" value="pages\ReadBytes.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="ReadChar">
-					<param name="Local" value="pages\ReadChar.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="ReadCharArray">
-					<param name="Local" value="pages\ReadCharArray.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="ReadCString">
-					<param name="Local" value="pages\ReadCString.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="ReadDouble">
-					<param name="Local" value="pages\ReadDouble.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="ReadFloat">
-					<param name="Local" value="pages\ReadFloat.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="ReadInt">
-					<param name="Local" value="pages\ReadInt.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="ReadInt64">
-					<param name="Local" value="pages\ReadInt64.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="ReadInt8">
-					<param name="Local" value="pages\ReadInt8.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="ReadLogical">
-					<param name="Local" value="pages\ReadLogical.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="ReadPChar">
-					<param name="Local" value="pages\ReadPChar.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="ReadPCString">
-					<param name="Local" value="pages\ReadPCString.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="ReadPDouble">
-					<param name="Local" value="pages\ReadPDouble.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="ReadPFloat">
-					<param name="Local" value="pages\ReadPFloat.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="ReadPInt">
-					<param name="Local" value="pages\ReadPInt.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="ReadPInt64">
-					<param name="Local" value="pages\ReadPInt64.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="ReadPInt8">
-					<param name="Local" value="pages\ReadPInt8.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="ReadPLogical">
-					<param name="Local" value="pages\ReadPLogical.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="ReadPointer">
-					<param name="Local" value="pages\ReadPointer.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="ReadPPointer">
-					<param name="Local" value="pages\ReadPPointer.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="ReadProcessMemoryEx">
-					<param name="Local" value="pages\ReadProcessMemoryEx.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="ReadPShort">
-					<param name="Local" value="pages\ReadPShort.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="ReadPUInt">
-					<param name="Local" value="pages\ReadPUInt.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="ReadPUInt64">
-					<param name="Local" value="pages\ReadPUInt64.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="ReadPUInt8">
-					<param name="Local" value="pages\ReadPUInt8.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="ReadPUShort">
-					<param name="Local" value="pages\ReadPUShort.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="ReadPWString">
-					<param name="Local" value="pages\ReadPWString.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="ReadShort">
-					<param name="Local" value="pages\ReadShort.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="ReadUInt">
-					<param name="Local" value="pages\ReadUInt.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="ReadUInt64">
-					<param name="Local" value="pages\ReadUInt64.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="ReadUInt8">
-					<param name="Local" value="pages\ReadUInt8.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="ReadUShort">
-					<param name="Local" value="pages\ReadUShort.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="ReadWCharArray">
-					<param name="Local" value="pages\ReadWCharArray.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="ReadWString">
-					<param name="Local" value="pages\ReadWString.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="WriteBytes">
-					<param name="Local" value="pages\WriteBytes.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="WriteChar">
-					<param name="Local" value="pages\WriteChar.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="WriteCharArray">
-					<param name="Local" value="pages\WriteCharArray.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="WriteCString">
-					<param name="Local" value="pages\WriteCString.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="WriteDouble">
-					<param name="Local" value="pages\WriteDouble.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="WriteFloat">
-					<param name="Local" value="pages\WriteFloat.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="WriteInt">
-					<param name="Local" value="pages\WriteInt.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="WriteInt64">
-					<param name="Local" value="pages\WriteInt64.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="WriteInt8">
-					<param name="Local" value="pages\WriteInt8.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="WriteLogical">
-					<param name="Local" value="pages\WriteLogical.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="WritePChar">
-					<param name="Local" value="pages\WritePChar.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="WritePCString">
-					<param name="Local" value="pages\WritePCString.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="WritePDouble">
-					<param name="Local" value="pages\WritePDouble.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="WritePFloat">
-					<param name="Local" value="pages\WritePFloat.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="WritePInt">
-					<param name="Local" value="pages\WritePInt.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="WritePInt64">
-					<param name="Local" value="pages\WritePInt64.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="WritePInt8">
-					<param name="Local" value="pages\WritePInt8.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="WritePLogical">
-					<param name="Local" value="pages\WritePLogical.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="WritePointer">
-					<param name="Local" value="pages\WritePointer.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="WritePPointer">
-					<param name="Local" value="pages\WritePPointer.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="WritePShort">
-					<param name="Local" value="pages\WritePShort.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="WritePUInt">
-					<param name="Local" value="pages\WritePUInt.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="WritePUInt64">
-					<param name="Local" value="pages\WritePUInt64.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="WritePUInt8">
-					<param name="Local" value="pages\WritePUInt8.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="WritePUShort">
-					<param name="Local" value="pages\WritePUShort.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="WritePWChar">
-					<param name="Local" value="pages\WritePWChar.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="WritePWString">
-					<param name="Local" value="pages\WritePWString.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="WriteShort">
-					<param name="Local" value="pages\WriteShort.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="WriteUInt">
-					<param name="Local" value="pages\WriteUInt.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="WriteUInt64">
-					<param name="Local" value="pages\WriteUInt64.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="WriteUInt8">
-					<param name="Local" value="pages\WriteUInt8.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="WriteUShort">
-					<param name="Local" value="pages\WriteUShort.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="WriteWChar">
-					<param name="Local" value="pages\WriteWChar.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="WriteWCharArray">
-					<param name="Local" value="pages\WriteWCharArray.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="WriteWString">
-					<param name="Local" value="pages\WriteWString.html">
-					</OBJECT>
-			</UL>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="COM">
-				<param name="Local" value="pages\group_33114G92D.html">
-				</OBJECT>
-			<UL>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="CLSIDFromProgID">
-					<param name="Local" value="pages\CLSIDFromProgID.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="CLSIDFromString">
-					<param name="Local" value="pages\CLSIDFromString.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="CreateGuid">
-					<param name="Local" value="pages\CreateGuid.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetIUnknown">
-					<param name="Local" value="pages\GetIUnknown.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="IDispatch_AsyncInvoke">
-					<param name="Local" value="pages\IDispatch_AsyncInvoke.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="IDispatch_Invoke">
-					<param name="Local" value="pages\IDispatch_Invoke.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="IsEqualGuid">
-					<param name="Local" value="pages\IsEqualGuid.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="ProgIDFromCLSID">
-					<param name="Local" value="pages\ProgIDFromCLSID.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="RegisterActiveObject">
-					<param name="Local" value="pages\RegisterActiveObject.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="RegisterObjectAsFileMoniker">
-					<param name="Local" value="pages\RegisterObjectAsFileMoniker.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="RevokeActiveObject">
-					<param name="Local" value="pages\RevokeActiveObject.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="StringFromCLSID">
-					<param name="Local" value="pages\StringFromCLSID.html">
-					</OBJECT>
-			</UL>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Common dialogs">
-				<param name="Local" value="pages\group_33114TYNO.html">
-				</OBJECT>
-			<UL>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetOpenFileName">
-					<param name="Local" value="pages\GetOpenFileName.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetSaveFileName">
-					<param name="Local" value="pages\GetSaveFileName.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="MessageBoxEx">
-					<param name="Local" value="pages\MessageBoxEx.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="SHBrowseFolder">
-					<param name="Local" value="pages\SHBrowseFolder.html">
-					</OBJECT>
-			</UL>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Conversion">
-				<param name="Local" value="pages\group_332133TE0.html">
-				</OBJECT>
-			<UL>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Colors2RGB">
-					<param name="Local" value="pages\Colors2RGB.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Double2Str">
-					<param name="Local" value="pages\Double2Str.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Float2Str">
-					<param name="Local" value="pages\Float2Str.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Int642Str">
-					<param name="Local" value="pages\Int642Str.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Long2Str">
-					<param name="Local" value="pages\Long2Str.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Num2Binary">
-					<param name="Local" value="pages\Num2Binary.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="PG_ByteA2Str">
-					<param name="Local" value="pages\PG_ByteA2Str.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="PG_Str2ByteA">
-					<param name="Local" value="pages\PG_Str2ByteA.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="RGB2Colors">
-					<param name="Local" value="pages\RGB2Colors.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Short2Str">
-					<param name="Local" value="pages\Short2Str.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Str2Double">
-					<param name="Local" value="pages\Str2Double.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Str2Float">
-					<param name="Local" value="pages\Str2Float.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Str2Int64">
-					<param name="Local" value="pages\Str2Int64.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Str2Long">
-					<param name="Local" value="pages\Str2Long.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Str2Short">
-					<param name="Local" value="pages\Str2Short.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Str2UInt64">
-					<param name="Local" value="pages\Str2UInt64.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Str2ULong">
-					<param name="Local" value="pages\Str2ULong.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Str2UShort">
-					<param name="Local" value="pages\Str2UShort.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="UInt642Str">
-					<param name="Local" value="pages\UInt642Str.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="ULong2Str">
-					<param name="Local" value="pages\ULong2Str.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="UShort2Str">
-					<param name="Local" value="pages\UShort2Str.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Value2Variant">
-					<param name="Local" value="pages\Value2Variant.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Variant2Value">
-					<param name="Local" value="pages\Variant2Value.html">
-					</OBJECT>
-			</UL>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Date and time">
-				<param name="Local" value="pages\group_33114MKBR.html">
-				</OBJECT>
-			<UL>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="ATimeZones">
-					<param name="Local" value="pages\ATimeZones.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Double2DT">
-					<param name="Local" value="pages\Double2DT.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="DT2Double">
-					<param name="Local" value="pages\DT2Double.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="DT2FT">
-					<param name="Local" value="pages\DT2FT.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="DT2ST">
-					<param name="Local" value="pages\DT2ST.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="DT2Timet">
-					<param name="Local" value="pages\DT2Timet.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="DT2UTC">
-					<param name="Local" value="pages\DT2UTC.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="FT2DT">
-					<param name="Local" value="pages\FT2DT.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetSystemTime">
-					<param name="Local" value="pages\GetSystemTime.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="SetSystemTime">
-					<param name="Local" value="pages\SetSystemTime.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="ST2DT">
-					<param name="Local" value="pages\ST2DT.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Timet2DT">
-					<param name="Local" value="pages\Timet2DT.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="UTC2DT">
-					<param name="Local" value="pages\UTC2DT.html">
-					</OBJECT>
-			</UL>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Filesystem">
-				<param name="Local" value="pages\group_33114THHH.html">
-				</OBJECT>
-			<UL>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="ADirectoryInfo">
-					<param name="Local" value="pages\ADirectoryInfo.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="ADirEx">
-					<param name="Local" value="pages\ADirEx.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="ADriveInfo">
-					<param name="Local" value="pages\ADriveInfo.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="AFileAttributes">
-					<param name="Local" value="pages\AFileAttributes.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="AFileAttributesEx">
-					<param name="Local" value="pages\AFileAttributesEx.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="CancelFileChange">
-					<param name="Local" value="pages\CancelFileChange.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="CompareFileTimes">
-					<param name="Local" value="pages\CompareFileTimes.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="CopyFileEx">
-					<param name="Local" value="pages\CopyFileEx.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="DeleteDirectory">
-					<param name="Local" value="pages\DeleteDirectory.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="DeleteFileEx">
-					<param name="Local" value="pages\DeleteFileEx.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="FindFileChange">
-					<param name="Local" value="pages\FindFileChange.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetFileAttributes">
-					<param name="Local" value="pages\GetFileAttributes.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetFileOwner">
-					<param name="Local" value="pages\GetFileOwner.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetFileSize">
-					<param name="Local" value="pages\GetFileSize.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetFileTimes">
-					<param name="Local" value="pages\GetFileTimes.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetLongPathName">
-					<param name="Local" value="pages\GetLongPathName.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetShortPathName">
-					<param name="Local" value="pages\GetShortPathName.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="MoveFileEx">
-					<param name="Local" value="pages\MoveFileEx.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="SetFileAttributes">
-					<param name="Local" value="pages\SetFileAttributes.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="SetFileTimes">
-					<param name="Local" value="pages\SetFileTimes.html">
-					</OBJECT>
-			</UL>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="General library">
-				<param name="Local" value="pages\group_33114YK25.html">
-				</OBJECT>
-			<UL>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="AErrorEx">
-					<param name="Local" value="pages\AErrorEx.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="FormatMessageEx">
-					<param name="Local" value="pages\FormatMessageEx.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="InitVFP2C32">
-					<param name="Local" value="pages\InitVFP2C32.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="VFP2CSys">
-					<param name="Local" value="pages\VFP2CSys.html">
-					</OBJECT>
-			</UL>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Low level file handling">
-				<param name="Local" value="pages\group_33114OL5D.html">
-				</OBJECT>
-			<UL>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="AFHandlesEx">
-					<param name="Local" value="pages\AFHandlesEx.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="FChSizeEx">
-					<param name="Local" value="pages\FChSizeEx.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="FCloseEx">
-					<param name="Local" value="pages\FCloseEx.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="FCreateEx">
-					<param name="Local" value="pages\FCreateEx.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="FEoFEx">
-					<param name="Local" value="pages\FEoFEx.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="FFlushEx">
-					<param name="Local" value="pages\FFlushEx.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="FGetsEx">
-					<param name="Local" value="pages\FGetsEx.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="FLockFile">
-					<param name="Local" value="pages\FLockFile.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="FLockFileEx">
-					<param name="Local" value="pages\FLockFileEx.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="FOpenEx">
-					<param name="Local" value="pages\FOpenEx.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="FPutsEx">
-					<param name="Local" value="pages\FPutsEx.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="FReadEx">
-					<param name="Local" value="pages\FReadEx.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="FSeekEx">
-					<param name="Local" value="pages\FSeekEx.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="FUnlockFile">
-					<param name="Local" value="pages\FUnlockFile.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="FUnlockFileEx">
-					<param name="Local" value="pages\FUnlockFileEx.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="FWriteEx">
-					<param name="Local" value="pages\FWriteEx.html">
-					</OBJECT>
-			</UL>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Memory management">
-				<param name="Local" value="pages\group_33114BC90.html">
-				</OBJECT>
-			<UL>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="AllocHGlobal">
-					<param name="Local" value="pages\AllocHGlobal.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="AllocMem">
-					<param name="Local" value="pages\AllocMem.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="AllocMemTo">
-					<param name="Local" value="pages\AllocMemTo.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="AMemBlocks">
-					<param name="Local" value="pages\AMemBlocks.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="CompactMem">
-					<param name="Local" value="pages\CompactMem.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="FreeHGlobal">
-					<param name="Local" value="pages\FreeHGlobal.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="FreeMem">
-					<param name="Local" value="pages\FreeMem.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="FreePMem">
-					<param name="Local" value="pages\FreePMem.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="FreeRefArray">
-					<param name="Local" value="pages\FreeRefArray.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="LockHGlobal">
-					<param name="Local" value="pages\LockHGlobal.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="ReAllocHGlobal">
-					<param name="Local" value="pages\ReAllocHGlobal.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="ReAllocMem">
-					<param name="Local" value="pages\ReAllocMem.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="SizeOfMem">
-					<param name="Local" value="pages\SizeOfMem.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="UnlockHGlobal">
-					<param name="Local" value="pages\UnlockHGlobal.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="ValidateMem">
-					<param name="Local" value="pages\ValidateMem.html">
-					</OBJECT>
-			</UL>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Miscellaneous">
-				<param name="Local" value="pages\group_33114NMMS.html">
-				</OBJECT>
-			<UL>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="AFontInfo">
-					<param name="Local" value="pages\AFontInfo.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="ASplitStr">
-					<param name="Local" value="pages\ASplitStr.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Decimals">
-					<param name="Local" value="pages\Decimals.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetCursorPosEx">
-					<param name="Local" value="pages\GetCursorPosEx.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Int64_Add">
-					<param name="Local" value="pages\Int64_Add.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Int64_Div">
-					<param name="Local" value="pages\Int64_Div.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Int64_Mod">
-					<param name="Local" value="pages\Int64_Mod.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Int64_Mul">
-					<param name="Local" value="pages\Int64_Mul.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Int64_Sub">
-					<param name="Local" value="pages\Int64_Sub.html">
-					</OBJECT>
-			</UL>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Networking">
-				<param name="Local" value="pages\group_33114F1IB.html">
-				</OBJECT>
-			<UL>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="AbortUrlDownloadToFileEx">
-					<param name="Local" value="pages\AbortUrlDownloadToFileEx.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="AIpAddresses">
-					<param name="Local" value="pages\AIpAddresses.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="ANetFiles">
-					<param name="Local" value="pages\ANetFiles.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="ANetServers">
-					<param name="Local" value="pages\ANetServers.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetServerTime">
-					<param name="Local" value="pages\GetServerTime.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="IcmpPing">
-					<param name="Local" value="pages\IcmpPing.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="Ip2MacAddress">
-					<param name="Local" value="pages\Ip2MacAddress.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="ResolveHostToIp">
-					<param name="Local" value="pages\ResolveHostToIp.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="SyncToSNTPServer">
-					<param name="Local" value="pages\SyncToSNTPServer.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="UrlDownloadToFileEx">
-					<param name="Local" value="pages\UrlDownloadToFileEx.html">
-					</OBJECT>
-			</UL>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="ODBC">
-				<param name="Local" value="pages\group_33114H8O4.html">
-				</OBJECT>
-			<UL>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="ASQLDataSources">
-					<param name="Local" value="pages\ASQLDataSources.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="ASQLDrivers">
-					<param name="Local" value="pages\ASQLDrivers.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="ChangeSQLDataSource">
-					<param name="Local" value="pages\ChangeSQLDataSource.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="CreateSQLDataSource">
-					<param name="Local" value="pages\CreateSQLDataSource.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="DeleteSQLDataSource">
-					<param name="Local" value="pages\DeleteSQLDataSource.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="SQLExecEx">
-					<param name="Local" value="pages\SQLExecEx.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="SQLGetPropEx">
-					<param name="Local" value="pages\SQLGetPropEx.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="SQLSetPropEx">
-					<param name="Local" value="pages\SQLSetPropEx.html">
-					</OBJECT>
-			</UL>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Printer information">
-				<param name="Local" value="pages\group_33114RPJW.html">
-				</OBJECT>
-			<UL>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="APaperSizes">
-					<param name="Local" value="pages\APaperSizes.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="APrinterForms">
-					<param name="Local" value="pages\APrinterForms.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="APrintersEx">
-					<param name="Local" value="pages\APrintersEx.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="APrinterTrays">
-					<param name="Local" value="pages\APrinterTrays.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="APrintJobs">
-					<param name="Local" value="pages\APrintJobs.html">
-					</OBJECT>
-			</UL>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Process information">
-				<param name="Local" value="pages\group_33114SAKK.html">
-				</OBJECT>
-			<UL>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="AHeapBlocks">
-					<param name="Local" value="pages\AHeapBlocks.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="AProcesses">
-					<param name="Local" value="pages\AProcesses.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="AProcessHeaps">
-					<param name="Local" value="pages\AProcessHeaps.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="AProcessModules">
-					<param name="Local" value="pages\AProcessModules.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="AProcessThreads">
-					<param name="Local" value="pages\AProcessThreads.html">
-					</OBJECT>
-			</UL>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="RAS">
-				<param name="Local" value="pages\group_33114K6L0.html">
-				</OBJECT>
-			<UL>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="AbortRasConnectionNotification">
-					<param name="Local" value="pages\AbortRasConnectionNotification.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="ARasConnections">
-					<param name="Local" value="pages\ARasConnections.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="ARasDevices">
-					<param name="Local" value="pages\ARasDevices.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="ARasPhonebookEntries">
-					<param name="Local" value="pages\ARasPhonebookEntries.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="RasClearConnectionStatistics">
-					<param name="Local" value="pages\RasClearConnectionStatistics.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="RasConnectionNotificationEx">
-					<param name="Local" value="pages\RasConnectionNotificationEx.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="RasDialDlgEx">
-					<param name="Local" value="pages\RasDialDlgEx.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="RasDialEx">
-					<param name="Local" value="pages\RasDialEx.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="RasGetConnectStatusEx">
-					<param name="Local" value="pages\RasGetConnectStatusEx.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="RasHangUpEx">
-					<param name="Local" value="pages\RasHangUpEx.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="RasPhonebookDlgEx">
-					<param name="Local" value="pages\RasPhonebookDlgEx.html">
-					</OBJECT>
-			</UL>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Registry">
-				<param name="Local" value="pages\group_33114D5SS.html">
-				</OBJECT>
-			<UL>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="ARegistryKeys">
-					<param name="Local" value="pages\ARegistryKeys.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="ARegistryValues">
-					<param name="Local" value="pages\ARegistryValues.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="CancelRegistryChange">
-					<param name="Local" value="pages\CancelRegistryChange.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="CloseRegistryKey">
-					<param name="Local" value="pages\CloseRegistryKey.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="CreateRegistryKey">
-					<param name="Local" value="pages\CreateRegistryKey.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="DeleteRegistryKey">
-					<param name="Local" value="pages\DeleteRegistryKey.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="FindRegistryChange">
-					<param name="Local" value="pages\FindRegistryChange.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="OpenRegistryKey">
-					<param name="Local" value="pages\OpenRegistryKey.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="ReadRegistryKey">
-					<param name="Local" value="pages\ReadRegistryKey.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="RegistryHiveToObject">
-					<param name="Local" value="pages\RegistryHiveToObject.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="RegistryValuesToObject">
-					<param name="Local" value="pages\RegistryValuesToObject.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="WriteRegistryKey">
-					<param name="Local" value="pages\WriteRegistryKey.html">
-					</OBJECT>
-			</UL>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Resource information">
-				<param name="Local" value="pages\group_33114SW3G.html">
-				</OBJECT>
-			<UL>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="AResourceLanguages">
-					<param name="Local" value="pages\AResourceLanguages.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="AResourceNames">
-					<param name="Local" value="pages\AResourceNames.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="AResourceTypes">
-					<param name="Local" value="pages\AResourceTypes.html">
-					</OBJECT>
-			</UL>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Service management">
-				<param name="Local" value="pages\group_33114HM3G.html">
-				</OBJECT>
-			<UL>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="ADependentServices">
-					<param name="Local" value="pages\ADependentServices.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="AServiceConfig">
-					<param name="Local" value="pages\AServiceConfig.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="AServices">
-					<param name="Local" value="pages\AServices.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="AServiceStatus">
-					<param name="Local" value="pages\AServiceStatus.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="CloseServiceHandle">
-					<param name="Local" value="pages\CloseServiceHandle.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="ContinueService">
-					<param name="Local" value="pages\ContinueService.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="ControlService">
-					<param name="Local" value="pages\ControlService.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="OpenService">
-					<param name="Local" value="pages\OpenService.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="PauseService">
-					<param name="Local" value="pages\PauseService.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="StartService">
-					<param name="Local" value="pages\StartService.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="StopService">
-					<param name="Local" value="pages\StopService.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="WaitForServiceStatus">
-					<param name="Local" value="pages\WaitForServiceStatus.html">
-					</OBJECT>
-			</UL>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Shell">
-				<param name="Local" value="pages\group_33114GPEY.html">
-				</OBJECT>
-			<UL>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="SHCopyFiles">
-					<param name="Local" value="pages\SHCopyFiles.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="SHDeleteFiles">
-					<param name="Local" value="pages\SHDeleteFiles.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="SHMoveFiles">
-					<param name="Local" value="pages\SHMoveFiles.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="SHRenameFiles">
-					<param name="Local" value="pages\SHRenameFiles.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="SHSpecialFolder">
-					<param name="Local" value="pages\SHSpecialFolder.html">
-					</OBJECT>
-			</UL>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="System information">
-				<param name="Local" value="pages\group_33213BP14.html">
-				</OBJECT>
-			<UL>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="ADesktopArea">
-					<param name="Local" value="pages\ADesktopArea.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="ADesktops">
-					<param name="Local" value="pages\ADesktops.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="ADisplayDevices">
-					<param name="Local" value="pages\ADisplayDevices.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="AResolutions">
-					<param name="Local" value="pages\AResolutions.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="AWindowStations">
-					<param name="Local" value="pages\AWindowStations.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="ExpandEnvironmentStrings">
-					<param name="Local" value="pages\ExpandEnvironmentStrings.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetLocaleInfoEx">
-					<param name="Local" value="pages\GetLocaleInfoEx.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetSystemDirectory">
-					<param name="Local" value="pages\GetSystemDirectory.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetWindowsDirectory">
-					<param name="Local" value="pages\GetWindowsDirectory.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="OsEx">
-					<param name="Local" value="pages\OsEx.html">
-					</OBJECT>
-			</UL>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Volume information">
-				<param name="Local" value="pages\group_332135W6B.html">
-				</OBJECT>
-			<UL>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="AVolumeInformation">
-					<param name="Local" value="pages\AVolumeInformation.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="AVolumeMountPoints">
-					<param name="Local" value="pages\AVolumeMountPoints.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="AVolumePaths">
-					<param name="Local" value="pages\AVolumePaths.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="AVolumes">
-					<param name="Local" value="pages\AVolumes.html">
-					</OBJECT>
-			</UL>
-			<LI> <OBJECT type="text/sitemap">
-				<param name="Name" value="Window information">
-				<param name="Local" value="pages\group_33213E2EB.html">
-				</OBJECT>
-			<UL>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="AWindowProps">
-					<param name="Local" value="pages\AWindowProps.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="AWindows">
-					<param name="Local" value="pages\AWindows.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="AWindowsEx">
-					<param name="Local" value="pages\AWindowsEx.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="CenterWindowEx">
-					<param name="Local" value="pages\CenterWindowEx.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetWindowRectEx">
-					<param name="Local" value="pages\GetWindowRectEx.html">
-					</OBJECT>
-				<LI> <OBJECT type="text/sitemap">
-					<param name="Name" value="GetWindowTextEx">
-					<param name="Local" value="pages\GetWindowTextEx.html">
-					</OBJECT>
-			</UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="AMin">
+			<param name="Local" value="pages\AMin.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ASum">
+			<param name="Local" value="pages\ASum.html">
+			</OBJECT>
+		</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="C array emulation">
+		<param name="Local" value="pages\group_332131Z1W.html">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="MarshalCArray2Cursor">
+			<param name="Local" value="pages\MarshalCArray2Cursor.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="MarshalCArray2FoxArray">
+			<param name="Local" value="pages\MarshalCArray2FoxArray.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="MarshalCursor2CArray">
+			<param name="Local" value="pages\MarshalCursor2CArray.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="MarshalFoxArray2CArray">
+			<param name="Local" value="pages\MarshalFoxArray2CArray.html">
+			</OBJECT>
+		</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="C callback and events">
+		<param name="Local" value="pages\group_33114FFKB.html">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="AsyncWaitForObject">
+			<param name="Local" value="pages\AsyncWaitForObject.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="BindEventsEx">
+			<param name="Local" value="pages\BindEventsEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="CancelWaitForObject">
+			<param name="Local" value="pages\CancelWaitForObject.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="CreateCallbackFunc">
+			<param name="Local" value="pages\CreateCallbackFunc.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="CreatePublicShadowObjReference">
+			<param name="Local" value="pages\CreatePublicShadowObjReference.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="DestroyCallbackFunc">
+			<param name="Local" value="pages\DestroyCallbackFunc.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ReleasePublicShadowObjReference">
+			<param name="Local" value="pages\ReleasePublicShadowObjReference.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="UnbindEventsEx">
+			<param name="Local" value="pages\UnbindEventsEx.html">
+			</OBJECT>
+		</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="C struct emulation">
+		<param name="Local" value="pages\group_33212WJOV.html">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ReadBytes">
+			<param name="Local" value="pages\ReadBytes.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ReadChar">
+			<param name="Local" value="pages\ReadChar.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ReadCharArray">
+			<param name="Local" value="pages\ReadCharArray.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ReadCString">
+			<param name="Local" value="pages\ReadCString.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ReadDouble">
+			<param name="Local" value="pages\ReadDouble.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ReadFloat">
+			<param name="Local" value="pages\ReadFloat.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ReadInt">
+			<param name="Local" value="pages\ReadInt.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ReadInt64">
+			<param name="Local" value="pages\ReadInt64.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ReadInt8">
+			<param name="Local" value="pages\ReadInt8.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ReadLogical">
+			<param name="Local" value="pages\ReadLogical.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ReadPChar">
+			<param name="Local" value="pages\ReadPChar.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ReadPCString">
+			<param name="Local" value="pages\ReadPCString.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ReadPDouble">
+			<param name="Local" value="pages\ReadPDouble.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ReadPFloat">
+			<param name="Local" value="pages\ReadPFloat.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ReadPInt">
+			<param name="Local" value="pages\ReadPInt.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ReadPInt64">
+			<param name="Local" value="pages\ReadPInt64.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ReadPInt8">
+			<param name="Local" value="pages\ReadPInt8.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ReadPLogical">
+			<param name="Local" value="pages\ReadPLogical.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ReadPointer">
+			<param name="Local" value="pages\ReadPointer.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ReadPPointer">
+			<param name="Local" value="pages\ReadPPointer.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ReadProcessMemoryEx">
+			<param name="Local" value="pages\ReadProcessMemoryEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ReadPShort">
+			<param name="Local" value="pages\ReadPShort.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ReadPUInt">
+			<param name="Local" value="pages\ReadPUInt.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ReadPUInt64">
+			<param name="Local" value="pages\ReadPUInt64.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ReadPUInt8">
+			<param name="Local" value="pages\ReadPUInt8.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ReadPUShort">
+			<param name="Local" value="pages\ReadPUShort.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ReadPWString">
+			<param name="Local" value="pages\ReadPWString.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ReadShort">
+			<param name="Local" value="pages\ReadShort.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ReadUInt">
+			<param name="Local" value="pages\ReadUInt.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ReadUInt64">
+			<param name="Local" value="pages\ReadUInt64.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ReadUInt8">
+			<param name="Local" value="pages\ReadUInt8.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ReadUShort">
+			<param name="Local" value="pages\ReadUShort.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ReadWCharArray">
+			<param name="Local" value="pages\ReadWCharArray.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ReadWString">
+			<param name="Local" value="pages\ReadWString.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="WriteBytes">
+			<param name="Local" value="pages\WriteBytes.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="WriteChar">
+			<param name="Local" value="pages\WriteChar.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="WriteCharArray">
+			<param name="Local" value="pages\WriteCharArray.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="WriteCString">
+			<param name="Local" value="pages\WriteCString.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="WriteDouble">
+			<param name="Local" value="pages\WriteDouble.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="WriteFloat">
+			<param name="Local" value="pages\WriteFloat.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="WriteGPCString">
+			<param name="Local" value="pages\WriteGPCString.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="WriteInt">
+			<param name="Local" value="pages\WriteInt.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="WriteInt64">
+			<param name="Local" value="pages\WriteInt64.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="WriteInt8">
+			<param name="Local" value="pages\WriteInt8.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="WriteLogical">
+			<param name="Local" value="pages\WriteLogical.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="WritePChar">
+			<param name="Local" value="pages\WritePChar.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="WritePCString">
+			<param name="Local" value="pages\WritePCString.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="WritePDouble">
+			<param name="Local" value="pages\WritePDouble.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="WritePFloat">
+			<param name="Local" value="pages\WritePFloat.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="WritePInt">
+			<param name="Local" value="pages\WritePInt.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="WritePInt64">
+			<param name="Local" value="pages\WritePInt64.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="WritePInt8">
+			<param name="Local" value="pages\WritePInt8.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="WritePLogical">
+			<param name="Local" value="pages\WritePLogical.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="WritePointer">
+			<param name="Local" value="pages\WritePointer.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="WritePPointer">
+			<param name="Local" value="pages\WritePPointer.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="WritePShort">
+			<param name="Local" value="pages\WritePShort.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="WritePUInt">
+			<param name="Local" value="pages\WritePUInt.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="WritePUInt64">
+			<param name="Local" value="pages\WritePUInt64.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="WritePUInt8">
+			<param name="Local" value="pages\WritePUInt8.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="WritePUShort">
+			<param name="Local" value="pages\WritePUShort.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="WritePWChar">
+			<param name="Local" value="pages\WritePWChar.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="WritePWString">
+			<param name="Local" value="pages\WritePWString.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="WriteShort">
+			<param name="Local" value="pages\WriteShort.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="WriteUInt">
+			<param name="Local" value="pages\WriteUInt.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="WriteUInt64">
+			<param name="Local" value="pages\WriteUInt64.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="WriteUInt8">
+			<param name="Local" value="pages\WriteUInt8.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="WriteUShort">
+			<param name="Local" value="pages\WriteUShort.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="WriteWChar">
+			<param name="Local" value="pages\WriteWChar.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="WriteWCharArray">
+			<param name="Local" value="pages\WriteWCharArray.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="WriteWString">
+			<param name="Local" value="pages\WriteWString.html">
+			</OBJECT>
+		</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="COM">
+		<param name="Local" value="pages\group_33114G92D.html">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="CLSIDFromProgID">
+			<param name="Local" value="pages\CLSIDFromProgID.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="CLSIDFromString">
+			<param name="Local" value="pages\CLSIDFromString.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="CreateGuid">
+			<param name="Local" value="pages\CreateGuid.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="CreateThreadObject">
+			<param name="Local" value="pages\CreateThreadObject.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="GetIUnknown">
+			<param name="Local" value="pages\GetIUnknown.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="IsEqualGuid">
+			<param name="Local" value="pages\IsEqualGuid.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ProgIDFromCLSID">
+			<param name="Local" value="pages\ProgIDFromCLSID.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="RegisterActiveObject">
+			<param name="Local" value="pages\RegisterActiveObject.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="RegisterObjectAsFileMoniker">
+			<param name="Local" value="pages\RegisterObjectAsFileMoniker.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="RevokeActiveObject">
+			<param name="Local" value="pages\RevokeActiveObject.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="StringFromCLSID">
+			<param name="Local" value="pages\StringFromCLSID.html">
+			</OBJECT>
+		</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Common dialogs">
+		<param name="Local" value="pages\group_33114TYNO.html">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="GetOpenFileName">
+			<param name="Local" value="pages\GetOpenFileName.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="GetSaveFileName">
+			<param name="Local" value="pages\GetSaveFileName.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="MessageBoxEx">
+			<param name="Local" value="pages\MessageBoxEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="SHBrowseFolder">
+			<param name="Local" value="pages\SHBrowseFolder.html">
+			</OBJECT>
+		</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Conversion">
+		<param name="Local" value="pages\group_332133TE0.html">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Colors2RGB">
+			<param name="Local" value="pages\Colors2RGB.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Double2Str">
+			<param name="Local" value="pages\Double2Str.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Float2Str">
+			<param name="Local" value="pages\Float2Str.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Int642Str">
+			<param name="Local" value="pages\Int642Str.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Long2Str">
+			<param name="Local" value="pages\Long2Str.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Num2Binary">
+			<param name="Local" value="pages\Num2Binary.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="PG_ByteA2Str">
+			<param name="Local" value="pages\PG_ByteA2Str.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="PG_Str2ByteA">
+			<param name="Local" value="pages\PG_Str2ByteA.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="RGB2Colors">
+			<param name="Local" value="pages\RGB2Colors.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Short2Str">
+			<param name="Local" value="pages\Short2Str.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Str2Double">
+			<param name="Local" value="pages\Str2Double.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Str2Float">
+			<param name="Local" value="pages\Str2Float.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Str2Int64">
+			<param name="Local" value="pages\Str2Int64.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Str2Long">
+			<param name="Local" value="pages\Str2Long.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Str2Short">
+			<param name="Local" value="pages\Str2Short.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Str2UInt64">
+			<param name="Local" value="pages\Str2UInt64.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Str2ULong">
+			<param name="Local" value="pages\Str2ULong.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Str2UShort">
+			<param name="Local" value="pages\Str2UShort.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="UInt642Str">
+			<param name="Local" value="pages\UInt642Str.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ULong2Str">
+			<param name="Local" value="pages\ULong2Str.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="UShort2Str">
+			<param name="Local" value="pages\UShort2Str.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Value2Variant">
+			<param name="Local" value="pages\Value2Variant.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Variant2Value">
+			<param name="Local" value="pages\Variant2Value.html">
+			</OBJECT>
+		</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Date and time">
+		<param name="Local" value="pages\group_33114MKBR.html">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ATimeZones">
+			<param name="Local" value="pages\ATimeZones.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Double2DT">
+			<param name="Local" value="pages\Double2DT.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="DT2Double">
+			<param name="Local" value="pages\DT2Double.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="DT2FT">
+			<param name="Local" value="pages\DT2FT.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="DT2ST">
+			<param name="Local" value="pages\DT2ST.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="DT2Timet">
+			<param name="Local" value="pages\DT2Timet.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="DT2UTC">
+			<param name="Local" value="pages\DT2UTC.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="FT2DT">
+			<param name="Local" value="pages\FT2DT.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="GetSystemTime">
+			<param name="Local" value="pages\GetSystemTime.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="SetSystemTime">
+			<param name="Local" value="pages\SetSystemTime.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ST2DT">
+			<param name="Local" value="pages\ST2DT.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Timet2DT">
+			<param name="Local" value="pages\Timet2DT.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="UTC2DT">
+			<param name="Local" value="pages\UTC2DT.html">
+			</OBJECT>
+		</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Filesystem">
+		<param name="Local" value="pages\group_33114THHH.html">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ADirectoryInfo">
+			<param name="Local" value="pages\ADirectoryInfo.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ADirEx">
+			<param name="Local" value="pages\ADirEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ADriveInfo">
+			<param name="Local" value="pages\ADriveInfo.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="AFileAttributes">
+			<param name="Local" value="pages\AFileAttributes.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="AFileAttributesEx">
+			<param name="Local" value="pages\AFileAttributesEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="CancelFileChange">
+			<param name="Local" value="pages\CancelFileChange.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="CompareFileTimes">
+			<param name="Local" value="pages\CompareFileTimes.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="CopyFileEx">
+			<param name="Local" value="pages\CopyFileEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="DeleteDirectory">
+			<param name="Local" value="pages\DeleteDirectory.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="DeleteFileEx">
+			<param name="Local" value="pages\DeleteFileEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="FindFileChange">
+			<param name="Local" value="pages\FindFileChange.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="GetFileAttributes">
+			<param name="Local" value="pages\GetFileAttributes.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="GetFileOwner">
+			<param name="Local" value="pages\GetFileOwner.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="GetFileSize">
+			<param name="Local" value="pages\GetFileSize.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="GetFileTimes">
+			<param name="Local" value="pages\GetFileTimes.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="GetLongPathName">
+			<param name="Local" value="pages\GetLongPathName.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="GetShortPathName">
+			<param name="Local" value="pages\GetShortPathName.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="MoveFileEx">
+			<param name="Local" value="pages\MoveFileEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="SetFileAttributes">
+			<param name="Local" value="pages\SetFileAttributes.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="SetFileTimes">
+			<param name="Local" value="pages\SetFileTimes.html">
+			</OBJECT>
+		</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="General library">
+		<param name="Local" value="pages\group_33114YK25.html">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="AErrorEx">
+			<param name="Local" value="pages\AErrorEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="FormatMessageEx">
+			<param name="Local" value="pages\FormatMessageEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="InitVFP2C32">
+			<param name="Local" value="pages\InitVFP2C32.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="VFP2CSys">
+			<param name="Local" value="pages\VFP2CSys.html">
+			</OBJECT>
+		</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Low level file handling">
+		<param name="Local" value="pages\group_33114OL5D.html">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="AFHandlesEx">
+			<param name="Local" value="pages\AFHandlesEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="FChSizeEx">
+			<param name="Local" value="pages\FChSizeEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="FCloseEx">
+			<param name="Local" value="pages\FCloseEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="FCreateEx">
+			<param name="Local" value="pages\FCreateEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="FEoFEx">
+			<param name="Local" value="pages\FEoFEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="FFlushEx">
+			<param name="Local" value="pages\FFlushEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="FGetsEx">
+			<param name="Local" value="pages\FGetsEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="FLockFile">
+			<param name="Local" value="pages\FLockFile.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="FLockFileEx">
+			<param name="Local" value="pages\FLockFileEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="FOpenEx">
+			<param name="Local" value="pages\FOpenEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="FPutsEx">
+			<param name="Local" value="pages\FPutsEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="FReadEx">
+			<param name="Local" value="pages\FReadEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="FSeekEx">
+			<param name="Local" value="pages\FSeekEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="FUnlockFile">
+			<param name="Local" value="pages\FUnlockFile.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="FUnlockFileEx">
+			<param name="Local" value="pages\FUnlockFileEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="FWriteEx">
+			<param name="Local" value="pages\FWriteEx.html">
+			</OBJECT>
+		</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Memory management">
+		<param name="Local" value="pages\group_33114BC90.html">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="AllocHGlobal">
+			<param name="Local" value="pages\AllocHGlobal.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="AllocMem">
+			<param name="Local" value="pages\AllocMem.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="AllocMemTo">
+			<param name="Local" value="pages\AllocMemTo.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="AMemBlocks">
+			<param name="Local" value="pages\AMemBlocks.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="CompactMem">
+			<param name="Local" value="pages\CompactMem.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="FreeHGlobal">
+			<param name="Local" value="pages\FreeHGlobal.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="FreeMem">
+			<param name="Local" value="pages\FreeMem.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="FreePMem">
+			<param name="Local" value="pages\FreePMem.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="FreeRefArray">
+			<param name="Local" value="pages\FreeRefArray.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="LockHGlobal">
+			<param name="Local" value="pages\LockHGlobal.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ReAllocHGlobal">
+			<param name="Local" value="pages\ReAllocHGlobal.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ReAllocMem">
+			<param name="Local" value="pages\ReAllocMem.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="SizeOfMem">
+			<param name="Local" value="pages\SizeOfMem.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="UnlockHGlobal">
+			<param name="Local" value="pages\UnlockHGlobal.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ValidateMem">
+			<param name="Local" value="pages\ValidateMem.html">
+			</OBJECT>
+		</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Miscellaneous">
+		<param name="Local" value="pages\group_33114NMMS.html">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="AFontInfo">
+			<param name="Local" value="pages\AFontInfo.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ASplitStr">
+			<param name="Local" value="pages\ASplitStr.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Decimals">
+			<param name="Local" value="pages\Decimals.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="GetCursorPosEx">
+			<param name="Local" value="pages\GetCursorPosEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Int64_Add">
+			<param name="Local" value="pages\Int64_Add.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Int64_Div">
+			<param name="Local" value="pages\Int64_Div.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Int64_Mod">
+			<param name="Local" value="pages\Int64_Mod.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Int64_Mul">
+			<param name="Local" value="pages\Int64_Mul.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Int64_Sub">
+			<param name="Local" value="pages\Int64_Sub.html">
+			</OBJECT>
+		</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Networking">
+		<param name="Local" value="pages\group_33114F1IB.html">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="AbortUrlDownloadToFileEx">
+			<param name="Local" value="pages\AbortUrlDownloadToFileEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="AIpAddresses">
+			<param name="Local" value="pages\AIpAddresses.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ANetFiles">
+			<param name="Local" value="pages\ANetFiles.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ANetServers">
+			<param name="Local" value="pages\ANetServers.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="GetServerTime">
+			<param name="Local" value="pages\GetServerTime.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="IcmpPing">
+			<param name="Local" value="pages\IcmpPing.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Ip2MacAddress">
+			<param name="Local" value="pages\Ip2MacAddress.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ResolveHostToIp">
+			<param name="Local" value="pages\ResolveHostToIp.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="SyncToSNTPServer">
+			<param name="Local" value="pages\SyncToSNTPServer.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="UrlDownloadToFileEx">
+			<param name="Local" value="pages\UrlDownloadToFileEx.html">
+			</OBJECT>
+		</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="ODBC">
+		<param name="Local" value="pages\group_33114H8O4.html">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ASQLDataSources">
+			<param name="Local" value="pages\ASQLDataSources.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ASQLDrivers">
+			<param name="Local" value="pages\ASQLDrivers.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ChangeSQLDataSource">
+			<param name="Local" value="pages\ChangeSQLDataSource.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="CreateSQLDataSource">
+			<param name="Local" value="pages\CreateSQLDataSource.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="DeleteSQLDataSource">
+			<param name="Local" value="pages\DeleteSQLDataSource.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="SQLExecEx">
+			<param name="Local" value="pages\SQLExecEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="SQLGetPropEx">
+			<param name="Local" value="pages\SQLGetPropEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="SQLSetPropEx">
+			<param name="Local" value="pages\SQLSetPropEx.html">
+			</OBJECT>
+		</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Printer information">
+		<param name="Local" value="pages\group_33114RPJW.html">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="APaperSizes">
+			<param name="Local" value="pages\APaperSizes.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="APrinterForms">
+			<param name="Local" value="pages\APrinterForms.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="APrintersEx">
+			<param name="Local" value="pages\APrintersEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="APrinterTrays">
+			<param name="Local" value="pages\APrinterTrays.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="APrintJobs">
+			<param name="Local" value="pages\APrintJobs.html">
+			</OBJECT>
+		</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Process information">
+		<param name="Local" value="pages\group_33114SAKK.html">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="AHeapBlocks">
+			<param name="Local" value="pages\AHeapBlocks.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="AProcesses">
+			<param name="Local" value="pages\AProcesses.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="AProcessHeaps">
+			<param name="Local" value="pages\AProcessHeaps.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="AProcessModules">
+			<param name="Local" value="pages\AProcessModules.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="AProcessThreads">
+			<param name="Local" value="pages\AProcessThreads.html">
+			</OBJECT>
+		</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="RAS">
+		<param name="Local" value="pages\group_33114K6L0.html">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="AbortRasConnectionNotification">
+			<param name="Local" value="pages\AbortRasConnectionNotification.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ARasConnections">
+			<param name="Local" value="pages\ARasConnections.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ARasDevices">
+			<param name="Local" value="pages\ARasDevices.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ARasPhonebookEntries">
+			<param name="Local" value="pages\ARasPhonebookEntries.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="RasClearConnectionStatistics">
+			<param name="Local" value="pages\RasClearConnectionStatistics.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="RasConnectionNotificationEx">
+			<param name="Local" value="pages\RasConnectionNotificationEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="RasDialDlgEx">
+			<param name="Local" value="pages\RasDialDlgEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="RasDialEx">
+			<param name="Local" value="pages\RasDialEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="RasGetConnectStatusEx">
+			<param name="Local" value="pages\RasGetConnectStatusEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="RasHangUpEx">
+			<param name="Local" value="pages\RasHangUpEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="RasPhonebookDlgEx">
+			<param name="Local" value="pages\RasPhonebookDlgEx.html">
+			</OBJECT>
+		</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Registry">
+		<param name="Local" value="pages\group_33114D5SS.html">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ARegistryKeys">
+			<param name="Local" value="pages\ARegistryKeys.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ARegistryValues">
+			<param name="Local" value="pages\ARegistryValues.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="CancelRegistryChange">
+			<param name="Local" value="pages\CancelRegistryChange.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="CloseRegistryKey">
+			<param name="Local" value="pages\CloseRegistryKey.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="CreateRegistryKey">
+			<param name="Local" value="pages\CreateRegistryKey.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="DeleteRegistryKey">
+			<param name="Local" value="pages\DeleteRegistryKey.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="FindRegistryChange">
+			<param name="Local" value="pages\FindRegistryChange.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="OpenRegistryKey">
+			<param name="Local" value="pages\OpenRegistryKey.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ReadRegistryKey">
+			<param name="Local" value="pages\ReadRegistryKey.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="RegistryHiveToObject">
+			<param name="Local" value="pages\RegistryHiveToObject.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="RegistryValuesToObject">
+			<param name="Local" value="pages\RegistryValuesToObject.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="WriteRegistryKey">
+			<param name="Local" value="pages\WriteRegistryKey.html">
+			</OBJECT>
+		</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Resource information">
+		<param name="Local" value="pages\group_33114SW3G.html">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="AResourceLanguages">
+			<param name="Local" value="pages\AResourceLanguages.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="AResourceNames">
+			<param name="Local" value="pages\AResourceNames.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="AResourceTypes">
+			<param name="Local" value="pages\AResourceTypes.html">
+			</OBJECT>
+		</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Service management">
+		<param name="Local" value="pages\group_33114HM3G.html">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ADependentServices">
+			<param name="Local" value="pages\ADependentServices.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="AServiceConfig">
+			<param name="Local" value="pages\AServiceConfig.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="AServices">
+			<param name="Local" value="pages\AServices.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="AServiceStatus">
+			<param name="Local" value="pages\AServiceStatus.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="CloseServiceHandle">
+			<param name="Local" value="pages\CloseServiceHandle.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ContinueService">
+			<param name="Local" value="pages\ContinueService.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ControlService">
+			<param name="Local" value="pages\ControlService.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="CreateService">
+			<param name="Local" value="pages\CreateService.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="OpenService">
+			<param name="Local" value="pages\OpenService.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="PauseService">
+			<param name="Local" value="pages\PauseService.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="StartService">
+			<param name="Local" value="pages\StartService.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="StopService">
+			<param name="Local" value="pages\StopService.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="WaitForServiceStatus">
+			<param name="Local" value="pages\WaitForServiceStatus.html">
+			</OBJECT>
+		</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Shell">
+		<param name="Local" value="pages\group_33114GPEY.html">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="SHCopyFiles">
+			<param name="Local" value="pages\SHCopyFiles.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="SHDeleteFiles">
+			<param name="Local" value="pages\SHDeleteFiles.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="SHMoveFiles">
+			<param name="Local" value="pages\SHMoveFiles.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="SHRenameFiles">
+			<param name="Local" value="pages\SHRenameFiles.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="SHSpecialFolder">
+			<param name="Local" value="pages\SHSpecialFolder.html">
+			</OBJECT>
+		</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="System information">
+		<param name="Local" value="pages\group_33213BP14.html">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ADesktopArea">
+			<param name="Local" value="pages\ADesktopArea.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ADesktops">
+			<param name="Local" value="pages\ADesktops.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ADisplayDevices">
+			<param name="Local" value="pages\ADisplayDevices.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="AResolutions">
+			<param name="Local" value="pages\AResolutions.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="AWindowStations">
+			<param name="Local" value="pages\AWindowStations.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="ExpandEnvironmentStrings">
+			<param name="Local" value="pages\ExpandEnvironmentStrings.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="GetLocaleInfoEx">
+			<param name="Local" value="pages\GetLocaleInfoEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="GetSystemDirectory">
+			<param name="Local" value="pages\GetSystemDirectory.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="GetWindowsDirectory">
+			<param name="Local" value="pages\GetWindowsDirectory.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="OsEx">
+			<param name="Local" value="pages\OsEx.html">
+			</OBJECT>
+		</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Volume information">
+		<param name="Local" value="pages\group_332135W6B.html">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="AVolumeInformation">
+			<param name="Local" value="pages\AVolumeInformation.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="AVolumeMountPoints">
+			<param name="Local" value="pages\AVolumeMountPoints.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="AVolumePaths">
+			<param name="Local" value="pages\AVolumePaths.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="AVolumes">
+			<param name="Local" value="pages\AVolumes.html">
+			</OBJECT>
+		</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Window information">
+		<param name="Local" value="pages\group_33213E2EB.html">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="AWindowProps">
+			<param name="Local" value="pages\AWindowProps.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="AWindows">
+			<param name="Local" value="pages\AWindows.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="AWindowsEx">
+			<param name="Local" value="pages\AWindowsEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="CenterWindowEx">
+			<param name="Local" value="pages\CenterWindowEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="GetWindowRectEx">
+			<param name="Local" value="pages\GetWindowRectEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="GetWindowTextEx">
+			<param name="Local" value="pages\GetWindowTextEx.html">
+			</OBJECT>
+		</UL>
+
+		
+				</UL>
 		</UL>
 	</UL>
 </UL>

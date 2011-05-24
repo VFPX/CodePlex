@@ -9,13 +9,11 @@ extern "C" {
 #endif
 
 void _stdcall SaveWinsockError(char *pFunction);
-bool _stdcall VFP2C_Init_Winsock();
-void _stdcall VFP2C_Destroy_Winsock();
+bool _stdcall VFP2C_Init_Winsock(VFP2CTls& tls);
+void _stdcall VFP2C_Destroy_Winsock(VFP2CTls& tls);
 
 void _fastcall AIPAddresses(ParamBlk *parm);
 void _fastcall ResolveHostToIp(ParamBlk *parm);
-
-extern DWORD gnDefaultWinsockTimeOut;
 
 #ifdef __cplusplus
 }

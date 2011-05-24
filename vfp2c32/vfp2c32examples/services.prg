@@ -6,7 +6,6 @@
 LOCAL lnCount, lnRet, laStatus[1], lnStatus, lnServiceHandle
 CD (FULLPATH(JUSTPATH(SYS(16))))
 SET LIBRARY TO vfp2c32.fll ADDITIVE
-INITVFP2C32(VFP2C_INIT_SERVICES)
 
 LOCAL laServiceStatus[7]
 laServiceStatus[1] = 'STOPPED'
@@ -18,7 +17,7 @@ laServiceStatus[6] = 'PAUSE PENDING'
 laServiceStatus[7] = 'PAUSED'
 
 lnServiceHandle = OpenService('Dhcp')
-IF AServiceStatus('laStatus',lnServiceHandle) = 1
+IF AServiceStatus('laStatus',lnServiceHandle)
 	? "Service is in : " + laServiceStatus[laStatus[3]] + " state"
 ELSE
 	AERROREX('laError')

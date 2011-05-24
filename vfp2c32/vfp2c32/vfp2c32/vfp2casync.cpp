@@ -1,3 +1,5 @@
+#ifndef _THREADSAFE
+
 #include <windows.h>
 #include <stdio.h>
 #include <malloc.h>
@@ -12,15 +14,14 @@
 
 HWND ghAsyncHwnd = 0;
 static ATOM gnAsyncAtom = 0;
-
 CThreadManager goThreadManager;
 
-bool _stdcall VFP2C_Init_Async()
+bool _stdcall VFP2C_Init_Async(VFP2CTls& tls)
 {
 	WNDCLASSEX wndClass = {0}; /* MO - message only */
 	const char* ASYNC_WINDOW_CLASS	= "__VFP2C_ASWC";
 
-	gnAsyncAtom = (ATOM)GetClassInfoEx(ghModule,ASYNC_WINDOW_CLASS,&wndClass);
+	gnAsyncAtom = (ATOM)GetClassInfoEx(ghModule, ASYNC_WINDOW_CLASS, &wndClass);
 	if (!gnAsyncAtom)
 	{
 		wndClass.cbSize = sizeof(WNDCLASSEX);
@@ -53,7 +54,7 @@ bool _stdcall VFP2C_Init_Async()
 	return goThreadManager.Initialize();
 }
 
-void _stdcall VFP2C_Destroy_Async()
+void _stdcall VFP2C_Destroy_Async(VFP2CTls& tls)
 {
 	goThreadManager.ShutdownThreads();
 
@@ -70,8 +71,6 @@ void _fastcall FindFileChange(ParamBlk *parm)
 	FindFileChangeThread *pThread = 0;
 try
 {
-	ResetWin32Errors();
-
 	FoxString pPath(p1);
 	bool bWatchSubtree = p2.ev_length > 0;
 	DWORD nFilter = p3.ev_long;
@@ -114,8 +113,6 @@ void _fastcall CancelFileChange(ParamBlk *parm)
 {
 try
 {
-	ResetWin32Errors();
-
 	if (!goThreadManager.Initialized())
 	{
 		SaveCustomError("CancelFileChange","Library not initialized.");
@@ -136,8 +133,6 @@ void _fastcall FindRegistryChange(ParamBlk *parm)
 	FindRegistryChangeThread *pThread = 0;
 try
 {
-	ResetWin32Errors();
-
 	HKEY hRoot = reinterpret_cast<HKEY>(p1.ev_long);
 	FoxString pKey(p2);
 	bool bWatchSubtree = p3.ev_length > 0;
@@ -177,8 +172,6 @@ void _fastcall CancelRegistryChange(ParamBlk *parm)
 {
 try
 {
-	ResetWin32Errors();
-
 	if (!goThreadManager.Initialized())
 	{
 		SaveCustomError("CancelRegistryChange","Library not initialized.");
@@ -199,8 +192,6 @@ void _fastcall AsyncWaitForObject(ParamBlk *parm)
 	WaitForObjectThread *pThread = 0;
 try
 {
-	ResetWin32Errors();
-
 	HANDLE hObject = reinterpret_cast<HANDLE>(p1.ev_long);
 	FoxString pCallback(p2);
 
@@ -237,8 +228,6 @@ void _fastcall CancelWaitForObject(ParamBlk *parm)
 {
 try
 {
-	ResetWin32Errors();
-
 	if (!goThreadManager.Initialized())
 	{
 		SaveCustomError("CancelWaitForObject","Library not initialized.");
@@ -302,7 +291,6 @@ LRESULT _stdcall FindChangeWindowProc(HWND nHwnd, UINT uMsg, WPARAM wParam, LPAR
 	else
 		return DefWindowProc(nHwnd,uMsg,wParam,lParam);
 }
-
 
 FindFileChangeThread::FindFileChangeThread(CThreadManager &pManager) : CThread(pManager)
 {
@@ -534,3 +522,5 @@ DWORD WaitForObjectThread::Run()
 
 	return 0;
 }
+
+#endif // _THREADSAFE

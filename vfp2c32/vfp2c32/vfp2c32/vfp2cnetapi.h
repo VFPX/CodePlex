@@ -42,8 +42,7 @@ extern "C" {
 #endif
 
 // function forward definitions
-bool _stdcall VFP2C_Init_Netapi();
-void _stdcall VFP2C_Destroy_Netapi();
+bool _stdcall VFP2C_Init_Netapi(VFP2CTls& tls);
 
 void _fastcall ANetUsers(ParamBlk *parm);
 void _fastcall ANetFiles(ParamBlk *parm);

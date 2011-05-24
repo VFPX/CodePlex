@@ -13,13 +13,6 @@ const int HEAP_INITIAL_SIZE	= 1024 * 1024;	// 1 MB
 #define REMOVEDEBUGALLOC(pPointer) RemoveDebugAlloc((void*)pPointer)
 #define REPLACEDEBUGALLOC(pOrig,pNew,nSize) ReplaceDebugAlloc((void*)pOrig,(void*)pNew,nSize)
 
-typedef struct _DBGALLOCINFO {
-	void* pPointer;
-	char* pProgInfo;
-	int nSize;
-	struct _DBGALLOCINFO *next;
-} DBGALLOCINFO, *LPDBGALLOCINFO;
-
 #else
 
 #define ADDDEBUGALLOC(pPointer,nSize)
@@ -47,17 +40,14 @@ typedef enum MarshalType
 
 // typedefs for dynamic linking to heap functions
 typedef BOOL (_stdcall *PHEAPSETINFO)(HANDLE, HEAP_INFORMATION_CLASS, PVOID, SIZE_T); // HeapSetInformation
-typedef SIZE_T (_stdcall *PHEAPCOMPACT)(HANDLE, DWORD); // HeapCompact
-typedef BOOL (_stdcall *PHEAPVALIDATE)(HANDLE, DWORD, LPCVOID); // HeapValidate
-typedef BOOL (_stdcall *PHEAPWALK)(HANDLE, LPPROCESS_HEAP_ENTRY); // HeapWalk
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 // function forward definitions
-bool _stdcall VFP2C_Init_Marshal();
-void _stdcall VFP2C_Destroy_Marshal();
+bool _stdcall VFP2C_Init_Marshal(VFP2CTls& tls);
+void _stdcall VFP2C_Destroy_Marshal(VFP2CTls& tls);
 
 int _stdcall Win32HeapExceptionHandler(int nExceptionCode);
 
@@ -163,10 +153,6 @@ void _fastcall MarshalCArray2FoxArray(ParamBlk *parm);
 
 void _fastcall MarshalCursor2CArray(ParamBlk *parm);
 void _fastcall MarshalCArray2Cursor(ParamBlk *parm);
-
-// extern definitions for shared variables
-extern HANDLE ghHeap;
-extern UINT gnConvCP;
 
 #ifdef __cplusplus
 }

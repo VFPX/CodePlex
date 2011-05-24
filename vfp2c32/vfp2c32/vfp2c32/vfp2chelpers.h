@@ -3,9 +3,8 @@
 
 #include <windows.h>
 #include <shlwapi.h>
-#include <list>
-#include <algorithm>
 #include <assert.h>
+#include <atlcoll.h>
 
 #define VER_SUITE_WH_SERVER 0x8000
 
@@ -35,12 +34,6 @@ typedef enum WindowsVersion
 	WindowsX
 };
 
-typedef enum WindowsGenericVersion
-{
-	Windows9x, // Win95 upto Windows Millenium
-	WindowsNT // any WindowsNT version
-};
-
 class COs
 {
 public:
@@ -50,7 +43,6 @@ public:
 	static void Init();
 	static WindowsVersion GetVersion();
 	static bool Is(WindowsVersion vVersion);
-	static bool Is(WindowsGenericVersion vVersion);
 	static bool GreaterOrEqual(WindowsVersion vVersion);
 
 private:
@@ -66,14 +58,6 @@ inline WindowsVersion COs::GetVersion()
 inline bool COs::Is(WindowsVersion vVersion)
 {
 	return m_Version == vVersion;
-}
-
-inline bool COs::Is(WindowsGenericVersion vVersion)
-{
-	if (vVersion == Windows9x)
-		return m_osver.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS;
-	else // if (vVersion == WindowsNT)
-		return m_osver.dwPlatformId == VER_PLATFORM_WIN32_NT && m_osver.dwMajorVersion <= 4;
 }
 
 inline bool COs::GreaterOrEqual(WindowsVersion vVersion)
@@ -266,7 +250,7 @@ public:
 	CCriticalSection() : m_Inited(false) { ZeroMemory(&m_Section,sizeof(CRITICAL_SECTION)); }
 	~CCriticalSection() { if (m_Inited) DeleteCriticalSection(&m_Section); }
 
-	bool Initialize();
+	bool Initialize(DWORD spinCount = 0);
 	bool Initialized();
 	void Enter();
 	void Leave();
@@ -281,14 +265,32 @@ class CEvent
 public:
 	CEvent() : m_Event(0) { }
 	CEvent(HANDLE hEvent) : m_Event(hEvent) { }
-	~CEvent() { if (m_Event) CloseHandle(m_Event); }
+	~CEvent() { Close(); }
 
-	bool Create(bool bManualReset = true, bool bInitalState = false, char *pName = 0, LPSECURITY_ATTRIBUTES pSecurityAttributes = 0);
-	void Signal();
-	void Reset();
-	void Attach(HANDLE hEvent);
-	HANDLE Detach();
+	bool Create(bool bManualReset = true, bool bInitalState = false, char *pName = 0, LPSECURITY_ATTRIBUTES pSecurityAttributes = 0)
+	{
+		m_Event = CreateEvent(pSecurityAttributes, bManualReset ? TRUE : FALSE, bInitalState ? TRUE : FALSE, pName);
+		if (m_Event == 0)
+		{
+			SaveWin32Error("CreateEvent", GetLastError());
+			return false;
+		}
+		return true;
+	}
+
+	BOOL Signal() { return ::SetEvent(m_Event); }
+	BOOL Reset() { return ::ResetEvent(m_Event); }
+	void Close() { if (m_Event) ::CloseHandle(m_Event); m_Event = 0; }
+	void Attach(HANDLE hEvent) { m_Event = hEvent; }
+	HANDLE Detach()
+	{
+		HANDLE hTmp;
+		hTmp = m_Event;
+		m_Event = 0;
+		return hTmp;
+	}
 	operator HANDLE() { return m_Event; }
+	operator bool() { return m_Event != NULL; }
 
 private:
 	HANDLE m_Event;
@@ -309,7 +311,7 @@ public:
 	void StartThread();
 	CThreadManager* GetThreadManager() { return m_ThreadManager; }
 	bool IsShutdown() { return m_AbortFlag == THREAD_SHUTDOWN_FLAG; }
-	void AbortThread(int reason) { m_AbortFlag = reason; SignalThreadAbort(); }
+	void AbortThread(long reason) { m_AbortFlag = reason; SignalThreadAbort(); }
 	
 	virtual void SignalThreadAbort() = 0;
 	virtual DWORD Run() = 0;
@@ -317,7 +319,7 @@ public:
 	static DWORD _stdcall ThreadProc(LPVOID lpParm);
 
 private:
-	volatile int m_AbortFlag;
+	long m_AbortFlag;
 	HANDLE m_ThreadHandle;
 	CThreadManager *m_ThreadManager;
 };
@@ -338,7 +340,7 @@ public:
 
 private:
 	CCriticalSection m_CritSect;
-	std::list<CThread *> m_Threads;
+	CAtlList<CThread *> m_Threads;
 };
 
 #endif // _VFP2CHELPERS_H__

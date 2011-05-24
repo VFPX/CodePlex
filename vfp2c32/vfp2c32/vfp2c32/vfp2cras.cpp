@@ -7,9 +7,6 @@
 #include "vfp2ccppapi.h"
 #include "vfpmacros.h"
 
-static HMODULE hRasApi32 = 0;
-static HMODULE hRasDlg = 0;
-
 static PRASGETERRORSTRING fpRasGetErrorString = 0;
 static PRASENUMCONNECTIONS fpRasEnumConnections = 0;
 static PRASGETPROJECTIONINFO fpRasGetProjectionInfo = 0;
@@ -22,63 +19,65 @@ static PRASGETENTRYDIALPARAMS fpRasGetEntryDialParams = 0;
 static PRASGETEAPUSERIDENTITY fpRasGetEapUserIdentity = 0;
 static PRASFREEEAPUSERIDENTITY fpRasFreeEapUserIdentity = 0;
 
+#ifndef _THREADSAFE
 static PRASCONNECTIONNOTIFICATION fpRasConnectionNotification = 0;
+#endif
+
 static PRASGETCONNECTSTATUS fpRasGetConnectStatus = 0;
 static PRASDIALDLG fpRasDialDlg = 0;
 static PRASCLEARCONNECTIONSTATISTICS fpRasClearConnectionStatistics = 0;
 
-static RasDialCallback goRasDialCallback;
-
 // RAS error handler
 void _stdcall SaveRas32Error(char *pFunction, DWORD nErrorNo)
 {
-	if (gnErrorCount == VFP2C_MAX_ERRORS)
+	VFP2CTls& tls = VFP2CTls::Tls();
+	if (tls.ErrorCount == VFP2C_MAX_ERRORS)
 		return;
-	gnErrorCount++;
+	tls.ErrorCount++;
 
-	gaErrorInfo[gnErrorCount].nErrorType = VFP2C_ERRORTYPE_WIN32;
-	gaErrorInfo[gnErrorCount].nErrorNo = nErrorNo;
-	strncpy(gaErrorInfo[gnErrorCount].aErrorFunction,pFunction,VFP2C_ERROR_FUNCTION_LEN);
-	fpRasGetErrorString(nErrorNo,gaErrorInfo[gnErrorCount].aErrorMessage,VFP2C_ERROR_MESSAGE_LEN);
+	LPVFP2CERROR pError = &tls.ErrorInfo[tls.ErrorCount];
+	pError->nErrorType = VFP2C_ERRORTYPE_WIN32;
+	pError->nErrorNo = nErrorNo;
+	strncpy(pError->aErrorFunction, pFunction, VFP2C_ERROR_FUNCTION_LEN);
+	fpRasGetErrorString(nErrorNo, pError->aErrorMessage, VFP2C_ERROR_MESSAGE_LEN);
 }
 
 // initialisation 
-bool _stdcall VFP2C_Init_Ras()
+bool _stdcall VFP2C_Init_Ras(VFP2CTls& tls)
 {
-	hRasApi32 = LoadLibrary("rasapi32.dll");
-	if (hRasApi32)
+	if (fpRasGetErrorString)
+		return true;
+
+	if (!tls.RasApi32)
+		tls.RasApi32 = LoadLibrary("rasapi32.dll");
+	if (tls.RasApi32)
 	{
-		fpRasGetErrorString = (PRASGETERRORSTRING)GetProcAddress(hRasApi32,"RasGetErrorStringA");
-		fpRasEnumConnections = (PRASENUMCONNECTIONS)GetProcAddress(hRasApi32,"RasEnumConnectionsA");
-		fpRasGetProjectionInfo = (PRASGETPROJECTIONINFO)GetProcAddress(hRasApi32,"RasGetProjectionInfoA");
-		fpRasEnumDevices = (PRASENUMDEVICES)GetProcAddress(hRasApi32,"RasEnumDevicesA");
-		fpRasEnumEntries = (PRASENUMENTRIES)GetProcAddress(hRasApi32,"RasEnumEntriesA");
-		fpRasDial = (PRASDIAL)GetProcAddress(hRasApi32,"RasDialA");
-		fpRasHangUp = (PRASHANGUP)GetProcAddress(hRasApi32,"RasHangUp");
-		fpRasGetEntryDialParams = (PRASGETENTRYDIALPARAMS)GetProcAddress(hRasApi32,"RasGetEntryDialParamsA");
-		fpRasGetEapUserIdentity = (PRASGETEAPUSERIDENTITY)GetProcAddress(hRasApi32,"RasGetEapUserIdentityA");
-		fpRasFreeEapUserIdentity = (PRASFREEEAPUSERIDENTITY)GetProcAddress(hRasApi32,"RasFreeEapUserIdentityA");
-		fpRasConnectionNotification = (PRASCONNECTIONNOTIFICATION)GetProcAddress(hRasApi32,"RasConnectionNotificationA");
-		fpRasGetConnectStatus = (PRASGETCONNECTSTATUS)GetProcAddress(hRasApi32,"RasGetConnectStatusA");
-		fpRasDialDlg = (PRASDIALDLG)GetProcAddress(hRasApi32,"RasDialDlgA");
-		fpRasClearConnectionStatistics = (PRASCLEARCONNECTIONSTATISTICS)
-			GetProcAddress(hRasApi32,"RasClearConnectionStatistics");
+		fpRasGetErrorString = (PRASGETERRORSTRING)GetProcAddress(tls.RasApi32, "RasGetErrorStringA");
+		fpRasEnumConnections = (PRASENUMCONNECTIONS)GetProcAddress(tls.RasApi32, "RasEnumConnectionsA");
+		fpRasGetProjectionInfo = (PRASGETPROJECTIONINFO)GetProcAddress(tls.RasApi32, "RasGetProjectionInfoA");
+		fpRasEnumDevices = (PRASENUMDEVICES)GetProcAddress(tls.RasApi32, "RasEnumDevicesA");
+		fpRasEnumEntries = (PRASENUMENTRIES)GetProcAddress(tls.RasApi32, "RasEnumEntriesA");
+		fpRasDial = (PRASDIAL)GetProcAddress(tls.RasApi32, "RasDialA");
+		fpRasHangUp = (PRASHANGUP)GetProcAddress(tls.RasApi32, "RasHangUp");
+		fpRasGetEntryDialParams = (PRASGETENTRYDIALPARAMS)GetProcAddress(tls.RasApi32, "RasGetEntryDialParamsA");
+		fpRasGetEapUserIdentity = (PRASGETEAPUSERIDENTITY)GetProcAddress(tls.RasApi32, "RasGetEapUserIdentityA");
+		fpRasFreeEapUserIdentity = (PRASFREEEAPUSERIDENTITY)GetProcAddress(tls.RasApi32, "RasFreeEapUserIdentityA");
+#ifndef _THREADSAFE
+		fpRasConnectionNotification = (PRASCONNECTIONNOTIFICATION)GetProcAddress(tls.RasApi32, "RasConnectionNotificationA");
+#endif
+		fpRasGetConnectStatus = (PRASGETCONNECTSTATUS)GetProcAddress(tls.RasApi32, "RasGetConnectStatusA");
+		fpRasDialDlg = (PRASDIALDLG)GetProcAddress(tls.RasApi32, "RasDialDlgA");
+		fpRasClearConnectionStatistics = (PRASCLEARCONNECTIONSTATISTICS)GetProcAddress(tls.RasApi32, "RasClearConnectionStatistics");
 	}
 
-	hRasDlg = LoadLibrary("rasdlg.dll");
-	if (hRasDlg)
-		fpRasPhonebookDlg = (PRASPHONEBOOKDLG)GetProcAddress(hRasDlg,"RasPhonebookDlgA");
+	if (!tls.RasDlg)
+		tls.RasDlg = LoadLibrary("rasdlg.dll");
+	if (tls.RasDlg)
+	{
+		fpRasPhonebookDlg = (PRASPHONEBOOKDLG)GetProcAddress(tls.RasDlg,"RasPhonebookDlgA");
+	}
 
 	return true;
-}
-
-// cleanup
-void _stdcall VFP2C_Destroy_Ras()
-{
-	if (hRasApi32)
-		FreeLibrary(hRasApi32);
-	if (hRasDlg)
-		FreeLibrary(hRasDlg);
 }
 
 // enumerate active dialup connections into an array
@@ -86,8 +85,6 @@ void _fastcall ARasConnections(ParamBlk *parm)
 {
 try
 {
-	ResetWin32Errors();
-
 	if (!fpRasEnumConnections || !fpRasGetProjectionInfo)
 		throw E_NOENTRYPOINT;
 
@@ -162,8 +159,6 @@ void _fastcall ARasDevices(ParamBlk *parm)
 {
 try
 {
-	ResetWin32Errors();
-
 	if (!fpRasEnumDevices)
 		throw E_NOENTRYPOINT;
 
@@ -221,8 +216,6 @@ void _fastcall ARasPhonebookEntries(ParamBlk *parm)
 {
 try
 {
-	ResetWin32Errors();
-
 	if (!fpRasEnumEntries)
 		throw E_NOENTRYPOINT;
 
@@ -264,11 +257,7 @@ try
 	for (unsigned int xj = 0; xj < dwEntries; xj++)
 	{
 		pArray(xj,1) = pEntryName = lpRasEntry->szEntryName;
-		if (COs::Is(Windows9x))
-			pArray(xj,2) = 0;
-		else
-            pArray(xj,2) = lpRasEntry->dwFlags;
-		
+        pArray(xj,2) = lpRasEntry->dwFlags;
 		lpRasEntry++;
 	}
 
@@ -331,8 +320,6 @@ void _fastcall RasPhonebookDlgEx(ParamBlk *parm)
 {
 try
 {
-	ResetWin32Errors();
-
 	if (!fpRasPhonebookDlg)
 		throw E_NOENTRYPOINT;
 
@@ -386,14 +373,7 @@ void RasDialCallback::SetCallback(char *pCallback)
 	m_Buffer.Size(VFP2C_MAX_CALLBACKBUFFER);
 }
 
-void RasDialCallback::Callback1(HRASCONN hrasconn, UINT unMsg, RASCONNSTATE rascs,
-													DWORD dwError, DWORD dwExtendedError)
-{
-	m_Buffer.Format(m_Callback, 0, hrasconn, unMsg, rascs, dwError, dwExtendedError);
-	_Execute(m_Buffer);
-}
-
-DWORD RasDialCallback::Callback2(DWORD dwSubEntry, HRASCONN hrasconn,
+DWORD RasDialCallback::Callback(DWORD dwSubEntry, HRASCONN hrasconn,
 								UINT unMsg,	RASCONNSTATE rascs, DWORD dwError, DWORD dwExtendedError)
 {
 	Value vRetVal = {'0'};
@@ -412,21 +392,12 @@ DWORD RasDialCallback::Callback2(DWORD dwSubEntry, HRASCONN hrasconn,
 	return 1;
 }
 
-void _stdcall RasDialCallback::RasDialCallbackFunc1(HRASCONN hrasconn, UINT unMsg, RASCONNSTATE rascs,
-													DWORD dwError, DWORD dwExtendedError)
-{
-	if (dwError)
-		fpRasHangUp(hrasconn);
-
-	goRasDialCallback.Callback1(hrasconn,unMsg,rascs,dwError,dwExtendedError);
-}
-
-DWORD _stdcall RasDialCallback::RasDialCallbackFunc2(DWORD dwCallbackId, DWORD dwSubEntry, HRASCONN hrasconn,
+DWORD _stdcall RasDialCallback::RasDialCallbackFunc(DWORD dwCallbackId, DWORD dwSubEntry, HRASCONN hrasconn,
 										UINT unMsg,	RASCONNSTATE rascs, DWORD dwError, DWORD dwExtendedError)
 {
 
 	RasDialCallback *pCall = reinterpret_cast<RasDialCallback*>(dwCallbackId);
-	DWORD dwRet = pCall->Callback2(dwSubEntry,hrasconn,unMsg,rascs,dwError,dwExtendedError);
+	DWORD dwRet = pCall->Callback(dwSubEntry,hrasconn,unMsg,rascs,dwError,dwExtendedError);
 	
 	if (dwError)
 		fpRasHangUp(hrasconn);
@@ -442,8 +413,6 @@ void _fastcall RasDialEx(ParamBlk *parm)
 	RASEAPUSERIDENTITY *pUserIdentity = 0;
 try
 {
-	ResetWin32Errors();
-
 	if (!fpRasDial || !fpRasGetEntryDialParams)
 		throw E_NOENTRYPOINT;
 
@@ -467,8 +436,7 @@ try
 	DWORD nApiRet;
 
 	char *pPhonebook = 0;
-	if (!COs::Is(Windows9x))
-		pPhonebook = pPhonebookFile;
+	pPhonebook = pPhonebookFile;
 
 	RASDIALPARAMS sDialParams = {0};
 	sDialParams.dwSize = sizeof(RASDIALPARAMS);
@@ -514,31 +482,22 @@ try
 	DWORD dwNotifier = 0; LPVOID lpNotifier = 0;
 	if (pCallback.Len())
 	{
-		if (COs::Is(Windows9x))
-		{
-			dwNotifier = 1;
-			lpNotifier = reinterpret_cast<LPVOID>(RasDialCallback::RasDialCallbackFunc1);
-			goRasDialCallback.SetCallback(pCallback);
-		}
-		else
-		{
-			dwNotifier = 2;
-			lpNotifier = reinterpret_cast<LPVOID>(RasDialCallback::RasDialCallbackFunc2);
-            
-			RasDialCallback *pRasCallback = new RasDialCallback;
-			if (!pRasCallback)
-				throw E_INSUFMEMORY;
+		dwNotifier = 2;
+		lpNotifier = reinterpret_cast<LPVOID>(RasDialCallback::RasDialCallbackFunc);
+
+		RasDialCallback *pRasCallback = new RasDialCallback;
+		if (!pRasCallback)
+			throw E_INSUFMEMORY;
 			
-			try
-			{
-				pRasCallback->SetCallback(pCallback);
-				pDialParamsPtr->dwCallbackId = reinterpret_cast<DWORD>(pRasCallback);
-			}
-			catch(int nErrorNo)
-			{
-				delete pRasCallback;
-				throw nErrorNo;
-			}
+		try
+		{
+			pRasCallback->SetCallback(pCallback);
+			pDialParamsPtr->dwCallbackId = reinterpret_cast<DWORD>(pRasCallback);
+		}
+		catch(int nErrorNo)
+		{
+			delete pRasCallback;
+			throw nErrorNo;
 		}
 	}
 
@@ -590,8 +549,6 @@ void _fastcall RasDialDlgEx(ParamBlk *parm)
 {
 try
 {
-	ResetWin32Errors();
-
 	if (!fpRasDialDlg)
 		throw E_NOENTRYPOINT;
 
@@ -629,8 +586,6 @@ void _fastcall RasHangUpEx(ParamBlk *parm)
 {
 try
 {
-	ResetWin32Errors();
-
 	if (!fpRasHangUp || !fpRasGetConnectStatus)
 		throw E_NOENTRYPOINT;
 
@@ -672,8 +627,6 @@ void _fastcall RasGetConnectStatusEx(ParamBlk *parm)
 {
 try
 {
-	ResetWin32Errors();
-
 	if (!fpRasGetConnectStatus)
 		throw E_NOENTRYPOINT;
 
@@ -707,6 +660,7 @@ catch(int nErrorNo)
 }
 }
 
+#ifndef _THREADSAFE
 void RasNotifyThread::SignalThreadAbort()
 {
 	m_AbortEvent.Signal();
@@ -781,8 +735,6 @@ void _fastcall RasConnectionNotificationEx(ParamBlk *parm)
 	RasNotifyThread *pNotifyThread = 0;
 try
 {
-	ResetWin32Errors();
-
 	if (!fpRasConnectionNotification)
 		throw E_NOENTRYPOINT;
 
@@ -823,8 +775,6 @@ void _fastcall AbortRasConnectionNotificationEx(ParamBlk *parm)
 {
 try
 {
-	ResetWin32Errors();
-
 	if (!goThreadManager.Initialized())
 	{
 		SaveCustomError("AbortRasConnectionNotificationEx","Library not initialized.");
@@ -839,13 +789,12 @@ catch(int nErrorNo)
 	RaiseError(nErrorNo);
 }
 }
+#endif
 
 void _fastcall RasClearConnectionStatisticsEx(ParamBlk *parm)
 {
 try
 {
-	ResetWin32Errors();
-
 	if (!fpRasClearConnectionStatistics)
 		throw E_NOENTRYPOINT;
 

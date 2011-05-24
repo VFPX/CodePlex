@@ -10,31 +10,10 @@
 #include "vfp2chelpers.h"
 #include "vfpmacros.h"
 
-static PENUMFORMS fpEnumForms = 0;
-
-bool _stdcall VFP2C_Init_Print()
-{
-	HMODULE hDll;
-	hDll = GetModuleHandle("winspool.drv");
-	if (hDll)
-	{
-		fpEnumForms = (PENUMFORMS)GetProcAddress(hDll,"EnumFormsA");
-	}
-	else
-	{
-		AddWin32Error("GetModuleHandle", GetLastError());
-		return false;
-	}
-
-	return true;
-}
-
 void _fastcall APrintersEx(ParamBlk *parm)
 {
 try
 {
- 	ResetWin32Errors();
-
  	FoxArray pArray(p1);
    	FoxString pName(parm,2);
 	FoxString pData(1024);
@@ -55,20 +34,12 @@ try
 	if (Vartype(p2) != '0' && Vartype(p2) != 'C')
 		throw E_INVALIDPARAMS;
 
-	if (COs::Is(Windows9x))
-	{
-		if (dwLevel != 1 && dwLevel != 2 && dwLevel != 5)
-			throw E_INVALIDPARAMS;
-	}
-	else
-	{
-		if (dwLevel != 1 && dwLevel != 2 && dwLevel != 4 && dwLevel != 5)
-			throw E_INVALIDPARAMS;
+	if (dwLevel != 1 && dwLevel != 2 && dwLevel != 4 && dwLevel != 5)
+		throw E_INVALIDPARAMS;
 
-		// If Level is 4, you can only use the PRINTER_ENUM_CONNECTIONS and PRINTER_ENUM_LOCAL constants.
-		if (dwLevel == 4 && (dwFlags & ~(PRINTER_ENUM_CONNECTIONS|PRINTER_ENUM_LOCAL)) > 0)
-			throw E_INVALIDPARAMS;
-	}
+	// If Level is 4, you can only use the PRINTER_ENUM_CONNECTIONS and PRINTER_ENUM_LOCAL constants.
+	if (dwLevel == 4 && (dwFlags & ~(PRINTER_ENUM_CONNECTIONS|PRINTER_ENUM_LOCAL)) > 0)
+		throw E_INVALIDPARAMS;
 
 	if (dwDest != APRINT_DEST_ARRAY && dwDest != APRINT_DEST_OBJECTARRAY)
 		throw E_INVALIDPARAMS;
@@ -262,8 +233,6 @@ void _fastcall APrintJobs(ParamBlk *parm)
 {
 try
 {
-	ResetWin32Errors();
-
 	FoxArray pArray(p1);
 	FoxString pPrinter(p2);
 	FoxString pJob(PRINT_ENUM_BUFFER);
@@ -439,11 +408,6 @@ void _fastcall APrinterForms(ParamBlk *parm)
 {
 try
 {
-	ResetWin32Errors();
-
-	if (!fpEnumForms)
-		throw E_NOENTRYPOINT;
-
 	FoxArray pArray(p1);
 	FoxString pPrinter(parm,2);
 	FoxString pForm(PRINT_ENUM_BUFFER);
@@ -458,7 +422,7 @@ try
 	}
 
 	// First call EnumForms() to find out how much memory we need
-	if (!fpEnumForms(hPrinter, 1, 0, 0, &dwBytes, &dwForms))
+	if (!EnumForms(hPrinter, 1, 0, 0, &dwBytes, &dwForms))
 	{
 		DWORD nLastError = GetLastError();
 		if (nLastError != ERROR_INSUFFICIENT_BUFFER)
@@ -474,7 +438,7 @@ try
 	}
 
 	CBuffer pBuffer(dwBytes);
-	if (!fpEnumForms(hPrinter, 1, pBuffer, dwBytes, &dwBytes, &dwForms))
+	if (!EnumForms(hPrinter, 1, pBuffer, dwBytes, &dwBytes, &dwForms))
 	{
 		SaveWin32Error("EnumForms", GetLastError());
 		throw E_APIERROR;
@@ -514,8 +478,6 @@ void _fastcall APaperSizes(ParamBlk *parm)
 {
 try
 {
-	ResetWin32Errors();
-
 	FoxArray pArray(p1);
 	FoxString pPrinter(p2);
 	FoxString pPort(p3);
@@ -599,10 +561,7 @@ try
 	nBins = DeviceCapabilities(pPrinter,pPort,DC_BINS,0,0);
 	if (nBins == -1)
 	{
-		if (COs::Is(Windows9x))
-			SaveCustomError("DeviceCapabilities","Function failed.");
-		else
-			SaveWin32Error("DeviceCapabilities", GetLastError());
+		SaveWin32Error("DeviceCapabilities", GetLastError());
 		throw E_APIERROR;
 	}
 	else if (nBins == 0)
@@ -617,10 +576,7 @@ try
 	if (DeviceCapabilities(pPrinter,pPort,DC_BINS,pBins,0) == -1 ||
 		DeviceCapabilities(pPrinter,pPort,DC_BINNAMES,pNames,0) == -1)
 	{
-		if (COs::Is(Windows9x))
-			SaveCustomError("DeviceCapabilities","Function failed.");
-		else
-			SaveWin32Error("DeviceCapabilities", GetLastError());
+		SaveWin32Error("DeviceCapabilities", GetLastError());
 		throw E_APIERROR;
 	}
 

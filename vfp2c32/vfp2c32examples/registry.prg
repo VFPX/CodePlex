@@ -1,7 +1,7 @@
 #INCLUDE vfp2c.h
 
 CD (FULLPATH(JUSTPATH(SYS(16))))
-SET LIBRARY TO vfp2c32d.fll ADDITIVE
+SET LIBRARY TO vfp2c32.fll ADDITIVE
 && no initialisation needed for registry functions
 
 LOCAL lnKey, lnNewKey, lcValue, laError[1], loValues

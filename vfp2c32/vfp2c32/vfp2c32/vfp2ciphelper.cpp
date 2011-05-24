@@ -8,9 +8,6 @@
 #include "vfp2chelpers.h"
 #include "vfpmacros.h"
 
-static HMODULE hIpHlpApi = 0;
-static HMODULE hIcmpApi = 0;
-
 static PSENDARP fpSendARP = 0;
 static PICMPCREATEFILE fpIcmpCreateFile = 0;
 static PICMPCLOSEHANDLE fpIcmpCloseHandle = 0;
@@ -85,26 +82,31 @@ bool IcmpFile::ValidData()
 	return memcmp(m_pEcho->pData, m_Data, min(m_pEcho->wDataSize, m_DataSize)) == 0;
 }
 
-bool _stdcall VFP2C_Init_IpHelper()
+bool _stdcall VFP2C_Init_IpHelper(VFP2CTls& tls)
 {
-	hIpHlpApi = LoadLibrary("iphlpapi.dll");
-	if (hIpHlpApi)
+	if (fpIcmpCreateFile)
+		return true;
+
+	if (!tls.IpHlpApi)
+		tls.IpHlpApi = LoadLibrary("iphlpapi.dll");
+	if (tls.IpHlpApi)
 	{
-		fpSendARP = (PSENDARP)GetProcAddress(hIpHlpApi,"SendARP");
-		fpIcmpCreateFile = (PICMPCREATEFILE)GetProcAddress(hIpHlpApi,"IcmpCreateFile");
-		fpIcmpCloseHandle = (PICMPCLOSEHANDLE)GetProcAddress(hIpHlpApi,"IcmpCloseHandle");
-        fpIcmpSendEcho = (PICMPSENDECHO)GetProcAddress(hIpHlpApi,"IcmpSendEcho");
+		fpSendARP = (PSENDARP)GetProcAddress(tls.IpHlpApi, "SendARP");
+		fpIcmpCreateFile = (PICMPCREATEFILE)GetProcAddress(tls.IpHlpApi, "IcmpCreateFile");
+		fpIcmpCloseHandle = (PICMPCLOSEHANDLE)GetProcAddress(tls.IpHlpApi, "IcmpCloseHandle");
+        fpIcmpSendEcho = (PICMPSENDECHO)GetProcAddress(tls.IpHlpApi, "IcmpSendEcho");
 	}
 	
 	// Icmp functions not found, then try to load icmp.dll
 	if (!fpIcmpCreateFile)
 	{
-		hIcmpApi = LoadLibrary("icmp.dll");
-		if (hIcmpApi)
+		if (!tls.Icmp)
+			tls.Icmp = LoadLibrary("icmp.dll");
+		if (tls.Icmp)
 		{
-			fpIcmpCreateFile = (PICMPCREATEFILE)GetProcAddress(hIcmpApi,"IcmpCreateFile");
-			fpIcmpCloseHandle = (PICMPCLOSEHANDLE)GetProcAddress(hIcmpApi,"IcmpCloseHandle");
-			fpIcmpSendEcho = (PICMPSENDECHO)GetProcAddress(hIcmpApi,"IcmpSendEcho");
+			fpIcmpCreateFile = (PICMPCREATEFILE)GetProcAddress(tls.Icmp, "IcmpCreateFile");
+			fpIcmpCloseHandle = (PICMPCLOSEHANDLE)GetProcAddress(tls.Icmp, "IcmpCloseHandle");
+			fpIcmpSendEcho = (PICMPSENDECHO)GetProcAddress(tls.Icmp, "IcmpSendEcho");
 		}
 		else
 		{
@@ -114,14 +116,6 @@ bool _stdcall VFP2C_Init_IpHelper()
 		}
 	}
 	return true;
-}
-
-void _stdcall VFP2C_Destroy_IpHelper()
-{
-	if (hIpHlpApi)
-		FreeLibrary(hIpHlpApi);
-	if (hIcmpApi)
-		FreeLibrary(hIcmpApi);
 }
 
 void _fastcall Ip2MacAddress(ParamBlk *parm)
@@ -196,8 +190,6 @@ void _fastcall IcmpPing(ParamBlk *parm)
 {
 try
 {
-	ResetWin32Errors();
-
 	if (!fpIcmpCreateFile)
 		throw E_NOENTRYPOINT;
 

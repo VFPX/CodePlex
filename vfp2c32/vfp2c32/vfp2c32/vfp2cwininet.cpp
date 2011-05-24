@@ -56,8 +56,6 @@ void _fastcall InitWinInet(ParamBlk *parm)
 {
 try
 {
-	ResetWin32Errors();;
-
 	FoxString pAgent(parm,1);
 	DWORD dwFlags = PCount() >= 2 ? p2.ev_long : 0;
 	FoxString pProxy(parm,3);
@@ -120,8 +118,6 @@ void _fastcall FTPConnect(ParamBlk *parm)
 {
 try
 {
-	ResetWin32Errors();;
-
 	if (!ghInternet)
 	{
 		SaveCustomError("FTPConnect","Library not initialized.");
@@ -154,8 +150,6 @@ void _fastcall FTPDisconnect(ParamBlk *parm)
 {
 try
 {
-	ResetWin32Errors();
-
 	if (!ghInternet)
 	{
 		SaveCustomError("FTPDisconnect","Library not initialized.");
@@ -179,8 +173,6 @@ void _fastcall FTPGetFileLib(ParamBlk *parm)
 {
 try
 {
-	ResetWin32Errors();
-
 	if (!ghInternet)
 	{
 		SaveCustomError("FTPGetFile","Library not initialized.");
@@ -275,8 +267,6 @@ void _fastcall FTPGetDirectory(ParamBlk *parm)
 {
 try
 {
-	ResetWin32Errors();
-
 	if (!ghInternet)
 	{
 		SaveCustomError("FTPGetDirectory","Library not initialized.");
@@ -304,8 +294,6 @@ void _fastcall FTPSetDirectory(ParamBlk *parm)
 {
 try
 {
-	ResetWin32Errors();
-
 	if (!ghInternet)
 	{
 		SaveCustomError("FTPSetDirectory","Library not initialized.");
@@ -343,8 +331,6 @@ void _fastcall AFTPFiles(ParamBlk *parm)
 	PADIREXFILTER fpFilterFunc;
 	WIN32_FIND_DATA sFiles;
 	char aExeBuffer[VFP2C_MAX_FUNCTIONBUFFER];
-
-	ResetWin32Errors();
 
 	if (!NullTerminateHandle(p2) || !NullTerminateHandle(p3))
 		RaiseError(E_INSUFMEMORY);

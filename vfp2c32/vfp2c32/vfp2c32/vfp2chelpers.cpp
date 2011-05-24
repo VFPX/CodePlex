@@ -10,13 +10,16 @@
 #include "vfp2chelpers.h"
 
 WindowsVersion COs::m_Version;
-OSVERSIONINFOEX COs::m_osver;
+OSVERSIONINFOEX COs::m_osver = {0};
 
 void COs::Init()
 {
 	PGETNATIVESYSTEMINFO pGetNativeSystemInfo = 0;
 	SYSTEM_INFO sysInfo;
 	bool bVersionEx = true;
+
+	if (m_osver.dwOSVersionInfoSize != 0)
+		return;
 
 	m_osver.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
 	if (!GetVersionEx(reinterpret_cast<LPOSVERSIONINFO>(&m_osver)))
@@ -700,15 +703,11 @@ RegistryKey& RegistryKey::operator=(HKEY hKey)
 	return *this;
 }
 
-bool CCriticalSection::Initialize()
+bool CCriticalSection::Initialize(DWORD spinCount)
 {
-	__try
+	if (!InitializeCriticalSectionAndSpinCount(&m_Section, spinCount | 0xFF000000))
 	{
-		InitializeCriticalSection(&m_Section);
-	}
-	__except(EXCEPTION_EXECUTE_HANDLER)
-	{
-		AddCustomError("InitializeCriticalSection","There's not enough memory to complete the operation.");
+		SaveWin32Error("InitializeCriticalSectionAndSpinCount", GetLastError());
 		return false;
 	}
 	m_Inited = true;
@@ -739,45 +738,6 @@ CThread::~CThread()
 		m_ThreadManager->RemoveThread(this);
 		CloseHandle(m_ThreadHandle);
 	}
-}
-
-bool CEvent::Create(bool bManualReset, bool bInitalState, char *pName, LPSECURITY_ATTRIBUTES pSecurityAttributes)
-{
-	assert(!m_Event);
-
-	m_Event = CreateEvent(pSecurityAttributes, bManualReset ? TRUE : FALSE, bInitalState ? TRUE : FALSE, pName);
-	if (m_Event == 0)
-	{
-		SaveWin32Error("CreateEvent", GetLastError());
-		return false;
-	}
-	return true;
-}
-	
-void CEvent::Signal()
-{
-	assert(m_Event);
-	SetEvent(m_Event);
-}
-
-void CEvent::Reset()
-{
-	assert(m_Event);
-	ResetEvent(m_Event);
-}
-
-void CEvent::Attach(HANDLE hEvent)
-{
-	assert(!m_Event);
-	m_Event = hEvent;
-}
-
-HANDLE CEvent::Detach()
-{
-	HANDLE hTmp;
-	hTmp = m_Event;
-	m_Event = 0;
-	return hTmp;
 }
 
 void CThread::WaitForThreadShutdown()
@@ -839,9 +799,9 @@ void CThreadManager::ShutdownThreads()
  	while (true)
 	{
 		m_CritSect.Enter();
-		if (!m_Threads.empty())
+		if (!m_Threads.IsEmpty())
 		{
-			CThread *pThread = m_Threads.front();
+			CThread *pThread = m_Threads.RemoveHead();
 			pThread->AbortThread(THREAD_SHUTDOWN_FLAG);
 			m_CritSect.Leave();
 			pThread->WaitForThreadShutdown();
@@ -858,14 +818,16 @@ void CThreadManager::ShutdownThreads()
 void CThreadManager::AddThread(CThread *pThread)
 {
 	m_CritSect.Enter();
-	m_Threads.push_back(pThread);
+	m_Threads.AddTail(pThread);
 	m_CritSect.Leave();
 }
 
 void CThreadManager::RemoveThread(CThread *pThread)
 {
 	m_CritSect.Enter();
-	m_Threads.remove(pThread);
+	POSITION pos = m_Threads.Find(pThread);
+	if (pos)
+		m_Threads.RemoveAt(pos);
 	m_CritSect.Leave();
 }
 
@@ -874,9 +836,8 @@ bool CThreadManager::AbortThread(CThread *pThread)
 	bool bRetval = false;
 
 	m_CritSect.Enter();
-	std::list<CThread*>::iterator result;
-	result = std::find(m_Threads.begin(), m_Threads.end(), pThread);
-	if (result != m_Threads.end())
+	POSITION pos = m_Threads.Find(pThread);
+	if (pos)
 	{
         pThread->AbortThread(THREAD_ABORT_FLAG);
 		bRetval = true;

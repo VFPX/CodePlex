@@ -164,6 +164,14 @@ inline void Return(CCY nValue, int nWidth) { _RetCurrency(nValue, nWidth); }
 inline void Return(Value &pVal) { _RetVal(&pVal); }
 inline void ReturnARows(Locator &pLoc) { _RetInt(pLoc.l_sub1, 5); }
 inline void ReturnNull() { Value vRetval; vRetval.ev_type = '\0'; _RetVal(&vRetval); }
+inline void ReturnIDispatch(void* pObject)
+{
+	char aCommand[32];
+	Value vObject = {'0'};
+	sprintfex(aCommand,"SYS(3096,%I)", pObject);
+	Evaluate(vObject, aCommand);
+	Return(vObject);
+}
 
 /* Foxpro like Vartype function */
 inline char Vartype(const Value &pVal) { return pVal.ev_type; }
@@ -662,6 +670,12 @@ public:
 	operator __int64() { return m_Value.ev_currency.QuadPart; }
 };
 
+typedef enum _FoxStringInitialization
+{
+	NullIfEmpty = 0,
+	NoNullIfEmpty
+} FoxStringInitialization;
+
 /* FoxString - wraps a FoxPro character/binary string */
 class FoxString : public FoxValue
 {
@@ -673,6 +687,7 @@ public:
 	FoxString(Value &pVal, unsigned int nExpand);
 	FoxString(ParamBlk *pParms, int nParmNo);
 	FoxString(ParamBlk *pParms, int nParmNo, unsigned int nExpand);
+	FoxString(ParamBlk *pParms, int nParmNo, FoxStringInitialization eInit);
 	FoxString(const char *pString);
 	FoxString(unsigned int nSize);
 	FoxString(BSTR pString, UINT nCodePage = CP_ACP);
@@ -724,8 +739,8 @@ public:
 	FoxString& operator=(FoxValue &pValue);
 	FoxString& operator<<(FoxObject &pObject);
 	FoxString& operator=(FoxString &pString);
-	FoxString& operator=(const char *pString);
-	FoxString& operator=(const wchar_t *pWString);
+	FoxString& operator=(char *pString);
+	FoxString& operator=(wchar_t *pWString);
 	FoxString& operator+=(const char *pString);
 	FoxString& operator+=(FoxString &pString);
 	FoxString& operator+=(const char pChar);
@@ -1077,18 +1092,19 @@ private:
 	FoxValue *m_pValues;
 };
 
-// helper class which holds the current timezone information (static singleton in vfp2ccppapi.cpp)
+// helper class which holds the current timezone information (singleton - use GetTsi to get instance)
 class TimeZoneInfo
 {
 public:
-	TimeZoneInfo();
-	~TimeZoneInfo();
-
-	static double Bias;
-	void Refresh();
-	static LRESULT _stdcall TimeChangeWindowProc(HWND nHwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+	double Bias;
+	static TimeZoneInfo& GetTsi();
 
 private:
+	TimeZoneInfo();
+	~TimeZoneInfo();
+	static LRESULT _stdcall TimeChangeWindowProc(HWND nHwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+	void Refresh();
+
 	DWORD m_CurrentZone;
 	TIME_ZONE_INFORMATION m_ZoneInfo;
 	HWND m_Hwnd;
