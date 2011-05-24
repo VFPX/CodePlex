@@ -13,7 +13,6 @@ m.loHtmlHelpCreator.CreateCHM(m.lcFunction)
 DEFINE CLASS cHtmlHelpCreator AS Session
 
 	cPath = ''
-	cVFP2C32Version = ''
 	bPreview = .F.
 	Datasession = 2
 	cHtmlPath = ''
@@ -23,10 +22,6 @@ DEFINE CLASS cHtmlHelpCreator AS Session
 		LPARAMETERS lcPath
 		THIS.cPath = ADDBS(m.lcPath)
 		THIS.cHtmlPath = THIS.cPath + 'chm\pages\'
-		
-		LOCAL laVersion[1]
-		AGETFILEVERSION(laVersion, THIS.cPath + [vfp2c32.fll])
-		THIS.cVFP2C32Version = CHRTRAN(m.laVersion[4], ', ', '.')
 		
 		IF !USED('vi')
 			USE vfp2cintelli ALIAS vi IN 0 AGAIN SHARED
@@ -124,12 +119,17 @@ DEFINE CLASS cHtmlHelpCreator AS Session
 	FUNCTION CreateFunctionPage
 		LOCAL lcHtml, lcGroupId, lcUniqueId, lcInitFlag
 		
-		IF ALLTRIM(LOWER(vi.initflag)) != 'none'
-			lcInitFlag = '<p class="initflag"><a href="/pages/InitVFP2C32.html" title="Needed initialization">' + ALLTRIM(vi.initflag) + '</a></p>' + CRLF
-			&& <img title="Library initialization with InitVFP2C32 is needed for this function!" src="/images/caution.gif"/>
+		m.lcInitFlag = '<div class="flags">'
+		IF vi.threadsafe
+			m.lcInitFlag = m.lcInitFlag + '<a class="threadsafe" title="Threadsafe"></a>'
 		ELSE
-			lcInitFlag = ''
+			m.lcInitFlag = m.lcInitFlag + '<a class="notthreadsafe" title="Not available in threadsafe version"></a>'
 		ENDIF
+		IF ALLTRIM(LOWER(vi.initflag)) != 'none'
+			m.lcInitFlag = m.lcInitFlag + '<a  class="initflag" href="/pages/InitVFP2C32.html" title="Needed initialization">' + ALLTRIM(vi.initflag) + '</a>'
+		ENDIF
+		m.lcInitFlag = m.lcInitFlag + '</div>'
+
 
 		m.lcHtml = THIS.HtmlHeader(vi.expanded, 'function', m.lcInitFlag)
 		
@@ -230,8 +230,9 @@ DEFINE CLASS cHtmlHelpCreator AS Session
 		TEXT TO lcHeader ADDITIVE TEXTMERGE NOSHOW PRETEXT 2
 		<body>
 		<div id="header">
-		<p>VFP2C32 <<THIS.cVFP2C32Version>></p>
-		<h1<<m.lcHeaderClass>>><<ALLTRIM(m.lcTitle)>></h1><<m.lcInitFlag>>
+		<p id="vfp2c32version"></p>
+		<h1<<m.lcHeaderClass>>><<ALLTRIM(m.lcTitle)>></h1>
+		<<m.lcInitFlag>>
 		</div>
 		<div id="content">
 		ENDTEXT
@@ -454,44 +455,98 @@ ENDTEXT
 		ENDSCAN
 		m.lcSiteMapGroup = m.lcSiteMapGroup + CRLF
 
-TEXT TO m.lcSiteMap TEXTMERGE NOSHOW
-		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Functions A-Z">
-			<param name="Local" value="pages\FunctionsA-Z.html">
-			</OBJECT>
-		<UL>
-		<<m.lcSiteMapAZ>>
-		</UL>
-		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="Functions by Category">
-			<param name="Local" value="pages\FunctionsCategory.html">
-			</OBJECT>
-		<UL>
-		<<m.lcSiteMapGroup>>		
-		</UL>
-ENDTEXT
-
 		&& merge sitemap into hhc file
-		LOCAL lcCurFile, lcBegin, lcEnd, lcMap
-		m.lcCurFile = FILETOSTR(THIS.cPath + 'chm\vfp2c32toc.hhc')
+		LOCAL lcSitemap
 
-TEXT TO m.lcBegin TEXTMERGE NOSHOW
+TEXT TO m.lcSitemap TEXTMERGE NOSHOW
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<meta name="GENERATOR" content="Microsoft&reg; HTML Help Workshop 4.1">
+<!-- Sitemap 1.0 -->
+</HEAD><BODY>
+<OBJECT type="text/site properties">
+	<param name="Window Styles" value="0x800025">
+</OBJECT>
+<UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="VFP2C32">
+		<param name="Local" value="pages\static\Mainpage.html">
+		</OBJECT>
+		<UL>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Error handling">
+				<param name="Local" value="pages\static\Errorhandling.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Distribution">
+				<param name="Local" value="pages\static\Distribution.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Intellisense &amp; Context Help">
+				<param name="Local" value="pages\static\Intellisense.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Version history">
+				<param name="Local" value="pages\static\VersionHistory.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Developers and collaborators">
+				<param name="Local" value="pages\static\Developers.html">
+				</OBJECT>
+		</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="VFP2C32Front">
+		<param name="Local" value="pages\static\VFP2C32Front.html">
+		</OBJECT>
+		<UL>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Translation options">
+				<param name="Local" value="pages\static\VFP2C32Front_Options.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Common errors">
+				<param name="Local" value="pages\static\VFP2C32Front_Errors.html">
+				</OBJECT>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Examples">
+				</OBJECT>
+				<UL>
+					<LI> <OBJECT type="text/sitemap">
+						<param name="Name" value="GlobalMemoryStatus">
+						<param name="Local" value="pages\static\VFP2C32Front_GlobalMemoryStatus.html">
+						</OBJECT>
+					<LI> <OBJECT type="text/sitemap">
+						<param name="Name" value="RegisterPowerSettingNotification">
+						<param name="Local" value="pages\static\VFP2C32Front_RegisterPowerSettingNotification.html">
+						</OBJECT>
+				</UL>
+		</UL>
 	<LI> <OBJECT type="text/sitemap">
 		<param name="Name" value="Reference">
-		<param name="Local" value="pages\Reference.html">
 		</OBJECT>
-	<UL>
-ENDTEXT
-
-TEXT TO m.lcEnd NOSHOW 
+		<UL>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Functions A-Z">
+				<param name="Local" value="pages\FunctionsA-Z.html">
+				</OBJECT>
+				<UL>
+				<<m.lcSiteMapAZ>>
+				</UL>
+			<LI> <OBJECT type="text/sitemap">
+				<param name="Name" value="Functions by Category">
+				<param name="Local" value="pages\FunctionsCategory.html">
+				</OBJECT>
+				<UL>
+				<<m.lcSiteMapGroup>>		
+				</UL>
+		</UL>
 	</UL>
 </UL>
+</BODY></HTML>
 ENDTEXT
 
-		m.lcMap = STREXTRACT(m.lcCurFile, m.lcBegin, m.lcEnd)
-		m.lcCurFile = STRTRAN(m.lcCurFile, m.lcMap, m.lcSiteMap)
-
-		STRTOFILE(m.lcCurFile, THIS.cPath + 'chm\vfp2c32toc.hhc', 0)
+		STRTOFILE(m.lcSitemap, THIS.cPath + 'chm\vfp2c32toc.hhc', 0)
 
 		USE IN SELECT('vs')
 		USE IN SELECT('vg')		

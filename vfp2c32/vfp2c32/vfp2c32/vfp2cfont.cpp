@@ -12,8 +12,6 @@ void _fastcall AFontInfo(ParamBlk *parm)
 {
 try
 {
-	ResetWin32Errors();
-
 	FoxString pFileName(p1);
 	FoxObject pFontInfo;
 	pFontInfo.EmptyObject();

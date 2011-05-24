@@ -61,8 +61,7 @@ typedef DWORD (_stdcall *PICMPSENDECHO)(HANDLE, long, LPVOID, WORD, PIPINFO, LPV
 
 const int MAC_ADDRESS_LEN	= 17; // FF:00:FF:00:FF:00
 
-bool _stdcall VFP2C_Init_IpHelper();
-void _stdcall VFP2C_Destroy_IpHelper();
+bool _stdcall VFP2C_Init_IpHelper(VFP2CTls& tls);
 
 void _fastcall Ip2MacAddress(ParamBlk *parm);
 void _fastcall IcmpPing(ParamBlk *parm);

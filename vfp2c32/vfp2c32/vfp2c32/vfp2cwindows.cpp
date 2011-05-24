@@ -7,35 +7,10 @@
 #include "vfpmacros.h"
 #include "vfp2ccppapi.h"
 
-static PMONITORFROMWINDOW fpMonitorFromWindow = 0;
-static PMONITORFROMPOINT fpMonitorFromPoint = 0;
-static PGETMONITORINFO fpGetMonitorInfo = 0;
-
-bool _stdcall VFP2C_Init_Windows()
-{
-	HMODULE hDll;
-	
-	hDll = GetModuleHandle("user32.dll");
-	if (hDll)
-	{
-		fpMonitorFromWindow = (PMONITORFROMWINDOW)GetProcAddress(hDll,"MonitorFromWindow");
-		fpMonitorFromPoint = (PMONITORFROMPOINT)GetProcAddress(hDll,"MonitorFromPoint");
-		fpGetMonitorInfo = (PGETMONITORINFO)GetProcAddress(hDll,"GetMonitorInfoA");
-	}
-	else
-	{
-		AddWin32Error("GetModuleHandle", GetLastError());
-		return false;
-	}
-	return true;
-}
-
 void _fastcall GetWindowTextEx(ParamBlk *parm)
 {
 try
 {
-	ResetWin32Errors();
-
 	FoxString pRetVal;
 	HWND hHwnd = reinterpret_cast<HWND>(p1.ev_long);
 	DWORD nLen, nApiRet, nLastError;
@@ -142,18 +117,12 @@ try
 			}
 			else
 			{
-				if (!fpMonitorFromWindow)
-					throw E_NOENTRYPOINT;
-
-				hMon = fpMonitorFromWindow(hSource, MONITOR_DEFAULTTONEAREST);
+				hMon = MonitorFromWindow(hSource, MONITOR_DEFAULTTONEAREST);
 				sMonInfo.cbSize = sizeof(MONITORINFO);
 				
-				if (!fpGetMonitorInfo(hMon, &sMonInfo))
+				if (!GetMonitorInfo(hMon, &sMonInfo))
 				{
-					if (COs::Is(Windows9x))
-						SaveCustomError("GetMonitorInfo","Function failed.");
-					else
-						SaveWin32Error("GetMonitorInfo", GetLastError());						
+					SaveWin32Error("GetMonitorInfo", GetLastError());						
 					throw E_APIERROR;
 				}
 				
@@ -208,31 +177,6 @@ catch (int nErrorNo)
 {
 	RaiseError(nErrorNo);
 }
-}
-
-void _fastcall ColorOfPoint(ParamBlk *parm)
-{
-	COLORREF nColor = 0;
-	POINT sPoint;
-	HWND hWindow;
-	HDC hContext;
-
-	sPoint.x = p1.ev_long;
-	sPoint.y = p2.ev_long;
-
-	if (PCount() == 2)
-		hWindow = 0;
-	else
-		hWindow = reinterpret_cast<HWND>(p3.ev_long);
-		
-	hContext = GetDC(hWindow);
-	if (hContext)
-	{
-		nColor = GetPixel(hContext, sPoint.x, sPoint.y);
-		if (hWindow)
-			ReleaseDC(hWindow,hContext);
-	}
-	Return(nColor);
 }
 
 void _fastcall MessageBoxExLib(ParamBlk *parm)

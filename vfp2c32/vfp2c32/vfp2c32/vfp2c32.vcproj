@@ -16,6 +16,7 @@
 			OutputDirectory="Debug"
 			IntermediateDirectory="Debug"
 			ConfigurationType="2"
+			UseOfATL="0"
 			CharacterSet="2"
 			WholeProgramOptimization="FALSE">
 			<Tool
@@ -27,7 +28,7 @@
 				ImproveFloatingPointConsistency="TRUE"
 				FavorSizeOrSpeed="0"
 				OmitFramePointers="FALSE"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;_USRDLL;VFPSTRUCTS_EXPORTS"
+				PreprocessorDefinitions="_WIN32_WINNT=0x0500;WIN32;_DEBUG;_WINDOWS;_USRDLL;VFPSTRUCTS_EXPORTS"
 				StringPooling="TRUE"
 				MinimalRebuild="FALSE"
 				ExceptionHandling="TRUE"
@@ -51,8 +52,8 @@
 				AdditionalDependencies="winapims.lib shlwapi.lib urlmon.lib wininet.lib ws2_32.lib"
 				OutputFile="$(OutDir)/vfp2c32d.fll"
 				LinkIncremental="1"
-				IgnoreDefaultLibraryNames="msvcrt"
-				ModuleDefinitionFile="vfp2c32d.def"
+				IgnoreDefaultLibraryNames="msvcrt; msvcprtd"
+				ModuleDefinitionFile=""
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile="$(OutDir)/vfp2c32.pdb"
 				SubSystem="2"
@@ -60,8 +61,9 @@
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
 				EntryPointSymbol=""
-				ImportLibrary="$(OutDir)/vfpstructs.lib"
-				TargetMachine="1"/>
+				ImportLibrary=""
+				TargetMachine="1"
+				FixedBaseAddress="1"/>
 			<Tool
 				Name="VCMIDLTool"/>
 			<Tool
@@ -93,6 +95,7 @@
 			OutputDirectory="Release"
 			IntermediateDirectory="Release"
 			ConfigurationType="2"
+			UseOfATL="0"
 			CharacterSet="2"
 			WholeProgramOptimization="TRUE">
 			<Tool
@@ -104,7 +107,7 @@
 				ImproveFloatingPointConsistency="TRUE"
 				FavorSizeOrSpeed="2"
 				OmitFramePointers="FALSE"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;VFPSTRUCTS_EXPORTS"
+				PreprocessorDefinitions="_WIN32_WINNT=0x0500;WIN32;NDEBUG;_WINDOWS;_USRDLL;VFPSTRUCTS_EXPORTS"
 				StringPooling="TRUE"
 				MinimalRebuild="FALSE"
 				ExceptionHandling="TRUE"
@@ -127,15 +130,16 @@
 				ShowProgress="0"
 				OutputFile="$(OutDir)/vfp2c32.fll"
 				LinkIncremental="1"
-				IgnoreDefaultLibraryNames=""
-				ModuleDefinitionFile="vfp2c32.def"
+				IgnoreDefaultLibraryNames="msvcprt"
+				ModuleDefinitionFile=""
 				GenerateDebugInformation="FALSE"
 				SubSystem="2"
 				LargeAddressAware="1"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				ImportLibrary="$(OutDir)/vfpstructs.lib"
-				TargetMachine="1"/>
+				ImportLibrary=""
+				TargetMachine="1"
+				FixedBaseAddress="1"/>
 			<Tool
 				Name="VCMIDLTool"/>
 			<Tool
@@ -166,6 +170,7 @@ copy &quot;$(TargetPath)&quot; &quot;$(SolutionDir)..\vfp2c32examples\$(TargetFi
 			OutputDirectory="$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="2"
+			UseOfATL="0"
 			CharacterSet="2"
 			WholeProgramOptimization="TRUE">
 			<Tool
@@ -177,6 +182,7 @@ copy &quot;$(TargetPath)&quot; &quot;$(SolutionDir)..\vfp2c32examples\$(TargetFi
 				ImproveFloatingPointConsistency="TRUE"
 				FavorSizeOrSpeed="2"
 				OmitFramePointers="FALSE"
+				PreprocessorDefinitions="_WIN32_WINNT=0x0500;WIN32;_WINDOWS;_USRDLL;VFPSTRUCTS_EXPORTS"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
 				BufferSecurityCheck="FALSE"
@@ -192,21 +198,237 @@ copy &quot;$(TargetPath)&quot; &quot;$(SolutionDir)..\vfp2c32examples\$(TargetFi
 				AdditionalDependencies="winapims.lib shlwapi.lib urlmon.lib wininet.lib ws2_32.lib"
 				OutputFile="$(OutDir)/vfp2c32rd.fll"
 				LinkIncremental="1"
-				ModuleDefinitionFile="vfp2c32rd.def"
+				IgnoreDefaultLibraryNames="msvcprt"
+				ModuleDefinitionFile=""
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile="$(OutDir)/vfp2c32.pdb"
 				SubSystem="2"
 				LargeAddressAware="1"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
-				TargetMachine="1"/>
+				ImportLibrary=""
+				TargetMachine="1"
+				FixedBaseAddress="1"/>
+			<Tool
+				Name="VCMIDLTool"/>
+			<Tool
+				Name="VCPostBuildEventTool"/>
+			<Tool
+				Name="VCPreBuildEventTool"
+				Description="Freeing leacked PDB handles"
+				CommandLine="&quot;$(VCInstallDir)\bin\freepdb.cmd&quot; &quot;$(ProjectName)&quot;"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
+			<Tool
+				Name="VCResourceCompilerTool"/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"/>
+			<Tool
+				Name="VCWebDeploymentTool"/>
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+		</Configuration>
+		<Configuration
+			Name="DebugTS|Win32"
+			OutputDirectory="$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="2"
+			UseOfATL="0"
+			CharacterSet="2"
+			WholeProgramOptimization="FALSE">
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="0"
+				GlobalOptimizations="FALSE"
+				InlineFunctionExpansion="0"
+				EnableIntrinsicFunctions="TRUE"
+				ImproveFloatingPointConsistency="TRUE"
+				FavorSizeOrSpeed="0"
+				OmitFramePointers="FALSE"
+				PreprocessorDefinitions="_THREADSAFE;_WIN32_WINNT=0x0500;WIN32;_DEBUG;_WINDOWS;_USRDLL;VFPSTRUCTS_EXPORTS"
+				StringPooling="TRUE"
+				MinimalRebuild="FALSE"
+				ExceptionHandling="TRUE"
+				BasicRuntimeChecks="0"
+				RuntimeLibrary="3"
+				BufferSecurityCheck="FALSE"
+				EnableFunctionLevelLinking="FALSE"
+				TreatWChar_tAsBuiltInType="TRUE"
+				UsePrecompiledHeader="0"
+				ExpandAttributedSource="FALSE"
+				AssemblerOutput="0"
+				WarningLevel="3"
+				Detect64BitPortabilityProblems="FALSE"
+				DebugInformationFormat="3"
+				CallingConvention="2"
+				CompileAs="2"/>
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalDependencies="winapims.lib shlwapi.lib urlmon.lib wininet.lib ws2_32.lib"
+				OutputFile="$(OutDir)/vfp2c32td.fll"
+				LinkIncremental="1"
+				IgnoreDefaultLibraryNames="msvcrt; msvcprtd"
+				ModuleDefinitionFile=""
+				GenerateDebugInformation="TRUE"
+				ProgramDatabaseFile="$(OutDir)/vfp2c32.pdb"
+				SubSystem="2"
+				LargeAddressAware="1"
+				OptimizeReferences="2"
+				EnableCOMDATFolding="2"
+				EntryPointSymbol=""
+				ImportLibrary=""
+				TargetMachine="1"
+				FixedBaseAddress="1"/>
+			<Tool
+				Name="VCMIDLTool"/>
+			<Tool
+				Name="VCPostBuildEventTool"/>
+			<Tool
+				Name="VCPreBuildEventTool"
+				Description="Freeing leacked PDB handles"
+				CommandLine="&quot;$(VCInstallDir)\bin\freepdb.cmd&quot; &quot;$(ProjectName)&quot;"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
+			<Tool
+				Name="VCResourceCompilerTool"/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"/>
+			<Tool
+				Name="VCWebDeploymentTool"/>
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+		</Configuration>
+		<Configuration
+			Name="ReleaseTS|Win32"
+			OutputDirectory="$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="2"
+			CharacterSet="2"
+			WholeProgramOptimization="TRUE">
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="3"
+				GlobalOptimizations="TRUE"
+				InlineFunctionExpansion="1"
+				EnableIntrinsicFunctions="TRUE"
+				ImproveFloatingPointConsistency="TRUE"
+				FavorSizeOrSpeed="2"
+				OmitFramePointers="FALSE"
+				PreprocessorDefinitions="_THREADSAFE;_WIN32_WINNT=0x0500;WIN32;NDEBUG;_WINDOWS;_USRDLL;VFPSTRUCTS_EXPORTS"
+				StringPooling="TRUE"
+				MinimalRebuild="FALSE"
+				ExceptionHandling="TRUE"
+				RuntimeLibrary="2"
+				BufferSecurityCheck="FALSE"
+				TreatWChar_tAsBuiltInType="TRUE"
+				UsePrecompiledHeader="0"
+				ExpandAttributedSource="FALSE"
+				AssemblerOutput="0"
+				WarningLevel="3"
+				Detect64BitPortabilityProblems="FALSE"
+				DebugInformationFormat="0"
+				CallingConvention="2"
+				CompileAs="2"/>
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalDependencies="winapims.lib shlwapi.lib urlmon.lib wininet.lib ws2_32.lib"
+				ShowProgress="0"
+				OutputFile="$(OutDir)/vfp2c32t.fll"
+				LinkIncremental="1"
+				IgnoreDefaultLibraryNames="msvcprt"
+				ModuleDefinitionFile=""
+				GenerateDebugInformation="FALSE"
+				SubSystem="2"
+				LargeAddressAware="1"
+				OptimizeReferences="2"
+				EnableCOMDATFolding="2"
+				ImportLibrary=""
+				TargetMachine="1"
+				FixedBaseAddress="1"/>
 			<Tool
 				Name="VCMIDLTool"/>
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Copying FLL"
-				CommandLine="copy &quot;$(TargetPath)&quot; &quot;$(SolutionDir)..\vfp2c32examples\$(TargetFileName)&quot;
+				CommandLine="copy &quot;$(TargetPath)&quot; &quot;$(SolutionDir)..\vfp2c32front\$(TargetFileName)&quot;
+copy &quot;$(TargetPath)&quot; &quot;$(SolutionDir)..\vfp2c32examples\$(TargetFileName)&quot;
 "/>
+			<Tool
+				Name="VCPreBuildEventTool"/>
+			<Tool
+				Name="VCPreLinkEventTool"/>
+			<Tool
+				Name="VCResourceCompilerTool"/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"/>
+			<Tool
+				Name="VCWebDeploymentTool"/>
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+		</Configuration>
+		<Configuration
+			Name="ReleaseDebugTS|Win32"
+			OutputDirectory="$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="2"
+			CharacterSet="2"
+			WholeProgramOptimization="TRUE">
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="3"
+				GlobalOptimizations="TRUE"
+				InlineFunctionExpansion="1"
+				EnableIntrinsicFunctions="TRUE"
+				ImproveFloatingPointConsistency="TRUE"
+				FavorSizeOrSpeed="2"
+				OmitFramePointers="FALSE"
+				PreprocessorDefinitions="_THREADSAFE;_WIN32_WINNT=0x0500;WIN32;_WINDOWS;_USRDLL;VFPSTRUCTS_EXPORTS"
+				StringPooling="TRUE"
+				RuntimeLibrary="2"
+				BufferSecurityCheck="FALSE"
+				TreatWChar_tAsBuiltInType="TRUE"
+				WarningLevel="3"
+				DebugInformationFormat="3"
+				CallingConvention="2"
+				CompileAs="2"/>
+			<Tool
+				Name="VCCustomBuildTool"/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalDependencies="winapims.lib shlwapi.lib urlmon.lib wininet.lib ws2_32.lib"
+				OutputFile="$(OutDir)/vfp2c32trd.fll"
+				LinkIncremental="1"
+				IgnoreDefaultLibraryNames="msvcprt"
+				ModuleDefinitionFile=""
+				GenerateDebugInformation="TRUE"
+				ProgramDatabaseFile="$(OutDir)/vfp2c32.pdb"
+				SubSystem="2"
+				LargeAddressAware="1"
+				OptimizeReferences="2"
+				EnableCOMDATFolding="2"
+				ImportLibrary=""
+				TargetMachine="1"
+				FixedBaseAddress="1"/>
+			<Tool
+				Name="VCMIDLTool"/>
+			<Tool
+				Name="VCPostBuildEventTool"/>
 			<Tool
 				Name="VCPreBuildEventTool"
 				Description="Freeing leacked PDB handles"
@@ -254,15 +476,24 @@ copy &quot;$(TargetPath)&quot; &quot;$(SolutionDir)..\vfp2c32examples\$(TargetFi
 						Name="VCCLCompilerTool"
 						CompileAs="0"/>
 				</FileConfiguration>
-			</File>
-			<File
-				RelativePath=".\vfp2c32.def">
-			</File>
-			<File
-				RelativePath=".\vfp2c32d.def">
-			</File>
-			<File
-				RelativePath=".\vfp2c32rd.def">
+				<FileConfiguration
+					Name="DebugTS|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="0"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="ReleaseTS|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="0"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="ReleaseDebugTS|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="0"/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\vfp2carray.cpp">
@@ -280,6 +511,24 @@ copy &quot;$(TargetPath)&quot; &quot;$(SolutionDir)..\vfp2c32examples\$(TargetFi
 				</FileConfiguration>
 				<FileConfiguration
 					Name="ReleaseDebug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="0"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="DebugTS|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="0"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="ReleaseTS|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="0"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="ReleaseDebugTS|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						CompileAs="0"/>
@@ -311,6 +560,30 @@ copy &quot;$(TargetPath)&quot; &quot;$(SolutionDir)..\vfp2c32examples\$(TargetFi
 "
 						Outputs="$(OutDir)\$(InputName).obj"/>
 				</FileConfiguration>
+				<FileConfiguration
+					Name="DebugTS|Win32">
+					<Tool
+						Name="VCCustomBuildTool"
+						CommandLine="C:\masm32\bin\ml /Fo $(TargetDir)$(InputName).obj /c /Cx /coff $(inputpath)
+"
+						Outputs="$(OutDir)\$(InputName).obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="ReleaseTS|Win32">
+					<Tool
+						Name="VCCustomBuildTool"
+						CommandLine="C:\masm32\bin\ml /Fo $(TargetDir)$(InputName).obj /c /Cx /coff $(inputpath)
+"
+						Outputs="$(OutDir)\$(InputName).obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="ReleaseDebugTS|Win32">
+					<Tool
+						Name="VCCustomBuildTool"
+						CommandLine="C:\masm32\bin\ml /Fo $(TargetDir)$(InputName).obj /c /Cx /coff $(inputpath)
+"
+						Outputs="$(OutDir)\$(InputName).obj"/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\vfp2cassembly.cpp">
@@ -328,6 +601,24 @@ copy &quot;$(TargetPath)&quot; &quot;$(SolutionDir)..\vfp2c32examples\$(TargetFi
 				</FileConfiguration>
 				<FileConfiguration
 					Name="ReleaseDebug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="0"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="DebugTS|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="0"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="ReleaseTS|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="0"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="ReleaseDebugTS|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						CompileAs="0"/>
@@ -353,6 +644,27 @@ copy &quot;$(TargetPath)&quot; &quot;$(SolutionDir)..\vfp2c32examples\$(TargetFi
 						Name="VCCLCompilerTool"
 						CompileAs="0"/>
 				</FileConfiguration>
+				<FileConfiguration
+					Name="DebugTS|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="0"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="ReleaseTS|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="0"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="ReleaseDebugTS|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="0"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\vfp2casynccom.cpp">
 			</File>
 			<File
 				RelativePath=".\vfp2ccallback.cpp">
@@ -376,15 +688,29 @@ copy &quot;$(TargetPath)&quot; &quot;$(SolutionDir)..\vfp2c32examples\$(TargetFi
 						Name="VCCLCompilerTool"
 						CompileAs="0"/>
 				</FileConfiguration>
+				<FileConfiguration
+					Name="DebugTS|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ExceptionHandling="TRUE"
+						AssemblerOutput="0"
+						CompileAs="0"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="ReleaseTS|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="0"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="ReleaseDebugTS|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="0"/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\vfp2ccom.cpp">
-			</File>
-			<File
-				RelativePath=".\vfp2ccomcall.cpp">
-			</File>
-			<File
-				RelativePath=".\vfp2ccominterop.cpp">
 			</File>
 			<File
 				RelativePath=".\vfp2cconv.cpp">
@@ -402,6 +728,24 @@ copy &quot;$(TargetPath)&quot; &quot;$(SolutionDir)..\vfp2c32examples\$(TargetFi
 				</FileConfiguration>
 				<FileConfiguration
 					Name="ReleaseDebug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="0"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="DebugTS|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="0"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="ReleaseTS|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="0"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="ReleaseDebugTS|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						CompileAs="0"/>
@@ -428,6 +772,25 @@ copy &quot;$(TargetPath)&quot; &quot;$(SolutionDir)..\vfp2c32examples\$(TargetFi
 						Name="VCCLCompilerTool"
 						CompileAs="0"/>
 				</FileConfiguration>
+				<FileConfiguration
+					Name="DebugTS|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ExceptionHandling="TRUE"
+						CompileAs="0"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="ReleaseTS|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="0"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="ReleaseDebugTS|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="0"/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\vfp2cenum.cpp">
@@ -449,6 +812,24 @@ copy &quot;$(TargetPath)&quot; &quot;$(SolutionDir)..\vfp2c32examples\$(TargetFi
 						Name="VCCLCompilerTool"
 						CompileAs="0"/>
 				</FileConfiguration>
+				<FileConfiguration
+					Name="DebugTS|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="0"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="ReleaseTS|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="0"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="ReleaseDebugTS|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="0"/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\vfp2cfile.cpp">
@@ -466,6 +847,24 @@ copy &quot;$(TargetPath)&quot; &quot;$(SolutionDir)..\vfp2c32examples\$(TargetFi
 				</FileConfiguration>
 				<FileConfiguration
 					Name="ReleaseDebug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="0"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="DebugTS|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="0"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="ReleaseTS|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="0"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="ReleaseDebugTS|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						CompileAs="0"/>
@@ -494,6 +893,24 @@ copy &quot;$(TargetPath)&quot; &quot;$(SolutionDir)..\vfp2c32examples\$(TargetFi
 						Name="VCCLCompilerTool"
 						CompileAs="0"/>
 				</FileConfiguration>
+				<FileConfiguration
+					Name="DebugTS|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="0"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="ReleaseTS|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="0"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="ReleaseDebugTS|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="0"/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\vfp2ciphelper.cpp">
@@ -511,6 +928,24 @@ copy &quot;$(TargetPath)&quot; &quot;$(SolutionDir)..\vfp2c32examples\$(TargetFi
 				</FileConfiguration>
 				<FileConfiguration
 					Name="ReleaseDebug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="0"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="DebugTS|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="0"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="ReleaseTS|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="0"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="ReleaseDebugTS|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						CompileAs="0"/>
@@ -536,6 +971,24 @@ copy &quot;$(TargetPath)&quot; &quot;$(SolutionDir)..\vfp2c32examples\$(TargetFi
 						Name="VCCLCompilerTool"
 						CompileAs="0"/>
 				</FileConfiguration>
+				<FileConfiguration
+					Name="DebugTS|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="0"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="ReleaseTS|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="0"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="ReleaseDebugTS|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="0"/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\vfp2cnetapi.cpp">
@@ -557,23 +1010,20 @@ copy &quot;$(TargetPath)&quot; &quot;$(SolutionDir)..\vfp2c32examples\$(TargetFi
 						Name="VCCLCompilerTool"
 						CompileAs="0"/>
 				</FileConfiguration>
-			</File>
-			<File
-				RelativePath=".\vfp2cnetapiex.cpp">
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="DebugTS|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						CompileAs="0"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="ReleaseTS|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						CompileAs="0"/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="ReleaseDebug|Win32">
+					Name="ReleaseDebugTS|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						CompileAs="0"/>
@@ -595,6 +1045,24 @@ copy &quot;$(TargetPath)&quot; &quot;$(SolutionDir)..\vfp2c32examples\$(TargetFi
 				</FileConfiguration>
 				<FileConfiguration
 					Name="ReleaseDebug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="0"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="DebugTS|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="0"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="ReleaseTS|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="0"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="ReleaseDebugTS|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						CompileAs="0"/>
@@ -621,6 +1089,25 @@ copy &quot;$(TargetPath)&quot; &quot;$(SolutionDir)..\vfp2c32examples\$(TargetFi
 						Name="VCCLCompilerTool"
 						CompileAs="0"/>
 				</FileConfiguration>
+				<FileConfiguration
+					Name="DebugTS|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ExceptionHandling="TRUE"
+						CompileAs="0"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="ReleaseTS|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="0"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="ReleaseDebugTS|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="0"/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\vfp2cras.cpp">
@@ -638,6 +1125,24 @@ copy &quot;$(TargetPath)&quot; &quot;$(SolutionDir)..\vfp2c32examples\$(TargetFi
 				</FileConfiguration>
 				<FileConfiguration
 					Name="ReleaseDebug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="0"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="DebugTS|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="0"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="ReleaseTS|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="0"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="ReleaseDebugTS|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						CompileAs="0"/>
@@ -663,6 +1168,24 @@ copy &quot;$(TargetPath)&quot; &quot;$(SolutionDir)..\vfp2c32examples\$(TargetFi
 						Name="VCCLCompilerTool"
 						CompileAs="0"/>
 				</FileConfiguration>
+				<FileConfiguration
+					Name="DebugTS|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="0"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="ReleaseTS|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="0"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="ReleaseDebugTS|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="0"/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\vfp2cservices.cpp">
@@ -680,6 +1203,24 @@ copy &quot;$(TargetPath)&quot; &quot;$(SolutionDir)..\vfp2c32examples\$(TargetFi
 				</FileConfiguration>
 				<FileConfiguration
 					Name="ReleaseDebug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="0"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="DebugTS|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="0"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="ReleaseTS|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="0"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="ReleaseDebugTS|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						CompileAs="0"/>
@@ -705,6 +1246,24 @@ copy &quot;$(TargetPath)&quot; &quot;$(SolutionDir)..\vfp2c32examples\$(TargetFi
 						Name="VCCLCompilerTool"
 						CompileAs="0"/>
 				</FileConfiguration>
+				<FileConfiguration
+					Name="DebugTS|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="0"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="ReleaseTS|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="0"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="ReleaseDebugTS|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="0"/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\vfp2ctime.cpp">
@@ -726,6 +1285,27 @@ copy &quot;$(TargetPath)&quot; &quot;$(SolutionDir)..\vfp2c32examples\$(TargetFi
 						Name="VCCLCompilerTool"
 						CompileAs="0"/>
 				</FileConfiguration>
+				<FileConfiguration
+					Name="DebugTS|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="0"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="ReleaseTS|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="0"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="ReleaseDebugTS|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="0"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\vfp2ctls.cpp">
 			</File>
 			<File
 				RelativePath=".\vfp2curlmon.cpp">
@@ -746,6 +1326,24 @@ copy &quot;$(TargetPath)&quot; &quot;$(SolutionDir)..\vfp2c32examples\$(TargetFi
 				</FileConfiguration>
 				<FileConfiguration
 					Name="ReleaseDebug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="0"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="DebugTS|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="0"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="ReleaseTS|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="0"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="ReleaseDebugTS|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						CompileAs="0"/>
@@ -771,6 +1369,24 @@ copy &quot;$(TargetPath)&quot; &quot;$(SolutionDir)..\vfp2c32examples\$(TargetFi
 						Name="VCCLCompilerTool"
 						CompileAs="0"/>
 				</FileConfiguration>
+				<FileConfiguration
+					Name="DebugTS|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="0"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="ReleaseTS|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="0"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="ReleaseDebugTS|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="0"/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\vfp2cwininet.cpp">
@@ -791,6 +1407,24 @@ copy &quot;$(TargetPath)&quot; &quot;$(SolutionDir)..\vfp2c32examples\$(TargetFi
 				</FileConfiguration>
 				<FileConfiguration
 					Name="ReleaseDebug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="0"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="DebugTS|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="0"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="ReleaseTS|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						CompileAs="0"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="ReleaseDebugTS|Win32">
 					<Tool
 						Name="VCCLCompilerTool"
 						CompileAs="0"/>
@@ -820,16 +1454,13 @@ copy &quot;$(TargetPath)&quot; &quot;$(SolutionDir)..\vfp2c32examples\$(TargetFi
 				RelativePath=".\vfp2casync.h">
 			</File>
 			<File
+				RelativePath=".\vfp2casynccom.h">
+			</File>
+			<File
 				RelativePath=".\vfp2ccallback.h">
 			</File>
 			<File
 				RelativePath=".\vfp2ccom.h">
-			</File>
-			<File
-				RelativePath=".\vfp2ccomcall.h">
-			</File>
-			<File
-				RelativePath=".\vfp2ccominterop.h">
 			</File>
 			<File
 				RelativePath=".\vfp2cconv.h">
@@ -859,9 +1490,6 @@ copy &quot;$(TargetPath)&quot; &quot;$(SolutionDir)..\vfp2c32examples\$(TargetFi
 				RelativePath=".\vfp2cnetapi.h">
 			</File>
 			<File
-				RelativePath=".\vfp2cnetapiex.h">
-			</File>
-			<File
 				RelativePath=".\vfp2codbc.h">
 			</File>
 			<File
@@ -881,6 +1509,9 @@ copy &quot;$(TargetPath)&quot; &quot;$(SolutionDir)..\vfp2c32examples\$(TargetFi
 			</File>
 			<File
 				RelativePath=".\vfp2ctime.h">
+			</File>
+			<File
+				RelativePath=".\vfp2ctls.h">
 			</File>
 			<File
 				RelativePath=".\vfp2curlmon.h">

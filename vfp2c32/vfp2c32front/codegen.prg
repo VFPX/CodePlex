@@ -362,9 +362,9 @@ DEFINE CLASS oVFPCodeGen AS oCodeGen
 
 				lcCode = lcCode + OFFSET1 + "PROCEDURE Init(lnAddress)" + CRLF
 				IF THIS.bAsserts
-					lcCode = lcCode + OFFSET2 + "ASSERT TYPE('lnAddress') = 'N' AND lnAddress != 0 MESSAGE 'Invalid structure address!'" + CRLF
+					lcCode = lcCode + OFFSET2 + "ASSERT VARTYPE(m.lnAddress) = 'N' AND m.lnAddress != 0 MESSAGE 'Invalid structure address!'" + CRLF
 				ENDIF
-				lcCode = lcCode + OFFSET2 + "THIS.Address = lnAddress" + CRLF
+				lcCode = lcCode + OFFSET2 + "THIS.Address = m.lnAddress" + CRLF
 				lcInitCode = THIS.CreateMemberInitProc(loType)
 				IF !EMPTY(lcInitCode)
 					lcCode = lcCode + OFFSET2 + "IF !THIS.AllocMembers()" + " &" + "& " + "Member allocation successful?" + CRLF
@@ -400,9 +400,9 @@ DEFINE CLASS oVFPCodeGen AS oCodeGen
 				ENDIF
 				lcCode = lcCode + OFFSET2 + "ELSE" + CRLF
 				IF THIS.bAsserts
-					lcCode = lcCode + OFFSET3 + "ASSERT TYPE('lnAddress') = 'N' AND lnAddress != 0 MESSAGE 'Invalid structure address!'" + CRLF
+					lcCode = lcCode + OFFSET3 + "ASSERT VARTYPE(m.lnAddress) = 'N' AND m.lnAddress != 0 MESSAGE 'Invalid structure address!'" + CRLF
 				ENDIF
-				lcCode = lcCode + OFFSET3 + "THIS.Address = lnAddress" + CRLF
+				lcCode = lcCode + OFFSET3 + "THIS.Address = m.lnAddress" + CRLF
 				lcCode = lcCode + OFFSET3 + "THIS.Embedded = .T." + CRLF			
 				IF !EMPTY(lcInitCode)
 					lcCode = lcCode + OFFSET3 + "IF !THIS.AllocMembers()" + " &" + "& " + "Member allocation successful?" + CRLF
@@ -429,14 +429,14 @@ DEFINE CLASS oVFPCodeGen AS oCodeGen
 					CASE !EMPTY(lcDestCode) AND !THIS.bBufferStruct AND THIS.bArraySupport
 						lcCode = lcCode + OFFSET2 + "LOCAL " + IIF(THIS.nSubscripts=1,"lnRows","lnRows,lnDims") + CRLF
 						IF THIS.nSubscripts = 1
-							lcCode = lcCode + OFFSET2 + "FOR lnRows = 1 TO THIS.Rows" + CRLF
-							lcCode = lcCode + OFFSET3 + "THIS.AIndex(lnRows)" + CRLF
+							lcCode = lcCode + OFFSET2 + "FOR m.lnRows = 1 TO THIS.Rows" + CRLF
+							lcCode = lcCode + OFFSET3 + "THIS.AIndex(m.lnRows)" + CRLF
 							lcCode = lcCode + OFFSET3 + "THIS.FreeMembers()" + CRLF
 							lcCode = lcCode + OFFSET2 + "ENDFOR" + CRLF
 						ELSE
-							lcCode = lcCode + OFFSET2 + "FOR lnDims = 1 TO THIS.Dims" + CRLF
-							lcCode = lcCode + OFFSET3 + "FOR lnRows = 1 TO THIS.Rows" + CRLF
-							lcCode = lcCode + OFFSET4 + "THIS.AIndex(lnRows,lnDims)" + CRLF
+							lcCode = lcCode + OFFSET2 + "FOR m.lnDims = 1 TO THIS.Dims" + CRLF
+							lcCode = lcCode + OFFSET3 + "FOR m.lnRows = 1 TO THIS.Rows" + CRLF
+							lcCode = lcCode + OFFSET4 + "THIS.AIndex(m.lnRows, m.lnDims)" + CRLF
 							lcCode = lcCode + OFFSET4 + "THIS.FreeMembers()" + CRLF
 							lcCode = lcCode + OFFSET3 + "ENDFOR" + CRLF
 							lcCode = lcCode + OFFSET2 + "ENDFOR" + CRLF
@@ -485,9 +485,9 @@ DEFINE CLASS oVFPCodeGen AS oCodeGen
 		IF THIS.bArraySupport AND !THIS.bBufferStruct
 			lcCode = lcCode + OFFSET1 + "PROCEDURE Dimension(" + IIF(THIS.nSubscripts=1,"lnRows","lnRows,lnDims") + ")" + CRLF
 			IF THIS.bAsserts
-				lcCode = lcCode + OFFSET2 + "ASSERT TYPE('lnRows') = 'N' AND lnRows > 0 MESSAGE 'Invalid row subscript!'" + CRLF
+				lcCode = lcCode + OFFSET2 + "ASSERT VARTYPE(m.lnRows) = 'N' AND m.lnRows > 0 MESSAGE 'Invalid row subscript!'" + CRLF
 				IF THIS.nSubscripts = 2
-					lcCode = lcCode + OFFSET2 + "ASSERT TYPE('lnDims') = 'N' AND lnDims > 0 MESSAGE 'Invalid dimension subscript!'" + CRLF
+					lcCode = lcCode + OFFSET2 + "ASSERT VARTYPE(m.lnDims) = 'N' AND m.lnDims > 0 MESSAGE 'Invalid dimension subscript!'" + CRLF
 				ENDIF
 			ENDIF
 			lcCode = lcCode + OFFSET2 + "IF THIS.Address != 0" + " &" + "& " + "Redimensioning not supported natively" + CRLF
@@ -495,20 +495,20 @@ DEFINE CLASS oVFPCodeGen AS oCodeGen
 			lcCode = lcCode + OFFSET2 + "ENDIF" + CRLF
 			IF THIS.nSubscripts = 1
 				IF THIS.nAllocator = 1
-					lcCode = lcCode + OFFSET2 + "THIS.Address = AllocMem(THIS.SizeOf*lnRows)" + CRLF
+					lcCode = lcCode + OFFSET2 + "THIS.Address = AllocMem(THIS.SizeOf * m.lnRows)" + CRLF
 				ELSE
-					lcCode = lcCode + OFFSET2 + "THIS.Address = AllocHGlobal(THIS.SizeOf*lnRows, GMEM_FIXED + GMEM_ZEROINIT)" + CRLF
+					lcCode = lcCode + OFFSET2 + "THIS.Address = AllocHGlobal(THIS.SizeOf * m.lnRows, GMEM_FIXED + GMEM_ZEROINIT)" + CRLF
 				ENDIF
-				lcCode = lcCode + OFFSET2 + "THIS.Rows = lnRows" + CRLF
+				lcCode = lcCode + OFFSET2 + "THIS.Rows = m.lnRows" + CRLF
 			ELSE
 				IF THIS.nAllocator = 1
-					lcCode = lcCode + OFFSET2 + "THIS.Address = AllocMem(THIS.SizeOf*lnRows*lnDims)" + CRLF
+					lcCode = lcCode + OFFSET2 + "THIS.Address = AllocMem(THIS.SizeOf * m.lnRows * m.lnDims)" + CRLF
 				ELSE
-					lcCode = lcCode + OFFSET2 + "THIS.Address = AllocHGlobal(THIS.SizeOf*lnRows*lnDims, GMEM_FIXED)" + CRLF
+					lcCode = lcCode + OFFSET2 + "THIS.Address = AllocHGlobal(THIS.SizeOf * m.lnRows * m.lnDims, GMEM_FIXED)" + CRLF
 				ENDIF
-				lcCode = lcCode + OFFSET2 + "THIS.Rows = lnRows" + CRLF
-				lcCode = lcCode + OFFSET2 + "THIS.Dims = lnDims" + CRLF
-				lcCode = lcCode + OFFSET2 + "THIS.RowSize = THIS.SizeOf * lnRows" + CRLF
+				lcCode = lcCode + OFFSET2 + "THIS.Rows = m.lnRows" + CRLF
+				lcCode = lcCode + OFFSET2 + "THIS.Dims = m.lnDims" + CRLF
+				lcCode = lcCode + OFFSET2 + "THIS.RowSize = THIS.SizeOf * m.lnRows" + CRLF
 			ENDIF
 			IF !THIS.TypeHasSubStructs(loType)
 				lcCode = lcCode + OFFSET2 + "THIS.Offset = THIS.Address" + CRLF
@@ -522,24 +522,24 @@ DEFINE CLASS oVFPCodeGen AS oCodeGen
 				lcCode = lcCode + OFFSET1 + "PROCEDURE AIndex(lnRow)" + CRLF
 				IF THIS.bAsserts
 					IF THIS.bBufferStruct
-						lcCode = lcCode + OFFSET2 + "ASSERT TYPE('lnRow') = 'N' AND lnRow > 0 MESSAGE 'Row subscript invalid!'" + CRLF
+						lcCode = lcCode + OFFSET2 + "ASSERT VARTYPE(m.lnRow) = 'N' AND m.lnRow > 0 MESSAGE 'Row subscript invalid!'" + CRLF
 					ELSE
-						lcCode = lcCode + OFFSET2 + "ASSERT TYPE('lnRow') = 'N' AND BETWEEN(lnRow,1,THIS.Rows) MESSAGE 'Row subscript not numeric or out of range!'" + CRLF
+						lcCode = lcCode + OFFSET2 + "ASSERT VARTYPE(m.lnRow) = 'N' AND BETWEEN(m.lnRow,1,THIS.Rows) MESSAGE 'Row subscript not numeric or out of range!'" + CRLF
 					ENDIF
 				ENDIF
-				lcCode = lcCode + OFFSET2 + "THIS.Offset = THIS.Address+THIS.SizeOf*(lnRow-1)" + CRLF
+				lcCode = lcCode + OFFSET2 + "THIS.Offset = THIS.Address + THIS.SizeOf * (m.lnRow-1)" + CRLF
 			ELSE
 				lcCode = lcCode + OFFSET1 + "PROCEDURE AIndex(lnRow,lnDim)" + CRLF
 				IF THIS.bAsserts
 					IF THIS.bBufferStruct
-						lcCode = lcCode + OFFSET2 + "ASSERT TYPE('lnRow') = 'N' AND lnRow > 0 MESSAGE 'Row subscript invalid!'" + CRLF
-						lcCode = lcCode + OFFSET2 + "ASSERT TYPE('lnDim') = 'N' AND lnDim > 0 MESSAGE 'Dimension subscript invalid!'" + CRLF
+						lcCode = lcCode + OFFSET2 + "ASSERT VARTYPE(m.lnRow) = 'N' AND m.lnRow > 0 MESSAGE 'Row subscript invalid!'" + CRLF
+						lcCode = lcCode + OFFSET2 + "ASSERT VARTYPE(m.lnDim) = 'N' AND m.lnDim > 0 MESSAGE 'Dimension subscript invalid!'" + CRLF
 					ELSE
-						lcCode = lcCode + OFFSET2 + "ASSERT TYPE('lnRow') = 'N' AND BETWEEN(lnRow,1,THIS.Rows) MESSAGE 'Row subscript not numeric or out of range!'" + CRLF
-						lcCode = lcCode + OFFSET2 + "ASSERT TYPE('lnDim') = 'N' AND BETWEEN(lnDim,1,THIS.Dims) MESSAGE 'Dimension subscript not numeric or out of range!'" + CRLF
+						lcCode = lcCode + OFFSET2 + "ASSERT VARTYPE(m.lnRow) = 'N' AND BETWEEN(m.lnRow,1,THIS.Rows) MESSAGE 'Row subscript not numeric or out of range!'" + CRLF
+						lcCode = lcCode + OFFSET2 + "ASSERT VARTYPE(m.lnDim) = 'N' AND BETWEEN(m.lnDim,1,THIS.Dims) MESSAGE 'Dimension subscript not numeric or out of range!'" + CRLF
 					ENDIF
 				ENDIF
-				lcCode = lcCode + OFFSET2 + "THIS.Offset = THIS.Address+(lnDim-1)*THIS.RowSize+(lnRow-1)*THIS.SizeOf" + CRLF
+				lcCode = lcCode + OFFSET2 + "THIS.Offset = THIS.Address + (m.lnDim-1) * THIS.RowSize + (m.lnRow-1) * THIS.SizeOf" + CRLF
 			ENDIF
 			lcCode = lcCode + OFFSET1 + "ENDPROC" + CRLF + CRLF
 		ENDIF
@@ -551,28 +551,28 @@ DEFINE CLASS oVFPCodeGen AS oCodeGen
 					lcCode = lcCode + OFFSET1 + "PROCEDURE " + "Address_Assign(lnAddress)" + CRLF
 					lcCode = lcCode + OFFSET2 + "DO CASE" + CRLF
 					lcCode = lcCode + OFFSET3 + "CASE THIS.Address = 0" + CRLF
-					lcCode = lcCode + OFFSET4 + "THIS.Address = lnAddress" + CRLF
-					lcCode = lcCode + OFFSET3 + "CASE THIS.Address = lnAddress" + CRLF
+					lcCode = lcCode + OFFSET4 + "THIS.Address = m.lnAddress" + CRLF
+					lcCode = lcCode + OFFSET3 + "CASE THIS.Address = m.lnAddress" + CRLF
 					lcCode = lcCode + OFFSET3 + "OTHERWISE" + CRLF
-					lcCode = lcCode + OFFSET4 + "THIS.Address = lnAddress" + CRLF
+					lcCode = lcCode + OFFSET4 + "THIS.Address = m.lnAddress" + CRLF
 					THIS.CreateAddressAssignCode(loType,@lcCode,4)
 					lcCode = lcCode + OFFSET2 + "ENDCASE" + CRLF
 					lcCode = lcCode + OFFSET1 + "ENDPROC" + CRLF + CRLF
 			
 				CASE THIS.bArraySupport
 					lcCode = lcCode + OFFSET1 + "PROCEDURE " + "Address_Assign(lnAddress)" + CRLF
-					lcCode = lcCode + OFFSET2 + "THIS.Address = lnAddress" + CRLF
-					lcCode = lcCode + OFFSET2 + "THIS.Offset = lnAddress" + CRLF
+					lcCode = lcCode + OFFSET2 + "THIS.Address = m.lnAddress" + CRLF
+					lcCode = lcCode + OFFSET2 + "THIS.Offset = m.lnAddress" + CRLF
 					lcCode = lcCode + OFFSET1 + "ENDPROC" + CRLF + CRLF
 
 					lcCode = lcCode + OFFSET1 + "PROCEDURE " + "Offset_Assign(lnAddress)" + CRLF
-					lcCode = lcCode + OFFSET2 + "THIS.Offset = lnAddress" + CRLF
+					lcCode = lcCode + OFFSET2 + "THIS.Offset = m.lnAddress" + CRLF
 					THIS.CreateAddressAssignCode(loType,@lcCode,2)
 					lcCode = lcCode + OFFSET1 + "ENDPROC" + CRLF + CRLF
 					
 				CASE !THIS.bArraySupport AND THIS.bBufferStruct
 					lcCode = lcCode + OFFSET1 + "PROCEDURE " + "Address_Assign(lnAddress)" + CRLF
-					lcCode = lcCode + OFFSET2 + "THIS.Address = lnAddress" + CRLF
+					lcCode = lcCode + OFFSET2 + "THIS.Address = m.lnAddress" + CRLF
 					THIS.CreateAddressAssignCode(loType,@lcCode,2)
 					lcCode = lcCode + OFFSET1 + "ENDPROC" + CRLF + CRLF
 					
@@ -584,12 +584,12 @@ DEFINE CLASS oVFPCodeGen AS oCodeGen
 			lcCode = lcCode + OFFSET1 + "PROCEDURE BufferSize_Assign(lnBufferSize)" + CRLF
 			lcCode = lcCode + OFFSET2 + "LOCAL lnAddress" + CRLF
 			IF THIS.nAllocator = 1
-				lcCode = lcCode + OFFSET2 + "lnAddress = ReAllocMem(THIS.Address, lnBufferSize)" + CRLF
+				lcCode = lcCode + OFFSET2 + "m.lnAddress = ReAllocMem(THIS.Address, m.lnBufferSize)" + CRLF
 			ELSE
-				lcCode = lcCode + OFFSET2 + "lnAddress = ReAllocHGlobal(THIS.Address, lnBufferSize)" + CRLF
+				lcCode = lcCode + OFFSET2 + "m.lnAddress = ReAllocHGlobal(THIS.Address, m.lnBufferSize)" + CRLF
 			ENDIF
-			lcCode = lcCode + OFFSET2 + "THIS.Address = lnAddress" + CRLF
-			lcCode = lcCode + OFFSET2 + "THIS.BufferSize = lnBufferSize" + CRLF
+			lcCode = lcCode + OFFSET2 + "THIS.Address = m.lnAddress" + CRLF
+			lcCode = lcCode + OFFSET2 + "THIS.BufferSize = m.lnBufferSize" + CRLF
 			lcCode = lcCode + OFFSET1 + "ENDPROC" + CRLF + CRLF
 		ENDIF
 
@@ -627,7 +627,7 @@ DEFINE CLASS oVFPCodeGen AS oCodeGen
 		IF (loType.Indirect = 1 AND BITAND(loType.Typemask,TM_INT8+TM_SHORT+TM_INT+TM_LONG+TM_FLOAT+TM_DOUBLE+TM_INT64) > 0) ;
 			OR (loType.Indirect = 2 AND BITAND(loType.Typemask,TM_VOID) > 0)
 
-				lcOffset = IIF(loType.OffsetOf > 0, "+" + ALLTRIM(STR(loType.OffsetOf)), "")
+				lcOffset = IIF(loType.OffsetOf > 0, " + " + ALLTRIM(STR(loType.OffsetOf)), "")
 				lcSize = IIF(loType.bArray, ALLTRIM(STR(loType.SizeOf)), ALLTRIM(STR(loType.BaseSize)))
 
 				IF THIS.nAllocator = 1
@@ -676,7 +676,7 @@ DEFINE CLASS oVFPCodeGen AS oCodeGen
 		IF (loType.Indirect = 1 AND BITAND(loType.Typemask,TM_INT8+TM_CHAR+TM_WCHAR+TM_SHORT+TM_INT+TM_LONG+TM_FLOAT+TM_DOUBLE+TM_INT64) > 0) ;
 			OR (loType.Indirect = 2 AND BITAND(loType.Typemask,TM_VOID) > 0)
 			
-			lcOffset = IIF(loType.OffsetOf>0,"+"+ALLTRIM(STR(loType.OffsetOf)),"") 
+			lcOffset = IIF(loType.OffsetOf>0, " + " + ALLTRIM(STR(loType.OffsetOf)), "") 
 			
 			IF THIS.nAllocator = 1
 				lcDestCode= lcDestCode+ OFFSET2 + "FreePMem(THIS.Address" + lcOffset + ")" + CRLF
@@ -700,7 +700,7 @@ DEFINE CLASS oVFPCodeGen AS oCodeGen
 			lcCode = lcCode + REPLICATE(CHR(9),lnOffset) + "THIS." + loType.cName + ;
 			IIF(loType.bArray,"[1]","") + " = CREATEOBJECT('" + loType.VFPClass + "',"
 			IF lbAddress
-				lcCode = lcCode + "THIS.Address" + IIF(loType.OffsetOf>0,"+"+ALLTRIM(STR(loType.OffsetOf)),"") + ")" + CRLF
+				lcCode = lcCode + "THIS.Address" + IIF(loType.OffsetOf>0, " + " + ALLTRIM(STR(loType.OffsetOf)), "") + ")" + CRLF
 			ELSE
 				lcCode = lcCode + "0)" + CRLF
 			ENDIF				
@@ -733,8 +733,8 @@ DEFINE CLASS oVFPCodeGen AS oCodeGen
 		
 		IF loType.Typemask = TM_STRUCT AND loType.Indirect = 0
 			lcCode = lcCode + REPLICATE(CHR(9),lnOffset) + "THIS." + loType.cName + ;
-			IIF(loType.bArray,"[1]","") + ".Address = lnAddress"
-			lcCode = lcCode + IIF(loType.OffsetOf>0,"+"+ALLTRIM(STR(loType.OffsetOf)),"") + CRLF
+			IIF(loType.bArray,"[1]","") + ".Address = m.lnAddress"
+			lcCode = lcCode + IIF(loType.OffsetOf>0," + "+ALLTRIM(STR(loType.OffsetOf)),"") + CRLF
 		ENDIF
 	
 	ENDPROC
@@ -757,27 +757,27 @@ DEFINE CLASS oVFPCodeGen AS oCodeGen
 					CASE ALEN(loType.laSubscripts) = 1
 						lcCode = lcCode + OFFSET1 + "PROCEDURE " + loType.cName + "_Access(lnRow)" + CRLF
 						IF THIS.bAsserts
-							lcCode = lcCode + OFFSET2 + "ASSERT TYPE('lnRow') = 'N' AND BETWEEN(lnRow,1," + ;
+							lcCode = lcCode + OFFSET2 + "ASSERT VARTYPE(m.lnRow) = 'N' AND BETWEEN(m.lnRow,1," + ;
 							ALLTRIM(STR(loType.laSubscripts[1])) + ") MESSAGE 'Invalid row subscript!'" + CRLF
 						ENDIF
 						lcCode = lcCode + OFFSET2 + "THIS." + loType.cName + "[1].Address = " + THIS.cBase
-						lcCode = lcCode + IIF(loType.OffsetOf>0,"+"+ALLTRIM(STR(loType.OffsetOf)),"")
-						lcCode = lcCode + "+(lnRow-1)*" + ALLTRIM(STR(loType.BaseSize)) + CRLF
+						lcCode = lcCode + IIF(loType.OffsetOf>0," + " + ALLTRIM(STR(loType.OffsetOf)),"")
+						lcCode = lcCode + "+(m.lnRow-1)*" + ALLTRIM(STR(loType.BaseSize)) + CRLF
 						lcCode = lcCode + OFFSET2 + "RETURN THIS." + loType.cName + "[1]" + CRLF
 						lcCode = lcCode + OFFSET1 + "ENDPROC" + CRLF + CRLF
 			
 					CASE ALEN(loType.laSubscripts) = 2
 						lcCode = lcCode + OFFSET1 + "PROCEDURE " + loType.cName + "_Access(lnRow,lnDim)" + CRLF
 						IF THIS.bAsserts
-							lcCode = lcCode + OFFSET2 + "ASSERT TYPE('lnRow') = 'N' AND BETWEEN(lnRow,1," + ;
+							lcCode = lcCode + OFFSET2 + "ASSERT VARTYPE(m.lnRow) = 'N' AND BETWEEN(m.lnRow,1," + ;
 							ALLTRIM(STR(loType.laSubscripts[1])) + ") MESSAGE 'Invalid row subscript!'" + CRLF
-							lcCode = lcCode + OFFSET2 + "ASSERT TYPE('lnDim') = 'N' AND BETWEEN(lnDim,1," + ;
+							lcCode = lcCode + OFFSET2 + "ASSERT VARTYPE(m.lnDim) = 'N' AND BETWEEN(m.lnDim,1," + ;
 							ALLTRIM(STR(loType.laSubscripts[2])) + ") MESSAGE 'Invalid dimension subscript!'" + CRLF						
 						ENDIF
 						lcCode = lcCode + OFFSET2 + "THIS." + loType.cName + "[1].Address = " + THIS.cBase
-						lcCode = lcCode + IIF(loType.OffsetOf>0,"+"+ALLTRIM(STR(loType.OffsetOf)),"")
-						lcCode = lcCode + "+" + ALLTRIM(STR(loType.BaseSize*loType.laSubscripts[1])) + "*(lnDim-1)+"
-						lcCode = lcCode + "*(lnRow-1)" + ALLTRIM(STR(loType.BaseSize)) + CRLF
+						lcCode = lcCode + IIF(loType.OffsetOf>0," + " + ALLTRIM(STR(loType.OffsetOf)),"")
+						lcCode = lcCode + " + " + ALLTRIM(STR(loType.BaseSize*loType.laSubscripts[1])) + " * (m.lnDim-1)"
+						lcCode = lcCode + " + (m.lnRow-1) *" + ALLTRIM(STR(loType.BaseSize)) + CRLF
 						lcCode = lcCode + OFFSET1 + "ENDPROC" + CRLF + CRLF
 											
 					OTHERWISE
@@ -805,20 +805,20 @@ DEFINE CLASS oVFPCodeGen AS oCodeGen
 						CASE ALEN(loType.laSubscripts) = 1
 							lcCode = lcCode + OFFSET1 + "PROCEDURE " + loType.cName + "_Access()" + CRLF
 							lcCode = lcCode + OFFSET2 + "RETURN " + loType.ReadFunc + "(" + THIS.cBase
-							lcCode = lcCode + IIF(loType.OffsetOf>0,"+"+ALLTRIM(STR(loType.OffsetOf)),"") + ","
+							lcCode = lcCode + IIF(loType.OffsetOf>0," + " + ALLTRIM(STR(loType.OffsetOf)),"") + ", "
 							lcCode = lcCode + ALLTRIM(STR(loType.laSubscripts[1])) + ")" + CRLF
 							lcCode = lcCode + OFFSET1 + "ENDPROC" + CRLF + CRLF
 
 						CASE ALEN(loType.laSubscripts) = 2
 							lcCode = lcCode + OFFSET1 + "PROCEDURE " + loType.cName + "_Access(lnDim)" + CRLF
 							IF THIS.bAsserts						
-								lcCode = lcCode + OFFSET2 + "ASSERT TYPE('lnDim') = 'N' AND BETWEEN(lnDim,1," + ;
+								lcCode = lcCode + OFFSET2 + "ASSERT VARTYPE(m.lnDim) = 'N' AND BETWEEN(m.lnDim,1," + ;
 								ALLTRIM(STR(loType.laSubscripts[2])) + ") MESSAGE 'Invalid dimension subscript!'" + CRLF				
 							ENDIF
 							lcCode = lcCode + OFFSET2 + "RETURN " + loType.ReadFunc + "(" + THIS.cBase
-							lcCode = lcCode + IIF(loType.OffsetOf>0,"+"+ALLTRIM(STR(loType.OffsetOf)),"")
-							lcCode = lcCode + "+(lnDim-1)*" + ALLTRIM(STR(loType.BaseSize * loType.laSubscripts[1]))
-							lcCode = lcCode + "," + ALLTRIM(STR(loType.laSubscripts[1])) + ")" + CRLF
+							lcCode = lcCode + IIF(loType.OffsetOf>0," + " + ALLTRIM(STR(loType.OffsetOf)),"")
+							lcCode = lcCode + " + (m.lnDim-1) * " + ALLTRIM(STR(loType.BaseSize * loType.laSubscripts[1]))
+							lcCode = lcCode + ", " + ALLTRIM(STR(loType.laSubscripts[1])) + ")" + CRLF
 							lcCode = lcCode + OFFSET1 + "ENDPROC" + CRLF + CRLF
 
 						OTHERWISE
@@ -833,29 +833,29 @@ DEFINE CLASS oVFPCodeGen AS oCodeGen
 							lcCode = lcCode + OFFSET1 + "PROCEDURE " + loType.cName + "_Access(lnRow)" + CRLF
 
 							IF THIS.bAsserts					
-								lcCode = lcCode + OFFSET2 + "ASSERT TYPE('lnRow') = 'N' AND BETWEEN(lnRow,1," + ;
+								lcCode = lcCode + OFFSET2 + "ASSERT VARTYPE(m.lnRow) = 'N' AND BETWEEN(m.lnRow,1," + ;
 								ALLTRIM(STR(loType.laSubscripts[1])) + ") MESSAGE 'Invalid row subscript!'" + CRLF
 							ENDIF
 
 							lcCode = lcCode + OFFSET2 + "RETURN " + loType.ReadFunc + "(" + THIS.cBase
-							lcCode = lcCode + IIF(loType.OffsetOf>0,"+"+ALLTRIM(STR(loType.OffsetOf)),"")							
-							lcCode = lcCode + "+(lnRow-1)*" + ALLTRIM(STR(loType.BaseSize)) + ")" + CRLF				
+							lcCode = lcCode + IIF(loType.OffsetOf>0," + " + ALLTRIM(STR(loType.OffsetOf)),"")							
+							lcCode = lcCode + " + (m.lnRow-1) * " + ALLTRIM(STR(loType.BaseSize)) + ")" + CRLF				
 							lcCode = lcCode + OFFSET1 + "ENDPROC" + CRLF + CRLF
 						
 						CASE ALEN(loType.laSubscripts) = 2
 							lcCode = lcCode + OFFSET1 + "PROCEDURE " + loType.cName + "_Access(lnRow,lnDim)" + CRLF
 
 							IF THIS.bAsserts					
-								lcCode = lcCode + OFFSET2 + "ASSERT TYPE('lnRow') = 'N' AND BETWEEN(lnRow,1," + ;
+								lcCode = lcCode + OFFSET2 + "ASSERT VARTYPE(m.lnRow) = 'N' AND BETWEEN(m.lnRow,1," + ;
 								ALLTRIM(STR(loType.laSubscripts[1])) + ") MESSAGE 'Invalid row subscript!'" + CRLF
-								lcCode = lcCode + OFFSET2 + "ASSERT TYPE('lnDim') = 'N' AND BETWEEN(lnDim,1," + ;
+								lcCode = lcCode + OFFSET2 + "ASSERT VARTYPE(m.lnDim) = 'N' AND BETWEEN(m.lnDim,1," + ;
 								ALLTRIM(STR(loType.laSubscripts[2])) + ") MESSAGE 'Invalid dimension subscript!'" + CRLF
 							ENDIF
 							
 							lcCode = lcCode + OFFSET2 + "RETURN " + loType.ReadFunc + "(" + THIS.cBase
-							lcCode = lcCode + IIF(loType.OffsetOf>0,"+"+ALLTRIM(STR(loType.OffsetOf)),"")							
-							lcCode = lcCode + "+(lnDim-1)*" + ALLTRIM(STR(loType.laSubscripts[1] * loType.BaseSize)) + ;
-							"+(lnRow-1)*" + ALLTRIM(STR(loType.BaseSize)) + ")" + CRLF
+							lcCode = lcCode + IIF(loType.OffsetOf>0," + " + ALLTRIM(STR(loType.OffsetOf)),"")							
+							lcCode = lcCode + " + (m.lnDim-1) * " + ALLTRIM(STR(loType.laSubscripts[1] * loType.BaseSize)) + ;
+							" + (m.lnRow-1) * " + ALLTRIM(STR(loType.BaseSize)) + ")" + CRLF
 							lcCode = lcCode + OFFSET1 + "ENDPROC" + CRLF + CRLF
 							
 						OTHERWISE
@@ -871,7 +871,7 @@ DEFINE CLASS oVFPCodeGen AS oCodeGen
 			
 				lcCode = lcCode + OFFSET1 + "PROCEDURE " + loType.cName + "_Access()" + CRLF
 				lcCode = lcCode + OFFSET2 + "RETURN " + loType.Readfunc + "(" + THIS.cBase + ;
-				IIF(loType.OffsetOf>0,"+"+ALLTRIM(STR(loType.OffsetOf)),"") + ")" + CRLF
+				IIF(loType.OffsetOf>0," + "+ALLTRIM(STR(loType.OffsetOf)),"") + ")" + CRLF
 				lcCode = lcCode + OFFSET1 + "ENDPROC" + CRLF + CRLF
 				
 		ENDCASE
@@ -892,7 +892,7 @@ DEFINE CLASS oVFPCodeGen AS oCodeGen
 					lcCode = lcCode + OFFSET2 + loType.Assertion + " MESSAGE 'Wrong datatype or value out of range!'" + CRLF
 				ENDIF
 				lcCode = lcCode + OFFSET2 + loType.Writefunc + "(" + THIS.cBase + ;
-				IIF(loType.OffsetOf>0,"+"+ALLTRIM(STR(loType.OffsetOf)),"") + ",lnNewVal)" + CRLF
+				IIF(loType.OffsetOf>0," + "+ALLTRIM(STR(loType.OffsetOf)),"") + ", m.lnNewVal)" + CRLF
 				lcCode = lcCode + OFFSET1 + "ENDPROC" + CRLF + CRLF
 
 			&& array of some kind?
@@ -907,7 +907,7 @@ DEFINE CLASS oVFPCodeGen AS oCodeGen
 								lcCode = lcCode + OFFSET2 + loType.Assertion + " MESSAGE 'Wrong datatype or value out of range!'" + CRLF
 							ENDIF
 							lcCode = lcCode + OFFSET2 + loType.WriteFunc + "(" + THIS.cBase
-							lcCode = lcCode + IIF(loType.OffsetOf>0,"+"+ALLTRIM(STR(loType.OffsetOf)),"") + ",lnNewVal,"
+							lcCode = lcCode + IIF(loType.OffsetOf>0," + "+ALLTRIM(STR(loType.OffsetOf)),"") + ", m.lnNewVal, "
 							lcCode = lcCode + ALLTRIM(STR(loType.laSubscripts[1])) + ")" + CRLF
 							lcCode = lcCode + OFFSET1 + "ENDPROC" + CRLF + CRLF
 
@@ -915,7 +915,7 @@ DEFINE CLASS oVFPCodeGen AS oCodeGen
 							lcCode = lcCode + OFFSET1 + "PROCEDURE " + loType.cName + "_Assign(lnDim)" + CRLF
 						
 							IF THIS.bAsserts						
-								lcCode = lcCode + OFFSET2 + "ASSERT TYPE('lnDim') = 'N' AND BETWEEN(lnDim,1," + ;
+								lcCode = lcCode + OFFSET2 + "ASSERT VARTYPE(m.lnDim) = 'N' AND BETWEEN(m.lnDim,1," + ;
 								ALLTRIM(STR(loType.laSubscripts[2])) + ") MESSAGE 'Invalid dimension subscript!'" + CRLF				
 							ENDIF
 						
@@ -924,9 +924,9 @@ DEFINE CLASS oVFPCodeGen AS oCodeGen
 							ENDIF
 							
 							lcCode = lcCode + OFFSET2 + loType.WriteFunc + "(" + THIS.cBase
-							lcCode = lcCode + IIF(loType.OffsetOf>0,"+"+ALLTRIM(STR(loType.OffsetOf)),"")							
-							lcCode = lcCode + "+(lnDim-1)*" + ALLTRIM(STR(loType.BaseSize * loType.laSubscripts[1]))
-							lcCode = lcCode + "," + ALLTRIM(STR(loType.laSubscripts[1])) + ")" + CRLF					
+							lcCode = lcCode + IIF(loType.OffsetOf>0," + "+ALLTRIM(STR(loType.OffsetOf)),"")							
+							lcCode = lcCode + " + (m.lnDim-1) * " + ALLTRIM(STR(loType.BaseSize * loType.laSubscripts[1]))
+							lcCode = lcCode + ", " + ALLTRIM(STR(loType.laSubscripts[1])) + ")" + CRLF					
 							lcCode = lcCode + OFFSET1 + "ENDPROC" + CRLF + CRLF
 
 						OTHERWISE
@@ -938,9 +938,9 @@ DEFINE CLASS oVFPCodeGen AS oCodeGen
 				
 					DO CASE
 						CASE ALEN(loType.laSubscripts) = 1
-							lcCode = lcCode + OFFSET1 + "PROCEDURE " + loType.cName + "_Assign(lnRow,lnNewVal)" + CRLF
+							lcCode = lcCode + OFFSET1 + "PROCEDURE " + loType.cName + "_Assign(lnNewVal, lnRow)" + CRLF
 							IF THIS.bAsserts
-								lcCode = lcCode + OFFSET2 + "ASSERT TYPE('lnRow') = 'N' AND BETWEEN(lnRow,1," + ;
+								lcCode = lcCode + OFFSET2 + "ASSERT VARTYPE(m.lnRow) = 'N' AND BETWEEN(m.lnRow,1," + ;
 								ALLTRIM(STR(loType.laSubscripts[1])) + ") MESSAGE 'Invalid row subscript!'" + CRLF
 								IF !EMPTY(loType.Assertion)
 									lcCode = lcCode + OFFSET2 + loType.Assertion + " MESSAGE 'Wrong datatype or value out of range!'" + CRLF								
@@ -948,16 +948,16 @@ DEFINE CLASS oVFPCodeGen AS oCodeGen
 							ENDIF
 							
 							lcCode = lcCode + OFFSET2 + loType.WriteFunc + "(" + THIS.cBase
-							lcCode = lcCode + IIF(loType.OffsetOf>0,"+"+ALLTRIM(STR(loType.OffsetOf)),"")							
-							lcCode = lcCode + "+(lnRow-1)*" + ALLTRIM(STR(loType.BaseSize)) + ",lnNewVal)" + CRLF
+							lcCode = lcCode + IIF(loType.OffsetOf>0," + "+ALLTRIM(STR(loType.OffsetOf)),"")							
+							lcCode = lcCode + " + (m.lnRow-1) * " + ALLTRIM(STR(loType.BaseSize)) + ", m.lnNewVal)" + CRLF
 							lcCode = lcCode + OFFSET1 + "ENDPROC" + CRLF + CRLF
 							
 						CASE ALEN(loType.laSubscripts) = 2
-							lcCode = lcCode + OFFSET1 + "PROCEDURE " + loType.cName + "_Assign(lnRow,lnDim,lnNewVal)" + CRLF
+							lcCode = lcCode + OFFSET1 + "PROCEDURE " + loType.cName + "_Assign(lnNewVal, lnRow, lnDim)" + CRLF
 							IF THIS.bAsserts
-								lcCode = lcCode + OFFSET2 + "ASSERT TYPE('lnRow') = 'N' AND BETWEEN(lnRow,1," + ;
+								lcCode = lcCode + OFFSET2 + "ASSERT VARTYPE(m.lnRow) = 'N' AND BETWEEN(m.lnRow,1," + ;
 								ALLTRIM(STR(loType.laSubscripts[1])) + ") MESSAGE 'Invalid row subscript!'" + CRLF
-								lcCode = lcCode + OFFSET2 + "ASSERT TYPE('lnDim') = 'N' AND BETWEEN(lnDim,1," + ;
+								lcCode = lcCode + OFFSET2 + "ASSERT VARTYPE(m.lnDim) = 'N' AND BETWEEN(m.lnDim,1," + ;
 								ALLTRIM(STR(loType.laSubscripts[2])) + ") MESSAGE 'Invalid dimension subscript!'" + CRLF
 								IF !EMPTY(loType.Assertion)
 									lcCode = lcCode + OFFSET2 + loType.Assertion + " MESSAGE 'Wrong datatype or value out of range!'" + CRLF
@@ -965,9 +965,9 @@ DEFINE CLASS oVFPCodeGen AS oCodeGen
 							ENDIF
 							
 							lcCode = lcCode + OFFSET2 + loType.WriteFunc + "(" + THIS.cBase
-							lcCode = lcCode + IIF(loType.OffsetOf>0,"+"+ALLTRIM(STR(loType.OffsetOf)),"")							
-							lcCode = lcCode + "+(lnDim-1)*" + ALLTRIM(STR(loType.laSubscripts[1] * loType.BaseSize)) + ;
-							"+(lnRow-1)*" + ALLTRIM(STR(loType.BaseSize)) + ",lnNewVal)" + CRLF
+							lcCode = lcCode + IIF(loType.OffsetOf>0," + "+ALLTRIM(STR(loType.OffsetOf)),"")							
+							lcCode = lcCode + " + (m.lnDim-1) * " + ALLTRIM(STR(loType.laSubscripts[1] * loType.BaseSize)) + ;
+							" + (m.lnRow-1) * " + ALLTRIM(STR(loType.BaseSize)) + ", m.lnNewVal)" + CRLF
 							lcCode = lcCode + OFFSET1 + "ENDPROC" + CRLF + CRLF
 							
 						OTHERWISE
@@ -985,7 +985,7 @@ DEFINE CLASS oVFPCodeGen AS oCodeGen
 					lcCode = lcCode + OFFSET2 + loType.Assertion + " MESSAGE 'Wrong datatype or value out of range!'" + CRLF
 				ENDIF
 				lcCode = lcCode + OFFSET2 + loType.Writefunc + "(" + THIS.cBase + ;
-				IIF(loType.OffsetOf>0,"+"+ALLTRIM(STR(loType.OffsetOf)),"") + ",lnNewVal)" + CRLF
+				IIF(loType.OffsetOf>0," + "+ALLTRIM(STR(loType.OffsetOf)),"") + ", m.lnNewVal)" + CRLF
 				lcCode = lcCode + OFFSET1 + "ENDPROC" + CRLF + CRLF
 				
 		ENDCASE

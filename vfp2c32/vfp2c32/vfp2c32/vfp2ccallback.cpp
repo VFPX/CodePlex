@@ -1,3 +1,5 @@
+#ifndef _THREADSAFE
+
 #include <windows.h>
 #include <stddef.h>
 #include <malloc.h>
@@ -21,12 +23,16 @@ static LPCALLBACKFUNC gpCallbackFuncs = 0;
 static HWND ghCallbackHwnd = 0;
 static ATOM gnCallbackAtom = 0;
 
-bool _stdcall VFP2C_Init_Callback()
+bool _stdcall VFP2C_Init_Callback(VFP2CTls& tls)
 {
 	WNDCLASSEX wndClass = {0}; /* MO - message only */
 	const char* CALLBACK_WINDOW_CLASS = "__VFP2C_CBWC";
 
-	if (!(ghThunkHeap = HeapCreate(0,MAX_USHORT,0)))
+#ifndef HEAP_CREATE_ENABLE_EXECUTE
+	#define HEAP_CREATE_ENABLE_EXECUTE      0x00040000  
+#endif
+
+	if (!(ghThunkHeap = HeapCreate(HEAP_CREATE_ENABLE_EXECUTE, MAX_USHORT, 0)))
 	{
 		AddWin32Error("HeapCreate", GetLastError());
 		return false;
@@ -65,7 +71,7 @@ bool _stdcall VFP2C_Init_Callback()
 	return true;
 }
 
-void _stdcall VFP2C_Destroy_Callback()
+void _stdcall VFP2C_Destroy_Callback(VFP2CTls& tls)
 {
 	ReleaseCallbackFuncs();
 	ReleaseWindowSubclasses();
@@ -89,8 +95,6 @@ void _fastcall BindEventsEx(ParamBlk *parm)
 	UINT uMsg = p2.ev_long;
 try
 {
-	ResetWin32Errors();
-
 	HWND hHwnd = reinterpret_cast<HWND>(p1.ev_long);
 	FoxString pCallback(p4);
 	FoxString pParameters(parm,5);
@@ -163,8 +167,6 @@ void _fastcall UnbindEventsEx(ParamBlk *parm)
 {
 try
 {
-	ResetWin32Errors();
-
 	HWND hHwnd = reinterpret_cast<HWND>(p1.ev_long);
 	UINT uMsg = static_cast<UINT>(p2.ev_long);
 	LPWINDOWSUBCLASS lpSubclass;
@@ -484,62 +486,64 @@ void _stdcall UnsubclassWindowExCallbackChild(HWND hHwnd, LPARAM lParam)
 
 void _stdcall CreateSubclassThunkProc(LPWINDOWSUBCLASS lpSubclass)
 {
-	Emit_Init();
+	RuntimeAssembler rasm;
 
-	Emit_Parameter("hWnd",T_INT);
-	Emit_Parameter("uMsg",T_UINT);
-    Emit_Parameter("wParam",T_UINT);
-    Emit_Parameter("lParam",T_INT);
+	rasm.Parameter("hWnd", T_INT);
+	rasm.Parameter("uMsg", T_UINT);
+    rasm.Parameter("wParam", T_UINT);
+    rasm.Parameter("lParam", T_INT);
 
-	Emit_LocalVar("vRetVal",sizeof(Value),__alignof(Value));
-	Emit_LocalVar("vAutoYield",sizeof(Value),__alignof(Value));
+	rasm.LocalVar("vRetVal", sizeof(Value), __alignof(Value));
+	rasm.LocalVar("vAutoYield", sizeof(Value), __alignof(Value));
 
 	// Function Prolog
-	Emit_Prolog();
+	rasm.Prolog();
 	// save common registers
-	Push(EBX);
-	Push(ECX);
-	Push(EDX);
+	rasm.Push(EBX);
+	rasm.Push(ECX);
+	rasm.Push(EDX);
 
-	Push("uMsg");
-	Push((AVALUE)lpSubclass);
-	Call((FUNCPTR)FindMsgCallbackThunk);
+	rasm.Push("uMsg");
+	rasm.Push((AVALUE)lpSubclass);
+	rasm.Call((FUNCPTR)FindMsgCallbackThunk);
 
-	Cmp(EAX,0); // msg was subclassed?
-	Je("CallWindowProc");
+	rasm.Cmp(EAX,0); // msg was subclassed?
+	rasm.Je("CallWindowProc");
 	
-	Jmp(EAX); // jump to thunk
+	rasm.Jmp(EAX); // jump to thunk
 	
-	Emit_Label("CallWindowProc");
+	rasm.Label("CallWindowProc");
 	//  return CallWindowProc(lpSubclass->pDefaultWndProc,hHwnd,uMsg,wParam,lParam);
-	Push("lParam");
-	Push("wParam");
-	Push("uMsg");
-	Push("hWnd");
-	Push((AVALUE)lpSubclass->pDefaultWndProc);
-	Call((FUNCPTR)CallWindowProc);
+	rasm.Push("lParam");
+	rasm.Push("wParam");
+	rasm.Push("uMsg");
+	rasm.Push("hWnd");
+	rasm.Push((AVALUE)lpSubclass->pDefaultWndProc);
+	rasm.Call((FUNCPTR)CallWindowProc);
 
-	Emit_Label("End");
+	rasm.Label("End");
 
 	// restore registers
-	Pop(EDX);
-	Pop(ECX);
-	Pop(EBX);
+	rasm.Pop(EDX);
+	rasm.Pop(ECX);
+	rasm.Pop(EBX);
 	// Function Epilog
-	Emit_Epilog();
+	rasm.Epilog();
 	
 	// backpatch jump instructions
-	Emit_Patch();
+	rasm.Patch();
 	
-	lpSubclass->pWindowThunk = AllocThunk(Emit_CodeSize());
-	Emit_Write(lpSubclass->pWindowThunk);
+	lpSubclass->pWindowThunk = AllocThunk(rasm.CodeSize());
+	rasm.WriteCode(lpSubclass->pWindowThunk);
 
-	lpSubclass->pHookWndRetCall = Emit_LabelAddress("CallWindowProc");
-	lpSubclass->pHookWndRetEax = Emit_LabelAddress("End");
+	lpSubclass->pHookWndRetCall = rasm.LabelAddress("CallWindowProc");
+	lpSubclass->pHookWndRetEax = rasm.LabelAddress("End");
 }
 
 void _stdcall CreateSubclassMsgThunkProc(LPWINDOWSUBCLASS lpSubclass, LPMSGCALLBACK lpMsg, char *pCallback, char *pParmDef, DWORD nFlags, BOOL bObjectCall)
 {
+	RuntimeAssembler rasm;
+
 	int nParmCount = 6, xj;
 	char aParmValue[VFP2C_MAX_TYPE_LEN];
 	char aConvertFlags[VFP2C_MAX_TYPE_LEN] = {0};
@@ -547,15 +551,13 @@ void _stdcall CreateSubclassMsgThunkProc(LPWINDOWSUBCLASS lpSubclass, LPMSGCALLB
 	char *pCallbackTmp;
 	REGISTER nReg = EAX;
 
-	Emit_Init();
+	rasm.Parameter("hWnd", T_INT);
+	rasm.Parameter("uMsg", T_UINT);
+    rasm.Parameter("wParam", T_UINT);
+	rasm.Parameter("lParam", T_UINT);
 
-	Emit_Parameter("hWnd",T_INT);
-	Emit_Parameter("uMsg",T_UINT);
-    Emit_Parameter("wParam",T_UINT);
-	Emit_Parameter("lParam",T_UINT);
-
-	Emit_LocalVar("vRetVal",sizeof(Value),__alignof(Value));
-	Emit_LocalVar("vAutoYield",sizeof(Value),__alignof(Value));
+	rasm.LocalVar("vRetVal", sizeof(Value), __alignof(Value));
+	rasm.LocalVar("vAutoYield", sizeof(Value), __alignof(Value));
 
 	if (bObjectCall)
 	{
@@ -569,38 +571,38 @@ void _stdcall CreateSubclassMsgThunkProc(LPWINDOWSUBCLASS lpSubclass, LPMSGCALLB
 
 	if (nFlags & BINDEVENTSEX_CALL_AFTER)
 	{
-		Push("lParam");
-		Push("wParam");
-		Push("uMsg");
-		Push("hWnd");
-		Push((AVALUE)lpSubclass->pDefaultWndProc);
-		Call((FUNCPTR)CallWindowProc);	
+		rasm.Push("lParam");
+		rasm.Push("wParam");
+		rasm.Push("uMsg");
+		rasm.Push("hWnd");
+		rasm.Push((AVALUE)lpSubclass->pDefaultWndProc);
+		rasm.Call((FUNCPTR)CallWindowProc);	
 	}
 
 	if (nFlags & BINDEVENTSEX_NO_RECURSION)
 	{
 		// _Evaluate(&vAutoYield,"_VFP.AutoYield");
-		Lea(ECX,"vAutoYield",0);
-		Mov(EDX,(AVALUE)"_VFP.AutoYield");
-		Call((FUNCPTR)_Evaluate);
+		rasm.Lea(ECX,"vAutoYield",0);
+		rasm.Mov(EDX,(AVALUE)"_VFP.AutoYield");
+		rasm.Call((FUNCPTR)_Evaluate);
 
 		// if (vAutoYield.ev_length)
 		//  _Execute("_VFP.AutoYield = .F.")
-		Mov(EAX,"vAutoYield",T_UINT,offsetof(Value,ev_length));
-		Cmp(EAX,0);
-		Je("AutoYieldFalse");
-		Mov(ECX,(AVALUE)"_VFP.AutoYield = .F.");
-		Call((FUNCPTR)_Execute);
-		Emit_Label("AutoYieldFalse");
+		rasm.Mov(EAX,"vAutoYield",T_UINT,offsetof(Value,ev_length));
+		rasm.Cmp(EAX,0);
+		rasm.Je("AutoYieldFalse");
+		rasm.Mov(ECX,(AVALUE)"_VFP.AutoYield = .F.");
+		rasm.Call((FUNCPTR)_Execute);
+		rasm.Label("AutoYieldFalse");
 	}
 
 	if (!pParmDef)
 	{
 		strcat(lpMsg->pCallbackFunction,"(%U,%U,%I,%I)");
-		Push("lParam");
-		Push("wParam");
-		Push("uMsg");
-		Push("hWnd");
+		rasm.Push("lParam");
+		rasm.Push("wParam");
+		rasm.Push("uMsg");
+		rasm.Push("hWnd");
 	}
 	else
 	{
@@ -617,98 +619,98 @@ void _stdcall CreateSubclassMsgThunkProc(LPWINDOWSUBCLASS lpSubclass, LPMSGCALLB
 			if (StrIEqual("wParam",aParmValue))
 			{
 				*pConvertFlags++ = 'I';
-				Push("wParam");
+				rasm.Push("wParam");
 			}
 			else if (StrIEqual("lParam",aParmValue))
 			{
 				*pConvertFlags++ = 'I';
-				Push("lParam");
+				rasm.Push("lParam");
 			}
 			else if (StrIEqual("uMsg",aParmValue))
 			{
 				*pConvertFlags++ = 'U';
-				Push("uMsg");
+				rasm.Push("uMsg");
 			}
 			else if (StrIEqual("hWnd",aParmValue))
 			{
 				*pConvertFlags++ = 'U';
-				Push("hWnd");
+				rasm.Push("hWnd");
 			}
 			else if (StrIEqual("UNSIGNED(wParam)",aParmValue))
 			{
 				*pConvertFlags++ = 'U';
-				Push("wParam");
+				rasm.Push("wParam");
 			}
 			else if (StrIEqual("UNSIGNED(lParam)",aParmValue))
 			{
 				*pConvertFlags++ = 'U';
-				Push("lParam");
+				rasm.Push("lParam");
 			}
 			else if (StrIEqual("HIWORD(wParam)",aParmValue))
 			{
 				*pConvertFlags++ = 'i';
-				Mov(nReg,"wParam");
-				Shr(nReg,16);
-				Push(nReg);
+				rasm.Mov(nReg,"wParam");
+				rasm.Shr(nReg,16);
+				rasm.Push(nReg);
 			}
 			else if (StrIEqual("LOWORD(wParam)",aParmValue))
 			{
 				*pConvertFlags++ = 'i';
-				Mov(nReg,"wParam");
-				And(nReg,MAX_USHORT);
-				Push(nReg);
+				rasm.Mov(nReg,"wParam");
+				rasm.And(nReg,MAX_USHORT);
+				rasm.Push(nReg);
 			}
 			else if (StrIEqual("HIWORD(lParam)",aParmValue))
 			{
 				*pConvertFlags++ = 'i';
-				Mov(nReg,"lParam");
-				Shr(nReg,16);
-				Push(nReg);
+				rasm.Mov(nReg,"lParam");
+				rasm.Shr(nReg,16);
+				rasm.Push(nReg);
 			}
 			else if (StrIEqual("LOWORD(lParam)",aParmValue))
 			{
 				*pConvertFlags++ = 'i';
-				Mov(nReg,"lParam");
-				And(nReg,MAX_USHORT);
-				Push(nReg);
+				rasm.Mov(nReg,"lParam");
+				rasm.And(nReg,MAX_USHORT);
+				rasm.Push(nReg);
 			}
 			else if (StrIEqual("UNSIGNED(HIWORD(wParam))",aParmValue))
 			{
 				*pConvertFlags++ = 'u';
-				Mov(nReg,"wParam");
-				Shr(nReg,16);
-				Push(nReg);
+				rasm.Mov(nReg,"wParam");
+				rasm.Shr(nReg,16);
+				rasm.Push(nReg);
 			}
 			else if (StrIEqual("UNSIGNED(LOWORD(wParam))",aParmValue))
 			{
 				*pConvertFlags++ = 'u';
-				Mov(nReg,"wParam");
-				And(nReg,MAX_USHORT);
-				Push(nReg);
+				rasm.Mov(nReg,"wParam");
+				rasm.And(nReg,MAX_USHORT);
+				rasm.Push(nReg);
 			}
 			else if (StrIEqual("UNSIGNED(HIWORD(lParam))",aParmValue))
 			{
 				*pConvertFlags++ = 'u';
-				Mov(nReg,"lParam");
-				Shr(nReg,16);
-				Push(nReg);
+				rasm.Mov(nReg,"lParam");
+				rasm.Shr(nReg,16);
+				rasm.Push(nReg);
 			}
 			else if (StrIEqual("UNSIGNED(LOWORD(lParam))",aParmValue))
 			{
 				*pConvertFlags++ = 'u';
-				Mov(nReg,"lParam");
-				And(nReg,MAX_USHORT);
-				Push(nReg);
+				rasm.Mov(nReg,"lParam");
+				rasm.And(nReg,MAX_USHORT);
+				rasm.Push(nReg);
 			}
 			else if (StrIEqual("BOOL(wParam)",aParmValue))
 			{
 				*pConvertFlags++ = 'L';
-				Push("wParam");
+				rasm.Push("wParam");
 			}
 			else if (StrIEqual("BOOL(lParam)",aParmValue))
 			{
 				*pConvertFlags++ = 'L';
-				Push("lParam");
+				rasm.Push("lParam");
 			}
 			else
 				throw E_INVALIDPARAMS;
@@ -743,56 +745,56 @@ void _stdcall CreateSubclassMsgThunkProc(LPWINDOWSUBCLASS lpSubclass, LPMSGCALLB
 	// if any parameters should be passed we need to call sprintfex
 	if (nParmCount > 2)
 	{
-		Push((AVALUE)lpMsg->pCallbackFunction);
-		Push((AVALUE)lpSubclass->aCallbackBuffer);
-		Call((FUNCPTR)sprintfex);
-		Add(ESP,nParmCount*sizeof(int));	// add esp, no of parameters * sizeof stack increment
+		rasm.Push((AVALUE)lpMsg->pCallbackFunction);
+		rasm.Push((AVALUE)lpSubclass->aCallbackBuffer);
+		rasm.Call((FUNCPTR)sprintfex);
+		rasm.Add(ESP,nParmCount*sizeof(int));	// add esp, no of parameters * sizeof stack increment
 	}
 
 	if (nFlags & BINDEVENTSEX_CALL_BEFORE)
 	{
 		if (nParmCount > 2)
-			Mov(ECX,(AVALUE)lpSubclass->aCallbackBuffer);
+			rasm.Mov(ECX,(AVALUE)lpSubclass->aCallbackBuffer);
 		else
-			Mov(ECX,(AVALUE)lpMsg->pCallbackFunction);
+			rasm.Mov(ECX,(AVALUE)lpMsg->pCallbackFunction);
 
-		Call((FUNCPTR)_Execute);
+		rasm.Call((FUNCPTR)_Execute);
 		
 		if (nFlags & BINDEVENTSEX_NO_RECURSION)
 		{
-			Mov(EAX,"vAutoYield",T_UINT,offsetof(Value,ev_length));
-			Cmp(EAX,0);
-			Je("AutoYieldBack");
+			rasm.Mov(EAX,"vAutoYield",T_UINT,offsetof(Value,ev_length));
+			rasm.Cmp(EAX,0);
+			rasm.Je("AutoYieldBack");
 			// set autoyield to .T. again 
-			Mov(ECX,(AVALUE)"_VFP.AutoYield = .T.");
-			Call((FUNCPTR)_Execute);
-			Emit_Label("AutoYieldBack");
+			rasm.Mov(ECX,(AVALUE)"_VFP.AutoYield = .T.");
+			rasm.Call((FUNCPTR)_Execute);
+			rasm.Label("AutoYieldBack");
 		}
-		Jmp(EBX,(AVALUE)lpSubclass->pHookWndRetCall); // jump back
+		rasm.Jmp(EBX,(AVALUE)lpSubclass->pHookWndRetCall); // jump back
 	}
 	else if (nFlags & (BINDEVENTSEX_CALL_AFTER | BINDEVENTSEX_RETURN_VALUE))
 	{
-		Lea(ECX,"vRetVal");
+		rasm.Lea(ECX,"vRetVal");
 		if (nParmCount > 2)
-			Mov(EDX,(AVALUE)lpSubclass->aCallbackBuffer);
+			rasm.Mov(EDX,(AVALUE)lpSubclass->aCallbackBuffer);
 		else
-			Mov(EDX,(AVALUE)lpMsg->pCallbackFunction);
+			rasm.Mov(EDX,(AVALUE)lpMsg->pCallbackFunction);
 
-		Call((FUNCPTR)_Evaluate);
+		rasm.Call((FUNCPTR)_Evaluate);
 
 		if (nFlags & BINDEVENTSEX_NO_RECURSION)
 		{
-			Mov(EAX,"vAutoYield",T_UINT,offsetof(Value,ev_length));
+			rasm.Mov(EAX,"vAutoYield",T_UINT,offsetof(Value,ev_length));
 			// if autoyield was .F. before we don't need to set it
-			Cmp(EAX,0);
-			Je("AutoYieldBack");
+			rasm.Cmp(EAX,0);
+			rasm.Je("AutoYieldBack");
 			// set autoyield to .T. again 
-			Mov(ECX,(AVALUE)"_VFP.AutoYield = .T.");
-			Call((FUNCPTR)_Execute);
-			Emit_Label("AutoYieldBack");
+			rasm.Mov(ECX,(AVALUE)"_VFP.AutoYield = .T.");
+			rasm.Call((FUNCPTR)_Execute);
+			rasm.Label("AutoYieldBack");
 		}
-		Mov(EAX,"vRetVal",T_INT,offsetof(Value,ev_long));
-		Jmp(EBX,(AVALUE)lpSubclass->pHookWndRetEax); // jump back
+		rasm.Mov(EAX,"vRetVal",T_INT,offsetof(Value,ev_long));
+		rasm.Jmp(EBX,(AVALUE)lpSubclass->pHookWndRetEax); // jump back
 	}
 
 	if (lpMsg->pCallbackThunk)
@@ -801,9 +803,9 @@ void _stdcall CreateSubclassMsgThunkProc(LPWINDOWSUBCLASS lpSubclass, LPMSGCALLB
 		lpMsg->pCallbackThunk = 0;
 	}
 
-	Emit_Patch();
-	lpMsg->pCallbackThunk = AllocThunk(Emit_CodeSize());
-	Emit_Write(lpMsg->pCallbackThunk);
+	rasm.Patch();
+	lpMsg->pCallbackThunk = AllocThunk(rasm.CodeSize());
+	rasm.WriteCode(lpMsg->pCallbackThunk);
 }
 
 void _stdcall ReleaseWindowSubclasses()
@@ -899,6 +901,8 @@ try
 	nSyncFlag &= ~CALLBACK_CDECL; // remove CALLBACK_CDECL from nSyncFlag
 	nSyncFlag = nSyncFlag ? nSyncFlag : CALLBACK_SYNCRONOUS; // set nSyncFlag to default CALLBACK_SYNCRONOUS if is 0
 
+	RuntimeAssembler rasm;
+
 	int nParmCount, nWordCount, nPrecision, nParmNo;
 	char aParmType[VFP2C_MAX_TYPE_LEN];
 	char aParmPrec[VFP2C_MAX_TYPE_LEN];
@@ -926,27 +930,26 @@ try
 	if (nParmCount > VFP2C_MAX_CALLBACK_PARAMETERS)
 		throw E_INVALIDPARAMS;
 
-	Emit_Init();
 	
 	// return value needed?
 	if (pRetVal.Len() > 0 && !pRetVal.ICompare("void"))
-		Emit_LocalVar("vRetVal",sizeof(Value),__alignof(Value));
+		rasm.LocalVar("vRetVal",sizeof(Value),__alignof(Value));
 	// local buffer variable needed
 	if (nSyncFlag & (CALLBACK_ASYNCRONOUS_POST|CALLBACK_ASYNCRONOUS_SEND))
-		Emit_LocalVar("pBuffer",T_UINT);
+		rasm.LocalVar("pBuffer",T_UINT);
 
-	Emit_Prolog();
-	Push(EBX);
+	rasm.Prolog();
+	rasm.Push(EBX);
 
 	if (nSyncFlag & (CALLBACK_ASYNCRONOUS_POST|CALLBACK_ASYNCRONOUS_SEND))
 	{
-		Push(VFP2C_MAX_CALLBACK_BUFFER);
-		Call((FUNCPTR)malloc);
-		Add(ESP,sizeof(int));
+		rasm.Push(VFP2C_MAX_CALLBACK_BUFFER);
+		rasm.Call((FUNCPTR)malloc);
+		rasm.Add(ESP,sizeof(int));
 
-		Cmp(EAX,0);
-		Je("ErrorOut");
-		Mov("pBuffer",EAX);
+		rasm.Cmp(EAX,0);
+		rasm.Je("ErrorOut");
+		rasm.Mov("pBuffer",EAX);
 	}
 
 	if (nParmCount)
@@ -959,17 +962,17 @@ try
 			/* memcpy(pBuffer,pFunc->aCallbackBuffer,strlen(pFunc->aCallbackBuffer)
 			memcpy uses the cdecl calling convention, thus parameters are pushed from right to left and
 			we have to adjust the stack pointer (ESP) after the call */
-			Push(strlen(pFunc->aCallbackBuffer));
-			Push((AVALUE)pFunc->aCallbackBuffer);
-			Push("pBuffer");
-			Call((FUNCPTR)memcpy);
-			Add(ESP,3*sizeof(int));
+			rasm.Push(strlen(pFunc->aCallbackBuffer));
+			rasm.Push((AVALUE)pFunc->aCallbackBuffer);
+			rasm.Push("pBuffer");
+			rasm.Call((FUNCPTR)memcpy);
+			rasm.Add(ESP,3*sizeof(int));
 
-			Mov(EAX,"pBuffer");
-			Add(EAX,strlen(pFunc->aCallbackBuffer));
+			rasm.Mov(EAX,"pBuffer");
+			rasm.Add(EAX,strlen(pFunc->aCallbackBuffer));
 		}
 		else
-			Mov(EAX,(AVALUE)(pFunc->aCallbackBuffer+strlen(pFunc->aCallbackBuffer)));
+			rasm.Mov(EAX,(AVALUE)(pFunc->aCallbackBuffer+strlen(pFunc->aCallbackBuffer)));
 	}
 	else
 	{
@@ -977,11 +980,11 @@ try
 		strcat(pFunc->aCallbackBuffer,"()");
 		if (nSyncFlag & (CALLBACK_ASYNCRONOUS_POST|CALLBACK_ASYNCRONOUS_SEND))
 		{
-			Push(strlen(pFunc->aCallbackBuffer)+1);
-			Push((AVALUE)pFunc->aCallbackBuffer);
-			Push("pBuffer");
-			Call((FUNCPTR)memcpy);
-			Add(ESP,3*sizeof(int));
+			rasm.Push(strlen(pFunc->aCallbackBuffer)+1);
+			rasm.Push((AVALUE)pFunc->aCallbackBuffer);
+			rasm.Push("pBuffer");
+			rasm.Call((FUNCPTR)memcpy);
+			rasm.Add(ESP,3*sizeof(int));
 		}
 	}
 	
@@ -1001,32 +1004,32 @@ try
 
 		if (nParmNo > 1)
 		{
-			Mov(REAX,sizeof(char),',');
-			Add(EAX,1);
+			rasm.Mov(REAX,sizeof(char),',');
+			rasm.Add(EAX,1);
 		}
 
 		if (StrIEqual(aParmType,"INTEGER") || StrIEqual(aParmType,"LONG"))
 		{
-			Emit_Parameter(T_INT);
-			Push((PARAMNO)nParmNo);
-			Push(EAX);
-			Call(EBX,(FUNCPTR)IntToStr);
+			rasm.Parameter(T_INT);
+			rasm.Push((PARAMNO)nParmNo);
+			rasm.Push(EAX);
+			rasm.Call(EBX,(FUNCPTR)IntToStr);
 		}
 		else if (StrIEqual(aParmType,"UINTEGER") || StrIEqual(aParmType,"ULONG"))
 		{
-			Emit_Parameter(T_UINT);
-			Push((PARAMNO)nParmNo);
-			Push(EAX);
-			Call(EBX,(FUNCPTR)UIntToStr);
+			rasm.Parameter(T_UINT);
+			rasm.Push((PARAMNO)nParmNo);
+			rasm.Push(EAX);
+			rasm.Call(EBX,(FUNCPTR)UIntToStr);
 		}
 		else if (StrIEqual(aParmType,"STRING"))
 		{
-			Emit_Parameter(T_UINT);
+			rasm.Parameter(T_UINT);
 			if (nWordCount == 1)
 			{
-				Push((PARAMNO)nParmNo);
-				Push(EAX);
-				Call(EBX,(FUNCPTR)UIntToStr);
+				rasm.Push((PARAMNO)nParmNo);
+				rasm.Push(EAX);
+				rasm.Call(EBX,(FUNCPTR)UIntToStr);
 			}
 			else
 			{
@@ -1040,52 +1043,52 @@ try
 				
 				// copy function name to into buffer
 				int nStringLen = strlen(pFunc);
-				Push(nStringLen);
-				Push((AVALUE)pFunc);
-				Push(EAX);
-				Call((FUNCPTR)memcpy);
-				Add(ESP, 3 * sizeof(int));
+				rasm.Push(nStringLen);
+				rasm.Push((AVALUE)pFunc);
+				rasm.Push(EAX);
+				rasm.Call((FUNCPTR)memcpy);
+				rasm.Add(ESP, 3 * sizeof(int));
 
 				// adjust EAX (end of string)
-				Add(EAX, nStringLen);
+				rasm.Add(EAX, nStringLen);
 				// copy '(' to end of buffer
-				Mov(REAX, sizeof(char), '(');
-				Add(EAX,1);
+				rasm.Mov(REAX, sizeof(char), '(');
+				rasm.Add(EAX,1);
 
 				// add pointer parameter to buffer
-				Push((PARAMNO)nParmNo);
-				Push(EAX);
-				Call(EBX,(FUNCPTR)UIntToStr);
+				rasm.Push((PARAMNO)nParmNo);
+				rasm.Push(EAX);
+				rasm.Call(EBX,(FUNCPTR)UIntToStr);
 				
 				// copy ')' to end of buffer
-				Mov(REAX, sizeof(char), ')');
-				Add(EAX,1);
+				rasm.Mov(REAX, sizeof(char), ')');
+				rasm.Add(EAX,1);
 			}
 		}
 		else if (StrIEqual(aParmType,"SHORT"))
 		{
-			Emit_Parameter(T_SHORT);
-			Push((PARAMNO)nParmNo);
-			Push(EAX);
-			Call(EBX,(FUNCPTR)IntToStr);
+			rasm.Parameter(T_SHORT);
+			rasm.Push((PARAMNO)nParmNo);
+			rasm.Push(EAX);
+			rasm.Call(EBX,(FUNCPTR)IntToStr);
 		}
 		else if (StrIEqual(aParmType,"USHORT"))
 		{
-			Emit_Parameter(T_USHORT);
-			Push((PARAMNO)nParmNo);
-			Push(EAX);
-			Call(EBX,(FUNCPTR)UIntToStr);
+			rasm.Parameter(T_USHORT);
+			rasm.Push((PARAMNO)nParmNo);
+			rasm.Push(EAX);
+			rasm.Call(EBX,(FUNCPTR)UIntToStr);
 		}
 		else if (StrIEqual(aParmType,"BOOL"))
 		{
-			Emit_Parameter(T_INT);
-			Push((PARAMNO)nParmNo);
-			Push(EAX);
-			Call(EBX,(FUNCPTR)BoolToStr);
+			rasm.Parameter(T_INT);
+			rasm.Push((PARAMNO)nParmNo);
+			rasm.Push(EAX);
+			rasm.Call(EBX,(FUNCPTR)BoolToStr);
 		}
 		else if (StrIEqual(aParmType,"SINGLE"))
 		{
-			Emit_Parameter(T_FLOAT);
+			rasm.Parameter(T_FLOAT);
 
 			if (nWordCount == 2)
 			{
@@ -1096,14 +1099,14 @@ try
 			else
 				nPrecision = 6;
 
-			Push(nPrecision);
-			Push((PARAMNO)nParmNo);
-			Push(EAX);
-			Call(EBX,(FUNCPTR)FloatToStr);
+			rasm.Push(nPrecision);
+			rasm.Push((PARAMNO)nParmNo);
+			rasm.Push(EAX);
+			rasm.Call(EBX,(FUNCPTR)FloatToStr);
 		}
 		else if (StrIEqual(aParmType,"DOUBLE"))
 		{
-			Emit_Parameter(T_DOUBLE);
+			rasm.Parameter(T_DOUBLE);
 
 			if (nWordCount == 2)
 			{
@@ -1114,43 +1117,43 @@ try
 			else
 				nPrecision = 6;
 
-			Push(nPrecision);
-			Push((PARAMNO)nParmNo);			
-			Push(EAX);
-			Call(EBX,(FUNCPTR)DoubleToStr);
+			rasm.Push(nPrecision);
+			rasm.Push((PARAMNO)nParmNo);			
+			rasm.Push(EAX);
+			rasm.Call(EBX,(FUNCPTR)DoubleToStr);
 		}
 		else if (StrIEqual(aParmType,"INT64"))
 		{
-			Emit_Parameter(T_INT64);
+			rasm.Parameter(T_INT64);
 			if (nWordCount == 1)
 			{
-				Push((PARAMNO)nParmNo);			
-				Push(EAX);
-				Call(EBX,(FUNCPTR)Int64ToStr);
+				rasm.Push((PARAMNO)nParmNo);			
+				rasm.Push(EAX);
+				rasm.Call(EBX,(FUNCPTR)Int64ToStr);
 			}
 			else
 			{
 				if (StrIEqual(aParmPrec, "BINARY"))
 				{
-					Push((PARAMNO)nParmNo);			
-					Push(EAX);
-					Call(EBX,(FUNCPTR)Int64ToVarbinary);
+					rasm.Push((PARAMNO)nParmNo);			
+					rasm.Push(EAX);
+					rasm.Call(EBX,(FUNCPTR)Int64ToVarbinary);
 				}
 				else if (StrIEqual(aParmPrec, "LITERAL"))
 				{
-					Mov(REAX,sizeof(char),'"');
-					Add(EAX, 1);
-					Push((PARAMNO)nParmNo);			
-					Push(EAX);
-					Call(EBX,(FUNCPTR)Int64ToStr);
-					Mov(REAX,sizeof(char),'"');
-					Add(EAX, 1);
+					rasm.Mov(REAX,sizeof(char),'"');
+					rasm.Add(EAX, 1);
+					rasm.Push((PARAMNO)nParmNo);			
+					rasm.Push(EAX);
+					rasm.Call(EBX,(FUNCPTR)Int64ToStr);
+					rasm.Mov(REAX,sizeof(char),'"');
+					rasm.Add(EAX, 1);
 				}
 				else if (StrIEqual(aParmPrec, "CURRENCY"))
 				{
-					Push((PARAMNO)nParmNo);			
-					Push(EAX);
-					Call(EBX,(FUNCPTR)Int64ToCurrency);
+					rasm.Push((PARAMNO)nParmNo);			
+					rasm.Push(EAX);
+					rasm.Call(EBX,(FUNCPTR)Int64ToCurrency);
 				}
 				else
 					throw E_INVALIDPARAMS;
@@ -1158,36 +1161,36 @@ try
 		}
 		else if (StrIEqual(aParmType,"UINT64"))
 		{
-			Emit_Parameter(T_UINT64);
+			rasm.Parameter(T_UINT64);
 			if (nWordCount == 1)
 			{
-				Push((PARAMNO)nParmNo);			
-				Push(EAX);
-				Call(EBX,(FUNCPTR)UInt64ToStr);
+				rasm.Push((PARAMNO)nParmNo);			
+				rasm.Push(EAX);
+				rasm.Call(EBX,(FUNCPTR)UInt64ToStr);
 			}
 			else
 			{
 				if (StrIEqual(aParmPrec, "BINARY"))
 				{
-					Push((PARAMNO)nParmNo);			
-					Push(EAX);
-					Call(EBX,(FUNCPTR)Int64ToVarbinary);
+					rasm.Push((PARAMNO)nParmNo);			
+					rasm.Push(EAX);
+					rasm.Call(EBX,(FUNCPTR)Int64ToVarbinary);
 				}
 				else if (StrIEqual(aParmPrec, "LITERAL"))
 				{
-					Mov(REAX,sizeof(char),'"');
-					Add(EAX, 1);
-					Push((PARAMNO)nParmNo);			
-					Push(EAX);
-					Call(EBX,(FUNCPTR)UInt64ToStr);
-					Mov(REAX,sizeof(char),'"');
-					Add(EAX, 1);
+					rasm.Mov(REAX,sizeof(char),'"');
+					rasm.Add(EAX, 1);
+					rasm.Push((PARAMNO)nParmNo);			
+					rasm.Push(EAX);
+					rasm.Call(EBX,(FUNCPTR)UInt64ToStr);
+					rasm.Mov(REAX,sizeof(char),'"');
+					rasm.Add(EAX, 1);
 				}
 				else if (StrIEqual(aParmPrec, "CURRENCY"))
 				{
-					Push((PARAMNO)nParmNo);			
-					Push(EAX);
-					Call(EBX,(FUNCPTR)Int64ToCurrency);
+					rasm.Push((PARAMNO)nParmNo);			
+					rasm.Push(EAX);
+					rasm.Call(EBX,(FUNCPTR)Int64ToCurrency);
 				}
 				else
 					throw E_INVALIDPARAMS;
@@ -1200,97 +1203,97 @@ try
 	// nullterminate
 	if (nParmCount)
 	{
-		Mov(REAX,sizeof(char),')');
-		Add(EAX,1);
-		Mov(REAX,sizeof(char),'\0');
+		rasm.Mov(REAX,sizeof(char),')');
+		rasm.Add(EAX,1);
+		rasm.Mov(REAX,sizeof(char),'\0');
 	}
 
 	if (nSyncFlag & (CALLBACK_ASYNCRONOUS_POST|CALLBACK_ASYNCRONOUS_SEND))
 	{
 		/* PostMessage(ghCallbackHwnd,WM_ASYNCCALLBACK,pBuffer,0); */
-		Push(0);
-		Push("pBuffer");
-		Push(WM_ASYNCCALLBACK);
-		Push(ghCallbackHwnd);
+		rasm.Push(0);
+		rasm.Push("pBuffer");
+		rasm.Push(WM_ASYNCCALLBACK);
+		rasm.Push(ghCallbackHwnd);
 		if (nSyncFlag & CALLBACK_ASYNCRONOUS_POST)
-			Call((FUNCPTR)PostMessage);
+			rasm.Call((FUNCPTR)PostMessage);
 		else
-			Call((FUNCPTR)SendMessage);
+			rasm.Call((FUNCPTR)SendMessage);
 	}
 	else if (pRetVal.Len() == 0 || pRetVal.ICompare("void"))
 	{
 		/* EXECUTE(pFunc->aCallbackBuffer); */
-		Mov(ECX,(AVALUE)pFunc->aCallbackBuffer);
-		Call((FUNCPTR)_Execute);
+		rasm.Mov(ECX,(AVALUE)pFunc->aCallbackBuffer);
+		rasm.Call((FUNCPTR)_Execute);
 	}
 	else
 	{
 		/* EVALUATE(vRetVal,pFunc->aCallbackBuffer) */
-		Lea(ECX,"vRetVal");
-		Mov(EDX,(AVALUE)pFunc->aCallbackBuffer);
-		Call((FUNCPTR)_Evaluate);
+		rasm.Lea(ECX,"vRetVal");
+		rasm.Mov(EDX,(AVALUE)pFunc->aCallbackBuffer);
+		rasm.Call((FUNCPTR)_Evaluate);
 
 		// return value
 		if (StrIEqual(pRetVal,"INTEGER") || StrIEqual(pRetVal,"LONG"))
-			Mov(EAX,"vRetVal",T_INT,offsetof(Value,ev_long));
+			rasm.Mov(EAX,"vRetVal",T_INT,offsetof(Value,ev_long));
 		else if (StrIEqual(pRetVal,"UINTEGER") || StrIEqual(pRetVal,"ULONG"))
 		{
-			Mov(AL,"vRetVal",T_CHAR,offsetof(Value,ev_type));
-			Cmp(AL,'N');
-			Je("DConv");
-			Mov(EAX,"vRetVal",T_UINT,offsetof(Value,ev_long));
-			Jmp("End");
-			Emit_Label("DConv");
-			Push("vRetVal",T_DOUBLE,offsetof(Value,ev_real));
-			Call((FUNCPTR)DoubleToUInt);
-			Emit_Label("End");
+			rasm.Mov(AL,"vRetVal",T_CHAR,offsetof(Value,ev_type));
+			rasm.Cmp(AL,'N');
+			rasm.Je("DConv");
+			rasm.Mov(EAX,"vRetVal",T_UINT,offsetof(Value,ev_long));
+			rasm.Jmp("End");
+			rasm.Label("DConv");
+			rasm.Push("vRetVal",T_DOUBLE,offsetof(Value,ev_real));
+			rasm.Call((FUNCPTR)DoubleToUInt);
+			rasm.Label("End");
 		}
 		else if (StrIEqual(pRetVal,"SHORT"))
-			Mov(AX,"vRetVal",T_INT,offsetof(Value,ev_long));
+			rasm.Mov(AX,"vRetVal",T_INT,offsetof(Value,ev_long));
 		else if (StrIEqual(pRetVal,"USHORT"))
-			Mov(AX,"vRetVal",T_UINT,offsetof(Value,ev_long));
+			rasm.Mov(AX,"vRetVal",T_UINT,offsetof(Value,ev_long));
 		else if (StrIEqual(pRetVal,"SINGLE") || StrIEqual(pRetVal,"DOUBLE"))
-			Fld("vRetVal",T_DOUBLE,offsetof(Value,ev_real));
+			rasm.Fld("vRetVal",T_DOUBLE,offsetof(Value,ev_real));
 		else if (StrIEqual(pRetVal,"BOOL"))
-			Mov(EAX,"vRetVal",T_UINT,offsetof(Value,ev_length));
+			rasm.Mov(EAX,"vRetVal",T_UINT,offsetof(Value,ev_length));
 		else if (StrIEqual(pRetVal,"INT64"))
 		{
-			Mov(AL,"vRetVal",T_CHAR,offsetof(Value,ev_type));
-			Cmp(AL,'N');
-			Je("DConv");
-			Mov(EAX,"vRetVal",T_INT,offsetof(Value,ev_long));
-			Cdq();
-			Jmp("End");
-			Emit_Label("DConv");
-			Push("vRetVal",T_DOUBLE,offsetof(Value,ev_real));
-			Call((FUNCPTR)DoubleToInt64);
-			Emit_Label("End");
+			rasm.Mov(AL,"vRetVal",T_CHAR,offsetof(Value,ev_type));
+			rasm.Cmp(AL,'N');
+			rasm.Je("DConv");
+			rasm.Mov(EAX,"vRetVal",T_INT,offsetof(Value,ev_long));
+			rasm.Cdq();
+			rasm.Jmp("End");
+			rasm.Label("DConv");
+			rasm.Push("vRetVal",T_DOUBLE,offsetof(Value,ev_real));
+			rasm.Call((FUNCPTR)DoubleToInt64);
+			rasm.Label("End");
 		}
 		else if (StrIEqual(pRetVal,"UINT64"))
 		{
-			Mov(AL,"vRetVal",T_CHAR,offsetof(Value,ev_type));
-			Cmp(AL,'N');
-			Je("DConv");
-			Mov(EAX,"vRetVal",T_UINT,offsetof(Value,ev_long));
-			Xor(EDX,EDX);
-			Jmp("End");
-			Emit_Label("DConv");
-			Push("vRetVal",T_DOUBLE,offsetof(Value,ev_real));
-			Call((FUNCPTR)DoubleToUInt64);
-			Emit_Label("End");
+			rasm.Mov(AL,"vRetVal",T_CHAR,offsetof(Value,ev_type));
+			rasm.Cmp(AL,'N');
+			rasm.Je("DConv");
+			rasm.Mov(EAX,"vRetVal",T_UINT,offsetof(Value,ev_long));
+			rasm.Xor(EDX,EDX);
+			rasm.Jmp("End");
+			rasm.Label("DConv");
+			rasm.Push("vRetVal",T_DOUBLE,offsetof(Value,ev_real));
+			rasm.Call((FUNCPTR)DoubleToUInt64);
+			rasm.Label("End");
 		}
 		else
 			throw E_INVALIDPARAMS;
 	}
 
-	Emit_Label("ErrorOut");
-	Pop(EBX);
-	Emit_Epilog(bCDeclCallConv);
+	rasm.Label("ErrorOut");
+	rasm.Pop(EBX);
+	rasm.Epilog(bCDeclCallConv);
 
-	Emit_Patch();
+	rasm.Patch();
 
-	pFunc->pFuncAddress = AllocThunk(Emit_CodeSize());
-	Emit_Write(pFunc->pFuncAddress);
+	pFunc->pFuncAddress = AllocThunk(rasm.CodeSize());
+	rasm.WriteCode(pFunc->pFuncAddress);
 
 	Return(pFunc->pFuncAddress);
 }
@@ -1335,20 +1338,9 @@ LRESULT _stdcall AsyncCallbackWindowProc(HWND nHwnd, UINT uMsg, WPARAM wParam, L
 void* _stdcall AllocThunk(int nSize) throw(int)
 {
 	void *pThunk;
-	DWORD dwProtect;
-
 	pThunk = HeapAlloc(ghThunkHeap,0,nSize);
 	if (pThunk)
-	{
-		if (VirtualProtect(pThunk,nSize,PAGE_EXECUTE_READWRITE,&dwProtect))
-			return pThunk;
-		else
-		{
-			SaveWin32Error("VirtualProtect", GetLastError());
-			HeapFree(ghThunkHeap,0,pThunk);
-			throw E_APIERROR;
-		}
-	}
+		return pThunk;
 	else
 		throw E_INSUFMEMORY;
 }
@@ -1357,3 +1349,5 @@ BOOL _stdcall FreeThunk(void *lpAddress)
 {
 	return HeapFree(ghThunkHeap,0,lpAddress);
 }
+
+#endif // _THREADSAFE

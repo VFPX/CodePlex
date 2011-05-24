@@ -1,5 +1,3 @@
-#define _WIN32_WINNT 0x0400
-
 #include <windows.h>
 #include <stdio.h> // sprintf, memcpy and other common C library routines
 
@@ -8,71 +6,38 @@
 #include "vfp2cutil.h"
 #include "vfp2cmarshal.h"
 #include "vfp2ccppapi.h"
+#include "vfp2ctls.h"
 #include "vfpmacros.h"
 
-// handle to our default heap which is created at load time
-HANDLE ghHeap = 0;
-
-// codepage for Unicode character conversion
-UINT gnConvCP = CP_ACP;
-
-// dynamic function pointers
-static PHEAPCOMPACT fpHeapCompact = 0;
-static PHEAPVALIDATE fpHeapValidate = 0;
-static PHEAPWALK fpHeapWalk = 0;
-
-#ifdef _DEBUG
-static LPDBGALLOCINFO gpDbgInfo = 0;
-static BOOL gbTrackAlloc = FALSE;
-#endif
-
-bool _stdcall VFP2C_Init_Marshal()
+bool _stdcall VFP2C_Init_Marshal(VFP2CTls& tls)
 {
-	HMODULE hDll;
-	// vars for changing the heap allocation algorithm
-	PHEAPSETINFO fpHeapSetInformation;
-	HEAP_INFORMATION_CLASS pInfo = HeapCompatibilityInformation;
-	ULONG nLFHFlag = 2;
-
 	// create default Heap
-	if (ghHeap == 0)
+	if (VFP2CTls::Heap == 0)
 	{
-		if (!(ghHeap = HeapCreate(0,HEAP_INITIAL_SIZE,0)))
+		if (!(VFP2CTls::Heap = HeapCreate(0, HEAP_INITIAL_SIZE, 0)))
 		{
 			AddWin32Error("HeapCreate", GetLastError());
 			return false;
 		}
-	}
-
-	// we can use GetModuleHandle instead of LoadLibrary since kernel32.dll is loaded already by VFP
-	if (fpHeapCompact == 0)
-	{
-		hDll = GetModuleHandle("kernel32.dll");
+		// we can use GetModuleHandle instead of LoadLibrary since kernel32.dll is loaded already by VFP
+		HMODULE hDll = GetModuleHandle("kernel32.dll");
 		if (hDll)
 		{
-			fpHeapSetInformation = (PHEAPSETINFO)GetProcAddress(hDll,"HeapSetInformation");
+			PHEAPSETINFO fpHeapSetInformation = (PHEAPSETINFO)GetProcAddress(hDll,"HeapSetInformation");
 			// if HeapSetInformation is supported (only on WinXP), call it to make our heap a low-fragmentation heap.
 			if (fpHeapSetInformation)
-				fpHeapSetInformation(ghHeap,pInfo,&nLFHFlag,sizeof(ULONG));
-
-			fpHeapCompact = (PHEAPCOMPACT)GetProcAddress(hDll,"HeapCompact");
-			fpHeapValidate = (PHEAPVALIDATE)GetProcAddress(hDll,"HeapValidate");
-			fpHeapWalk = (PHEAPWALK)GetProcAddress(hDll,"HeapWalk");
-		}
-		else
-		{
-			AddWin32Error("GetModuleHandle", GetLastError());
-			return false;
+			{
+				ULONG nLFHFlag = 2;
+				fpHeapSetInformation(VFP2CTls::Heap, HeapCompatibilityInformation, &nLFHFlag, sizeof(ULONG));
+			}
 		}
 	}
+
 	return true;
 }
 
-void _stdcall VFP2C_Destroy_Marshal()
+void _stdcall VFP2C_Destroy_Marshal(VFP2CTls& tls)
 {
-	if (ghHeap)
-		HeapDestroy(ghHeap);
-
 #ifdef _DEBUG
 	FreeDebugAlloc();
 #endif
@@ -80,17 +45,19 @@ void _stdcall VFP2C_Destroy_Marshal()
 
 int _stdcall Win32HeapExceptionHandler(int nExceptionCode)
 {
-	gnErrorCount = 0;
-	gaErrorInfo[0].nErrorType = VFP2C_ERRORTYPE_WIN32;
-	gaErrorInfo[0].nErrorNo = nExceptionCode;
-	strcpy(gaErrorInfo[0].aErrorFunction,"HeapAlloc/HeapReAlloc");
+	VFP2CTls& tls = VFP2CTls::Tls();
+	LPVFP2CERROR pError = tls.ErrorInfo;
+	tls.ErrorCount = 0;
+	pError->nErrorType = VFP2C_ERRORTYPE_WIN32;
+	pError->nErrorNo = nExceptionCode;
+	strcpy(pError->aErrorFunction,"HeapAlloc/HeapReAlloc");
 
 	if (nExceptionCode == STATUS_NO_MEMORY)
-		strcpy(gaErrorInfo[0].aErrorMessage,"The allocation attempt failed because of a lack of available memory or heap corruption.");
+		strcpy(pError->aErrorMessage,"The allocation attempt failed because of a lack of available memory or heap corruption.");
 	else if (nExceptionCode == STATUS_ACCESS_VIOLATION)
-		strcpy(gaErrorInfo[0].aErrorMessage,"The allocation attempt failed because of heap corruption or improper function parameters.");
+		strcpy(pError->aErrorMessage,"The allocation attempt failed because of heap corruption or improper function parameters.");
 	else
-		strcpy(gaErrorInfo[0].aErrorMessage,"Unknown exception code.");
+		strcpy(pError->aErrorMessage,"Unknown exception code.");
 
 	return EXCEPTION_EXECUTE_HANDLER;
 }
@@ -100,11 +67,12 @@ int _stdcall Win32HeapExceptionHandler(int nExceptionCode)
 
 void _stdcall AddDebugAlloc(void* pPointer, int nSize)
 {
+	VFP2CTls& tls = VFP2CTls::Tls();
 	FoxValue vProgInfo;
 	LPDBGALLOCINFO pDbg;	
 	char *pProgInfo = 0;
 
-	if (pPointer && gbTrackAlloc)
+	if (pPointer && tls.TrackAlloc)
 	{
 		pDbg = (LPDBGALLOCINFO)malloc(sizeof(DBGALLOCINFO));
 		if (!pDbg)
@@ -117,17 +85,17 @@ void _stdcall AddDebugAlloc(void* pPointer, int nSize)
 		pDbg->pPointer = pPointer;
 		pDbg->pProgInfo = pProgInfo;
 		pDbg->nSize = nSize;
-		pDbg->next = gpDbgInfo;
-		gpDbgInfo = pDbg;
+		pDbg->next = tls.DbgInfo;
+		tls.DbgInfo = pDbg;
 	}
 }
 
 void _stdcall RemoveDebugAlloc(void* pPointer)
 {
-	LPDBGALLOCINFO pDbg = gpDbgInfo, pDbgPrev = 0;
-    
-	if (pPointer && gbTrackAlloc)
+	VFP2CTls& tls = VFP2CTls::Tls();
+	if (pPointer && tls.TrackAlloc)
 	{
+		LPDBGALLOCINFO pDbg = tls.DbgInfo, pDbgPrev = 0;
 		while (pDbg && pDbg->pPointer != pPointer)
 		{
 			pDbgPrev = pDbg;
@@ -139,7 +107,7 @@ void _stdcall RemoveDebugAlloc(void* pPointer)
 			if (pDbgPrev)
 				pDbgPrev->next = pDbg->next;
 			else
-				gpDbgInfo = pDbg->next;
+				tls.DbgInfo = pDbg->next;
 
 			if (pDbg->pProgInfo)
 				free(pDbg->pProgInfo);
@@ -150,13 +118,14 @@ void _stdcall RemoveDebugAlloc(void* pPointer)
 
 void _stdcall ReplaceDebugAlloc(void* pOrig, void* pNew, int nSize)
 {
-	LPDBGALLOCINFO pDbg = gpDbgInfo;
+   	VFP2CTls& tls = VFP2CTls::Tls();
+	if (!pNew || !tls.TrackAlloc)
+		return;
+
+	LPDBGALLOCINFO pDbg = tls.DbgInfo;
 	FoxValue vProgInfo;
 	char* pProgInfo = 0;
 
-	if (!pNew || !gbTrackAlloc)
-		return;
-    
 	while (pDbg && pDbg->pPointer != pOrig)
 		pDbg = pDbg->next;
 
@@ -177,7 +146,8 @@ void _stdcall ReplaceDebugAlloc(void* pOrig, void* pNew, int nSize)
 
 void _stdcall FreeDebugAlloc()
 {
-	LPDBGALLOCINFO pDbg = gpDbgInfo, pDbgEx;
+	VFP2CTls& tls = VFP2CTls::Tls();
+	LPDBGALLOCINFO pDbg = tls.DbgInfo, pDbgEx;
 	while (pDbg)
 	{
 		pDbgEx = pDbg->next;
@@ -186,14 +156,15 @@ void _stdcall FreeDebugAlloc()
 		free(pDbg);
 		pDbg = pDbgEx;
 	}
-	gpDbgInfo = 0;
+	tls.DbgInfo = 0;
 }
 
 void _fastcall AMemLeaks(ParamBlk *parm)
 {
 try
 {
-	LPDBGALLOCINFO pDbg = gpDbgInfo;
+	VFP2CTls& tls = VFP2CTls::Tls();
+	LPDBGALLOCINFO pDbg = tls.DbgInfo;
 	if (!pDbg)
 	{
 		Return(0);
@@ -233,7 +204,8 @@ catch(int nErrorNo)
 
 void _fastcall TrackMem(ParamBlk *parm)
 {
-	gbTrackAlloc = static_cast<BOOL>(p1.ev_length);
+	VFP2CTls& tls = VFP2CTls::Tls();
+	tls.TrackAlloc = static_cast<BOOL>(p1.ev_length);
 	if (PCount() == 2 && p2.ev_length)
 		FreeDebugAlloc();
 }
@@ -246,7 +218,7 @@ void _fastcall AllocMem(ParamBlk *parm)
 	void *pAlloc = 0;
 	__try
 	{
-		pAlloc = HeapAlloc(ghHeap, HEAP_ZERO_MEMORY | HEAP_GENERATE_EXCEPTIONS, p1.ev_long);
+		pAlloc = HeapAlloc(VFP2CTls::Heap, HEAP_ZERO_MEMORY | HEAP_GENERATE_EXCEPTIONS, p1.ev_long);
 	}
 	__except(SAVEHEAPEXCEPTION()) { }
 
@@ -268,7 +240,7 @@ void _fastcall AllocMemTo(ParamBlk *parm)
 	{
 		__try
 		{
-			pAlloc = HeapAlloc(ghHeap, HEAP_ZERO_MEMORY | HEAP_GENERATE_EXCEPTIONS, p2.ev_long);
+			pAlloc = HeapAlloc(VFP2CTls::Heap, HEAP_ZERO_MEMORY | HEAP_GENERATE_EXCEPTIONS, p2.ev_long);
 		}
 		__except(SAVEHEAPEXCEPTION()) { }
 	
@@ -293,12 +265,12 @@ void _fastcall ReAllocMem(ParamBlk *parm)
 	{
 		if (pPointer)
 		{
-			pAlloc = HeapReAlloc(ghHeap, HEAP_ZERO_MEMORY | HEAP_GENERATE_EXCEPTIONS, pPointer, p2.ev_long);
+			pAlloc = HeapReAlloc(VFP2CTls::Heap, HEAP_ZERO_MEMORY | HEAP_GENERATE_EXCEPTIONS, pPointer, p2.ev_long);
 			REPLACEDEBUGALLOC(pPointer, pAlloc, p2.ev_long);
 		}
 		else
 		{
-			pAlloc = HeapAlloc(ghHeap, HEAP_ZERO_MEMORY | HEAP_GENERATE_EXCEPTIONS, p2.ev_long);
+			pAlloc = HeapAlloc(VFP2CTls::Heap, HEAP_ZERO_MEMORY | HEAP_GENERATE_EXCEPTIONS, p2.ev_long);
 			ADDDEBUGALLOC(pAlloc, p2.ev_long);
 		}
     }
@@ -315,7 +287,7 @@ void _fastcall FreeMem(ParamBlk *parm)
 	void *pPointer = reinterpret_cast<void*>(p1.ev_long);
 	if (pPointer)
 	{
-		if (HeapFree(ghHeap,0, pPointer))
+		if (HeapFree(VFP2CTls::Heap,0, pPointer))
 		{
 			REMOVEDEBUGALLOC(pPointer);
 		}
@@ -334,7 +306,7 @@ void _fastcall FreePMem(ParamBlk *parm)
 	{
 		if ((pAlloc = *reinterpret_cast<void**>(p1.ev_long)))
 		{
-			if (HeapFree(ghHeap,0,pAlloc))
+			if (HeapFree(VFP2CTls::Heap, 0, pAlloc))
 			{
 				REMOVEDEBUGALLOC(pAlloc);
 			}
@@ -368,7 +340,7 @@ void _fastcall FreeRefArray(ParamBlk *parm)
 	{
 		if (*pAddress)
 		{
-			if (!HeapFree(ghHeap,0,*pAddress))
+			if (!HeapFree(VFP2CTls::Heap, 0, *pAddress))
 			{
 				AddWin32Error("HeapFree", GetLastError());
 				bApiRet = FALSE;
@@ -382,25 +354,19 @@ void _fastcall FreeRefArray(ParamBlk *parm)
 void _fastcall SizeOfMem(ParamBlk *parm)
 {
 	if (p1.ev_long)
-		Return((int)HeapSize(ghHeap, 0, reinterpret_cast<void*>(p1.ev_long)));
+		Return((int)HeapSize(VFP2CTls::Heap, 0, reinterpret_cast<void*>(p1.ev_long)));
 	else
 		Return(0);
 }
 
 void _fastcall ValidateMem(ParamBlk *parm)
 {
-	if (fpHeapValidate)
-		Return(fpHeapValidate(ghHeap, 0, reinterpret_cast<void*>(p1.ev_long)) > 0);
-	else
-		RaiseError(E_NOENTRYPOINT);
+	Return(HeapValidate(VFP2CTls::Heap, 0, reinterpret_cast<void*>(p1.ev_long)) > 0);
 }
 
 void _fastcall CompactMem(ParamBlk *parm)
 {
-	if (fpHeapCompact)
-		Return(fpHeapCompact(ghHeap,0));
-	else
-		RaiseError(E_NOENTRYPOINT);
+	Return(HeapCompact(VFP2CTls::Heap, 0));
 }
 
 // wrappers around GlobalAlloc, GlobalFree etc .. for movable memory objects ..
@@ -496,16 +462,14 @@ void _fastcall AMemBlocks(ParamBlk *parm)
 {
 try
 {
-	if (!fpHeapWalk)
-		throw E_NOENTRYPOINT;
-
 	FoxArray pArray(p1,1,3);
 	PROCESS_HEAP_ENTRY pEntry;
 	DWORD nLastError;
+	HANDLE hHeap = VFP2CTls::Heap;
 
 	pEntry.lpData = NULL;
 
-	if (!fpHeapWalk(ghHeap,&pEntry))
+	if (!HeapWalk(hHeap, &pEntry))
 	{
 		nLastError = GetLastError();
 		if (nLastError == ERROR_NO_MORE_ITEMS)
@@ -526,7 +490,7 @@ try
 		pArray(nRow,1) = pEntry.lpData;
 		pArray(nRow,2) = pEntry.cbData;
 		pArray(nRow,3) = pEntry.cbOverhead;
-	} while (fpHeapWalk(ghHeap,&pEntry));
+	} while (HeapWalk(hHeap, &pEntry));
 	
 	nLastError = GetLastError();
     if (nLastError != ERROR_NO_MORE_ITEMS)
@@ -849,7 +813,7 @@ void _fastcall WritePChar(ParamBlk *parm)
 void _fastcall WriteWChar(ParamBlk *parm)
 {
 	wchar_t *pString = reinterpret_cast<wchar_t*>(p1.ev_long);
-	unsigned int nCodePage = PCount() == 2 ? gnConvCP : p3.ev_long;
+	unsigned int nCodePage = PCount() == 2 ? VFP2CTls::Tls().ConvCP : p3.ev_long;
 	if (pString)
 	{
 		if (p2.ev_length)
@@ -864,7 +828,7 @@ void _fastcall WriteWChar(ParamBlk *parm)
 void _fastcall WritePWChar(ParamBlk *parm)
 {
 	wchar_t **pString = reinterpret_cast<wchar_t**>(p1.ev_long);
-	unsigned int nCodePage = PCount() == 2 ? gnConvCP : p3.ev_long;
+	unsigned int nCodePage = PCount() == 2 ? VFP2CTls::Tls().ConvCP : p3.ev_long;
 	if (pString)
 	{
 		if ((*pString))
@@ -886,12 +850,12 @@ void _fastcall WriteCString(ParamBlk *parm)
 	{
 		if (pPointer)
 		{
-			pNewAddress = (char*)HeapReAlloc(ghHeap, HEAP_GENERATE_EXCEPTIONS, pPointer, p2.ev_length+1);
+			pNewAddress = (char*)HeapReAlloc(VFP2CTls::Heap, HEAP_GENERATE_EXCEPTIONS, pPointer, p2.ev_length+1);
 			REPLACEDEBUGALLOC(pPointer, pNewAddress, p2.ev_length+1);
 		}
 		else
 		{
-			pNewAddress = (char*)HeapAlloc(ghHeap, HEAP_GENERATE_EXCEPTIONS, p2.ev_length+1);
+			pNewAddress = (char*)HeapAlloc(VFP2CTls::Heap, HEAP_GENERATE_EXCEPTIONS, p2.ev_length+1);
 			ADDDEBUGALLOC(pNewAddress, p2.ev_length+1);
 		}
 	}
@@ -975,12 +939,12 @@ void _fastcall WritePCString(ParamBlk *parm)
 		{
 			if ((*pOldAddress))
 			{
-				pNewAddress = (char*)HeapReAlloc(ghHeap, HEAP_GENERATE_EXCEPTIONS, (*pOldAddress), p2.ev_length+1);
+				pNewAddress = (char*)HeapReAlloc(VFP2CTls::Heap, HEAP_GENERATE_EXCEPTIONS, (*pOldAddress), p2.ev_length+1);
 				REPLACEDEBUGALLOC(*pOldAddress, pNewAddress, p2.ev_length);
 			}
 			else
 			{
-				pNewAddress = (char*)HeapAlloc(ghHeap, HEAP_GENERATE_EXCEPTIONS, p2.ev_length+1);
+				pNewAddress = (char*)HeapAlloc(VFP2CTls::Heap, HEAP_GENERATE_EXCEPTIONS, p2.ev_length+1);
 				ADDDEBUGALLOC(pNewAddress,p2.ev_length);
 			}
 		}
@@ -1000,7 +964,7 @@ void _fastcall WritePCString(ParamBlk *parm)
 	{
 		if ((*pOldAddress))
 		{
-			if (HeapFree(ghHeap,0,*pOldAddress))
+			if (HeapFree(VFP2CTls::Heap,0,*pOldAddress))
 			{
 				REMOVEDEBUGALLOC(*pOldAddress);
 				*pOldAddress = 0;
@@ -1042,7 +1006,7 @@ void _fastcall WriteCharArray(ParamBlk *parm)
 void _fastcall WriteWString(ParamBlk *parm)
 {
 	wchar_t *pString = reinterpret_cast<wchar_t*>(p1.ev_long);
-	unsigned int nCodePage = PCount() == 2 ? gnConvCP : p3.ev_long;
+	unsigned int nCodePage = PCount() == 2 ? VFP2CTls::Tls().ConvCP : p3.ev_long;
 	wchar_t *pDest = 0;
 	int nStringLen, nBytesNeeded, nBytesWritten;	
 	nStringLen = p2.ev_length;
@@ -1052,12 +1016,12 @@ void _fastcall WriteWString(ParamBlk *parm)
 	{
 		if (pString)
 		{
-			pDest = (wchar_t*)HeapReAlloc(ghHeap, HEAP_GENERATE_EXCEPTIONS, pString, nBytesNeeded);
+			pDest = (wchar_t*)HeapReAlloc(VFP2CTls::Heap, HEAP_GENERATE_EXCEPTIONS, pString, nBytesNeeded);
 			REPLACEDEBUGALLOC(pString, pDest, nBytesNeeded);
 		}
 		else
 		{
-			pDest = (wchar_t*)HeapAlloc(ghHeap, HEAP_GENERATE_EXCEPTIONS, nBytesNeeded);
+			pDest = (wchar_t*)HeapAlloc(VFP2CTls::Heap, HEAP_GENERATE_EXCEPTIONS, nBytesNeeded);
 			ADDDEBUGALLOC(pDest, nBytesNeeded);
 		}
 	}
@@ -1086,7 +1050,7 @@ void _fastcall WritePWString(ParamBlk *parm)
 {
 	wchar_t **pOld = reinterpret_cast<wchar_t**>(p1.ev_long);
 	wchar_t *pDest = 0;
-	unsigned int nCodePage = PCount() == 2 ? gnConvCP : p3.ev_long;
+	unsigned int nCodePage = PCount() == 2 ? VFP2CTls::Tls().ConvCP : p3.ev_long;
 	int nStringLen, nBytesNeeded, nBytesWritten;
 
 	if (Vartype(p2) == 'C' && pOld)
@@ -1098,12 +1062,12 @@ void _fastcall WritePWString(ParamBlk *parm)
 		{
 			if ((*pOld))
 			{
-				pDest = (wchar_t*)HeapReAlloc(ghHeap,HEAP_ZERO_MEMORY | HEAP_GENERATE_EXCEPTIONS,*pOld,nBytesNeeded);
+				pDest = (wchar_t*)HeapReAlloc(VFP2CTls::Heap, HEAP_ZERO_MEMORY | HEAP_GENERATE_EXCEPTIONS,*pOld,nBytesNeeded);
 				REPLACEDEBUGALLOC(*pOld,pDest,nBytesNeeded);
 			}
 			else
 			{
-				pDest = (wchar_t*)HeapAlloc(ghHeap,HEAP_ZERO_MEMORY | HEAP_GENERATE_EXCEPTIONS,nBytesNeeded);
+				pDest = (wchar_t*)HeapAlloc(VFP2CTls::Heap, HEAP_ZERO_MEMORY | HEAP_GENERATE_EXCEPTIONS,nBytesNeeded);
 				ADDDEBUGALLOC(pDest,nBytesNeeded);
 			}
 		}
@@ -1127,7 +1091,7 @@ void _fastcall WritePWString(ParamBlk *parm)
 	{
 		if ((*pOld))
 		{
-			if (HeapFree(ghHeap,0,*pOld))
+			if (HeapFree(VFP2CTls::Heap, 0, *pOld))
 			{
 				REMOVEDEBUGALLOC(*pOld);
 				*pOld = 0;
@@ -1149,7 +1113,7 @@ void _fastcall WritePWString(ParamBlk *parm)
 void _fastcall WriteWCharArray(ParamBlk *parm)
 {
 	wchar_t *pString = reinterpret_cast<wchar_t*>(p1.ev_long);
-	unsigned int nCodePage = PCount() == 3 ? gnConvCP : p4.ev_long;
+	unsigned int nCodePage = PCount() == 3 ? VFP2CTls::Tls().ConvCP : p4.ev_long;
 	int nBytesWritten, nArrayWidth, nStringLen;
 	nArrayWidth = p3.ev_long - 1; // -1 for null terminator
 	nStringLen = p2.ev_length;
@@ -1586,7 +1550,7 @@ void _fastcall ReadWString(ParamBlk *parm)
 	StringValue vBuffer;
 	int nStringLen, nBufferLen;
 	wchar_t* pString = reinterpret_cast<wchar_t*>(p1.ev_long);
-	unsigned int nCodePage = PCount() == 1 ? gnConvCP : p2.ev_long;
+	unsigned int nCodePage = PCount() == 1 ? VFP2CTls::Tls().ConvCP : p2.ev_long;
 
 	if (pString)
 	{
@@ -1620,7 +1584,7 @@ void _fastcall ReadPWString(ParamBlk *parm)
 {
 	StringValue vBuffer;
 	wchar_t **pString = reinterpret_cast<wchar_t**>(p1.ev_long);
-	unsigned int nCodePage = PCount() > 1 && p2.ev_long ? p2.ev_long : gnConvCP;
+	unsigned int nCodePage = PCount() > 1 && p2.ev_long ? p2.ev_long : VFP2CTls::Tls().ConvCP;
 	int nStringLen, nBufferLen;
 
 	if (pString)
@@ -1657,7 +1621,7 @@ void _fastcall ReadWCharArray(ParamBlk *parm)
 {
 	StringValue vBuffer;
 	wchar_t *pString = reinterpret_cast<wchar_t*>(p1.ev_long);
-	unsigned int nCodePage = PCount() == 2 ? gnConvCP : p3.ev_long;
+	unsigned int nCodePage = PCount() == 2 ? VFP2CTls::Tls().ConvCP : p3.ev_long;
 	int nBufferLen, nStringLen;
 
 	if (pString)
@@ -1722,6 +1686,7 @@ try
 	FoxArray vfpArray(r2);
 	MarshalType Type = static_cast<MarshalType>(p3.ev_long);
 	FoxValue pValue;
+	HANDLE hHeap = VFP2CTls::Heap;
 
 	switch(Type)
 	{
@@ -1831,9 +1796,9 @@ try
 					if (pValue.Vartype() == 'C')
 					{
 						if (*CArray)
-							*CArray = (char*)HeapReAlloc(ghHeap, 0, *CArray, pValue->ev_length + sizeof(char));
+							*CArray = (char*)HeapReAlloc(hHeap, 0, *CArray, pValue->ev_length + sizeof(char));
 						else
-							*CArray = (char*)HeapAlloc(ghHeap, 0, pValue->ev_length + sizeof(char));
+							*CArray = (char*)HeapAlloc(hHeap, 0, pValue->ev_length + sizeof(char));
 			
 						if (*CArray)
 						{
@@ -1847,7 +1812,7 @@ try
 					{
 						if (*CArray)
 						{
-							HeapFree(ghHeap, 0, *CArray);
+							HeapFree(hHeap, 0, *CArray);
 							*CArray = 0;
 						}
 					}
@@ -1863,15 +1828,15 @@ try
 			{
 				wchar_t **CArray = reinterpret_cast<wchar_t**>(p1.ev_long);
 				int nCharsWritten;
-				unsigned int nCodePage = PCount() == 3 ? gnConvCP : p4.ev_long;
+				unsigned int nCodePage = PCount() == 3 ? VFP2CTls::Tls().ConvCP : p4.ev_long;
 				BEGIN_ARRAYLOOP()
 					pValue = vfpArray;
 					if (pValue.Vartype() == 'C')
 					{
 						if (*CArray)
-							*CArray = (wchar_t*)HeapReAlloc(ghHeap, 0, *CArray, pValue->ev_length * sizeof(wchar_t) + sizeof(wchar_t));
+							*CArray = (wchar_t*)HeapReAlloc(hHeap, 0, *CArray, pValue->ev_length * sizeof(wchar_t) + sizeof(wchar_t));
 						else
-							*CArray = (wchar_t*)HeapAlloc(ghHeap, 0, pValue->ev_length * sizeof(wchar_t) + sizeof(wchar_t));
+							*CArray = (wchar_t*)HeapAlloc(hHeap, 0, pValue->ev_length * sizeof(wchar_t) + sizeof(wchar_t));
 
 						if (*CArray)
 						{
@@ -1893,7 +1858,7 @@ try
 					{
 						if (*CArray)
 						{
-							HeapFree(ghHeap, 0, *CArray);
+							HeapFree(hHeap, 0, *CArray);
 							*CArray = 0;
 						}
 					}
@@ -1939,7 +1904,7 @@ try
 
 				wchar_t *CArray = reinterpret_cast<wchar_t*>(p1.ev_long);
 				unsigned int nCodePage, nCharsWritten, nLength = p4.ev_long;
-				nCodePage = PCount() == 4 ? gnConvCP : p5.ev_long;
+				nCodePage = PCount() == 4 ? VFP2CTls::Tls().ConvCP : p5.ev_long;
 				BEGIN_ARRAYLOOP()
 					pValue = vfpArray;
 					if (pValue.Vartype() == 'C')
@@ -2121,7 +2086,7 @@ try
 			{
 				wchar_t **CArray = reinterpret_cast<wchar_t**>(p1.ev_long);
 				unsigned int nByteCount, nWCharCount, nCharsWritten;
-				unsigned int nCodePage = PCount() == 3 ? gnConvCP : p4.ev_long;;
+				unsigned int nCodePage = PCount() == 3 ? VFP2CTls::Tls().ConvCP : p4.ev_long;;
 				FoxString pValue(512);
 				FoxValue pNull;
 
@@ -2178,7 +2143,7 @@ try
 
 				wchar_t *CArray = reinterpret_cast<wchar_t*>(p1.ev_long);
 				int nCharCount, nLen = p4.ev_long;
-				unsigned int nCodePage = PCount() == 4 ? gnConvCP : p5.ev_long;
+				unsigned int nCodePage = PCount() == 4 ? VFP2CTls::Tls().ConvCP : p5.ev_long;
 				FoxString pValue(nLen);
 				
 				BEGIN_ARRAYLOOP()
@@ -2252,7 +2217,8 @@ try
 	FoxString pCursorAndFields(p2);
 	MarshalType Type = static_cast<MarshalType>(p3.ev_long);
 	FoxCursor pCursor;
-
+	VFP2CTls& tls = VFP2CTls::Tls();
+		
 	char CursorName[VFP_MAX_CURSOR_NAME];
 	char *pFieldNames = pCursorAndFields;
 	pFieldNames += GetWordNumN(CursorName, pCursorAndFields, '.', 1, VFP_MAX_CURSOR_NAME) + 1;
@@ -2379,9 +2345,9 @@ try
 						if (pValue.Vartype() == 'C')
 						{
 							if (*pString)
-								*pString = (char*)HeapReAlloc(ghHeap, 0, *pString, pValue->ev_length + sizeof(char));
+								*pString = (char*)HeapReAlloc(VFP2CTls::Heap, 0, *pString, pValue->ev_length + sizeof(char));
 							else
-								*pString = (char*)HeapAlloc(ghHeap, 0, pValue->ev_length + sizeof(char));
+								*pString = (char*)HeapAlloc(VFP2CTls::Heap, 0, pValue->ev_length + sizeof(char));
 				
 							if (*pString)
 							{
@@ -2395,7 +2361,7 @@ try
 						{
 							if (*pString)
 							{
-								HeapFree(ghHeap, 0, *CArray);
+								HeapFree(VFP2CTls::Heap, 0, *CArray);
 								*pString = 0;
 							}
 						}
@@ -2411,7 +2377,7 @@ try
 				wchar_t **CArray = reinterpret_cast<wchar_t**>(p1.ev_long);
 				wchar_t **pString;
 				int nCharsWritten;
-				unsigned int nCodePage = PCount() == 3 ? gnConvCP : p4.ev_long;
+				unsigned int nCodePage = PCount() == 3 ? VFP2CTls::Tls().ConvCP : p4.ev_long;
 				BEGIN_CURSORLOOP()
 					BEGIN_FIELDLOOP()
 						pValue = pCursor(nFieldNo);
@@ -2419,9 +2385,9 @@ try
 						if (pValue.Vartype() == 'C')
 						{
 							if (*pString)
-								*pString = (wchar_t*)HeapReAlloc(ghHeap, 0, *pString, pValue->ev_length * sizeof(wchar_t) + sizeof(wchar_t));
+								*pString = (wchar_t*)HeapReAlloc(VFP2CTls::Heap, 0, *pString, pValue->ev_length * sizeof(wchar_t) + sizeof(wchar_t));
 							else
-								*pString = (wchar_t*)HeapAlloc(ghHeap, 0, pValue->ev_length * sizeof(wchar_t) + sizeof(wchar_t));
+								*pString = (wchar_t*)HeapAlloc(VFP2CTls::Heap, 0, pValue->ev_length * sizeof(wchar_t) + sizeof(wchar_t));
 
 							if (*pString)
 							{
@@ -2443,7 +2409,7 @@ try
 						{
 							if (*pString)
 							{
-								HeapFree(ghHeap, 0, *pString);
+								HeapFree(VFP2CTls::Heap, 0, *pString);
 								*pString = 0;
 							}
 						}
@@ -2491,7 +2457,7 @@ try
 				wchar_t *CArray = reinterpret_cast<wchar_t*>(p1.ev_long);
 				wchar_t *pString;
 				unsigned int nByteLen, nCharsWritten, nDimensionSize, nLen = p4.ev_long;
-				unsigned int nCodePage = PCount() == 4 ? gnConvCP : p5.ev_long;
+				unsigned int nCodePage = PCount() == 4 ? tls.ConvCP : p5.ev_long;
 				nByteLen = nLen * sizeof(wchar_t);
 				nDimensionSize = nRecCount * nByteLen;
 				BEGIN_CURSORLOOP()
@@ -2600,6 +2566,8 @@ try
 	FoxString pCursorAndFields(p2);
 	MarshalType Type = static_cast<MarshalType>(p3.ev_long);
 	FoxCursor pCursor;
+	VFP2CTls& tls = VFP2CTls::Tls();
+
 	unsigned int nFieldCount;
 	unsigned int nRowCount = p4.ev_long;
 	char CursorName[VFP_MAX_CURSOR_NAME];
@@ -2727,7 +2695,7 @@ try
 				wchar_t **CArray = reinterpret_cast<wchar_t**>(p1.ev_long);
 				wchar_t *pString;
 				unsigned int nByteCount, nWCharCount, nCharsWritten;
-				UINT nCodePage = PCount() == 4 ? gnConvCP : p5.ev_long;;
+				UINT nCodePage = PCount() == 4 ? tls.ConvCP : p5.ev_long;;
 				FoxString pValue(512);
 				FoxValue pNull;
 
@@ -2793,7 +2761,7 @@ try
 				unsigned int nLen = p5.ev_long;
 				nByteLen = nLen * sizeof(wchar_t);
 				unsigned int nDimensionSize = nByteLen * nRowCount;
-				UINT nCodePage = PCount() == 5 ? gnConvCP : p6.ev_long;
+				UINT nCodePage = PCount() == 5 ? tls.ConvCP : p6.ev_long;
 				FoxString pValue(nByteLen);
 				
 				BEGIN_CURSORLOOP()

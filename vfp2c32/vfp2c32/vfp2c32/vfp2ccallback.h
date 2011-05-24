@@ -1,3 +1,5 @@
+#ifndef _THREADSAFE
+
 #ifndef _VFP2CCALLBACK_H__
 #define _VFP2CCALLBACK_H__
 
@@ -51,8 +53,8 @@ typedef struct _CALLBACKFUNC {
 extern "C" {
 #endif
 
-bool _stdcall VFP2C_Init_Callback();
-void _stdcall VFP2C_Destroy_Callback();
+bool _stdcall VFP2C_Init_Callback(VFP2CTls& tls);
+void _stdcall VFP2C_Destroy_Callback(VFP2CTls& tls);
 
 void _fastcall CreateCallbackFunc(ParamBlk *parm);
 void _fastcall DestroyCallbackFunc(ParamBlk *parm);
@@ -97,3 +99,5 @@ void* _stdcall AllocThunk(int nSize) throw(int);
 BOOL _stdcall FreeThunk(void *lpAddress);
 
 #endif // _VFP2CCALLBACK_H__
+
+#endif // _THREADSAFE

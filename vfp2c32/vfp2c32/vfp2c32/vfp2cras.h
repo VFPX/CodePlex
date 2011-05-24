@@ -48,13 +48,9 @@ public:
 	RasDialCallback() {};
 	~RasDialCallback() {};
 	void SetCallback(char *pCallback);
-	void Callback1(HRASCONN hrasconn, UINT unMsg, RASCONNSTATE rascs,
-					DWORD dwError, DWORD dwExtendedError);
-	DWORD Callback2(DWORD dwSubEntry, HRASCONN hrasconn, UINT unMsg,
+	DWORD Callback(DWORD dwSubEntry, HRASCONN hrasconn, UINT unMsg,
 					RASCONNSTATE rascs, DWORD dwError, DWORD dwExtendedError);
-	static void _stdcall RasDialCallbackFunc1(HRASCONN hrasconn, UINT unMsg, RASCONNSTATE rascs,
-											DWORD dwError, DWORD dwExtendedError);
-	static DWORD _stdcall RasDialCallbackFunc2(DWORD dwCallbackId, DWORD dwSubEntry, HRASCONN hrasconn, UINT unMsg,
+	static DWORD _stdcall RasDialCallbackFunc(DWORD dwCallbackId, DWORD dwSubEntry, HRASCONN hrasconn, UINT unMsg,
 											RASCONNSTATE rascs, DWORD dwError, DWORD dwExtendedError);
 private:
 	CStr m_Callback;
@@ -87,8 +83,7 @@ extern "C" {
 
 void _stdcall SaveRas32Error(char *pFunction, DWORD nErrorNo);
 
-bool _stdcall VFP2C_Init_Ras();
-void _stdcall VFP2C_Destroy_Ras();
+bool _stdcall VFP2C_Init_Ras(VFP2CTls& tls);
 
 void _fastcall ARasConnections(ParamBlk *parm);
 void _fastcall ARasDevices(ParamBlk *parm);
@@ -98,8 +93,10 @@ void _fastcall RasDialEx(ParamBlk *parm);
 void _fastcall RasHangUpEx(ParamBlk *parm);
 void _fastcall RasGetConnectStatusEx(ParamBlk *parm);
 void _fastcall RasDialDlgEx(ParamBlk *parm);
+
 void _fastcall RasConnectionNotificationEx(ParamBlk *parm);
 void _fastcall AbortRasConnectionNotificationEx(ParamBlk *parm);
+
 void _fastcall RasClearConnectionStatisticsEx(ParamBlk *parm);
 
 #ifdef __cplusplus

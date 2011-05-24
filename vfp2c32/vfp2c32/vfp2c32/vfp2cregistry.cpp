@@ -12,8 +12,6 @@ void _fastcall CreateRegistryKey(ParamBlk *parm)
 {
 try
 {
-	ResetWin32Errors();
-	
 	HKEY hRoot = reinterpret_cast<HKEY>(p1.ev_long);
 	FoxString pKey(p2);
 	REGSAM nKeyRights = (PCount() < 3) ? KEY_ALL_ACCESS : p3.ev_long;
@@ -33,8 +31,6 @@ void _fastcall DeleteRegistryKey(ParamBlk *parm)
 {
 try
 {
-	ResetWin32Errors();
-
 	HKEY hRoot = reinterpret_cast<HKEY>(p1.ev_long);
 	FoxString pKey(p2);
 	bool bShell = PCount() == 2 || p3.ev_long != REG_DELETE_NORMAL;
@@ -52,8 +48,6 @@ void _fastcall OpenRegistryKey(ParamBlk *parm)
 {
 try
 {
-	ResetWin32Errors();
-
 	HKEY hRoot = reinterpret_cast<HKEY>(p1.ev_long);
 	FoxString pKeyName(p2);
 	REGSAM nKeyRights = (PCount() == 2) ? KEY_ALL_ACCESS : (REGSAM)p3.ev_long;
@@ -71,8 +65,6 @@ catch(int nErrorNo)
 
 void _fastcall CloseRegistryKey(ParamBlk *parm)
 {
-	ResetWin32Errors();
-
 	LONG nApiRet = RegCloseKey(reinterpret_cast<HKEY>(p1.ev_long));
 	if (nApiRet != ERROR_SUCCESS)
 	{
@@ -85,8 +77,6 @@ void _fastcall ReadRegistryKey(ParamBlk *parm)
 {
 try
 {
-	ResetWin32Errors();
-	
 	HKEY hRoot = reinterpret_cast<HKEY>(p1.ev_long);
 	FoxString pValueName(parm,2);
 	FoxString pKeyName(parm,3);
@@ -274,8 +264,6 @@ void _fastcall WriteRegistryKey(ParamBlk *parm)
 {
 try
 {
-	ResetWin32Errors();
-
 	HKEY hRoot = reinterpret_cast<HKEY>(p1.ev_long);
 	FoxString pData(parm,2,0);
 	FoxMemo pMemo(parm, 2);
@@ -474,8 +462,6 @@ void _fastcall ARegistryKeys(ParamBlk *parm)
 {
 try
 {
-	ResetWin32Errors();
-
 	FoxArray pArray(p1);
 	HKEY hRoot = reinterpret_cast<HKEY>(p2.ev_long);
 	FoxString pKeyName(p3);
@@ -556,8 +542,6 @@ void _fastcall ARegistryValues(ParamBlk *parm)
 {
 try
 {
-	ResetWin32Errors();
-
 	FoxArray pArray(p1);
 	HKEY hRoot = reinterpret_cast<HKEY>(p2.ev_long);
 	FoxString pKeyName(p3);
@@ -693,8 +677,6 @@ void _fastcall RegistryValuesToObject(ParamBlk *parm)
 {
 try
 {
-	ResetWin32Errors();
-
 	HKEY hRoot = reinterpret_cast<HKEY>(p1.ev_long);
 	FoxString pKeyName(p2);
 	FoxObject pObject(p3);
@@ -806,8 +788,6 @@ void _fastcall RegistryHiveToObject(ParamBlk *parm)
 {
 try
 {
-	ResetWin32Errors();
-	
 	HKEY hRoot = reinterpret_cast<HKEY>(p1.ev_long);
 	FoxString pKeyName(p2);
 	FoxObject pObject(p3);

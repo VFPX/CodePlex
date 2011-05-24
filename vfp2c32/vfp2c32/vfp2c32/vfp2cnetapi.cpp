@@ -3,12 +3,9 @@
 #include "pro_ext.h"
 #include "vfp2c32.h"
 #include "vfp2cnetapi.h"
-#include "vfp2cnetapiex.h"
 #include "vfp2chelpers.h"
 #include "vfp2ccppapi.h"
 #include "vfpmacros.h"
-
-static HMODULE hNetApi32 = 0;
 
 static PNETAPIBUFFERALLOCATE fpNetApiBufferAllocate = 0;
 static PNETAPIBUFFERFREE fpNetApiBufferFree = 0;
@@ -24,48 +21,31 @@ NetApiBuffer::~NetApiBuffer()
 		fpNetApiBufferFree(m_Buffer);
 }
 
-bool _stdcall VFP2C_Init_Netapi()
+bool _stdcall VFP2C_Init_Netapi(VFP2CTls& tls)
 {
-	HMODULE hDll;
+	if(fpNetApiBufferAllocate)
+		return true;
 
-	hDll = GetModuleHandle("netapi32.dll");
-	if (!hDll)
+	if (!tls.NetApi32)
+		tls.NetApi32 = LoadLibrary("netapi32.dll");
+	if (!tls.NetApi32)
 	{
-		hDll = LoadLibrary("netapi32.dll");
-		if (!hDll)
-		{
-			AddWin32Error("LoadLibrary", GetLastError());
-			return false;			
-		}
-		hNetApi32 = hDll;
+		AddWin32Error("LoadLibrary", GetLastError());
+		return false;			
 	}
 
-	fpNetApiBufferAllocate = (PNETAPIBUFFERALLOCATE)GetProcAddress(hDll,"NetApiBufferAllocate");
-	fpNetApiBufferFree = (PNETAPIBUFFERFREE)GetProcAddress(hDll,"NetApiBufferFree");
-	fpNetApiBufferReallocate = (PNETAPIBUFFERREALLOCATE)GetProcAddress(hDll,"NetApiBufferReallocate");
-	fpNetApiBufferSize = (PNETAPIBUFFERSIZE)GetProcAddress(hDll,"NetApiBufferSize");
-	fpNetRemoteTOD = (PNETREMOTETOD)GetProcAddress(hDll,"NetRemoteTOD");
-	fpNetFileEnum = (PNETFILEENUM)GetProcAddress(hDll,"NetFileEnum");
-	fpNetServerEnum = (PNETSERVERENUM)GetProcAddress(hDll,"NetServerEnum");
-
+	fpNetApiBufferAllocate = (PNETAPIBUFFERALLOCATE)GetProcAddress(tls.NetApi32,"NetApiBufferAllocate");
+	fpNetApiBufferFree = (PNETAPIBUFFERFREE)GetProcAddress(tls.NetApi32,"NetApiBufferFree");
+	fpNetApiBufferReallocate = (PNETAPIBUFFERREALLOCATE)GetProcAddress(tls.NetApi32,"NetApiBufferReallocate");
+	fpNetApiBufferSize = (PNETAPIBUFFERSIZE)GetProcAddress(tls.NetApi32,"NetApiBufferSize");
+	fpNetRemoteTOD = (PNETREMOTETOD)GetProcAddress(tls.NetApi32,"NetRemoteTOD");
+	fpNetFileEnum = (PNETFILEENUM)GetProcAddress(tls.NetApi32,"NetFileEnum");
+	fpNetServerEnum = (PNETSERVERENUM)GetProcAddress(tls.NetApi32,"NetServerEnum");
 	return true;
-}
-
-void _stdcall VFP2C_Destroy_Netapi()
-{
-	if (hNetApi32)
-		FreeLibrary(hNetApi32);
 }
 
 void _fastcall ANetFiles(ParamBlk *parm)
 {
-	ResetWin32Errors();
-
-	if (COs::Is(Windows9x))
-	{
-		ANetFilesEx(parm);
-		return;
-	}
 try
 {
 	// entry point valid?
@@ -73,9 +53,9 @@ try
 		throw E_NOENTRYPOINT;
 
 	FoxArray pArray(p1,1,5);
-	FoxWString pServerName(parm,2);
-	FoxWString pBasePath(parm,3);
-	FoxWString pUserName(parm,4);
+	FoxWString pServerName(parm,2, '0');
+	FoxWString pBasePath(parm,3, '0');
+	FoxWString pUserName(parm,4, '0');
 	FoxString pNetInfo(NETAPI_INFO_SIZE);
 	NetApiBuffer pBuffer;
 
@@ -86,7 +66,7 @@ try
 	do 
 	{
 		nApiRet = fpNetFileEnum(pServerName,pBasePath,pUserName,3,
-			pBuffer,NETAPI_BUFFER_SIZE,&dwEntries,&dwTotal,&hResume);
+			pBuffer, NETAPI_BUFFER_SIZE, &dwEntries, &dwTotal, &hResume);
 		
 		if (nApiRet == NERR_Success || nApiRet == ERROR_MORE_DATA)
 		{
@@ -102,8 +82,8 @@ try
 
 			while (dwEntries--)
 			{
-				pArray(nRow,1) = pNetInfo = pFileInfo3->fi3_pathname;
-				pArray(nRow,2) = pNetInfo = pFileInfo3->fi3_username;
+				pArray(nRow,1) = pNetInfo = (LPWSTR)pFileInfo3->fi3_pathname;
+				pArray(nRow,2) = pNetInfo = (LPWSTR)pFileInfo3->fi3_username;
 				pArray(nRow,3) = (int)pFileInfo3->fi3_id;		
 				pArray(nRow,4) = (int)pFileInfo3->fi3_permissions;
 				pArray(nRow,5) = (int)pFileInfo3->fi3_num_locks;
@@ -131,15 +111,13 @@ void _fastcall ANetServers(ParamBlk *parm)
 
 try
 {
-	ResetWin32Errors();
-
 	if (!fpNetServerEnum)
 		throw E_NOENTRYPOINT;
 
 	FoxArray pArray(p1);
 	DWORD dwServerType = PCount() >= 2 && p2.ev_long ? p2.ev_long : SV_TYPE_SERVER;
 	DWORD dwLevel = PCount() >= 3 && p3.ev_long ? (p3.ev_long == 1 ? 101 : 100) : 101;
-	FoxWString pDomain(parm,4);
+	FoxWString pDomain(parm, 4, '0');
 
 	NetApiBuffer pBuffer;
 	FoxString pData(NETAPI_INFO_SIZE);
@@ -153,8 +131,7 @@ try
 
 	do
 	{
-		nApiRet = fpNetServerEnum(0,dwLevel,pBuffer,MAX_PREFERRED_LENGTH,&dwEntries,&dwTotal,dwServerType,
-			pDomain,&hResume);
+		nApiRet = fpNetServerEnum(0, dwLevel, pBuffer, MAX_PREFERRED_LENGTH, &dwEntries, &dwTotal, dwServerType, pDomain, &hResume);
 		if (nApiRet == NERR_Success || nApiRet == ERROR_MORE_DATA)
 		{
 			if (dwEntries == 0)
@@ -172,11 +149,11 @@ try
 				while(dwEntries--)
 				{
 					pArray(nRow,1) = pInfo101->sv101_platform_id;
-					pArray(nRow,2) = pData = pInfo101->sv101_name;
+					pArray(nRow,2) = pData = (LPWSTR)pInfo101->sv101_name;
 					pArray(nRow,3) = pInfo101->sv101_version_major;
 					pArray(nRow,4) = pInfo101->sv101_version_minor;
 					pArray(nRow,5) = pInfo101->sv101_type;
-					pArray(nRow,6) = pData = pInfo101->sv101_comment;
+					pArray(nRow,6) = pData = (LPWSTR)pInfo101->sv101_comment;
 					nRow++;
 				}
 			}
@@ -187,7 +164,7 @@ try
 				while(dwEntries--)
 				{
 					pArray(nRow,1) = pInfo100->sv100_platform_id;
-					pArray(nRow,2) = pData = pInfo100->sv100_name;
+					pArray(nRow,2) = pData = (LPWSTR)pInfo100->sv100_name;
 					nRow++;
 				}
 			}
@@ -212,8 +189,6 @@ void _fastcall GetServerTime(ParamBlk *parm)
 {
 try
 {
-	ResetWin32Errors();
-
 	if (!fpNetRemoteTOD)
 		throw E_NOENTRYPOINT;
 
@@ -271,7 +246,7 @@ double _stdcall TimeOfDayInfoToDateTime(LPTIME_OF_DAY_INFO pTimeOfDay, TimeZone 
 	{
 		if (pTimeOfDay->tod_timezone != -1)
 			dDateTime -= (((double)pTimeOfDay->tod_timezone * 60) / SECONDSPERDAY);
-		dDateTime -= TimeZoneInfo::Bias;
+		dDateTime -= TimeZoneInfo::GetTsi().Bias;
 	}
 	return dDateTime;
 }

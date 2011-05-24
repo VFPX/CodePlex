@@ -7,8 +7,6 @@
 #include "vfp2cutil.h"
 #include "vfp2ccppapi.h"
 
-static TimeZoneInfo gsTimeZone;
-
 int CFoxVersion::m_Version = 0;
 int CFoxVersion::m_MajorVersion = 0;
 int CFoxVersion::m_MinorVersion = 0;
@@ -78,6 +76,8 @@ void _stdcall ReleaseObjectRef(char *pName, NTI nVarNti)
 		_Release(nVarNti);
 	}
 }
+
+
 
 /* implementation of C++ wrapper classes over FoxPro datatypes */
 
@@ -290,6 +290,36 @@ FoxString::FoxString(ParamBlk *pParms, int nParmNo, unsigned int nExpand) : FoxV
 			LockHandle();
 			m_String = HandleToPtr();
 			return;
+		}
+	}
+	// else
+	m_ParameterRef = false;
+	m_BufferSize = 0;
+	m_String = 0;
+}
+
+FoxString::FoxString(ParamBlk *pParms, int nParmNo, FoxStringInitialization eInit)
+{
+	// if parameter count is equal or greater than the parameter we want
+	if (pParms->pCount >= nParmNo)
+	{
+    	Value *pVal = &pParms->p[nParmNo-1].val;
+		if (pVal->ev_type == 'C')
+		{
+			if (eInit == NoNullIfEmpty || pVal->ev_length)
+			{
+				if (!NullTerminateValue(pVal))
+					throw E_INSUFMEMORY;
+
+				m_Value.ev_handle = pVal->ev_handle;
+				m_Value.ev_length = pVal->ev_length;
+				m_Value.ev_width = pVal->ev_width;
+				m_BufferSize = pVal->ev_length + 1;
+				m_ParameterRef = true;
+				LockHandle();
+				m_String = HandleToPtr();
+				return;
+			}
 		}
 	}
 	// else
@@ -1027,7 +1057,7 @@ FoxString& FoxString::operator=(FoxString &pString)
 	return *this;
 }
 
-FoxString& FoxString::operator=(const char *pString)
+FoxString& FoxString::operator=(char *pString)
 {
 	if (pString)
 	{
@@ -1046,7 +1076,7 @@ FoxString& FoxString::operator=(const char *pString)
 	return *this;
 }
 
-FoxString& FoxString::operator=(const wchar_t *pWString)
+FoxString& FoxString::operator=(wchar_t *pWString)
 {
 	unsigned int nLen;
 	int nChars;
@@ -1054,12 +1084,14 @@ FoxString& FoxString::operator=(const wchar_t *pWString)
 	if (pWString)
 	{
 		nLen = wcslen(pWString) + 1;
-
 		if (m_BufferSize < nLen)
 			Size(nLen);
 
-		if (nLen == 0)
+		if (nLen == 1)
+		{
 			m_Value.ev_length = 0;
+			m_String[0] = '\0';
+		}
 		else
 		{
 			nChars = WideCharToMultiByte(CP_ACP, 0, pWString, nLen-1, m_String, m_BufferSize, 0, 0);
@@ -1192,24 +1224,27 @@ FoxWString::FoxWString(ParamBlk *pParms, int nParmNo, char cTypeCheck)
 	if (pParms->pCount >= nParmNo)
 	{
     	Value *pVal = &pParms->p[nParmNo-1].val;
-		if (pVal->ev_type == 'C' && pVal->ev_length > 0)
+		if (pVal->ev_type == 'C')
 		{
-			DWORD dwLength = pVal->ev_length + 1;
-			DWORD nWChars;
-
-			m_String = new wchar_t[dwLength];
-			if (m_String == 0)
-				throw E_INSUFMEMORY;
-
-			char *pString = ::HandleToPtr(pVal);
-			nWChars = MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, pString, pVal->ev_length, m_String, dwLength);
-			if (!nWChars)
+			if (pVal->ev_length > 0)
 			{
-				SaveWin32Error("MultiByteToWideChar", GetLastError());
-				throw E_APIERROR;
+				DWORD dwLength = pVal->ev_length + 1;
+				DWORD nWChars;
+
+				m_String = new wchar_t[dwLength];
+				if (m_String == 0)
+					throw E_INSUFMEMORY;
+
+				char *pString = ::HandleToPtr(pVal);
+				nWChars = MultiByteToWideChar(CP_ACP, MB_PRECOMPOSED, pString, pVal->ev_length, m_String, dwLength);
+				if (!nWChars)
+				{
+					SaveWin32Error("MultiByteToWideChar", GetLastError());
+					throw E_APIERROR;
+				}
+				m_String[pVal->ev_length] = L'\0'; // nullterminate
+				return;
 			}
-			m_String[pVal->ev_length] = L'\0'; // nullterminate
-			return;
 		}
 		else if (pVal->ev_type != cTypeCheck)
 			throw E_INVALIDPARAMS;
@@ -1480,14 +1515,14 @@ FoxDateTime::operator FILETIME()
 FoxDateTime& FoxDateTime::ToUTC()
 { 
 	if (m_Value.ev_real != 0.0)
-		m_Value.ev_real += TimeZoneInfo::Bias;
+		m_Value.ev_real += TimeZoneInfo::GetTsi().Bias;
 	return *this;
 }
 
 FoxDateTime& FoxDateTime::ToLocal()
 {
 	if (m_Value.ev_real != 0.0)
-		m_Value.ev_real -= TimeZoneInfo::Bias;
+		m_Value.ev_real -= TimeZoneInfo::GetTsi().Bias;
 	return *this;
 }
 
@@ -2202,11 +2237,14 @@ FoxCStringArray& FoxCStringArray::operator=(FoxArray &pArray)
 	return *this;
 }
 
-
-double TimeZoneInfo::Bias = 0;
+TimeZoneInfo& TimeZoneInfo::GetTsi()
+{
+	static TimeZoneInfo tsi;
+	return tsi;
+}
 
 /* TimeZoneInfo class */
-TimeZoneInfo::TimeZoneInfo() : m_Hwnd(0), m_Atom(0)
+TimeZoneInfo::TimeZoneInfo() : m_Hwnd(0), m_Atom(0), Bias(0)
 {
 	WNDCLASSEX wndClass = {0};
 	char *lpClass = "__VFP2C_TZWC";
@@ -2224,9 +2262,7 @@ TimeZoneInfo::TimeZoneInfo() : m_Hwnd(0), m_Atom(0)
 	if (m_Atom)
 	{
 		m_Hwnd = CreateWindowEx(0,(LPCSTR)m_Atom,0,WS_POPUP,0,0,0,0,0,0,ghModule,0);
-		if (m_Hwnd)
-			SetWindowLong(m_Hwnd,GWL_USERDATA, reinterpret_cast<LONG>(this));
-		else
+		if (!m_Hwnd)
 			AddWin32Error("CreateWindowEx", GetLastError());
 	}
 	else
@@ -2247,19 +2283,19 @@ void TimeZoneInfo::Refresh()
 {
 	m_CurrentZone = GetTimeZoneInformation(&m_ZoneInfo);
 	if (m_CurrentZone == TIME_ZONE_ID_STANDARD || m_CurrentZone == TIME_ZONE_ID_UNKNOWN)
-		TimeZoneInfo::Bias = ((double)m_ZoneInfo.Bias * 60) / SECONDSPERDAY;
+		Bias = ((double)m_ZoneInfo.Bias * 60) / SECONDSPERDAY;
 	else if (m_CurrentZone == TIME_ZONE_ID_DAYLIGHT)
-		TimeZoneInfo::Bias = ((double)m_ZoneInfo.Bias * 60 + m_ZoneInfo.DaylightBias * 60) / SECONDSPERDAY;
+		Bias = ((double)m_ZoneInfo.Bias * 60 + m_ZoneInfo.DaylightBias * 60) / SECONDSPERDAY;
 	else
-		TimeZoneInfo::Bias = 0;
+		Bias = 0;
 }
 
 LRESULT _stdcall TimeZoneInfo::TimeChangeWindowProc(HWND nHwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	if (uMsg == WM_TIMECHANGE)
 	{
-		TimeZoneInfo *lpTimeZone = reinterpret_cast<TimeZoneInfo*>(GetWindowLong(nHwnd,GWL_USERDATA));
-		lpTimeZone->Refresh();
+		TimeZoneInfo& tsi = TimeZoneInfo::GetTsi();
+		tsi.Refresh();
 	}
 	return DefWindowProc(nHwnd,uMsg,wParam,lParam);
 }

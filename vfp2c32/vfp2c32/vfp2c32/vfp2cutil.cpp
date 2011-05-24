@@ -9,9 +9,6 @@
 #include "vfp2cutil.h"
 #include "vfp2ccppapi.h"
 
-static TIME_ZONE_INFORMATION gsTimeZone = {0};
-static DWORD gnTimeZone = 0;
-
 // some helper functions for common tasks
 int _stdcall Dimension(char *pArrayName, unsigned long nRows, unsigned long nDims)
 {
@@ -456,10 +453,11 @@ void _stdcall DateTimeToSystemTimeEx(Value *pDateTime, LPSYSTEMTIME pSysTime)
 
 void _stdcall DateTimeToLocalDateTime(Value *pDateTime)
 {
+	TIME_ZONE_INFORMATION TimeZone;
 	DWORD nApiRet;
 	int nBias;
 
-	nApiRet = GetTimeZoneInformation(&gsTimeZone);
+	nApiRet = GetTimeZoneInformation(&TimeZone);
 	if (nApiRet == TIME_ZONE_ID_INVALID)
 	{
 		SaveWin32Error("GetTimeZoneInformation",GetLastError());
@@ -467,19 +465,20 @@ void _stdcall DateTimeToLocalDateTime(Value *pDateTime)
 	}
 
 	if (nApiRet == TIME_ZONE_ID_STANDARD || TIME_ZONE_ID_UNKNOWN)
-		nBias = gsTimeZone.Bias + gsTimeZone.StandardBias;
+		nBias = TimeZone.Bias + TimeZone.StandardBias;
 	else if (nApiRet == TIME_ZONE_ID_DAYLIGHT)
-		nBias = gsTimeZone.Bias + gsTimeZone.DaylightBias;
+		nBias = TimeZone.Bias + TimeZone.DaylightBias;
 
 	pDateTime->ev_real -= (((double)nBias * 60) / SECONDSPERDAY);
 }
 
 void _stdcall LocalDateTimeToDateTime(Value *pDateTime)
 {
+	TIME_ZONE_INFORMATION TimeZone;
 	DWORD nApiRet;
 	int nBias;
 
-	nApiRet = GetTimeZoneInformation(&gsTimeZone);
+	nApiRet = GetTimeZoneInformation(&TimeZone);
 	if (nApiRet == TIME_ZONE_ID_INVALID)
 	{
 		SaveWin32Error("GetTimeZoneInformation",GetLastError());
@@ -487,9 +486,9 @@ void _stdcall LocalDateTimeToDateTime(Value *pDateTime)
 	}
 
 	if (nApiRet == TIME_ZONE_ID_STANDARD || TIME_ZONE_ID_UNKNOWN)
-		nBias = gsTimeZone.Bias + gsTimeZone.StandardBias;
+		nBias = TimeZone.Bias + TimeZone.StandardBias;
 	else if (nApiRet == TIME_ZONE_ID_DAYLIGHT)
-		nBias = gsTimeZone.Bias + gsTimeZone.DaylightBias;
+		nBias = TimeZone.Bias + TimeZone.DaylightBias;
 
 	pDateTime->ev_real += (((double)nBias) * 60 / SECONDSPERDAY);
 }
@@ -497,7 +496,6 @@ void _stdcall LocalDateTimeToDateTime(Value *pDateTime)
 BOOL _stdcall SystemTimeToDateTime(LPSYSTEMTIME pSysTime, Value *pDateTime, BOOL bToLocal)
 {
 	FILETIME sUTCTime, sFileTime;
-
 	if (!SystemTimeToFileTime(pSysTime,&sUTCTime))
 	{
 		SaveWin32Error("SystemTimeToFileTime",GetLastError());
@@ -757,8 +755,14 @@ unsigned short _stdcall CharPosN(const char *pString, const char pSearched, unsi
 unsigned int _stdcall wstrnlen(const wchar_t *pString, unsigned int nMaxLen)
 {
 	register const wchar_t* pStart = pString;
-	while (*pString++ && --nMaxLen);
-	return pString - pStart - 1;
+	while (nMaxLen--)
+	{
+		if (*pString)
+			pString++;
+		else
+			break;
+	}
+	return pString - pStart;
 }
 // copies null terminated source string to a buffer
 // returns count characters copied NOT including the terminating null character

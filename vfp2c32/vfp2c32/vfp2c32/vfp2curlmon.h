@@ -1,3 +1,5 @@
+#ifndef _THREADSAFE
+
 #ifndef _VFP2CINET_H__
 #define _VFP2CINET_H__
 
@@ -40,7 +42,7 @@ public:
 	CStr pFile;
 
 private:
-	int volatile m_nAborted;
+	int m_nAborted;
 	DWORD m_nTickCount;
 	bool m_bCallback;
 	bool m_bAsync;
@@ -68,8 +70,8 @@ protected:
 extern "C" {
 #endif
 
-bool _stdcall VFP2C_Init_Urlmon();
-void _stdcall VFP2C_Destroy_Urlmon();
+bool _stdcall VFP2C_Init_Urlmon(VFP2CTls& tls);
+void _stdcall VFP2C_Destroy_Urlmon(VFP2CTls& tls);
 
 /* UrlDownloadToFile related functions */
 void _fastcall UrlDownloadToFileEx(ParamBlk *parm);
@@ -81,3 +83,5 @@ DWORD _stdcall UrlDownloadToFileThreadProc(LPVOID lpParam);
 #endif // end of extern "C"
 
 #endif // _VFP2CINET_H__
+
+#endif // _THREADSAFE

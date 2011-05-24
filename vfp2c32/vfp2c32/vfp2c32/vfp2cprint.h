@@ -18,9 +18,6 @@ const int PAPERSIZE_UNIT_POINT	= 3;
 const double POINTS_PER_MM	= 0.2834645669;
 const double INCH_PER_MM	= 0.039370079;
 
-typedef BOOL (_stdcall *PENUMFORMS)(HANDLE,DWORD,LPBYTE,DWORD,LPDWORD,LPDWORD); // EnumForms
-
-bool _stdcall VFP2C_Init_Print();
 void _fastcall APrintersEx(ParamBlk *parm);
 void _fastcall APrintJobs(ParamBlk *parm);
 void _fastcall APrinterForms(ParamBlk *parm);

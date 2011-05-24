@@ -3,22 +3,6 @@
 
 #include "vfp2chelpers.h"
 
-typedef BOOL (_stdcall *PENUMSERVICESSTATUS)(SC_HANDLE,DWORD,DWORD,LPENUM_SERVICE_STATUS,DWORD,LPDWORD,
-											 LPDWORD,LPDWORD); // EnumServicesStatus
-typedef BOOL (_stdcall *PENUMSERVICESSTATUSEX)(SC_HANDLE,SC_ENUM_TYPE,DWORD,DWORD,LPBYTE,DWORD,LPDWORD,
-											   LPDWORD,LPDWORD,LPCTSTR); // EnumServicesStatusEx
-typedef SC_HANDLE (_stdcall *POPENSCMANAGER)(LPCTSTR,LPCTSTR,DWORD); // OpenSCManager
-typedef BOOL (_stdcall *PCLOSESERVICEHANDLE)(SC_HANDLE); // CloseServiceHandle
-typedef BOOL (_stdcall *PSTARTSERVICE)(SC_HANDLE,DWORD,LPCTSTR*); // StartService
-typedef SC_HANDLE (_stdcall *POPENSERVICE)(SC_HANDLE,LPCTSTR,DWORD); // OpenService
-typedef BOOL (_stdcall *PCLOSESERVICEHANDLE)(SC_HANDLE); // CloseServiceHandle
-typedef BOOL (_stdcall *PCONTROLSERVICE)(SC_HANDLE,DWORD,LPSERVICE_STATUS); // ControlService
-typedef BOOL (_stdcall *PQUERYSERVICESTATUS)(SC_HANDLE,LPSERVICE_STATUS); // QueryServiceStatus
-typedef BOOL (_stdcall *PQUERYSERVICECONFIG)(SC_HANDLE,LPQUERY_SERVICE_CONFIG,DWORD,LPDWORD); // QueryServiceConfig
-typedef BOOL (_stdcall *PENUMDEPENDENTSERVICES)(SC_HANDLE,DWORD,LPENUM_SERVICE_STATUS,DWORD,LPDWORD,LPDWORD);
-typedef SC_HANDLE (_stdcall *PCREATESERVICE)(SC_HANDLE, LPCTSTR, LPCTSTR, DWORD, DWORD, DWORD, DWORD, LPCTSTR, LPCTSTR, LPDWORD, LPCTSTR, LPCTSTR, LPCTSTR); // CreateService
-typedef BOOL (_stdcall *PDELETESERVICE)(SC_HANDLE); // DeleteService
-
 // EnumDependentServices
 const int SERVICE_ENUM_BUFFER		= 8192;
 const int SERVICE_MAX_ENUM_BUFFER	= 32768;
@@ -77,14 +61,13 @@ private:
 extern "C" {
 #endif
 
-bool _stdcall VFP2C_Init_Services();
-
 void _fastcall OpenServiceLib(ParamBlk *parm);
 void _fastcall CloseServiceHandleLib(ParamBlk *parm);
 void _fastcall StartServiceLib(ParamBlk *parm);
 void _fastcall StopServiceLib(ParamBlk *parm);
 void _fastcall PauseService(ParamBlk *parm);
 void _fastcall ContinueService(ParamBlk *parm);
+void _fastcall ControlServiceLib(ParamBlk *parm);
 void _fastcall AServices(ParamBlk *parm);
 void _fastcall AServiceStatus(ParamBlk *parm);
 void _fastcall AServiceConfig(ParamBlk *parm);

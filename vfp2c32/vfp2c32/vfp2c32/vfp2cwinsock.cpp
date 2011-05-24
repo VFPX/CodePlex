@@ -7,36 +7,36 @@
 #include "vfp2cutil.h"
 #include "vfp2ccppapi.h"
 
-static bool gbWinsockInited = false;
-DWORD gnDefaultWinsockTimeOut = 4000; // 4 seconds default timeout
-
 void _stdcall SaveWinsockError(char *pFunction)
 {
 	int nError;
 	nError = WSAGetLastError();
-	gnErrorCount = 0;
 
-	strcpy(gaErrorInfo[0].aErrorFunction,pFunction);
-	gaErrorInfo[0].nErrorNo = nError;
-	gaErrorInfo[0].nErrorType = VFP2C_ERRORTYPE_WIN32;
+	VFP2CTls& tls = VFP2CTls::Tls();
+	tls.ErrorCount = 0;
+	LPVFP2CERROR pError = tls.ErrorInfo;
+
+	strcpy(pError->aErrorFunction, pFunction);
+	pError->nErrorNo = nError;
+	pError->nErrorType = VFP2C_ERRORTYPE_WIN32;
 
 	switch(nError)
 	{
 		case WSANOTINITIALISED:
-			strcpy(gaErrorInfo[0].aErrorMessage,"WSANOTINITIALIZED: Winsock library is not initialized.");
+			strcpy(pError->aErrorMessage,"WSANOTINITIALIZED: Winsock library is not initialized.");
 			break;
 		case WSAENETDOWN:
-			strcpy(gaErrorInfo[0].aErrorMessage,"WSANETDOWN: Network is down.");
+			strcpy(pError->aErrorMessage,"WSANETDOWN: Network is down.");
 			break;
 		case WSAEINPROGRESS:
-			strcpy(gaErrorInfo[0].aErrorMessage,"WSAINPROGRESS: Another blocking socket operation is in progress.");
+			strcpy(pError->aErrorMessage,"WSAINPROGRESS: Another blocking socket operation is in progress.");
 			break;
 		default:
-			gaErrorInfo[0].aErrorMessage[0] = '\0';
+			pError->aErrorMessage[0] = '\0';
 	}
 }
 
-bool _stdcall VFP2C_Init_Winsock()
+bool _stdcall VFP2C_Init_Winsock(VFP2CTls& tls)
 {
 	WORD wWinsockVer;
 	WSADATA wsaData;
@@ -49,13 +49,13 @@ bool _stdcall VFP2C_Init_Winsock()
 		AddWin32Error("WSAStartup", nError);
 		return false;
 	}
-	gbWinsockInited = true;
+	tls.WinsockInited = TRUE;
 	return true;
 }
 
-void _stdcall VFP2C_Destroy_Winsock()
+void _stdcall VFP2C_Destroy_Winsock(VFP2CTls& tls)
 {
-	if (gbWinsockInited)
+	if (tls.WinsockInited)
 		WSACleanup();
 }
 

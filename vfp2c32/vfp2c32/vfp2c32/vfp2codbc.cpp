@@ -14,44 +14,56 @@ static SQLHENV hODBCEnvHandle = 0;
 
 void _stdcall SaveODBCError(char *pFunction, SQLHANDLE hHandle, SQLSMALLINT nHandleType)
 {
+	VFP2CTls& tls = VFP2CTls::Tls();
+	LPVFP2CERROR pError = tls.ErrorInfo;
+
 	SQLRETURN nApiRet = SQL_SUCCESS;
 	SQLSMALLINT nErrorLength, nError = 1;
 	int nErrorNum = 0;
 
-SQLSaveError:
-
-	nApiRet = SQLGetDiagRec(nHandleType,hHandle,nError++,
-		(SQLCHAR*)gaErrorInfo[nErrorNum].aSqlState,
-		(SQLINTEGER*)&gaErrorInfo[nErrorNum].nErrorNo,
-		(SQLCHAR*)gaErrorInfo[nErrorNum].aErrorMessage,
-		VFP2C_ERROR_MESSAGE_LEN,&nErrorLength);
-
-	if(nApiRet == SQL_SUCCESS)
+	do 
 	{
-		gaErrorInfo[nErrorNum].nErrorType = VFP2C_ERRORTYPE_ODBC;
-		strncpy(gaErrorInfo[nErrorNum].aErrorFunction,pFunction,VFP2C_ERROR_FUNCTION_LEN);
-		nErrorNum++;
-		goto SQLSaveError;
-	}
-	gnErrorCount = nErrorNum - 1;
+		nApiRet = SQLGetDiagRec(nHandleType,hHandle, nError++,
+			(SQLCHAR*)pError->aSqlState,
+			(SQLINTEGER*)&pError->nErrorNo,
+			(SQLCHAR*)pError->aErrorMessage,
+			VFP2C_ERROR_MESSAGE_LEN,
+			&nErrorLength);
+
+		if(nApiRet == SQL_SUCCESS)
+		{
+			pError->nErrorType = VFP2C_ERRORTYPE_ODBC;
+			strncpy(pError->aErrorFunction, pFunction, VFP2C_ERROR_FUNCTION_LEN);
+			nErrorNum++;
+			pError++;
+		}
+	} while (nApiRet == SQL_SUCCESS);
+
+	tls.ErrorCount = nErrorNum - 1;
 }
 
 void _stdcall SaveODBCInstallerError(char *pFunction)
 {
+	VFP2CTls& tls = VFP2CTls::Tls();
+	LPVFP2CERROR pError = tls.ErrorInfo;
 	WORD nErrorLength, nError = 1;
-	gnErrorCount = 0;
+	tls.ErrorCount = 0;
 
-	while (nError <= 8 && SQLInstallerError(nError++,&gaErrorInfo[gnErrorCount].nErrorNo,
-		gaErrorInfo[gnErrorCount].aErrorMessage,VFP2C_ERROR_MESSAGE_LEN,&nErrorLength) == SQL_SUCCESS)
+	while (nError <= 8 && 
+		SQLInstallerError(nError++, &pError->nErrorNo, pError->aErrorMessage, VFP2C_ERROR_MESSAGE_LEN, &nErrorLength) == SQL_SUCCESS)
 	{
-		gaErrorInfo[gnErrorCount].nErrorType = VFP2C_ERRORTYPE_WIN32; // we don't need a SQLState field here 
-		strncpy(gaErrorInfo[gnErrorCount].aErrorFunction,pFunction,VFP2C_ERROR_FUNCTION_LEN);
-		gnErrorCount++;
+		pError->nErrorType = VFP2C_ERRORTYPE_WIN32; // we don't need a SQLState field here 
+		strncpy(pError->aErrorFunction, pFunction, VFP2C_ERROR_FUNCTION_LEN);
+		tls.ErrorCount++;
+		pError++;
 	}
 }
 
-bool _stdcall VFP2C_Init_Odbc()
+bool _stdcall VFP2C_Init_Odbc(VFP2CTls& tls)
 {
+	if (hODBCEnvHandle)
+		return true;
+
 	int nErrorNo;
 	FoxValue vODBCHandle;
 
@@ -69,8 +81,6 @@ void _fastcall CreateSQLDataSource(ParamBlk *parm)
 {
 try
 {
-	ResetWin32Errors();
-
 	FoxString pDsn(p1,2);
 	FoxString pDriver(p2);
 
@@ -92,8 +102,6 @@ void _fastcall DeleteSQLDataSource(ParamBlk *parm)
 {
 try
 {
-	ResetWin32Errors();
-
 	FoxString pDsn(p1);
 	FoxString pDriver(p2,2);
 
@@ -121,8 +129,6 @@ void _fastcall ChangeSQLDataSource(ParamBlk *parm)
 {
 try
 {
-	ResetWin32Errors();
-
 	FoxString pDsn(p1,2);
 	FoxString pDriver(p2,2);
 
@@ -144,8 +150,6 @@ void _fastcall ASQLDataSources(ParamBlk *parm)
 {
 try
 {
-	ResetWin32Errors();
-
 	FoxArray pArray(p1,1,2);
 	FoxString pDatasource(SQL_MAX_DSN_LENGTH+1);
 	FoxString pDescription(ODBC_MAX_DESCRIPTION_LEN);
@@ -196,8 +200,6 @@ void _fastcall ASQLDrivers(ParamBlk *parm)
 {
 try
 {
-	ResetWin32Errors();
-
 	FoxArray pArray(p1,1,2);
 	FoxString pDriver(ODBC_MAX_DRIVER_LEN);
 	FoxString pAttributes(ODBC_MAX_ATTRIBUTES_LEN);
@@ -236,8 +238,6 @@ void _fastcall SQLGetPropEx(ParamBlk *parm)
 {
 try
 {
-	ResetWin32Errors();
-
 	FoxString pCursor(parm,1);
 	FoxString pConAttribute(p2);
 	FoxReference pRef(r3);
@@ -334,8 +334,6 @@ void _fastcall SQLSetPropEx(ParamBlk *parm)
 {
 try
 {
-	ResetWin32Errors();
-
 	FoxString pCursor(parm,1);
 	FoxString pConAttribute(p2);
 	FoxString pProperty(parm,3);
@@ -446,8 +444,6 @@ void _fastcall SQLExecEx(ParamBlk *parm)
 	char *pCursorName;
 	BOOL bAbort = FALSE;
 	int nErrorNo = 0;
-
-	ResetWin32Errors();
 
 	// 1
 	pStmt = SQLAllocStatement(parm,&nErrorNo);
@@ -759,8 +755,6 @@ void _fastcall SQLPrepareEx(ParamBlk *parm)
 	char *pCursorName;
 	BOOL bAbort = FALSE;
 	int nErrorNo = 0;
-
-	ResetWin32Errors();
 
 	// 1
 	pStmt = SQLAllocStatement(parm,&nErrorNo);

@@ -8,7 +8,7 @@
 </head>
 <body>
 <div id="header">
-<p>VFP2C32 2.0.0.8</p>
+<p id="vfp2c32version"></p>
 <h1>Distribution</h1>
 </div>
 <div id="content">
@@ -24,6 +24,7 @@
 <h2>Integration into you project</h2>
 <p>Add vfp2c32.fll and vfp2c.h to your project - both excluded from the application/executable.<br />
 If you need to pass C style arrays to a C library you'll want to have a look at the classes defined in vfp2carray.prg and also include it.</p>
+<p>vfp2c32t.fll is the threadsafe version of the library, you can use it in multithreaded VFP COM dlls.</p>
 
 <h2>Initialization/cleanup of the library</h2>
 
@@ -46,7 +47,7 @@ ENDIF
 </pre></div>
 
 <h2>Deployment</h2>
-<p>Just place a copy of vfp2c32.fll and msvcr71.dll in your application directory structure, <strong>NOT</strong> in Windows\System32.</p>
+<p>Just place a copy of vfp2c32.fll/vfp2c32t.fll and msvcr71.dll in your application directory structure, <strong>NOT</strong> in Windows\System32.</p>
 
 </div>
 <div id="footer">

@@ -1,7 +1,7 @@
 && there are some debugging functions in the debug version (vfp2c32d.fll) that help to 
 && test your converted C structs for memory leaks
 && since the conversion is done automatically there "normally" shouldn't be leaks
-&& i'm not aware of any bugs in which the vfp2c.exe produces code that creates memory leaks ..
+&& i'm not aware of any bugs in which the vfp2c32front.exe produces code that creates memory leaks ..
 && but since the whole thing is rather complex i've implemented these debugging functions
 
 #INCLUDE vfp2c.h

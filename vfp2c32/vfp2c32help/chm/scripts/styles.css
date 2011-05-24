@@ -23,7 +23,7 @@ body
 	top: 0;
 	left: 0;
 	width: 100%;
-	height: 50px;
+	height: 53px;
 	background-color: #D4DFFF;
 	padding-top: 5px;
 	border-bottom: 1px solid #C8CDDE;
@@ -64,31 +64,51 @@ body
 	background: transparent url(/images/function.gif) no-repeat left center;
 }
 
-#header p.initflag
+#header div.flags
 {
-	margin-top: 3px;
-	font-size: 0.6em;
-	font-weight: bold;
-	color: #000;
-	padding-left: 13px;
-	background: transparent url(/images/note.gif) no-repeat left center;
+	margin-left: 10px;
 }
 
-#header p.initflag a
+#header div.flags a
 {
+	display: inline-block;
+	height: 17px;
 	color: #000;
+	font-size: 0.6em;
+	font-weight: bold;
 	text-decoration: none;
 }
 
-#header p.initflag a:hover
+#header div.flags a.initflag
+{
+	padding: 0 0 0 13px;
+	line-height: 16px;
+	background: transparent url(/images/note.gif) no-repeat left center;	
+}
+
+#header div.flags a.initflag:hover
 {
 	text-decoration: underline;
+}
+
+#header div.flags a.threadsafe
+{
+	margin-right: 6px;
+	padding-left: 16px;
+	background: transparent url(/images/threadsafe.gif) no-repeat left top;	
+}
+
+#header div.flags a.notthreadsafe
+{
+	margin-right: 6px;
+	padding-left: 16px;
+	background: transparent url(/images/notthreadsafe.gif) no-repeat left top;	
 }
 
 #content
 {
 	position: relative;
-	top: 55px;
+	top: 58px;
 	padding: 10px 15px 30px 25px;
 }
 

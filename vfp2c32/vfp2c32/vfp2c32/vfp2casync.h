@@ -1,3 +1,5 @@
+#ifndef _THREADSAFE
+
 #ifndef _VFP2CASYNC_H__
 #define _VFP2CASYNC_H__
 
@@ -69,8 +71,8 @@ extern "C" {
 #endif
 
 // function forward definitions of vfp2casync.c
-bool _stdcall VFP2C_Init_Async();
-void _stdcall VFP2C_Destroy_Async();
+bool _stdcall VFP2C_Init_Async(VFP2CTls& tls);
+void _stdcall VFP2C_Destroy_Async(VFP2CTls& tls);
 
 void _fastcall FindFileChange(ParamBlk *parm);
 void _fastcall CancelFileChange(ParamBlk *parm);
@@ -91,3 +93,5 @@ extern CThreadManager goThreadManager;
 #endif // extern "C"
 
 #endif // _VFP2CASYNC_H__
+
+#endif // _THREADSAFE

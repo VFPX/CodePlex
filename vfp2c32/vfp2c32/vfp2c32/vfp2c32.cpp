@@ -1,5 +1,3 @@
-#define _WIN32_WINNT 0x0400
-
 #include <windows.h> /* no comment .. */
 #include <stdio.h>
 
@@ -14,13 +12,12 @@
 #include "vfp2cfile.h" /* filesystem related functions */
 #include "vfp2cmarshal.h" /* marshaling & memory allocation/read/write routines */
 #include "vfp2cnetapi.h" /* NetApi32 wrappers (network user,group,resource enumeration etc.) */
-#include "vfp2cnetapiex.h" /* NetApi32 wrappers for Win95,98,Me */
 #include "vfp2codbc.h" /* ODBC related functions (datasource enumeration,creation,deletion etc., SQLSetPropEx ..) */
 #include "vfp2cprint.h" /* Printer related functions (printjob enumeration etc.) */
 #include "vfp2cregistry.h" /* registry functions */
 #include "vfp2ctime.h" /* time conversion functions */
 #include "vfp2ccom.h" /* COM functions */
-#include "vfp2ccominterop.h" /* Dynamic COM Wrapper object */
+#include "vfp2casynccom.h" /* Asynchronous COM calls */
 #include "vfp2curlmon.h" /* wrappers around urlmon.dll functions */
 #include "vfp2cwininet.h" /* wrappers around wininet.dll functions */
 #include "vfp2ccallback.h" /* C Callback function emulation */
@@ -33,75 +30,194 @@
 #include "vfp2cfont.h" /* Font functions  */
 #include "vfp2cutil.h" /* common utility functions */
 #include "vfp2ccppapi.h" /* C++ class library over LCK */
+#include "vfp2ctls.h" /* VFP2C32 thread local storage */
 #include "vfpmacros.h"
 
-/* Global variables:
-module handle for this DLL */
+/* Global variables: module handle for this DLL */
 HMODULE ghModule = 0;
-/* array of VFP2CERROR structs for storing Win32, custom & ODBC errors */
-VFP2CERROR gaErrorInfo[VFP2C_MAX_ERRORS] = {0};
-/* No. of error messages in gaErrorInfo */
-int gnErrorCount = -1; 
-/* Initialization status */
-static DWORD gnInitStatus = 0;
+
+void _fastcall OnLoad()
+{
+	/* get module handle - _GetAPIHandle() doesn't work (unresolved external error from linker) */
+	if (!ghModule)
+		ghModule = GetModuleHandle(FLLFILENAME);
+	VFP2CTls::OnLoad();
+	/* get OS information */
+	COs::Init();
+}
+
+void _fastcall OnUnload()
+{
+	VFP2CTls& tls = VFP2CTls::Tls();
+
+	VFP2C_Destroy_Marshal(tls);
+
+	 // these are not supported in multithreaded version
+#ifndef _THREADSAFE
+	VFP2C_Destroy_Async(tls);
+	VFP2C_Destroy_Callback(tls);
+	VFP2C_Destroy_Urlmon(tls);
+#endif
+
+	VFP2C_Destroy_Winsock(tls);
+	VFP2C_Destroy_File(tls);
+
+	VFP2CTls::OnUnload();
+}
+
+void _fastcall InitVFP2C32(ParamBlk *parm)
+{
+	VFP2CTls& tls = VFP2CTls::Tls();
+
+	DWORD dwFlags = p1.ev_long;
+	dwFlags &= ~tls.InitStatus;
+
+	ResetWin32Errors();
+
+	if (dwFlags & VFP2C_INIT_MARSHAL)
+	{
+		if (VFP2C_Init_Marshal(tls))
+			tls.InitStatus |= VFP2C_INIT_MARSHAL;
+	}
+
+#ifndef _THREADSAFE
+	if (dwFlags & VFP2C_INIT_ASYNC)
+	{
+		if (VFP2C_Init_Async(tls))
+			tls.InitStatus |= VFP2C_INIT_ASYNC;
+	}
+#endif
+
+	if (dwFlags & VFP2C_INIT_FILE)
+	{
+		if (VFP2C_Init_File(tls))
+			tls.InitStatus |= VFP2C_INIT_FILE;
+	}
+
+	if (dwFlags & VFP2C_INIT_WINSOCK)
+	{
+		if (VFP2C_Init_Winsock(tls))
+			tls.InitStatus |= VFP2C_INIT_WINSOCK;
+	}
+
+	if (dwFlags & VFP2C_INIT_ODBC)
+	{
+		if (VFP2C_Init_Odbc(tls))
+			tls.InitStatus |= VFP2C_INIT_ODBC;
+	}
+	
+	if (dwFlags & VFP2C_INIT_NETAPI)
+	{
+		if (VFP2C_Init_Netapi(tls))
+			tls.InitStatus |= VFP2C_INIT_NETAPI;
+	}
+
+#ifndef _THREADSAFE
+	if (dwFlags & VFP2C_INIT_CALLBACK)
+	{
+		if (VFP2C_Init_Callback(tls))
+			tls.InitStatus |= VFP2C_INIT_CALLBACK;
+	}
+#endif
+
+	if (dwFlags & VFP2C_INIT_RAS)
+	{
+		if (VFP2C_Init_Ras(tls))
+			tls.InitStatus |= VFP2C_INIT_RAS;
+	}
+
+	if (dwFlags & VFP2C_INIT_IPHELPER)
+	{
+		if (VFP2C_Init_IpHelper(tls))
+			tls.InitStatus |= VFP2C_INIT_IPHELPER;
+	}
+
+#ifndef _THREADSAFE
+	if (dwFlags & VFP2C_INIT_URLMON)
+	{
+		if (VFP2C_Init_Urlmon(tls))
+			tls.InitStatus |= VFP2C_INIT_URLMON;
+	}
+#endif
+
+	if (dwFlags & VFP2C_INIT_COM)
+	{
+		VFP2C_Init_Com(tls);
+			// gnInitStatus |= VFP2C_INIT_COM; -> commented for the same reason as VFP2C_Init_Marshal
+	}
+/*
+	if (dwFlags & VFP2C_INIT_WININET)
+	{
+		if (VFP2C_Init_WinInet())
+			tls.InitStatus |= VFP2C_INIT_WININET;
+	}
+*/
+	Return(tls.ErrorCount == -1);
+}
 
 /* error handling routine to store the last error occurred in a Win32 API call 
  called through the macros SAVEWIN32ERROR, ADDWIN32ERROR or RAISEWIN32ERROR */
 void _stdcall Win32ErrorHandler(char *pFunction, DWORD nErrorNo, bool bAddError, bool bRaise)
 {
+	VFP2CTls& tls = VFP2CTls::Tls();
 	if (bAddError)
 	{
-		if (gnErrorCount == VFP2C_MAX_ERRORS)
+		if (tls.ErrorCount == VFP2C_MAX_ERRORS)
 			return;
-		gnErrorCount++;
+		tls.ErrorCount++;
 	}
 	else
-		gnErrorCount = 0;
+		tls.ErrorCount = 0;
 
-	gaErrorInfo[gnErrorCount].nErrorType = VFP2C_ERRORTYPE_WIN32;
-	gaErrorInfo[gnErrorCount].nErrorNo = nErrorNo;
-	strncpy(gaErrorInfo[gnErrorCount].aErrorFunction,pFunction,VFP2C_ERROR_FUNCTION_LEN);
-	FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM,0,nErrorNo,0,gaErrorInfo[gnErrorCount].aErrorMessage,VFP2C_ERROR_MESSAGE_LEN,0);
+	LPVFP2CERROR pError = &tls.ErrorInfo[tls.ErrorCount];
+	pError->nErrorType = VFP2C_ERRORTYPE_WIN32;
+	pError->nErrorNo = nErrorNo;
+	strncpy(pError->aErrorFunction,pFunction,VFP2C_ERROR_FUNCTION_LEN);
+	FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, 0, nErrorNo, 0, pError->aErrorMessage,VFP2C_ERROR_MESSAGE_LEN,0);
 	if (bRaise)
-		_UserError(gaErrorInfo[gnErrorCount].aErrorMessage);
+		_UserError(pError->aErrorMessage);
 }
 
 void _stdcall CustomErrorHandler(char *pFunction, char* pErrorMessage, bool bAddError, bool bRaise, va_list lpArgs)
 {
+	VFP2CTls& tls = VFP2CTls::Tls();
 	if (bAddError)
 	{
-		if (gnErrorCount == VFP2C_MAX_ERRORS)
+		if (tls.ErrorCount == VFP2C_MAX_ERRORS)
 			return;
-		gnErrorCount++;
+		tls.ErrorCount++;
 	}
 	else
-		gnErrorCount = 0;
+		tls.ErrorCount = 0;
 
-	gaErrorInfo[gnErrorCount].nErrorType = VFP2C_ERRORTYPE_WIN32;
-	gaErrorInfo[gnErrorCount].nErrorNo = E_CUSTOMERROR;
-	strncpy(gaErrorInfo[gnErrorCount].aErrorFunction,pFunction,VFP2C_ERROR_FUNCTION_LEN);
-	printfex(gaErrorInfo[gnErrorCount].aErrorMessage, pErrorMessage, lpArgs);
+	LPVFP2CERROR pError = &tls.ErrorInfo[tls.ErrorCount];
+	pError->nErrorType = VFP2C_ERRORTYPE_WIN32;
+	pError->nErrorNo = E_CUSTOMERROR;
+	strncpy(pError->aErrorFunction,pFunction,VFP2C_ERROR_FUNCTION_LEN);
+	printfex(pError->aErrorMessage, pErrorMessage, lpArgs);
 	if (bRaise)
-		_UserError(gaErrorInfo[gnErrorCount].aErrorMessage);
+		_UserError(pError->aErrorMessage);
 }
 
 void _stdcall CustomErrorHandlerEx(char *pFunction, char *pErrorMessage, int nErrorNo, bool bAddError, bool bRaise, va_list lpArgs)
 {
+	VFP2CTls& tls = VFP2CTls::Tls();
 	if (bAddError)
 	{
-		if (gnErrorCount == VFP2C_MAX_ERRORS)
+		if (tls.ErrorCount == VFP2C_MAX_ERRORS)
 			return;
-		gnErrorCount++;
+		tls.ErrorCount++;
 	}
 	else
-		gnErrorCount = 0;
+		tls.ErrorCount = 0;
 
-	gaErrorInfo[gnErrorCount].nErrorType = VFP2C_ERRORTYPE_WIN32;
-	gaErrorInfo[gnErrorCount].nErrorNo = nErrorNo;
-	strncpy(gaErrorInfo[gnErrorCount].aErrorFunction, pFunction,VFP2C_ERROR_FUNCTION_LEN);
-	printfex(gaErrorInfo[gnErrorCount].aErrorMessage, pErrorMessage, lpArgs);
+	LPVFP2CERROR pError = &tls.ErrorInfo[tls.ErrorCount];
+	pError->nErrorType = VFP2C_ERRORTYPE_WIN32;
+	pError->nErrorNo = nErrorNo;
+	strncpy(pError->aErrorFunction, pFunction,VFP2C_ERROR_FUNCTION_LEN);
+	printfex(pError->aErrorMessage, pErrorMessage, lpArgs);
 	if (bRaise)
-		_UserError(gaErrorInfo[gnErrorCount].aErrorMessage);
+		_UserError(pError->aErrorMessage);
 }
 
 void _cdecl SaveCustomError(char *pFunction, char *pMessage, ...)
@@ -152,148 +268,6 @@ void _cdecl RaiseCustomErrorEx(char *pFunction, char *pMessage, int nErrorNo, ..
 	va_end(lpArgs);
 }
 
-void _fastcall InitVFP2C32(ParamBlk *parm)
-{
-	DWORD dwFlags = p1.ev_long;
-	dwFlags &= ~gnInitStatus;
-
-	ResetWin32Errors();
-
-	if (dwFlags & VFP2C_INIT_MARSHAL)
-	{
-		VFP2C_Init_Marshal();
-		// dont set gnInitStatus so marshaling functions are re DECLARE'd after a call to CLEAR ALL 
-	}
-
-	if (dwFlags & VFP2C_INIT_ASYNC)
-	{
-		if (VFP2C_Init_Async())
-			gnInitStatus |= VFP2C_INIT_ASYNC;
-	}
-
-	if (dwFlags & VFP2C_INIT_ENUM)
-	{
-		if (VFP2C_Init_Enum())
-			gnInitStatus |= VFP2C_INIT_ENUM;
-	}
-
-	if (dwFlags & VFP2C_INIT_FILE)
-	{
-		if (VFP2C_Init_File())
-			gnInitStatus |= VFP2C_INIT_FILE;
-	}
-
-	if (dwFlags & VFP2C_INIT_WINSOCK)
-	{
-		if (VFP2C_Init_Winsock())
-			gnInitStatus |= VFP2C_INIT_WINSOCK;
-	}
-
-	if (dwFlags & VFP2C_INIT_ODBC)
-	{
-		if (VFP2C_Init_Odbc())
-			gnInitStatus |= VFP2C_INIT_ODBC;
-	}
-	
-	if (dwFlags & VFP2C_INIT_PRINT)
-	{
-		if (VFP2C_Init_Print())
-			gnInitStatus |= VFP2C_INIT_PRINT;
-	}
-
-	if (dwFlags & VFP2C_INIT_NETAPI)
-	{
-		if (COs::Is(Windows9x))
-		{
-			if (VFP2C_Init_Netapiex())
-				gnInitStatus |= VFP2C_INIT_NETAPI;
-		}
-		else
-		{
-			if (VFP2C_Init_Netapi())
-				gnInitStatus |= VFP2C_INIT_NETAPI;
-		}
-	}
-
-	if (dwFlags & VFP2C_INIT_CALLBACK)
-	{
-		if (VFP2C_Init_Callback())
-			gnInitStatus |= VFP2C_INIT_CALLBACK;
-	}
-
-	if (dwFlags & VFP2C_INIT_SERVICES)
-	{
-		if (VFP2C_Init_Services())
-			gnInitStatus |= VFP2C_INIT_SERVICES;
-	}
-
-	if (dwFlags & VFP2C_INIT_WINDOWS)
-	{
-		if (VFP2C_Init_Windows())
-			gnInitStatus |= VFP2C_INIT_WINDOWS;
-	}
-
-	if (dwFlags & VFP2C_INIT_RAS)
-	{
-		if (VFP2C_Init_Ras())
-			gnInitStatus |= VFP2C_INIT_RAS;
-	}
-
-	if (dwFlags & VFP2C_INIT_IPHELPER)
-	{
-		if (VFP2C_Init_IpHelper())
-			gnInitStatus |= VFP2C_INIT_IPHELPER;
-	}
-
-	if (dwFlags & VFP2C_INIT_URLMON)
-	{
-		if (VFP2C_Init_Urlmon())
-			gnInitStatus |= VFP2C_INIT_URLMON;
-	}
-	
-	if (dwFlags & VFP2C_INIT_COM)
-	{
-		VFP2C_Init_Com();
-			// gnInitStatus |= VFP2C_INIT_COM; -> commented for the same reason as VFP2C_Init_Marshal
-	}
-/*
-	if (dwFlags & VFP2C_INIT_WININET)
-	{
-		if (VFP2C_Init_WinInet())
-			gnInitStatus |= VFP2C_INIT_WININET;
-	}
-*/
-
-	Return(gnErrorCount == -1);
-}
-
-void _fastcall OnLoad()
-{
-	/* get module handle - _GetAPIHandle() doesn't work (unresolved external error from linker) */
-	ghModule = GetModuleHandle(FLLFILENAME);
-	/* get OS information */
-	COs::Init();
-}
-
-void _fastcall OnUnload()
-{
-	VFP2C_Destroy_Marshal();
-	VFP2C_Destroy_Async();
-	VFP2C_Destroy_Enum();
-	VFP2C_Destroy_Callback();
-	VFP2C_Destroy_Winsock();
-	VFP2C_Destroy_File();
-	if (COs::Is(Windows9x))
-		VFP2C_Destroy_Netapiex();
-	else
-		VFP2C_Destroy_Netapi();
-	VFP2C_Destroy_Ras();
-	VFP2C_Destroy_IpHelper();
-	VFP2C_Destroy_Urlmon();
-	VFP2C_Destroy_Com();
-	// VFP2C_Destroy_WinInet();
-}
-
 void _fastcall VFP2CSys(ParamBlk *parm)
 {
 try
@@ -308,7 +282,7 @@ try
 		case 2: /* library heap HANDLE */
 			if (PCount() == 2)
 				throw E_INVALIDPARAMS;
-			Return(ghHeap);
+			Return(VFP2CTls::Heap);
 			break;
 		case 3: /* set or return Unicode conversion codepage */
 			if (PCount() == 2)
@@ -317,7 +291,7 @@ try
 				{
 					if (IsValidCodePage((UINT)p2.ev_long))
 					{
-						gnConvCP = (UINT)p2.ev_long;
+						VFP2CTls::Tls().ConvCP = (UINT)p2.ev_long;
 						Return(true);
 					}
 					else
@@ -327,7 +301,7 @@ try
 					throw E_INVALIDPARAMS;
 			}
 			else
-				Return(gnConvCP);
+				Return(VFP2CTls::Tls().ConvCP);
 			break;
 
 		default: /* else wrong parameter */
@@ -378,25 +352,26 @@ void _fastcall AErrorEx(ParamBlk *parm)
 {
 try
 {
-	if (gnErrorCount == -1)
+	VFP2CTls& tls = VFP2CTls::Tls();
+	if (tls.ErrorCount == -1)
 	{
 		Return(0);
 		return;
 	}
 
-	FoxArray pArray(p1, gnErrorCount+1, 4);
+	FoxArray pArray(p1, tls.ErrorCount+1, 4);
 	FoxString pErrorInfo(VFP2C_ERROR_MESSAGE_LEN);
 	FoxValue vNullValue;
 
 	unsigned int nRow = 0;
-	for (int xj = 0; xj <= gnErrorCount; xj++)
+	for (int xj = 0; xj <= tls.ErrorCount; xj++)
 	{
 		nRow++;
-		pArray(nRow,1) = gaErrorInfo[xj].nErrorNo;
-		pArray(nRow,2) = pErrorInfo = gaErrorInfo[xj].aErrorFunction;
-		pArray(nRow,3) = pErrorInfo = gaErrorInfo[xj].aErrorMessage;
-		if (gaErrorInfo[xj].nErrorType == VFP2C_ERRORTYPE_ODBC)
-			pArray(nRow,4) = pErrorInfo = gaErrorInfo[xj].aSqlState;
+		pArray(nRow,1) = tls.ErrorInfo[xj].nErrorNo;
+		pArray(nRow,2) = pErrorInfo = tls.ErrorInfo[xj].aErrorFunction;
+		pArray(nRow,3) = pErrorInfo = tls.ErrorInfo[xj].aErrorMessage;
+		if (tls.ErrorInfo[xj].nErrorType == VFP2C_ERRORTYPE_ODBC)
+			pArray(nRow,4) = pErrorInfo = tls.ErrorInfo[xj].aSqlState;
 		else
 			pArray(nRow,4) = vNullValue;
 	}
@@ -645,11 +620,13 @@ FoxInfo VFP2CFuncs[] =
 	{"SHBrowseFolder", (FPFI) SHBrowseFolder, 5, "CIR.C.C"},
 
 	/* windows message hooks */
+#ifndef _THREADSAFE
 	{"BindEventsEx", (FPFI) BindEventsEx, 6, "II?C.?.I"},
 	{"UnbindEventsEx", (FPFI) UnbindEventsEx, 3, "I.I.L"},
 	/* C callback function emulation */
 	{"CreateCallbackFunc", (FPFI) CreateCallbackFunc, 5, "CCC.O.I"},
 	{"DestroyCallbackFunc", (FPFI) DestroyCallbackFunc, 1, "I"},
+#endif
 
 	// some window functions
 	{"GetWindowTextEx", (FPFI) GetWindowTextEx, 2, "I.L"},
@@ -659,12 +636,14 @@ FoxInfo VFP2CFuncs[] =
 	{"MessageBoxEx", (FPFI) MessageBoxExLib, 8, "C.I.C.?.?.?.?.I"},
 
 	/* asynchronous notification functions */
+#ifndef _THREADSAFE
 	{"FindFileChange", (FPFI) FindFileChange, 4, "CLIC"},
 	{"CancelFileChange", (FPFI) CancelFileChange, 1, "I"},
 	{"FindRegistryChange", (FPFI) FindRegistryChange, 5, "ICLIC"},
 	{"CancelRegistryChange", (FPFI) CancelRegistryChange, 1, "I"},
 	{"AsyncWaitForObject", (FPFI) AsyncWaitForObject, 2, "IC"},
 	{"CancelWaitForObject", (FPFI) CancelWaitForObject, 1, "I"},
+#endif
 
 	/* time conversion routines */
 	{"DT2FT", (FPFI) DT2FT, 3, "TI.L"},
@@ -682,35 +661,30 @@ FoxInfo VFP2CFuncs[] =
 	{"ATimeZones", (FPFI) ATimeZones, 1, "C"},
 
 	/* netapi32 wrappers */
-	{"ANetFiles", (FPFI) ANetFiles, 4, "C.C.C.C"},
-	{"ANetServers", (FPFI) ANetServers, 4, "C.I.I.C"},
+	{"ANetFiles", (FPFI) ANetFiles, 4, "C.?.?.?"},
+	{"ANetServers", (FPFI) ANetServers, 4, "C.I.I.?"},
 	{"GetServerTime", (FPFI) GetServerTime, 2, "C.I"},
 
 	/* SNTP */
 	{"SyncToSNTPServer", (FPFI) SyncToSNTPServer, 3, "C.I.I"},
 
 	/* COM routines */
-	{"GetIUnknown", (FPFI) GetIUnknown, 1, "C"},
 	{"CLSIDFromProgID", (FPFI) CLSIDFromProgIDLib, 1, "C"},
 	{"ProgIDFromCLSID", (FPFI) ProgIDFromCLSIDLib, 1, "?"},
 	{"CLSIDFromString", (FPFI) CLSIDFromStringLib, 1, "C"},
 	{"StringFromCLSID", (FPFI) StringFromCLSIDLib, 1, "?"},
 	{"IsEqualGuid", (FPFI) IsEqualGUIDLib, 2, "??"},
 	{"CreateGuid", (FPFI) CreateGuid, 1, ".I"},
-	{"RegisterActiveObject", (FPFI) RegisterActiveObjectLib, 2, "CC"},
-	{"RegisterObjectAsFileMoniker", (FPFI) RegisterObjectAsFileMoniker, 3, "CCC"},
+	{"RegisterActiveObject", (FPFI) RegisterActiveObjectLib, 2, "OC"},
+	{"RegisterObjectAsFileMoniker", (FPFI) RegisterObjectAsFileMoniker, 3, "OCC"},
 	{"RevokeActiveObject", (FPFI) RevokeActiveObjectLib, 1, "I"},
-	//{"IsObjectActive", (FPFI) IsObjectActive, 2, "CC"},
-	//{"CoCreateInstanceEx", (FPFI) CoCreateInstanceExLib, 2, "C.C"},
-	//{"CoRegisterComDll", (FPFI) CoRegisterComDll, 1, "C"},
-	//{"CoUnregisterComDll", (FPFI) CoUnregisterComDll, 1, "C"},
-	{"IDispatch_Invoke", (FPFI) IDispatch_Invoke, 26, "?C.?.?.?.?.?.?.?.?.?.?.?.?.?.?.?.?.?.?.?.?.?.?.?.?"},
-	{"IDispatch_AsyncInvoke", (FPFI) IDispatch_AsyncInvoke, 7, "CC?CC.I.I"},
-	//{"CoCreateComProxy", (FPFI) CoCreateComProxy, 3, "CCC"},
+	{"CreateThreadObject", (FPFI) CreateThreadObject, 5, "C.?.L.I.I"},
 
 	/* urlmon wrappers */
+#ifndef _THREADSAFE
 	{"UrlDownloadToFileEx", (FPFI) UrlDownloadToFileEx, 5, "CC.C.L.L"},
 	{"AbortUrlDownloadToFileEx", (FPFI) AbortUrlDownloadToFileEx, 1, "I"},
+#endif
 	/* winsock functions */
 	{"AIPAddresses", (FPFI) AIPAddresses, 1, "C"},
 	{"ResolveHostToIp", (FPFI) ResolveHostToIp, 2, "C.C"},
@@ -738,7 +712,7 @@ FoxInfo VFP2CFuncs[] =
 	{"StopService", (FPFI) StopServiceLib, 5, "?.?.L.C.C"},
 	{"PauseService", (FPFI) PauseService, 4, "?.?.C.C"},
 	{"ContinueService", (FPFI) ContinueService, 4, "?.?.C.C"},
-	{"ControlService", (FPFI) ControlService, 4, "?.I.C.C"},
+	{"ControlService", (FPFI) ControlServiceLib, 4, "?.I.C.C"},
 	{"AServiceStatus", (FPFI) AServiceStatus, 4, "C?.C.C"},
 	{"AServiceConfig", (FPFI) AServiceConfig, 4, "C?.C.C"},
 	{"AServices", (FPFI) AServices, 5, "C.C.C.I.I"},
@@ -753,7 +727,6 @@ FoxInfo VFP2CFuncs[] =
 	{"RGB2Colors", (FPFI) RGB2Colors, 5, "IRRR.R"},
 	{"Colors2RGB", (FPFI) Colors2RGB, 4, "III.I"},
 	{"GetCursorPosEx", (FPFI) GetCursorPosEx, 4, "RR.L.?"},
-	//{"ColorOfPoint", (FPFI) ColorOfPoint, 3, "II.I"},
 	{"Int64_Add", (FPFI) Int64_Add, 3, "??.I"},
 	{"Int64_Sub", (FPFI) Int64_Sub, 3, "??.I"},
 	{"Int64_Mul", (FPFI) Int64_Mul, 3, "??.I"},
@@ -780,13 +753,15 @@ FoxInfo VFP2CFuncs[] =
 	{"ARasDevices", (FPFI) ARasDevices, 1, "C"},
 	{"ARasPhonebookEntries", (FPFI)ARasPhonebookEntries, 2, "C.C"},
 	{"RasPhonebookDlgEx", (FPFI) RasPhonebookDlgEx, 4, ".?.?.?.I"},
-	{"RasDialEx",(FPFI) RasDialEx, 5, ".?.C.C.I.I"},
 	{"RasHangUpEx", (FPFI) RasHangUpEx, 1, "I"},
 	{"RasGetConnectStatusEx", (FPFI) RasGetConnectStatusEx, 2, "IC"},
 	{"RasDialDlgEx", (FPFI) RasDialDlgEx, 5, ".C.C.C.I.I"},
+	{"RasClearConnectionStatisticsEx", (FPFI) RasClearConnectionStatisticsEx, 1, "I"},
+	{"RasDialEx",(FPFI) RasDialEx, 5, ".?.C.C.I.I"},
+#ifndef _THREADSAFE
 	{"RasConnectionNotificationEx", (FPFI) RasConnectionNotificationEx, 3, "IIC"},
 	{"AbortRasConnectionNotificationEx", (FPFI) AbortRasConnectionNotificationEx, 1, "I"},
-	{"RasClearConnectionStatisticsEx", (FPFI) RasClearConnectionStatisticsEx, 1, "I"},
+#endif
 
 	/* Font routines */
 	{"AFontInfo", (FPFI) AFontInfo, 3, "C.I.I"},

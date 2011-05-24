@@ -8,10 +8,20 @@
 </head>
 <body>
 <div id="header">
-<p>VFP2C32 2.0.0.8</p>
+<p id="vfp2c32version"></p>
 <h1>Version history</h1>
 </div>
 <div id="content">
+
+<h2>Version 2.0.0.9 -- 2011-05-24</h2>
+<ul>
+<li>removed dependency on msvcp71.dll</li>
+<li>fixed a bug in FGetsEx - file pointer was set incorrectly when retrieving lines in the file and the current file pointer position was greater than 4GB. FGetsEx now also behaves identical to FGets in respect to linefeed carriage return handling.</li>
+<li>fixed a bug in ANetFiles, ANetServers - reported file/server names were truncated.</li>
+<li>changed many functions to direct linking instead of dynamic runtime linking, this has two implications:<br />1. The mininum operating system supported by VFP2C32 now is Windows 2000<br />2. Most functions don't need to be initialized with a call to InitVFP2C32 anymore.</li>
+<li>created a thread safe version of the library (vfp2c32t.fll) which you can use inside Visual FoxPro COM servers or for multithreaded development.</li>
+<li>added function: CreateThreadObject - allows you to create COM objects on their own thread and fire off functions calls on these objects asyncronously - or in simple terms: create multithreaded FoxPro programs.</li>
+</ul>
 
 <h2>Version 2.0.0.8 -- 2011-01-27</h2>
 <ul >

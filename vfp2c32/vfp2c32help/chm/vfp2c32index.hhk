@@ -326,8 +326,16 @@
 			<param name="Local" value="pages\CreateRegistryKey.html">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="CreateService">
+			<param name="Local" value="pages\CreateService.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="CreateSQLDataSource">
 			<param name="Local" value="pages\CreateSQLDataSource.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="CreateThreadObject">
+			<param name="Local" value="pages\CreateThreadObject.html">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="Decimals">
@@ -552,14 +560,6 @@
 		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="IcmpPing">
 			<param name="Local" value="pages\IcmpPing.html">
-			</OBJECT>
-		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="IDispatch_AsyncInvoke">
-			<param name="Local" value="pages\IDispatch_AsyncInvoke.html">
-			</OBJECT>
-		<LI> <OBJECT type="text/sitemap">
-			<param name="Name" value="IDispatch_Invoke">
-			<param name="Local" value="pages\IDispatch_Invoke.html">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="InitVFP2C32">

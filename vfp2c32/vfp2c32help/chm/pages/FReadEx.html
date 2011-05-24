@@ -6,8 +6,9 @@
 <script src="/scripts/jscript.js" type="text/javascript"></script>
 </head><body>
 <div id="header">
-<p>VFP2C32 2.0.0.8</p>
+<p id="vfp2c32version"></p>
 <h1 class="function">FReadEx</h1>
+<div class="flags"><a class="threadsafe" title="Threadsafe"></a></div>
 </div>
 <div id="content">
 <p class="description">Returns a specified number of bytes from a file opened with <a href="/pages/FCreateEx.html">FCreateEx</a> or <a href="/pages/FOpenEx.html">FOpenEx</a>.</p>
@@ -28,8 +29,8 @@
 
 <h2>Example</h2>
 <p>Open a file and return the first 20 bytes:</p>
-<div class="codeheader"><a onclick="CopyCode('code_34W0WTP3J')" onmouseover="ChangeClass(this, 'onhover')" onmouseout="ChangeClass(this, '')">Copy code</a></div>
-<div class="block"><pre id="code_34W0WTP3J">LOCAL nFileHandle, cBytesRead
+<div class="codeheader"><a onclick="CopyCode('code_385174EVR')" onmouseover="ChangeClass(this, 'onhover')" onmouseout="ChangeClass(this, '')">Copy code</a></div>
+<div class="block"><pre id="code_385174EVR">LOCAL nFileHandle, cBytesRead
 nFileHandle=FOpenEx("c:\temp\audit.log")
 cBytesRead = FReadEx(nFileHandle, 20)
 ? cBytesRead &amp;&amp; Returns 1st 20 bytes of the file, since the read position wasn't moved after <a href="/pages/FOpenEx.html">FOpenEx</a>()
