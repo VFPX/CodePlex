@@ -99,8 +99,8 @@ FCreateEx( ) assigns a file handle number to the file, which you can use to iden
 
 <h2>Example</h2>
 <p>Create a read-only INI file in the current directory, if it doesn't already exist:</p>
-<div class="codeheader"><a onclick="CopyCode('code_385174EQJ')" onmouseover="ChangeClass(this, 'onhover')" onmouseout="ChangeClass(this, '')">Copy code</a></div>
-<div class="block"><pre id="code_385174EQJ">LOCAL cIniFile, nFileHandle
+<div class="codeheader"><a onclick="CopyCode('code_3AC0SX0T9')" onmouseover="ChangeClass(this, 'onhover')" onmouseout="ChangeClass(this, '')">Copy code</a></div>
+<div class="block"><pre id="code_3AC0SX0T9">LOCAL cIniFile, nFileHandle
 cIniFile = [./MyFile.ini]
 IF NOT FILE(cIniFile)  &amp;&amp; Does file exist? 
 	nFileHandle= FCreateEx(cIniFile)  &amp;&amp; If not create it in a read-only mode

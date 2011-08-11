@@ -30,14 +30,14 @@
 <tr><td>7</td><td>Attributes</td><td>N</td></tr>
 </table><p><br />
 If you specify ADIREX_DEST_CURSOR in the nFlags parameter and the cursor does not exist a cursor with of default fieldnames is created.</p>
-<div class="codeheader"><a onclick="CopyCode('code_385174DU1')" onmouseover="ChangeClass(this, 'onhover')" onmouseout="ChangeClass(this, '')">Copy code</a></div>
-<div class="block"><pre id="code_385174DU1">CREATE CURSOR theCursorName (filename C(254), dosfilename C(13), creationtime T, accesstime T, writetime T, filesize N(20,0), fileattribs I)
+<div class="codeheader"><a onclick="CopyCode('code_3AC0SWZWC')" onmouseover="ChangeClass(this, 'onhover')" onmouseout="ChangeClass(this, '')">Copy code</a></div>
+<div class="block"><pre id="code_3AC0SWZWC">CREATE CURSOR theCursorName (filename C(254), dosfilename C(13), creationtime T, accesstime T, writetime T, filesize N(20,0), fileattribs I)
 </pre></div>
 <p>A self created cursor with alternate names or additional fields is also possible, but the fieldtypes and order of the above field's have to match.<br />
 <br />
 If you specify ADIREX_DEST_CALLBACK in the nFlags parameter the function definition of the callback procedure has to match this one:</p>
-<div class="codeheader"><a onclick="CopyCode('code_385174DU2')" onmouseover="ChangeClass(this, 'onhover')" onmouseout="ChangeClass(this, '')">Copy code</a></div>
-<div class="block"><pre id="code_385174DU2">FUNCTION AdirExCallbackExample(cFileName,cDosFileName,tCreationTime,tLastAccessTime,tLastWriteTime,nFileSize,nFileAttributes)
+<div class="codeheader"><a onclick="CopyCode('code_3AC0SWZWD')" onmouseover="ChangeClass(this, 'onhover')" onmouseout="ChangeClass(this, '')">Copy code</a></div>
+<div class="block"><pre id="code_3AC0SWZWD">FUNCTION AdirExCallbackExample(cFileName,cDosFileName,tCreationTime,tLastAccessTime,tLastWriteTime,nFileSize,nFileAttributes)
 ENDFUNC
 </pre></div>
 </dd></dl>

@@ -1,21 +1,6 @@
 #ifndef _VFP2CCOM_H__
 #define _VFP2CCOM_H__
 
-class CGetIDispatch : public IDispatch
-{
-	// IUnknown methods
-	STDMETHOD(QueryInterface)(REFIID riid, void **ppvObject);
-	STDMETHOD_(ULONG, AddRef)();
-	STDMETHOD_(ULONG, Release)();
-
-	// IDispatch methods
-	STDMETHOD(GetTypeInfoCount)(UINT* pctinfo);
-	STDMETHOD(GetTypeInfo)(UINT itinfo, LCID lcid, ITypeInfo** pptinfo);
-	STDMETHOD(GetIDsOfNames)(REFIID riid, LPOLESTR* rgszNames, UINT cNames, LCID lcid, DISPID* rgdispid);
-	STDMETHOD(Invoke)(DISPID dispidMember, REFIID riid, LCID lcid, WORD wFlags, 
-				DISPPARAMS* pdispparams, VARIANT* pvarResult, EXCEPINFO* pexcepinfo, UINT* puArgErr);
-};
-
 void _stdcall GetIDispatchFromObject(Value &pVal, void** pDisp);
 
 #ifdef __cplusplus
@@ -42,8 +27,8 @@ void _fastcall RegisterObjectAsFileMoniker(ParamBlk *parm);
 void _fastcall RevokeActiveObjectLib(ParamBlk *parm);
 IDispatch * _stdcall GetIDispatch(IDispatch *pObject);
 
-// void _fastcall Sys3095Ex(ParamBlk *parm);
 /*
+void _fastcall Sys3095Ex(ParamBlk *parm);
 void _fastcall IsObjectActive(ParamBlk *parm);
 void _fastcall CoCreateInstanceExLib(ParamBlk *parm);
 void _fastcall CoRegisterComDll(ParamBlk *parm);
