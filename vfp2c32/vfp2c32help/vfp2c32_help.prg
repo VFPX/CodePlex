@@ -1,7 +1,7 @@
 LPARAMETERS lcInstall
 
 LOCAL loHelp
-m.loHelp = CREATEOBJECT('VFP2C32_HtmlHelp')
+m.loHelp = CREATEOBJECT('VFP2C32_HtmlHelp', JUSTPATH(SYS(16)))
 IF VARTYPE(m.lcInstall) = 'C' AND ALLTRIM(LOWER(m.lcInstall)) == 'install'
 	m.loHelp.Install()
 ELSE
@@ -11,9 +11,12 @@ ENDIF
 DEFINE CLASS VFP2C32_HtmlHelp AS Session
 	
 	DataSession = 2
-	
+	cPath = ''
+		
 	FUNCTION Init
+		LPARAMETERS lcPath
 		LOCAL lcfxtoollib
+		THIS.cPath =  ADDBS(m.lcPath)
 		&& ensure FOXTOOLS.FLL is loaded
 		IF !('FOXTOOLS.FLL' $ SET('Library'))
 			lcfxtoollib = HOME() + "FOXTOOLS.FLL"
@@ -69,7 +72,7 @@ DEFINE CLASS VFP2C32_HtmlHelp AS Session
 		m.lcSystem = SET("Help", 3)
 
 		SET HELP ON
-		SET HELP TO (HOME() + 'vfp2c32.chm')
+		SET HELP TO (THIS.cPath + 'vfp2c32.chm')
 		HELP ID m.lnTopicId
 
 		&& restore help settings
@@ -93,7 +96,9 @@ DEFINE CLASS VFP2C32_HtmlHelp AS Session
 	ENDFUNC
 
 	FUNCTION Install
-		ON KEY LABEL F1 DO (HOME() + 'vfp2c32_help.prg')
+		LOCAL lcPath
+		m.lcPath = ["] + THIS.cPath + 'vfp2c32_help.prg' + ["]
+		ON KEY LABEL F1 DO &lcPath
 	ENDFUNC
 
 ENDDEFINE

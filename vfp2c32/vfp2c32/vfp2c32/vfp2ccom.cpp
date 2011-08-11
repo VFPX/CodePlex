@@ -54,46 +54,6 @@ catch(int nErrorNo)
 	return true;
 }
 
-STDMETHODIMP CGetIDispatch::QueryInterface(REFIID riid, void **ppvObject)
-{
-	return E_NOTIMPL;
-}
-
-STDMETHODIMP_(ULONG) CGetIDispatch::AddRef()
-{
-	return 1;
-}
-
-STDMETHODIMP_(ULONG) CGetIDispatch::Release()
-{
-	return 1;
-}
-
-STDMETHODIMP CGetIDispatch::GetTypeInfoCount(UINT* pctinfo)
-{
-	return E_NOTIMPL;
-}
-
-STDMETHODIMP CGetIDispatch::GetTypeInfo(UINT itinfo, LCID lcid, ITypeInfo** pptinfo)
-{
-	return E_NOTIMPL;
-}
-
-STDMETHODIMP CGetIDispatch::GetIDsOfNames(REFIID riid, LPOLESTR* rgszNames, UINT cNames, LCID lcid, DISPID* rgdispid)
-{
-	*rgdispid = 0;
-	return S_OK;
-}
-
-STDMETHODIMP CGetIDispatch::Invoke(DISPID dispidMember, REFIID riid, LCID lcid, WORD wFlags, 
-										DISPPARAMS* pdispparams, VARIANT* pvarResult, EXCEPINFO* pexcepinfo, UINT* puArgErr)
-{
-	pdispparams->rgvarg[0].pdispVal->AddRef();
-	pvarResult->vt = VT_I4;
-	pvarResult->lVal = (LONG)pdispparams->rgvarg[0].pdispVal;
-	return S_OK;
-}
-
 void _stdcall GetIDispatchFromObject(Value &pVal, void** pDisp)
 {
 	char* VarName = "__VFP2C32_TEMP_COMOBJECT";
@@ -107,25 +67,25 @@ void _stdcall GetIDispatchFromObject(Value &pVal, void** pDisp)
 		*pDisp = reinterpret_cast<void*>(vObject->ev_long);
 	else
 	{
-		CGetIDispatch* pObject = new CGetIDispatch;
-		try
+		HRESULT hr;
+		VARIANT vResult;
+		VariantInit(&vResult);
+		IDispatch *pVFP;
+		vObject.Evaluate("SYS(3095,_VFP)");
+		pVFP = (IDispatch*)vObject->ev_long;
+		LPOLESTR pMethod = L"Eval";
+		DISPID dispidEval;
+		hr = pVFP->GetIDsOfNames(IID_NULL, &pMethod, 1, 1033, &dispidEval);
+		if (SUCCEEDED(hr))
 		{
-			if (!pObject)
-				throw E_INSUFMEMORY;
-			char *ComObjectName = "__VFP2C32_TEMP_GETIDISPATCH";
-			FoxVariable TmpComObject(ComObjectName, false);
-			FoxValue vTmpComObjectRef;
-			sprintfex(aCommand,"SYS(3096,%I)", pObject);
-			vTmpComObjectRef.Evaluate(aCommand);
-			TmpComObject = vTmpComObjectRef;
-			vObject.Evaluate("m.__VFP2C32_TEMP_GETIDISPATCH.Get(m.__VFP2C32_TEMP_COMOBJECT)");
-			*pDisp = reinterpret_cast<void*>(vObject->ev_long);
-		}
-		catch(int nErrorNo)
-		{
-			if (pObject)
-				delete pObject;
-			throw nErrorNo;
+			CComBSTR pCommand(L"m.__VFP2C32_TEMP_COMOBJECT");
+			VARIANTARG Arg;
+			DISPPARAMS DispParams = {&Arg, 0, 1, 0};
+			Arg.vt = VT_BSTR;
+			Arg.bstrVal = pCommand;
+			hr = pVFP->Invoke(dispidEval, IID_NULL, 0, DISPATCH_METHOD, &DispParams, &vResult, 0, 0);
+			if (SUCCEEDED(hr))
+				*pDisp = vResult.pdispVal;
 		}
 	}
 }
@@ -134,38 +94,6 @@ IDispatch * _stdcall GetIDispatch(IDispatch *pObject)
 {
 	return pObject;
 }
-
-/*
-void _fastcall Sys3095Ex(ParamBlk *parm)
-{
-	CGetIDispatch* pObject;
-try
-{
-	pObject = new CGetIDispatch();
-	char *ComObjectName = "__VFP2C32_TEMP_GETIDISPATCH";
-	char *VfpObjectName = "__VFP2C32_TEMP_VFPOBJECT";
-	char aCommand[128];
-	Value vObject = {'0'};
-	FoxVariable TmpVfpObject(VfpObjectName, false);
-	FoxVariable TmpComObject(ComObjectName, false);
-
-	TmpVfpObject = p1;
-	sprintfex(aCommand,"SYS(3096,%I)", pObject);
-	Evaluate(vObject, aCommand);
-	TmpComObject = vObject;
-	vObject.ev_type = '0';
-	Evaluate(vObject, "m.__VFP2C32_TEMP_GETIDISPATCH.Get(m.__VFP2C32_TEMP_VFPOBJECT)");
-	Return(vObject);
-	delete pObject;
-}
-catch(int nErrorNo)
-{
-	if (pObject)
-		delete pObject;
-	RaiseError(nErrorNo);
-}
-}
-*/
 
 void _fastcall CLSIDFromProgIDLib(ParamBlk *parm)
 {

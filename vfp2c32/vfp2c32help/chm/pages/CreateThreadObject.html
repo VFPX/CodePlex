@@ -25,15 +25,15 @@ An object reference which will receive callbacks when the called methods on the 
 If you pass NULL you won't receive any callbacks on method completion or errors.<br />
 If you pass an object it has to implement at least one of these methods:<br />
 </p>
-<div class="codeheader"><a onclick="CopyCode('code_385174ELC')" onmouseover="ChangeClass(this, 'onhover')" onmouseout="ChangeClass(this, '')">Copy code</a></div>
-<div class="block"><pre id="code_385174ELC">FUNCTION OnCallComplete(callid, result, callcontext)
+<div class="codeheader"><a onclick="CopyCode('code_3AC0SX0NM')" onmouseover="ChangeClass(this, 'onhover')" onmouseout="ChangeClass(this, '')">Copy code</a></div>
+<div class="block"><pre id="code_3AC0SX0NM">FUNCTION OnCallComplete(callid, result, callcontext)
 &amp;&amp; callid = a unique call id (integer) that is assigned to each call
 &amp;&amp; result = the return value of the method
 &amp;&amp; callcontext = the callcontext value that was associated with the call 
 </pre></div>
 <p></p>
-<div class="codeheader"><a onclick="CopyCode('code_385174ELD')" onmouseover="ChangeClass(this, 'onhover')" onmouseout="ChangeClass(this, '')">Copy code</a></div>
-<div class="block"><pre id="code_385174ELD">FUNCTION OnError(callid, callcontext, errornumber, errorsource, errordescription)
+<div class="codeheader"><a onclick="CopyCode('code_3AC0SX0NN')" onmouseover="ChangeClass(this, 'onhover')" onmouseout="ChangeClass(this, '')">Copy code</a></div>
+<div class="block"><pre id="code_3AC0SX0NN">FUNCTION OnError(callid, callcontext, errornumber, errorsource, errordescription)
 &amp;&amp; callid = a unique call id (integer) that is assigned to each call
 &amp;&amp; callcontext = the callcontext value that was associated with the call 
 &amp;&amp; errornumber = the errornumber
@@ -106,8 +106,8 @@ to check for method abortion and other information. The property will return an 
 <p>TestFunc blocks for the passed in timeout <br />
 TestFunc2 loops, simulates some work with the Sleep api call and checks for method abortion<br />
 </p>
-<div class="codeheader"><a onclick="CopyCode('code_385174ELS')" onmouseover="ChangeClass(this, 'onhover')" onmouseout="ChangeClass(this, '')">Copy code</a></div>
-<div class="block"><pre id="code_385174ELS">&amp;&amp; Compile this class into a "Multi-threaded COM server (dll)"
+<div class="codeheader"><a onclick="CopyCode('code_3AC0SX0O2')" onmouseover="ChangeClass(this, 'onhover')" onmouseout="ChangeClass(this, '')">Copy code</a></div>
+<div class="block"><pre id="code_3AC0SX0O2">&amp;&amp; Compile this class into a "Multi-threaded COM server (dll)"
 DEFINE CLASS ExampleObject AS Session OLEPUBLIC
     DataSession = 2 &amp;&amp; you should always run each object in their own datasession
     CallInfo = .NULL. &amp;&amp; "magic" property
@@ -135,8 +135,8 @@ DEFINE CLASS ExampleObject AS Session OLEPUBLIC
 ENDDEFINE
 </pre></div>
 <p></p>
-<div class="codeheader"><a onclick="CopyCode('code_385174ELT')" onmouseover="ChangeClass(this, 'onhover')" onmouseout="ChangeClass(this, '')">Copy code</a></div>
-<div class="block"><pre id="code_385174ELT">&amp;&amp; using the above class
+<div class="codeheader"><a onclick="CopyCode('code_3AC0SX0O3')" onmouseover="ChangeClass(this, 'onhover')" onmouseout="ChangeClass(this, '')">Copy code</a></div>
+<div class="block"><pre id="code_3AC0SX0O3">&amp;&amp; using the above class
 PUBLIC loObj, loCallback, xj, lnCallId
 m.loCallback = <a href="its:dv_foxhelp.chm::/html/932a73fb-6354-402b-bbb2-08386d41fdae.htm">CREATEOBJECT</a>('ExampleCallback')
 m.loObj = CreateThreadObject('YourProject.ExampleObject', m.loCallback, .T.)

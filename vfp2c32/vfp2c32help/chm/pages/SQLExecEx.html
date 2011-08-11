@@ -78,8 +78,8 @@ If you convert a unicode column to types 'W' or 'Q' the data will also be in Uni
 <dd><p>Comma seperated list of parameter number, name and SQL type in wich the data should be send e.g.<br />
 "1 '@parmone' SQL_WCHAR, 2 '@parmtwo' SQL_CHAR"<br />
 </p>
-<div class="codeheader"><a onclick="CopyCode('code_385174G9L')" onmouseover="ChangeClass(this, 'onhover')" onmouseout="ChangeClass(this, '')">Copy code</a></div>
-<div class="block"><pre id="code_385174G9L">&amp;&amp;  the parameter name must be enclosed with either " (double quotes) or ' (single quotes)
+<div class="codeheader"><a onclick="CopyCode('code_3AC0SX27J')" onmouseover="ChangeClass(this, 'onhover')" onmouseout="ChangeClass(this, '')">Copy code</a></div>
+<div class="block"><pre id="code_3AC0SX27J">&amp;&amp;  the parameter name must be enclosed with either " (double quotes) or ' (single quotes)
  lcDocument = STRTOFILE('someFileWithUnicodeContent.txt')
  ?SQLEXECEX(yourConnection,'UPDATE yourTable SET someField = ?{someVar}, someUnicodeTextField = ?{lcDocument} WHERE yourKey = ?{lnID}','','',0,'','2 SQL_WCHAR')
 
@@ -96,8 +96,8 @@ If you use named parameters all parameters must be named.
 <dd><p>Function to call back while fetching the resultset or when a PRINT or RAISERROR statement  or other additional backend information is retrieved.<br />
 <br />
 Function prototype:</p>
-<div class="codeheader"><a onclick="CopyCode('code_385174G9M')" onmouseover="ChangeClass(this, 'onhover')" onmouseout="ChangeClass(this, '')">Copy code</a></div>
-<div class="block"><pre id="code_385174G9M">FUNCTION SQLCallback(lnSet, lnRow, lnRowCount)
+<div class="codeheader"><a onclick="CopyCode('code_3AC0SX27K')" onmouseover="ChangeClass(this, 'onhover')" onmouseout="ChangeClass(this, '')">Copy code</a></div>
+<div class="block"><pre id="code_3AC0SX27K">FUNCTION SQLCallback(lnSet, lnRow, lnRowCount)
 &amp;&amp; lnSet: number of the resultset which is currently fetched or -1
 &amp;&amp; if a PRINT or RAISERROR statement with low severity is catched
 
@@ -124,8 +124,8 @@ Your callback procedure will be called once before the first row is fetched, the
 
 <h2>Example</h2>
 <p>Embedding of parameters.</p>
-<div class="codeheader"><a onclick="CopyCode('code_385174G9N')" onmouseover="ChangeClass(this, 'onhover')" onmouseout="ChangeClass(this, '')">Copy code</a></div>
-<div class="block"><pre id="code_385174G9N">LOCAL laInfo[1], laError[1]
+<div class="codeheader"><a onclick="CopyCode('code_3AC0SX27L')" onmouseover="ChangeClass(this, 'onhover')" onmouseout="ChangeClass(this, '')">Copy code</a></div>
+<div class="block"><pre id="code_3AC0SX27L">LOCAL laInfo[1], laError[1]
 
 lcSQL = "SELECT * FROM someTable WHERE someCol = ?{someVar}"
 IF SQLEXECEX(yourConnection, lcSQL, 'yourResult', 'laInfo')
@@ -145,14 +145,14 @@ ENDIF
 </pre></div>
 <p><br />
 Storing the result into variables instead of a cursor.</p>
-<div class="codeheader"><a onclick="CopyCode('code_385174G9O')" onmouseover="ChangeClass(this, 'onhover')" onmouseout="ChangeClass(this, '')">Copy code</a></div>
-<div class="block"><pre id="code_385174G9O">LOCAL lnSum, lnAvg
+<div class="codeheader"><a onclick="CopyCode('code_3AC0SX27M')" onmouseover="ChangeClass(this, 'onhover')" onmouseout="ChangeClass(this, '')">Copy code</a></div>
+<div class="block"><pre id="code_3AC0SX27M">LOCAL lnSum, lnAvg
 ?SQLEXECEX(yourConnection, 'SELECT SUM(someCol), AVG(someCol2) FROM yourTable', 'lnSum, lnAvg', '', SQLEXECEX_DEST_VARIABLE)
 </pre></div>
 <p><br />
 Using named parameters.</p>
-<div class="codeheader"><a onclick="CopyCode('code_385174G9P')" onmouseover="ChangeClass(this, 'onhover')" onmouseout="ChangeClass(this, '')">Copy code</a></div>
-<div class="block"><pre id="code_385174G9P">MSSQL T-SQL:
+<div class="codeheader"><a onclick="CopyCode('code_3AC0SX27N')" onmouseover="ChangeClass(this, 'onhover')" onmouseout="ChangeClass(this, '')">Copy code</a></div>
+<div class="block"><pre id="code_3AC0SX27N">MSSQL T-SQL:
 ------------------------
 CREATE PROCEDURE teststoredproc (@lnPK int = 1, @description varchar(8000) = 'Hello' OUTPUT,
 										@thirdParam int = 2, @fourthParam varchar(4000))

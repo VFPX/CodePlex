@@ -9,7 +9,9 @@ DEFINE CLASS oCodeGen AS Exception
 	nCharSet = 1 && ANSI & Unicode switch
 	nPragmaPack = 8 && Pragma pack option as in C(++)
 	nAllocScheme = 1 && memory management scheme to use ..
-
+	bProcProlog = .F. && generate prolog code for standalone struct procedure
+	bMemberData = .F. && generate _MemberData XML for struct classes
+	
 	&& main entry point for code creation
 	PROCEDURE CreateCode(loType)
 	
@@ -222,10 +224,25 @@ DEFINE CLASS oVFPCodeGen AS oCodeGen
 			THIS.CreateEnumCode(loType,@lcCode)
 			RETURN lcCode
 		ENDIF
-		SET STEP ON
+
 		lnMainDeclar = THIS.MainDeclarator(loType)
-			
+
+		IF THIS.bProcProlog
+TEXT TO lcCode TEXTMERGE NOSHOW PRETEXT 1+4
+Lparameters pnAddress
+If Vartype(m.pnAddress) = "N" Then
+	Return Createobject("<< loType.laDeclar[m.lnMainDeclar].cName>>", m.pnAddress)
+Else
+	Return Createobject("<< loType.laDeclar[m.lnMainDeclar].cName>>")
+Endif
+ENDTEXT
+			lcCode = lcCode + CRLF + CRLF
+		ENDIF
+		
 		THIS.CreateClassHeader(loType,@lcCode,lnMainDeclar)
+		IF THIS.bMemberData
+			THIS.CreateMemberData(loType, @lcCode, .T.)
+		ENDIF
 		THIS.CreateMemberHeader(loType,@lcCode)
 		THIS.CreateClassProcs(loType,@lcCode,lnMainDeclar)
 		THIS.CreateMemberProcs(loType,@lcCode)
@@ -306,6 +323,26 @@ DEFINE CLASS oVFPCodeGen AS oCodeGen
 
 		ENDCASE
 		
+	ENDPROC
+	
+	PROCEDURE CreateMemberData(loType, lcCode, bFirst)
+	
+		IF INLIST(loType.nType,TT_STRUCTHEADER,TT_UNIONHEADER)
+			IF m.bFirst
+				lcCode = lcCode + OFFSET1 + [_MemberData = '<VFPData>' + ;] + CRLF
+			ENDIF
+			LOCAL xj
+			FOR xj = 1 TO ALEN(loType.laMembers)
+				THIS.CreateMemberData(loType.laMembers[xj], @lcCode, .F.)
+			ENDFOR
+			IF m.bFirst
+				lcCode = lcCode + OFFSET2 + ['</VFPData>'] + CRLF + CRLF
+			ENDIF			
+			RETURN
+		ENDIF
+
+		lcCode = lcCode + OFFSET2 + ['<memberdata name="] + LOWER(loType.cName) + [" type="property" display="] + loType.cName + ["/> + ;] + CRLF
+
 	ENDPROC
 	
 	PROCEDURE CreateClassProcs(loType,lcCode,lnIndex)
