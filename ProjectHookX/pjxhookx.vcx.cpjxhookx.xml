@@ -179,6 +179,7 @@ chookalias =
 oproject = .NULL.
 otimer = .NULL.
 ohooks = .NULL.
+cuniqueid = 
 Name = "cpjxhookx"
 ]]></properties>
 		<protected><![CDATA[addhooks
@@ -753,6 +754,9 @@ PROCEDURE gethooks
 *					based "collection like" object.
 * 	01/08/2012 		Set EXACT off so that the SEEK works without including
 *					the order since it is part of the index expression.
+*					Also added code to try to open the hook table if it is
+*					not open here. This could happen if the environment were
+*					cleared.
 *==============================================================================
 LPARAMETERS ;
 	tcPjxName, ;
@@ -764,7 +768,12 @@ LOCAL ;
 	lcExact
 		
 IF NOT USED(This.cHookAlias)
-	RETURN
+	This.OpenHookTable(ADDBS(This.oProject.HomeDir) + "PJXHooks.dbf")
+
+	IF NOT USED(This.cHookAlias)	
+		RETURN
+	ENDIF
+	
 ENDIF
 
 lcExact = SET('EXACT')
@@ -819,6 +828,10 @@ PROCEDURE Init
 * Modifications:
 * 	10/08/2009		Modified to use a VFP collection rather than an array 
 *					based "collection like" object.
+* 	01/08/2012		Added code to set the Unique ID and support the hooks
+*					being populated through an Access method to better support
+*					clearing the environment while the project is open.
+*					Thank you Ian Simcock for this contribution. 
 *==============================================================================
 LOCAL ;
 	lcHomeDir, ;
@@ -833,20 +846,16 @@ IF TYPE("Application.ActiveProject.Name") <> T_CHARACTER
 	RETURN .F.
 ENDIF
 
-This.oProject = Application.ActiveProject	
+This.cUniqueid = SYS(2015)
+This.oProject = _VFP.ActiveProject	
 lcHomeDir = ADDBS(This.oProject.HomeDir)
 lcPjxName = JUSTSTEM(This.oProject.Name)
 lcHooksTable = lcHomeDir + "PJXHooks.dbf"
-This.oHooks = CREATEOBJECT('collection')
 
 IF NOT FILE(lcHooksTable)
 	This.CreateHookTable(lcHooksTable)
 ELSE
 	This.OpenHookTable(lcHooksTable)
-ENDIF
-
-IF This.lHooksTableOpen
-	This.GetHooks(lcPjxName,.F.)
 ENDIF
 
 IF This.oHooks.Count = 0 AND NOT This.lAlwaysProceed
@@ -970,6 +979,26 @@ IF TYPE("tuNewVal") = T_LOGICAL
 
 ENDIF
 ENDPROC
+PROCEDURE ohooks_access
+*==============================================================================
+* Method:			oHooks_Access
+* Purpose:			This method creates the collection and loads the 
+*					ProjectHooks if there is no collection. This means that if 
+*					a Clear All is executed and the oHooks collection 
+*					disappears the it will quietly be recreated instead of 
+*					throwing an error.
+* Author:			F1 Technologies
+* Parameters:		None
+* Returns:			Object
+*==============================================================================
+IF ISNULL(This.oHooks)
+	This.oHooks = CREATEOBJECT('collection')
+	This.GetHooks(JUSTSTEM(This.oProject.Name), .F.)
+ENDIF
+
+RETURN This.ohooks
+
+ENDPROC
 PROCEDURE openhooktable
 *==============================================================================
 * Method:			OpenHookTable
@@ -1003,6 +1032,34 @@ IF USED(lcAlias)
 ENDIF
 	
 RETURN
+ENDPROC
+PROCEDURE oproject_access
+*==============================================================================
+* Method:			oProject_Access
+* Purpose:			This method finds the current project thorugh the project 
+*					collection based on the UniqueID. This enables finding 
+*					of the project if it somehow is lost through clearing
+*					of the environment. 
+* Author:			F1 Technologies
+* Parameters:		None
+* Returns:			Object
+*==============================================================================
+LOCAL ;
+	loProject AS Object
+
+IF ISNULL(This.oProject)
+	FOR EACH loProject IN _VFP.Projects FOXOBJECT 
+		IF TYPE("M.loProject.ProjectHook.cUniqueID") == "C" and ;
+				M.loProject.ProjectHook.cUniqueID == This.cUniqueID
+			This.oProject = M.loProject
+			EXIT 
+		ENDIF 
+	ENDFOR 
+	loProject = .NULL.
+ENDIF 
+
+RETURN THIS.oproject
+
 ENDPROC
 PROCEDURE otimer_assign
 *==============================================================================
@@ -1366,6 +1423,7 @@ oproject An object reference to the current project.
 luseglobalhookvariable Determines whether the variable _oPJXHook is created with an object reference to this object. When this property is .T., a timer has to be instantiated in order to release the variable when the project is closed.
 otimer An object reference to the timer that checks to see if the project has been closed.
 ohooks The collection of hooks.
+cuniqueid Set on Init. Unique ID for the project. 
 *openhooktable Opens the project hook table located in a project's home directory.
 *createhooktable Creates the project hooks table in the project's home directory.
 *gethooks Looks at the hooks table and instantiates each hook.
@@ -1386,6 +1444,8 @@ ohooks The collection of hooks.
 *ishook Checks hooks array to make sure that the hook is not already instantiated.
 *checkhooks Scans through the hooks array and removes any items that are no longer in the hooks table.
 *selecthooks Brings up the AddHooks form so that new hooks can be added or existing ones removed. This method is to simplify this process. It used to be that you had to call GetHooks with the proper parameters.
+*ohooks_access 
+*oproject_access 
 ]]></reserved3>
 		<reserved4/>
 		<reserved5/>
