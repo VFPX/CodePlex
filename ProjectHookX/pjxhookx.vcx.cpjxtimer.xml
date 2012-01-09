@@ -178,25 +178,25 @@ Name = "cpjxtimer"
 		<protected/>
 		<methods><![CDATA[PROCEDURE copyright
 *==============================================================================
-* Class:{9}{9}{9}cPjxTimer
-* Author:{9}{9}{9}F1 Technologies
-* Copyright:{9}{9}Released into Public Domain by F1 Technologies.
+* Class:			cPjxTimer
+* Author:			F1 Technologies
+* Copyright:		Released into Public Domain by F1 Technologies.
 *==============================================================================
 
 ENDPROC
 PROCEDURE Timer
 *==============================================================================
-* Method:{9}{9}{9}Timer
-* Purpose:{9}{9}{9}Release the global project hook variable once the
-*{9}{9}{9}{9}{9}active project is closed.
-* Author:{9}{9}{9}F1 Technologies
-* Parameters:{9}{9}
-* Returns:{9}{9}{9}
+* Method:			Timer
+* Purpose:			Release the global project hook variable once the
+*					active project is closed.
+* Author:			F1 Technologies
+* Parameters:		
+* Returns:			
 *==============================================================================
 IF TYPE("Application.ActiveProject.Name") <> T_CHARACTER
-{9}RELEASE _oPJXHook
-ENDIF{9}
-{9}
+	RELEASE _oPJXHook
+ENDIF	
+	
 ENDPROC
 ]]></methods>
 		<ole/>
