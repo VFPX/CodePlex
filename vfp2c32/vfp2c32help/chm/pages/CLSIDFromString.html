@@ -25,8 +25,8 @@
 <p>A CLSID is a globally unique identifier that identifies a COM class object. If your server or container allows linking to its embedded objects, you need to register a CLSID for each supported class of objects.</p>
 
 <h2>Example</h2>
-<div class="codeheader"><a onclick="CopyCode('code_3AC0SX0H5')" onmouseover="ChangeClass(this, 'onhover')" onmouseout="ChangeClass(this, '')">Copy code</a></div>
-<div class="block"><pre id="code_3AC0SX0H5">lcGuidString = <a href="/pages/StringFromCLSID.html">StringFromCLSID</a>(CLSIDFROMPROGID("Word.Application"))
+<div class="codeheader"><a onclick="CopyCode('code_1')" onmouseover="ChangeClass(this, 'onhover')" onmouseout="ChangeClass(this, '')">Copy code</a></div>
+<div class="block"><pre id="code_1">lcGuidString = <a href="/pages/StringFromCLSID.html">StringFromCLSID</a>(CLSIDFROMPROGID("Word.Application"))
 lcClsId = CLSIDFromString(lcGuidString)
 ? lcClsId
 </pre></div>

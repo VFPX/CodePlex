@@ -2,13 +2,14 @@
 
 FUNCTION TextToHtml
 	LPARAMETERS lcText, lcTag, lcClass
-	LOCAL laLines[1], lnCount, xj, lcRet, lcCloseTag, lnOpenTag, lcDivId, lcTmp, lcLine
+	LOCAL laLines[1], lnCount, xj, lcRet, lcCloseTag, lnOpenTag, lcDivId, lcTmp, lcLine, lnCodeId
 	m.lcRet = ''
 	m.lcTag = IIF(VARTYPE(m.lcTag) = 'C', ALLTRIM(m.lcTag), '')
 	m.lcClass = IIF(VARTYPE(m.lcClass) = 'C', [ class="] + ALLTRIM(m.lcClass) + ["], '')
 	m.lcCloseTag = IIF(EMPTY(m.lcTag), '', '</' + m.lcTag + '>')
 	m.lcTag = IIF(EMPTY(m.lcTag), '', '<' + m.lcTag + m.lcClass + '>')
 	m.lnOpenTag = 0
+	m.lnCodeId = 0
 	&& remove whitespace from beginning and end
 	m.lcText = ALLTRIM(m.lcText, 0, CHR(13), CHR(10), CHR(32), CHR(9))
 	m.lnCount = ALINES(m.laLines, m.lcText, 0)
@@ -29,10 +30,11 @@ FUNCTION TextToHtml
 			DO CASE
 				
 				CASE m.lcLine == '<code>'
-
-					m.lcDivId = SYS(2015)
-					m.lcRet = m.lcRet + [<div class="codeheader"><a onclick="CopyCode('code] + m.lcDivId + [')" onmouseover="ChangeClass(this, 'onhover')" onmouseout="ChangeClass(this, '')">Copy code</a></div>] + CRLF + ;
-										'<div class="block"><pre id="code' + m.lcDivId + '">'
+					
+					m.lnCodeId = m.lnCodeId + 1 
+					m.lcDivId = 'code_' + ALLTRIM(STR(m.lnCodeId))
+					m.lcRet = m.lcRet + [<div class="codeheader"><a onclick="CopyCode('] + m.lcDivId + [')" onmouseover="ChangeClass(this, 'onhover')" onmouseout="ChangeClass(this, '')">Copy code</a></div>] + CRLF + ;
+										[<div class="block"><pre id="] + m.lcDivId + [">]
 					m.xj = m.xj + 1 
 					DO WHILE m.xj <= m.lnCount AND !(ALLTRIM(m.laLines[m.xj]) == '</code>')
 						m.lcRet = m.lcRet + HtmlChars(m.laLines[m.xj]) + CRLF

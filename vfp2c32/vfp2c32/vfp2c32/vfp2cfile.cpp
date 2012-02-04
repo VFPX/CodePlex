@@ -1582,8 +1582,28 @@ try
 		sCallbackParam.pCallback += "(%I,%U,%I)";
 	}
 
-	if (GetSaveFileName(&sFile))
-		pFiles.StringLen().Return();
+	if (GetSaveFileName(&sFile)) {
+		pFiles.StringLen();
+		if (pFilter.Len() && sFile.nFilterIndex) {
+			char *pSelectedFilter = pFilter;
+			for (unsigned int xj = 1; xj < sFile.nFilterIndex * 2; xj++)
+				pSelectedFilter += strlen(pSelectedFilter) + 1;
+
+			FoxString pExtension = pSelectedFilter;
+			pExtension.SubStr(pExtension.Rat('.'));
+			if (!pExtension.ICompare(".*")) {
+				if (pFiles.At('.')) {
+					FoxString pCurrentExtension = pFiles;
+					pCurrentExtension.SubStr(pCurrentExtension.Rat('.'));
+					if (!pCurrentExtension.ICompare(pExtension))
+						pFiles += pExtension;
+				}
+				else
+					pFiles += pExtension;
+			}
+		}
+		pFiles.Return();
+	}
 	else
 	{
 		DWORD nLastError = CommDlgExtendedError();

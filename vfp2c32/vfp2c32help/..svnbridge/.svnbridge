@@ -1,2 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?><ItemProperties xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><Properties><Property><Name>svn:ignore</Name><Value>*.BAK
+</Value></Property><Property><Name>svn:ignore</Name><Value>*.BAK
+vfp2chelp_ref.CDX
+vfp2chelp_ref.DBF
+vfp2chelp_ref.FPT
 </Value></Property></Properties></ItemProperties>

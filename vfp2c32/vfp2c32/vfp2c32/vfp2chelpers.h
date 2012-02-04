@@ -343,4 +343,42 @@ private:
 	CAtlList<CThread *> m_Threads;
 };
 
+class PerformanceCounter
+{
+public:
+	static LARGE_INTEGER GetCounter();
+	static __int64 GetMillisecondsSince(LARGE_INTEGER &refcounter);
+private:
+	static __int64 CountsPerMillisecond();
+};
+
+inline LARGE_INTEGER PerformanceCounter::GetCounter() 
+{
+	LARGE_INTEGER counter;
+	if (QueryPerformanceCounter(&counter) == 0)
+		counter.QuadPart = 0;
+	return counter;
+}
+
+inline __int64 PerformanceCounter::GetMillisecondsSince(LARGE_INTEGER &refcounter)
+{
+	LARGE_INTEGER counter;
+	if (QueryPerformanceCounter(&counter) != 0)
+		return (counter.QuadPart - refcounter.QuadPart) / CountsPerMillisecond();
+	else
+		return -1;
+}
+
+inline __int64 PerformanceCounter::CountsPerMillisecond()
+{
+	static LARGE_INTEGER counts = {0};
+	if (counts.QuadPart)
+		return counts.QuadPart;
+
+	LARGE_INTEGER frequency;
+	QueryPerformanceFrequency(&frequency);
+    counts.QuadPart = frequency.QuadPart / 1000;
+	return counts.QuadPart;
+}
+
 #endif // _VFP2CHELPERS_H__

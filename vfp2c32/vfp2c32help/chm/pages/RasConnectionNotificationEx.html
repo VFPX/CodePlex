@@ -32,8 +32,8 @@ If this parameter is INVALID_HANDLE_VALUE (-1), notifications are received for a
 <dl class="parm"><dt><a id="p3">cCallback</a></dt>
 <dd><p>The name of a function to call when a RAS connection is created/terminated.<br />
 The function should have the following prototype.</p>
-<div class="codeheader"><a onclick="CopyCode('code_3AC0SX1L0')" onmouseover="ChangeClass(this, 'onhover')" onmouseout="ChangeClass(this, '')">Copy code</a></div>
-<div class="block"><pre id="code_3AC0SX1L0">FUNCTION OnConnectionChange(lnConn, lnError)
+<div class="codeheader"><a onclick="CopyCode('code_1')" onmouseover="ChangeClass(this, 'onhover')" onmouseout="ChangeClass(this, '')">Copy code</a></div>
+<div class="block"><pre id="code_1">FUNCTION OnConnectionChange(lnConn, lnError)
     IF lnError = 0
         &amp;&amp; call <a href="/pages/ARasConnections.html">ARasConnections</a> to see if a new connection was established or one was disconnected
         LOCAL lnConnCount, laRasConns[1,5]

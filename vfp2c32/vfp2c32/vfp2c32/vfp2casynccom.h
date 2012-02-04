@@ -38,6 +38,7 @@ private:
 	CComVariant m_CallContext;
 	HANDLE m_AbortEvent;
 	bool m_Aborted;
+	LARGE_INTEGER m_StartTime;
 
 	static const DISPID DISPID_AbortEvent		= 1;
 	static const DISPID DISPID_Aborted			= 2;
@@ -85,6 +86,7 @@ private:
 	
 	// custom methods callable by COM object
 	HRESULT AbortCall(long callid, VARIANT* result);
+	HRESULT GetCallRunTime(long callid, VARIANT* result);
 
 	static unsigned int _stdcall ThreadProc(void* lpParameter);
 	static long m_CallId;	// call id, incremented on each call of a method
@@ -119,7 +121,8 @@ private:
 	static const DISPID DISPID_ContainedObject			= -100001;
 	static const DISPID DISPID_ThreadId					= -100002;
 	static const DISPID DISPID_CallContext				= -100003;
-
+	static const DISPID DISPID_GetCallQueueSize			= -100004;
+	static const DISPID DISPID_GetCallRunTime			= -100005;
 };
 
 #ifdef __cplusplus
