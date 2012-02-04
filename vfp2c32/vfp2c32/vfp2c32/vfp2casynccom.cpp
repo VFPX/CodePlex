@@ -20,6 +20,7 @@ CComCallInfo::CComCallInfo()
 	m_DispParams.cNamedArgs = 0;
 	m_AbortEvent = 0;
 	m_Aborted = false;
+	m_StartTime.QuadPart = 0;
 }
 
 CComCallInfo::~CComCallInfo()
@@ -452,6 +453,36 @@ STDMETHODIMP CThreadedComObject::Invoke(DISPID dispidMember, REFIID riid, LCID l
 			else
 				hr = DISP_E_MEMBERNOTFOUND;
 			break;
+		
+		case DISPID_GetCallQueueSize:
+			if (wFlags & DISPATCH_PROPERTYGET) {
+				if (pvarResult)
+				{
+					pvarResult->vt = VT_I4;
+					m_CritSect.Enter();
+					pvarResult->lVal = m_CallQueue.GetCount() + (m_CurrentCall.m_p ? 1 : 0);
+					m_CritSect.Leave();
+					hr = S_OK;
+				}
+				else
+					hr = S_OK;
+			}
+			else
+				hr = DISP_E_MEMBERNOTFOUND;
+			break;
+
+		case DISPID_GetCallRunTime:
+			if (wFlags & DISPATCH_PROPERTYGET) {
+				if (pdispparams->cArgs == 1) {
+					hr = VariantChangeType(&pdispparams->rgvarg[0], &pdispparams->rgvarg[0], 0, VT_I4);
+					if (SUCCEEDED(hr))
+						hr = GetCallRunTime(pdispparams->rgvarg[0].lVal, pvarResult);
+				} else
+					hr = DISP_E_BADPARAMCOUNT;
+			}
+			else
+				hr = DISP_E_MEMBERNOTFOUND;
+			break;
 
 		default:
 		{
@@ -623,6 +654,22 @@ HRESULT CThreadedComObject::AbortCall(long callid, VARIANT* result)
 	return hr;
 }
 
+HRESULT CThreadedComObject::GetCallRunTime(long callid, VARIANT* result)
+{
+	LARGE_INTEGER time = {0};
+	m_CritSect.Enter();
+	if (m_CurrentCall.m_p && (m_CurrentCall->m_CallId == callid || callid == 0))
+		time = m_CurrentCall->m_StartTime;
+	m_CritSect.Leave();
+
+	result->vt = VT_R8;
+	if (time.QuadPart > 0)
+		result->dblVal = (double)PerformanceCounter::GetMillisecondsSince(time);
+	else
+		result->dblVal = 0;
+	return S_OK;
+}
+
 bool CThreadedComObject::ThreadInitialize()
 {
 try
@@ -692,7 +739,7 @@ try
 
 
 	size_t entry = 0;
-	size_t funcCount = typeAttr->cFuncs - 7 + (m_SynchronousAccess ? 5 : 4); // subtract the 7 IDispatch functions, add custom entries ...
+	size_t funcCount = typeAttr->cFuncs - 7 + (m_SynchronousAccess ? 7 : 6); // subtract the 7 IDispatch functions, add custom entries ...
 	m_DispMap.SetCount(funcCount, -1);
 
 	m_DispMap[entry].Name = L"abortcall";
@@ -707,9 +754,18 @@ try
 	m_DispMap[entry].Name = L"threadid";
 	m_DispMap[entry].Len = m_DispMap[entry].Name.Length();
 	m_DispMap[entry++].DispId = DISPID_ThreadId;
+
 	m_DispMap[entry].Name = L"callcontext";
 	m_DispMap[entry].Len = m_DispMap[entry].Name.Length();
 	m_DispMap[entry++].DispId = DISPID_CallContext;
+
+	m_DispMap[entry].Name = L"getcallqueuesize";
+	m_DispMap[entry].Len = m_DispMap[entry].Name.Length();
+	m_DispMap[entry++].DispId = DISPID_GetCallQueueSize;
+
+	m_DispMap[entry].Name = L"getcallruntime";
+	m_DispMap[entry].Len = m_DispMap[entry].Name.Length();
+	m_DispMap[entry++].DispId = DISPID_GetCallRunTime;
 
 	for(UINT curFunc = 7; curFunc < typeAttr->cFuncs; ++curFunc)
 	{
@@ -912,8 +968,10 @@ bool CThreadedComObject::ProcessCalls()
 			if (SUCCEEDED(hr))
 			{
 				hr = m_CurrentCall->UnmarshalParameters();
-				if (SUCCEEDED(hr))
+				if (SUCCEEDED(hr)) {
+					m_CurrentCall->m_StartTime = PerformanceCounter::GetCounter();
 					hr = m_Disp->Invoke(m_CurrentCall->m_DispIdMember, IID_NULL, m_CurrentCall->m_Lcid, m_CurrentCall->m_Flags, &m_CurrentCall->m_DispParams, &vResult, &ErrorInfo, &ErrorArg);
+				}
 				else
 				{
 					ErrorInfo.scode = hr;

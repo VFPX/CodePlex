@@ -31,8 +31,8 @@
 <p>File monikers can be used to identify any object that is stored in its own file. A file moniker acts as a wrapper for the path name the native file system assigns to the file.  The source of the object named by the moniker must provide an implementation of the IPersistFile interface to support binding a file moniker. File monikers can represent either a complete or a relative path.</p>
 
 <h2>Example</h2>
-<div class="codeheader"><a onclick="CopyCode('code_3AC0SX1YG')" onmouseover="ChangeClass(this, 'onhover')" onmouseout="ChangeClass(this, '')">Copy code</a></div>
-<div class="block"><pre id="code_3AC0SX1YG">LOCAL yourObject, nObjectHandle
+<div class="codeheader"><a onclick="CopyCode('code_1')" onmouseover="ChangeClass(this, 'onhover')" onmouseout="ChangeClass(this, '')">Copy code</a></div>
+<div class="block"><pre id="code_1">LOCAL yourObject, nObjectHandle
 yourObject = <a href="its:dv_foxhelp.chm::/html/932a73fb-6354-402b-bbb2-08386d41fdae.htm">CREATEOBJECT</a>('some.ComObject')
 nObjectHandle= RegisterObjectAsFileMoniker(m.yourObject, 'some.ComObject', 'D:\objec.ref')
 ? nObjectHandle

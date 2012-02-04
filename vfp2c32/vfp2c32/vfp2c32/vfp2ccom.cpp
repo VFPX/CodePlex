@@ -57,36 +57,29 @@ catch(int nErrorNo)
 void _stdcall GetIDispatchFromObject(Value &pVal, void** pDisp)
 {
 	char* VarName = "__VFP2C32_TEMP_COMOBJECT";
-	char aCommand[128];
+	HRESULT hr;
+	VARIANT vResult;
 	FoxVariable pTmpObject(VarName, false);
 	FoxValue vObject;
+	IDispatch *pVFP;
+	VariantInit(&vResult);
+
 	pTmpObject = pVal;
-	sprintfex(aCommand,"INT(SYS(3095,m.%S))", VarName);
-	Evaluate(vObject, aCommand);
-	if (vObject->ev_long)
-		*pDisp = reinterpret_cast<void*>(vObject->ev_long);
-	else
+	vObject.Evaluate("SYS(3095,_VFP)");
+	pVFP = (IDispatch*)vObject->ev_long;
+	LPOLESTR pMethod = L"Eval";
+	DISPID dispidEval;
+	hr = pVFP->GetIDsOfNames(IID_NULL, &pMethod, 1, 1033, &dispidEval);
+	if (SUCCEEDED(hr))
 	{
-		HRESULT hr;
-		VARIANT vResult;
-		VariantInit(&vResult);
-		IDispatch *pVFP;
-		vObject.Evaluate("SYS(3095,_VFP)");
-		pVFP = (IDispatch*)vObject->ev_long;
-		LPOLESTR pMethod = L"Eval";
-		DISPID dispidEval;
-		hr = pVFP->GetIDsOfNames(IID_NULL, &pMethod, 1, 1033, &dispidEval);
+		CComBSTR pCommand(L"m.__VFP2C32_TEMP_COMOBJECT");
+		VARIANTARG Arg;
+		DISPPARAMS DispParams = {&Arg, 0, 1, 0};
+		Arg.vt = VT_BSTR;
+		Arg.bstrVal = pCommand;
+		hr = pVFP->Invoke(dispidEval, IID_NULL, 0, DISPATCH_METHOD, &DispParams, &vResult, 0, 0);
 		if (SUCCEEDED(hr))
-		{
-			CComBSTR pCommand(L"m.__VFP2C32_TEMP_COMOBJECT");
-			VARIANTARG Arg;
-			DISPPARAMS DispParams = {&Arg, 0, 1, 0};
-			Arg.vt = VT_BSTR;
-			Arg.bstrVal = pCommand;
-			hr = pVFP->Invoke(dispidEval, IID_NULL, 0, DISPATCH_METHOD, &DispParams, &vResult, 0, 0);
-			if (SUCCEEDED(hr))
-				*pDisp = vResult.pdispVal;
-		}
+			*pDisp = vResult.pdispVal;
 	}
 }
 

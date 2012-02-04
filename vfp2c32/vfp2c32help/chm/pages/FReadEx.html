@@ -29,8 +29,8 @@
 
 <h2>Example</h2>
 <p>Open a file and return the first 20 bytes:</p>
-<div class="codeheader"><a onclick="CopyCode('code_3AC0SX0YG')" onmouseover="ChangeClass(this, 'onhover')" onmouseout="ChangeClass(this, '')">Copy code</a></div>
-<div class="block"><pre id="code_3AC0SX0YG">LOCAL nFileHandle, cBytesRead
+<div class="codeheader"><a onclick="CopyCode('code_1')" onmouseover="ChangeClass(this, 'onhover')" onmouseout="ChangeClass(this, '')">Copy code</a></div>
+<div class="block"><pre id="code_1">LOCAL nFileHandle, cBytesRead
 nFileHandle=FOpenEx("c:\temp\audit.log")
 cBytesRead = FReadEx(nFileHandle, 20)
 ? cBytesRead &amp;&amp; Returns 1st 20 bytes of the file, since the read position wasn't moved after <a href="/pages/FOpenEx.html">FOpenEx</a>()

@@ -36,8 +36,8 @@ The name is limited to MAX_PATH (260) characters.</p>
 <dl class="parm"><dt><a id="p4">cCallback</a></dt>
 <dd><p>The function to call when one of the filter conditions occur in the monitored directory or subtree.<br />
 The function should have to following signature:</p>
-<div class="codeheader"><a onclick="CopyCode('code_3AC0SX0VF')" onmouseover="ChangeClass(this, 'onhover')" onmouseout="ChangeClass(this, '')">Copy code</a></div>
-<div class="block"><pre id="code_3AC0SX0VF">FUNCTION FolderChanged
+<div class="codeheader"><a onclick="CopyCode('code_1')" onmouseover="ChangeClass(this, 'onhover')" onmouseout="ChangeClass(this, '')">Copy code</a></div>
+<div class="block"><pre id="code_1">FUNCTION FolderChanged
     LPARAMETERS hHandle, cPath, nError
     IF nError = 0
         ? cPath + ' changed'
