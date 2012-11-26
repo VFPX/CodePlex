@@ -340,6 +340,9 @@ DEFINE CLASS _codeAnalyzer AS CUSTOM
 		*- Again don't rely on the HOME(), use SYS(16) instead. Now strip class/method names to
 		*- get the homedir for the data
 		LOCAL lcProgram
+		LOCAL lcSetExact
+		lcSetExact=SET("EXACT")
+		SET EXACT OFF
 		IF SYS(16)="PROCEDURE"
 			lcProgram = ALLTRIM(SUBSTR(SYS(16),ATC(" ",SYS(16),2)+1))
 		ELSE
@@ -369,7 +372,9 @@ DEFINE CLASS _codeAnalyzer AS CUSTOM
 
 		DEFINE BAR 5942 OF _MTOOLS PROMPT "Code Analyst..." AFTER  _MTL_TOOLBOX
 		ON SELECTION BAR 5942 OF _MTOOLS &lcDir
-
+		
+	SET EXACT &lcSetExact
+		
 	ENDPROC
 
 	PROCEDURE BuildAnalysisCursor
