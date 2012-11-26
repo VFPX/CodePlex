@@ -470,6 +470,7 @@ ENDIF
 	PROCEDURE Analyze
 		LPARAMETERS tcFile
 		THIS.cMessage = ""
+		THIS.cError = ""
 		LOCAL lcDir
 		lcDir = CURDIR()
 		THIS.cMainProgram = tcFile
