@@ -108,7 +108,13 @@ IF PEMSTATUS(_SCREEN,"_analyst",5)
 ENDIF
 DODEFAULT()
 
-
+USE IN (SELECT("CODERULE"))
+USE IN (SELECT("FOXRESOURCE"))
+USE IN (SELECT("FOXREFCURSOR"))
+IF PEMSTATUS(_SCREEN,"_analyst",5)
+USE IN (SELECT(_SCREEN._Analyst.cANALYSISCURSOR))
+ENDIF
+	
 ENDPROC
 PROCEDURE Init
 #include "foxref.h"
@@ -187,7 +193,7 @@ THIS.SetFonts()
 THIS.Visible = .T.
 THIS.LoadNodes()
 THIS.FillRules()
-THIS.Caption = "Code Analysis Results"
+THIS.Caption = "Code Analysis Results for " + _SCREEN._Analyst.cMainProgram
 THIS.SetFont()
 
 BINDEVENT(THIS, "OnSortBy", THIS, "SortBy")
@@ -425,7 +431,7 @@ PROCEDURE exportresults
 LOCAL lc
 lc = PUTFILE("Name:","CODEANAL.DBF","DBF")
 IF NOT EMPTY(lc)
-	SELECT * FROM (THIS.ocode.canalysiscursor) INTO TABLE &lc
+	SELECT * FROM (THIS.ocode.canalysiscursor) INTO TABLE (lc)
 	BROWSE NORMAL
 ENDIF
 
@@ -2265,6 +2271,9 @@ SELECT DISTINCT cprog FROM (THISFORM.ocode.canalysisCursor) ;
 	WHERE JUSTFNAME(UPPER(cProg))==TRIM(lcFile) ;
 	INTO ARRAY la
 IF NOT EMPTY(la(1))
+	IF NOT FILE(la(1))
+		la(1) = _SCREEN._ANALYST.cHomeDir + la(1)
+	ENDIF
 THISFORM.GotoReference(la(1))
 
 ENDIF
@@ -2353,10 +2362,10 @@ ENDIF
 ENDPROC
 [END METHODS]
 [BINSTART OLE]
-CHECKSUM=41539
+CHECKSUM=16378
 [BINEND OLE]
 [BINSTART OLE2]
-CHECKSUM=5108
+CHECKSUM=21978
 [BINEND OLE2]
 
 [ RECORD]
@@ -2435,10 +2444,10 @@ TabIndex = 12
 Name = "oBrowser"
 [END PROPERTIES]
 [BINSTART OLE]
-CHECKSUM=42289
+CHECKSUM=41790
 [BINEND OLE]
 [BINSTART OLE2]
-CHECKSUM=63254
+CHECKSUM=40379
 [BINEND OLE2]
 
 [ RECORD]
@@ -2721,5 +2730,5 @@ Tahoma, 0, 8, 5, 13, 11, 23, 2, 0
 Microsoft Sans Serif, 0, 8, 5, 13, 11, 23, 2, 0
 [END PROPERTIES]
 [START RESERVED1]
-  foxref.hæ&“Z…:? ..\..\..\program files (x86)\microsoft visual foxpro 9\foxpro.hî'’‰1[END RESERVED1]
+  foxref.h~Ló!zA9 ..\..\..\program files\microsoft visual foxpro 9\foxpro.h†MŠ‰1[END RESERVED1]
 [EOF]
