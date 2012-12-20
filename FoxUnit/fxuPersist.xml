@@ -1,0 +1,5312 @@
+<?xml version = "1.0" encoding="Windows-1252" standalone="yes"?>
+<VFPData>
+	<xsd:schema id="VFPData" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+		<xsd:element name="VFPData" msdata:IsDataSet="true">
+			<xsd:complexType>
+				<xsd:choice maxOccurs="unbounded">
+					<xsd:element name="foxunitpersist" minOccurs="0" maxOccurs="unbounded">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="userid">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="10"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="setting">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+							</xsd:sequence>
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:choice>
+				<xsd:anyAttribute namespace="http://www.w3.org/XML/1998/namespace" processContents="lax"/>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:schema>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Top = 204</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Left = 236</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Height = IIF(VERSION(5)&gt;=900,480,480)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Width = IIF(VERSION(5)&gt;=900,724,724)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomTop = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomLeft = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomHeight = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomWidth = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomWindowState = 0</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.ActivePage = 1</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontName = "Arial"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontName = "Arial"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilLargeGrid=.F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.COLUMN1.Width = 208</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.COLUMN2.Width = 466</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>SET ORDER TO TAG TCLOC IN (THIS.icGridRS)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>=SEEK("                                                                                                                                                                                                        ",THIS.icGridRS,"TCLName")</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilAllowDebug = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ShowTips = .T.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilHonorTestPrefix = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilReloadTestsOnRun = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilCloseDebuggerAtEndOfTestsRun = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Top = 343</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Left = 434</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Height = IIF(VERSION(5)&gt;=900,480,480)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Width = IIF(VERSION(5)&gt;=900,724,724)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomTop = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomLeft = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomHeight = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomWidth = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomWindowState = 0</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.ActivePage = 1</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontName = "Arial"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontName = "Arial"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilLargeGrid=.F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.COLUMN1.Width = 208</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.COLUMN2.Width = 466</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>SET ORDER TO TAG TCLOC IN (THIS.icGridRS)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>=SEEK("                                                                                                                                                                                                        ",THIS.icGridRS,"TCLName")</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilAllowDebug = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ShowTips = .T.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilHonorTestPrefix = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilReloadTestsOnRun = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilCloseDebuggerAtEndOfTestsRun = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Top = 321</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Left = 584</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Height = IIF(VERSION(5)&gt;=900,480,480)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Width = IIF(VERSION(5)&gt;=900,724,724)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomTop = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomLeft = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomHeight = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomWidth = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomWindowState = 0</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.ActivePage = 1</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontName = "Arial"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontName = "Arial"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilLargeGrid=.F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.COLUMN1.Width = 208</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.COLUMN2.Width = 466</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>SET ORDER TO TAG TCLOC IN (THIS.icGridRS)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>=SEEK("                                                                                                                                                                                                        ",THIS.icGridRS,"TCLName")</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilAllowDebug = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ShowTips = .T.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilHonorTestPrefix = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilReloadTestsOnRun = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilCloseDebuggerAtEndOfTestsRun = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Top = 343</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Left = 434</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Height = IIF(VERSION(5)&gt;=900,480,480)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Width = IIF(VERSION(5)&gt;=900,724,724)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomTop = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomLeft = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomHeight = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomWidth = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomWindowState = 0</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.ActivePage = 1</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontName = "Arial"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontName = "Arial"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilLargeGrid=.F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.COLUMN1.Width = 208</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.COLUMN2.Width = 466</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>SET ORDER TO TAG TCLOC IN (THIS.icGridRS)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>=SEEK("                                                                                                                                                                                                        ",THIS.icGridRS,"TCLName")</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilAllowDebug = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ShowTips = .T.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilHonorTestPrefix = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilReloadTestsOnRun = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilCloseDebuggerAtEndOfTestsRun = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Top = 343</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Left = 434</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Height = IIF(VERSION(5)&gt;=900,480,480)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Width = IIF(VERSION(5)&gt;=900,724,724)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomTop = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomLeft = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomHeight = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomWidth = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomWindowState = 0</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.ActivePage = 1</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontName = "Arial"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontName = "Arial"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilLargeGrid=.F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.COLUMN1.Width = 208</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.COLUMN2.Width = 466</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>SET ORDER TO TAG TCLOC IN (THIS.icGridRS)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>=SEEK("                                                                                                                                                                                                        ",THIS.icGridRS,"TCLName")</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilAllowDebug = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ShowTips = .T.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilHonorTestPrefix = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilReloadTestsOnRun = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilCloseDebuggerAtEndOfTestsRun = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Top = 343</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Left = 434</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Height = IIF(VERSION(5)&gt;=900,480,480)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Width = IIF(VERSION(5)&gt;=900,724,724)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomTop = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomLeft = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomHeight = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomWidth = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomWindowState = 0</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.ActivePage = 1</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontName = "Arial"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontName = "Arial"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilLargeGrid=.F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.Column1.Width = 208</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.Column2.Width = 466</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>SET ORDER TO TAG TCLOC IN (THIS.icGridRS)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>=SEEK("                                                                                                                                                                                                        ",THIS.icGridRS,"TCLName")</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilAllowDebug = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ShowTips = .T.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilHonorTestPrefix = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilReloadTestsOnRun = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilCloseDebuggerAtEndOfTestsRun = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Top = 343</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Left = 434</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Height = IIF(VERSION(5)&gt;=900,480,480)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Width = IIF(VERSION(5)&gt;=900,724,724)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomTop = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomLeft = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomHeight = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomWidth = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomWindowState = 0</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.ActivePage = 1</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontName = "Arial"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontName = "Arial"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilLargeGrid=.F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.Column1.Width = 208</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.Column2.Width = 466</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>SET ORDER TO TAG TCLOC IN (THIS.icGridRS)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>=SEEK("                                                                                                                                                                                                        ",THIS.icGridRS,"TCLName")</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilAllowDebug = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ShowTips = .T.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilHonorTestPrefix = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilReloadTestsOnRun = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilCloseDebuggerAtEndOfTestsRun = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Top = 343</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Left = 434</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Height = IIF(VERSION(5)&gt;=900,480,480)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Width = IIF(VERSION(5)&gt;=900,724,724)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomTop = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomLeft = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomHeight = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomWidth = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomWindowState = 0</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.ActivePage = 1</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontName = "Arial"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontName = "Arial"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilLargeGrid=.F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.Column1.Width = 208</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.Column2.Width = 466</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>SET ORDER TO TAG TCLOC IN (THIS.icGridRS)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>=SEEK("                                                                                                                                                                                                        ",THIS.icGridRS,"TCLName")</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilAllowDebug = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ShowTips = .T.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilHonorTestPrefix = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilReloadTestsOnRun = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilCloseDebuggerAtEndOfTestsRun = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Top = 343</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Left = 434</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Height = IIF(VERSION(5)&gt;=900,480,480)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Width = IIF(VERSION(5)&gt;=900,724,724)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomTop = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomLeft = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomHeight = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomWidth = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomWindowState = 0</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.ActivePage = 1</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontName = "Arial"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontName = "Arial"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilLargeGrid=.F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.COLUMN1.Width = 208</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.COLUMN2.Width = 466</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>SET ORDER TO TAG TCLOC IN (THIS.icGridRS)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>=SEEK("                                                                                                                                                                                                        ",THIS.icGridRS,"TCLName")</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilAllowDebug = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ShowTips = .T.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilHonorTestPrefix = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilReloadTestsOnRun = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilCloseDebuggerAtEndOfTestsRun = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Top = 343</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Left = 434</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Height = IIF(VERSION(5)&gt;=900,480,480)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Width = IIF(VERSION(5)&gt;=900,724,724)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomTop = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomLeft = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomHeight = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomWidth = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomWindowState = 0</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.ActivePage = 1</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontName = "Arial"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontName = "Arial"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilLargeGrid=.F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.COLUMN1.Width = 208</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.COLUMN2.Width = 466</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>SET ORDER TO TAG TCLOC IN (THIS.icGridRS)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>=SEEK("                                                                                                                                                                                                        ",THIS.icGridRS,"TCLName")</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilAllowDebug = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ShowTips = .T.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilHonorTestPrefix = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilReloadTestsOnRun = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilCloseDebuggerAtEndOfTestsRun = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Top = 343</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Left = 434</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Height = IIF(VERSION(5)&gt;=900,480,480)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Width = IIF(VERSION(5)&gt;=900,724,724)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomTop = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomLeft = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomHeight = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomWidth = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomWindowState = 0</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.ActivePage = 1</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontName = "Arial"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontName = "Arial"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilLargeGrid=.F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.COLUMN1.Width = 208</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.COLUMN2.Width = 466</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>SET ORDER TO TAG TCLOC IN (THIS.icGridRS)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>=SEEK("                                                                                                                                                                                                        ",THIS.icGridRS,"TCLName")</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilAllowDebug = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ShowTips = .T.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilHonorTestPrefix = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilReloadTestsOnRun = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilCloseDebuggerAtEndOfTestsRun = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Top = 343</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Left = 434</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Height = IIF(VERSION(5)&gt;=900,480,480)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Width = IIF(VERSION(5)&gt;=900,724,724)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomTop = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomLeft = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomHeight = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomWidth = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomWindowState = 0</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.ActivePage = 1</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontName = "Arial"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontName = "Arial"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilLargeGrid=.F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.COLUMN1.Width = 208</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.COLUMN2.Width = 466</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>SET ORDER TO TAG TCLOC IN (THIS.icGridRS)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>=SEEK("                                                                                                                                                                                                        ",THIS.icGridRS,"TCLName")</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilAllowDebug = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ShowTips = .T.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilHonorTestPrefix = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilReloadTestsOnRun = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilCloseDebuggerAtEndOfTestsRun = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Top = 343</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Left = 434</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Height = IIF(VERSION(5)&gt;=900,480,480)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Width = IIF(VERSION(5)&gt;=900,724,724)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomTop = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomLeft = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomHeight = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomWidth = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomWindowState = 0</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.ActivePage = 1</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontName = "Arial"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontName = "Arial"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilLargeGrid=.F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.COLUMN1.Width = 208</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.COLUMN2.Width = 466</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>SET ORDER TO TAG TCLOC IN (THIS.icGridRS)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>=SEEK("                                                                                                                                                                                                        ",THIS.icGridRS,"TCLName")</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilAllowDebug = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ShowTips = .T.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilHonorTestPrefix = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilReloadTestsOnRun = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilCloseDebuggerAtEndOfTestsRun = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Top = 343</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Left = 434</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Height = IIF(VERSION(5)&gt;=900,480,480)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Width = IIF(VERSION(5)&gt;=900,724,724)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomTop = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomLeft = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomHeight = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomWidth = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomWindowState = 0</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.ActivePage = 1</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontName = "Arial"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontName = "Arial"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilLargeGrid=.F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.COLUMN1.Width = 208</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.COLUMN2.Width = 466</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>SET ORDER TO TAG TCLOC IN (THIS.icGridRS)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>=SEEK("                                                                                                                                                                                                        ",THIS.icGridRS,"TCLName")</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilAllowDebug = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ShowTips = .T.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilHonorTestPrefix = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilReloadTestsOnRun = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilCloseDebuggerAtEndOfTestsRun = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Top = 343</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Left = 434</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Height = IIF(VERSION(5)&gt;=900,480,480)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Width = IIF(VERSION(5)&gt;=900,724,724)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomTop = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomLeft = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomHeight = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomWidth = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomWindowState = 0</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.ActivePage = 1</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontName = "Arial"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontName = "Arial"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilLargeGrid=.F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.COLUMN1.Width = 208</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.COLUMN2.Width = 466</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>SET ORDER TO TAG TCLOC IN (THIS.icGridRS)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>=SEEK("                                                                                                                                                                                                        ",THIS.icGridRS,"TCLName")</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilAllowDebug = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ShowTips = .T.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilHonorTestPrefix = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilReloadTestsOnRun = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilCloseDebuggerAtEndOfTestsRun = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Top = 343</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Left = 434</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Height = IIF(VERSION(5)&gt;=900,480,480)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Width = IIF(VERSION(5)&gt;=900,724,724)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomTop = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomLeft = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomHeight = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomWidth = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomWindowState = 0</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.ActivePage = 1</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontName = "Arial"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontName = "Arial"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilLargeGrid=.F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.COLUMN1.Width = 208</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.COLUMN2.Width = 466</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>SET ORDER TO TAG TCLOC IN (THIS.icGridRS)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>=SEEK("                                                                                                                                                                                                        ",THIS.icGridRS,"TCLName")</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilAllowDebug = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ShowTips = .T.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilHonorTestPrefix = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilReloadTestsOnRun = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilCloseDebuggerAtEndOfTestsRun = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Top = 343</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Left = 434</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Height = IIF(VERSION(5)&gt;=900,480,480)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Width = IIF(VERSION(5)&gt;=900,724,724)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomTop = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomLeft = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomHeight = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomWidth = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomWindowState = 0</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.ActivePage = 1</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontName = "Arial"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontName = "Arial"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilLargeGrid=.F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.COLUMN1.Width = 208</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.COLUMN2.Width = 466</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>SET ORDER TO TAG TCLOC IN (THIS.icGridRS)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>=SEEK("                                                                                                                                                                                                        ",THIS.icGridRS,"TCLName")</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilAllowDebug = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ShowTips = .T.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilHonorTestPrefix = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilReloadTestsOnRun = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilCloseDebuggerAtEndOfTestsRun = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Top = 343</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Left = 434</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Height = IIF(VERSION(5)&gt;=900,480,480)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Width = IIF(VERSION(5)&gt;=900,724,724)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomTop = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomLeft = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomHeight = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomWidth = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomWindowState = 0</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.ActivePage = 1</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontName = "Arial"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontName = "Arial"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilLargeGrid=.F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.COLUMN1.Width = 208</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.COLUMN2.Width = 466</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>SET ORDER TO TAG TCLOC IN (THIS.icGridRS)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>=SEEK("                                                                                                                                                                                                        ",THIS.icGridRS,"TCLName")</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilAllowDebug = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ShowTips = .T.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilHonorTestPrefix = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilReloadTestsOnRun = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilCloseDebuggerAtEndOfTestsRun = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Top = 343</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Left = 434</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Height = IIF(VERSION(5)&gt;=900,480,480)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Width = IIF(VERSION(5)&gt;=900,724,724)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomTop = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomLeft = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomHeight = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomWidth = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomWindowState = 0</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.ActivePage = 1</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontName = "Arial"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontName = "Arial"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilLargeGrid=.F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.COLUMN1.Width = 208</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.COLUMN2.Width = 466</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>SET ORDER TO TAG  IN (THIS.icGridRS)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>=SEEK("                                                                                                                                                                                                        ",THIS.icGridRS,"TCLName")</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilAllowDebug = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ShowTips = .T.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilHonorTestPrefix = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilReloadTestsOnRun = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilCloseDebuggerAtEndOfTestsRun = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Top = 343</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Left = 434</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Height = IIF(VERSION(5)&gt;=900,480,480)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Width = IIF(VERSION(5)&gt;=900,724,724)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomTop = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomLeft = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomHeight = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomWidth = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomWindowState = 0</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.ActivePage = 1</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontName = "Arial"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontName = "Arial"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilLargeGrid=.F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.COLUMN1.Width = 208</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.COLUMN2.Width = 466</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>SET ORDER TO TAG TCLOC IN (THIS.icGridRS)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>=SEEK("SSEPRESENTER_TESTS                                                              (NONE)                                                                                                                  ",THIS.icGridRS,"TCLName")</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilAllowDebug = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ShowTips = .T.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilHonorTestPrefix = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilReloadTestsOnRun = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilCloseDebuggerAtEndOfTestsRun = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Top = 343</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Left = 434</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Height = IIF(VERSION(5)&gt;=900,480,480)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Width = IIF(VERSION(5)&gt;=900,724,724)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomTop = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomLeft = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomHeight = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomWidth = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomWindowState = 0</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.ActivePage = 1</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontName = "Arial"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontName = "Arial"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilLargeGrid=.F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.COLUMN1.Width = 208</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.COLUMN2.Width = 466</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>SET ORDER TO TAG TCLOC IN (THIS.icGridRS)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>=SEEK("MOCKERYTESTS                                                                    (NONE)                                                                                                                  ",THIS.icGridRS,"TCLName")</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilAllowDebug = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ShowTips = .T.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilHonorTestPrefix = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilReloadTestsOnRun = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilCloseDebuggerAtEndOfTestsRun = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Top = 343</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Left = 434</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Height = IIF(VERSION(5)&gt;=900,480,480)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Width = IIF(VERSION(5)&gt;=900,724,724)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomTop = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomLeft = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomHeight = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomWidth = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomWindowState = 0</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.ActivePage = 1</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontName = "Arial"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontName = "Arial"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilLargeGrid=.F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.COLUMN1.Width = 208</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.COLUMN2.Width = 466</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>SET ORDER TO TAG TCLOC IN (THIS.icGridRS)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>=SEEK("MOCKERYTESTS                                                                    TESTOBJECTCUSTOMMETHOD100RETURNVALUE                                                                                    ",THIS.icGridRS,"TCLName")</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilAllowDebug = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ShowTips = .T.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilHonorTestPrefix = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilReloadTestsOnRun = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilCloseDebuggerAtEndOfTestsRun = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>THIS.Top = 0</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>THIS.Left = 0</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>THIS.Height = IIF(VERSION(5)&gt;=900,480,480)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>THIS.Width = IIF(VERSION(5)&gt;=900,724,724)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>THIS.inZoomTop = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>THIS.inZoomLeft = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>THIS.inZoomHeight = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>THIS.inZoomWidth = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>THIS.inZoomWindowState = 0</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>THIS.pgfDetails.ActivePage = 1</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>THIS.grdTests.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>THIS.grdTests.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>THIS.grdTests.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>THIS.grdTests.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontName = "Arial"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>THIS.pgfDetails.pgMessages.FontName = "Arial"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>THIS.pgfDetails.pgMessages.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>THIS.pgfDetails.pgMessages.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>THIS.pgfDetails.pgMessages.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>THIS.ilLargeGrid=.F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>THIS.grdTests.COLUMN1.Width = 208</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>THIS.grdTests.COLUMN2.Width = 466</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>SET ORDER TO TAG TCLOC IN (THIS.icGridRS)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>=SEEK("MOCKERYTESTS                                                                    TESTMOCKERYWASCREATED                                                                                                   ",THIS.icGridRS,"TCLName")</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>THIS.ilAllowDebug = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>THIS.ShowTips = .T.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>THIS.ilHonorTestPrefix = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>THIS.ilReloadTestsOnRun = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>THIS.ilCloseDebuggerAtEndOfTestsRun = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Top = 343</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Left = 434</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Height = IIF(VERSION(5)&gt;=900,480,480)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Width = IIF(VERSION(5)&gt;=900,724,724)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomTop = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomLeft = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomHeight = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomWidth = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomWindowState = 0</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.ActivePage = 1</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontName = "Arial"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontName = "Arial"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilLargeGrid=.F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.COLUMN1.Width = 208</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.COLUMN2.Width = 466</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>SET ORDER TO TAG TCLOC IN (THIS.icGridRS)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>=SEEK("MOCKERYTESTS                                                                    TESTMOCKERYWASCREATED                                                                                                   ",THIS.icGridRS,"TCLName")</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilAllowDebug = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ShowTips = .T.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilHonorTestPrefix = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilReloadTestsOnRun = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilCloseDebuggerAtEndOfTestsRun = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>alan.steve</userid>
+		<setting>THIS.Top = 343</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>alan.steve</userid>
+		<setting>THIS.Left = 434</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>alan.steve</userid>
+		<setting>THIS.Height = IIF(VERSION(5)&gt;=900,480,480)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>alan.steve</userid>
+		<setting>THIS.Width = IIF(VERSION(5)&gt;=900,724,724)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>alan.steve</userid>
+		<setting>THIS.inZoomTop = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>alan.steve</userid>
+		<setting>THIS.inZoomLeft = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>alan.steve</userid>
+		<setting>THIS.inZoomHeight = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>alan.steve</userid>
+		<setting>THIS.inZoomWidth = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>alan.steve</userid>
+		<setting>THIS.inZoomWindowState = 0</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>alan.steve</userid>
+		<setting>THIS.pgfDetails.ActivePage = 1</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>alan.steve</userid>
+		<setting>THIS.grdTests.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>alan.steve</userid>
+		<setting>THIS.grdTests.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>alan.steve</userid>
+		<setting>THIS.grdTests.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>alan.steve</userid>
+		<setting>THIS.grdTests.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>alan.steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontName = "Arial"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>alan.steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>alan.steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>alan.steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>alan.steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>alan.steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>alan.steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>alan.steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>alan.steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontName = "Arial"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>alan.steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>alan.steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>alan.steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>alan.steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>alan.steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>alan.steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>alan.steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>alan.steve</userid>
+		<setting>THIS.ilLargeGrid=.F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>alan.steve</userid>
+		<setting>THIS.grdTests.COLUMN1.Width = 208</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>alan.steve</userid>
+		<setting>THIS.grdTests.COLUMN2.Width = 466</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>alan.steve</userid>
+		<setting>SET ORDER TO TAG TCLOC IN (THIS.icGridRS)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>alan.steve</userid>
+		<setting>=SEEK("MOCKERYTESTS                                                                    TESTMOCKERYWASCREATED                                                                                                   ",THIS.icGridRS,"TCLName")</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>alan.steve</userid>
+		<setting>THIS.ilAllowDebug = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>alan.steve</userid>
+		<setting>THIS.ShowTips = .T.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>alan.steve</userid>
+		<setting>THIS.ilHonorTestPrefix = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>alan.steve</userid>
+		<setting>THIS.ilReloadTestsOnRun = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>alan.steve</userid>
+		<setting>THIS.ilCloseDebuggerAtEndOfTestsRun = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Top = 350</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Left = 548</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Height = IIF(VERSION(5)&gt;=900,480,480)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Width = IIF(VERSION(5)&gt;=900,724,724)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomTop = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomLeft = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomHeight = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomWidth = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomWindowState = 0</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.ActivePage = 1</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontName = "Arial"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontName = "Arial"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilLargeGrid=.F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.COLUMN1.Width = 208</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.COLUMN2.Width = 466</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>SET ORDER TO TAG TCLOC IN (THIS.icGridRS)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>=SEEK("MOCKERYTESTS                                                                    TESTMOCKERYWASCREATED                                                                                                   ",THIS.icGridRS,"TCLName")</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilAllowDebug = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ShowTips = .T.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilHonorTestPrefix = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilReloadTestsOnRun = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilCloseDebuggerAtEndOfTestsRun = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Top = 343</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Left = 434</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Height = IIF(VERSION(5)&gt;=900,480,480)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Width = IIF(VERSION(5)&gt;=900,724,724)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomTop = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomLeft = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomHeight = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomWidth = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomWindowState = 0</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.ActivePage = 1</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontName = "Arial"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontName = "Arial"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilLargeGrid=.F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.COLUMN1.Width = 208</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.COLUMN2.Width = 466</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>SET ORDER TO TAG TCLOC IN (THIS.icGridRS)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>=SEEK("MOCKERYTESTS                                                                    TESTMOCKERYWASCREATED                                                                                                   ",THIS.icGridRS,"TCLName")</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilAllowDebug = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ShowTips = .T.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilHonorTestPrefix = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilReloadTestsOnRun = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilCloseDebuggerAtEndOfTestsRun = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Top = 343</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Left = 434</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Height = IIF(VERSION(5)&gt;=900,480,480)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Width = IIF(VERSION(5)&gt;=900,724,724)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomTop = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomLeft = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomHeight = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomWidth = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomWindowState = 0</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.ActivePage = 1</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontName = "Arial"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontName = "Arial"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilLargeGrid=.F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.COLUMN1.Width = 208</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.COLUMN2.Width = 466</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>SET ORDER TO TAG TCLOC IN (THIS.icGridRS)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>=SEEK("MOCKERYTESTS                                                                    TESTMOCKERYWASCREATED                                                                                                   ",THIS.icGridRS,"TCLName")</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilAllowDebug = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ShowTips = .T.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilHonorTestPrefix = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilReloadTestsOnRun = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilCloseDebuggerAtEndOfTestsRun = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Top = 343</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Left = 434</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Height = IIF(VERSION(5)&gt;=900,480,480)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Width = IIF(VERSION(5)&gt;=900,724,724)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomTop = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomLeft = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomHeight = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomWidth = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomWindowState = 0</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.ActivePage = 1</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontName = "Arial"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontName = "Arial"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilLargeGrid=.F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.COLUMN1.Width = 208</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.COLUMN2.Width = 466</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>SET ORDER TO TAG TCLOC IN (THIS.icGridRS)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>=SEEK("MOCKERYTESTS                                                                    TESTMOCKERYWASCREATED                                                                                                   ",THIS.icGridRS,"TCLName")</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilAllowDebug = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ShowTips = .T.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilHonorTestPrefix = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilReloadTestsOnRun = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilCloseDebuggerAtEndOfTestsRun = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Top = 81</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Left = 2155</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Height = IIF(VERSION(5)&gt;=900,480,480)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Width = IIF(VERSION(5)&gt;=900,724,724)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomTop = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomLeft = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomHeight = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomWidth = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomWindowState = 0</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.ActivePage = 1</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontName = "Arial"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontBold = .T.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontName = "Arial"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilLargeGrid=.F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.COLUMN1.Width = 208</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.COLUMN2.Width = 466</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>SET ORDER TO TAG TCLOC IN (THIS.icGridRS)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>=SEEK("TESTSUDFDATES                                                                   TESTDAYS2CAL                                                                                                            ",THIS.icGridRS,"TCLName")</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilAllowDebug = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ShowTips = .T.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilHonorTestPrefix = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilReloadTestsOnRun = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilCloseDebuggerAtEndOfTestsRun = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Top = 343</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Left = 434</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Height = IIF(VERSION(5)&gt;=900,480,480)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Width = IIF(VERSION(5)&gt;=900,724,724)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomTop = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomLeft = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomHeight = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomWidth = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomWindowState = 0</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.ActivePage = 1</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontName = "Arial"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontBold = .T.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontName = "Arial"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilLargeGrid=.F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.COLUMN1.Width = 208</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.COLUMN2.Width = 466</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>SET ORDER TO TAG TCLOC IN (THIS.icGridRS)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>=SEEK("TESTSUDFDATES                                                                   TESTFORMATDAY                                                                                                           ",THIS.icGridRS,"TCLName")</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilAllowDebug = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ShowTips = .T.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilHonorTestPrefix = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilReloadTestsOnRun = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilCloseDebuggerAtEndOfTestsRun = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Top = 343</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Left = 594</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Height = IIF(VERSION(5)&gt;=900,480,480)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Width = IIF(VERSION(5)&gt;=900,724,724)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomTop = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomLeft = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomHeight = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomWidth = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomWindowState = 0</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.ActivePage = 1</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontName = "Arial"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontName = "Arial"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilLargeGrid=.F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.COLUMN1.Width = 208</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.COLUMN2.Width = 466</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>SET ORDER TO TAG TCLOC IN (THIS.icGridRS)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>=SEEK("MOCKERYTESTS                                                                    TESTMOCKERYWASCREATED                                                                                                   ",THIS.icGridRS,"TCLName")</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilAllowDebug = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ShowTips = .T.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilHonorTestPrefix = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilReloadTestsOnRun = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilCloseDebuggerAtEndOfTestsRun = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Top = 343</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Left = 594</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Height = IIF(VERSION(5)&gt;=900,480,480)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.Width = IIF(VERSION(5)&gt;=900,724,724)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomTop = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomLeft = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomHeight = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomWidth = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.inZoomWindowState = 0</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.ActivePage = 1</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontName = "Arial"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontName = "Arial"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilLargeGrid=.F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.COLUMN1.Width = 208</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.grdTests.COLUMN2.Width = 466</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>SET ORDER TO TAG TCLOC IN (THIS.icGridRS)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>=SEEK("MOCKERYTESTS                                                                    TESTMOCKERYWASCREATED                                                                                                   ",THIS.icGridRS,"TCLName")</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilAllowDebug = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ShowTips = .T.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilHonorTestPrefix = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilReloadTestsOnRun = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Alan.Steve</userid>
+		<setting>THIS.ilCloseDebuggerAtEndOfTestsRun = .F.</setting>
+	</foxunitpersist>
+</VFPData>
