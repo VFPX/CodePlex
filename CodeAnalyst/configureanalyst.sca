@@ -35,13 +35,14 @@ Name = "Dataenvironment"
 [OBJNAME] Form1
 [START PROPERTIES]
 Height = 425
-Width = 716
+Width = 721
 DoCreate = .T.
 AutoCenter = .T.
 Caption = "Code Analyst Configuration"
 MaxButton = .F.
 MinButton = .F.
-MinHeight = 340
+MinHeight = 396
+MinWidth = 600
 WindowType = 1
 LockScreen = .F.
 _memberdata =       87<VFPData><memberdata name="resetrules" type="method" display="ResetRules"/></VFPData>
@@ -154,6 +155,7 @@ _memberdata XML Metadata for customizable properties
 [START PROPERTIES]
 FontName = "Tahoma"
 FontSize = 8
+Anchor = 130
 ColumnCount = 0
 ColumnWidths = ""
 RowSourceType = 1
@@ -187,7 +189,7 @@ Height = 27
 Width = 84
 FontName = "Tahoma"
 FontSize = 8
-Anchor = 768
+Anchor = 256
 Caption = "\<Update"
 Name = "cmdUpdate"
 [END PROPERTIES]
@@ -216,7 +218,7 @@ Height = 27
 Width = 84
 FontName = "Tahoma"
 FontSize = 8
-Anchor = 768
+Anchor = 256
 Cancel = .T.
 Caption = "\<Cancel"
 Name = "cmdCancel"
@@ -585,6 +587,11 @@ THIS.AddItem("Object")
 THIS.List(THIS.ListCount,2)="O"
 THIS.AddItem("Line")
 THIS.List(THIS.ListCount,2)="L"
+THIS.AddItem("Pre-Analysis")
+THIS.List(THIS.ListCount,2)="I"
+
+THIS.AddItem("Post-Analysis")
+THIS.List(THIS.ListCount,2)="P"
 
 ENDPROC
 [END METHODS]
@@ -679,7 +686,7 @@ Height = 27
 Width = 84
 FontName = "Tahoma"
 FontSize = 8
-Anchor = 768
+Anchor = 256
 Caption = "\<Add"
 Name = "cmdAdd"
 [END PROPERTIES]
@@ -728,7 +735,7 @@ Height = 27
 Width = 84
 FontName = "Tahoma"
 FontSize = 8
-Anchor = 768
+Anchor = 256
 Caption = "\<Reset..."
 ToolTipText = "Reset rules to the default rules"
 Name = "cmdReset"
@@ -748,7 +755,7 @@ ENDPROC
 [OBJNAME] txtFont
 [PARENT] Form1
 [START PROPERTIES]
-Anchor = 514
+Anchor = 642
 Height = 21
 Left = 12
 ReadOnly = .T.
@@ -800,7 +807,7 @@ ENDPROC
 [OBJNAME] txtRuleDir
 [PARENT] Form1
 [START PROPERTIES]
-Anchor = 514
+Anchor = 642
 Height = 21
 Left = 300
 ReadOnly = .T.
@@ -882,7 +889,7 @@ Name = "Label3"
 [OBJNAME] txtXMLFile
 [PARENT] Form1
 [START PROPERTIES]
-Anchor = 514
+Anchor = 642
 Height = 21
 Left = 300
 ReadOnly = .F.

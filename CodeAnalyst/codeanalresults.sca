@@ -193,7 +193,11 @@ THIS.SetFonts()
 THIS.Visible = .T.
 THIS.LoadNodes()
 THIS.FillRules()
-THIS.Caption = "Code Analysis Results for " + _SCREEN._Analyst.cMainProgram
+IF _SCREEN._Analyst.IsDirectory
+	THIS.Caption = "Code Analysis Results for " + _SCREEN._Analyst.cDirectory
+ELSE
+	THIS.Caption = "Code Analysis Results for " + _SCREEN._Analyst.cMainProgram
+ENDIF
 THIS.SetFont()
 
 BINDEVENT(THIS, "OnSortBy", THIS, "SortBy")
@@ -1873,22 +1877,7 @@ CASE oNode.Children>0
 						ENDIF
 
 			ENDFOR
-			*!*				lcFile = THIS.aFiles(ASCAN(THIS.aFiles,oNode.key)-1)
-			*!*				LOCAL lni
-			*!*				THIS.lstResults.Clear()
-			*!*				FOR lni = 1 TO ALEN(_SCREEN._analyst.awarnings,1)
-			*!*					IF EMPTY(_SCREEN._analyst.awarnings(lni,1))
-			*!*						LOOP
-			*!*					ENDIF
-			*!*					IF _SCREEN._analyst.awarnings(lni,2)=lcFile
-			*!*						THIS.lstResults.AddItem(_SCREEN._analyst.awarnings(lni,1))
-			*!*						IF NOT EMPTY(_SCREEN._analyst.awarnings(lni,3))
-			*!*						THIS.lstResults.List(THIS.lstResults.ListCount,2) = _SCREEN._analyst.awarnings(lni,3)
-			*!*						ELSE
-			*!*	 					THIS.lstResults.List(THIS.lstResults.ListCount,2) = ""
-			*!*	ENDIF
-			*!*					ENDIF
-			*!*				ENDFOR
+			
 	
 		OTHERWISE
 			lcFile = TRIM(oNode.KEY)
@@ -1920,22 +1909,7 @@ CASE oNode.Children>0
 						ENDIF
 
 			ENDFOR
-			*!*				lcFile = THIS.aFiles(ASCAN(THIS.aFiles,oNode.key)-1)
-			*!*				LOCAL lni
-			*!*				THIS.lstResults.Clear()
-			*!*				FOR lni = 1 TO ALEN(_SCREEN._analyst.awarnings,1)
-			*!*					IF EMPTY(_SCREEN._analyst.awarnings(lni,1))
-			*!*						LOOP
-			*!*					ENDIF
-			*!*					IF _SCREEN._analyst.awarnings(lni,2)=lcFile
-			*!*						THIS.lstResults.AddItem(_SCREEN._analyst.awarnings(lni,1))
-			*!*						IF NOT EMPTY(_SCREEN._analyst.awarnings(lni,3))
-			*!*						THIS.lstResults.List(THIS.lstResults.ListCount,2) = _SCREEN._analyst.awarnings(lni,3)
-			*!*						ELSE
-			*!*	 					THIS.lstResults.List(THIS.lstResults.ListCount,2) = ""
-			*!*	ENDIF
-			*!*					ENDIF
-			*!*				ENDFOR
+			
 		ENDCASE
 
 		IF .F.
@@ -1954,6 +1928,10 @@ CASE oNode.Children>0
 		ENDIF
 	ENDIF
 ENDIF
+IF THIS.lstResults.ListIndex<1 AND THIS.lstResults.ListCount>0
+	THIS.lstResults.ListIndex = 1
+ENDIF
+THIS.ShowWarning()
 
 ENDPROC
 [END METHODS]
@@ -2362,7 +2340,7 @@ ENDIF
 ENDPROC
 [END METHODS]
 [BINSTART OLE]
-CHECKSUM=16378
+CHECKSUM=8265
 [BINEND OLE]
 [BINSTART OLE2]
 CHECKSUM=21978
@@ -2444,7 +2422,7 @@ TabIndex = 12
 Name = "oBrowser"
 [END PROPERTIES]
 [BINSTART OLE]
-CHECKSUM=41790
+CHECKSUM=58580
 [BINEND OLE]
 [BINSTART OLE2]
 CHECKSUM=40379
@@ -2730,5 +2708,5 @@ Tahoma, 0, 8, 5, 13, 11, 23, 2, 0
 Microsoft Sans Serif, 0, 8, 5, 13, 11, 23, 2, 0
 [END PROPERTIES]
 [START RESERVED1]
-  foxref.h~Ló!zA9 ..\..\..\program files\microsoft visual foxpro 9\foxpro.h†MŠ‰1[END RESERVED1]
+  foxref.h¶2ó!zA9 ..\..\..\program files\microsoft visual foxpro 9\foxpro.h¾3Š‰1[END RESERVED1]
 [EOF]

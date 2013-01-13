@@ -4,7 +4,9 @@ IF PCOUNT()=1
 	tlSilent = .F.
 ENDIF
 
-
+IF PCOUNT()=0
+	tcFile = ""
+ENDIF
 EXTERNAL ARRAY taArray
 LOCAL llRunning
 llRunning = PEMSTATUS(_SCREEN,"_Analyst",5)
@@ -18,25 +20,45 @@ IF NOT llRunning
 	ENDIF
 	llRunning = .T.
 ENDIF
+_SCREEN._Analyst.IsDirectory = .F.
+_SCREEN._Analyst.cdirectory = ""
+IF UPPER(tcFile)="DIRECTORY"
+	IF DIRECTORY(tlSilent)
+	_SCREEN._Analyst.IsDirectory = .T.
+	_SCREEN._Analyst.cDirectory = tlSilent
+	 _SCREEN._Analyst.BuildFakeProject(tlSilent)
+	 tcFile = _SCREEN._Analyst.cFile
+	 tlSilent = .T.
+	 ELSE
+	 MESSAGEBOX("Directory " + tlSilent + " does not exist",0+16,"Code Analyst")
+	 tlSilent = .F.
+	 tcFile = ""
+	 
+	ENDIF
+ENDIF
 IF tlSilent
 	_SCREEN._Analyst.lProjectRun = .T.
 ENDIF
 *- Check for a parameter passed. If none is passed, the analyst is just installed in the menu
 *- If the analyst was already installed, start the Analyze anyway.
 
+
 IF PCOUNT()>0 AND UPPER(tcFile)="-CONFIG"
 	_SCREEN._Analyst.Configure()
 ELSE
-IF PCOUNT() = 1 OR llRunning THEN
-	_SCREEN._Analyst.Analyze(tcFile)
-ENDIF
+	IF PCOUNT() = 1 OR llRunning THEN
+		_SCREEN._Analyst.Analyze(tcFile)
+	ENDIF
 ENDIF
 
 DEFINE CLASS _codeAnalyzer AS CUSTOM
 	cFile = ""
 	csetesc = ""
+	csetesclabel = ""
 	cMainProgram = ""
 	cHomeDir = ""
+	isdirectory = .F.
+	cDirectory = ""
 	lLineRules = .F.
 	cLine = ""
 	nLine = 0
@@ -89,7 +111,7 @@ DEFINE CLASS _codeAnalyzer AS CUSTOM
 		_Analysthomedir          = THIS.cHomeDir
 		_AnalystRuledir          = THIS.cRuleDir
 		IF THIS.lUseDefaultDir
-			_AnalystRuleDir = ""
+			_AnalystRuledir = ""
 		ENDIF
 
 		nSelect = SELECT()
@@ -149,6 +171,9 @@ DEFINE CLASS _codeAnalyzer AS CUSTOM
 		nSelect = SELECT()
 
 		lSuccess = .F.
+		IF EMPTY(This.cRuleDir)
+			This.cRuleDir = HOME()
+		ENDIF
 
 		IF FILE(SYS(2005))    && resource file not found.
 			USE (SYS(2005)) IN SELECT("FOXRESOURCE") SHARED AGAIN ALIAS FoxResource
@@ -164,36 +189,36 @@ DEFINE CLASS _codeAnalyzer AS CUSTOM
 				IF FOUND() AND !EMPTY(DATA) AND ckval == VAL(SYS(2007, DATA)) AND EMPTY(NAME)
 					RESTORE FROM MEMO DATA ADDITIVE
 
-					THIS.cFontString = _analystFontString
+					THIS.cFontString = _AnalystFontString
 					IF TYPE("_ANALYSTRuleDIR")="C"
-					IF NOT EMPTY(_analystRuleDir)
-						THIS.lUseDefaultDir = .F.
-						THIS.cRuleDir = _analystRuledir
-					ELSE
-						THIS.lUseDefaultDir = .T.
-						THIS.cRuleDir = CURDIR()
-					ENDIF
+						IF NOT EMPTY(_AnalystRuledir)
+							THIS.lUseDefaultDir = .F.
+							THIS.cRuleDir = _AnalystRuledir
+						ELSE
+							THIS.lUseDefaultDir = .T.
+							THIS.cRuleDir = CURDIR()
+						ENDIF
 					ELSE
 						THIS.lUseDefaultDir = .T.
 						THIS.cRuleDir = CURDIR()
 					ENDIF
 					IF TYPE("_ANALYSTHomeDIR")="C"
-					IF NOT EMPTY(_analystHomeDir)
+						IF NOT EMPTY(_Analysthomedir)
+						ELSE
+							THIS.cHomeDir = CURDIR()
+						ENDIF
 					ELSE
 						THIS.cHomeDir = CURDIR()
 					ENDIF
-					ELSE
-						THIS.cHomeDir = CURDIR()
-					ENDIF
-					
+
 
 
 					IF TYPE("_AnalystResetXML")="C"
-					IF NOT EMPTY(_AnalystResetXML)
-						THIS.cResetFile = _AnalystResetXML 
-					ELSE
-						THIS.cResetFile = ""
-					ENDIF
+						IF NOT EMPTY(_AnalystResetXML)
+							THIS.cResetFile = _AnalystResetXML
+						ELSE
+							THIS.cResetFile = ""
+						ENDIF
 					ELSE
 						THIS.cResetFile = ""
 					ENDIF
@@ -206,6 +231,7 @@ DEFINE CLASS _codeAnalyzer AS CUSTOM
 
 				USE IN FoxResource
 			ENDIF
+		
 		ENDIF
 
 		SELECT (nSelect)
@@ -369,12 +395,13 @@ DEFINE CLASS _codeAnalyzer AS CUSTOM
 		THIS.LoadRules()
 		LOCAL lcDir
 		lcDir = "DO ('"+THIS.cHomeDir +"ANALYST.APP')"
-
+		
+		
 		DEFINE BAR 5942 OF _MTOOLS PROMPT "Code Analyst..." AFTER  _MTL_TOOLBOX
 		ON SELECTION BAR 5942 OF _MTOOLS &lcDir
-		
-	SET EXACT &lcSetExact
-		
+
+		SET EXACT &lcSetExact
+
 	ENDPROC
 
 	PROCEDURE BuildAnalysisCursor
@@ -414,12 +441,12 @@ DEFINE CLASS _codeAnalyzer AS CUSTOM
 		IF EMPTY(tcType)
 			tcType = "Unknown"
 		ENDIF
-		IF EMPTY(THIS.cAnalysisCursor) 
+		IF EMPTY(THIS.cAnalysisCursor)
 			THIS.BuildAnalysisCursor()
 		ELSE
-IF NOT USED(THIS.cAnalysisCursor)
-			THIS.BuildAnalysisCursor()
-ENDIF
+			IF NOT USED(THIS.cAnalysisCursor)
+				THIS.BuildAnalysisCursor()
+			ENDIF
 		ENDIF
 		IF EMPTY(tcFunc)
 			tcFunc = THIS.cFile
@@ -475,7 +502,7 @@ ENDIF
 		lcDir = CURDIR()
 		THIS.cMainProgram = tcFile
 		IF NOT EMPTY(tcFile)
-			IF NOT FILE(tcFile)
+			IF NOT FILE(tcFile) AND NOT USED(tcFile)
 				MESSAGEBOX("File "+tcFile+" does not exist.",16,"Code Analyst")
 				RETURN
 
@@ -487,6 +514,8 @@ ENDIF
 		ENDIF
 		LOCAL lc
 		THIS.ResetArrays()
+		LOCAL lAlias 
+		lAlias = .F.
 		IF EMPTY(tcFile)
 			IF ASELOBJ(la,1)=0
 				** Should we use the Active project or not?
@@ -497,22 +526,28 @@ ENDIF
 				*!*					ELSE
 				*!*						tcFile = _VFP.ActiveProject.Name
 				*!*					ENDIF
-				IF EMPTY(tcFile)				
+				IF EMPTY(tcFile)
 					RETURN
 				ENDIF
 				SET DEFAULT TO (STRTRAN(tcFile,JUSTFNAME(tcFile)))
 				THIS.cHomeDir = (STRTRAN(tcFile,JUSTFNAME(tcFile)))
-				
+
 
 			ENDIF
 		ELSE
-			SET DEFAULT TO (STRTRAN(tcFile,JUSTFNAME(tcFile)))		
-			THIS.cHomeDir = (STRTRAN(tcFile,JUSTFNAME(tcFile)))
+			IF USED(tcFile)
+				lAlias = .T.
+			ELSE
+				SET DEFAULT TO (STRTRAN(tcFile,JUSTFNAME(tcFile)))
+				THIS.cHomeDir = (STRTRAN(tcFile,JUSTFNAME(tcFile)))
+			ENDIF
 		ENDIF
 
 		TRY
 			THIS.csetesc = ON("ESCAPE")
+			THIS.csetEscLabel = ON("KEY","ESC")
 			ON ESCAPE _SCREEN._Analyst.StopAnalysis()
+			ON KEY LABEL ESCAPE _SCREEN.StopAnalysis = .T.
 
 			THIS.PreValidate()
 			IF EMPTY(tcFile)
@@ -537,20 +572,20 @@ ENDIF
 				DOEVENTS
 				THIS.oTherm.SHOW()
 				THIS.AddToCursor(lc,lc,'',"File")
-				THIS.AnalFile(tcFile)
+				THIS.AnalFile(tcFile,lAlias)
 			ENDIF
 
 			THIS.oTherm.HIDE()
 			IF THIS.lDisplayForm
 				IF NOT THIS.lProjectRun OR RECCOUNT(THIS.cAnalysisCursor)>0
 					IF NOT PEMSTATUS(_SCREEN,"_analysisform",5)
-						_SCREEN.AddProperty("_analysisform",.NULL.)					
+						_SCREEN.ADDPROPERTY("_analysisform",.NULL.)
 					ENDIF
 					IF ISNULL(_SCREEN._Analysisform)
 						SELECT 0
-						DO FORM codeanalresults NAME _SCREEN._analysisform
+						DO FORM codeanalresults NAME _SCREEN._Analysisform
 					ELSE
-						_SCREEN._analysisform.refresh()
+						_SCREEN._Analysisform.REFRESH()
 					ENDIF
 				ENDIF
 			ENDIF
@@ -558,18 +593,23 @@ ENDIF
 			IF NOT ISNULL(THIS.oTherm)
 				THIS.oTherm.HIDE()
 			ENDIF
-			
-			ERROR loErr.MESSAGE+ " on line " + TRANSFORM(loErr.Lineno)+" of "+loErr.Procedure 
+
+			ERROR loErr.MESSAGE+ " on line " + TRANSFORM(loErr.LINENO)+" of "+loErr.PROCEDURE
 		ENDTRY
 		THIS.PostValidate()
 		SET DEFAULT TO (lcDir)
 		LOCAL lc
 		lc = THIS.csetesc
 		ON ESCAPE &lc
+		lc = THIS.cSetEscLabel
+		ON KEY LABEL ESCAPE &lc
 
 
 	PROCEDURE StopAnalysis
 		LOCAL lc
+		IF PEMSTATUS(_SCREEN,"StopAnalysis",5)
+			_SCREEN.StopAnalysis = .T.
+		ENDIF
 		lc = THIS.csetesc
 		ON ESCAPE &lc
 		THIS.oTherm.HIDE()
@@ -742,6 +782,87 @@ ENDIF
 		SELECT (lnArea)
 	ENDPROC
 
+	PROCEDURE BuildFakeProject
+		LPARAMETERS tcDir
+		LOCAL lnArea
+		lnArea = SELECT()
+		LOCAL lcFile
+		lcFile = SYS(2015)
+		THIS.cFile = lcFile
+		SELECT 0
+		CREATE CURSOR (lcFile) (TYPE C(1), NAME M)
+		THIS.addtoproj(tcDir,lcFile)
+		SELECT (lnArea)
+
+	ENDPROC
+	FUNCTION GetFileExtensionType
+		LPARAMETERS tcExt
+		LOCAL lcRet
+		lcRet = "X"
+		DO CASE
+			CASE tcExt="PRG"
+				lcRet = "P"
+		ENDCASE
+
+		RETURN lcRet
+	ENDFUNC
+
+	PROCEDURE AddToProj
+		LPARAMETERS tcDir,tcAlias
+		LOCAL lnFiles
+		LOCAL lnDirs
+		LOCAL la(1)
+		LOCAL lni
+		LOCAL lcExt
+
+IF RIGHT(tcDir,1)="\"
+	tcDir = LEFT(tcDir,LEN(tcDir)-1)
+ENDIF
+		lnFiles = ADIR(la,tcDir+"\*.*")
+		FOR lni = 1 TO lnFiles
+			IF LEFT(la(lni,1),1)<>"."
+				lcExt = JUSTEXT(la(lni,1))
+				IF INLIST(lcExt,"PRG","VCX","MNX","FRX","SCX")
+					INSERT INTO (tcAlias) VALUES ("P",FULLPATH(tcDir+"\"+la(lni,1)))
+				ENDIF
+			ENDIF
+		ENDFOR
+
+		lnDirs = ADIR(la,tcDir+"\*.","D")
+		FOR lni = 1 TO lnDirs
+			IF LEFT(la(lni,1),1)<>"."
+				
+				THIS.AddToProj(tcDir+"\"+la(lni,1), tcAlias)
+			ENDIF
+		ENDFOR
+	ENDPROC
+	
+	PROCEDURE scanDirectory
+		LPARAMETERS tcFile
+		
+		LOCAL lnArea,lcFile
+		lnArea = SELECT()
+		LOCAL lnArea,lcAlias
+		IF NOT PEMSTATUS(_SCREEN,"StopAnalysis",5)
+			_SCREEN.AddProperty("StopAnalysis",.F.)
+		ENDIF
+		_SCREEN.StopAnalysis = .F.
+		SELECT (tcFile)
+		lcAlias = ALIAS()
+		SCAN FOR NOT TYPE="H"
+			IF _Screen.StopAnalysis
+				EXIT
+			ENDIF
+			THIS.oTherm.SetProgress(RECNO()/RECCOUNT()*95)
+			lcFile = STRTRAN(NAME,CHR(0))
+			THIS.AnalFile(lcFile)
+		ENDSCAN
+		SELECT (lcAlias)
+		USE
+		SELECT (lnArea)
+
+	ENDPROC
+
 	PROCEDURE scanProject
 		LPARAMETERS tcFile
 		THIS.cFile = tcFile
@@ -762,42 +883,70 @@ ENDIF
 
 	ENDPROC
 	PROCEDURE AnalFile
-		LPARAMETERS tcFile
+		LPARAMETERS tcFile,tlAlias
 
+IF PCOUNT()=1
+	tlAlias = .F.
+ENDIF
 		THIS.oTherm.SetDescription("Analyzing "+tcFile)
 		THIS.cFile = tcFile
+IF tlAlias
+THIS.ScanDirectory(tcFile)
+ELSE
+LOCAL lcRet
+lcRet = ""
 
 		LOCAL lcExt
 		lcExt = UPPER(JUSTEXT(tcFile))
+		TRY
 		DO CASE
 			CASE lcExt = "PRG"
-				RETURN THIS.analstring(FILETOSTR(tcFile))
+				lcRet = THIS.analstring(FILETOSTR(tcFile))
 			CASE lcExt = "SCX"
-				RETURN THIS.ScanSCXVCX(tcFile)
+				lcRet = THIS.ScanSCXVCX(tcFile)
 			CASE lcExt = "MNX"
-				RETURN THIS.ScanMNX(tcFile)
+				lcRet = THIS.ScanMNX(tcFile)
 
 			CASE lcExt = "FRX"
-				RETURN ""
+				lcRet = ""
 
+			CASE lcExt="ZIP"
+				lcRet = "Zip File - Ignored"
+
+			CASE lcExt = "BAK"
+				lcRet = "Ignored"
 			CASE lcExt = "APP"
-				RETURN ""
+				lcRet = ""
 
 			CASE lcExt = "FLL"
-				RETURN ""
+				lcRet = ""
+
+			CASE lcExt = "DBF"
+				lcRet = ""
 
 			CASE lcExt = "PJX"
-				RETURN THIS.scanProject(tcFile)
+				lcRet = THIS.scanProject(tcFile)
 
 			CASE lcExt = "VCX"
-				RETURN THIS.ScanSCXVCX(tcFile)
+				lcRet = THIS.ScanSCXVCX(tcFile)
 
-			CASE INLIST(lcExt,"BMP","TXT","MSK","INC","H","JPG","GIF","ICO")
+			CASE INLIST(lcExt,"BMP","TXT","MSK","INC","H","JPG","GIF","ICO","SCT","MNT","FPT","TBK","PJT","VCT","FRA","SCA","MNA","VCA","XML","HTM","FXP")
 
 			OTHERWISE
-				RETURN THIS.analstring(FILETOSTR(tcFile))
+			LOCAL lc
+				TRY
+				lc = THIS.analstring(FILETOSTR(tcFile))
+				CATCH
+				lc = ""
+				ENDTRY
+				lcRet = lc
 		ENDCASE
-
+		
+		CATCH TO loErr
+		lcRet = "Error reading: " + tcFile +": "+loErr.Message
+		ENDTRY
+		RETURN lcRet
+ENDIF
 
 	PROCEDURE analstring
 		** Takes a piece of code and looks for any breaks in it.
