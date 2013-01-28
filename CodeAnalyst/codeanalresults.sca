@@ -443,7 +443,7 @@ ENDPROC
 PROCEDURE fillrules
 LOCAL la(1,2)
 
-SELECT DISTINCT cwarning,name FROM _SCREEN._analyst.cHomeDir+"CODERULE",(THIS.ocode.cAnalysisCursor) a WHERE coderule.uniqueid=a.cwarning INTO ARRAY la
+SELECT DISTINCT cwarning,name FROM _SCREEN._analyst.cRuleDir+"CODERULE",(THIS.ocode.cAnalysisCursor) a WHERE coderule.uniqueid=a.cwarning INTO ARRAY la
 THIS.cboRules.Clear()
 THIS.cboRules.AddItem("All")
 FOR LNi = 1 TO ALEN(la,1)
@@ -2340,7 +2340,7 @@ ENDIF
 ENDPROC
 [END METHODS]
 [BINSTART OLE]
-CHECKSUM=8265
+CHECKSUM=9307
 [BINEND OLE]
 [BINSTART OLE2]
 CHECKSUM=21978
@@ -2422,7 +2422,7 @@ TabIndex = 12
 Name = "oBrowser"
 [END PROPERTIES]
 [BINSTART OLE]
-CHECKSUM=58580
+CHECKSUM=49687
 [BINEND OLE]
 [BINSTART OLE2]
 CHECKSUM=40379
@@ -2708,5 +2708,5 @@ Tahoma, 0, 8, 5, 13, 11, 23, 2, 0
 Microsoft Sans Serif, 0, 8, 5, 13, 11, 23, 2, 0
 [END PROPERTIES]
 [START RESERVED1]
-  foxref.h¶2ó!zA9 ..\..\..\program files\microsoft visual foxpro 9\foxpro.h¾3Š‰1[END RESERVED1]
+  foxref.h.»ó!zA9 ..\..\..\program files\microsoft visual foxpro 9\foxpro.h6¼Š‰1[END RESERVED1]
 [EOF]
