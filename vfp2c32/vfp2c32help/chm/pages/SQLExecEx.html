@@ -1,6 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1252" />
 <title>SQLExecEx</title><link href="/scripts/styles.css" rel="stylesheet" type="text/css" />
 <script src="/scripts/jscript.js" type="text/javascript"></script>
@@ -13,10 +14,10 @@
 <div id="content">
 <p class="description">Extended <a href="its:dv_foxhelp.chm::/html/8dd6491b-da44-401f-b972-0d51f12f1a07.htm">SQLEXEC</a>, sends a SQL statement to the data source, where the statement is processed.</p>
 
-<div class="block"><pre>SQLExecEx(<a href="#p1">nConn</a>, <a href="#p2">cSQL</a> [, <a href="#p3">cCursors | cVariables</a> [, <a href="#p4">cArrayName</a> [, <a href="#p5">nFlags</a> [, <a href="#p6">cCursorSchema</a> [, <a href="#p7">cParamSchema</a> [, <a href="#p8">cCallback</a> [, <a href="#p9">nCallbackinterval</a>]]]]]]])</pre></div>
+<div class="block"><pre>SQLExecEx(<a href="#p1">nConn | nStatement</a>, <a href="#p2">cSQL</a> [, <a href="#p3">cCursors | cVariables</a> [, <a href="#p4">cArrayName</a> [, <a href="#p5">nFlags</a> [, <a href="#p6">cCursorSchema</a> [, <a href="#p7">cParamSchema</a> [, <a href="#p8">cCallback</a> [, <a href="#p9">nCallbackinterval</a>]]]]]]])</pre></div>
 <h3>Parameters</h3>
-<dl class="parm"><dt><a id="p1">nConn</a></dt>
-<dd><p>A valid ODBC connection handle.</p>
+<dl class="parm"><dt><a id="p1">nConn | nStatement</a></dt>
+<dd><p>A valid ODBC connection handle or a  prepared statement handle returned from <a href="/pages/SQLPrepareEx.html">SQLPrepareEx</a>.</p>
 </dd></dl>
 <dl class="parm"><dt><a id="p2">cSQL</a></dt>
 <dd><p>The SQL statement to execute.<br />
@@ -179,7 +180,9 @@ lcSQL = "{ CALL teststoredproc(?@{lcMessage},?{lcMessage2}) }"
 <a href="/pages/ChangeSQLDataSource.html">ChangeSQLDataSource</a><br />
 <a href="/pages/CreateSQLDataSource.html">CreateSQLDataSource</a><br />
 <a href="/pages/DeleteSQLDataSource.html">DeleteSQLDataSource</a><br />
+<a href="/pages/SQLCancelEx.html">SQLCancelEx</a><br />
 <a href="/pages/SQLGetPropEx.html">SQLGetPropEx</a><br />
+<a href="/pages/SQLPrepareEx.html">SQLPrepareEx</a><br />
 <a href="/pages/SQLSetPropEx.html">SQLSetPropEx</a><br />
 </p>
 <h4>Used WinApi functions</h4>

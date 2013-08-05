@@ -541,8 +541,9 @@ FoxInfo VFP2CFuncs[] =
 	{"ASQLDrivers", (FPFI) ASQLDrivers, 1, "C"},
 	{"SQLGetPropEx", (FPFI) SQLGetPropEx, 3, "?CR"},
 	{"SQLSetPropEx", (FPFI) SQLSetPropEx, 3, "?C.?"},
-	{"SQLExecEx", (FPFI) SQLExecEx, 9, "I.C.C.C.I.C.C.C.I"},
-	//{"SQLPrepareEx", (FPFI) SQLPrepareEx, 7,  "IC.C.I.C.C.I"},
+	{"SQLExecEx", (FPFI) SQLExecEx, 9,        "I.C.C.C.I.C.C.C.I"},
+	{"SQLPrepareEx", (FPFI) SQLPrepareEx, 9,  "IC.C.C.I.C.C.C.I"},
+	{"SQLCancelEx", (FPFI) SQLCancelEx, 1, "I"},
 	//{"TableUpdateEx", (FPFI) TableUpdateEx, 6, "IICCC.C"},
 
 	/* printer functions */

@@ -980,12 +980,20 @@
 			<param name="Local" value="pages\SizeOfMem.html">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="SQLCancelEx">
+			<param name="Local" value="pages\SQLCancelEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="SQLExecEx">
 			<param name="Local" value="pages\SQLExecEx.html">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="SQLGetPropEx">
 			<param name="Local" value="pages\SQLGetPropEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="SQLPrepareEx">
+			<param name="Local" value="pages\SQLPrepareEx.html">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="SQLSetPropEx">
@@ -2204,12 +2212,20 @@
 			<param name="Local" value="pages\DeleteSQLDataSource.html">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="SQLCancelEx">
+			<param name="Local" value="pages\SQLCancelEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="SQLExecEx">
 			<param name="Local" value="pages\SQLExecEx.html">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="SQLGetPropEx">
 			<param name="Local" value="pages\SQLGetPropEx.html">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="SQLPrepareEx">
+			<param name="Local" value="pages\SQLPrepareEx.html">
 			</OBJECT>
 		<LI> <OBJECT type="text/sitemap">
 			<param name="Name" value="SQLSetPropEx">
