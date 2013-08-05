@@ -341,7 +341,7 @@ ENDTEXT
 			RETURN
 		ENDIF
 
-		lcCode = lcCode + OFFSET2 + ['<memberdata name="] + LOWER(loType.cName) + [" type="property" display="] + loType.cName + ["/> + ;] + CRLF
+		lcCode = lcCode + OFFSET2 + ['<memberdata name="] + LOWER(loType.cName) + [" type="property" display="] + loType.cName + ["/>' + ;] + CRLF
 
 	ENDPROC
 	

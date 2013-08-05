@@ -122,6 +122,8 @@ typedef struct _SQLSTATEMENT {
 	SQLSMALLINT nNoOfParms;
 	BOOL bOutputParams;
 	SQLPOINTER pGetDataBuffer;
+	StringValue vCursorName;
+	char *pCursorName;
 	char *pArrayName;
 	char *pCursorNames;
 	char *pCallbackCmd;
@@ -131,6 +133,8 @@ typedef struct _SQLSTATEMENT {
 	char *pParamSchema;
 	char *pSQLSend;
 	char *pSQLInput;
+	char *pCursorname;
+	SQLINTEGER nSQLLen;
 	int nResultset;
 	int nCallbackInterval;
 	SQLINTEGER nRowsTotal;
@@ -140,6 +144,8 @@ typedef struct _SQLSTATEMENT {
 	Locator lArrayLoc;
 	Locator lInfoParm;
 	NTI nInfoNTI;
+	bool bMapVarchar;
+	bool bPrepared;
 } SQLSTATEMENT, *LPSQLSTATEMENT;
 
 #ifdef __cplusplus
@@ -165,9 +171,10 @@ void _fastcall SQLSetPropEx(ParamBlk *parm);
 void _fastcall DBSetPropEx(ParamBlk *parm);
 void _fastcall SQLExecEx(ParamBlk *parm);
 void _fastcall SQLPrepareEx(ParamBlk *parm);
+void _fastcall SQLCancelEx(ParamBlk *parm);
 
-LPSQLSTATEMENT _stdcall SQLAllocStatement(ParamBlk *parm, int *nErrorNo);
-void _stdcall SQLReleaseStatement(ParamBlk *parm, LPSQLSTATEMENT pStmt);
+LPSQLSTATEMENT _stdcall SQLAllocStatement(ParamBlk *parm, int *nErrorNo, bool prepared);
+void _stdcall SQLReleaseStatement(ParamBlk *parm, LPSQLSTATEMENT pStmt, bool prepared);
 void _stdcall SQLFreeColumnBuffers(LPSQLSTATEMENT pStmt);
 
 SQLRETURN _stdcall SQLGetMetaData(LPSQLSTATEMENT pStmt);
@@ -190,6 +197,7 @@ int _stdcall SQLEvaluateParams(LPSQLSTATEMENT pStmt);
 SQLRETURN _stdcall SQLBindParameterEx(LPSQLSTATEMENT pStmt);
 SQLRETURN _stdcall SQLPutDataEx(SQLHSTMT hStmt);
 int _stdcall SQLSaveOutputParameters(LPSQLSTATEMENT pStmt);
+void _stdcall SQLFreeParameterEx(LPSQLSTATEMENT pStmt);
 
 int _stdcall SQLProgressCallback(LPSQLSTATEMENT pStmt, int nRowsFetched, BOOL *nAbort);
 int _stdcall SQLInfoCallbackOrStore(LPSQLSTATEMENT pStatement);

@@ -900,7 +900,7 @@ FoxString& FoxString::Fullpath()
 	Value vFullpath = {'0'};
 	char aBuffer[VFP2C_MAX_CALLBACKFUNCTION];
 
-	_snprintf(aBuffer,VFP2C_MAX_CALLBACKFUNCTION,"FULLPATH('%s')+CHR(0)",m_String);
+	_snprintf(aBuffer,VFP2C_MAX_CALLBACKFUNCTION,"FULLPATH(\"%s\")+CHR(0)",m_String);
 	::Evaluate(vFullpath,aBuffer);
 
 	return Attach(vFullpath);

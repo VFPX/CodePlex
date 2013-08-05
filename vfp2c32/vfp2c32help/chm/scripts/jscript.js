@@ -8,7 +8,7 @@ document.getElementById('ieScriptLoad').onreadystatechange = function() {
 function domReady()
 {
 	var version = document.getElementById('vfp2c32version');
-	version.innerText = 'VFP2C32 2.0.0.11';
+	version.innerText = 'VFP2C32 2.0.0.13';
 }			
 			
 function CopyCode(cElement)

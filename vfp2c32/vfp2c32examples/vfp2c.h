@@ -75,6 +75,11 @@
 #DEFINE CP_UTF7			65000       && UTF-7 translation
 #DEFINE CP_UTF8			65001       && UTF-8 translation
 
+&& CreateGUID
+#DEFINE CREATE_GUID_ANSI	0
+#DEFINE CREATE_GUID_UNICODE 	1
+#DEFINE CREATE_GUID_BINARY	2
+
 && defines for SHBrowseFolder
 #DEFINE BIF_RETURNONLYFSDIRS   0x0001  && For finding a folder to start document searching
 #DEFINE BIF_DONTGOBELOWDOMAIN  0x0002  && For starting the Find Computer

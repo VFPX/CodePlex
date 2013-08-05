@@ -2368,7 +2368,15 @@ try
 					bCarri = 1; // set detect flag
 
 				distance.QuadPart = -dwRead;
-				SetFilePointerEx(hFile, distance, 0, FILE_CURRENT); // position filepointer after carri/linefeed(s)
+				SetFilePointerEx(hFile, distance, 0, FILE_CURRENT); // position filepointer after carriage return and optional linefeed
+				break;
+			}
+			else if (*pData == '\n')
+			{
+				pData++;
+				distance.QuadPart = -dwRead;
+				SetFilePointerEx(hFile, distance, 0, FILE_CURRENT); // position filepointer after linefeed
+				bCarri = 1; // set detect flag
 				break;
 			}
 			else
