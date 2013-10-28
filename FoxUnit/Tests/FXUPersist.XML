@@ -315,11 +315,11 @@
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid/>
-		<setting>THIS.grdTests.Column1.Width = 208</setting>
+		<setting>THIS.grdTests.COLUMN1.Width = 208</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid/>
-		<setting>THIS.grdTests.Column2.Width = 766</setting>
+		<setting>THIS.grdTests.COLUMN2.Width = 766</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid/>
