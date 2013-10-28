@@ -1,0 +1,322 @@
+<?xml version = "1.0" encoding="Windows-1252" standalone="yes"?>
+<VFPData>
+	<xsd:schema id="VFPData" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+		<xsd:element name="VFPData" msdata:IsDataSet="true">
+			<xsd:complexType>
+				<xsd:choice maxOccurs="unbounded">
+					<xsd:element name="class" minOccurs="0" maxOccurs="unbounded">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="platform">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="8"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="uniqueid">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="10"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="class">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="classloc">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="baseclass">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="objname">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="parent">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="properties">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="protected">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="methods">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="ole">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:base64Binary">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="ole2">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="reserved1">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="reserved2">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="reserved3">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="reserved4">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="reserved5">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="reserved6">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="reserved7">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="reserved8">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="user">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="nrecno">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:decimal">
+											<xsd:totalDigits value="10"/>
+											<xsd:fractionDigits value="0"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+							</xsd:sequence>
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:choice>
+				<xsd:anyAttribute namespace="http://www.w3.org/XML/1998/namespace" processContents="lax"/>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:schema>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid>_ROP0KFJTW</uniqueid>
+		<class><![CDATA[container]]></class>
+		<classloc/>
+		<baseclass><![CDATA[container]]></baseclass>
+		<objname><![CDATA[cstatusbar]]></objname>
+		<parent/>
+		<properties><![CDATA[Width = 240
+Height = 15
+SpecialEffect = 1
+version = 1.1.000
+Name = "cstatusbar"
+]]></properties>
+		<protected><![CDATA[version
+]]></protected>
+		<methods><![CDATA[PROCEDURE Init
+*********************************************
+*	Statusbar class            				*
+*	By Michael G. Emmons			 		*
+*	mgemmons@netrunner.net		 			*
+*										 	*
+*	(c)1997 Michael G. Emmons		 		*
+*										 	*
+*	Persmission to use this class is	 	*
+*	granted to anyone as long as this		*
+*	header is left intact.				 	*
+*										 	*
+*	I'm always interested in talking	 	*
+*	about foxpro. If you have any 		 	*
+*	questions or comments drop me 			*
+*	a line.								 	*
+*********************************************
+
+ENDPROC
+PROCEDURE setstatus
+LPARAMETERS tcStatus
+
+If Type('tcStatus') # 'C'
+	Return .F.
+EndIf
+
+this.lblStatusText.Caption = Alltrim(tcStatus)
+
+Return .T.
+
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1><![CDATA[Class]]></reserved1>
+		<reserved2><![CDATA[3]]></reserved2>
+		<reserved3><![CDATA[version The version of this class.
+*setstatus Sets the status text
+]]></reserved3>
+		<reserved4/>
+		<reserved5/>
+		<reserved6><![CDATA[Pixels]]></reserved6>
+		<reserved7><![CDATA[A basic status bar class.]]></reserved7>
+		<reserved8/>
+		<user/>
+		<nrecno>7</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid>_ROP0KKWSZ</uniqueid>
+		<class><![CDATA[label]]></class>
+		<classloc/>
+		<baseclass><![CDATA[label]]></baseclass>
+		<objname><![CDATA[lblStatus]]></objname>
+		<parent><![CDATA[cstatusbar]]></parent>
+		<properties><![CDATA[AutoSize = .T.
+FontSize = 8
+BackStyle = 0
+Caption = "Status:"
+Left = 4
+Top = 0
+Name = "lblStatus"
+]]></properties>
+		<protected/>
+		<methods/>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>8</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid>_ROP0KKWT7</uniqueid>
+		<class><![CDATA[label]]></class>
+		<classloc/>
+		<baseclass><![CDATA[label]]></baseclass>
+		<objname><![CDATA[lblStatusText]]></objname>
+		<parent><![CDATA[cstatusbar]]></parent>
+		<properties><![CDATA[AutoSize = .T.
+FontSize = 8
+BackStyle = 0
+Caption = " "
+Left = 45
+Top = 0
+Name = "lblStatusText"
+]]></properties>
+		<protected/>
+		<methods/>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>9</nrecno>
+	</class>
+	<class>
+		<platform>COMMENT</platform>
+		<uniqueid>RESERVED</uniqueid>
+		<class/>
+		<classloc/>
+		<baseclass/>
+		<objname><![CDATA[cstatusbar]]></objname>
+		<parent/>
+		<properties/>
+		<protected/>
+		<methods/>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>10</nrecno>
+	</class>
+</VFPData>

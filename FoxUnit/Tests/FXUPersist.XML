@@ -189,4 +189,164 @@
 		<userid>Eric</userid>
 		<setting>THIS.ilCloseDebuggerAtEndOfTestsRun = .F.</setting>
 	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>THIS.Top = 127</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>THIS.Left = 330</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>THIS.Height = IIF(VERSION(5)&gt;=900,816,480)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>THIS.Width = IIF(VERSION(5)&gt;=900,1025,724)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>THIS.inZoomTop = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>THIS.inZoomLeft = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>THIS.inZoomHeight = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>THIS.inZoomWidth = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>THIS.inZoomWindowState = 0</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>THIS.pgfDetails.ActivePage = 1</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>THIS.grdTests.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>THIS.grdTests.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>THIS.grdTests.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>THIS.grdTests.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontName = "Arial"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>THIS.pgfDetails.pgMessages.FontName = "Arial"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>THIS.pgfDetails.pgMessages.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>THIS.pgfDetails.pgMessages.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>THIS.pgfDetails.pgMessages.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>THIS.ilLargeGrid=.F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>THIS.grdTests.Column1.Width = 208</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>THIS.grdTests.Column2.Width = 766</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>SET ORDER TO TAG TCLOC IN (THIS.icGridRS)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>=SEEK("TEST                                                                            TESTMYTESTMETHOD                                                                                                        ",THIS.icGridRS,"TCLName")</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>THIS.ilAllowDebug = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>THIS.ShowTips = .T.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>THIS.ilHonorTestPrefix = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>THIS.ilReloadTestsOnRun = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid/>
+		<setting>THIS.ilCloseDebuggerAtEndOfTestsRun = .F.</setting>
+	</foxunitpersist>
 </VFPData>

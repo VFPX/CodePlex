@@ -1,0 +1,1445 @@
+<?xml version = "1.0" encoding="Windows-1252" standalone="yes"?>
+<VFPData>
+	<xsd:schema id="VFPData" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+		<xsd:element name="VFPData" msdata:IsDataSet="true">
+			<xsd:complexType>
+				<xsd:choice maxOccurs="unbounded">
+					<xsd:element name="class" minOccurs="0" maxOccurs="unbounded">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="platform">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="8"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="uniqueid">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="10"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="class">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="classloc">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="baseclass">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="objname">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="parent">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="properties">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="protected">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="methods">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="ole">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:base64Binary">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="ole2">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="reserved1">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="reserved2">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="reserved3">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="reserved4">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="reserved5">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="reserved6">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="reserved7">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="reserved8">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="user">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="nrecno">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:decimal">
+											<xsd:totalDigits value="10"/>
+											<xsd:fractionDigits value="0"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+							</xsd:sequence>
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:choice>
+				<xsd:anyAttribute namespace="http://www.w3.org/XML/1998/namespace" processContents="lax"/>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:schema>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid>_1A00BASP9</uniqueid>
+		<class><![CDATA[form]]></class>
+		<classloc/>
+		<baseclass><![CDATA[form]]></baseclass>
+		<objname><![CDATA[frmoptions]]></objname>
+		<parent/>
+		<properties><![CDATA[Height = 421
+Width = 664
+ShowWindow = 1
+DoCreate = .T.
+ShowTips = .T.
+AutoCenter = .T.
+Caption = "Customize FoxUnit options"
+MaxButton = .F.
+MinButton = .F.
+Icon = ("foxunit.ico")
+WindowType = 1
+AllowOutput = .F.
+_memberdata = 
+iomainform = .NULL.
+Name = "frmoptions"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Destroy
+THIS.ioMainForm = .NULL.
+
+ENDPROC
+PROCEDURE GotFocus
+KEYBOARD '{123}TAB}' PLAIN CLEAR 
+ENDPROC
+PROCEDURE Init
+this.ilInitialHonorTestPrefix = this.ioMainForm.ilHonorTestPrefix
+ENDPROC
+PROCEDURE Load
+*
+*  store an object reference to the main calling
+*  FoxUnit form, which calls this form
+*
+THIS.ioMainForm = _Screen.ActiveForm
+
+ENDPROC
+PROCEDURE okaction
+* Debugger page options
+THISFORM.ioMainForm.ilCloseDebuggerAtEndOfTestsRun = ;
+	this.pgfOptions.Page1.chkCloseDebuggerAfterTestsRun.Value
+THISFORM.ioMainForm.ilAllowDebug = THIS.pgfOptions.Page1.chkAllowDebug.Value
+
+* Interface page options
+THISFORM.ioMainForm.ShowTips = THIS.pgfOptions.Page2.chkShowTips.Value
+thisform.ioMainForm.ilHonorTestPrefix = this.pgfOptions.Page2.chkHonorTestPrefix.value
+thisform.ioMainForm.ilReloadTestsOnRun = this.pgfOptions.Page2.chkReloadAll.Value
+
+* If we've changed the value of ilHonorTestPrefix, 
+* we need to reload all test case classes
+IF thisform.ioMainForm.ilHonorTestPrefix != thisform.ilInitialhonortestprefix
+	thisform.ioMainForm.ioResultData.ReloadTestCaseClasses()
+ENDIF 
+
+
+
+
+ENDPROC
+PROCEDURE zreadme
+#IF .f.
+
+Class:  FXU.VCX/frmOptions
+
+#ENDIF
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1><![CDATA[Class]]></reserved1>
+		<reserved2><![CDATA[36]]></reserved2>
+		<reserved3><![CDATA[_memberdata XML Metadata for customizable properties
+iomainform
+ilinitialhonortestprefix
+*zreadme 
+*okaction 
+]]></reserved3>
+		<reserved4/>
+		<reserved5/>
+		<reserved6><![CDATA[Pixels]]></reserved6>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>4</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid>_1AL14NOXM</uniqueid>
+		<class><![CDATA[label]]></class>
+		<classloc/>
+		<baseclass><![CDATA[label]]></baseclass>
+		<objname><![CDATA[Label1]]></objname>
+		<parent><![CDATA[frmoptions]]></parent>
+		<properties><![CDATA[WordWrap = .T.
+BackStyle = 0
+Caption = "Select OK to make permanent any changes you make here.  The settings are peristed in FXUPersist.XML, located in the same folder as the FXUResults.DBF"
+Height = 32
+Left = 20
+Top = 375
+Width = 432
+Name = "Label1"
+]]></properties>
+		<protected/>
+		<methods/>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>39</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid>_11D0XWNM5</uniqueid>
+		<class><![CDATA[commandbutton]]></class>
+		<classloc/>
+		<baseclass><![CDATA[commandbutton]]></baseclass>
+		<objname><![CDATA[cmdCancel]]></objname>
+		<parent><![CDATA[frmoptions]]></parent>
+		<properties><![CDATA[Top = 371
+Left = 572
+Height = 39
+Width = 84
+FontName = "Tahoma"
+Picture = ("FXUCancel.BMP")
+Cancel = .T.
+Caption = "\<Cancel"
+TabIndex = 5
+ToolTipText = "Click here to cancel the changes you have made here"
+Name = "cmdCancel"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Click
+THISFORM.Release()
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>37</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid>_1AL12AW7M</uniqueid>
+		<class><![CDATA[commandbutton]]></class>
+		<classloc/>
+		<baseclass><![CDATA[commandbutton]]></baseclass>
+		<objname><![CDATA[cmdOK]]></objname>
+		<parent><![CDATA[frmoptions]]></parent>
+		<properties><![CDATA[Top = 371
+Left = 476
+Height = 39
+Width = 84
+FontName = "Tahoma"
+Picture = ("FXUFormClose.BMP")
+Caption = "\<OK"
+Default = .T.
+TabIndex = 5
+ToolTipText = "Click here to make permanent the settings you update here"
+Name = "cmdOK"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Click
+THISFORM.OKAction()
+THISFORM.Release()
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>38</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid>_11D0XWNM5</uniqueid>
+		<class><![CDATA[pageframe]]></class>
+		<classloc/>
+		<baseclass><![CDATA[pageframe]]></baseclass>
+		<objname><![CDATA[pgfOptions]]></objname>
+		<parent><![CDATA[frmoptions]]></parent>
+		<properties><![CDATA[ErasePage = .T.
+PageCount = 2
+Top = 8
+Left = 8
+Width = 652
+Height = 352
+Themes = .F.
+Name = "pgfOptions"
+Page1.Caption = "Debugging"
+Page1.Name = "Page1"
+Page2.Caption = "Interface"
+Page2.Name = "Page2"
+]]></properties>
+		<protected/>
+		<methods/>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>5</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid>_11D0Z07LD</uniqueid>
+		<class><![CDATA[label]]></class>
+		<classloc/>
+		<baseclass><![CDATA[label]]></baseclass>
+		<objname><![CDATA[Label1]]></objname>
+		<parent><![CDATA[frmoptions.pgfOptions.Page1]]></parent>
+		<properties><![CDATA[WordWrap = .T.
+BackStyle = 0
+Caption = "As shown on the left, the default FoxUnit behavior is to execute any explicit Setup() code for the test class, run the test, then execute any explicit TearDown() code for that test class -- all within the TRY..CATCH block."
+Height = 32
+Left = 15
+Top = 49
+Width = 616
+Name = "Label1"
+]]></properties>
+		<protected/>
+		<methods/>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>9</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid>RESERVED</uniqueid>
+		<class><![CDATA[label]]></class>
+		<classloc/>
+		<baseclass><![CDATA[label]]></baseclass>
+		<objname><![CDATA[Label10]]></objname>
+		<parent><![CDATA[frmoptions.pgfOptions.Page1]]></parent>
+		<properties><![CDATA[FontName = "Courier New"
+BackStyle = 0
+Caption = "FINALLY"
+Height = 16
+Left = 71
+Top = 165
+Width = 168
+Name = "Label10"
+]]></properties>
+		<protected/>
+		<methods/>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>18</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid>_1A00BASP9</uniqueid>
+		<class><![CDATA[label]]></class>
+		<classloc/>
+		<baseclass><![CDATA[label]]></baseclass>
+		<objname><![CDATA[Label11]]></objname>
+		<parent><![CDATA[frmoptions.pgfOptions.Page1]]></parent>
+		<properties><![CDATA[FontName = "Courier New"
+BackStyle = 0
+Caption = "CATCH TO loEx"
+Height = 16
+Left = 79
+Top = 201
+Width = 168
+Name = "Label11"
+]]></properties>
+		<protected/>
+		<methods/>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>19</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid>_11D0XWNM5</uniqueid>
+		<class><![CDATA[label]]></class>
+		<classloc/>
+		<baseclass><![CDATA[label]]></baseclass>
+		<objname><![CDATA[Label12]]></objname>
+		<parent><![CDATA[frmoptions.pgfOptions.Page1]]></parent>
+		<properties><![CDATA[FontName = "Courier New"
+BackStyle = 0
+Caption = "THIS.HandleException(...)"
+Height = 16
+Left = 87
+Top = 213
+Width = 176
+Name = "Label12"
+]]></properties>
+		<protected/>
+		<methods/>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>20</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid>_1A00BQSVT</uniqueid>
+		<class><![CDATA[label]]></class>
+		<classloc/>
+		<baseclass><![CDATA[label]]></baseclass>
+		<objname><![CDATA[Label13]]></objname>
+		<parent><![CDATA[frmoptions.pgfOptions.Page1]]></parent>
+		<properties><![CDATA[FontName = "Courier New"
+BackStyle = 0
+Caption = "ENDTRY"
+Height = 16
+Left = 79
+Top = 225
+Width = 176
+Name = "Label13"
+]]></properties>
+		<protected/>
+		<methods/>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>21</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid>_11D0XWNM5</uniqueid>
+		<class><![CDATA[label]]></class>
+		<classloc/>
+		<baseclass><![CDATA[label]]></baseclass>
+		<objname><![CDATA[Label14]]></objname>
+		<parent><![CDATA[frmoptions.pgfOptions.Page1]]></parent>
+		<properties><![CDATA[FontItalic = .T.
+BackStyle = 0
+Caption = "Errors in Setup() and TearDown() methods are handled -- no native VFP Cancel/Ignore/Suspend dialog."
+Height = 16
+Left = 15
+Top = 81
+Width = 588
+Name = "Label14"
+]]></properties>
+		<protected/>
+		<methods/>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>22</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid>_1AL147L2T</uniqueid>
+		<class><![CDATA[label]]></class>
+		<classloc/>
+		<baseclass><![CDATA[label]]></baseclass>
+		<objname><![CDATA[Label15]]></objname>
+		<parent><![CDATA[frmoptions.pgfOptions.Page1]]></parent>
+		<properties><![CDATA[WordWrap = .T.
+BackStyle = 0
+Caption = "As shown on the right, if you select the checkbox above, there is no TRY..CATCH exception handling for the Setup() and TearDown() code."
+Height = 32
+Left = 15
+Top = 261
+Width = 620
+Name = "Label15"
+]]></properties>
+		<protected/>
+		<methods/>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>23</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid>_1AL14EE7J</uniqueid>
+		<class><![CDATA[label]]></class>
+		<classloc/>
+		<baseclass><![CDATA[label]]></baseclass>
+		<objname><![CDATA[Label16]]></objname>
+		<parent><![CDATA[frmoptions.pgfOptions.Page1]]></parent>
+		<properties><![CDATA[FontItalic = .T.
+BackStyle = 0
+Caption = "Errors in Setup() and TearDown() methods invoked the native VFP Cancel/Ignore/Suspend dialog."
+Height = 16
+Left = 15
+Top = 293
+Width = 556
+Name = "Label16"
+]]></properties>
+		<protected/>
+		<methods/>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>24</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid>_1AL14EE7K</uniqueid>
+		<class><![CDATA[label]]></class>
+		<classloc/>
+		<baseclass><![CDATA[label]]></baseclass>
+		<objname><![CDATA[Label17]]></objname>
+		<parent><![CDATA[frmoptions.pgfOptions.Page1]]></parent>
+		<properties><![CDATA[FontName = "Courier New"
+BackStyle = 0
+Caption = "TRY"
+Height = 16
+Left = 379
+Top = 125
+Width = 168
+Name = "Label17"
+]]></properties>
+		<protected/>
+		<methods/>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>25</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid>_1AL14EE7M</uniqueid>
+		<class><![CDATA[label]]></class>
+		<classloc/>
+		<baseclass><![CDATA[label]]></baseclass>
+		<objname><![CDATA[Label18]]></objname>
+		<parent><![CDATA[frmoptions.pgfOptions.Page1]]></parent>
+		<properties><![CDATA[FontName = "Courier New"
+BackStyle = 0
+Caption = "THIS.Setup()"
+Height = 16
+Left = 379
+Top = 105
+Width = 168
+Name = "Label18"
+]]></properties>
+		<protected/>
+		<methods/>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>26</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid>_1AL14EE7N</uniqueid>
+		<class><![CDATA[label]]></class>
+		<classloc/>
+		<baseclass><![CDATA[label]]></baseclass>
+		<objname><![CDATA[Label19]]></objname>
+		<parent><![CDATA[frmoptions.pgfOptions.Page1]]></parent>
+		<properties><![CDATA[FontName = "Courier New"
+BackStyle = 0
+Caption = "THIS.RunTest()"
+Height = 16
+Left = 387
+Top = 137
+Width = 168
+Name = "Label19"
+]]></properties>
+		<protected/>
+		<methods/>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>27</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid>_11D0XWNM5</uniqueid>
+		<class><![CDATA[label]]></class>
+		<classloc/>
+		<baseclass><![CDATA[label]]></baseclass>
+		<objname><![CDATA[Label2]]></objname>
+		<parent><![CDATA[frmoptions.pgfOptions.Page1]]></parent>
+		<properties><![CDATA[FontName = "Courier New"
+BackStyle = 0
+Caption = "TRY"
+Height = 16
+Left = 71
+Top = 105
+Width = 168
+Name = "Label2"
+]]></properties>
+		<protected/>
+		<methods/>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>10</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid>_1AL14EE7P</uniqueid>
+		<class><![CDATA[label]]></class>
+		<classloc/>
+		<baseclass><![CDATA[label]]></baseclass>
+		<objname><![CDATA[Label20]]></objname>
+		<parent><![CDATA[frmoptions.pgfOptions.Page1]]></parent>
+		<properties><![CDATA[FontName = "Courier New"
+BackStyle = 0
+Caption = "CATCH TO loEx"
+Height = 16
+Left = 379
+Top = 149
+Width = 168
+Name = "Label20"
+]]></properties>
+		<protected/>
+		<methods/>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>28</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid>_1AL14EE7Q</uniqueid>
+		<class><![CDATA[label]]></class>
+		<classloc/>
+		<baseclass><![CDATA[label]]></baseclass>
+		<objname><![CDATA[Label21]]></objname>
+		<parent><![CDATA[frmoptions.pgfOptions.Page1]]></parent>
+		<properties><![CDATA[FontName = "Courier New"
+BackStyle = 0
+Caption = "THIS.HandleException(...)"
+Height = 16
+Left = 387
+Top = 161
+Width = 176
+Name = "Label21"
+]]></properties>
+		<protected/>
+		<methods/>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>29</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid>_1AL14EE7S</uniqueid>
+		<class><![CDATA[label]]></class>
+		<classloc/>
+		<baseclass><![CDATA[label]]></baseclass>
+		<objname><![CDATA[Label22]]></objname>
+		<parent><![CDATA[frmoptions.pgfOptions.Page1]]></parent>
+		<properties><![CDATA[FontName = "Courier New"
+BackStyle = 0
+Caption = "ENDTRY"
+Height = 16
+Left = 379
+Top = 173
+Width = 176
+Name = "Label22"
+]]></properties>
+		<protected/>
+		<methods/>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>30</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid>_1AL14I4Z3</uniqueid>
+		<class><![CDATA[label]]></class>
+		<classloc/>
+		<baseclass><![CDATA[label]]></baseclass>
+		<objname><![CDATA[Label23]]></objname>
+		<parent><![CDATA[frmoptions.pgfOptions.Page1]]></parent>
+		<properties><![CDATA[FontItalic = .T.
+WordWrap = .T.
+BackStyle = 0
+Caption = "(This is the behavior you get if you select the above checkbox)"
+Height = 32
+Left = 387
+Top = 217
+Width = 180
+Name = "Label23"
+]]></properties>
+		<protected/>
+		<methods/>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>32</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid>_1AL14EE7V</uniqueid>
+		<class><![CDATA[label]]></class>
+		<classloc/>
+		<baseclass><![CDATA[label]]></baseclass>
+		<objname><![CDATA[Label24]]></objname>
+		<parent><![CDATA[frmoptions.pgfOptions.Page1]]></parent>
+		<properties><![CDATA[FontName = "Courier New"
+BackStyle = 0
+Caption = "THIS.TearDown()"
+Height = 16
+Left = 379
+Top = 193
+Width = 168
+Name = "Label24"
+]]></properties>
+		<protected/>
+		<methods/>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>31</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid>_11D0Z07LD</uniqueid>
+		<class><![CDATA[label]]></class>
+		<classloc/>
+		<baseclass><![CDATA[label]]></baseclass>
+		<objname><![CDATA[Label3]]></objname>
+		<parent><![CDATA[frmoptions.pgfOptions.Page1]]></parent>
+		<properties><![CDATA[FontName = "Courier New"
+BackStyle = 0
+Caption = "THIS.Setup()"
+Height = 16
+Left = 79
+Top = 117
+Width = 168
+Name = "Label3"
+]]></properties>
+		<protected/>
+		<methods/>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>11</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid>_RBT0V74R7</uniqueid>
+		<class><![CDATA[label]]></class>
+		<classloc/>
+		<baseclass><![CDATA[label]]></baseclass>
+		<objname><![CDATA[Label4]]></objname>
+		<parent><![CDATA[frmoptions.pgfOptions.Page1]]></parent>
+		<properties><![CDATA[FontName = "Courier New"
+BackStyle = 0
+Caption = "THIS.RunTest()"
+Height = 16
+Left = 79
+Top = 129
+Width = 168
+Name = "Label4"
+]]></properties>
+		<protected/>
+		<methods/>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>12</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid>_RBT0V74R7</uniqueid>
+		<class><![CDATA[label]]></class>
+		<classloc/>
+		<baseclass><![CDATA[label]]></baseclass>
+		<objname><![CDATA[Label5]]></objname>
+		<parent><![CDATA[frmoptions.pgfOptions.Page1]]></parent>
+		<properties><![CDATA[FontName = "Courier New"
+BackStyle = 0
+Caption = "CATCH TO loEx"
+Height = 16
+Left = 71
+Top = 141
+Width = 168
+Name = "Label5"
+]]></properties>
+		<protected/>
+		<methods/>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>13</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid>RESERVED</uniqueid>
+		<class><![CDATA[label]]></class>
+		<classloc/>
+		<baseclass><![CDATA[label]]></baseclass>
+		<objname><![CDATA[Label6]]></objname>
+		<parent><![CDATA[frmoptions.pgfOptions.Page1]]></parent>
+		<properties><![CDATA[FontName = "Courier New"
+BackStyle = 0
+Caption = "THIS.HandleException(...)"
+Height = 16
+Left = 79
+Top = 153
+Width = 176
+Name = "Label6"
+]]></properties>
+		<protected/>
+		<methods/>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>14</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid>_19V0PAN25</uniqueid>
+		<class><![CDATA[label]]></class>
+		<classloc/>
+		<baseclass><![CDATA[label]]></baseclass>
+		<objname><![CDATA[Label7]]></objname>
+		<parent><![CDATA[frmoptions.pgfOptions.Page1]]></parent>
+		<properties><![CDATA[FontName = "Courier New"
+BackStyle = 0
+Caption = "ENDTRY"
+Height = 16
+Left = 71
+Top = 237
+Width = 176
+Name = "Label7"
+]]></properties>
+		<protected/>
+		<methods/>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>15</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid>RESERVED</uniqueid>
+		<class><![CDATA[label]]></class>
+		<classloc/>
+		<baseclass><![CDATA[label]]></baseclass>
+		<objname><![CDATA[Label8]]></objname>
+		<parent><![CDATA[frmoptions.pgfOptions.Page1]]></parent>
+		<properties><![CDATA[FontName = "Courier New"
+BackStyle = 0
+Caption = "TRY"
+Height = 16
+Left = 79
+Top = 177
+Width = 168
+Name = "Label8"
+]]></properties>
+		<protected/>
+		<methods/>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>16</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid>_19V0PCF32</uniqueid>
+		<class><![CDATA[label]]></class>
+		<classloc/>
+		<baseclass><![CDATA[label]]></baseclass>
+		<objname><![CDATA[Label9]]></objname>
+		<parent><![CDATA[frmoptions.pgfOptions.Page1]]></parent>
+		<properties><![CDATA[FontName = "Courier New"
+BackStyle = 0
+Caption = "THIS.TearDown()"
+Height = 16
+Left = 87
+Top = 189
+Width = 168
+Name = "Label9"
+]]></properties>
+		<protected/>
+		<methods/>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>17</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid>_11D0XWNM5</uniqueid>
+		<class><![CDATA[shape]]></class>
+		<classloc/>
+		<baseclass><![CDATA[shape]]></baseclass>
+		<objname><![CDATA[Shape1]]></objname>
+		<parent><![CDATA[frmoptions.pgfOptions.Page1]]></parent>
+		<properties><![CDATA[Top = 101
+Left = 55
+Height = 157
+Width = 225
+BackColor = 255,255,255
+BorderColor = 255,255,255
+Name = "Shape1"
+]]></properties>
+		<protected/>
+		<methods/>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>7</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid>_1AL14KQ18</uniqueid>
+		<class><![CDATA[shape]]></class>
+		<classloc/>
+		<baseclass><![CDATA[shape]]></baseclass>
+		<objname><![CDATA[Shape2]]></objname>
+		<parent><![CDATA[frmoptions.pgfOptions.Page1]]></parent>
+		<properties><![CDATA[Top = 101
+Left = 363
+Height = 157
+Width = 225
+BackColor = 255,255,255
+BorderColor = 255,255,255
+Name = "Shape2"
+]]></properties>
+		<protected/>
+		<methods/>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>6</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid>_11D0XWNM5</uniqueid>
+		<class><![CDATA[checkbox]]></class>
+		<classloc/>
+		<baseclass><![CDATA[checkbox]]></baseclass>
+		<objname><![CDATA[chkAllowDebug]]></objname>
+		<parent><![CDATA[frmoptions.pgfOptions.Page1]]></parent>
+		<properties><![CDATA[Top = 25
+Left = 15
+Height = 17
+Width = 576
+Alignment = 0
+BackStyle = 0
+Caption = "Exclude the Setup() and TearDown() methods from the TRY..CATCH block in which each test executes"
+Name = "chkAllowDebug"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Init
+THIS.Value = THISFORM.ioMainForm.ilAllowDebug
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>8</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid>_1BW0R04OL</uniqueid>
+		<class><![CDATA[checkbox]]></class>
+		<classloc/>
+		<baseclass><![CDATA[checkbox]]></baseclass>
+		<objname><![CDATA[chkCloseDebuggerAfterTestsRun]]></objname>
+		<parent><![CDATA[frmoptions.pgfOptions.Page1]]></parent>
+		<properties><![CDATA[Top = 5
+Left = 15
+Height = 17
+Width = 576
+Alignment = 0
+BackStyle = 0
+Caption = "Automatically close the debugger at completion of test suite run (all, class or selected)"
+Value = .F.
+ToolTipText = "If left unchecked, all class methods not implemented in the superclass of the test class will be loaded and run as tests. For a more detailed explanation, read the comments on icTestPrefix in FxuTestCaseTemplate.txt"
+Name = "chkCloseDebuggerAfterTestsRun"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Init
+THIS.Value = THISFORM.ioMainForm.ilCloseDebuggerAtEndOfTestsRun
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>33</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid>_11D0XWNM5</uniqueid>
+		<class><![CDATA[checkbox]]></class>
+		<classloc/>
+		<baseclass><![CDATA[checkbox]]></baseclass>
+		<objname><![CDATA[chkHonorTestPrefix]]></objname>
+		<parent><![CDATA[frmoptions.pgfOptions.Page2]]></parent>
+		<properties><![CDATA[Top = 62
+Left = 31
+Height = 17
+Width = 428
+Alignment = 0
+BackStyle = 0
+Caption = "Load and run only tests with the specified icTestPrefix value in test classes"
+Value = .T.
+ToolTipText = "If left unchecked, all class methods not implemented in the superclass of the test class will be loaded and run as tests. For a more detailed explanation, read the comments on icTestPrefix in FxuTestCaseTemplate.txt"
+Name = "chkHonorTestPrefix"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Init
+THIS.Value = THISFORM.ioMainForm.ilHonorTestPrefix
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>36</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid>_11D0XWNM5</uniqueid>
+		<class><![CDATA[checkbox]]></class>
+		<classloc/>
+		<baseclass><![CDATA[checkbox]]></baseclass>
+		<objname><![CDATA[chkReloadAll]]></objname>
+		<parent><![CDATA[frmoptions.pgfOptions.Page2]]></parent>
+		<properties><![CDATA[Top = 43
+Left = 31
+Height = 17
+Width = 428
+Alignment = 0
+BackStyle = 0
+Caption = "Reload all test classes involved in a test run every time tests are run"
+Value = .F.
+ToolTipText = "This will mean a performance hit each time tests are run, and could also affect cursor positioning in the grid, however if you modify tests outside of the buttons provided by the FoxUnit form, this may be a wise choice."
+Name = "chkReloadAll"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Init
+THIS.Value = THISFORM.ioMainForm.ilReloadTestsOnRun
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>35</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid>_11D0XWNM5</uniqueid>
+		<class><![CDATA[checkbox]]></class>
+		<classloc/>
+		<baseclass><![CDATA[checkbox]]></baseclass>
+		<objname><![CDATA[chkShowTips]]></objname>
+		<parent><![CDATA[frmoptions.pgfOptions.Page2]]></parent>
+		<properties><![CDATA[Top = 24
+Left = 31
+Height = 17
+Width = 428
+Alignment = 0
+BackStyle = 0
+Caption = "Show ToolTipText in the main FoxUnit form (set its ShowTips property to .t.)"
+Value = .T.
+Name = "chkShowTips"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Init
+THIS.Value = THISFORM.ioMainForm.ShowTips
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>34</nrecno>
+	</class>
+	<class>
+		<platform>COMMENT</platform>
+		<uniqueid>RESERVED</uniqueid>
+		<class/>
+		<classloc/>
+		<baseclass/>
+		<objname><![CDATA[frmoptions]]></objname>
+		<parent/>
+		<properties/>
+		<protected/>
+		<methods/>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>40</nrecno>
+	</class>
+</VFPData>
