@@ -1,0 +1,404 @@
+<?xml version = "1.0" encoding="Windows-1252" standalone="yes"?>
+<VFPData>
+	<xsd:schema id="VFPData" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+		<xsd:element name="VFPData" msdata:IsDataSet="true">
+			<xsd:complexType>
+				<xsd:choice maxOccurs="unbounded">
+					<xsd:element name="class" minOccurs="0" maxOccurs="unbounded">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="platform">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="8"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="uniqueid">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="10"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="class">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="classloc">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="baseclass">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="objname">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="parent">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="properties">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="protected">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="methods">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="ole">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:base64Binary">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="ole2">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="reserved1">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="reserved2">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="reserved3">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="reserved4">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="reserved5">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="reserved6">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="reserved7">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="reserved8">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="user">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="nrecno">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:decimal">
+											<xsd:totalDigits value="10"/>
+											<xsd:fractionDigits value="0"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+							</xsd:sequence>
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:choice>
+				<xsd:anyAttribute namespace="http://www.w3.org/XML/1998/namespace" processContents="lax"/>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:schema>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid>_ROM107HJN</uniqueid>
+		<class><![CDATA[container]]></class>
+		<classloc/>
+		<baseclass><![CDATA[container]]></baseclass>
+		<objname><![CDATA[cprogresscontainer]]></objname>
+		<parent/>
+		<properties><![CDATA[Width = 250
+Height = 93
+BackStyle = 1
+BorderWidth = 3
+SpecialEffect = 0
+autocenter = .T.
+version = 1.1.000
+Name = "cprogresscontainer"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Init
+LPARAMETERS tnMin, tnMax, tlCenter
+*********************************************
+*	Progressbar Container Class				*
+*	By Michael G. Emmons			 		*
+*	mgemmons@netrunner.net		 			*
+*										 	*
+*	(c)1997 Michael G. Emmons		 		*
+*										 	*
+*	Persmission to use this class is	 	*
+*	granted to anyone as long as this		*
+*	header is left intact.				 	*
+*										 	*
+*	I'm always interested in talking	 	*
+*	about foxpro. If you have any 		 	*
+*	questions or comments drop me 			*
+*	a line.								 	*
+*********************************************
+
+*this.Zorder(0)	&& Make sure the bar is in front.
+If tlCenter <> this.AutoCenter
+	this.AutoCenter = tlCenter
+EndIf
+
+this.SetRange(tnMin, tnMax)
+
+If this.AutoCenter
+	this.Top = Int(this.parent.Height/2)- Int(this.Height/2)
+	this.Left = Int(this.parent.Width/2) - Int(this.Width/2)
+EndIf
+
+this.Visible = .T.
+Return .T.
+
+
+ENDPROC
+PROCEDURE release
+RELEASE this
+
+ENDPROC
+PROCEDURE setrange
+LPARAMETERS tnMin, tnMax
+
+Return this.cntProgressbar.SetRange(tnMin,tnMax)
+
+ENDPROC
+PROCEDURE setstatus
+LPARAMETERS tcStatus
+
+If Type('tcStatus') # 'C'
+	Return .F.
+EndIf
+
+tcStatus = Alltrim(tcStatus)
+this.cntStatus.SetStatus(tcStatus)
+
+
+ENDPROC
+PROCEDURE settitle
+LPARAMETERS tcTitle
+
+If Type('tcTitle') # 'C' 
+	Return .F.
+EndIf
+
+this.lblTitle.Caption = Alltrim(tcTitle)
+this.lblTitle.Left = Int(this.Width / 2) - Int(this.lblTitle.Width / 2)
+
+ENDPROC
+PROCEDURE setvalue
+LPARAMETERS tnValue
+
+Return this.cntProgressbar.SetValue(tnValue)
+
+
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1><![CDATA[Class]]></reserved1>
+		<reserved2><![CDATA[4]]></reserved2>
+		<reserved3><![CDATA[autocenter Specifies whether the Form object is automatically centered in the main Visual FoxPro window the first time it is displayed.
+version The version of this class.
+*setvalue Sets the current value of the progress bar
+*setrange Sets the minimum/maximum values for the progress bar.
+*setstatus Sets the status bar caption
+*settitle Sets the title for the progressbar container. The default is "Progress Indicator"
+*release Releases a FormSet or Form from memory.
+]]></reserved3>
+		<reserved4/>
+		<reserved5/>
+		<reserved6><![CDATA[Pixels]]></reserved6>
+		<reserved7><![CDATA[A container class for the progressbar class. Adds funtionality such as a status bar and title bar.]]></reserved7>
+		<reserved8/>
+		<user/>
+		<nrecno>2</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid>_ROM10K955</uniqueid>
+		<class><![CDATA[cprogressbar]]></class>
+		<classloc><![CDATA[cprogres.vcx]]></classloc>
+		<baseclass><![CDATA[container]]></baseclass>
+		<objname><![CDATA[cntProgressBar]]></objname>
+		<parent><![CDATA[cprogresscontainer]]></parent>
+		<properties><![CDATA[Top = 36
+Left = 5
+Width = 240
+autocenter = .F.
+Name = "cntProgressBar"
+shpBar.Name = "shpBar"
+lblPercent.Name = "lblPercent"
+]]></properties>
+		<protected/>
+		<methods/>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>3</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid>_ROP0KVUY1</uniqueid>
+		<class><![CDATA[cstatusbar]]></class>
+		<classloc><![CDATA[cprogres.vcx]]></classloc>
+		<baseclass><![CDATA[container]]></baseclass>
+		<objname><![CDATA[cntStatus]]></objname>
+		<parent><![CDATA[cprogresscontainer]]></parent>
+		<properties><![CDATA[Top = 73
+Left = 5
+Name = "cntStatus"
+lblStatus.Name = "lblStatus"
+lblStatusText.Name = "lblStatusText"
+]]></properties>
+		<protected/>
+		<methods/>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>5</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid>_ROM10K95H</uniqueid>
+		<class><![CDATA[label]]></class>
+		<classloc/>
+		<baseclass><![CDATA[label]]></baseclass>
+		<objname><![CDATA[lblTitle]]></objname>
+		<parent><![CDATA[cprogresscontainer]]></parent>
+		<properties><![CDATA[AutoSize = .T.
+FontName = "Century Gothic"
+FontSize = 12
+BackStyle = 0
+Caption = "Progress Indicator"
+Left = 55
+Top = 9
+Name = "lblTitle"
+]]></properties>
+		<protected/>
+		<methods/>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>4</nrecno>
+	</class>
+	<class>
+		<platform>COMMENT</platform>
+		<uniqueid>RESERVED</uniqueid>
+		<class/>
+		<classloc/>
+		<baseclass/>
+		<objname><![CDATA[cprogresscontainer]]></objname>
+		<parent/>
+		<properties/>
+		<protected/>
+		<methods/>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>6</nrecno>
+	</class>
+</VFPData>

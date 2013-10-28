@@ -1,0 +1,49 @@
+<?xml version = "1.0" encoding="Windows-1252" standalone="yes"?>
+<VFPData>
+	<xsd:schema id="VFPData" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+		<xsd:element name="VFPData" msdata:IsDataSet="true">
+			<xsd:complexType>
+				<xsd:choice maxOccurs="unbounded">
+					<xsd:element name="classlist" minOccurs="0" maxOccurs="unbounded">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="objname">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="128"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+							</xsd:sequence>
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:choice>
+				<xsd:anyAttribute namespace="http://www.w3.org/XML/1998/namespace" processContents="lax"/>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:schema>
+	<classlist>
+		<objname>frmfoxunit</objname>
+	</classlist>
+	<classlist>
+		<objname>frmfxunewtestclass</objname>
+	</classlist>
+	<classlist>
+		<objname>frmgettestclasstemplate</objname>
+	</classlist>
+	<classlist>
+		<objname>frmoptions</objname>
+	</classlist>
+	<classlist>
+		<objname>frmshowinfo</objname>
+	</classlist>
+	<classlist>
+		<objname>fxufrmbase</objname>
+	</classlist>
+	<classlist>
+		<objname>fxufrmloadclass</objname>
+	</classlist>
+	<classlist>
+		<objname>fxufrmtestbroker</objname>
+	</classlist>
+</VFPData>
