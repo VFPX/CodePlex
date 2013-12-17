@@ -197,13 +197,14 @@ ilallowdebug = .F.
 inmostrecentselectedrow = 1
 icgridrs = FXUResults
 ilinitialentry = .T.
-_memberdata = 
+_memberdata = <VFPData><memberdata name="nsplitterposition" display="nSplitterPosition"/></VFPData>
 inbar = 0
 inzoomwindowstate = 0
 icclassfilter = 
 icnamefilter = 
 ilhonortestprefix = .F.
 ilclosedebuggeratendoftestsrun = .F.
+nsplitterposition = 0
 Name = "frmfoxunit"
 ]]></properties>
 		<protected/>
@@ -920,6 +921,7 @@ THISFORM.AddProperty("ilLargeGrid",.f.)
 *  apply settings saved last time in THIS.SaveSettings(),
 *  called from THIS.Destroy()
 *
+
 THIS.RestoreSettings()
 
 *
@@ -930,8 +932,10 @@ THIS.inColorNotRun = THIS.grdTests.BackColor
 
 THIS.UpdateCurrentGridRowColor()
 
-THIS.LockScreen = .f.
+This.Show() && Matt Slay 2013-12-17
+Thisform.sfsplitterv1.MoveSplitterToPosition(This.nSplitterPosition) && Matt Slay 2013-12-17
 
+THIS.LockScreen = .f.
 
 
 
@@ -1726,6 +1730,9 @@ INSERT INTO FoxUnitPersist FROM NAME loPersistVariables
 loPersistVariables.Setting = "THIS.ilCloseDebuggerAtEndOfTestsRun = " + TRANSFORM(THIS.ilCloseDebuggerAtEndOfTestsRun)
 INSERT INTO FoxUnitPersist FROM NAME loPersistVariables
 
+loPersistVariables.Setting = "THIS.nSplitterPosition = " + TRANSFORM(THIS.sfsplitterv1.Top)
+INSERT INTO FoxUnitPersist FROM NAME loPersistVariables
+
 CURSORTOXML("FoxUnitPersist",THIS.icPersistFile,1,512,0,"1")
 
 CATCH TO loException
@@ -2158,6 +2165,7 @@ ilhonortestprefix
 ilreloadtestsonrun
 iltestsfailed
 ilclosedebuggeratendoftestsrun
+nsplitterposition
 *calculaterowcolor Calculates the correct RGB value row color for a test row (grey = not tested, red = falied, green = succeeded)
 *runalltests runs all tests in all test classes that are currently loaded into the thisform.icGridRs table
 *runonetest Runs the one test who's row is currently selected in the grid
@@ -2239,7 +2247,7 @@ ilclosedebuggeratendoftestsrun
 		<properties><![CDATA[Anchor = 0
 Top = 257
 Left = 8
-Width = 708
+Width = 710
 Height = 7
 cobject1name = grdTests
 cobject2name = pgfDetails
@@ -2270,15 +2278,10 @@ gripper.Name = "gripper"
 		<methods><![CDATA[PROCEDURE Init
 DoDefault()
 
-If Version(5) >= 900
-*
-*   16 = Top Relative
-*    2 = Left Absolute
-*  128 = Right Relative
-*   64 = Bottom Relative
-*
-	This.Anchor = 16 + 2 + 128 + 64
-Endif
+** Matt Slay 2013-12-16
+IF VERSION(5) >= 900
+  THIS.Anchor = 10 
+ENDIF
 ENDPROC
 ]]></methods>
 		<ole/>
@@ -2292,7 +2295,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>111</nrecno>
+		<nrecno>81</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -2350,7 +2353,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>99</nrecno>
+		<nrecno>100</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -2395,7 +2398,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>109</nrecno>
+		<nrecno>110</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -2451,7 +2454,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>96</nrecno>
+		<nrecno>97</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -2496,7 +2499,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>90</nrecno>
+		<nrecno>91</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -2555,7 +2558,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>102</nrecno>
+		<nrecno>103</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -2602,7 +2605,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>94</nrecno>
+		<nrecno>95</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -2688,7 +2691,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>95</nrecno>
+		<nrecno>96</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -2727,7 +2730,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>91</nrecno>
+		<nrecno>92</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -2771,7 +2774,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>97</nrecno>
+		<nrecno>98</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -2810,7 +2813,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>92</nrecno>
+		<nrecno>93</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -2830,7 +2833,7 @@ ReadOnly = .T.
 ScrollBars = 2
 TabIndex = 10
 Top = 76
-Width = 708
+Width = 710
 HighlightStyle = 2
 Name = "grdTests"
 Column1.FontBold = .F.
@@ -2871,6 +2874,7 @@ PROCEDURE Init
 *
 *  set THIS.HighlightBackColor to the SelectedItems
 *  color set in Windows on this machine
+
 *
 THIS.HighlightBackColor = THIS.SelectedItemBackColor
 
@@ -2941,7 +2945,8 @@ IF VERSION(5)>=900
   *  128 = Right Relative
   *   64 = Bottom Relative
   *
-  THIS.Anchor = 1 + 2 + 128 + 64
+ * THIS.Anchor = 1 + 2 + 128 + 64
+  THIS.Anchor = 10 && Matt Slay 2013-12-16
 ENDIF
 
 
@@ -3013,7 +3018,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>85</nrecno>
+		<nrecno>82</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -3052,7 +3057,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>107</nrecno>
+		<nrecno>108</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -3067,7 +3072,7 @@ BackStyle = 0
 Caption = "Elapsed Time:"
 Height = 18
 Left = 360
-Top = 432
+Top = 435
 Visible = .F.
 Width = 84
 TabIndex = 16
@@ -3099,7 +3104,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>100</nrecno>
+		<nrecno>101</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -3139,7 +3144,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>110</nrecno>
+		<nrecno>111</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -3178,7 +3183,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>108</nrecno>
+		<nrecno>109</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -3194,7 +3199,7 @@ BackStyle = 0
 Caption = "Test results"
 Height = 16
 Left = 24
-Top = 432
+Top = 435
 Width = 66
 TabIndex = 15
 Name = "lblTestsRunTestsFailed"
@@ -3227,7 +3232,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>98</nrecno>
+		<nrecno>99</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -3275,7 +3280,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>101</nrecno>
+		<nrecno>102</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -3285,10 +3290,10 @@ ENDPROC
 		<baseclass><![CDATA[container]]></baseclass>
 		<objname><![CDATA[pbProgress]]></objname>
 		<parent><![CDATA[frmfoxunit]]></parent>
-		<properties><![CDATA[Top = 448
+		<properties><![CDATA[Top = 451
 Left = 20
 Width = 680
-Height = 24
+Height = 23
 TabIndex = 18
 Name = "pbProgress"
 shpBar.BackColor = 0,255,0
@@ -3342,7 +3347,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>93</nrecno>
+		<nrecno>94</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -3354,10 +3359,10 @@ ENDPROC
 		<parent><![CDATA[frmfoxunit]]></parent>
 		<properties><![CDATA[ErasePage = .T.
 PageCount = 2
-Top = 261
+Top = 260
 Left = 8
-Width = 711
-Height = 148
+Width = 713
+Height = 170
 TabIndex = 11
 Name = "pgfDetails"
 Page1.Caption = "\<Failures and Errors"
@@ -3378,7 +3383,9 @@ IF VERSION(5)>=900
   *  128 = Right Relative
   *   64 = Bottom Relative
   *
-  THIS.Anchor = 16 + 2 + 128 + 64
+  *THIS.Anchor = 16 + 2 + 128 + 64
+  THIS.Anchor = 15 && Matt Slay 2013-12-16
+
 ENDIF
 ENDPROC
 ]]></methods>
@@ -3393,7 +3400,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>81</nrecno>
+		<nrecno>87</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -3435,7 +3442,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>84</nrecno>
+		<nrecno>90</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -3473,7 +3480,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>103</nrecno>
+		<nrecno>104</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -3511,7 +3518,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>104</nrecno>
+		<nrecno>105</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -3563,7 +3570,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>105</nrecno>
+		<nrecno>106</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -3615,7 +3622,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>106</nrecno>
+		<nrecno>107</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -3643,7 +3650,7 @@ Name = "Header1"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>86</nrecno>
+		<nrecno>83</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -3676,7 +3683,7 @@ Name = "Text1"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>87</nrecno>
+		<nrecno>84</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -3704,7 +3711,7 @@ Name = "Header1"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>88</nrecno>
+		<nrecno>85</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -3737,7 +3744,7 @@ Name = "Text1"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>89</nrecno>
+		<nrecno>86</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -3748,12 +3755,12 @@ Name = "Text1"
 		<objname><![CDATA[edtFailuresAndErrors]]></objname>
 		<parent><![CDATA[frmfoxunit.pgfDetails.pgFailuresAndErrors]]></parent>
 		<properties><![CDATA[FontName = "Tahoma"
-Height = 106
-Left = 7
+Height = 134
+Left = 4
 ReadOnly = .T.
 TabIndex = 2
-Top = 8
-Width = 688
+Top = 3
+Width = 698
 ControlSource = ""
 IntegralHeight = .T.
 Name = "edtFailuresAndErrors"
@@ -3773,7 +3780,8 @@ IF VERSION(5)>=900
   *  128 = Right Relative
   *   64 = Bottom Relative
   *
-  THIS.Anchor = 16 + 2 + 128 + 64
+  *THIS.Anchor = 16 + 2 + 128 + 64
+  THIS.Anchor = 15 && Matt Slay 2013-12-16
 ENDIF
 
 ENDPROC
@@ -3803,7 +3811,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>82</nrecno>
+		<nrecno>88</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -3814,12 +3822,12 @@ ENDPROC
 		<objname><![CDATA[edtMessages]]></objname>
 		<parent><![CDATA[frmfoxunit.pgfDetails.pgMessages]]></parent>
 		<properties><![CDATA[FontName = "Tahoma"
-Height = 106
-Left = 7
+Height = 134
+Left = 4
 ReadOnly = .T.
 TabIndex = 3
-Top = 8
-Width = 688
+Top = 3
+Width = 698
 ControlSource = ""
 IntegralHeight = .T.
 Name = "edtMessages"
@@ -3839,7 +3847,9 @@ IF VERSION(5)>=900
   *  128 = Right Relative
   *   64 = Bottom Relative
   *
-  THIS.Anchor = 16 + 2 + 128 + 64
+  *THIS.Anchor = 16 + 2 + 128 + 64
+  THIS.Anchor = 15 && Matt Slay 2013-12-16
+
 ENDIF
 ENDPROC
 PROCEDURE RightClick
@@ -3868,7 +3878,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>83</nrecno>
+		<nrecno>89</nrecno>
 	</class>
 	<class>
 		<platform>COMMENT</platform>

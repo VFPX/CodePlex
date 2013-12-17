@@ -87,7 +87,6 @@ DEFINE CLASS FxuTestResult as Collection
 	********************************************************************
 	FUNCTION LogException(toExceptionInfo, tlTearDownException)
 	********************************************************************
-	
 		IF EMPTY(tlTearDownException)
 			tlTearDownException = .f.
 		ELSE
@@ -103,7 +102,9 @@ DEFINE CLASS FxuTestResult as Collection
 		ENDIF
 		
 		*this.LogDetail(this.BuildExceptionString(toException))
-		this.LogDetail(toExceptionInfo.ToString())
+  	this.inFailedTests = this.inFailedTests + 1
+		lcMessage = toExceptionInfo.ToString()
+		this.LogDetail(lcMessage)
 		*this.icFailureErrorDetails = this.icFailureErrorDetails + this.BuildExceptionString(toException)
 		
 	********************************************************************
@@ -160,7 +161,7 @@ DEFINE CLASS FxuTestResult as Collection
 			this.icMessages = this.icMessages + CHR(10)
 		ENDIF
 		
-		this.icMessages = this.icMessages + ALLTRIM(tcMessage)
+		this.icMessages = this.icMessages + RTRIM(tcMessage)
 	
 	********************************************************************
 	ENDPROC

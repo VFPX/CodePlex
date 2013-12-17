@@ -191,19 +191,19 @@
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid/>
-		<setting>THIS.Top = 127</setting>
+		<setting>THIS.Top = 191</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid/>
-		<setting>THIS.Left = 330</setting>
+		<setting>THIS.Left = 350</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid/>
-		<setting>THIS.Height = IIF(VERSION(5)&gt;=900,816,480)</setting>
+		<setting>THIS.Height = IIF(VERSION(5)&gt;=900,480,480)</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid/>
-		<setting>THIS.Width = IIF(VERSION(5)&gt;=900,1025,724)</setting>
+		<setting>THIS.Width = IIF(VERSION(5)&gt;=900,724,724)</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid/>
@@ -319,7 +319,7 @@
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid/>
-		<setting>THIS.grdTests.COLUMN2.Width = 766</setting>
+		<setting>THIS.grdTests.COLUMN2.Width = 466</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid/>
@@ -327,7 +327,7 @@
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid/>
-		<setting>=SEEK("TEST                                                                            TESTMYTESTMETHOD                                                                                                        ",THIS.icGridRS,"TCLName")</setting>
+		<setting>=SEEK("T1                                                                              (NONE)                                                                                                                  ",THIS.icGridRS,"TCLName")</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid/>
