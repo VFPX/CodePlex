@@ -204,9 +204,10 @@ DEFINE CLASS FxuAssertions As FxuCustom OF FxuCustom.prg
 *!*  			tcMessage = ""
 *!*  		ENDIF
 
-		IF !tuItem
+ 
+ 		IF !tuItem
 			this.ReportAssertionFalse(tcMessage)
-		ELSE
+		Else
 			llAssertTrue = .t.
 		ENDIF
 		
