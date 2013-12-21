@@ -1,0 +1,109 @@
+<?xml version = "1.0" encoding="Windows-1252" standalone="yes"?>
+<VFPData>
+	<xsd:schema id="VFPData" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+		<xsd:element name="VFPData" msdata:IsDataSet="true">
+			<xsd:complexType>
+				<xsd:choice maxOccurs="unbounded">
+					<xsd:element name="_origen" minOccurs="0" maxOccurs="unbounded">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="classid">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="60"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="classname">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="60"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="classlib">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="120"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+							</xsd:sequence>
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:choice>
+				<xsd:anyAttribute namespace="http://www.w3.org/XML/1998/namespace" processContents="lax"/>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:schema>
+	<_origen>
+		<classid>FoxUnitForm</classid>
+		<classname>frmFoxUnit</classname>
+		<classlib>FXU.VCX</classlib>
+	</_origen>
+	<_origen>
+		<classid>FxuTestBroker</classid>
+		<classname>FxuFrmTestBroker</classname>
+		<classlib>FXU.VCX</classlib>
+	</_origen>
+	<_origen>
+		<classid>FxuAssertions</classid>
+		<classname>FxuAssertions</classname>
+		<classlib>FxuAssertions.prg</classlib>
+	</_origen>
+	<_origen>
+		<classid>FxuTestResult</classid>
+		<classname>FxuTestResult</classname>
+		<classlib>FxuTestResult.prg</classlib>
+	</_origen>
+	<_origen>
+		<classid>FxuTestSuite</classid>
+		<classname>FxuTestSuite</classname>
+		<classlib>FxuTestSuite.prg</classlib>
+	</_origen>
+	<_origen>
+		<classid>FxuResultData</classid>
+		<classname>FxuResultData</classname>
+		<classlib>FxuResultData.prg</classlib>
+	</_origen>
+	<_origen>
+		<classid>FxuDataMaintenance</classid>
+		<classname>FxuDataMaintenance</classname>
+		<classlib>FxuDataMaintenance.prg</classlib>
+	</_origen>
+	<_origen>
+		<classid>FxuNewTestClass</classid>
+		<classname>FxuNewTestClass</classname>
+		<classlib>FxuNewTestClass.prg</classlib>
+	</_origen>
+	<_origen>
+		<classid>FxuTestCaseEnumerator</classid>
+		<classname>FxuTestCaseEnumerator</classname>
+		<classlib>FxuTestCaseEnumerator.prg</classlib>
+	</_origen>
+	<_origen>
+		<classid>FxuResultExceptionInfo</classid>
+		<classname>FxuResultExceptionInfo</classname>
+		<classlib>FxuResultExceptionInfo.prg</classlib>
+	</_origen>
+	<_origen>
+		<classid>FxuGetTestClassTemplateDialog</classid>
+		<classname>frmGetTestClassTemplate</classname>
+		<classlib>FXU.VCX</classlib>
+	</_origen>
+	<_origen>
+		<classid>FxuOptionsDialog</classid>
+		<classname>frmOptions</classname>
+		<classlib>FXU.VCX</classlib>
+	</_origen>
+	<_origen>
+		<classid>FxuFileIO</classid>
+		<classname>FxuFileIO</classname>
+		<classlib>FxuFileIO.prg</classlib>
+	</_origen>
+	<_origen>
+		<classid>FrmFxuNewTestClass</classid>
+		<classname>FrmFxuNewTestClass</classname>
+		<classlib>FXU.VCX</classlib>
+	</_origen>
+</VFPData>

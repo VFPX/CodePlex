@@ -1,0 +1,11 @@
+FoxUnit would like to acknowledge those who have contributed to
+or supported FoxUnit.
+
+Contributors:
+
+Visionpace Developers -
+Jim Erwin 
+Drew Speedie 
+Glenn Taylor 
+Dave Aring 
+Bud Wheeler

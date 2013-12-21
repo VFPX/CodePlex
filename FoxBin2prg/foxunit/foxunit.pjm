@@ -1,0 +1,68 @@
+Version=  1.20
+Author=
+Company=
+Address=
+City=
+State=
+Zip=
+Country=
+SaveCode=.T.
+Debug=.T.
+Encrypt=.F.
+NoLogo=.F.
+CommentStyle=1
+Comments=
+CompanyName=
+FileDescription=
+LegalCopyright=
+LegalTrademarks=
+ProductName=
+Major=
+Minor=
+Revision=
+AutoIncrement=.F.
+[OLEServers]
+[OLEServersEnd]
+[ProjectFiles]
+ 862213210,P,fxu.prg,.F.,.T.,1252,,,
+ 862213211,P,fxushowform.prg,.F.,.F.,1252,,,
+ 862213211,P,fxunewobject.prg,.F.,.F.,1252,,,
+ 862213211,P,fxuinheritsfromfxutestcase.prg,.F.,.F.,1252,,,
+ 862213212,P,fxutestresult.prg,.F.,.F.,1252,,,
+ 862213224,V,cprogres.vcx,.F.,.F.,1252,,,
+ 862213224,V,fxu.vcx,.F.,.F.,1252,,,
+ 862213228,x,fxuacknowledgements.bmp,.F.,.F.,0,,,
+ 862213228,x,fxubrowseforfolder.bmp,.F.,.F.,0,,,
+ 862213228,x,fxuclassaddtestto.bmp,.F.,.F.,0,,,
+ 862213228,x,fxuclasscreate.bmp,.F.,.F.,0,,,
+ 862213228,x,fxuclassload.bmp,.F.,.F.,0,,,
+ 862213228,x,fxuclassmodify.bmp,.F.,.F.,0,,,
+ 862213228,x,fxuclassreload.bmp,.F.,.F.,0,,,
+ 862213228,x,fxuclassremove.bmp,.F.,.F.,0,,,
+ 862213228,x,fxuformclose.bmp,.F.,.F.,0,,,
+ 862213228,x,fxulicense.bmp,.F.,.F.,0,,,
+ 862213228,x,fxuoptions.bmp,.F.,.F.,0,,,
+ 862213228,x,fxurunalltests.bmp,.F.,.F.,0,,,
+ 862213228,x,fxurunclasstests.bmp,.F.,.F.,0,,,
+ 862213228,x,fxurunsingletest.bmp,.F.,.F.,0,,,
+ 862213228,x,fxuselectall.bmp,.F.,.F.,0,,,
+ 862213228,x,fxuselectnone.bmp,.F.,.F.,0,,,
+ 862213233,P,fxuassertions.prg,.F.,.F.,1252,,,
+ 862213233,P,fxucustom.prg,.F.,.F.,1252,,,
+ 862213233,P,fxudatamaintenance.prg,.F.,.F.,1252,,,
+ 862213233,P,fxufileio.prg,.F.,.F.,1252,,,
+ 862213233,P,fxunewtestclass.prg,.F.,.F.,1252,,,
+ 862213233,P,fxuresultdata.prg,.F.,.F.,1252,,,
+ 862213233,P,fxuresultexceptioninfo.prg,.F.,.F.,1252,,,
+ 862213233,P,fxusession.prg,.F.,.F.,1252,,,
+ 862213233,P,fxutest.prg,.F.,.F.,1252,,,
+ 862213233,P,fxutestcase.prg,.F.,.F.,1252,,,
+ 862213233,P,fxutestcaseenumerator.prg,.F.,.F.,1252,,,
+ 862213233,P,fxutestsuite.prg,.F.,.F.,1252,,,
+ 862213237,T,foxunitacknowledgements.txt,.F.,.F.,1252,,,
+ 862213237,T,foxunitlicense.txt,.F.,.F.,1252,,,
+ 862213237,T,fxutestcasetemplate.txt,.F.,.F.,1252,,,
+ 862213237,T,fxutestcasetemplate_minimal.txt,.F.,.F.,1252,,,
+ 862213245,D,fxuclassfactorybase.dbf,.T.,.F.,1252,,,
+ 862213256,x,foxunit.ico,.F.,.F.,1252,,,
+[EOF]
