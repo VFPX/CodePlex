@@ -1,12 +1,12 @@
 *       *********************************************************
 *       *                                                         
-*       * 29/12/2013         MENU_SHORTCUT.MPR          04:02:02  
+*       * 03/01/2014         MENU_SHORTCUT.MPR          12:54:49  
 *       *                                                         
 *       *********************************************************
 *       *                                                         
 *       * Author's Name                                           
 *       *                                                         
-*       * Copyright (C) 2013 Company Name                         
+*       * Copyright (C) 2014 Company Name                         
 *       * Address                                                 
 *       * City,     Zip                                           
 *       *                                                         
@@ -72,7 +72,7 @@ DEFINE BAR _MFI_SYSPRINT OF opcióna2su PROMPT "Opción A-2-Sub.3" ;
 	PICTRES _mfi_sysprint ;
 	MESSAGE "Message para Opción A-2-Sub.3 (Tipo Bar#)"
 ON SELECTION BAR 1 OF opcióna2su ;
-	DO _3ym142v56 ;
+	DO _3yt02n88p ;
 	IN LOCFILE("FOXBIN2PRG\TESTS\DATOS_READONLY\MENU_SHORTCUT" ,"MPX;MPR|FXP;PRG" ,"WHERE is MENU_SHORTCUT?")
 ON SELECTION BAR 2 OF opcióna2su wait window "Ejecuta Comando o función para Opción A-2-Sub.2"
 ON BAR 3 OF opcióna2su ACTIVATE POPUP _3ym134xpb
@@ -89,7 +89,7 @@ DEFINE BAR 1 OF opc_b PROMPT "Opción B con comando" ;
 	MESSAGE "Mensaje para Opción B con Command"
 ON SELECTION BAR 1 OF opc_b WAIT WINDOW "Opción B"
 
-ON SELECTION POPUP shortcut *- Menu procedure
+ON SELECTION POPUP shortcut *- Menu procedure (secundario)
 ACTIVATE POPUP shortcut
 
 *       *********************************************************
@@ -104,7 +104,7 @@ ACTIVATE POPUP shortcut
 
 *       *********************************************************
 *       *                                                         
-*       * _3YM142V56  ON SELECTION BAR 1 OF POPUP opcióna2su      
+*       * _3YT02N88P  ON SELECTION BAR 1 OF POPUP opcióna2su      
 *       *                                                         
 *       * Procedure Origin:                                       
 *       *                                                         
@@ -115,7 +115,7 @@ ACTIVATE POPUP shortcut
 *       *                                                         
 *       *********************************************************
 *
-PROCEDURE _3ym142v56
+PROCEDURE _3yt02n88p
 *PROCEDURE Menu1_Opción_A_2_Sub
 	*-- Mi procedure!
 *ENDPROC
