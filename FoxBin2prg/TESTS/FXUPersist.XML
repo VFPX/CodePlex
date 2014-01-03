@@ -203,7 +203,7 @@
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
-		<setting>THIS.Width = IIF(VERSION(5)&gt;=900,1324,724)</setting>
+		<setting>THIS.Width = IIF(VERSION(5)&gt;=900,1309,724)</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
@@ -319,7 +319,7 @@
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
-		<setting>THIS.grdTests.COLUMN2.Width = 817</setting>
+		<setting>THIS.grdTests.COLUMN2.Width = 802</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
