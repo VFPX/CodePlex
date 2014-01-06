@@ -5863,8 +5863,9 @@ DEFINE CLASS c_conversor_prg_a_dbf AS c_conversor_prg_a_bin
 
 			USE IN (SELECT(JUSTSTEM(THIS.c_OutputFile)))
 
-			*ldLastUpdate	= EVALUATE( '{^' + toTable._LastUpdate + '}' )
-			loDBFUtils.write_DBC_BackLink( THIS.c_OutputFile, toTable._Database )
+			*-- La actualización de la fecha sirve para evitar diferencias al regenerar el DBF
+			ldLastUpdate	= EVALUATE( '{^' + toTable._LastUpdate + '}' )
+			loDBFUtils.write_DBC_BackLink( THIS.c_OutputFile, toTable._Database, ldLastUpdate )
 			
 
 		CATCH TO loEx
@@ -13506,7 +13507,7 @@ DEFINE CLASS CL_DBF_INDEX AS CL_CUS_BASE
 			TEXT TO lcText TEXTMERGE NOSHOW FLAGS 1+2 PRETEXT 1+2
 				<<>>		<INDEX>
 				<<>>			<TagName><<taTagInfo(I,1)>></TagName>
-				<<>>			<TagType><<taTagInfo(I,2)>></TagType>
+				<<>>			<TagType><<ICASE(LEFT(taTagInfo(I,2),3)='BIN','BINARY',PRIMARY(I),'PRIMARY',CANDIDATE(),'CANDIDATE',UNIQUE(I),'UNIQUE','REGULAR'))>></TagType>
 				<<>>			<Key><<taTagInfo(I,3)>></Key>
 				<<>>			<Filter><<taTagInfo(I,4)>></Filter>
 				<<>>			<Order><<IIF(DESCENDING(I), 'DESCENDING', 'ASCENDING')>></Order>
@@ -16151,8 +16152,9 @@ DEFINE CLASS CL_DBF_UTILS AS SESSION
 		* PARÁMETROS:				(!=Obligatorio | ?=Opcional) (@=Pasar por referencia | v=Pasar por valor) (IN/OUT)
 		* tc_FileName				(v! IN    ) Nombre del DBF a analizar
 		* tcDBC_Name				(v! IN    ) Nombre del DBC a asociar
+		* tdLastUpdate				(v! IN    ) Fecha de última actualización
 		*---------------------------------------------------------------------------------------------------
-		LPARAMETERS tc_FileName, tcDBC_Name
+		LPARAMETERS tc_FileName, tcDBC_Name, tdLastUpdate
 
 		TRY
 			LOCAL lnHandle, ln_HexFileType, lcStr, lnDataPos, lnFieldCount, loEx AS EXCEPTION
@@ -16168,7 +16170,15 @@ DEFINE CLASS CL_DBF_UTILS AS SESSION
 				lcStr			= FREAD(lnHandle,1)		&& File type
 				ln_HexFileType	= EVALUATE( TRANSFORM(ASC(lcStr),'@0') )
 
-				=FREAD(lnHandle,3)		&& Last update (YYMMDD)
+				IF EMPTY(tdLastUpdate)
+					lcStr	= FREAD(lnHandle,3)		&& Last update (YYMMDD)
+				ELSE
+					lcStr	= CHR( VAL( RIGHT( PADL( YEAR( tdLastUpdate ),4,'0'), 2 ) ) ) ;
+						+ CHR( VAL( PADL( MONTH( tdLastUpdate ),2,'0' ) ) ) ;
+						+ CHR( VAL( PADL( DAY( tdLastUpdate ),2,'0' ) ) )		&&	Last update (YYMMDD)
+					=FWRITE( lnHandle, PADR(lcStr,3,CHR(0)) )
+				ENDIF
+
 				=FREAD(lnHandle,4)		&& Number of records in file
 				lcStr			= FREAD(lnHandle,2)		&& Position of first data record
 				lnDataPos		= CTOBIN(lcStr,"2RS")
