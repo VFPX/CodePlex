@@ -199,7 +199,7 @@
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
-		<setting>THIS.Height = IIF(VERSION(5)&gt;=900,936,480)</setting>
+		<setting>THIS.Height = IIF(VERSION(5)&gt;=900,912,480)</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
@@ -227,7 +227,7 @@
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
-		<setting>THIS.pgfDetails.ActivePage = 2</setting>
+		<setting>THIS.pgfDetails.ActivePage = 1</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
@@ -327,7 +327,7 @@
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
-		<setting>=SEEK("FT__FOXBIN2PRG__C_CONVERSOR_PRG_A_DBF                                                                         EVALUATE_RESULTS                                                                                                                  ",THIS.icGridRS,"TCLName")</setting>
+		<setting>=SEEK("FT__FOXBIN2PRG__C_CONVERSOR_PRG_A_DBC                                                                         DEBERIA_EJECUTAR_FOXBIN2PRG_PARAELARCHIVO_FB2P_DBC_DC2_YREGENERAREL_DBC_CONTODOSSUSOBJETOS                                        ",THIS.icGridRS,"TCLName")</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
