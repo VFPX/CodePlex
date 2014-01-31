@@ -17,7 +17,7 @@
 #DEFINE C_FILE_DOESNT_EXIST_LOC								'File doesn't exist:'
 #DEFINE C_FILE_NAME_IS_NOT_SUPPORTED_LOC					'File [<<.c_InputFile>>] is not supported'
 #DEFINE C_FILE_NOT_FOUND_LOC								'File not found'
-#DEFINE C_FOXBIN2PRG_CFG_EXTENSION_LOC						'extension:'
+#DEFINE C_EXTENSION_RECONFIGURATION_LOC						'Extension Reconfiguration:'
 #DEFINE C_FOXBIN2PRG_ERROR_CAPTION_LOC						'FOXBIN2PRG: ERROR!!'
 #DEFINE C_FOXBIN2PRG_INFO_SINTAX_LOC						'FOXBIN2PRG: SINTAXIS INFO'
 #DEFINE C_FOXBIN2PRG_INFO_SINTAX_EXAMPLE_LOC				'FOXBIN2PRG <cFileSpec.Ext>  [cType_NA  cTextName_NA  cGenText_NA  cDontShowErrors  cDebug  cDontShowProgress  cOriginalFileName  cRecompile]' + CR_LF + CR_LF ;
