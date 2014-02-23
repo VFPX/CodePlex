@@ -327,7 +327,7 @@
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
-		<setting>=SEEK("UT__FOXBIN2PRG__C_CONVERSOR_BASE__IDENTIFICARBLOQUESDEEXCLUSION                                               DEBERIA_OBTENERLAUBICACIONDELBLOQUE_IF_ENDIF_CUANDOCODIGOCON_IF_ENDIF_PREDOMINANTE_ESEVALUADO                                     ",THIS.icGridRS,"TCLName")</setting>
+		<setting>=SEEK("UT__FOXBIN2PRG__C_CONVERSOR_PRG_A_BIN__ANALIZARASIGNACION_TAG_INDICADO                                        DEBERIA_ANALIZARASIGNACION_TAG__MEMBERDATA__ENUNAASIGNACION_MULTILINE                                                             ",THIS.icGridRS,"TCLName")</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
