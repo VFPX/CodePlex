@@ -30,166 +30,6 @@
 		</xsd:element>
 	</xsd:schema>
 	<foxunitpersist>
-		<userid>FDBOZZO</userid>
-		<setting>THIS.Top = 0</setting>
-	</foxunitpersist>
-	<foxunitpersist>
-		<userid>FDBOZZO</userid>
-		<setting>THIS.Left = 0</setting>
-	</foxunitpersist>
-	<foxunitpersist>
-		<userid>FDBOZZO</userid>
-		<setting>THIS.Height = IIF(VERSION(5)&gt;=900,864,480)</setting>
-	</foxunitpersist>
-	<foxunitpersist>
-		<userid>FDBOZZO</userid>
-		<setting>THIS.Width = IIF(VERSION(5)&gt;=900,1272,724)</setting>
-	</foxunitpersist>
-	<foxunitpersist>
-		<userid>FDBOZZO</userid>
-		<setting>THIS.inZoomTop = .F.</setting>
-	</foxunitpersist>
-	<foxunitpersist>
-		<userid>FDBOZZO</userid>
-		<setting>THIS.inZoomLeft = .F.</setting>
-	</foxunitpersist>
-	<foxunitpersist>
-		<userid>FDBOZZO</userid>
-		<setting>THIS.inZoomHeight = .F.</setting>
-	</foxunitpersist>
-	<foxunitpersist>
-		<userid>FDBOZZO</userid>
-		<setting>THIS.inZoomWidth = .F.</setting>
-	</foxunitpersist>
-	<foxunitpersist>
-		<userid>FDBOZZO</userid>
-		<setting>THIS.inZoomWindowState = 0</setting>
-	</foxunitpersist>
-	<foxunitpersist>
-		<userid>FDBOZZO</userid>
-		<setting>THIS.pgfDetails.ActivePage = 2</setting>
-	</foxunitpersist>
-	<foxunitpersist>
-		<userid>FDBOZZO</userid>
-		<setting>THIS.grdTests.FontName = "Tahoma"</setting>
-	</foxunitpersist>
-	<foxunitpersist>
-		<userid>FDBOZZO</userid>
-		<setting>THIS.grdTests.FontSize = 9</setting>
-	</foxunitpersist>
-	<foxunitpersist>
-		<userid>FDBOZZO</userid>
-		<setting>THIS.grdTests.FontBold = .F.</setting>
-	</foxunitpersist>
-	<foxunitpersist>
-		<userid>FDBOZZO</userid>
-		<setting>THIS.grdTests.FontItalic = .F.</setting>
-	</foxunitpersist>
-	<foxunitpersist>
-		<userid>FDBOZZO</userid>
-		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontName = "Arial"</setting>
-	</foxunitpersist>
-	<foxunitpersist>
-		<userid>FDBOZZO</userid>
-		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontSize = 9</setting>
-	</foxunitpersist>
-	<foxunitpersist>
-		<userid>FDBOZZO</userid>
-		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontBold = .F.</setting>
-	</foxunitpersist>
-	<foxunitpersist>
-		<userid>FDBOZZO</userid>
-		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontItalic = .F.</setting>
-	</foxunitpersist>
-	<foxunitpersist>
-		<userid>FDBOZZO</userid>
-		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontName = "Tahoma"</setting>
-	</foxunitpersist>
-	<foxunitpersist>
-		<userid>FDBOZZO</userid>
-		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontSize = 9</setting>
-	</foxunitpersist>
-	<foxunitpersist>
-		<userid>FDBOZZO</userid>
-		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontBold = .F.</setting>
-	</foxunitpersist>
-	<foxunitpersist>
-		<userid>FDBOZZO</userid>
-		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontItalic = .F.</setting>
-	</foxunitpersist>
-	<foxunitpersist>
-		<userid>FDBOZZO</userid>
-		<setting>THIS.pgfDetails.pgMessages.FontName = "Arial"</setting>
-	</foxunitpersist>
-	<foxunitpersist>
-		<userid>FDBOZZO</userid>
-		<setting>THIS.pgfDetails.pgMessages.FontSize = 9</setting>
-	</foxunitpersist>
-	<foxunitpersist>
-		<userid>FDBOZZO</userid>
-		<setting>THIS.pgfDetails.pgMessages.FontBold = .T.</setting>
-	</foxunitpersist>
-	<foxunitpersist>
-		<userid>FDBOZZO</userid>
-		<setting>THIS.pgfDetails.pgMessages.FontItalic = .F.</setting>
-	</foxunitpersist>
-	<foxunitpersist>
-		<userid>FDBOZZO</userid>
-		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontName = "Tahoma"</setting>
-	</foxunitpersist>
-	<foxunitpersist>
-		<userid>FDBOZZO</userid>
-		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontSize = 9</setting>
-	</foxunitpersist>
-	<foxunitpersist>
-		<userid>FDBOZZO</userid>
-		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontBold = .F.</setting>
-	</foxunitpersist>
-	<foxunitpersist>
-		<userid>FDBOZZO</userid>
-		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontItalic = .F.</setting>
-	</foxunitpersist>
-	<foxunitpersist>
-		<userid>FDBOZZO</userid>
-		<setting>THIS.ilLargeGrid=.F.</setting>
-	</foxunitpersist>
-	<foxunitpersist>
-		<userid>FDBOZZO</userid>
-		<setting>THIS.grdTests.COLUMN1.Width = 342</setting>
-	</foxunitpersist>
-	<foxunitpersist>
-		<userid>FDBOZZO</userid>
-		<setting>THIS.grdTests.COLUMN2.Width = 876</setting>
-	</foxunitpersist>
-	<foxunitpersist>
-		<userid>FDBOZZO</userid>
-		<setting>SET ORDER TO TAG TCLOC IN (THIS.icGridRS)</setting>
-	</foxunitpersist>
-	<foxunitpersist>
-		<userid>FDBOZZO</userid>
-		<setting>=SEEK("FOXBIN2PRG__C_CONVERSOR_BASE__DOBACKUP                                                                        DEBERIA_HACERELBACKUPDELARCHIVOINDICADO                                                                                           ",THIS.icGridRS,"TCLName")</setting>
-	</foxunitpersist>
-	<foxunitpersist>
-		<userid>FDBOZZO</userid>
-		<setting>THIS.ilAllowDebug = .F.</setting>
-	</foxunitpersist>
-	<foxunitpersist>
-		<userid>FDBOZZO</userid>
-		<setting>THIS.ShowTips = .T.</setting>
-	</foxunitpersist>
-	<foxunitpersist>
-		<userid>FDBOZZO</userid>
-		<setting>THIS.ilHonorTestPrefix = .F.</setting>
-	</foxunitpersist>
-	<foxunitpersist>
-		<userid>FDBOZZO</userid>
-		<setting>THIS.ilReloadTestsOnRun = .F.</setting>
-	</foxunitpersist>
-	<foxunitpersist>
-		<userid>FDBOZZO</userid>
-		<setting>THIS.ilCloseDebuggerAtEndOfTestsRun = .F.</setting>
-	</foxunitpersist>
-	<foxunitpersist>
 		<userid>windows</userid>
 		<setting>THIS.Top = -8</setting>
 	</foxunitpersist>
@@ -231,7 +71,7 @@
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
-		<setting>THIS.grdTests.FontName = "Courier New"</setting>
+		<setting>THIS.grdTests.FontName = "Tahoma"</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
@@ -247,7 +87,7 @@
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
-		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontName = "Courier New"</setting>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontName = "Arial"</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
@@ -263,7 +103,7 @@
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
-		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontName = "Courier New"</setting>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontName = "Tahoma"</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
@@ -279,7 +119,7 @@
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
-		<setting>THIS.pgfDetails.pgMessages.FontName = "Courier New"</setting>
+		<setting>THIS.pgfDetails.pgMessages.FontName = "Arial"</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
@@ -295,7 +135,7 @@
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
-		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontName = "Courier New"</setting>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontName = "Tahoma"</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
@@ -315,11 +155,11 @@
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
-		<setting>THIS.grdTests.Column1.Width = 453</setting>
+		<setting>THIS.grdTests.Column1.Width = 399</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
-		<setting>THIS.grdTests.Column2.Width = 802</setting>
+		<setting>THIS.grdTests.Column2.Width = 856</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
@@ -327,7 +167,7 @@
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
-		<setting>=SEEK("UT__FOXBIN2PRG__C_CONVERSOR_PRG_A_BIN__ANALIZARASIGNACION_TAG_INDICADO                                        DEBERIA_ANALIZARASIGNACION_TAG__MEMBERDATA__ENUNAASIGNACION_MULTILINE                                                             ",THIS.icGridRS,"TCLName")</setting>
+		<setting>=SEEK("FT__FOXBIN2PRG__C_CONVERSOR_PRG_A_DBC                                                                         EVALUATE_RESULTS                                                                                                                  ",THIS.icGridRS,"TCLName")</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
@@ -335,7 +175,7 @@
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
-		<setting>THIS.ShowTips = .F.</setting>
+		<setting>THIS.ShowTips = .T.</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
