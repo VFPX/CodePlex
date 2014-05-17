@@ -31,19 +31,19 @@
 	</xsd:schema>
 	<foxunitpersist>
 		<userid>FDBOZZO</userid>
-		<setting>THIS.Top = -4</setting>
+		<setting>THIS.Top = 37</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>FDBOZZO</userid>
-		<setting>THIS.Left = -4</setting>
+		<setting>THIS.Left = 25</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>FDBOZZO</userid>
-		<setting>THIS.Height = IIF(VERSION(5)&gt;=900,908,480)</setting>
+		<setting>THIS.Height = IIF(VERSION(5)&gt;=900,786,480)</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>FDBOZZO</userid>
-		<setting>THIS.Width = IIF(VERSION(5)&gt;=900,1280,724)</setting>
+		<setting>THIS.Width = IIF(VERSION(5)&gt;=900,1202,724)</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>FDBOZZO</userid>
@@ -95,7 +95,7 @@
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>FDBOZZO</userid>
-		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontBold = .F.</setting>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontBold = .T.</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>FDBOZZO</userid>
@@ -159,7 +159,7 @@
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>FDBOZZO</userid>
-		<setting>THIS.grdTests.COLUMN2.Width = 840</setting>
+		<setting>THIS.grdTests.COLUMN2.Width = 763</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>FDBOZZO</userid>
@@ -167,7 +167,7 @@
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>FDBOZZO</userid>
-		<setting>=SEEK("UT__FOXBIN2PRG__C_CONVERSOR_PRG_A_BIN__ANALIZARASIGNACION_TAG_INDICADO                                        DEBERIA_ANALIZARASIGNACION_TAG__MEMBERDATA__ENUNAASIGNACION_MULTILINE                                                             ",THIS.icGridRS,"TCLName")</setting>
+		<setting>=SEEK("UT__FOXBIN2PRG                                                                                                DEBERIA_EJECUTAR_FOXBIN2PRG_PARAELFORM__F_FORMSET__YVALIDARLAVISUALIZACIONDEPANTALLA                                              ",THIS.icGridRS,"TCLName")</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>FDBOZZO</userid>
@@ -191,11 +191,11 @@
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
-		<setting>THIS.Top = -8</setting>
+		<setting>THIS.Top = 7</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
-		<setting>THIS.Left = -8</setting>
+		<setting>THIS.Left = 6</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
@@ -227,7 +227,7 @@
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
-		<setting>THIS.pgfDetails.ActivePage = 1</setting>
+		<setting>THIS.pgfDetails.ActivePage = 2</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
@@ -315,11 +315,11 @@
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
-		<setting>THIS.grdTests.Column1.Width = 399</setting>
+		<setting>THIS.grdTests.COLUMN1.Width = 399</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
-		<setting>THIS.grdTests.Column2.Width = 856</setting>
+		<setting>THIS.grdTests.COLUMN2.Width = 856</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
@@ -327,7 +327,7 @@
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
-		<setting>=SEEK("FT__FOXBIN2PRG__C_CONVERSOR_PRG_A_DBC                                                                         EVALUATE_RESULTS                                                                                                                  ",THIS.icGridRS,"TCLName")</setting>
+		<setting>=SEEK("UT__FOXBIN2PRG                                                                                                DEBERIA_EJECUTAR_FOXBIN2PRG_PARAELFORM__F_FORM_AA__YVALIDARLAVISUALIZACIONDEPANTALLA                                              ",THIS.icGridRS,"TCLName")</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
