@@ -155,11 +155,11 @@
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
-		<setting>THIS.grdTests.COLUMN1.Width = 460</setting>
+		<setting>THIS.grdTests.Column1.Width = 460</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
-		<setting>THIS.grdTests.COLUMN2.Width = 1415</setting>
+		<setting>THIS.grdTests.Column2.Width = 1399</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
@@ -167,7 +167,7 @@
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
-		<setting>=SEEK("FT__FOXBIN2PRG__C_CONVERSOR_PRG_A_DBC                                                                         EVALUATE_RESULTS                                                                                                                  ",THIS.icGridRS,"TCLName")</setting>
+		<setting>=SEEK("UT__FOXBIN2PRG                                                                                                DEBERIA_CREARUNARCHIVO_DB2_DESDEUN_DBF_Y_EJECUTARELMETODO__RUN_AFTERCREATE_DB2                                                    ",THIS.icGridRS,"TCLName")</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
@@ -188,9 +188,5 @@
 	<foxunitpersist>
 		<userid>windows</userid>
 		<setting>THIS.ilCloseDebuggerAtEndOfTestsRun = .F.</setting>
-	</foxunitpersist>
-	<foxunitpersist>
-		<userid>windows</userid>
-		<setting>THIS.nSplitterPosition = 372</setting>
 	</foxunitpersist>
 </VFPData>
