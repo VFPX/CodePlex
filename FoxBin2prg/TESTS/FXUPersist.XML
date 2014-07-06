@@ -67,7 +67,7 @@
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
-		<setting>THIS.pgfDetails.ActivePage = 1</setting>
+		<setting>THIS.pgfDetails.ActivePage = 2</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
@@ -155,11 +155,11 @@
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
-		<setting>THIS.grdTests.Column1.Width = 572</setting>
+		<setting>THIS.grdTests.COLUMN1.Width = 572</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
-		<setting>THIS.grdTests.Column2.Width = 1303</setting>
+		<setting>THIS.grdTests.COLUMN2.Width = 1303</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
@@ -167,7 +167,7 @@
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
-		<setting>=SEEK("UT__FOXBIN2PRG__C_FOXBIN2PRG__EVALUARCONFIGURACION                                                            DEBERIA_SETEAR_CLEARUNIQUEID_TRUE_CUANDONOEXISTAELARHIVO_FOXBIN2PRG_CFG                                                           ",THIS.icGridRS,"TCLName")</setting>
+		<setting>=SEEK("UT__FOXBIN2PRG                                                                                                DEBERIA_CREARUNARCHIVO_DB2_DESDEUN_DBF_Y_EJECUTARELMETODO__RUN_AFTERCREATE_DB2                                                    ",THIS.icGridRS,"TCLName")</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
