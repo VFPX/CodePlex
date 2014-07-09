@@ -1,4 +1,4 @@
-(See the FoxUnit Wiki page on the VFPX CodePlex page for complete information)
+(See the FoxUnit Wiki page on the VFPX CodePlex page https://vfpx.codeplex.com/wikipage?title=FoxUnit&referringTitle=Documentation for complete information)
 
 VFPX Release 1.2 - July 9, 2014
 
