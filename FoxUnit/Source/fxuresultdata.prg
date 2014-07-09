@@ -65,8 +65,7 @@ DEFINE CLASS FxuResultData AS FxuCustom OF FxuCustom.prg
     ENDIF
 
     SET DELETED ON
-    THIS.ioDataMaintenance = FxuNewObject("FxuDataMaintenance", ;
-      THIS.icResultsTable)
+    THIS.ioDataMaintenance = FxuNewObject("FxuDataMaintenance", THIS.icResultsTable, THIS.icDataPath)	&& FDBOZZO
     THIS.OpenDataInit()
 
     THIS.ioFileIO = FxuNewObject("FXUFileIO")
@@ -84,8 +83,7 @@ DEFINE CLASS FxuResultData AS FxuCustom OF FxuCustom.prg
     loDataMaintenance = THIS.ioDataMaintenance
 
     IF !FILE(THIS.icDataPath + FORCEEXT(THIS.icResultsTable,"DBF"))
-      loDataMaintenance.CreateNewTestResultTable(THIS.icDataPath, ;
-        THIS.icResultsTable)
+      loDataMaintenance.CreateNewTestResultTable(THIS.icDataPath, THIS.icResultsTable)
     ELSE
       loDataMaintenance.ReIndexResultsTable(.T.)
     ENDIF
@@ -150,7 +148,7 @@ DEFINE CLASS FxuResultData AS FxuCustom OF FxuCustom.prg
     IF EMPTY(tcTestClassFile)
       LOCAL loFrmLoadClass AS fxuFrmLoadClass OF fxu.vcx
       LOCAL i
-      loFrmLoadClass=NEWOBJECT('fxuFrmLoadClass','fxu.vcx')
+      loFrmLoadClass=NEWOBJECT('fxuFrmLoadClass','fxu.vcx','',THIS.icDataPath)	&& FDBOZZO. 01/06/2014. DataPath Fix
       loFrmLoadClass.SHOW
       IF loFrmLoadClass.ilCancel = .F.
         WITH loFrmLoadClass.lstFiles
@@ -175,7 +173,7 @@ DEFINE CLASS FxuResultData AS FxuCustom OF FxuCustom.prg
     LOCAL loEnumerator AS FxuTestCaseEnumerator OF FxuTestCaseEnumerator.prg
 
     LOCAL lcTestClassFile, lcCurdir, lcTestDirectory, ;
-      lcTag, lnTClass, lnTName, lnLocation, llNew, lcTestName
+      lcTag, lnTClass, lnTName, lnLocation, llNew, lcTestName, lcFilter
 
     ************
     * EHW/02/27/2005
@@ -185,6 +183,7 @@ DEFINE CLASS FxuResultData AS FxuCustom OF FxuCustom.prg
     SET ORDER TO 0 IN (THIS.icResultsTable)
     lnTClass = LENC(EVALUATE(THIS.icResultsTable+".TCLass"))
     lnTName = LENC(EVALUATE(THIS.icResultsTable+".TName"))
+    lcFilter	= FILTER(THIS.icResultsTable)	&& Save FILTER expression. FDBOZZO. 2014.06.19
 
     loEnumerator = FxuNewObject("FxuTestCaseEnumerator")
 
@@ -242,6 +241,10 @@ DEFINE CLASS FxuResultData AS FxuCustom OF FxuCustom.prg
         SELECT TestCase_Curs
         GO TOP
         lnLocation = 0
+
+		*-- Clear FILTER temporaly on icResultsTable before INSERT/REPLACE to avoid errors. FDBOZZO. 2014.06.19
+        SET FILTER TO IN (THIS.icResultsTable)
+        
         SCAN
           lnLocation = lnLocation + 1
           lcTestName = TestCase_Curs.tname
@@ -274,7 +277,11 @@ DEFINE CLASS FxuResultData AS FxuCustom OF FxuCustom.prg
           (SELECT UPPER(TName) AS CurrentTests;
           FROM TestCase_Curs WHERE UPPER(ALLTRIM(TClass)) == UPPER(ALLTRIM(m.lcTestClass)))
 
-
+		*-- Restore FILTER, if any. FDBOZZO. 2014.06.19
+		IF NOT EMPTY(lcFilter)
+	        SET FILTER TO &lcFilter. IN (THIS.icResultsTable)
+		ENDIF
+		
       ENDIF
 
     ENDIF
@@ -325,7 +332,10 @@ DEFINE CLASS FxuResultData AS FxuCustom OF FxuCustom.prg
       RETURN .F.
     ENDIF
 
-    CREATE CURSOR TestCase_Curs (resultid c(32),tclass c(80), tname c(100))
+	*-- FDBOZZO. 01/10/2011. Field length expansion.
+	*-- 	Expanded TClass C(80) to C(110) ==> So the Unit Test file name can be 'ut_libraryName__className__methodName.prg'
+	*-- 	Expanded TName C(100) to C(130) ==> So the method name can be 'SHOULD_DoSomething__WHEN_SomeConditions'
+    CREATE CURSOR TestCase_Curs (resultid c(32),tclass c(110), tname c(130))
 
     FOR lnX = 1 TO lnTestCases
 

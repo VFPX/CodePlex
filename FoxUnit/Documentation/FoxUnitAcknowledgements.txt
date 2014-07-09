@@ -13,3 +13,6 @@ Bud Wheeler
 Community Developers -
 Alan Stevens
 Derek Alweit
+Matt Slay
+Fernando Bozzo
+Eric Selje

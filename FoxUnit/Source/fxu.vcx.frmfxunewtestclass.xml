@@ -172,26 +172,26 @@
 	</xsd:schema>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_1AR134XBE</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[fxufrmbase]]></class>
 		<classloc><![CDATA[fxu.vcx]]></classloc>
 		<baseclass><![CDATA[form]]></baseclass>
 		<objname><![CDATA[frmfxunewtestclass]]></objname>
 		<parent/>
-		<properties><![CDATA[Height = 154
-Width = 649
-ShowWindow = 1
+		<properties><![CDATA[ShowWindow = 1
 DoCreate = .T.
 AutoCenter = .T.
-Caption = "Select name and location of your new test class"
 ControlBox = .T.
 Closable = .F.
+Height = 154
+Width = 649
 MaxButton = .F.
 MinButton = .F.
+Caption = "Select name and location of your new test class"
 Icon = ..\
 WindowType = 1
 iccurrenttestfolder = 
-_memberdata = 
+_memberdata = <VFPData></VFPData>
 Name = "frmfxunewtestclass"
 ]]></properties>
 		<protected/>
@@ -221,6 +221,10 @@ THIS.icclassvalidationmessage = m.vNewVal
 ENDPROC
 PROCEDURE Init
 LPARAMETERS tcCurrentTestFolder
+
+Thisform.MinHeight	= thisform.Height	&& FDBOZZO
+thisform.MaxHeight	= thisform.Height	&& FDBOZZO
+thisform.MinWidth	= thisform.Width	&& FDBOZZO
 
 thisform.txtCurrentTestFolder.value = tcCurrentTestFolder 
 thisform.Icon = "FoxUnit.ico"
@@ -258,14 +262,14 @@ ENDPROC
 		<ole2/>
 		<reserved1><![CDATA[Class]]></reserved1>
 		<reserved2><![CDATA[9]]></reserved2>
-		<reserved3><![CDATA[iccurrenttestfolder
-icclassvalidationmessage
+		<reserved3><![CDATA[icclassvalidationmessage
+iccurrenttestfolder
 icnewtestclass
 _memberdata XML Metadata for customizable properties
-*validatetestclass 
-*icclassvalidationmessage_assign 
 *cancelaction 
+*icclassvalidationmessage_assign 
 *okaction 
+*validatetestclass 
 ]]></reserved3>
 		<reserved4/>
 		<reserved5/>
@@ -273,11 +277,11 @@ _memberdata XML Metadata for customizable properties
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>58</nrecno>
+		<nrecno>2</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_1AR134XBE</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[label]]></class>
 		<classloc/>
 		<baseclass><![CDATA[label]]></baseclass>
@@ -306,11 +310,11 @@ Name = "Label1"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>60</nrecno>
+		<nrecno>4</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_1AR13CZFE</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[label]]></class>
 		<classloc/>
 		<baseclass><![CDATA[label]]></baseclass>
@@ -339,11 +343,11 @@ Name = "Label2"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>62</nrecno>
+		<nrecno>6</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_1AW1104JF</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[label]]></class>
 		<classloc/>
 		<baseclass><![CDATA[label]]></baseclass>
@@ -371,11 +375,11 @@ Name = "Label3"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>59</nrecno>
+		<nrecno>3</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_1AR13F54X</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[commandbutton]]></class>
 		<classloc/>
 		<baseclass><![CDATA[commandbutton]]></baseclass>
@@ -409,11 +413,11 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>64</nrecno>
+		<nrecno>8</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_1AR134XBE</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[commandbutton]]></class>
 		<classloc/>
 		<baseclass><![CDATA[commandbutton]]></baseclass>
@@ -456,11 +460,11 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>63</nrecno>
+		<nrecno>7</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_1AR13CZFD</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[commandbutton]]></class>
 		<classloc/>
 		<baseclass><![CDATA[commandbutton]]></baseclass>
@@ -516,11 +520,11 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>61</nrecno>
+		<nrecno>5</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_11D0XWNM5</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[textbox]]></class>
 		<classloc/>
 		<baseclass><![CDATA[textbox]]></baseclass>
@@ -548,11 +552,11 @@ Name = "txtCurrentTestFolder"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>65</nrecno>
+		<nrecno>9</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_1AS0GD6VV</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[textbox]]></class>
 		<classloc/>
 		<baseclass><![CDATA[textbox]]></baseclass>
@@ -586,7 +590,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>66</nrecno>
+		<nrecno>10</nrecno>
 	</class>
 	<class>
 		<platform>COMMENT</platform>
@@ -610,6 +614,6 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>67</nrecno>
+		<nrecno>11</nrecno>
 	</class>
 </VFPData>

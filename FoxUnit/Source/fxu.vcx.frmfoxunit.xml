@@ -172,7 +172,7 @@
 	</xsd:schema>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_1930NO3S7</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[form]]></class>
 		<classloc/>
 		<baseclass><![CDATA[form]]></baseclass>
@@ -190,21 +190,21 @@ Visible = .T.
 FillStyle = 1
 Icon = (("FoxUnit.ico"))
 AllowOutput = .F.
-incolorpass = (rgb(0,220,0))
-incolornotrun = (rgb(200,200,200))
-incolorfail = (rgb(255,50,50))
-ilallowdebug = .F.
-inmostrecentselectedrow = 1
-icgridrs = FXUResults
-ilinitialentry = .T.
-_memberdata = <VFPData><memberdata name="nsplitterposition" display="nSplitterPosition"/></VFPData>
-inbar = 0
-inzoomwindowstate = 0
 icclassfilter = 
+icgridrs = FXUResults
 icnamefilter = 
-ilhonortestprefix = .F.
+ilallowdebug = .F.
 ilclosedebuggeratendoftestsrun = .F.
+ilhonortestprefix = .F.
+ilinitialentry = .T.
+inbar = 0
+incolorfail = (rgb(255,50,50))
+incolornotrun = (rgb(200,200,200))
+incolorpass = (rgb(0,220,0))
+inmostrecentselectedrow = 1
+inzoomwindowstate = 0
 nsplitterposition = 0
+_memberdata = <VFPData><memberdata name="nsplitterposition" display="nSplitterPosition"/></VFPData>
 Name = "frmfoxunit"
 ]]></properties>
 		<protected/>
@@ -1017,7 +1017,8 @@ SET CLASSLIB TO &lcSetClassLib
 ENDPROC
 PROCEDURE Load
 IF UPPER(JUSTSTEM(SYS(16,0))) == "FXU" ;
-     OR UPPER(PROGRAM(PROGRAM(-1)-2)) == "FXU"
+     OR UPPER(PROGRAM(PROGRAM(-1)-2)) == "FXU" ;
+     OR UPPER(PROGRAM(PROGRAM(-1)-3)) == "FXU"
   *
   *  FoxUnit started via DO FXU or by a menu 
   *  option that issues DO FXU
@@ -1029,8 +1030,8 @@ IF UPPER(JUSTSTEM(SYS(16,0))) == "FXU" ;
              "  DO FXU", ;
              48, ;
              "Please Note")
-  KEYBOARD "DO FXU " PLAIN CLEAR 
-  ACTIVATE WINDOW Command 
+  *KEYBOARD "DO FXU " PLAIN CLEAR 
+  *ACTIVATE WINDOW Command 
   RETURN .f.
 ENDIF             
 
@@ -1052,84 +1053,31 @@ LOCAL lcFXUDataPath, cHomeDir as String
 * I created this function for defaulting the tests
 * folder to _VFP.CurrentProject.HomeDir + "Tests" HAS
 lcFXUDataPath = GetTestsDir() 
-
-IF FILE("FXUResults.DBF")
-  lcFXUDataPath = ADDBS(JUSTPATH(FULLPATH("FXUResults.DBF")))
-
-ELSE
-
-  * I despise this message. HAS
-  *MESSAGEBOX("There is no FXUResults.DBF FoxUnit results table " + ;
-             "in your VFP path at the moment." + ;
-             CHR(13) + CHR(13) + ;
-             "Either:" + ;
-             CHR(13) + CHR(13) + ;
-             "This is the first time you have run FoxUnit " + ;
-             "for this application/development environment -- " + ;
-             "Specify/create the folder where you will store " + ;
-             "the test classes (.PRGs) and FXUResults.DBF table " + ;
-             "in the GETFILE() dialog presented " + ;
-             "after you acknowledge this dialog." + ;
-             CHR(13) + CHR(13) + ;
-             "-OR-" + ;
-             CHR(13) + CHR(13) + ;
-             "You have already run FoxUnit for this application/" + ;
-             "development environment, but you have not ensured " + ;
-             "that the folder containing the FoxUnit tests and " + ;
-             "FXUResults.DBF results table is in your VFP path -- " + ;
-             "You can select that folder in the GETFILE() dialog " + ;
-             "that is about to be presented, but we recommend " + ;
-             "instead that you Cancel from the GETFILE() dialog " + ;
-             "and update your VFP path to include the FoxUnit " + ;
-             "tests and results folder.", ;
-             48, ;
-             "Please Note")
-             
-  * Commented by HAS
-  *lcFXUDataPath = GETDIR(FULLPATH(CURDIR()), ;
-                         [Specify the folder for the FXUResults.DBF results table.  ];
-                         + [We recommend that you specify the folder where you will store the test classes ];
-                         + [(.PRGs), typically in a FoxUnitTests/FXUTests/etc. folder under the application root and in the VFP path.], ;
-                         "Specify the folder for the FXUResults.DBF table", ;
-                         1+2+8+16+32+64)          
-                         
-  IF EMPTY(m.lcFXUDataPath)
-    RETURN .f.
-  ENDIF
   
-  lcFXUDataPath = ADDBS(m.lcFXUDataPath)
-  
-  IF FILE(m.lcFXUDataPath + "FXUResults.DBF")
-    *
-    *  FXUResults.DBF already exists -- the -OR- condition
-    *  above has apparently been met, so add m.lcFXUDataPath
-    *  to the VFP path
-    *
-    LOCAL lcPath
-    #IF VERSION(5) >= 900    &&& VFP 9
-    *  all these work:
-    *SET PATH TO (lcFXUDataPath) ADDITIVE 
-    *
-    *SET PATH TO "&lcFXUDataPath" ADDITIVE
-    *
-    *lcFXUDataPath = ["] + m.lcFXUDataPath + ["]
-    *SET PATH TO &lcFXUDataPath ADDITIVE 
-    *
-    lcPath = ["] + m.lcFXUDataPath + ["]
-    SET PATH TO &lcPath ADDITIVE 
-    #ELSE   &&& VFP 8
-    lcPath = SET("PATH") + "; " + m.lcFXUDataPath
-    SET PATH TO &lcPath
-    #ENDIF
-    
-    * I despise this message, too. HAS
-    *MESSAGEBOX(m.lcFXUDataPath + CHR(13) + CHR(13) + ;
-               "has been added to your VFP path -- you should " + ;
-               "ensure that from now on it is in your VFP path " + ;
-               "before you run FoxUnit.", ;
-               48, ;
-               "Please Note")
-  ENDIF
+lcFXUDataPath = ADDBS(m.lcFXUDataPath)
+
+IF FILE(m.lcFXUDataPath + "FXUResults.DBF")
+	*
+	*  FXUResults.DBF already exists -- the -OR- condition
+	*  above has apparently been met, so add m.lcFXUDataPath
+	*  to the VFP path
+	*
+	LOCAL lcPath
+	#IF VERSION(5) >= 900    &&& VFP 9
+		*  all these work:
+		*SET PATH TO (lcFXUDataPath) ADDITIVE 
+		*
+		*SET PATH TO "&lcFXUDataPath" ADDITIVE
+		*
+		*lcFXUDataPath = ["] + m.lcFXUDataPath + ["]
+		*SET PATH TO &lcFXUDataPath ADDITIVE 
+		*
+		lcPath = ["] + m.lcFXUDataPath + ["]
+		SET PATH TO &lcPath ADDITIVE 
+	#ELSE   &&& VFP 8
+		lcPath = SET("PATH") + "; " + m.lcFXUDataPath
+		SET PATH TO &lcPath
+	#ENDIF
 ENDIF
 
 *
@@ -2142,91 +2090,91 @@ ENDPROC
 		<ole2/>
 		<reserved1><![CDATA[Class]]></reserved1>
 		<reserved2><![CDATA[32]]></reserved2>
-		<reserved3><![CDATA[incolorpass Green color property used for setting green "pass" color to grid rows and test running status bar
-incolornotrun Background color definition for grid rows of tests that weren't run yet, or not run during the last test pass
-incolorfail Red Color for background color of rows in test grid for tests that failed and the test run progress bar when tests have failed.
-iotestbroker Object That decouples the test data session from the foxUnit datasession, enabling tests to run without conflicting with the datasession storing the results.
-iotestresult Class level test result object. Passed to testbroker when running tests. Instantiated when the form is instantiated.
-ilallowdebug
-ioresultdata Results Data Object, controls the test results table and allows update loggin to the table
-inmostrecentselectedrow
+		<reserved3><![CDATA[icclassfilter
 icgridrs THIS.grdTests.RecordSource
-ilinitialentry
-_memberdata XML Metadata for customizable properties
-inbar
-inzoomtop
-inzoomleft
-inzoomheight
-inzoomwidth
-inzoomwindowstate
-icclassfilter
 icnamefilter
+ilallowdebug
+ilclosedebuggeratendoftestsrun
 ilhonortestprefix
+ilinitialentry
 ilreloadtestsonrun
 iltestsfailed
-ilclosedebuggeratendoftestsrun
+inbar
+incolorfail Red Color for background color of rows in test grid for tests that failed and the test run progress bar when tests have failed.
+incolornotrun Background color definition for grid rows of tests that weren't run yet, or not run during the last test pass
+incolorpass Green color property used for setting green "pass" color to grid rows and test running status bar
+inmostrecentselectedrow
+inzoomheight
+inzoomleft
+inzoomtop
+inzoomwidth
+inzoomwindowstate
+ioresultdata Results Data Object, controls the test results table and allows update loggin to the table
+iotestbroker Object That decouples the test data session from the foxUnit datasession, enabling tests to run without conflicting with the datasession storing the results.
+iotestresult Class level test result object. Passed to testbroker when running tests. Instantiated when the form is instantiated.
 nsplitterposition
-*calculaterowcolor Calculates the correct RGB value row color for a test row (grey = not tested, red = falied, green = succeeded)
-*runalltests runs all tests in all test classes that are currently loaded into the thisform.icGridRs table
-*runonetest Runs the one test who's row is currently selected in the grid
-*showprogress Sets the value of the test progress bar as well as the color for pass or fail
-*setprogress sets progress bar back to no tests run status
-*runclasstests Runs all tests for the class specified
-*settestsruntestsfailedlabel 
-*setallowdebug 
-*receiveresultnotification Recieves results of the current test
-*receivecompletenotification 
-*zreadme 
-*updatecurrentgridrowcolor 
-*formatsecondselapsed 
-*restoresettings 
-*savesettings 
-*afterruntests 
-*underconstruction 
-*addshortcutoption_runtestselected 
-*addshortcutoption_runtestsclass 
-*addshortcutoption_runtestsall 
-*addshortcutoption_classnew 
-*addshortcutoption_classload 
-*addshortcutoption_classaddtest 
-*addshortcutoption_selectedremove 
-*addshortcutoption_selectedreload 
-*addshortcutoption_selectedmodify 
-*addshortcutoption_separator 
-*addshortcutoption_gridsize 
-*addshortcutoption_gridresetcolumnwidths 
-*addshortcutoption_formfont 
-*addshortcutoption_formoptions 
-*addshortcutoption_formclose 
-*addshortcutoption_formacknowledgements 
-*addshortcutoption_formlicense 
-*addshortcutoption_detailszoom 
-*shortcutmenuform 
-*shortcutmenugrid 
-*shortcutmenueditbox 
-*shellshortcutmenuform 
-*shellshortcutmenugrid 
-*shellshortcutmenueditbox 
-*addshortcutoption_formresetfont 
-*formfont 
-*formresetfont 
-*options 
+_memberdata XML Metadata for customizable properties
 *acknowledgements 
-*license 
-*gridsize 
-*gridresetcolumnwidths 
-*detailszoom 
-*detailsprint 
+*addshortcutoption_classaddtest 
+*addshortcutoption_classload 
+*addshortcutoption_classnew 
 *addshortcutoption_detailsprint 
+*addshortcutoption_detailszoom 
+*addshortcutoption_formacknowledgements 
+*addshortcutoption_formclose 
+*addshortcutoption_formfont 
+*addshortcutoption_formlicense 
+*addshortcutoption_formoptions 
+*addshortcutoption_formresetfont 
+*addshortcutoption_gridresetcolumnwidths 
+*addshortcutoption_gridsize 
 *addshortcutoption_gridsortbylocation 
 *addshortcutoption_gridsortbyname 
-*gridsortbyname 
-*gridsortbylocation 
-*movetofirsttestofnextclass 
+*addshortcutoption_runtestsall 
+*addshortcutoption_runtestsclass 
+*addshortcutoption_runtestselected 
+*addshortcutoption_selectedmodify 
+*addshortcutoption_selectedreload 
+*addshortcutoption_selectedremove 
+*addshortcutoption_separator 
+*afterruntests 
 *applyfilter 
+*calculaterowcolor Calculates the correct RGB value row color for a test row (grey = not tested, red = falied, green = succeeded)
+*detailsprint 
+*detailszoom 
+*formatsecondselapsed 
+*formfont 
+*formresetfont 
 *getfiltertooltiptext 
-*seeiftestclassprgexists 
+*gridresetcolumnwidths 
+*gridsize 
+*gridsortbylocation 
+*gridsortbyname 
+*license 
 *modifyclassatlinenumber 
+*movetofirsttestofnextclass 
+*options 
+*receivecompletenotification 
+*receiveresultnotification Recieves results of the current test
+*restoresettings 
+*runalltests runs all tests in all test classes that are currently loaded into the thisform.icGridRs table
+*runclasstests Runs all tests for the class specified
+*runonetest Runs the one test who's row is currently selected in the grid
+*savesettings 
+*seeiftestclassprgexists 
+*setallowdebug 
+*setprogress sets progress bar back to no tests run status
+*settestsruntestsfailedlabel 
+*shellshortcutmenueditbox 
+*shellshortcutmenuform 
+*shellshortcutmenugrid 
+*shortcutmenueditbox 
+*shortcutmenuform 
+*shortcutmenugrid 
+*showprogress Sets the value of the test progress bar as well as the color for pass or fail
+*underconstruction 
+*updatecurrentgridrowcolor 
+*zreadme 
 ]]></reserved3>
 		<reserved4/>
 		<reserved5/>
@@ -2238,7 +2186,7 @@ nsplitterposition
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_3WT0YWHA1</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[sfsplitterv]]></class>
 		<classloc><![CDATA[sfsplitter.vcx]]></classloc>
 		<baseclass><![CDATA[control]]></baseclass>
@@ -2299,7 +2247,7 @@ ENDPROC
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_1930NO3TI</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[commandbutton]]></class>
 		<classloc/>
 		<baseclass><![CDATA[commandbutton]]></baseclass>
@@ -2357,7 +2305,7 @@ ENDPROC
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_1970ZP794</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[commandbutton]]></class>
 		<classloc/>
 		<baseclass><![CDATA[commandbutton]]></baseclass>
@@ -2380,6 +2328,9 @@ THISFORM.ApplyFilter()
 
 ENDPROC
 PROCEDURE Init
+IF VERSION(5) >= 900
+	THIS.Anchor = 8	&& FDBOZZO
+ENDIF
 THIS.ToolTipText = THISFORM.GetFilterToolTipText()
 ENDPROC
 PROCEDURE Refresh
@@ -2402,7 +2353,7 @@ ENDPROC
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_1930NO3T9</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[commandbutton]]></class>
 		<classloc/>
 		<baseclass><![CDATA[commandbutton]]></baseclass>
@@ -2458,7 +2409,7 @@ ENDPROC
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_1930NO3SQ</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[commandbutton]]></class>
 		<classloc/>
 		<baseclass><![CDATA[commandbutton]]></baseclass>
@@ -2503,7 +2454,7 @@ ENDPROC
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_1930NO3TP</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[commandbutton]]></class>
 		<classloc/>
 		<baseclass><![CDATA[commandbutton]]></baseclass>
@@ -2562,7 +2513,7 @@ ENDPROC
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_1930NO3T4</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[commandbutton]]></class>
 		<classloc/>
 		<baseclass><![CDATA[commandbutton]]></baseclass>
@@ -2609,7 +2560,7 @@ ENDPROC
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_1930NO3T6</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[commandbutton]]></class>
 		<classloc/>
 		<baseclass><![CDATA[commandbutton]]></baseclass>
@@ -2695,7 +2646,7 @@ ENDPROC
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_1930NO3ST</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[commandbutton]]></class>
 		<classloc/>
 		<baseclass><![CDATA[commandbutton]]></baseclass>
@@ -2734,7 +2685,7 @@ ENDPROC
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_1930NO3TB</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[commandbutton]]></class>
 		<classloc/>
 		<baseclass><![CDATA[commandbutton]]></baseclass>
@@ -2778,7 +2729,7 @@ ENDPROC
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_1930NO3SV</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[commandbutton]]></class>
 		<classloc/>
 		<baseclass><![CDATA[commandbutton]]></baseclass>
@@ -2817,7 +2768,7 @@ ENDPROC
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_1930NO3SG</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[grid]]></class>
 		<classloc/>
 		<baseclass><![CDATA[grid]]></baseclass>
@@ -3022,7 +2973,7 @@ ENDPROC
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_11D0XWNM5</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[label]]></class>
 		<classloc/>
 		<baseclass><![CDATA[label]]></baseclass>
@@ -3061,7 +3012,7 @@ ENDPROC
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_1930NO3TL</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[label]]></class>
 		<classloc/>
 		<baseclass><![CDATA[label]]></baseclass>
@@ -3108,7 +3059,7 @@ ENDPROC
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_1970ZZ6QB</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[label]]></class>
 		<classloc/>
 		<baseclass><![CDATA[label]]></baseclass>
@@ -3148,7 +3099,7 @@ ENDPROC
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_1970SIAKD</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[label]]></class>
 		<classloc/>
 		<baseclass><![CDATA[label]]></baseclass>
@@ -3166,6 +3117,9 @@ Name = "lblNameFilter"
 ]]></properties>
 		<protected/>
 		<methods><![CDATA[PROCEDURE Init
+IF VERSION(5) >= 900
+	THIS.Anchor = 160	&& FDBOZZO
+ENDIF
 THIS.ToolTipText = THISFORM.GetFilterToolTipText()
 ENDPROC
 PROCEDURE RightClick
@@ -3187,7 +3141,7 @@ ENDPROC
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_1930NO3TE</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[label]]></class>
 		<classloc/>
 		<baseclass><![CDATA[label]]></baseclass>
@@ -3236,7 +3190,7 @@ ENDPROC
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_1930NO3TN</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[label]]></class>
 		<classloc/>
 		<baseclass><![CDATA[label]]></baseclass>
@@ -3284,7 +3238,7 @@ ENDPROC
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_1930NO3SZ</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[cprogressbar]]></class>
 		<classloc><![CDATA[cprogres.vcx]]></classloc>
 		<baseclass><![CDATA[container]]></baseclass>
@@ -3351,7 +3305,7 @@ ENDPROC
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_1930NO3TS</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[pageframe]]></class>
 		<classloc/>
 		<baseclass><![CDATA[pageframe]]></baseclass>
@@ -3404,7 +3358,7 @@ ENDPROC
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_1940HURHU</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[shape]]></class>
 		<classloc/>
 		<baseclass><![CDATA[shape]]></baseclass>
@@ -3446,7 +3400,7 @@ ENDPROC
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_1930NO3S7</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[shape]]></class>
 		<classloc/>
 		<baseclass><![CDATA[shape]]></baseclass>
@@ -3484,7 +3438,7 @@ ENDPROC
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_1940I8IFW</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[shape]]></class>
 		<classloc/>
 		<baseclass><![CDATA[shape]]></baseclass>
@@ -3522,7 +3476,7 @@ ENDPROC
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_11D0XWNM5</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[textbox]]></class>
 		<classloc/>
 		<baseclass><![CDATA[textbox]]></baseclass>
@@ -3542,6 +3496,9 @@ THIS.AddProperty("icValueOnGotFocus",THIS.Value)
 
 ENDPROC
 PROCEDURE Init
+IF VERSION(5) >= 900
+	THIS.Anchor = 130	&& FDBOZZO
+ENDIF
 THIS.InputMask = REPLICATE("X",60)
 THIS.ToolTipText = THISFORM.GetFilterToolTipText()
 ENDPROC
@@ -3574,7 +3531,7 @@ ENDPROC
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_1970QSK9X</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[textbox]]></class>
 		<classloc/>
 		<baseclass><![CDATA[textbox]]></baseclass>
@@ -3594,6 +3551,9 @@ THIS.AddProperty("icValueOnGotFocus",THIS.Value)
 
 ENDPROC
 PROCEDURE Init
+IF VERSION(5) >= 900
+	THIS.Anchor = 40	&& FDBOZZO
+ENDIF
 THIS.InputMask = REPLICATE("X",60)
 THIS.ToolTipText = THISFORM.GetFilterToolTipText()
 ENDPROC
@@ -3626,7 +3586,7 @@ ENDPROC
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_1930NO3SK</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[header]]></class>
 		<classloc/>
 		<baseclass><![CDATA[header]]></baseclass>
@@ -3654,7 +3614,7 @@ Name = "Header1"
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_1930NO3SL</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[textbox]]></class>
 		<classloc/>
 		<baseclass><![CDATA[textbox]]></baseclass>
@@ -3687,7 +3647,7 @@ Name = "Text1"
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_1930NO3SN</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[header]]></class>
 		<classloc/>
 		<baseclass><![CDATA[header]]></baseclass>
@@ -3715,7 +3675,7 @@ Name = "Header1"
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_1930NO3SP</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[textbox]]></class>
 		<classloc/>
 		<baseclass><![CDATA[textbox]]></baseclass>
@@ -3748,14 +3708,14 @@ Name = "Text1"
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_1930NO3TV</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[editbox]]></class>
 		<classloc/>
 		<baseclass><![CDATA[editbox]]></baseclass>
 		<objname><![CDATA[edtFailuresAndErrors]]></objname>
 		<parent><![CDATA[frmfoxunit.pgfDetails.pgFailuresAndErrors]]></parent>
-		<properties><![CDATA[FontName = "Tahoma"
-Height = 134
+		<properties><![CDATA[FontName = "Courier New"
+Height = 128
 Left = 4
 ReadOnly = .T.
 TabIndex = 2
@@ -3815,14 +3775,14 @@ ENDPROC
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_1930NO3TY</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[editbox]]></class>
 		<classloc/>
 		<baseclass><![CDATA[editbox]]></baseclass>
 		<objname><![CDATA[edtMessages]]></objname>
 		<parent><![CDATA[frmfoxunit.pgfDetails.pgMessages]]></parent>
-		<properties><![CDATA[FontName = "Tahoma"
-Height = 134
+		<properties><![CDATA[FontName = "Courier New"
+Height = 128
 Left = 4
 ReadOnly = .T.
 TabIndex = 3

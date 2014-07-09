@@ -172,7 +172,7 @@
 	</xsd:schema>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_19V0PAN25</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[form]]></class>
 		<classloc/>
 		<baseclass><![CDATA[form]]></baseclass>
@@ -195,7 +195,7 @@ Name = "fxufrmbase"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>2</nrecno>
+		<nrecno>66</nrecno>
 	</class>
 	<class>
 		<platform>COMMENT</platform>
@@ -219,6 +219,6 @@ Name = "fxufrmbase"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>3</nrecno>
+		<nrecno>67</nrecno>
 	</class>
 </VFPData>

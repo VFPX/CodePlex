@@ -172,20 +172,20 @@
 	</xsd:schema>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_19V0PCF32</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[fxufrmbase]]></class>
 		<classloc><![CDATA[fxu.vcx]]></classloc>
 		<baseclass><![CDATA[form]]></baseclass>
 		<objname><![CDATA[fxufrmtestbroker]]></objname>
 		<parent/>
 		<properties><![CDATA[DataSession = 2
+DoCreate = .T.
 Top = 0
 Left = 0
 Height = 35
 Width = 115
-DoCreate = .T.
 Visible = .F.
-_memberdata = 
+_memberdata = <VFPData></VFPData>
 Name = "fxufrmtestbroker"
 ]]></properties>
 		<protected/>
