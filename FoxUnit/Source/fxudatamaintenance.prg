@@ -51,10 +51,11 @@ DEFINE CLASS FxuDataMaintenance As FxuCustom OF FxuCustom.prg
 	icResultsTable = 'FXUResults'
 	
 	********************************************************************
-	FUNCTION Init(tcResultsTable)
+	FUNCTION Init(tcResultsTable, tcDataPath)
 	********************************************************************
 		THIS.icResultsTable = EVL(tcResultsTable,THIS.icResultsTable)
 		THIS.icResultsTable = JUSTSTEM(THIS.icResultsTable)
+		THIS.icDataPath		= tcDataPath	&& FDBOZZO. 01/06/2014
 
 	********************************************************************
 	FUNCTION CreateNewTestResultTable(tcDataPath, tcResultsTable)
@@ -71,26 +72,29 @@ DEFINE CLASS FxuDataMaintenance As FxuCustom OF FxuCustom.prg
 		this.icResultsTable = EVL(tcResultsTable,'FXUResults')
 			
 		* Added path field. HAS
-    CREATE TABLE (tcDataPath + this.icResultsTable) ;
-			(TClass C(80), ;
-       TPath C(120), ;
-			 TName C(120), ;
-			 Location I, ;
-			 Success L, ;
-			 TLastRun T, ;
-			 Telapsed N(10,3), ;
+		*-- FDBOZZO. 01/10/2011. Field length expansion.
+		*-- 	Expanded TClass C(80) to C(110) ==> So the Unit Test file name can be 'ut_libraryName__className__methodName.prg'
+		*-- 	Expanded TName C(100) to C(130) ==> So the method name can be 'SHOULD_DoSomething__WHEN_SomeConditions'
+		CREATE TABLE (tcDataPath + THIS.icResultsTable) ;
+			(TClass C(110), ;
+			TPath C(120), ;
+			TName C(130), ;
+			Location I, ;
+			Success L, ;
+			TLastRun T, ;
+			Telapsed N(10,3), ;
 			 TRun L, ;
-			 Fail_Error M, ;
+			Fail_Error M, ;
 			 Messages M )
-			
+
 		SELECT (this.icResultsTable)
-		
+
 		this.BuildIndexes()
-		
+
 		USE IN SELECT(this.icResultsTable)
-		
-	
-	********************************************************************
+
+
+		********************************************************************
 	ENDFUNC
 	********************************************************************
 
@@ -168,9 +172,9 @@ DEFINE CLASS FxuDataMaintenance As FxuCustom OF FxuCustom.prg
 		LOCAL llSuccess 
 		llSuccess = .t. 
 		TRY 
-		USE (this.icDataPath + this.icResultsTable) IN 0 &lcExclusive
+			USE (this.icDataPath + this.icResultsTable) IN 0 &lcExclusive
 		CATCH 
-		llSuccess = .f. 
+			llSuccess = .f. 
 		ENDTRY  
 		
 		IF m.llSuccess  

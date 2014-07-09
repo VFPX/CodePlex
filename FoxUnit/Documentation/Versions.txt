@@ -1,3 +1,9 @@
+(See the FoxUnit Wiki page on the VFPX CodePlex page for complete information)
+
+VFPX Release 1.2 - July 9, 2014
+
+Matt Slay uses SFSplitter to separate the tests from the results on the form.
+Fernando Bozzo abstracts the tests to COM classes, allows FoxUnit to be used by a Continuous Integration Server.
 
 VFPX Release 1.1 - December 20, 2012
 

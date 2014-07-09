@@ -172,25 +172,25 @@
 	</xsd:schema>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_11D0XWNM5</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[form]]></class>
 		<classloc/>
 		<baseclass><![CDATA[form]]></baseclass>
 		<objname><![CDATA[frmshowinfo]]></objname>
 		<parent/>
-		<properties><![CDATA[Height = 360
-Width = 600
-Desktop = .T.
+		<properties><![CDATA[Desktop = .T.
 ShowWindow = 1
 DoCreate = .T.
 AutoCenter = .T.
-Caption = "Please Note"
+Height = 360
+Width = 600
 MinButton = .F.
 MinHeight = 180
 MinWidth = 300
+Caption = "Please Note"
 WindowType = 1
 AllowOutput = .F.
-_memberdata = 
+_memberdata = <VFPData></VFPData>
 Name = "frmshowinfo"
 ]]></properties>
 		<protected/>
@@ -264,6 +264,9 @@ LPARAMETERS tcText, ;
 		    tlFontItalic, ;   &&& editbox
 		    tnDataSessionID, ;
 		    tlNoImage
+
+Thisform.MinHeight	= thisform.Height	&& FDBOZZO
+thisform.MinWidth	= thisform.Width	&& FDBOZZO
 
 IF NOT DODEFAULT()
   RETURN .F.
@@ -543,11 +546,11 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>53</nrecno>
+		<nrecno>61</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_RBT0V74R7</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[commandbutton]]></class>
 		<classloc/>
 		<baseclass><![CDATA[commandbutton]]></baseclass>
@@ -578,11 +581,11 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>55</nrecno>
+		<nrecno>63</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_RBT0V74R7</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[commandbutton]]></class>
 		<classloc/>
 		<baseclass><![CDATA[commandbutton]]></baseclass>
@@ -611,11 +614,11 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>56</nrecno>
+		<nrecno>64</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_11D0Z07LD</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[editbox]]></class>
 		<classloc/>
 		<baseclass><![CDATA[editbox]]></baseclass>
@@ -647,7 +650,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>54</nrecno>
+		<nrecno>62</nrecno>
 	</class>
 	<class>
 		<platform>COMMENT</platform>
@@ -671,6 +674,6 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>57</nrecno>
+		<nrecno>65</nrecno>
 	</class>
 </VFPData>

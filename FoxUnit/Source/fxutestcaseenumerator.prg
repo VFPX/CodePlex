@@ -119,7 +119,7 @@ DEFINE CLASS FxuTestCaseEnumerator as FxuCustom OF FxuCustom.prg
 				
 				llFoundClass = .t.
 				
-				lcCurrentMethod = SUBSTR(lcCurrentProcedure,lnDotPos + 1,100)
+				lcCurrentMethod = SUBSTR(lcCurrentProcedure,lnDotPos + 1,150) && FDBOZZO. Fix from 100 to 150
 				*IF UPPER(LEFT(lcCurrentMethod,4)) == "TEST"
 				IF ATC("|"+UPPER(lcCurrentMethod)+"|", lcSuperclassMethodsList) = 0 ;
 					AND LEFT(UPPER(lcCurrentMethod),lnTestPrefixLength) == lcTestPrefix
@@ -128,7 +128,7 @@ DEFINE CLASS FxuTestCaseEnumerator as FxuCustom OF FxuCustom.prg
 						lcMethods = lcMethods + CHR(13)
 					ENDIF
 					
-					lcMethods = lcMethods + SUBSTR(lcCurrentProcedure,lnDotPos + 1,100)
+					lcMethods = lcMethods + SUBSTR(lcCurrentProcedure,lnDotPos + 1,150) && FDBOZZO. Fix from 100 to 150
 					
 				ENDIF
 				

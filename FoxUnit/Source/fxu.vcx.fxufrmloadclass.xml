@@ -172,14 +172,14 @@
 	</xsd:schema>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_1GK153VAC</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[fxufrmbase]]></class>
 		<classloc><![CDATA[fxu.vcx]]></classloc>
 		<baseclass><![CDATA[form]]></baseclass>
 		<objname><![CDATA[fxufrmloadclass]]></objname>
 		<parent/>
 		<properties><![CDATA[Height = 397
-Width = 408
+Width = 760
 DoCreate = .T.
 AutoCenter = .T.
 Caption = "Load Class"
@@ -189,10 +189,10 @@ MaxButton = .F.
 MinButton = .F.
 Icon = (("FoxUnit.ico"))
 WindowType = 1
-ilcancel = .F.
 icfxudefaulttestdirectory = .F.
 icfxuselectedtestdirectory = 
-_memberdata = 
+ilcancel = .F.
+_memberdata = <VFPData></VFPData>
 Name = "fxufrmloadclass"
 ]]></properties>
 		<protected><![CDATA[icfxudefaulttestdirectory
@@ -283,11 +283,15 @@ ENDIF
 
 ENDPROC
 PROCEDURE Init
+LPARAMETERS tcDataPath
+
+Thisform.MinHeight	= thisform.Height	&& FDBOZZO
+thisform.MinWidth	= thisform.Width	&& FDBOZZO
 
 *FIXME I still don't understand why we always look here.   Doesn't anybody else
 * store their tests with the project in version control? 
 * Why not use the current value of SET DEFAULT, at least? HAS
-thisform.icFxuDefaultTestDirectory = ADDBS(JUSTPATH(FULLPATH("FXUResults.DBF")))
+thisform.icFxuDefaultTestDirectory = EVL( tcDataPath, ADDBS(JUSTPATH(FULLPATH("FXUResults.DBF"))) )
 
 thisform.icFxuSelectedTestDirectory = thisform.icFxuDefaultTestDirectory
 
@@ -348,17 +352,17 @@ ENDPROC
 		<ole2/>
 		<reserved1><![CDATA[Class]]></reserved1>
 		<reserved2><![CDATA[9]]></reserved2>
-		<reserved3><![CDATA[ilcancel
-icfxudefaulttestdirectory
+		<reserved3><![CDATA[icfxudefaulttestdirectory
 icfxuselectedtestdirectory
+ilcancel
 _memberdata XML Metadata for customizable properties
 ^iafiles[1,0] 
-*okaction 
 *cancelaction 
 *gettestcases 
+*okaction 
 *selectall 
-*settestcasesonlystate 
 *selectalternatetestfolder 
+*settestcasesonlystate 
 ]]></reserved3>
 		<reserved4/>
 		<reserved5/>
@@ -370,7 +374,7 @@ _memberdata XML Metadata for customizable properties
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_1GL0XHXLD</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[checkbox]]></class>
 		<classloc/>
 		<baseclass><![CDATA[checkbox]]></baseclass>
@@ -406,7 +410,7 @@ ENDPROC
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_1GL0XHXLB</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[checkbox]]></class>
 		<classloc/>
 		<baseclass><![CDATA[checkbox]]></baseclass>
@@ -442,14 +446,14 @@ ENDPROC
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_1GO1EDP45</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[commandbutton]]></class>
 		<classloc/>
 		<baseclass><![CDATA[commandbutton]]></baseclass>
 		<objname><![CDATA[cmdBrowse]]></objname>
 		<parent><![CDATA[fxufrmloadclass]]></parent>
 		<properties><![CDATA[Top = 171
-Left = 316
+Left = 665
 Height = 48
 Width = 84
 Picture = (("fxubrowseforfolder.bmp"))
@@ -478,14 +482,14 @@ ENDPROC
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_1GK155ZJO</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[commandbutton]]></class>
 		<classloc/>
 		<baseclass><![CDATA[commandbutton]]></baseclass>
 		<objname><![CDATA[cmdCancel]]></objname>
 		<parent><![CDATA[fxufrmloadclass]]></parent>
 		<properties><![CDATA[Top = 297
-Left = 316
+Left = 665
 Height = 48
 Width = 84
 Picture = ('fxucancel.bmp')
@@ -513,14 +517,14 @@ ENDPROC
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_11D0XWNM5</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[commandbutton]]></class>
 		<classloc/>
 		<baseclass><![CDATA[commandbutton]]></baseclass>
 		<objname><![CDATA[cmdDeselectAll]]></objname>
 		<parent><![CDATA[fxufrmloadclass]]></parent>
 		<properties><![CDATA[Top = 108
-Left = 317
+Left = 666
 Height = 48
 Width = 84
 Picture = (("fxuselectnone.bmp"))
@@ -548,14 +552,14 @@ ENDPROC
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_11D0XWNM5</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[commandbutton]]></class>
 		<classloc/>
 		<baseclass><![CDATA[commandbutton]]></baseclass>
 		<objname><![CDATA[cmdLoad]]></objname>
 		<parent><![CDATA[fxufrmloadclass]]></parent>
 		<properties><![CDATA[Top = 236
-Left = 316
+Left = 665
 Height = 48
 Width = 84
 Picture = (("fxuclassload.bmp"))
@@ -584,14 +588,14 @@ ENDPROC
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_1GO1EDP4P</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[commandbutton]]></class>
 		<classloc/>
 		<baseclass><![CDATA[commandbutton]]></baseclass>
 		<objname><![CDATA[cmdSelectAll]]></objname>
 		<parent><![CDATA[fxufrmloadclass]]></parent>
 		<properties><![CDATA[Top = 48
-Left = 319
+Left = 668
 Height = 48
 Width = 84
 Picture = (("fxuselectall.bmp"))
@@ -619,7 +623,7 @@ ENDPROC
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_1GK155ZJK</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[listbox]]></class>
 		<classloc/>
 		<baseclass><![CDATA[listbox]]></baseclass>
@@ -631,7 +635,7 @@ Height = 333
 Left = 8
 MultiSelect = .T.
 Top = 12
-Width = 293
+Width = 648
 Name = "lstFiles"
 ]]></properties>
 		<protected/>

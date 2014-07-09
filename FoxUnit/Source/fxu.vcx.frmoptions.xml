@@ -172,26 +172,26 @@
 	</xsd:schema>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_1A00BASP9</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[form]]></class>
 		<classloc/>
 		<baseclass><![CDATA[form]]></baseclass>
 		<objname><![CDATA[frmoptions]]></objname>
 		<parent/>
-		<properties><![CDATA[Height = 421
-Width = 664
-ShowWindow = 1
+		<properties><![CDATA[ShowWindow = 1
 DoCreate = .T.
 ShowTips = .T.
 AutoCenter = .T.
-Caption = "Customize FoxUnit options"
+Height = 421
+Width = 664
 MaxButton = .F.
 MinButton = .F.
+Caption = "Customize FoxUnit options"
 Icon = ("foxunit.ico")
 WindowType = 1
 AllowOutput = .F.
-_memberdata = 
 iomainform = .NULL.
+_memberdata = <VFPData></VFPData>
 Name = "frmoptions"
 ]]></properties>
 		<protected/>
@@ -203,6 +203,9 @@ PROCEDURE GotFocus
 KEYBOARD '{123}TAB}' PLAIN CLEAR 
 ENDPROC
 PROCEDURE Init
+Thisform.MinHeight	= thisform.Height	&& FDBOZZO
+thisform.MinWidth	= thisform.Width	&& FDBOZZO
+
 this.ilInitialHonorTestPrefix = this.ioMainForm.ilHonorTestPrefix
 ENDPROC
 PROCEDURE Load
@@ -246,11 +249,11 @@ ENDPROC
 		<ole2/>
 		<reserved1><![CDATA[Class]]></reserved1>
 		<reserved2><![CDATA[36]]></reserved2>
-		<reserved3><![CDATA[_memberdata XML Metadata for customizable properties
+		<reserved3><![CDATA[ilinitialhonortestprefix
 iomainform
-ilinitialhonortestprefix
-*zreadme 
+_memberdata XML Metadata for customizable properties
 *okaction 
+*zreadme 
 ]]></reserved3>
 		<reserved4/>
 		<reserved5/>
@@ -258,11 +261,11 @@ ilinitialhonortestprefix
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>4</nrecno>
+		<nrecno>24</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_1AL14NOXM</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[label]]></class>
 		<classloc/>
 		<baseclass><![CDATA[label]]></baseclass>
@@ -290,11 +293,11 @@ Name = "Label1"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>39</nrecno>
+		<nrecno>59</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_11D0XWNM5</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[commandbutton]]></class>
 		<classloc/>
 		<baseclass><![CDATA[commandbutton]]></baseclass>
@@ -328,11 +331,11 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>37</nrecno>
+		<nrecno>57</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_1AL12AW7M</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[commandbutton]]></class>
 		<classloc/>
 		<baseclass><![CDATA[commandbutton]]></baseclass>
@@ -367,11 +370,11 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>38</nrecno>
+		<nrecno>58</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_11D0XWNM5</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[pageframe]]></class>
 		<classloc/>
 		<baseclass><![CDATA[pageframe]]></baseclass>
@@ -381,8 +384,8 @@ ENDPROC
 PageCount = 2
 Top = 8
 Left = 8
-Width = 652
 Height = 352
+Width = 652
 Themes = .F.
 Name = "pgfOptions"
 Page1.Caption = "Debugging"
@@ -403,11 +406,11 @@ Page2.Name = "Page2"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>5</nrecno>
+		<nrecno>25</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_11D0Z07LD</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[label]]></class>
 		<classloc/>
 		<baseclass><![CDATA[label]]></baseclass>
@@ -435,11 +438,11 @@ Name = "Label1"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>9</nrecno>
+		<nrecno>29</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>RESERVED</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[label]]></class>
 		<classloc/>
 		<baseclass><![CDATA[label]]></baseclass>
@@ -467,11 +470,11 @@ Name = "Label10"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>18</nrecno>
+		<nrecno>38</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_1A00BASP9</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[label]]></class>
 		<classloc/>
 		<baseclass><![CDATA[label]]></baseclass>
@@ -499,11 +502,11 @@ Name = "Label11"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>19</nrecno>
+		<nrecno>39</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_11D0XWNM5</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[label]]></class>
 		<classloc/>
 		<baseclass><![CDATA[label]]></baseclass>
@@ -531,11 +534,11 @@ Name = "Label12"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>20</nrecno>
+		<nrecno>40</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_1A00BQSVT</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[label]]></class>
 		<classloc/>
 		<baseclass><![CDATA[label]]></baseclass>
@@ -563,11 +566,11 @@ Name = "Label13"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>21</nrecno>
+		<nrecno>41</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_11D0XWNM5</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[label]]></class>
 		<classloc/>
 		<baseclass><![CDATA[label]]></baseclass>
@@ -595,11 +598,11 @@ Name = "Label14"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>22</nrecno>
+		<nrecno>42</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_1AL147L2T</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[label]]></class>
 		<classloc/>
 		<baseclass><![CDATA[label]]></baseclass>
@@ -627,11 +630,11 @@ Name = "Label15"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>23</nrecno>
+		<nrecno>43</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_1AL14EE7J</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[label]]></class>
 		<classloc/>
 		<baseclass><![CDATA[label]]></baseclass>
@@ -659,11 +662,11 @@ Name = "Label16"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>24</nrecno>
+		<nrecno>44</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_1AL14EE7K</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[label]]></class>
 		<classloc/>
 		<baseclass><![CDATA[label]]></baseclass>
@@ -691,11 +694,11 @@ Name = "Label17"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>25</nrecno>
+		<nrecno>45</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_1AL14EE7M</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[label]]></class>
 		<classloc/>
 		<baseclass><![CDATA[label]]></baseclass>
@@ -723,11 +726,11 @@ Name = "Label18"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>26</nrecno>
+		<nrecno>46</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_1AL14EE7N</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[label]]></class>
 		<classloc/>
 		<baseclass><![CDATA[label]]></baseclass>
@@ -755,11 +758,11 @@ Name = "Label19"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>27</nrecno>
+		<nrecno>47</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_11D0XWNM5</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[label]]></class>
 		<classloc/>
 		<baseclass><![CDATA[label]]></baseclass>
@@ -787,11 +790,11 @@ Name = "Label2"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>10</nrecno>
+		<nrecno>30</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_1AL14EE7P</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[label]]></class>
 		<classloc/>
 		<baseclass><![CDATA[label]]></baseclass>
@@ -819,11 +822,11 @@ Name = "Label20"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>28</nrecno>
+		<nrecno>48</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_1AL14EE7Q</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[label]]></class>
 		<classloc/>
 		<baseclass><![CDATA[label]]></baseclass>
@@ -851,11 +854,11 @@ Name = "Label21"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>29</nrecno>
+		<nrecno>49</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_1AL14EE7S</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[label]]></class>
 		<classloc/>
 		<baseclass><![CDATA[label]]></baseclass>
@@ -883,11 +886,11 @@ Name = "Label22"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>30</nrecno>
+		<nrecno>50</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_1AL14I4Z3</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[label]]></class>
 		<classloc/>
 		<baseclass><![CDATA[label]]></baseclass>
@@ -916,11 +919,11 @@ Name = "Label23"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>32</nrecno>
+		<nrecno>52</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_1AL14EE7V</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[label]]></class>
 		<classloc/>
 		<baseclass><![CDATA[label]]></baseclass>
@@ -948,11 +951,11 @@ Name = "Label24"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>31</nrecno>
+		<nrecno>51</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_11D0Z07LD</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[label]]></class>
 		<classloc/>
 		<baseclass><![CDATA[label]]></baseclass>
@@ -980,11 +983,11 @@ Name = "Label3"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>11</nrecno>
+		<nrecno>31</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_RBT0V74R7</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[label]]></class>
 		<classloc/>
 		<baseclass><![CDATA[label]]></baseclass>
@@ -1012,11 +1015,11 @@ Name = "Label4"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>12</nrecno>
+		<nrecno>32</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_RBT0V74R7</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[label]]></class>
 		<classloc/>
 		<baseclass><![CDATA[label]]></baseclass>
@@ -1044,11 +1047,11 @@ Name = "Label5"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>13</nrecno>
+		<nrecno>33</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>RESERVED</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[label]]></class>
 		<classloc/>
 		<baseclass><![CDATA[label]]></baseclass>
@@ -1076,11 +1079,11 @@ Name = "Label6"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>14</nrecno>
+		<nrecno>34</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_19V0PAN25</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[label]]></class>
 		<classloc/>
 		<baseclass><![CDATA[label]]></baseclass>
@@ -1108,11 +1111,11 @@ Name = "Label7"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>15</nrecno>
+		<nrecno>35</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>RESERVED</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[label]]></class>
 		<classloc/>
 		<baseclass><![CDATA[label]]></baseclass>
@@ -1140,11 +1143,11 @@ Name = "Label8"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>16</nrecno>
+		<nrecno>36</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_19V0PCF32</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[label]]></class>
 		<classloc/>
 		<baseclass><![CDATA[label]]></baseclass>
@@ -1172,11 +1175,11 @@ Name = "Label9"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>17</nrecno>
+		<nrecno>37</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_11D0XWNM5</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[shape]]></class>
 		<classloc/>
 		<baseclass><![CDATA[shape]]></baseclass>
@@ -1203,11 +1206,11 @@ Name = "Shape1"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>7</nrecno>
+		<nrecno>27</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_1AL14KQ18</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[shape]]></class>
 		<classloc/>
 		<baseclass><![CDATA[shape]]></baseclass>
@@ -1234,11 +1237,11 @@ Name = "Shape2"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>6</nrecno>
+		<nrecno>26</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_11D0XWNM5</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[checkbox]]></class>
 		<classloc/>
 		<baseclass><![CDATA[checkbox]]></baseclass>
@@ -1269,11 +1272,11 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>8</nrecno>
+		<nrecno>28</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_1BW0R04OL</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[checkbox]]></class>
 		<classloc/>
 		<baseclass><![CDATA[checkbox]]></baseclass>
@@ -1306,11 +1309,11 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>33</nrecno>
+		<nrecno>53</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_11D0XWNM5</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[checkbox]]></class>
 		<classloc/>
 		<baseclass><![CDATA[checkbox]]></baseclass>
@@ -1343,11 +1346,11 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>36</nrecno>
+		<nrecno>56</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_11D0XWNM5</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[checkbox]]></class>
 		<classloc/>
 		<baseclass><![CDATA[checkbox]]></baseclass>
@@ -1380,11 +1383,11 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>35</nrecno>
+		<nrecno>55</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_11D0XWNM5</uniqueid>
+		<uniqueid/>
 		<class><![CDATA[checkbox]]></class>
 		<classloc/>
 		<baseclass><![CDATA[checkbox]]></baseclass>
@@ -1416,7 +1419,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>34</nrecno>
+		<nrecno>54</nrecno>
 	</class>
 	<class>
 		<platform>COMMENT</platform>
@@ -1440,6 +1443,6 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>40</nrecno>
+		<nrecno>60</nrecno>
 	</class>
 </VFPData>
