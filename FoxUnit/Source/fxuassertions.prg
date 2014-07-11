@@ -101,13 +101,11 @@ DEFINE CLASS FxuAssertions As FxuCustom OF FxuCustom.prg
 		
 		* Trap for non case-sensitive string compare
     
-    *BUG This is bogus, because the pcount() will always equal 4. HAS
-    * Commented as useless. HAS    
-*!*  		IF PCOUNT() = 4
-*!*  			IF VARTYPE( tuNonCaseSensitiveStringCompare ) == "L"
-*!*  				llNonCaseSensitiveStringCompare = tuNonCaseSensitiveStringCompare 
-*!*  			ENDIF 
-*!*  		ENDIF
+	     	IF VARTYPE(tuNonCaseSensitiveStringCompare) = 'L'
+	        	llNonCaseSensitiveStringCompare = tuNonCaseSensitiveStringCompare
+	        ENDIF
+   
+
 		
 		* Trap for no message passed
 		IF PCOUNT() = 2

@@ -1,5 +1,8 @@
 (See the FoxUnit Wiki page on the VFPX CodePlex page https://vfpx.codeplex.com/wikipage?title=FoxUnit&referringTitle=Documentation for complete information)
 
+VFPX Release 1.21 - July 11, 2014
+Doug Meerschaert found a bug that caused AssertEquals to ignore the NonCaseSensitive flag. (work item 34625)
+
 VFPX Release 1.2 - July 9, 2014
 
 Matt Slay uses SFSplitter to separate the tests from the results on the form.
