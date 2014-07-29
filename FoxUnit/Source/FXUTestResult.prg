@@ -63,7 +63,6 @@ DEFINE CLASS FxuTestResult as Collection
 	********************************************************************
 	
 		WITH THIS
-			
 
 			.icFailureErrorDetails = ''
 			.icMessages = ''
@@ -87,6 +86,7 @@ DEFINE CLASS FxuTestResult as Collection
 	********************************************************************
 	FUNCTION LogException(toExceptionInfo, tlTearDownException)
 	********************************************************************
+	
 		IF EMPTY(tlTearDownException)
 			tlTearDownException = .f.
 		ELSE
@@ -102,9 +102,7 @@ DEFINE CLASS FxuTestResult as Collection
 		ENDIF
 		
 		*this.LogDetail(this.BuildExceptionString(toException))
-  	this.inFailedTests = this.inFailedTests + 1
-		lcMessage = toExceptionInfo.ToString()
-		this.LogDetail(lcMessage)
+		this.LogDetail(toExceptionInfo.ToString())
 		*this.icFailureErrorDetails = this.icFailureErrorDetails + this.BuildExceptionString(toException)
 		
 	********************************************************************
@@ -136,7 +134,7 @@ DEFINE CLASS FxuTestResult as Collection
 	********************************************************************
 
 	********************************************************************
-	PROCEDURE LogDetail(tcDetail)
+	PROCEDURE LogDetail(tcDetail AS String)
 	********************************************************************
 	
 		IF !EMPTY(this.icFailureErrorDetails)
@@ -150,18 +148,12 @@ DEFINE CLASS FxuTestResult as Collection
 	********************************************************************
 	
 	********************************************************************
-	PROCEDURE LogMessage(tcMessage)
+	PROCEDURE LogMessage(tcMessage AS String) AS Void
 	********************************************************************
-		
-		IF PCOUNT() = 0
-			tcMessage = ""
-		ENDIF
-		
-		IF !EMPTY(this.icMessages)
-			this.icMessages = this.icMessages + CHR(10)
-		ENDIF
-		
-		this.icMessages = this.icMessages + RTRIM(tcMessage)
+		*BSt [~] shortend code a little bit
+		tcMessage = Iif(PCOUNT() = 0, "", ALLTRIM(m.tcMessage))
+		this.icMessages = this.icMessages + ;
+				Iif(EMPTY(this.icMessages),"", CHR(10)) + m.tcMessage
 	
 	********************************************************************
 	ENDPROC
