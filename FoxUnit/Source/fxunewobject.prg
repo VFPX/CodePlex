@@ -132,7 +132,9 @@ ENDIF
 *            
 IF NOT USED("FXUClassFactory")
   TRY
-  USE (ADDBS(JUSTPATH(SYS(16))) + "FXUClassFactory") IN 0 SHARED NOUPDATE && Added path. HAS
+  *% EJS Add path, but the path of original code
+  cDataPath = JUSTPATH(SUBS( SYS(16,0), ATC(':',SYS(16,0)) -1))
+  USE (ADDBS(cDataPath) + "FXUClassFactory") IN 0 SHARED NOUPDATE && Added path. HAS
   CATCH TO loException
   ENDTRY
 ENDIF

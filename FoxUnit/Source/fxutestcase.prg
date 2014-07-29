@@ -46,7 +46,7 @@ DEFINE CLASS FxuTestCase As FxuTest OF FxuTest.Prg
 	#IF .f.
 		LOCAL this as FxuTestCase OF FxuTestCase.prg
 	#ENDIF
-
+	
 	icCurrentTest = ""
 	ioTestResult = .NULL.
 	ilAllowDebug = .f.
@@ -105,7 +105,8 @@ DEFINE CLASS FxuTestCase As FxuTest OF FxuTest.Prg
 	********************************************************************
 		LOCAL loEx as Exception
 		
-		this.ioAssert = .f.
+		this.ioAssert = .f.		
+
 		this.ioAssert = FxuNewObject("FxuAssertions")
 		this.ioAssert.ioTestResult = this.ioTestResult
 		
@@ -115,8 +116,6 @@ DEFINE CLASS FxuTestCase As FxuTest OF FxuTest.Prg
 		IF this.ilAllowDebug
 			this.RunWithSetupTeardownDebugging()
 		ELSE
-		
-			
 
 			TRY
 				
@@ -238,10 +237,10 @@ DEFINE CLASS FxuTestCase As FxuTest OF FxuTest.Prg
 	********************************************************************
 	
 		LOCAL lcCurrentTest
-		lcCurrentTest = "this." + this.icCurrentTest + "()"
-		
+
+		lcCurrentTest = "this." + this.icCurrentTest + "()"		
 		&lcCurrentTest
-	
+
 	********************************************************************
 	ENDFUNC
 	********************************************************************
@@ -271,16 +270,12 @@ DEFINE CLASS FxuTestCase As FxuTest OF FxuTest.Prg
   * Swapped message and expression parameter order. HAS
 	FUNCTION AssertEquals(tuExpectedValue, tuExpression, tcMessage, tuNonCaseSensitiveStringComparison)
 	********************************************************************
-
 		LOCAL llNonCaseSensitiveStringComparison
 		llNonCaseSensitiveStringComparison = .f. 
-		
 		IF VARTYPE( tuNonCaseSensitiveStringComparison ) == "L"
 			llNonCaseSensitiveStringComparison = tuNonCaseSensitiveStringComparison  
 		ENDIF  
-
-		this.ioAssert.AssertEquals(tcMessage, tuExpectedValue, tuExpression, llNonCaseSensitiveStringComparison)
-
+		RETURN This.ioAssert.AssertEquals(tcMessage, tuExpectedValue, tuExpression, llNonCaseSensitiveStringComparison)
 	********************************************************************
 	ENDFUNC
 	********************************************************************
@@ -289,8 +284,8 @@ DEFINE CLASS FxuTestCase As FxuTest OF FxuTest.Prg
   * Swapped message and expression parameter order. HAS
 	FUNCTION AssertTrue(tuExpression, tcMessage)
 	********************************************************************
-	
-		this.ioAssert.AssertTrue(tcMessage, tuExpression)
+		*BSt [+] Added RETURN statement
+		Return this.ioAssert.AssertTrue(tcMessage, tuExpression)
 	
 	********************************************************************
 	ENDFUNC
@@ -300,8 +295,8 @@ DEFINE CLASS FxuTestCase As FxuTest OF FxuTest.Prg
   * Swapped message and expression parameter order. HAS
   FUNCTION AssertFalse(tuExpression, tcMessage)  && Added by HAS
   ********************************************************************
-  
-    this.ioAssert.AssertFalse(tcMessage, tuExpression)
+	*BSt [+] Added RETURN statement
+    Return this.ioAssert.AssertFalse(tcMessage, tuExpression)
   
   ********************************************************************
   ENDFUNC
@@ -311,8 +306,8 @@ DEFINE CLASS FxuTestCase As FxuTest OF FxuTest.Prg
   * Swapped message and expression parameter order. HAS
 	FUNCTION AssertNotNull(tuExpression, tcMessage)
 	********************************************************************
-	
-		this.ioAssert.AssertNotNull(tcMessage, tuExpression)
+		*BSt [+] Added RETURN statement
+		Return this.ioAssert.AssertNotNull(tcMessage, tuExpression)
 	
 	********************************************************************
 	ENDFUNC
@@ -322,25 +317,99 @@ DEFINE CLASS FxuTestCase As FxuTest OF FxuTest.Prg
   * Swapped message and expression parameter order. HAS
   FUNCTION AssertNotEmpty(tuExpression, tcMessage)
   ********************************************************************
-  
-    this.ioAssert.AssertNotEmpty(tcMessage, tuExpression)
+	*BSt [+] Added RETURN statement  
+    Return this.ioAssert.AssertNotEmpty(tcMessage, tuExpression)
   
   ********************************************************************
   ENDFUNC
   ********************************************************************
-
 
   ********************************************************************
   * Swapped message and expression parameter order. HAS
   FUNCTION AssertNotNullOrEmpty(tuExpression, tcMessage) && Added by HAS
   ********************************************************************
-  
-    this.ioAssert.AssertNotNullOrEmpty(tcMessage, tuExpression)
-  
+ 	*BSt [+] Added RETURN statement
+    Return this.ioAssert.AssertNotNullOrEmpty(tcMessage, tuExpression)
   ********************************************************************
   ENDFUNC
   ********************************************************************
 	
+  ********************************************************************
+  *BSt [+] Added whole implementation
+  FUNCTION AssertIsObject(tuObject AS Object, tcMessage AS String) AS Boolean
+  ********************************************************************
+    Return this.ioAssert.AssertIsObject(m.tcMessage, m.tuObject)
+  ********************************************************************
+  ENDFUNC
+  ********************************************************************
+
+  ********************************************************************
+  *BSt [+] Added whole implementation
+  FUNCTION AssertIsNotObject(tuUnknown AS Variant, tcMessage AS String) AS Boolean
+  ********************************************************************
+    Return this.ioAssert.AssertIsNotObject(m.tcMessage, m.tuUnknown)
+  ********************************************************************
+  ENDFUNC
+  ********************************************************************
+
+  ********************************************************************
+  *BSt [+] Added whole implementation
+  FUNCTION AssertEqualsArrays(taArray1 AS Variant, taArray2 AS Variant, tcMessage AS String, tlCaseInsensitive as Boolean) AS Boolean
+  ********************************************************************
+    Return this.ioAssert.AssertEqualsArrays(tcMessage, @taArray1, @taArray2, tlCaseInsensitive)
+  ********************************************************************
+  ENDFUNC
+  ********************************************************************
+
+  FUNCTION AssertNotEqualsArrays(taArray1 AS Variant, taArray2 AS Variant, tcMessage AS String, tlCaseInsensitive as Boolean) AS Boolean
+  ********************************************************************
+    Return NOT this.ioAssert.AssertEqualsArrays(tcMessage, @taArray1, @taArray2, tlCaseInsensitive)
+  ********************************************************************
+  ENDFUNC
+  ********************************************************************
+
+
+  ********************************************************************
+  *BSt [+] Added whole implementation
+  FUNCTION AssertHasError(tcFunction AS String, tcMessage AS String) AS Boolean
+  ********************************************************************
+	Local loExeption AS Exception
+	loExeption = NULL
+	LOCAL ARRAY laStackInfo[1,1]
+	laStackInfo[1,1] = ""
+	
+	Try
+		&tcFunction.
+	Catch To loExeption When .T.
+		=ASTACKINFO(laStackInfo)
+		* now, an exception object should exist!
+	Endtry
+	
+    Return This.ioAssert.AssertHasError(m.tcMessage, m.loExeption, @laStackInfo)
+  ********************************************************************
+  ENDFUNC
+  ********************************************************************
+
+  ********************************************************************
+  *BSt [+] Added whole implementation
+  FUNCTION AssertHasErrorNo(tcFunction AS String, tnErrorNo AS Integer, tcMessage AS String) AS Boolean
+  ********************************************************************
+	Local loExeption AS Exception
+	loExeption = NULL
+	LOCAL ARRAY laStackInfo[1,1]
+	laStackInfo[1,1] = ""
+	
+	Try
+		&tcFunction.
+	Catch To loExeption When .T.
+		=ASTACKINFO(laStackInfo)
+		* now, an exception object should exist!
+	Endtry
+	
+    Return This.ioAssert.AssertHasErrorNo(m.tcMessage, m.loExeption, m.tnErrorNo, @laStackInfo)
+  ********************************************************************
+  ENDFUNC
+  ********************************************************************
 
 	********************************************************************
 	FUNCTION MessageOut(tcMessage)
@@ -348,7 +417,8 @@ DEFINE CLASS FxuTestCase As FxuTest OF FxuTest.Prg
 		IF PCOUNT() = 0
 			tcMessage = CHR(10)
 		ENDIF 
-		this.ioTestResult.LogMessage(tcMessage)
+		Return this.ioTestResult.LogMessage(tcMessage)
+		
 	********************************************************************
 	ENDFUNC
 	********************************************************************
