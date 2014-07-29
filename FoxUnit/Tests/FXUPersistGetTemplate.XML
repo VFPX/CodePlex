@@ -1,0 +1,116 @@
+<?xml version = "1.0" encoding="Windows-1252" standalone="yes"?>
+<VFPData>
+	<xsd:schema id="VFPData" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+		<xsd:element name="VFPData" msdata:IsDataSet="true">
+			<xsd:complexType>
+				<xsd:choice maxOccurs="unbounded">
+					<xsd:element name="fxupersistgettemplate" minOccurs="0" maxOccurs="unbounded">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="userid">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="10"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="setting">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+							</xsd:sequence>
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:choice>
+				<xsd:anyAttribute namespace="http://www.w3.org/XML/1998/namespace" processContents="lax"/>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:schema>
+	<fxupersistgettemplate>
+		<userid>Eric</userid>
+		<setting>THIS.Top = -2</setting>
+	</fxupersistgettemplate>
+	<fxupersistgettemplate>
+		<userid>Eric</userid>
+		<setting>THIS.Left = 35</setting>
+	</fxupersistgettemplate>
+	<fxupersistgettemplate>
+		<userid>Eric</userid>
+		<setting>THIS.Height = IIF(VERSION(5)&gt;=900,440,440)</setting>
+	</fxupersistgettemplate>
+	<fxupersistgettemplate>
+		<userid>Eric</userid>
+		<setting>THIS.Width = IIF(VERSION(5)&gt;=900,640,640)</setting>
+	</fxupersistgettemplate>
+	<fxupersistgettemplate>
+		<userid>Eric</userid>
+		<setting>THIS.chkProcedure.Value = .F.</setting>
+	</fxupersistgettemplate>
+	<fxupersistgettemplate>
+		<userid>Eric</userid>
+		<setting>THIS.chkTab.Value = .T.</setting>
+	</fxupersistgettemplate>
+	<fxupersistgettemplate>
+		<userid>Eric</userid>
+		<setting>THIS.lstTemplates.Value = 1</setting>
+	</fxupersistgettemplate>
+	<fxupersistgettemplate>
+		<userid/>
+		<setting>THIS.Top = 1</setting>
+	</fxupersistgettemplate>
+	<fxupersistgettemplate>
+		<userid/>
+		<setting>THIS.Left = 34</setting>
+	</fxupersistgettemplate>
+	<fxupersistgettemplate>
+		<userid/>
+		<setting>THIS.Height = IIF(VERSION(5)&gt;=900,440,440)</setting>
+	</fxupersistgettemplate>
+	<fxupersistgettemplate>
+		<userid/>
+		<setting>THIS.Width = IIF(VERSION(5)&gt;=900,640,640)</setting>
+	</fxupersistgettemplate>
+	<fxupersistgettemplate>
+		<userid/>
+		<setting>THIS.chkProcedure.Value = .F.</setting>
+	</fxupersistgettemplate>
+	<fxupersistgettemplate>
+		<userid/>
+		<setting>THIS.chkTab.Value = .T.</setting>
+	</fxupersistgettemplate>
+	<fxupersistgettemplate>
+		<userid/>
+		<setting>THIS.lstTemplates.Value = 1</setting>
+	</fxupersistgettemplate>
+	<fxupersistgettemplate>
+		<userid>Eric Selje</userid>
+		<setting>THIS.Top = 255</setting>
+	</fxupersistgettemplate>
+	<fxupersistgettemplate>
+		<userid>Eric Selje</userid>
+		<setting>THIS.Left = 512</setting>
+	</fxupersistgettemplate>
+	<fxupersistgettemplate>
+		<userid>Eric Selje</userid>
+		<setting>THIS.Height = IIF(VERSION(5)&gt;=900,440,440)</setting>
+	</fxupersistgettemplate>
+	<fxupersistgettemplate>
+		<userid>Eric Selje</userid>
+		<setting>THIS.Width = IIF(VERSION(5)&gt;=900,640,640)</setting>
+	</fxupersistgettemplate>
+	<fxupersistgettemplate>
+		<userid>Eric Selje</userid>
+		<setting>THIS.chkProcedure.Value = .F.</setting>
+	</fxupersistgettemplate>
+	<fxupersistgettemplate>
+		<userid>Eric Selje</userid>
+		<setting>THIS.chkTab.Value = .T.</setting>
+	</fxupersistgettemplate>
+	<fxupersistgettemplate>
+		<userid>Eric Selje</userid>
+		<setting>THIS.lstTemplates.Value = 1</setting>
+	</fxupersistgettemplate>
+</VFPData>
