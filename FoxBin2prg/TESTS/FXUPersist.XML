@@ -31,19 +31,19 @@
 	</xsd:schema>
 	<foxunitpersist>
 		<userid>windows</userid>
-		<setting>THIS.Top = -8</setting>
+		<setting>THIS.Top = 49</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
-		<setting>THIS.Left = -8</setting>
+		<setting>THIS.Left = 45</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
-		<setting>THIS.Height = IIF(VERSION(5)&gt;=900,972,480)</setting>
+		<setting>THIS.Height = IIF(VERSION(5)&gt;=900,770,480)</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
-		<setting>THIS.Width = IIF(VERSION(5)&gt;=900,1920,724)</setting>
+		<setting>THIS.Width = IIF(VERSION(5)&gt;=900,1836,724)</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
@@ -155,7 +155,7 @@
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
-		<setting>THIS.grdTests.COLUMN1.Width = 572</setting>
+		<setting>THIS.grdTests.COLUMN1.Width = 488</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
@@ -167,7 +167,7 @@
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
-		<setting>=SEEK("UT__FOXBIN2PRG                                                                                                DEBERIA_CREARUNARCHIVO_DB2_DESDEUN_DBF_Y_EJECUTARELMETODO__RUN_AFTERCREATE_DB2                                                    ",THIS.icGridRS,"TCLName")</setting>
+		<setting>=SEEK("UT__FOXBIN2PRG__C_CONVERSOR_BASE__IDENTIFICARBLOQUESDEEXCLUSION                                               DEBERIA_NOENCONTRARBLOQUE_TEXT_ENDTEXT_CUANDOEVALUAUNALINEAQUECOMIENZACONUNCAMPOLLAMADO_TEXT_YLINEAANTERIORTERMINAEN_COMA         ",THIS.icGridRS,"TCLName")</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
@@ -191,6 +191,6 @@
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
-		<setting>THIS.nSplitterPosition = 459</setting>
+		<setting>THIS.nSplitterPosition = 391</setting>
 	</foxunitpersist>
 </VFPData>

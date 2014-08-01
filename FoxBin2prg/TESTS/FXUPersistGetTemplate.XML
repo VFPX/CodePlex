@@ -30,40 +30,12 @@
 		</xsd:element>
 	</xsd:schema>
 	<fxupersistgettemplate>
-		<userid>FDBOZZO</userid>
-		<setting>THIS.Top = 217</setting>
-	</fxupersistgettemplate>
-	<fxupersistgettemplate>
-		<userid>FDBOZZO</userid>
-		<setting>THIS.Left = 316</setting>
-	</fxupersistgettemplate>
-	<fxupersistgettemplate>
-		<userid>FDBOZZO</userid>
-		<setting>THIS.Height = IIF(VERSION(5)&gt;=900,440,440)</setting>
-	</fxupersistgettemplate>
-	<fxupersistgettemplate>
-		<userid>FDBOZZO</userid>
-		<setting>THIS.Width = IIF(VERSION(5)&gt;=900,640,640)</setting>
-	</fxupersistgettemplate>
-	<fxupersistgettemplate>
-		<userid>FDBOZZO</userid>
-		<setting>THIS.chkProcedure.Value = .F.</setting>
-	</fxupersistgettemplate>
-	<fxupersistgettemplate>
-		<userid>FDBOZZO</userid>
-		<setting>THIS.chkTab.Value = .T.</setting>
-	</fxupersistgettemplate>
-	<fxupersistgettemplate>
-		<userid>FDBOZZO</userid>
-		<setting>THIS.lstTemplates.Value = 2</setting>
+		<userid>windows</userid>
+		<setting>THIS.Top = 43</setting>
 	</fxupersistgettemplate>
 	<fxupersistgettemplate>
 		<userid>windows</userid>
-		<setting>THIS.Top = 229</setting>
-	</fxupersistgettemplate>
-	<fxupersistgettemplate>
-		<userid>windows</userid>
-		<setting>THIS.Left = 334</setting>
+		<setting>THIS.Left = 289</setting>
 	</fxupersistgettemplate>
 	<fxupersistgettemplate>
 		<userid>windows</userid>
