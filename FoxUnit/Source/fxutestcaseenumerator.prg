@@ -250,31 +250,34 @@ DEFINE CLASS FxuTestCaseEnumerator as FxuCustom OF FxuCustom.prg
 		IF EMPTY(tcClass)
 			tcClass = JUSTSTEM(tcProgramFile)
 		ENDIF  
+		tcClass = CHRTRAN(tcClass,' ','')
 		
 		lcSuperclass = this.GetSuperclass(tcProgramFile, tcClass)
 		lcSuperclassFile = DEFAULTEXT(lcSuperclass, "prg")
 
-		* Instantiate a test result to be passed to the creation
-		* the TestCase superclass specified
-		loTestResult = FxuNewObject("FxuTestResult")
-		* Instantiate the TestCase SuperClass in order to enumerate members
-		loTestCase = NEWOBJECT(lcSuperClass,lcSuperClassFile,.NULL.,loTestResult)
-		
-		* Enumerate the members of the TestCase SuperClass
-		lnMembers = AMEMBERS(laMembers,loTestCase,1)
-		
-		* Release the objects
-		RELEASE loTestCase, loTestResult
-		
-		FOR lnX = 1 TO lnMembers
-			IF laMembers[lnX,2] == "Method"
-				IF !EMPTY(lcMethodList)
-					lcMethodList = lcMethodList + "|"
+		IF NOT EMPTY(lcSuperClass)
+
+			* Instantiate a test result to be passed to the creation
+			* the TestCase superclass specified
+			loTestResult = FxuNewObject("FxuTestResult")
+			* Instantiate the TestCase SuperClass in order to enumerate members
+			loTestCase = NEWOBJECT(lcSuperClass,lcSuperClassFile,.NULL.,loTestResult)
+			
+			* Enumerate the members of the TestCase SuperClass
+			lnMembers = AMEMBERS(laMembers,loTestCase,1)
+			
+			* Release the objects
+			RELEASE loTestCase, loTestResult
+			
+			FOR lnX = 1 TO lnMembers
+				IF laMembers[lnX,2] == "Method"
+					IF !EMPTY(lcMethodList)
+						lcMethodList = lcMethodList + "|"
+					ENDIF 
+					lcMethodList = lcMethodList + UPPER(ALLTRIM(laMembers[lnX,1])) 
 				ENDIF 
-				lcMethodList = lcMethodList + UPPER(ALLTRIM(laMembers[lnX,1])) 
-			ENDIF 
-		ENDFOR
-		
+			ENDFOR
+		ENDIF 
 		
 		RETURN "|" + lcMethodList + "|"
 		

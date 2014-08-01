@@ -178,16 +178,16 @@
 		<baseclass><![CDATA[form]]></baseclass>
 		<objname><![CDATA[frmfxunewtestclass]]></objname>
 		<parent/>
-		<properties><![CDATA[ShowWindow = 1
+		<properties><![CDATA[Height = 149
+Width = 649
+ShowWindow = 1
 DoCreate = .T.
 AutoCenter = .T.
+Caption = "Select name and location of your new test class"
 ControlBox = .T.
 Closable = .F.
-Height = 154
-Width = 649
 MaxButton = .F.
 MinButton = .F.
-Caption = "Select name and location of your new test class"
 Icon = ..\
 WindowType = 1
 iccurrenttestfolder = 
@@ -205,13 +205,8 @@ thisform.Release()
 ENDPROC
 PROCEDURE icclassvalidationmessage_assign
 LPARAMETERS vNewVal
-*To do: Modify this routine for the Assign method
-IF EMPTY(vNewVal)
-	this.cmdCreate.Enabled = .t.
-ELSE
-	this.cmdCreate.enabled = .f.
-ENDIF
 
+this.cmdCreate.Enabled = EMPTY(vNewVal)
 
 this.label3.Caption = vNewVal
 thisform.cmdCreate.Refresh()
@@ -251,6 +246,8 @@ DO CASE
 		this.icClassValidationMessage = "Directory " + this.txtCurrentTestFolder.value + " does not exist."
 	CASE FILE(lcTestClassFile)
 		this.icClassValidationMessage = "Test class file already exists."
+	CASE AT(' ',ALLTRIM(This.txtTestClassName.Value))>0
+		this.icClassValidationMessage = "Test class name cannot contain spaces."	
 	OTHERWISE
 		this.icClassValidationMessage = ""
 ENDCASE 
@@ -277,7 +274,7 @@ _memberdata XML Metadata for customizable properties
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>2</nrecno>
+		<nrecno>111</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -310,7 +307,7 @@ Name = "Label1"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>4</nrecno>
+		<nrecno>113</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -343,7 +340,7 @@ Name = "Label2"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>6</nrecno>
+		<nrecno>115</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -375,7 +372,7 @@ Name = "Label3"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>3</nrecno>
+		<nrecno>112</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -413,7 +410,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>8</nrecno>
+		<nrecno>117</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -460,7 +457,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>7</nrecno>
+		<nrecno>116</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -520,7 +517,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>5</nrecno>
+		<nrecno>114</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -552,7 +549,7 @@ Name = "txtCurrentTestFolder"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>9</nrecno>
+		<nrecno>118</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -590,7 +587,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>10</nrecno>
+		<nrecno>119</nrecno>
 	</class>
 	<class>
 		<platform>COMMENT</platform>
@@ -614,6 +611,6 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>11</nrecno>
+		<nrecno>120</nrecno>
 	</class>
 </VFPData>

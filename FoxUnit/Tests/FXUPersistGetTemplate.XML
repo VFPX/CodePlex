@@ -87,19 +87,19 @@
 	</fxupersistgettemplate>
 	<fxupersistgettemplate>
 		<userid>Eric Selje</userid>
-		<setting>THIS.Top = 255</setting>
+		<setting>THIS.Top = 109</setting>
 	</fxupersistgettemplate>
 	<fxupersistgettemplate>
 		<userid>Eric Selje</userid>
-		<setting>THIS.Left = 512</setting>
+		<setting>THIS.Left = 182</setting>
 	</fxupersistgettemplate>
 	<fxupersistgettemplate>
 		<userid>Eric Selje</userid>
-		<setting>THIS.Height = IIF(VERSION(5)&gt;=900,440,440)</setting>
+		<setting>THIS.Height = IIF(VERSION(5)&gt;=900,431,431)</setting>
 	</fxupersistgettemplate>
 	<fxupersistgettemplate>
 		<userid>Eric Selje</userid>
-		<setting>THIS.Width = IIF(VERSION(5)&gt;=900,640,640)</setting>
+		<setting>THIS.Width = IIF(VERSION(5)&gt;=900,640,638)</setting>
 	</fxupersistgettemplate>
 	<fxupersistgettemplate>
 		<userid>Eric Selje</userid>
@@ -111,6 +111,30 @@
 	</fxupersistgettemplate>
 	<fxupersistgettemplate>
 		<userid>Eric Selje</userid>
-		<setting>THIS.lstTemplates.Value = 1</setting>
+		<setting>THIS.lstTemplates.Value = 3</setting>
+	</fxupersistgettemplate>
+	<fxupersistgettemplate>
+		<userid>Eric Selje</userid>
+		<setting>DIMENSION THIS.iaTemplates[3,4]</setting>
+	</fxupersistgettemplate>
+	<fxupersistgettemplate>
+		<userid>Eric Selje</userid>
+		<setting>THIS.iaTemplates[3,1] = "TDD Class Template"</setting>
+	</fxupersistgettemplate>
+	<fxupersistgettemplate>
+		<userid>Eric Selje</userid>
+		<setting>THIS.iaTemplates[3,2] = "TDDTESTCASETEMPLATE.TXT"</setting>
+	</fxupersistgettemplate>
+	<fxupersistgettemplate>
+		<userid>Eric Selje</userid>
+		<setting>THIS.iaTemplates[3,3] = "C:\USERS\ERIC SELJE.WIWP\DOCUMENTS\DEV\FOX\VFPX\FOXUNIT\TEXT\TDDTESTCASETEMPLATE.TXT"</setting>
+	</fxupersistgettemplate>
+	<fxupersistgettemplate>
+		<userid>Eric Selje</userid>
+		<setting>THIS.iaTemplates[3,4] = .F.</setting>
+	</fxupersistgettemplate>
+	<fxupersistgettemplate>
+		<userid>Eric Selje</userid>
+		<setting>THIS.lstTemplates.RowSource = THIS.lstTemplates.RowSource</setting>
 	</fxupersistgettemplate>
 </VFPData>

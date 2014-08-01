@@ -1,5 +1,10 @@
 (See the FoxUnit Wiki page on the VFPX CodePlex page https://vfpx.codeplex.com/wikipage?title=FoxUnit&referringTitle=Documentation for complete information)
 
+VFPX Release 1.4 - August 1, 2014
+Added an Options button to the main screen.
+Added a filter on failed tests (per VFPX request by Tamar Granor)
+Reworked the "New Test Class" screen
+
 VFPX Release 1.3 - July 29, 2014
 Burkhard Stiller added: AssertEqualsArrays, AssertEqualsObjects, AssertEqualsValues, AssertHasError, AssertHasErrorNo, AssertIsObject, AssertIsNotObject
 Eric Selje added FoxUnit tests for FoxUnit itself, under the Tests folder. 

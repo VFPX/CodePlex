@@ -1,7 +1,4 @@
-FoxUnit would like to acknowledge those who have contributed to
-or supported FoxUnit.
-
-Contributors:
+FoxUnit would like to acknowledge those who have contributed to or supported FoxUnit.
 
 Visionpace Developers -
 Jim Erwin 

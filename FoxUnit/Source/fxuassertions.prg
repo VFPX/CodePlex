@@ -37,7 +37,7 @@
 ***********************************************************************
 
 RETURN CREATEOBJECT("FxuAssertions")
-
+EXTERNAL ARRAY taArray1, taArray2
 *** Added by BSt -> mailto:burkhard.stiller@freenet.de
 
 **********************************************************************

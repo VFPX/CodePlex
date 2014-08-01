@@ -1,0 +1,2071 @@
+<?xml version = "1.0" encoding="Windows-1252" standalone="yes"?>
+<VFPData>
+	<xsd:schema id="VFPData" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+		<xsd:element name="VFPData" msdata:IsDataSet="true">
+			<xsd:complexType>
+				<xsd:choice maxOccurs="unbounded">
+					<xsd:element name="class" minOccurs="0" maxOccurs="unbounded">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="platform">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="8"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="uniqueid">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="10"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="class">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="classloc">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="baseclass">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="objname">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="parent">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="properties">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="protected">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="methods">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="ole">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:base64Binary">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="ole2">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="reserved1">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="reserved2">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="reserved3">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="reserved4">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="reserved5">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="reserved6">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="reserved7">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="reserved8">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="user">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="nrecno">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:decimal">
+											<xsd:totalDigits value="10"/>
+											<xsd:fractionDigits value="0"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+							</xsd:sequence>
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:choice>
+				<xsd:anyAttribute namespace="http://www.w3.org/XML/1998/namespace" processContents="lax"/>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:schema>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid/>
+		<class><![CDATA[form]]></class>
+		<classloc/>
+		<baseclass><![CDATA[form]]></baseclass>
+		<objname><![CDATA[frmnewtestclass]]></objname>
+		<parent/>
+		<properties><![CDATA[BorderStyle = 1
+Height = 431
+Width = 638
+ShowWindow = 1
+ShowInTaskBar = .F.
+DoCreate = .T.
+ShowTips = .T.
+AutoCenter = .T.
+Caption = "New Test Class"
+FontName = "Verdana"
+FontSize = 10
+MaxButton = .F.
+MinButton = .F.
+Icon = ..\
+WindowType = 1
+AllowOutput = .F.
+inpermanenttemplates = 0
+iuretval = .NULL.
+_memberdata = <VFPData><memberdata name="validatetestclass" display="ValidateTestClass"/><memberdata name="picktestfolder" display="pickTestFolder"/><memberdata name="showcontrols" display="showControls"/></VFPData>
+icclassvalidationmessage = ("")
+ntemplatesource = 1
+ctestfolder = ("")
+cclassname = ("")
+cexistingfile = ("")
+lvalidclassname = .F.
+lcreated = .F.
+luseprocedure = .F.
+lusetabs = .T.
+iclasterrormessage = ("")
+Name = "frmnewtestclass"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE addtemplate
+*
+*  called from THIS.lstTemplates.RightClick() 
+*  and from THIS.GetYourFXUTemplate()
+*
+LPARAMETERS tcFileName
+
+LOCAL lcFileName, xx, lcDescription, lnRow, yy, llAlready
+
+IF PCOUNT() = 0
+  lcFileName = GETFILE("TXT","FoxUnit template","Select",0,"Select a FoxUnit test class .TXT template")
+ ELSE
+  lcFileName = m.tcFileName
+ENDIF
+IF EMPTY(m.lcFileName)
+  RETURN
+ENDIF
+
+lcFileName = UPPER(ALLTRIM(m.lcFileName))
+
+FOR xx = 1 TO ALEN(THIS.iaTemplates,1)
+  IF UPPER(ALLTRIM(THIS.iaTemplates[m.xx,3])) == m.lcFileName
+    llAlready = .t.
+    EXIT
+  ENDIF
+ENDFOR
+IF m.llAlready
+  MESSAGEBOX(m.lcFileName + " is already in the list!", ;
+             16, ;
+             "Please Note")
+  RETURN
+ENDIF
+
+IF NOT THIS.ValidTemplateFile(m.lcFileName)
+  MESSAGEBOX(JUSTFNAME(m.lcFileName) + ;
+             " is not a FoxUnit test case class inheriting from FXUTestCase.PRG", ;
+             48, ;
+             "Please Note")
+  RETURN
+ENDIF
+
+IF PCOUNT() = 0
+  lcDescription = INPUTBOX("Description", ;
+                           "Enter a short description")
+ENDIF
+IF EMPTY(m.lcDescription)
+  lcDescription = "Custom FoxUnit template"
+ENDIF
+
+*
+*  add it
+*
+lnRow = ALEN(THIS.iaTemplates,1)+1
+DIMENSION THIS.iaTemplates[m.lnRow,ALEN(THIS.iaTemplates,2)]
+THIS.iaTemplates[m.lnRow,1] = m.lcDescription
+THIS.iaTemplates[m.lnRow,2] = JUSTFNAME(m.lcFileName)
+THIS.iaTemplates[m.lnRow,3] = m.lcFileName
+
+THIS.SortOptionalTemplates()
+
+THIS.lstTemplates.Value = m.lnRow
+THIS.lstTemplates.RowSource = THIS.lstTemplates.RowSource
+
+                         
+                         
+
+
+ENDPROC
+PROCEDURE addvmptemplates
+*
+*  FXU.VCX/frmGetTestClassTemplate::AddVMPTemplates()  
+*
+*
+*  add VMP-specific (Visual MaxFrame Professional) templates
+*
+IF NOT FILE("XXFW.VCX")
+	RETURN
+ENDIF
+
+LOCAL lnRow, lnCols, lcCurDir, lcXLIB, laFiles[1], lnFiles, xx, ;
+	lcFileName, lcDesc, lcDescText, laLines[1]
+m.lnRow = ALEN(THIS.iaTemplates, 1)
+m.lnCols = ALEN(THIS.iaTemplates, 2)
+m.lcCurDir = FULLPATH(CURDIR())
+m.lcXLIB = JUSTPATH(FULLPATH("XXFW.VCX"))
+
+CD (m.lcXLIB)
+
+m.lnFiles = ADIR(laFiles, "VMPFXU*.TXT")
+
+CD (m.lcCurDir)
+
+IF m.lnFiles = 0
+	RETURN
+ENDIF
+
+FOR m.xx = 1 TO m.lnFiles
+	m.lcFileName = UPPER(m.laFiles[m.xx, 1])
+	IF NOT "TEMPLATE" $ m.lcFileName
+		LOOP
+	ENDIF
+	IF ASCAN(THIS.iaTemplates, m.lcFileName, -1, -1, 2, 15) > 0
+*  already in the list
+		LOOP
+	ENDIF
+	m.lnRow = m.lnRow + 1
+	DIMENSION THIS.iaTemplates[m.lnRow, m.lnCols]
+	ALINES(laLines, FILETOSTR(m.lcFileName))
+	m.lcDescText = m.laLines[2]   &&& description is on the 2nd line of the .TXT template file
+	m.lcDescText = ALLTRIM(SUBSTRC(m.lcDescText, 2))   &&& remove leading asterisk
+
+*!*	  DO CASE
+*!*	    CASE RIGHTC(m.lcFileName,7) = "_DS.TXT"
+*!*	      lcDescText = "VMP DataSource test case template"
+*!*	    CASE RIGHTC(m.lcFileName,7) = "_BO.TXT"
+*!*	      lcDescText = "VMP Business Object test case template"
+*!*	    CASE RIGHTC(m.lcFileName,16) = "_BO_ONE2MANY.TXT"
+*!*	      lcDescText = "VMP One2Many Business Object test case template"
+*!*	    CASE RIGHTC(m.lcFileName,21) = "_BO_ONE2MANY2MANY.TXT"
+*!*	      lcDescText = "VMP One2Many2Many Business Object test case template"
+*!*	    OTHERWISE
+*!*	      lcDescText = "VMP test case template"
+*!*	  ENDCASE
+
+	THIS.iaTemplates[m.lnRow, 1] = m.lcDescText
+	THIS.iaTemplates[m.lnRow, 2] = m.laFiles[m.xx, 1]
+	THIS.iaTemplates[m.lnRow, 3] = FULLPATH(m.lcFileName)
+	THIS.iaTemplates[m.lnRow, 4] = .T.   &&& permanent
+NEXT
+
+THIS.lstTemplates.ROWSOURCE = THIS.lstTemplates.ROWSOURCE
+
+
+ENDPROC
+PROCEDURE classfullname
+RETURN FORCEEXT(ADDBS(ALLTRIM(This.cTestFolder)) + ALLTRIM(This.cClassName),"prg")
+
+ENDPROC
+PROCEDURE createtestclass
+LOCAL lcTemplateFile, lcNewTestClassName
+LOCAL loTestClassCreator AS FxuNewTestClass OF FxuNewTestClass.prg
+LOCAL loTestClassCreator 
+
+This.lCreated =.f.
+loTestClassCreator = FxuNewObject("FxuNewTestClass")
+lcNewTestClassName= This.ClassFullName() 
+
+SET PATH TO (["] + JUSTPATH(m.lcNewTestClassName) + ["]) ADDITIVE && Add new location to path. HAS
+
+DO CASE
+	CASE EMPTY(This.cClassName)	 && This shouldn't ever happen, as the button won't be enabled via showControls() unless there's a value there
+
+	CASE This.nTemplatesource=1	&& Template
+		* Verify template exists
+		IF FILE(THISFORM.iaTemplates[THISFORM.lstTemplates.Value, 3])
+			m.lcTemplateFile = THISFORM.iaTemplates[THISFORM.lstTemplates.Value, 3]
+		ELSE
+			IF MESSAGEBOX("Unable to locate " + ;
+					  CHR(13) + ;
+					  THISFORM.iaTemplates[THISFORM.lstTemplates.Value, 3] + ;
+					  CHR(13) + CHR(13) + ;
+					  "Remove it from the list?", ;
+					  16 + 4, ;
+					  "Please Note") = 6
+				THISFORM.RemoveTemplate()
+			ENDIF
+		ENDIF
+		This.lCreated = loTestClassCreator.CreateNewTestClass(m.lcNewTestClassName, m.lcTemplateFile, This.lUseTabs, This.lUseProcedure)
+
+	CASE This.nTemplatesource=2	&& Copy existing class
+		IF loTestClassCreator.LoadExistingClassProgram(This.cExistingFile)
+			loTestClassCreator.MergeClassName(JUSTSTEM(lcNewTestClassName))
+			STRTOFILE(loTestClassCreator.icTemplateContents, lcNewTestClassName)
+			This.lCreated = FILE(lcNewTestClassName)
+		ENDIF	
+
+	CASE This.nTemplatesource=3	&& Create mock tests for an existing classlib
+		* TODO
+ENDCASE
+
+
+ENDPROC
+PROCEDURE Destroy
+THIS.SaveSettings()
+
+ENDPROC
+PROCEDURE getyourfxutemplate
+*  
+*  called from THIS.cmdSelectCustomTemplate.Click()
+*
+
+
+LOCAL lcFileName, xx, llAlready
+
+lcFileName = GETFILE("TXT","FoxUnit template","Select",0,"Select a FoxUnit test class .TXT template")
+
+IF EMPTY(m.lcFileName)
+  RETURN
+ENDIF
+
+IF NOT THIS.ValidTemplateFile(m.lcFileName)
+  IF MESSAGEBOX(JUSTFNAME(m.lcFileName) + ;
+             " is not a FoxUnit test case class inheriting from FXUTestCase.PRG." + ;
+             CHR(10) + "Do you wish to load this test case template anyway?", ;
+             4+48,  ;
+             "Please Note") = 7
+  	RETURN
+  ENDIF
+ENDIF
+
+*
+*  if the selected template isn't already in the list,
+*  put it in the list so it's there from now on
+*
+FOR xx = 1 TO ALEN(THIS.iaTemplates,1)
+  IF UPPER(ALLTRIM(THIS.iaTemplates[m.xx,3])) == m.lcFileName
+    llAlready = .t.
+    EXIT
+  ENDIF
+ENDFOR
+
+IF m.llAlready
+  RETURN m.lcFileName
+ENDIF  
+
+THIS.AddTemplate(m.lcFileName)
+
+RETURN m.lcFileName
+          
+ENDPROC
+PROCEDURE icclassvalidationmessage_assign
+LPARAMETERS vNewVal
+*To do: Modify this routine for the Assign method
+
+this.cmdCreate.Enabled = EMPTY(vNewVal)
+
+this.lblValidationMsg.Caption = vNewVal
+thisform.cmdCreate.Refresh()
+thisform.lblValidationMsg.Refresh()
+THIS.icclassvalidationmessage = m.vNewVal
+
+ENDPROC
+PROCEDURE Init
+LPARAMETERS tcCurrentTestFolder, tcNewTestClass, tcResultVariable
+
+This.cTestFolder=EVL(tcCurrentTestFolder,"")
+THIS.icNewTestClass = EVL(m.tcNewTestClass,"")
+THIS.icResultVariable = m.tcResultVariable
+This.Icon="foxunit.ico"
+
+THIS.MinHeight = THIS.Height
+THIS.MinWidth = THIS.Width
+
+IF VERSION(5) < 900
+  THIS.BorderStyle = 2
+ENDIF
+
+THIS.RestoreSettings()
+THIS.RemoveMissingTemplates()
+THIS.AddVMPTemplates()
+*
+*  if you subclass this form, you can add code here
+*  to add your own custom templates
+*
+THIS.AddCustomTemplates()
+This.ValidateTestClass()
+
+
+ENDPROC
+PROCEDURE KeyPress
+LPARAMETERS nKeyCode, nShiftAltCtrl
+If nKeyCode=27
+   Thisform.Hide()
+Endif 
+
+ENDPROC
+PROCEDURE Load
+*
+*  grab these settings from the calling FXU.VCX/frmFoxUnit form
+*
+
+THIS.AddProperty("icPersistFile",SPACE(0))
+THIS.AddProperty("icUserID",SPACE(0))
+
+IF TYPE("_Screen.ActiveForm.icPersistFile") = "C" ;
+     AND NOT EMPTY(_Screen.ActiveForm.icPersistFile)
+
+  *
+  *  this should always be true, because this dialog
+  *  is expected to only be called from the main
+  *  FXU.VCX/frmFoxUnit form
+  *
+
+  THIS.icPersistFile = ;
+       ADDBS(JUSTPATH(_Screen.ActiveForm.icPersistFile)) + ;
+       "FXUPersistGetTemplate.XML"
+
+  THIS.icUserID = _Screen.ActiveForm.icUserID
+
+ ELSE
+  *
+  *  this should never really happen, except perhaps
+  *  for when Drew is testing standalone 
+  *
+
+  THIS.icPersistFile = ADDBS(JUSTPATH(FULLPATH("FXUResults.DBF"))) + ;
+       "FXUPersistGetTemplate.XML"
+  
+  THIS.icUserID = ALLTRIM(TRANSFORM(SYS(0)))
+  IF LENC(THIS.icUserID) < 15 OR NOT "#" $ THIS.icUserID
+    *  machine information not assigned by the network,
+    *  or network shell not loaded, or standalone machine
+    THIS.icUserID = SPACE(0)
+   ELSE
+    THIS.icUserID = ALLTRIM(SUBSTRC(THIS.icUserID,AT_C("#",THIS.icUserID)+1))
+  ENDIF
+
+ENDIF
+    
+     
+*
+*  save these for use in THIS.SaveSettings
+*
+THIS.AddProperty("inDesignHeight",THIS.Height)
+THIS.AddProperty("inDesignWidth",THIS.Width)
+     
+ENDPROC
+PROCEDURE modifytemplate
+*
+*  called from THIS.lstTemplates.RightClick()
+*
+
+LOCAL lcFileName
+m.lcFileName = THIS.iaTemplates[THIS.lstTemplates.Value, 3]
+IF EMPTY(m.lcFileName)
+	MESSAGEBOX("This feature is only available for those " + ;
+		  "items for which a filename has been specified.", ;
+		  48, ;
+		  "Please Note")
+	RETURN
+ENDIF
+
+MODIFY COMMAND (m.lcFileName)
+
+ENDPROC
+PROCEDURE picktestfolder
+LOCAL lcChangedTestFolder
+
+m.lcChangedTestFolder = ""
+
+m.lcChangedTestFolder = GETDIR(THISFORM.txtCurrentTestFolder.VALUE, "Select test class folder", "Select test class folder", 1 + 2 + 8 + 16 + 32 + 64) && Added nFlag parameter. HAS
+
+IF DIRECTORY(m.lcChangedTestFolder)
+	THISFORM.txtCurrentTestFolder.VALUE = m.lcChangedTestFolder
+	THISFORM.Validatetestclass()
+	IF !EMPTY(THISFORM.icClassValidationMessage)
+		THISFORM.txtTestClassName.SETFOCUS()
+	ELSE
+		THISFORM.cmdCreate.SETFOCUS()
+	ENDIF
+
+ENDIF
+ENDPROC
+PROCEDURE QueryUnload
+IF This.ReleaseType=1
+	nodefault
+	This.Hide()
+ENDIF
+
+ENDPROC
+PROCEDURE Release
+IF This.ReleaseType=1
+	This.Hide()
+ENDIF
+
+ENDPROC
+PROCEDURE removemissingtemplates
+*
+*  remove any rows of THIS.lstTemplates that have
+*  been added by THIS.RestoreSettings(), but which
+*  templates are now missing
+*
+
+LOCAL xx, lnRows, lnRemoved, lnValue
+m.lnRows = ALEN(THIS.iaTemplates, 1)
+m.lnValue = THIS.lstTemplates.VALUE
+
+IF m.lnRows < 5
+*  nothing to do
+	RETURN
+ENDIF
+
+m.lnRemoved = 0
+FOR m.xx = m.lnRows TO 5 STEP - 1
+	IF NOT FILE(THIS.iaTemplates[m.xx, 3])
+		m.lnRemoved = m.lnRemoved + 1
+		ADEL(THIS.iaTemplates, m.xx)
+	ENDIF
+ENDFOR
+IF m.lnRemoved > 0
+	DIMENSION THIS.iaTemplates[m.lnRows - m.lnRemoved, ALEN(THIS.iaTemplates, 2)]
+	THIS.lstTemplates.ROWSOURCE = THIS.lstTemplates.ROWSOURCE
+	THIS.lstTemplates.VALUE = 1
+ENDIF
+
+
+
+
+ENDPROC
+PROCEDURE removetemplate
+*
+*  called from THIS.lstTemplates.RightClick()
+*
+
+IF THIS.iaTemplates[THIS.lstTemplates.Value, 4]
+	MESSAGEBOX("This is a permanent item and may not be removed." + ;
+		  CHR(13) + CHR(13) + ;
+		  "You may only remove any custom templates of your own.", ;
+		  48, ;
+		  "Please Note")
+	RETURN
+ENDIF
+
+IF MESSAGEBOX("Are you sure you want to remove " + THIS.iaTemplates[THIS.lstTemplates.Value, 2] + "?", ;
+		  4 + 48, ;
+		  "Please confirm") = 7
+	RETURN
+ENDIF
+
+LOCAL lnRow
+m.lnRow = THIS.lstTemplates.VALUE
+ADEL(THIS.iaTemplates, m.lnRow)
+DIMENSION THIS.iaTemplates[ALEN(THIS.iaTemplates, 1) - 1, ALEN(THIS.iaTemplates, 2)]
+IF m.lnRow > ALEN(THIS.iaTemplates, 1)
+	THIS.lstTemplates.VALUE = THIS.lstTemplates.VALUE - 1
+ENDIF
+THIS.lstTemplates.ROWSOURCE = THIS.lstTemplates.ROWSOURCE
+
+
+
+
+
+
+
+
+
+ENDPROC
+PROCEDURE restoresettings
+*
+*  restore settings from the last time this
+*  form was run
+*
+*  this method is called from THIS.Init()
+*
+LOCAL lcUserID, lcCommand, lcAlias
+
+m.lcUserID = THIS.icUserID
+m.lcAlias = SYS(2015)
+
+IF FILE(THIS.icPersistFile)
+	TRY
+		XMLTOCURSOR(THIS.icPersistFile, m.lcAlias, 512)
+*
+*  apply settings for this user/developer
+*
+		SELECT (m.lcAlias)
+		LOCATE
+		SCAN FOR UPPER(ALLTRIM(USERID)) == UPPER(ALLTRIM(THIS.icUserID))
+			m.lcCommand = ALLTRIM(Setting)
+			&lcCommand
+			SELECT (m.lcAlias)
+		ENDSCAN
+	CATCH TO m.loException
+	ENDTRY
+	USE IN SELECT(m.lcAlias)
+ENDIF
+
+RETURN
+
+
+ENDPROC
+PROCEDURE savesettings
+*
+*  save settings so they can be restored the next
+*  time this form is run (see THIS.Init() call to
+*  THIS.RestoreSettings() method)
+*
+*  this method is called from THIS.Destroy()
+*
+
+LOCAL lcAlias
+m.lcAlias = "FXUPersistGetTemplate"   &&& SYS(2015)
+
+TRY
+
+	IF FILE(THIS.icPersistFile)
+		XMLTOCURSOR(THIS.icPersistFile, m.lcAlias, 512)
+	ELSE
+		CREATE CURSOR (m.lcAlias) (USERID C(10), Setting M)
+	ENDIF
+	SELECT (m.lcAlias)
+*
+*  delete all the existing settings for this user
+*
+	DELETE ALL FOR UPPER(ALLTRIM(USERID)) == UPPER(ALLTRIM(THIS.icUserID))
+	SCATTER MEMVAR
+	m.UserID = THIS.icUserID
+
+*
+*  THISFORM settings
+*
+	m.Setting = "THIS.Top = " + TRANSFORM(THIS.TOP)
+	INSERT INTO (m.lcAlias) FROM MEMVAR
+	m.Setting = "THIS.Left = " + TRANSFORM(THIS.LEFT)
+	INSERT INTO (m.lcAlias) FROM MEMVAR
+	m.Setting = "THIS.Height = IIF(VERSION(5)>=900," + TRANSFORM(THIS.HEIGHT) + "," + TRANSFORM(THIS.inDesignHeight) + ")"
+	INSERT INTO (m.lcAlias) FROM MEMVAR
+	m.Setting = "THIS.Width = IIF(VERSION(5)>=900," + TRANSFORM(THIS.WIDTH) + "," + TRANSFORM(THIS.inDesignWidth) + ")"
+	INSERT INTO (m.lcAlias) FROM MEMVAR
+
+*
+*  THISFORM checkbox values
+*
+	m.Setting = "THIS.chkProcedure.Value = " + TRANSFORM(THIS.chkProcedure.VALUE)
+	INSERT INTO (m.lcAlias) FROM MEMVAR
+	m.Setting = "THIS.chkTab.Value = " + TRANSFORM(THIS.chkTab.VALUE)
+	INSERT INTO (m.lcAlias) FROM MEMVAR
+
+*
+*  THIS.lstTemplates.Value
+*
+	m.Setting = "THIS.lstTemplates.Value = " + TRANSFORM(THIS.lstTemplates.VALUE)
+	INSERT INTO (m.lcAlias) FROM MEMVAR
+
+*
+*  all templates after the permanent templates
+*
+
+	IF ALEN(THIS.iaTemplates, 1) > THIS.inPermanentTemplates
+		m.Setting = 'DIMENSION THIS.iaTemplates[' + TRANSFORM(ALEN(THIS.iaTemplates, 1)) + ',' + TRANSFORM(ALEN(THIS.iaTemplates, 2)) + ']'
+		INSERT INTO (m.lcAlias) FROM MEMVAR
+		LOCAL xx, yy
+		FOR m.xx = THIS.inPermanentTemplates + 1 TO ALEN(THIS.iaTemplates, 1)
+			IF EMPTY(THIS.iaTemplates[m.xx, 2]) OR NOT FILE(THIS.iaTemplates[m.xx, 3])
+				LOOP
+			ENDIF
+			FOR m.yy = 1 TO ALEN(THIS.iaTemplates, 2) - 1
+				m.Setting = 'THIS.iaTemplates[' + TRANSFORM(m.xx) + ',' + TRANSFORM(m.yy) + '] = "' + TRANSFORM(THIS.iaTemplates[m.xx, m.yy]) + ["]
+				INSERT INTO (m.lcAlias) FROM MEMVAR
+			ENDFOR
+			m.Setting = 'THIS.iaTemplates[' + TRANSFORM(m.xx) + ',' + TRANSFORM(ALEN(THIS.iaTemplates, 2)) + '] = ' + TRANSFORM(THIS.iaTemplates[m.xx, m.yy])
+			INSERT INTO (m.lcAlias) FROM MEMVAR
+		ENDFOR
+		m.Setting = "THIS.lstTemplates.RowSource = THIS.lstTemplates.RowSource"
+		INSERT INTO (m.lcAlias) FROM MEMVAR
+	ENDIF
+
+	CURSORTOXML(m.lcAlias, THIS.icPersistFile, 1, 512, 0, "1")
+
+CATCH TO m.loException
+ENDTRY
+
+USE IN SELECT(m.lcAlias)
+
+IF VARTYPE(m.loException) = "O"
+	MESSAGEBOX("Unable to save user settings because " + ;
+		  CHR(13) + ;
+		  m.loException.MESSAGE, ;
+		  48, ;
+		  "Please Note")
+ENDIF
+
+RETURN
+
+
+ENDPROC
+PROCEDURE selectfile
+*  
+*  called from THIS.cmdCopyExistingPRG.Click()
+*
+LOCAL lcFileName, llReturn
+
+IF This.nTemplatesource = 2
+	m.lcFileName = GETFILE("PRG", "FoxUnit test class", "Select", 0, "Select an existing FoxUnit test class .PRG")
+	IF NOT EMPTY(m.lcFileName)
+		llReturn = THIS.ValidTemplateFile(m.lcFileName)
+		IF NOT llReturn
+			MESSAGEBOX(JUSTFNAME(m.lcFileName) + ;
+				  " is not a FoxUnit test case class inheriting from FXUTestCase.PRG", ;
+				  48, ;
+				  "Please Note")
+		ENDIF
+	ENDIF
+ELSE
+	m.lcFileName = GETFILE("VCX,PRG", "FoxUnit test class", "Select", 0, "Select a VFP Class Library")
+ENDIF
+IF llReturn
+	This.cExistingFile = lcFileName
+ENDIF
+This.showControls()
+RETURN llReturn
+
+ENDPROC
+PROCEDURE showcontrols
+
+THISFORM.lstTemplates.ENABLED = (THIS.nTemplatesource = 1)
+THIS.cmdAdd.ENABLED = (THIS.nTemplatesource = 1)
+THIS.cmdRemoveTemplate.ENABLED = (THIS.nTemplatesource = 1)
+THIS.cmdEditTemplate.ENABLED = (THIS.nTemplatesource = 1)
+THIS.cmdselectCustomTemplate.ENABLED = (THIS.nTemplatesource = 1)
+
+THIS.cmdSelectFile.Visible = (THIS.nTemplatesource > 1)
+THIS.txtExistingFile.Visible = (THIS.nTemplatesource > 1)
+
+DO CASE 
+	CASE This.nTemplatesource = 1
+	* Normal Template
+
+	CASE This.nTemplateSource = 2	
+		This.cmdCreate.Enabled = not EMPTY(This.cExistingFile) and FILE(This.cExistingFile) ;
+			AND This.lValidClassName
+
+	CASE This.nTemplateSource = 3
+		This.cmdCreate.Enabled = not EMPTY(This.cExistingFile) and FILE(This.cExistingFile) ;
+			AND This.lValidClassName
+ENDCASE
+This.Refresh()
+
+ENDPROC
+PROCEDURE sortoptionaltemplates
+*
+*  re-sort the optional templates, in alphabetical order
+*  
+
+IF ALEN(THIS.iaTemplates, 1) = THIS.inPermanentTemplates
+*  nothing to do
+	RETURN
+ENDIF
+
+LOCAL lnRows, lnCols, lnPermanentRows, xx, yy, lnRow
+m.lnRows = ALEN(THIS.iaTemplates, 1)
+m.lnCols = ALEN(THIS.iaTemplates, 2)
+m.lnPermanentRows = THIS.inPermanentTemplates
+
+LOCAL laItems[m.lnRows - THIS.inPermanentTemplates, m.lnCols]
+
+FOR m.xx = m.lnPermanentRows + 1 TO m.lnRows
+	FOR m.yy = 1 TO m.lnCols
+		m.laItems[m.xx - m.lnPermanentRows, m.yy] = THIS.iaTemplates[m.xx, m.yy]
+	ENDFOR
+ENDFOR
+
+ASORT(m.laItems)
+
+FOR m.xx = m.lnPermanentRows + 1 TO m.lnRows
+	FOR m.yy = 1 TO m.lnCols
+		THIS.iaTemplates[m.xx, m.yy] = m.laItems[m.xx - m.lnPermanentRows, m.yy]
+	ENDFOR
+ENDFOR
+
+*lnRow = ASCAN(THISFORM.iaTemplates,m.lcFileName,3,-1,3,15)
+
+
+
+ENDPROC
+PROCEDURE templateclassinheritsfromfxutestcase
+LPARAMETERS tcDefineClassStatement
+
+LOCAL lcTestCaseClass, lcTestCaseClassProgramFile
+
+m.tcDefineClassStatement = UPPER(ALLTRIM( m.tcDefineClassStatement ))
+
+m.tcDefineClassStatement = SUBSTR( m.tcDefineClassStatement, ;
+	ATC( " AS", m.tcDefineClassStatement ) + 3)
+	
+m.lcTestCaseClass = ALLTRIM(LEFT(m.tcDefineClassStatement, ;
+	ATC("OF", m.tcDefineClassStatement) - 1)) 
+
+m.lcTestCaseClassProgramFile = ALLTRIM(SUBSTR(m.tcDefineClassStatement, ;
+	RATC(SPACE(1), m.tcDefineClassStatement))) 	
+	
+RETURN  FXUInheritsFromFxuTestCase( m.lcTestCaseClass, m.lcTestCaseClassProgramFile )  
+	
+ 
+ENDPROC
+PROCEDURE Unload
+LOCAL lcResultVariable
+IF NOT EMPTY(THIS.icResultVariable)
+	lcResultVariable = THIS.icResultVariable
+	STORE THIS.iuRetVal TO &lcResultVariable
+ENDIF
+
+RETURN THIS.iuRetVal
+
+ENDPROC
+PROCEDURE validatederivedtestcasetemplate
+LPARAMETERS tcTestCaseTemplate
+
+LOCAL llValidDerivedTestCaseTemplate
+LOCAL lcValidatePrg, lnLInes
+LOCAL ARRAY laLines[1]
+
+m.llValidDerivedTestCaseTemplate = .F.
+
+DO WHILE .T.
+	IF !FILE(m.tcTestCaseTemplate)
+		EXIT
+	ENDIF
+	EXIT
+ENDDO
+RETURN m.llValidDerivedTestCaseTemplate
+ENDPROC
+PROCEDURE validatetestclass
+LOCAL lcTestClassFile
+lcTestClassFile = This.classFullName()
+This.lValidclassname=.f.
+DO CASE 
+	CASE !DIRECTORY(This.cTestFolder)
+		this.icClassValidationMessage = "Directory " + This.cTestFolder + " does not exist."
+	CASE EMPTY(ALLTRIM(This.cClassName))
+		this.icClassValidationMessage = "Test class name is blank"
+	CASE FILE(lcTestClassFile)
+		this.icClassValidationMessage = "Test class file already exists."
+	CASE AT(' ',ALLTRIM(This.cClassName))>0
+		this.icClassValidationMessage = "Test class name cannot contain spaces."	
+	OTHERWISE
+		this.icClassValidationMessage = ""
+		This.lValidclassname=.t.
+ENDCASE
+This.showControls()
+RETURN This.lValidClassname
+
+ENDPROC
+PROCEDURE validtemplatefile
+*
+*  RETURNs a logical value indicating whether the
+*  passed tcFileName is a valid FXUTestCase template
+*
+LPARAMETERS tcFileName
+
+LOCAL laLines[1], lcLine, llValid
+=ALINES(laLines,FILETOSTR(m.tcFileName),.t.)
+FOR EACH lcLine IN laLines
+*  IF UPPER(ALLTRIM(m.lcLine)) = "DEFINE CLASS " ;
+*      AND UPPER(" AS FXUTestCase OF FXUTestCase") $ UPPER(m.lcLine)
+
+  IF UPPER(ALLTRIM(m.lcLine)) = "DEFINE CLASS " ;
+  	AND (UPPER(" AS FXUTestCase OF FXUTestCase") $ UPPER(m.lcLine) ;
+	OR this.TemplateClassInheritsFromFxuTestCase(m.lcLine))
+
+    *
+    *  MODIFY COMMAND FXUTestCase 
+    *  MODIFY COMMAND FXUTestCaseTemplate.TXT
+    *    XXDTES("FXUTESTCASETEMPLATE.TXT","DEFINE CLASS")
+    *
+    IF UPPER(JUSTEXT(m.tcFileName)) = "TXT"
+      *  make sure it has the <<test class>> text
+      llValid = "<<" $ m.lcLine ;
+                AND ">>" $ m.lcLine ;
+                AND AT_C("<<",m.lcLine) < AT_C(">>",m.lcLine)
+     ELSE
+      *  PRG
+      llValid = .t.
+    ENDIF
+    IF m.llValid
+      EXIT
+    ENDIF
+  ENDIF         
+ENDFOR
+
+RETURN m.llValid
+
+
+
+
+ENDPROC
+PROCEDURE zreadme
+#IF .f.
+
+Class:  FXU.VCX/frmGetTestClassTemplate
+
+
+#ENDIF
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1><![CDATA[Class]]></reserved1>
+		<reserved2><![CDATA[22]]></reserved2>
+		<reserved3><![CDATA[icnewtestclass
+icresultvariable
+inpermanenttemplates
+iuretval
+_memberdata XML Metadata for customizable properties
+icclassvalidationmessage
+ntemplatesource
+ctestfolder
+cclassname
+cexistingfile
+lvalidclassname
+lcreated Was a new test class created?
+luseprocedure Use the word PROCEDURE instead of METHOD
+lusetabs Use TABS rather than spaces
+iclasterrormessage Error messages
+^iatemplates[1,0] 
+*addcustomtemplates 
+*addtemplate 
+*addvmptemplates 
+*getyourfxutemplate Select template file to copy
+*selectfile Get filename of test class to copy or classlib to mock
+*modifytemplate 
+*removemissingtemplates 
+*removetemplate 
+*restoresettings 
+*savesettings 
+*sortoptionaltemplates 
+*templateclassinheritsfromfxutestcase 
+*validatederivedtestcasetemplate 
+*validtemplatefile 
+*zreadme 
+*validatetestclass 
+*txtclassname 
+*picktestfolder 
+*icclassvalidationmessage_assign 
+*createtestforclasslib Create mockunit tests for every class in a classlib
+*showcontrols 
+*createtestclass 
+*classfullname 
+]]></reserved3>
+		<reserved4/>
+		<reserved5/>
+		<reserved6><![CDATA[Pixels]]></reserved6>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>121</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid>_44L0ZDGS8</uniqueid>
+		<class><![CDATA[label]]></class>
+		<classloc/>
+		<baseclass><![CDATA[label]]></baseclass>
+		<objname><![CDATA[Label2]]></objname>
+		<parent><![CDATA[frmnewtestclass]]></parent>
+		<properties><![CDATA[AutoSize = .T.
+FontBold = .F.
+FontName = "Verdana"
+FontSize = 9
+Caption = "Test Class/File Name:"
+Height = 16
+Left = 12
+Top = 320
+Width = 138
+TabIndex = 1
+ZOrderSet = 3
+Name = "Label2"
+]]></properties>
+		<protected/>
+		<methods/>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>125</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid/>
+		<class><![CDATA[checkbox]]></class>
+		<classloc/>
+		<baseclass><![CDATA[checkbox]]></baseclass>
+		<objname><![CDATA[chkProcedure]]></objname>
+		<parent><![CDATA[frmnewtestclass]]></parent>
+		<properties><![CDATA[Top = 235
+Left = 13
+Height = 16
+Width = 471
+FontName = "Verdana"
+FontSize = 9
+WordWrap = .F.
+AutoSize = .F.
+Alignment = 6
+BackStyle = 0
+Caption = 'Use "PROCEDURE MethodName" rather than "FUNCTION MethodName" '
+Value = .F.
+ControlSource = "w"
+Enabled = .F.
+TabIndex = 17
+Name = "chkProcedure"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Init
+IF VERSION(5)>=900
+  *
+  *  2 = Left Absolute
+  *  4 = Bottom Absolute
+  *
+  THIS.Anchor = 2 + 4
+ENDIF
+ENDPROC
+PROCEDURE Refresh
+THIS.Enabled = THISFORM.lstTemplates.Value < 3
+
+
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>131</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid/>
+		<class><![CDATA[checkbox]]></class>
+		<classloc/>
+		<baseclass><![CDATA[checkbox]]></baseclass>
+		<objname><![CDATA[chkTab]]></objname>
+		<parent><![CDATA[frmnewtestclass]]></parent>
+		<properties><![CDATA[Top = 219
+Left = 13
+Height = 16
+Width = 194
+FontName = "Verdana"
+FontSize = 9
+AutoSize = .F.
+Alignment = 0
+BackStyle = 0
+Caption = "Indent methods by one TAB"
+Value = .T.
+ControlSource = "ThisForm.lUseTabs"
+Enabled = .F.
+TabIndex = 16
+Name = "chkTab"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Init
+IF VERSION(5)>=900
+  *
+  *  2 = Left Absolute
+  *  4 = Bottom Absolute
+  *
+  THIS.Anchor = 2 + 4
+ENDIF
+ENDPROC
+PROCEDURE Refresh
+THIS.Enabled = THISFORM.lstTemplates.Value < 3
+
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>132</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid/>
+		<class><![CDATA[commandbutton]]></class>
+		<classloc/>
+		<baseclass><![CDATA[commandbutton]]></baseclass>
+		<objname><![CDATA[cmdAdd]]></objname>
+		<parent><![CDATA[frmnewtestclass]]></parent>
+		<properties><![CDATA[AutoSize = .F.
+Top = 33
+Left = 594
+Height = 27
+Width = 27
+FontName = "Verdana"
+FontSize = 9
+Picture = ..\graphics\list2_add.png
+Caption = "+"
+TabIndex = 8
+ToolTipText = "Add a template file to this list"
+PicturePosition = 14
+Name = "cmdAdd"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Click
+_Screen.ActiveForm.AddTemplate()
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>137</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid/>
+		<class><![CDATA[commandbutton]]></class>
+		<classloc/>
+		<baseclass><![CDATA[commandbutton]]></baseclass>
+		<objname><![CDATA[cmdCreate]]></objname>
+		<parent><![CDATA[frmnewtestclass]]></parent>
+		<properties><![CDATA[Top = 383
+Left = 474
+Height = 40
+Width = 144
+FontName = "Verdana"
+FontSize = 9
+WordWrap = .T.
+Caption = "Create Test Class"
+Default = .F.
+TabIndex = 4
+Name = "cmdCreate"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Click
+
+ThisForm.createTestClass()
+THISFORM.Hide()
+
+
+
+
+
+ENDPROC
+PROCEDURE Init
+IF VERSION(5)>=900
+  *
+  *  4 = Bottom Absolute
+  *  8 = Right Absolute
+  *  2 = Left Absolute
+  *
+  THIS.Anchor = 2 + 8 + 4
+ENDIF
+
+
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>126</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid>_44L0ZDGS3</uniqueid>
+		<class><![CDATA[commandbutton]]></class>
+		<classloc/>
+		<baseclass><![CDATA[commandbutton]]></baseclass>
+		<objname><![CDATA[cmdEditTemplate]]></objname>
+		<parent><![CDATA[frmnewtestclass]]></parent>
+		<properties><![CDATA[AutoSize = .F.
+Top = 87
+Left = 594
+Height = 27
+Width = 27
+FontName = "Verdana"
+FontSize = 9
+Picture = ..\graphics\list_information.png
+Caption = "M"
+TabIndex = 10
+ToolTipText = "Modify the Selected Template"
+PicturePosition = 14
+Name = "cmdEditTemplate"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Click
+_Screen.ActiveForm.ModifyTemplate()
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>139</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid>_44L0ZDGSP</uniqueid>
+		<class><![CDATA[commandbutton]]></class>
+		<classloc/>
+		<baseclass><![CDATA[commandbutton]]></baseclass>
+		<objname><![CDATA[cmdPickTestFolder]]></objname>
+		<parent><![CDATA[frmnewtestclass]]></parent>
+		<properties><![CDATA[Top = 284
+Left = 594
+Height = 25
+Width = 24
+FontName = "Verdana"
+FontSize = 9
+Caption = "..."
+TabIndex = 21
+ZOrderSet = 2
+Name = "cmdPickTestFolder"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Click
+ThisForm.pickTestFolder()
+
+ 
+ENDPROC
+PROCEDURE LostFocus
+IF !EMPTY(thisform.icclassvalidationmessage)
+	thisform.txtTestClassName.SetFocus()
+ELSE
+	thisform.cmdSelectCustomTemplate.SetFocus()
+ENDIF
+
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>124</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid/>
+		<class><![CDATA[commandbutton]]></class>
+		<classloc/>
+		<baseclass><![CDATA[commandbutton]]></baseclass>
+		<objname><![CDATA[cmdRemoveTemplate]]></objname>
+		<parent><![CDATA[frmnewtestclass]]></parent>
+		<properties><![CDATA[AutoSize = .F.
+Top = 60
+Left = 594
+Height = 27
+Width = 27
+FontName = "Verdana"
+FontSize = 9
+Picture = ..\graphics\list1_delete.png
+Caption = "-"
+TabIndex = 9
+ToolTipText = "Remove the selected template file from this list"
+PicturePosition = 14
+Name = "cmdRemoveTemplate"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Click
+_Screen.ActiveForm.RemoveTemplate()
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>138</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid/>
+		<class><![CDATA[commandbutton]]></class>
+		<classloc/>
+		<baseclass><![CDATA[commandbutton]]></baseclass>
+		<objname><![CDATA[cmdSelectCustomTemplate]]></objname>
+		<parent><![CDATA[frmnewtestclass]]></parent>
+		<properties><![CDATA[Top = 114
+Left = 594
+Height = 28
+Width = 27
+FontName = "Verdana"
+FontSize = 9
+WordWrap = .T.
+Picture = ..\graphics\list_go.png
+Caption = "C"
+Default = .F.
+TabIndex = 11
+ToolTipText = "Select a custom FoxUnit template of your own.  If you select one that is not in the list above, it will be automatically added to the list the next time you invoke this dialog."
+PicturePosition = 14
+Name = "cmdSelectCustomTemplate"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Click
+LOCAL lcTemplateFile
+
+lcTemplateFile = THISFORM.GetYourFXUTemplate()
+
+IF NOT VARTYPE(m.lcTemplateFile) = "C" OR EMPTY(m.lcTemplateFile)
+  RETURN
+ENDIF
+
+THISFORM.iuRetVal = m.lcTemplateFile + ",.NULL.,.NULL."
+
+* THISFORM.Release()
+
+
+ENDPROC
+PROCEDURE Init
+IF VERSION(5)>=900
+  *
+  *  4 = Bottom Absolute
+  *  8 = Right Absolute
+  *  2 = Left Absolute
+  *
+  THIS.Anchor = 2 + 8 + 4
+ENDIF
+
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>133</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid/>
+		<class><![CDATA[commandbutton]]></class>
+		<classloc/>
+		<baseclass><![CDATA[commandbutton]]></baseclass>
+		<objname><![CDATA[cmdSelectFile]]></objname>
+		<parent><![CDATA[frmnewtestclass]]></parent>
+		<properties><![CDATA[AutoSize = .F.
+Top = 151
+Left = 225
+Height = 25
+Width = 64
+FontName = "Verdana"
+FontSize = 9
+WordWrap = .T.
+Caption = "Select..."
+Default = .T.
+TabIndex = 13
+Visible = .F.
+Name = "cmdSelectFile"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Click
+ThisForm.SelectFile()
+
+
+ENDPROC
+PROCEDURE Init
+IF VERSION(5)>=900
+  *
+  *  4 = Bottom Absolute
+  *  8 = Right Absolute
+  *  2 = Left Absolute
+  *
+  THIS.Anchor = 2 + 8 + 4
+ENDIF
+
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>134</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid/>
+		<class><![CDATA[label]]></class>
+		<classloc/>
+		<baseclass><![CDATA[label]]></baseclass>
+		<objname><![CDATA[lblCopyExisting]]></objname>
+		<parent><![CDATA[frmnewtestclass]]></parent>
+		<properties><![CDATA[AutoSize = .T.
+FontBold = .F.
+FontName = "Verdana"
+FontSize = 9
+BackStyle = 0
+Caption = ""
+Height = 16
+Left = 36
+Top = 155
+Width = 2
+TabIndex = 12
+Name = "lblCopyExisting"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Init
+IF VERSION(5)>=900
+  *
+  *  4 = Bottom Absolute
+  *  2 = Left Absolute
+  *
+  THIS.Anchor = 4 + 2
+ENDIF
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>140</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid/>
+		<class><![CDATA[label]]></class>
+		<classloc/>
+		<baseclass><![CDATA[label]]></baseclass>
+		<objname><![CDATA[lblOptions]]></objname>
+		<parent><![CDATA[frmnewtestclass]]></parent>
+		<properties><![CDATA[AutoSize = .T.
+FontName = "Verdana"
+FontSize = 9
+Caption = "Code Options:"
+Height = 16
+Left = 12
+Top = 203
+Width = 93
+TabIndex = 15
+ForeColor = 128,0,0
+Name = "lblOptions"
+]]></properties>
+		<protected/>
+		<methods/>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>136</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid>_44L0ZDGT8</uniqueid>
+		<class><![CDATA[label]]></class>
+		<classloc/>
+		<baseclass><![CDATA[label]]></baseclass>
+		<objname><![CDATA[lblSaveAs]]></objname>
+		<parent><![CDATA[frmnewtestclass]]></parent>
+		<properties><![CDATA[AutoSize = .T.
+FontName = "Verdana"
+FontSize = 9
+Caption = "Save as:"
+Height = 16
+Left = 12
+Top = 264
+Width = 57
+TabIndex = 18
+ForeColor = 128,0,0
+Name = "lblSaveAs"
+]]></properties>
+		<protected/>
+		<methods/>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>142</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid/>
+		<class><![CDATA[label]]></class>
+		<classloc/>
+		<baseclass><![CDATA[label]]></baseclass>
+		<objname><![CDATA[lblTemplate]]></objname>
+		<parent><![CDATA[frmnewtestclass]]></parent>
+		<properties><![CDATA[AutoSize = .T.
+FontBold = .F.
+FontName = "Tahoma"
+FontSize = 12
+BackStyle = 0
+Caption = "Template"
+Height = 21
+Left = 12
+Top = 12
+Width = 68
+TabIndex = 5
+ForeColor = 128,0,0
+Name = "lblTemplate"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Init
+IF VERSION(5)>=900
+  *
+  *  4 = Bottom Absolute
+  *  2 = Left Absolute
+  *
+  THIS.Anchor = 4 + 2
+ENDIF
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>135</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid>_44L0ZDGS6</uniqueid>
+		<class><![CDATA[label]]></class>
+		<classloc/>
+		<baseclass><![CDATA[label]]></baseclass>
+		<objname><![CDATA[lblTestFolder]]></objname>
+		<parent><![CDATA[frmnewtestclass]]></parent>
+		<properties><![CDATA[AutoSize = .T.
+FontBold = .F.
+FontName = "Verdana"
+FontSize = 9
+Caption = "Test Folder:"
+Height = 16
+Left = 12
+Top = 288
+Width = 77
+TabIndex = 19
+ZOrderSet = 1
+Name = "lblTestFolder"
+]]></properties>
+		<protected/>
+		<methods/>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>123</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid>_44L0ZDGSS</uniqueid>
+		<class><![CDATA[label]]></class>
+		<classloc/>
+		<baseclass><![CDATA[label]]></baseclass>
+		<objname><![CDATA[lblValidationMsg]]></objname>
+		<parent><![CDATA[frmnewtestclass]]></parent>
+		<properties><![CDATA[FontName = "Verdana"
+FontSize = 9
+Caption = ""
+Height = 25
+Left = 12
+Top = 341
+Width = 625
+TabIndex = 3
+ForeColor = 255,0,0
+ZOrderSet = 0
+Name = "lblValidationMsg"
+]]></properties>
+		<protected/>
+		<methods/>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>122</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid/>
+		<class><![CDATA[listbox]]></class>
+		<classloc/>
+		<baseclass><![CDATA[listbox]]></baseclass>
+		<objname><![CDATA[lstTemplates]]></objname>
+		<parent><![CDATA[frmnewtestclass]]></parent>
+		<properties><![CDATA[FontName = "Verdana"
+FontSize = 9
+ColumnCount = 2
+ColumnWidths = "304,336"
+Height = 116
+ColumnLines = .F.
+Left = 36
+TabIndex = 7
+Top = 33
+Width = 552
+IntegralHeight = .T.
+ItemTips = .T.
+Name = "lstTemplates"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Init
+LOCAL lnRow, lnCols
+lnRow = 0
+lnCols = 4
+
+lnRow = m.lnRow + 1
+DIMENSION THISFORM.iaTemplates[m.lnRow,m.lnCols]
+THISFORM.iaTemplates[m.lnRow,1] = "Standard FoxUnit test case template"
+THISFORM.iaTemplates[m.lnRow,2] = "FXUTestCaseTemplate.TXT"
+THISFORM.iaTemplates[m.lnRow,3] = FULLPATH(THISFORM.iaTemplates[m.lnRow,2])
+THISFORM.iaTemplates[m.lnRow,4] = .t.   &&& permanent
+
+lnRow = m.lnRow + 1
+DIMENSION THISFORM.iaTemplates[m.lnRow,m.lnCols]
+THISFORM.iaTemplates[m.lnRow,1] = "Minimal FoxUnit test case template"
+THISFORM.iaTemplates[m.lnRow,2] = "FXUTestCaseTemplate_Minimal.TXT"
+THISFORM.iaTemplates[m.lnRow,3] = FULLPATH(THISFORM.iaTemplates[m.lnRow,2])
+THISFORM.iaTemplates[m.lnRow,4] = .t.   &&& permanent
+
+THISFORM.inPermanentTemplates = ALEN(THISFORM.iaTemplates,1)
+
+THIS.RowSourceType = 5
+THIS.RowSource = "THISFORM.iaTemplates"
+
+THIS.Value = 1
+
+IF VERSION(5)>=900
+  *
+  *    1 = Top Absolute
+  *    2 = Left Absolute
+  *  128 = Right Relative
+  *    4 = Bottom Absolute
+  *
+  THIS.Anchor = 1 + 2 + 128 + 4
+ENDIF
+
+
+ENDPROC
+PROCEDURE InteractiveChange
+THISFORM.Refresh()
+
+ENDPROC
+PROCEDURE RightClick
+DEFINE POPUP pShortCut IN WINDOW (THISFORM.Name) SHORTCUT RELATIVE FROM MROW(THISFORM.Name),MCOL(THISFORM.Name)
+
+DEFINE BAR 1 OF pShortCut PROMPT "MODIFY COMMAND the indicated template" 
+ON SELECTION BAR 1 OF pShortCut _Screen.ActiveForm.ModifyTemplate() 
+
+DEFINE BAR 2 OF pShortCut PROMPT "Add a template file to this list" 
+ON SELECTION BAR 2 OF pShortCut _Screen.ActiveForm.AddTemplate() 
+
+DEFINE BAR 3 OF pShortCut PROMPT "Remove this template from the list" 
+ON SELECTION BAR 3 OF pShortCut _Screen.ActiveForm.RemoveTemplate() 
+
+ACTIVATE POPUP pShortCut
+
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>127</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid>_44L0ZDGT4</uniqueid>
+		<class><![CDATA[optiongroup]]></class>
+		<classloc/>
+		<baseclass><![CDATA[optiongroup]]></baseclass>
+		<objname><![CDATA[opgTemplateSource]]></objname>
+		<parent><![CDATA[frmnewtestclass]]></parent>
+		<properties><![CDATA[AutoSize = .T.
+ButtonCount = 3
+BackStyle = 0
+BorderStyle = 0
+Value = 1
+ControlSource = "ThisForm.nTemplateSource"
+Height = 168
+Left = 13
+Top = 33
+Width = 211
+TabIndex = 6
+Name = "opgTemplateSource"
+Option1.Caption = ""
+Option1.Value = 1
+Option1.Height = 17
+Option1.Left = 5
+Option1.Top = 5
+Option1.Width = 61
+Option1.Name = "Option1"
+Option2.Caption = "\<Copy an existing Test Class"
+Option2.Height = 17
+Option2.Left = 5
+Option2.ToolTipText = "This option copies an existing test class PRG to a new test class PRG."
+Option2.Top = 124
+Option2.Width = 171
+Option2.AutoSize = .T.
+Option2.Name = "Option2"
+Option3.Caption = "\<Mock tests for an existing classlib"
+Option3.Enabled = .F.
+Option3.Height = 17
+Option3.Left = 5
+Option3.ToolTipText = "This option will create stub tests for every method in a class library."
+Option3.Top = 146
+Option3.Width = 201
+Option3.AutoSize = .T.
+Option3.Name = "Option3"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Click
+ThisForm.showControls()
+ENDPROC
+PROCEDURE Option2.Click
+DODEFAULT()
+ThisForm.selectFile()
+
+ENDPROC
+PROCEDURE Option3.Click
+DODEFAULT()
+ThisForm.selectFile()
+
+ENDPROC
+PROCEDURE Valid
+ThisForm.showControls()
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>141</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid>_44L0ZDGS9</uniqueid>
+		<class><![CDATA[textbox]]></class>
+		<classloc/>
+		<baseclass><![CDATA[textbox]]></baseclass>
+		<objname><![CDATA[txtCurrentTestFolder]]></objname>
+		<parent><![CDATA[frmnewtestclass]]></parent>
+		<properties><![CDATA[FontName = "Verdana"
+FontSize = 9
+ControlSource = "ThisForm.cTestFolder"
+Height = 25
+Left = 152
+ReadOnly = .T.
+TabIndex = 20
+Top = 284
+Width = 438
+ZOrderSet = 6
+Name = "txtCurrentTestFolder"
+]]></properties>
+		<protected/>
+		<methods/>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>128</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid/>
+		<class><![CDATA[textbox]]></class>
+		<classloc/>
+		<baseclass><![CDATA[textbox]]></baseclass>
+		<objname><![CDATA[txtExistingFile]]></objname>
+		<parent><![CDATA[frmnewtestclass]]></parent>
+		<properties><![CDATA[FontName = "Verdana"
+FontSize = 9
+ControlSource = "ThisForm.cExistingFile"
+Height = 25
+Left = 290
+TabIndex = 14
+TabStop = .F.
+Top = 151
+Visible = .F.
+Width = 298
+ZOrderSet = 7
+Name = "txtExistingFile"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE InteractiveChange
+thisform.ValidateTestClass()
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>130</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid/>
+		<class><![CDATA[textbox]]></class>
+		<classloc/>
+		<baseclass><![CDATA[textbox]]></baseclass>
+		<objname><![CDATA[txtTestClassName]]></objname>
+		<parent><![CDATA[frmnewtestclass]]></parent>
+		<properties><![CDATA[FontName = "Verdana"
+FontSize = 9
+ControlSource = "ThisForm.cClassName"
+Height = 25
+Left = 152
+TabIndex = 2
+Top = 314
+Width = 437
+ZOrderSet = 7
+Name = "txtTestClassName"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Valid
+RETURN thisform.ValidateTestClass()
+
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>129</nrecno>
+	</class>
+	<class>
+		<platform>COMMENT</platform>
+		<uniqueid>RESERVED</uniqueid>
+		<class/>
+		<classloc/>
+		<baseclass/>
+		<objname><![CDATA[frmnewtestclass]]></objname>
+		<parent/>
+		<properties/>
+		<protected/>
+		<methods/>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>143</nrecno>
+	</class>
+</VFPData>

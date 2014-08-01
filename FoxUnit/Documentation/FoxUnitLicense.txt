@@ -1,10 +1,8 @@
 FoxUnit is licensed under the Shared Source License for VFPX
 
-This license governs use of the accompanying software ('Software'), and your
-use of the Software constitutes acceptance of this license.
+This license governs use of the accompanying software ('Software'), and your use of the Software constitutes acceptance of this license.
 
-You may use the Software for any commercial or noncommercial purpose,
-including distributing derivative works.
+You may use the Software for any commercial or noncommercial purpose, including distributing derivative works.
 
 In return, we simply require that you agree:
 
@@ -33,3 +31,5 @@ In return, we simply require that you agree:
 
 --------------------------------------------------------------
 Prior to its incorporation into VFPX, FoxUnit was Copyright (c) 2004 - 2005, Visionpace as subjects to its terms and license.
+Some graphics included are licensed under Creative Commons, courtesy of http://momentumdesignlab.com/
+
