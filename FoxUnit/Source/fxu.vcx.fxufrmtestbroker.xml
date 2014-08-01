@@ -232,7 +232,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>68</nrecno>
+		<nrecno>9</nrecno>
 	</class>
 	<class>
 		<platform>COMMENT</platform>
@@ -256,6 +256,6 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>69</nrecno>
+		<nrecno>10</nrecno>
 	</class>
 </VFPData>

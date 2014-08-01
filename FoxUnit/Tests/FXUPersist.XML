@@ -351,19 +351,19 @@
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>Eric Selje</userid>
-		<setting>THIS.Top = 85</setting>
+		<setting>THIS.Top = 114</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>Eric Selje</userid>
-		<setting>THIS.Left = 141</setting>
+		<setting>THIS.Left = 275</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>Eric Selje</userid>
-		<setting>THIS.Height = IIF(VERSION(5)&gt;=900,721,480)</setting>
+		<setting>THIS.Height = IIF(VERSION(5)&gt;=900,747,480)</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>Eric Selje</userid>
-		<setting>THIS.Width = IIF(VERSION(5)&gt;=900,1269,724)</setting>
+		<setting>THIS.Width = IIF(VERSION(5)&gt;=900,956,803)</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>Eric Selje</userid>
@@ -475,11 +475,11 @@
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>Eric Selje</userid>
-		<setting>THIS.grdTests.Column1.Width = 208</setting>
+		<setting>THIS.grdTests.COLUMN1.Width = 208</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>Eric Selje</userid>
-		<setting>THIS.grdTests.Column2.Width = 1016</setting>
+		<setting>THIS.grdTests.COLUMN2.Width = 703</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>Eric Selje</userid>
@@ -511,6 +511,6 @@
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>Eric Selje</userid>
-		<setting>THIS.nSplitterPosition = 404</setting>
+		<setting>THIS.nSplitterPosition = 538</setting>
 	</foxunitpersist>
 </VFPData>

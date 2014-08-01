@@ -370,7 +370,7 @@ _memberdata XML Metadata for customizable properties
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>70</nrecno>
+		<nrecno>11</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -406,7 +406,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>75</nrecno>
+		<nrecno>16</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -442,7 +442,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>74</nrecno>
+		<nrecno>15</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -478,7 +478,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>76</nrecno>
+		<nrecno>17</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -513,7 +513,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>73</nrecno>
+		<nrecno>14</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -548,7 +548,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>77</nrecno>
+		<nrecno>18</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -584,7 +584,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>72</nrecno>
+		<nrecno>13</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -619,7 +619,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>78</nrecno>
+		<nrecno>19</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -654,7 +654,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>71</nrecno>
+		<nrecno>12</nrecno>
 	</class>
 	<class>
 		<platform>COMMENT</platform>
@@ -678,6 +678,6 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>79</nrecno>
+		<nrecno>20</nrecno>
 	</class>
 </VFPData>

@@ -178,20 +178,20 @@
 		<baseclass><![CDATA[form]]></baseclass>
 		<objname><![CDATA[frmoptions]]></objname>
 		<parent/>
-		<properties><![CDATA[ShowWindow = 1
+		<properties><![CDATA[Height = 421
+Width = 664
+ShowWindow = 1
 DoCreate = .T.
 ShowTips = .T.
 AutoCenter = .T.
-Height = 421
-Width = 664
+Caption = "Customize FoxUnit options"
 MaxButton = .F.
 MinButton = .F.
-Caption = "Customize FoxUnit options"
 Icon = ("foxunit.ico")
 WindowType = 1
 AllowOutput = .F.
 iomainform = .NULL.
-_memberdata = <VFPData></VFPData>
+_memberdata = <VFPData><memberdata name="showdocument" display="showDocument"/></VFPData>
 Name = "frmoptions"
 ]]></properties>
 		<protected/>
@@ -207,6 +207,7 @@ Thisform.MinHeight	= thisform.Height	&& FDBOZZO
 thisform.MinWidth	= thisform.Width	&& FDBOZZO
 
 this.ilInitialHonorTestPrefix = this.ioMainForm.ilHonorTestPrefix
+This.showDocument(ThisForm.pgfOptions.pagAbout.Check1)
 ENDPROC
 PROCEDURE Load
 *
@@ -237,6 +238,13 @@ ENDIF
 
 
 ENDPROC
+PROCEDURE showdocument
+LPARAMETERS oCheckBox
+ThisForm.pgfOptions.pagAbout.SetAll("value",0,"checkbox")
+oCheckBox.value=1
+ThisForm.pgfOptions.pagAbout.edtDocument.Value=FILETOSTR(oCheckBox.comment)
+	
+ENDPROC
 PROCEDURE zreadme
 #IF .f.
 
@@ -248,12 +256,13 @@ ENDPROC
 		<ole/>
 		<ole2/>
 		<reserved1><![CDATA[Class]]></reserved1>
-		<reserved2><![CDATA[36]]></reserved2>
+		<reserved2><![CDATA[41]]></reserved2>
 		<reserved3><![CDATA[ilinitialhonortestprefix
 iomainform
 _memberdata XML Metadata for customizable properties
 *okaction 
 *zreadme 
+*showdocument 
 ]]></reserved3>
 		<reserved4/>
 		<reserved5/>
@@ -261,7 +270,7 @@ _memberdata XML Metadata for customizable properties
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>24</nrecno>
+		<nrecno>21</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -273,11 +282,11 @@ _memberdata XML Metadata for customizable properties
 		<parent><![CDATA[frmoptions]]></parent>
 		<properties><![CDATA[WordWrap = .T.
 BackStyle = 0
-Caption = "Select OK to make permanent any changes you make here.  The settings are peristed in FXUPersist.XML, located in the same folder as the FXUResults.DBF"
+Caption = "Select OK to make permanent any changes you make here.  The settings are persisted in FXUPersist.XML, located in the same folder as the FXUResults.DBF"
 Height = 32
-Left = 20
+Left = 8
 Top = 375
-Width = 432
+Width = 444
 Name = "Label1"
 ]]></properties>
 		<protected/>
@@ -293,7 +302,7 @@ Name = "Label1"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>59</nrecno>
+		<nrecno>61</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -331,7 +340,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>57</nrecno>
+		<nrecno>59</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -370,7 +379,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>58</nrecno>
+		<nrecno>60</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -381,17 +390,19 @@ ENDPROC
 		<objname><![CDATA[pgfOptions]]></objname>
 		<parent><![CDATA[frmoptions]]></parent>
 		<properties><![CDATA[ErasePage = .T.
-PageCount = 2
+PageCount = 3
 Top = 8
 Left = 8
-Height = 352
 Width = 652
+Height = 352
 Themes = .F.
 Name = "pgfOptions"
 Page1.Caption = "Debugging"
 Page1.Name = "Page1"
 Page2.Caption = "Interface"
 Page2.Name = "Page2"
+Page3.Caption = "About"
+Page3.Name = "pagAbout"
 ]]></properties>
 		<protected/>
 		<methods/>
@@ -406,7 +417,7 @@ Page2.Name = "Page2"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>25</nrecno>
+		<nrecno>22</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -438,7 +449,7 @@ Name = "Label1"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>29</nrecno>
+		<nrecno>26</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -470,7 +481,7 @@ Name = "Label10"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>38</nrecno>
+		<nrecno>35</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -502,7 +513,7 @@ Name = "Label11"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>39</nrecno>
+		<nrecno>36</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -534,7 +545,7 @@ Name = "Label12"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>40</nrecno>
+		<nrecno>37</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -566,7 +577,7 @@ Name = "Label13"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>41</nrecno>
+		<nrecno>38</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -598,7 +609,7 @@ Name = "Label14"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>42</nrecno>
+		<nrecno>39</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -630,7 +641,7 @@ Name = "Label15"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>43</nrecno>
+		<nrecno>40</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -662,7 +673,7 @@ Name = "Label16"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>44</nrecno>
+		<nrecno>41</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -694,7 +705,7 @@ Name = "Label17"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>45</nrecno>
+		<nrecno>42</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -726,7 +737,7 @@ Name = "Label18"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>46</nrecno>
+		<nrecno>43</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -758,7 +769,7 @@ Name = "Label19"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>47</nrecno>
+		<nrecno>44</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -790,7 +801,7 @@ Name = "Label2"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>30</nrecno>
+		<nrecno>27</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -822,7 +833,7 @@ Name = "Label20"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>48</nrecno>
+		<nrecno>45</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -854,7 +865,7 @@ Name = "Label21"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>49</nrecno>
+		<nrecno>46</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -886,7 +897,7 @@ Name = "Label22"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>50</nrecno>
+		<nrecno>47</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -919,7 +930,7 @@ Name = "Label23"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>52</nrecno>
+		<nrecno>49</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -951,7 +962,7 @@ Name = "Label24"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>51</nrecno>
+		<nrecno>48</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -983,7 +994,7 @@ Name = "Label3"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>31</nrecno>
+		<nrecno>28</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -1015,7 +1026,7 @@ Name = "Label4"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>32</nrecno>
+		<nrecno>29</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -1047,7 +1058,7 @@ Name = "Label5"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>33</nrecno>
+		<nrecno>30</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -1079,7 +1090,7 @@ Name = "Label6"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>34</nrecno>
+		<nrecno>31</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -1111,7 +1122,7 @@ Name = "Label7"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>35</nrecno>
+		<nrecno>32</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -1143,7 +1154,7 @@ Name = "Label8"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>36</nrecno>
+		<nrecno>33</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -1175,7 +1186,7 @@ Name = "Label9"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>37</nrecno>
+		<nrecno>34</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -1206,7 +1217,7 @@ Name = "Shape1"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>27</nrecno>
+		<nrecno>24</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -1237,7 +1248,7 @@ Name = "Shape2"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>26</nrecno>
+		<nrecno>23</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -1272,7 +1283,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>28</nrecno>
+		<nrecno>25</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -1309,7 +1320,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>53</nrecno>
+		<nrecno>50</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -1346,7 +1357,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>56</nrecno>
+		<nrecno>53</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -1383,7 +1394,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>55</nrecno>
+		<nrecno>52</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -1419,7 +1430,196 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
+		<nrecno>51</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid>_44L0LX6TD</uniqueid>
+		<class><![CDATA[checkbox]]></class>
+		<classloc/>
+		<baseclass><![CDATA[checkbox]]></baseclass>
+		<objname><![CDATA[Check1]]></objname>
+		<parent><![CDATA[frmoptions.pgfOptions.pagAbout]]></parent>
+		<properties><![CDATA[Comment = "readme.txt"
+Top = 12
+Left = 2
+Height = 43
+Width = 142
+AutoSize = .F.
+Picture = ..\graphics\foxunit.bmp
+Alignment = 0
+Caption = "Getting Started"
+Style = 1
+PicturePosition = 0
+Name = "Check1"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Click
+ThisForm.showDocument(This)
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
 		<nrecno>54</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid>_44L0LX6TL</uniqueid>
+		<class><![CDATA[checkbox]]></class>
+		<classloc/>
+		<baseclass><![CDATA[checkbox]]></baseclass>
+		<objname><![CDATA[Check2]]></objname>
+		<parent><![CDATA[frmoptions.pgfOptions.pagAbout]]></parent>
+		<properties><![CDATA[Comment = "versions.txt"
+Top = 53
+Left = 2
+Height = 43
+Width = 142
+AutoSize = .F.
+Picture = ..\graphics\foxunit.bmp
+Alignment = 0
+Caption = "Version History"
+Style = 1
+PicturePosition = 0
+Name = "Check2"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Click
+ThisForm.showDocument(This)
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>55</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid>_44L0LX6TR</uniqueid>
+		<class><![CDATA[checkbox]]></class>
+		<classloc/>
+		<baseclass><![CDATA[checkbox]]></baseclass>
+		<objname><![CDATA[Check3]]></objname>
+		<parent><![CDATA[frmoptions.pgfOptions.pagAbout]]></parent>
+		<properties><![CDATA[Comment = "foxunitacknowledgements.txt"
+Top = 95
+Left = 2
+Height = 43
+Width = 142
+AutoSize = .F.
+Picture = ..\graphics\foxunit.bmp
+Alignment = 0
+Caption = "Acknowledgements"
+Style = 1
+PicturePosition = 0
+Name = "Check3"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Click
+ThisForm.showDocument(This)
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>56</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid>_44L0LX6TX</uniqueid>
+		<class><![CDATA[checkbox]]></class>
+		<classloc/>
+		<baseclass><![CDATA[checkbox]]></baseclass>
+		<objname><![CDATA[Check4]]></objname>
+		<parent><![CDATA[frmoptions.pgfOptions.pagAbout]]></parent>
+		<properties><![CDATA[Comment = "foxunitlicense.txt"
+Top = 136
+Left = 2
+Height = 43
+Width = 142
+AutoSize = .F.
+Picture = ..\graphics\foxunit.bmp
+Alignment = 0
+Caption = "License"
+Style = 1
+PicturePosition = 0
+Name = "Check4"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Click
+ThisForm.showDocument(This)
+
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>57</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid>_44L0LX6U4</uniqueid>
+		<class><![CDATA[editbox]]></class>
+		<classloc/>
+		<baseclass><![CDATA[editbox]]></baseclass>
+		<objname><![CDATA[edtDocument]]></objname>
+		<parent><![CDATA[frmoptions.pgfOptions.pagAbout]]></parent>
+		<properties><![CDATA[Height = 301
+Left = 147
+ReadOnly = .T.
+Top = 12
+Width = 493
+BackColor = 255,255,255
+DisabledBackColor = 255,255,255
+Name = "edtDocument"
+]]></properties>
+		<protected/>
+		<methods/>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>58</nrecno>
 	</class>
 	<class>
 		<platform>COMMENT</platform>
@@ -1443,6 +1643,6 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>60</nrecno>
+		<nrecno>62</nrecno>
 	</class>
 </VFPData>

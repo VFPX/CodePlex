@@ -180,7 +180,7 @@
 		<parent/>
 		<properties><![CDATA[DataSession = 2
 Height = 480
-Width = 724
+Width = 803
 ShowWindow = 2
 DoCreate = .T.
 ShowTips = .T.
@@ -205,6 +205,7 @@ inmostrecentselectedrow = 1
 inzoomwindowstate = 0
 nsplitterposition = 0
 _memberdata = <VFPData><memberdata name="nsplitterposition" display="nSplitterPosition"/></VFPData>
+lfailedonly = .F.
 Name = "frmfoxunit"
 ]]></properties>
 		<protected/>
@@ -501,59 +502,62 @@ PROCEDURE applyfilter
 *  this method is called from the LostFocus of
 *  the two filter textboxes above the grid
 *
-
 IF EMPTY(THIS.icClassFilter) ;
-     AND EMPTY(THIS.icNameFilter) ;
-     AND EMPTY(FILTER(THIS.icGridRS))
-  *
-  *  nothing to do
-  *
-  RETURN
+		AND EMPTY(THIS.icNameFilter) ;
+		AND NOT THIS.lFailedonly ;
+		AND EMPTY(FILTER(THIS.icGridRS))
+*
+*  nothing to do
+*
+	RETURN
 ENDIF
 
 LOCAL lcFilter
-lcFilter = UPPER(ALLTRIM(THIS.icClassFilter))
+m.lcFilter = UPPER(ALLTRIM(THIS.icClassFilter))
 IF NOT EMPTY(m.lcFilter)
-  lcFilter = ['] + m.lcFilter + [' $ UPPER(TClass)]
+	m.lcFilter = ['] + m.lcFilter + [' $ UPPER(TClass)]
 ENDIF
-IF NOT EMPTY(UPPER(THIS.icNameFilter))
-  IF NOT EMPTY(m.lcFilter)
-    lcFilter = m.lcFilter + " AND "
-  ENDIF
-  lcFilter = m.lcFilter + ['] + UPPER(ALLTRIM(THIS.icNameFilter)) + [' $ UPPER(TName)]
+IF NOT EMPTY(THIS.icNameFilter)
+	IF NOT EMPTY(m.lcFilter)
+		m.lcFilter = m.lcFilter + " AND "
+	ENDIF
+	m.lcFilter = m.lcFilter + ['] + UPPER(ALLTRIM(THIS.icNameFilter)) + [' $ UPPER(TName)]
+ENDIF
+IF THIS.lFailedonly
+	IF NOT EMPTY(m.lcFilter)
+		m.lcFilter = m.lcFilter + " AND "
+	ENDIF
+	m.lcFilter = m.lcFilter + " not success "
 ENDIF
 
 LOCAL lnSelect
-lnSelect = SELECT(0)
+m.lnSelect = SELECT(0)
 SELECT (THIS.icGridRS)
 
 IF EMPTY(m.lcFilter)
-  SET FILTER TO 
- ELSE
-  SET FILTER TO &lcFilter
-  IF NOT EVALUATE(m.lcFilter)
-    *
-    *  current record does not meet the new
-    *  filter condition
-    *
-    LOCATE 
-  ENDIF
+	SET FILTER TO
+ELSE
+	SET FILTER TO &lcFilter
+	IF NOT EVALUATE(m.lcFilter)
+*
+*  current record does not meet the new
+*  filter condition
+*
+		LOCATE
+	ENDIF
 ENDIF
 
-THIS.LockScreen = .t.
-
-THIS.grdTests.Refresh()
-
+THIS.LOCKSCREEN = .T.
+THIS.grdTests.REFRESH()
 *
 *  scroll PageUp, so that if the filter includes more
 *  records above the first/top one showing in the grid,
 *  we can see at least some of them 
 *
-THIS.grdTests.DoScroll(2)
-
-THIS.cmdClearFilter.Refresh()
-
-THIS.LockScreen = .f.
+THIS.grdTests.DOSCROLL(2)
+THIS.cmdClearFilter.REFRESH()
+This.Refresh()
+THIS.LOCKSCREEN = .F.
 ENDPROC
 PROCEDURE calculaterowcolor
 LPARAMETERS tlSuccess, tlRun
@@ -2089,7 +2093,7 @@ ENDPROC
 		<ole/>
 		<ole2/>
 		<reserved1><![CDATA[Class]]></reserved1>
-		<reserved2><![CDATA[32]]></reserved2>
+		<reserved2><![CDATA[35]]></reserved2>
 		<reserved3><![CDATA[icclassfilter
 icgridrs THIS.grdTests.RecordSource
 icnamefilter
@@ -2114,6 +2118,7 @@ iotestbroker Object That decouples the test data session from the foxUnit datase
 iotestresult Class level test result object. Passed to testbroker when running tests. Instantiated when the form is instantiated.
 nsplitterposition
 _memberdata XML Metadata for customizable properties
+lfailedonly Filter to show failed tests only
 *acknowledgements 
 *addshortcutoption_classaddtest 
 *addshortcutoption_classload 
@@ -2182,7 +2187,44 @@ _memberdata XML Metadata for customizable properties
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>80</nrecno>
+		<nrecno>75</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid>_44L0ILG50</uniqueid>
+		<class><![CDATA[checkbox]]></class>
+		<classloc/>
+		<baseclass><![CDATA[checkbox]]></baseclass>
+		<objname><![CDATA[Check1]]></objname>
+		<parent><![CDATA[frmfoxunit]]></parent>
+		<properties><![CDATA[Top = 52
+Left = 564
+Height = 17
+Width = 79
+Anchor = 8
+AutoSize = .T.
+Alignment = 0
+Caption = "Failed Only"
+ControlSource = "ThisForm.lFailedOnly"
+Name = "Check1"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Click
+THISFORM.ApplyFilter()
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>107</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -2243,7 +2285,46 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>81</nrecno>
+		<nrecno>76</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid>_44L0JXZUR</uniqueid>
+		<class><![CDATA[shape]]></class>
+		<classloc/>
+		<baseclass><![CDATA[shape]]></baseclass>
+		<objname><![CDATA[Shape3]]></objname>
+		<parent><![CDATA[frmfoxunit]]></parent>
+		<properties><![CDATA[Top = 9
+Left = 721
+Height = 28
+Width = 2
+Anchor = 8
+SpecialEffect = 0
+Name = "Shape3"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Init
+IF NOT DODEFAULT()
+  RETURN .F.
+ENDIF
+
+THIS.Top = 1
+THIS.Height = 44
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>108</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -2301,7 +2382,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>100</nrecno>
+		<nrecno>95</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -2311,11 +2392,12 @@ ENDPROC
 		<baseclass><![CDATA[commandbutton]]></baseclass>
 		<objname><![CDATA[cmdClearFilter]]></objname>
 		<parent><![CDATA[frmfoxunit]]></parent>
-		<properties><![CDATA[Top = 50
-Left = 636
-Height = 23
-Width = 84
-Caption = "Clear filter"
+		<properties><![CDATA[AutoSize = .T.
+Top = 48
+Left = 750
+Height = 27
+Width = 48
+Caption = "Clear"
 TabIndex = 22
 Name = "cmdClearFilter"
 ]]></properties>
@@ -2323,6 +2405,8 @@ Name = "cmdClearFilter"
 		<methods><![CDATA[PROCEDURE Click
 THIS.Parent.txtClassFilter.Value = SPACE(0)
 THIS.Parent.txtNameFilter.Value = SPACE(0)
+This.Parent.lFailedOnly = .f.
+
 THISFORM.ApplyFilter()
 
 
@@ -2335,6 +2419,7 @@ THIS.ToolTipText = THISFORM.GetFilterToolTipText()
 ENDPROC
 PROCEDURE Refresh
 THIS.Enabled = NOT EMPTY(FILTER(THISFORM.icGridRS))
+
 
 ENDPROC
 ]]></methods>
@@ -2349,7 +2434,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>110</nrecno>
+		<nrecno>105</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -2405,7 +2490,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>97</nrecno>
+		<nrecno>92</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -2450,7 +2535,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>91</nrecno>
+		<nrecno>86</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -2509,7 +2594,47 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>103</nrecno>
+		<nrecno>98</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid>_44L0JXZUU</uniqueid>
+		<class><![CDATA[commandbutton]]></class>
+		<classloc/>
+		<baseclass><![CDATA[commandbutton]]></baseclass>
+		<objname><![CDATA[cmdOptions]]></objname>
+		<parent><![CDATA[frmfoxunit]]></parent>
+		<properties><![CDATA[Top = 3
+Left = 724
+Height = 40
+Width = 76
+FontName = "Tahoma"
+Anchor = 8
+Picture = ..\graphics\foxunit.bmp
+Caption = "Options"
+TabIndex = 6
+TabStop = .F.
+ToolTipText = "Add a new test (method) to the test class (.PRG) currently selected in the grid."
+SpecialEffect = 2
+Name = "cmdOptions"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Click
+_Screen.ActiveForm.Options()
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>109</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -2556,7 +2681,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>95</nrecno>
+		<nrecno>90</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -2642,7 +2767,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>96</nrecno>
+		<nrecno>91</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -2681,7 +2806,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>92</nrecno>
+		<nrecno>87</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -2725,7 +2850,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>98</nrecno>
+		<nrecno>93</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -2764,7 +2889,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>93</nrecno>
+		<nrecno>88</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -2784,7 +2909,7 @@ ReadOnly = .T.
 ScrollBars = 2
 TabIndex = 10
 Top = 76
-Width = 710
+Width = 789
 HighlightStyle = 2
 Name = "grdTests"
 Column1.FontBold = .F.
@@ -2795,7 +2920,7 @@ Column1.BackColor = 255,255,255
 Column1.Name = "Column1"
 Column2.FontBold = .F.
 Column2.FontName = "Tahoma"
-Column2.Width = 466
+Column2.Width = 550
 Column2.ReadOnly = .T.
 Column2.BackColor = 255,255,255
 Column2.Name = "Column2"
@@ -2805,7 +2930,7 @@ Column2.Name = "Column2"
 LPARAMETERS nColIndex
 
 THIS.Column2.Header1.Caption = ;
-     "Test name (" + ALLTRIM(EVALUATE(THIS.RecordSource+".TClass")) + "::" + ALLTRIM(EVALUATE(this.RecordSource+".TName") +")")
+     "Test name (" + ALLTRIM(EVALUATE(THIS.RecordSource+".TClass")) + "::" + ALLTRIM(EVALUATE(this.RecordSource+".TName")) +")"
 
 THISFORM.AfterRunTests(.t.)
 
@@ -2969,7 +3094,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>82</nrecno>
+		<nrecno>77</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -2979,13 +3104,14 @@ ENDPROC
 		<baseclass><![CDATA[label]]></baseclass>
 		<objname><![CDATA[lblClassFilter]]></objname>
 		<parent><![CDATA[frmfoxunit]]></parent>
-		<properties><![CDATA[Alignment = 1
+		<properties><![CDATA[AutoSize = .F.
+Alignment = 1
 BackStyle = 0
 Caption = "Class"
 Height = 17
-Left = 316
+Left = 253
 Top = 54
-Width = 44
+Width = 35
 TabIndex = 12
 Name = "lblClassFilter"
 ]]></properties>
@@ -3008,7 +3134,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>108</nrecno>
+		<nrecno>103</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -3055,7 +3181,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>101</nrecno>
+		<nrecno>96</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -3065,14 +3191,15 @@ ENDPROC
 		<baseclass><![CDATA[label]]></baseclass>
 		<objname><![CDATA[lblFilterInfo]]></objname>
 		<parent><![CDATA[frmfoxunit]]></parent>
-		<properties><![CDATA[FontSize = 8
+		<properties><![CDATA[AutoSize = .F.
+FontSize = 8
 WordWrap = .T.
 BackStyle = 0
-Caption = "Filter the list to include Classes, Names containing these strings: "
-Height = 17
+Caption = "Filter the list to include Classes, Names containing: "
+Height = 16
 Left = 8
 Top = 55
-Width = 312
+Width = 245
 TabIndex = 13
 Name = "lblFilterInfo"
 ]]></properties>
@@ -3095,7 +3222,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>111</nrecno>
+		<nrecno>106</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -3109,7 +3236,7 @@ ENDPROC
 BackStyle = 0
 Caption = "Name"
 Height = 17
-Left = 476
+Left = 403
 Top = 54
 Width = 40
 TabIndex = 14
@@ -3137,7 +3264,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>109</nrecno>
+		<nrecno>104</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -3186,7 +3313,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>99</nrecno>
+		<nrecno>94</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -3234,7 +3361,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>102</nrecno>
+		<nrecno>97</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -3246,7 +3373,7 @@ ENDPROC
 		<parent><![CDATA[frmfoxunit]]></parent>
 		<properties><![CDATA[Top = 451
 Left = 20
-Width = 680
+Width = 759
 Height = 23
 TabIndex = 18
 Name = "pbProgress"
@@ -3301,7 +3428,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>94</nrecno>
+		<nrecno>89</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -3315,7 +3442,7 @@ ENDPROC
 PageCount = 2
 Top = 260
 Left = 8
-Width = 713
+Width = 792
 Height = 170
 TabIndex = 11
 Name = "pgfDetails"
@@ -3354,7 +3481,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>87</nrecno>
+		<nrecno>82</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -3366,8 +3493,9 @@ ENDPROC
 		<parent><![CDATA[frmfoxunit]]></parent>
 		<properties><![CDATA[Top = 0
 Left = 0
-Height = 44
-Width = 724
+Height = 45
+Width = 804
+Anchor = 10
 BackStyle = 0
 SpecialEffect = 0
 Name = "shpButtons"
@@ -3396,7 +3524,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>90</nrecno>
+		<nrecno>85</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -3434,7 +3562,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>104</nrecno>
+		<nrecno>99</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -3472,7 +3600,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>105</nrecno>
+		<nrecno>100</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -3484,7 +3612,7 @@ ENDPROC
 		<parent><![CDATA[frmfoxunit]]></parent>
 		<properties><![CDATA[ControlSource = "THISFORM.icClassFilter"
 Height = 23
-Left = 364
+Left = 292
 TabIndex = 20
 Top = 50
 Width = 108
@@ -3527,7 +3655,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>106</nrecno>
+		<nrecno>101</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -3539,7 +3667,7 @@ ENDPROC
 		<parent><![CDATA[frmfoxunit]]></parent>
 		<properties><![CDATA[ControlSource = "THISFORM.icNameFilter"
 Height = 23
-Left = 520
+Left = 447
 TabIndex = 21
 Top = 50
 Width = 108
@@ -3582,7 +3710,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>107</nrecno>
+		<nrecno>102</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -3610,7 +3738,7 @@ Name = "Header1"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>83</nrecno>
+		<nrecno>78</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -3643,7 +3771,7 @@ Name = "Text1"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>84</nrecno>
+		<nrecno>79</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -3671,7 +3799,7 @@ Name = "Header1"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>85</nrecno>
+		<nrecno>80</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -3704,7 +3832,7 @@ Name = "Text1"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>86</nrecno>
+		<nrecno>81</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -3720,7 +3848,7 @@ Left = 4
 ReadOnly = .T.
 TabIndex = 2
 Top = 3
-Width = 698
+Width = 779
 ControlSource = ""
 IntegralHeight = .T.
 Name = "edtFailuresAndErrors"
@@ -3771,7 +3899,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>88</nrecno>
+		<nrecno>83</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -3787,7 +3915,7 @@ Left = 4
 ReadOnly = .T.
 TabIndex = 3
 Top = 3
-Width = 698
+Width = 779
 ControlSource = ""
 IntegralHeight = .T.
 Name = "edtMessages"
@@ -3838,7 +3966,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>89</nrecno>
+		<nrecno>84</nrecno>
 	</class>
 	<class>
 		<platform>COMMENT</platform>
@@ -3862,6 +3990,6 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>112</nrecno>
+		<nrecno>110</nrecno>
 	</class>
 </VFPData>

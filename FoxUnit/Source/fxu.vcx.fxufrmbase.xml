@@ -195,7 +195,7 @@ Name = "fxufrmbase"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>66</nrecno>
+		<nrecno>7</nrecno>
 	</class>
 	<class>
 		<platform>COMMENT</platform>
@@ -219,6 +219,6 @@ Name = "fxufrmbase"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>67</nrecno>
+		<nrecno>8</nrecno>
 	</class>
 </VFPData>

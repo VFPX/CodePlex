@@ -546,7 +546,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>61</nrecno>
+		<nrecno>2</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -581,7 +581,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>63</nrecno>
+		<nrecno>4</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -614,7 +614,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>64</nrecno>
+		<nrecno>5</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -650,7 +650,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>62</nrecno>
+		<nrecno>3</nrecno>
 	</class>
 	<class>
 		<platform>COMMENT</platform>
@@ -674,6 +674,6 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>65</nrecno>
+		<nrecno>6</nrecno>
 	</class>
 </VFPData>

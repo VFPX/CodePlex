@@ -38,7 +38,7 @@
 LPARAMETERS tcMethodToAutoRun, tcParam1
 
 
-#DEFINE C_Version "1.3"
+#DEFINE C_Version "1.4"
 
 SET CENTURY ON
 SET CENTURY TO
