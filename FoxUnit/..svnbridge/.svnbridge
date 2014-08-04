@@ -7,4 +7,12 @@ Tests2
 FoxUnit_ref.DBF
 FoxUnit_ref.FPT
 Tests2
+</Value></Property><Property><Name>svn:ignore</Name><Value>FXUPersistGetTemplate.XML
+FoxUnit_ref.CDX
+FoxUnit_ref.DBF
+FoxUnit_ref.FPT
+Tests2
+fxuPersist.xml
+</Value></Property><Property><Name>svn:global-ignores</Name><Value>Tests
+Tests2
 </Value></Property></Properties></ItemProperties>
