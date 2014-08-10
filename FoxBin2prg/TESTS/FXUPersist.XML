@@ -43,7 +43,7 @@
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
-		<setting>THIS.Width = IIF(VERSION(5)&gt;=900,1836,724)</setting>
+		<setting>THIS.Width = IIF(VERSION(5)&gt;=900,1836,803)</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
@@ -167,7 +167,7 @@
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
-		<setting>=SEEK("UT__FOXBIN2PRG__C_CONVERSOR_BASE__IDENTIFICARBLOQUESDEEXCLUSION                                               DEBERIA_NOENCONTRARBLOQUE_TEXT_ENDTEXT_CUANDOEVALUAUNALINEAQUECOMIENZACONUNCAMPOLLAMADO_TEXT_YLINEAANTERIORTERMINAEN_COMA         ",THIS.icGridRS,"TCLName")</setting>
+		<setting>=SEEK("UT__FOXBIN2PRG                                                                                                DEBERIA_EJECUTAR_FOXBIN2PRG_PARALALIBRERIA_CLASSLIB_METHOD_ORDER_BUG_TEST_VCX_YVALIDAREL_BUG_DELORDENDEMETODOSDECLASES_V1_19_29   ",THIS.icGridRS,"TCLName")</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
@@ -191,6 +191,6 @@
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
-		<setting>THIS.nSplitterPosition = 391</setting>
+		<setting>THIS.nSplitterPosition = 397</setting>
 	</foxunitpersist>
 </VFPData>
