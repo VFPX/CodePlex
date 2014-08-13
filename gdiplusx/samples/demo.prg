@@ -8,7 +8,7 @@ SET PATH TO (lcPath) ADDITIVE
 SET PATH TO (lcPath+"image\") ADDITIVE
 SET PATH TO (lcPath+"..\source\") ADDITIVE
 
-DO (LOCFILE("System.prg"))
+DO (LOCFILE("System.app"))
 
 DO FORM samples
 
