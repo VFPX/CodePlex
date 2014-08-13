@@ -49,7 +49,7 @@ PROCEDURE Init
 ThisForm.cFileName = HOME(4)+"gifs\morphfox.gif"
 ENDPROC
 PROCEDURE Load
-DO (LOCFILE("System.prg"))
+DO (LOCFILE("System.app"))
 
 loImgAnimator = _SCREEN.System.Drawing.ImageAnimator.New()
 ADDPROPERTY(This, "IA", loImgAnimator)
