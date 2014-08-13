@@ -1,4 +1,6 @@
-DO (LOCFILE("System.prg"))
+DO (LOCFILE("System.app"))
+
+SET CLASSLIB TO (ADDBS(HOME(1)) + "FFC\_ReportListener.VCX") ADDITIVE
 
 LOCAL loReportListener, i
 loReportListener = CREATEOBJECT("MyReportListener")
@@ -27,7 +29,7 @@ RETURN
 
 
 
-DEFINE CLASS MyReportListener AS "_ReportListener" OF ADDBS(HOME(1)) + "FFC\_ReportListener.vcx"
+DEFINE CLASS MyReportListener AS "_ReportListener"
 	NewPage = .T.
 	oGDIGraphics = NULL
 	WaterMarkImage = ""
