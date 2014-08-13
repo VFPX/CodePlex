@@ -1,4 +1,6 @@
-DO (LOCFILE("System.prg"))
+DO (LOCFILE("System.app"))
+
+SET CLASSLIB TO (ADDBS(HOME(1)) + "FFC\_ReportListener.VCX") ADDITIVE
 
 LOCAL loReportListener, i
 loReportListener = CREATEOBJECT("FullJustifyListener")
@@ -55,7 +57,7 @@ RETURN
 
 
 
-DEFINE CLASS FullJustifyListener AS _ReportListener OF ADDBS(HOME(1)) + "FFC\_ReportListener.VCX"
+DEFINE CLASS FullJustifyListener AS _ReportListener
 	oGDIGraphics = NULL
 	nSaveGraphicsHandle = 0
 	nTimes = 1
