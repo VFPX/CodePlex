@@ -2638,7 +2638,8 @@ DEFINE CLASS xfcGraphicsPath AS xfcgpobject OF System.Drawing.prg
 	** History:
 	**  2006/03/07: Auto Generated
 	**	2006/05/06: BDurban - Coded
-	**
+	**  2013/03/10: MJindru - Fixed - detect base name Point but create object by class xfcPointF
+	**						http://vfpx.codeplex.com/workitem/30995
 	** .NET Help ********************************************************
 	** http://msdn2.microsoft.com/en-us/library/System.Drawing.Drawing2D.GraphicsPath.GraphicsPath%28vs.80%29.aspx
 	** Parameters:
@@ -2683,7 +2684,7 @@ DEFINE CLASS xfcGraphicsPath AS xfcgpobject OF System.Drawing.prg
 				This.SetStatus(xfcGdipCreatePath2(@lqPoints, @lqTypes, m.liCount, m.tiFillMode, @lhPath))
 				
 			CASE VARTYPE(m.taoPts)="O" AND m.taoPts.BaseName = "Point"
-				m.loPoint = NEWOBJECT("xfcPointF",XFCCLASS_DRAWING)
+				m.loPoint = NEWOBJECT("xfcPoint",XFCCLASS_DRAWING)
 				m.lqPoints = loPoint.ToVarBinary(@taoPts, @liCount)
 				m.tiFillMode = EVL(m.tiFillMode, FillModeAlternate)
 				FOR m.lnCnt = 1 TO m.liCount
@@ -7488,7 +7489,6 @@ DEFINE CLASS xfcPathGradientBrush AS xfcbrush OF System.Drawing.prg
 	LPARAMETERS toPointF AS xfcPointF
 		
 		*!ToDo: Test this function
-		
 		LOCAL loExc AS Exception
 		TRY
 			IF VARTYPE(toPointF) = "O"

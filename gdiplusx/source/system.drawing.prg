@@ -1543,6 +1543,7 @@ DEFINE CLASS xfcBitmap AS xfcimage
 	** History:
 	**	2006/08/26: CChalom - Coded
 	**	2007/11/26: CChalom - Added new overload allowing to capture a form object
+	**  2013/03/10: DHennig - Fixed - http://vfpx.codeplex.com/workitem/27974
 	*********************************************************************
 	LPARAMETERS tHWnd, ;
 					tiX, tiY, tiWidth, tiHeight, ;
@@ -1636,10 +1637,10 @@ DEFINE CLASS xfcBitmap AS xfcimage
 		    m.lnBottom = CTOBIN(SUBSTR(m.lqRect, 13, 4),"4rs")
 			m.lnWidth  = m.lnRight - m.lnLeft
 			m.lnHeight = m.lnBottom - m.lnTop
-		
+
 			*! ToDo: Need to check the position of the parent window, not just the desktop
-			IF m.tlEnsureVisible AND m.lnRight > SYSMETRIC(1) OR m.lnBottom > SYSMETRIC(2) ;
-				OR m.lnLeft < 0 OR m.lnTop < 0
+			IF m.tlEnsureVisible AND ;
+				(m.lnRight > SYSMETRIC(1) OR m.lnBottom > SYSMETRIC(2) OR m.lnLeft < 0 OR m.lnTop < 0)
 		
 				m.lnLeft0  = m.lnLeft
 				m.lnTop0   = m.lnTop
@@ -1759,70 +1760,6 @@ DEFINE CLASS xfcBitmap AS xfcimage
 
 	RETURN m.lnPosition
 
-
-
-	*********************************************************************
-	FUNCTION ObjToClientEx
-	*********************************************************************
-	** Method: xfcBitmap.ObjToClientEx
-	**
-	** This replaces OBJTOCLIENT that has bugs with pageframes and SP2
-	**
-	** History:
-	**	2007/11/26: CAlloatti/CChalom - Coded Made small adaptation from the original code from Carlos Alloatti in his CTL32SContainer
-	*********************************************************************
-	PARAMETERS toControl, tnType && 1 = Top  2 = Left
-
-	*!* TabOrientation parameters
-	#DEFINE CON_TABOR_TOP							0
-	#DEFINE CON_TABOR_BOTTOM						1
-	#DEFINE CON_TABOR_LEFT							2
-	#DEFINE CON_TABOR_RIGHT							3
-
-	LOCAL lnPosition AS INTEGER
-	m.lnPosition = 0
-
-	DO CASE
-
-	CASE m.tnType = 1 && Top
-		DO WHILE NOT UPPER(m.toControl.BASECLASS) == [FORM]
-			IF PEMSTATUS(m.toControl, [Top],5) THEN && Defined Property
-				m.lnPosition = m.lnPosition + m.toControl.TOP
-			ENDIF
-			IF UPPER(m.toControl.BASECLASS) == [PAGE] THEN
-				IF m.toControl.PARENT.TABORIENTATION = CON_TABOR_TOP THEN	&& Top
-					m.lnPosition = m.lnPosition + ;
-						m.toControl.PARENT.HEIGHT - ;
-						m.toControl.PARENT.PAGEHEIGHT - ;
-						m.toControl.PARENT.BORDERWIDTH * 2
-				ELSE
-					m.lnPosition = m.lnPosition + 1
-				ENDIF
-			ENDIF
-			m.toControl = m.toControl.PARENT
-		ENDDO
-
-	CASE m.tnType = 2 && Left
-		DO WHILE NOT UPPER(m.toControl.BASECLASS) == [FORM]
-			IF PEMSTATUS(m.toControl, [Left], 5) THEN && Defined Property
-				m.lnPosition = m.lnPosition + m.toControl.LEFT
-			ENDIF
-			IF UPPER(m.toControl.BASECLASS) == [PAGE]
-				IF m.toControl.PARENT.TABORIENTATION = CON_TABOR_LEFT THEN	&& Left
-					m.lnPosition = m.lnPosition + ;
-						m.toControl.PARENT.WIDTH - ;
-						m.toControl.PARENT.PAGEWIDTH - ;
-						m.toControl.PARENT.BORDERWIDTH * 2
-				ELSE
-					m.lnPosition = m.lnPosition + 1
-				ENDIF
-			ENDIF
-			m.toControl = m.toControl.PARENT
-		ENDDO
-
-	ENDCASE
-
-	RETURN m.lnPosition
 
 
 
@@ -2087,6 +2024,113 @@ DEFINE CLASS xfcBitmap AS xfcimage
 		RETURN NULL
 	ENDFUNC
 
+
+	*********************************************************************
+	FUNCTION FloodFill
+	*********************************************************************
+	** Method: xfcBitmap.FloodFill
+	**
+	** Fills an area of the current bitmap surface with the passed color
+	**
+	** Parameters
+	**    [in]tnX - The x-coordinate, in logical units, of the point where filling is to start.
+	**    [in]tnY - The y-coordinate, in logical units, of the point where filling is to start.
+	**    [xfcColor]toColor or [in]RGB - The color of the boundary or of the area to be filled. The interpretation of crColor depends on the value of the fuFillType parameter.
+	**    [in]FillType [in] - The type of fill operation to be performed. This parameter must be one of the following values.
+	**           FLOODFILLBORDER (0) - The fill area is bounded by the color specified by the crColor parameter. This style is identical to the filling performed by the FloodFill function.
+ 	**           FOODFILLSURFACE (1) - The fill area is defined by the color that is specified by crColor. Filling continues outward in all directions as long as the color is encountered. This style is useful for filling areas with multicolored boundaries.
+	**
+	** Documentation on MSDN
+	**    http://msdn.microsoft.com/en-us/library/windows/desktop/dd162709(v=vs.85).aspx
+ 	**
+	** History:
+	**	2013/03/11: CChalom - Coded
+	**
+	*********************************************************************
+
+	#DEFINE FLOODFILLBORDER  0  && Fill until crColor& color encountered.
+	#DEFINE FLOODFILLSURFACE 1  && Fill surface until crColor& color not encountered.
+
+	LPARAMETERS tnX, tnY, toColor AS xfcColor, tiFillType
+		
+		*!ToDo: Test this function
+		
+		LOCAL loExc AS Exception
+		TRY
+		
+			IF VARTYPE(m.tiFillType) <> "N"
+				m.tiFillType = FLOODFILLSURFACE
+			ENDIF 
+
+			IF VARTYPE(m.toColor) = "O"
+				LOCAL liColor as Integer 
+				m.liColor = RGB(m.toColor.R, m.toColor.G, m.toColor.B)
+
+			ELSE && Received RGB value
+				m.liColor = m.toColor
+			ENDIF 
+		
+			#DEFINE FF_SRCCOPY			0x00CC0020
+			#DEFINE FF_RGBQUAD_SIZE     4
+			#DEFINE FF_DIB_RGB_COLORS   0
+			#DEFINE FF_BFHDR_SIZE      14
+			#DEFINE FF_BHDR_SIZE       40
+			#DEFINE FF_BI_RGB           0
+
+			LOCAL lnSrcDC, lnDstDC
+			m.lnSrcDC = xfcCreateCompatibleDC(0)
+			m.lnDstDC = xfcCreateCompatibleDC(0)
+
+			LOCAL lnWidth, lnHeight, lnBitsPerPixel, lcDstBMI
+			m.lnWidth  = This.Width
+			m.lnHeight = This.Height
+			m.lnBitsPerPixel = This.GetPixelFormatSize(This.PixelFormat)
+			m.lcDstBMI = BINTOC(FF_BHDR_SIZE ,"4RS") + BINTOC(m.lnWidth,"4RS") + BINTOC(m.lnHeight, "4RS") + ;
+				(CHR(MOD(1,256)) + CHR(INT(1/256))) + (CHR(MOD(m.lnBitsPerPixel,256))+ CHR(INT(m.lnBitsPerPixel/256))) +;
+				BINTOC(FF_BI_RGB, "4RS") + REPLI(0h00, 20)
+
+			LOCAL lnHBitmap, loGDIBmp1, loGDIBmp2, lnDstBits, lnDstHBitmap, loGDIBrush, lhBrush
+			m.lnHBitmap    = This.GetHbitmap()
+			m.loGDIBmp1    = xfcSelectObject(m.lnSrcDC, m.lnHBitmap)
+			m.lnDstBits    = 0
+			
+			m.lnDstHBitmap = xfcCreateDIBSection(m.lnDstDC, @lcDstBMI, 0, @lnDstbits, 0, 0)
+			m.loGDIBmp2    = xfcSelectObject(lnDstDC, lnDstHBitmap)
+			xfcBitBlt(m.lnDstDC, 0, 0, m.lnWidth, m.lnHeight, m.lnSrcDC, 0, 0, FF_SRCCOPY)
+			xfcGdiFlush()
+ 
+			m.lhBrush      = xfcCreateSolidBrush(m.liColor)
+			m.loGDIBrush   = xfcSelectObject(m.lnDstDC, m.lhBrush)
+
+			* Fill the object
+			=xfcExtFloodFill(m.lnDstDC, m.tnX, m.tnY, xfcGetPixel(m.lnDstDC, m.tnX, m.tnY), m.tiFillType)
+
+			IF This.Handle <> 0
+				This.Destroy()
+			    m.lhBitmap = 0
+			 	This.SetStatus(xfcGdipCreateBitmapFromHBITMAP(m.lnDstHBitmap,0, @m.lhBitmap))
+				This.Handle = m.lhBitmap
+			ENDIF
+			
+			* Cleaning up
+			xfcDeleteObject(m.lhBrush)
+			xfcDeleteObject(xfcSelectObject(m.lnDstDC, m.lhBrush))
+			xfcDeleteObject(xfcSelectObject(m.lnDstDC, m.lnDstHBitmap))
+			xfcDeleteObject(xfcSelectObject(m.lnSrcDC, m.lnHBitmap))
+			xfcDeleteObject(m.loGDIBrush)
+			xfcDeleteObject(m.lnDstBits)
+			xfcDeleteObject(m.loGDIBmp2)
+			xfcDeleteObject(m.loGDIBmp1)
+			xfcDeleteObject(m.lnDstHBitmap)
+			xfcDeleteDC(m.lnDstDC)
+			xfcDeleteDC(m.lnSrcDC)
+
+		CATCH TO loExc
+			THROW_EXCEPTION
+		ENDTRY
+		
+		RETURN NULL
+	ENDFUNC
 
 
 	*********************************************************************
@@ -3005,7 +3049,6 @@ DEFINE CLASS xfcCharacterRange AS xfcdrawingbase
 	LPARAMETERS taoRange AS xfcCharacterRange, tiCount
 		
 		*!ToDo: Test this function
-		
 		LOCAL lqBinary, loRange
 		m.lqBinary = 0h
 		m.tiCount = 0
@@ -9276,6 +9319,7 @@ DEFINE CLASS xfcGraphics AS xfcgpobject
 	** History:
 	**  2006/03/07: Auto Generated
 	**	2006/06/14: BDurban - Coded
+	**  2013/03/10: CChalom - Fixed - Thanks to MReigler - http://vfpx.codeplex.com/workitem/26382
 	**
 	** .NET Help ********************************************************
 	** http://msdn2.microsoft.com/en-us/library/System.Drawing.Graphics.ExcludeClip%28vs.80%29.aspx
@@ -9288,7 +9332,7 @@ DEFINE CLASS xfcGraphics AS xfcgpobject
 	*********** toRegion AS xfcRegion
 		
 		*!ToDo: Test this function
-		
+	
 		This.SetClip(m.toRect, CombineModeExclude)
 		
 		RETURN NULL
@@ -10237,6 +10281,7 @@ DEFINE CLASS xfcGraphics AS xfcgpobject
 	** History:
 	**  2006/03/07: Auto Generated
 	**	2006/06/14: BDurban - Coded
+	**  2013/03/12: Christian Ehlscheidt (posted as patch in Codeplex in April 2010)
 	**
 	** .NET Help ********************************************************
 	** http://msdn2.microsoft.com/en-us/library/System.Drawing.Graphics.MeasureCharacterRanges%28vs.80%29.aspx
@@ -10245,24 +10290,24 @@ DEFINE CLASS xfcGraphics AS xfcgpobject
 	** Returns: Region[]
 	*********************************************************************
 	LPARAMETERS tcText, toFont AS xfcFont, toLayoutRect AS xfcRectangleF, toStringFormat AS xfcStringFormat
-		
-		*!ToDo: Test this function
-		
+	
+	*!ToDo: Test this function
+	
 		LOCAL loExc AS Exception
 		TRY
-			LOCAL loRegion AS xfcRegion, liCount, lqRegions
+			LOCAL loRegion AS xfcRegion, liCount, lqRegions, lnLoop, loRegion
 			m.liCount = 0
 			This.SetStatus(xfcGdipGetStringFormatMeasurableCharacterRangeCount(m.toStringFormat.Handle, @m.liCount))
 			IF m.liCount > 0
 				DIMENSION This._internalarray[m.liCount]
-				m.lqRegions = REPLICATE(EMPTY_LONG, m.liCount)
-				This.SetStatus(xfcGdipMeasureCharacterRanges(This.Handle, STRCONV(m.tcText+0h00,6), LENC(m.tcText), ;
-							m.toFont.Handle, m.toLayoutRect.ToVarBinary(), m.toStringFormat.Handle, m.liCount, @lqRegions))
+				m.lqRegions = 0h
 				FOR m.lnLoop = 1 TO m.liCount
 					m.loRegion = CREATEOBJECT("xfcRegion")
-					m.loRegion.Handle = CTOBIN(SUBSTR(m.lqRegions,(m.lnLoop-1)*4+1,4),"4rs")
+					m.lqRegions = m.lqRegions + BINTOC(m.loRegion.Handle, "4rs")
 					This._internalarray[m.lnLoop] = m.loRegion
 				ENDFOR
+				This.SetStatus(xfcGdipMeasureCharacterRanges(This.Handle, STRCONV(m.tcText+0h00,5), LEN(m.tcText), ;
+						m.toFont.Handle, m.toLayoutRect.ToVarBinary(), m.toStringFormat.Handle, m.liCount, @lqRegions))
 			ELSE
 				*!ToDo: Should we return NULL or an empty array here?
 				DIMENSION This._internalarray[1]
@@ -10271,7 +10316,7 @@ DEFINE CLASS xfcGraphics AS xfcgpobject
 		CATCH TO loExc
 			THROW_EXCEPTION
 		ENDTRY
-		
+	
 		RETURN @This._internalarray
 	ENDFUNC
 
@@ -10911,6 +10956,7 @@ DEFINE CLASS xfcGraphics AS xfcgpobject
 	** History:
 	**  2006/03/07: Auto Generated
 	**	2006/05/03: BDurban - Coded
+	**  2013/03/12: Christian Ehlscheidt (posted as patch in Codeplex in April 2010)
 	**
 	** .NET Help ********************************************************
 	** http://msdn2.microsoft.com/en-us/library/System.Drawing.Graphics.SetClip%28vs.80%29.aspx
@@ -10930,37 +10976,37 @@ DEFINE CLASS xfcGraphics AS xfcgpobject
 	*********** toPath AS xfcGraphicsPath [, tiCombineMode AS EnumCombineMode]
 	*********** toRect AS xfcRectangle [, tiCombineMode AS EnumCombineMode]
 	*********** toG AS xfcGraphics [, tiCombineMode AS EnumCombineMode]
-		
+	
 		*!ToDo: Test this function
-		
+	
 		LOCAL loExc AS Exception
 		TRY
 			LOCAL lnX, lnY, lnWidth, lnHeight
 			STORE 0.0 TO m.lnX, m.lnY, m.lnWidth, m.lnHeight
 			m.tiCombineMode = EVL(m.tiCombineMode, CombineModeReplace)
-			
+		
 			DO CASE
 			CASE VARTYPE(m.toRegion) = "O" AND m.toRegion.BaseName == "Graphics"
 				This.SetStatus(xfcGdipSetClipGraphics(This.Handle, m.toRegion.Handle, m.tiCombineMode))
-		
+	
 			CASE VARTYPE(m.toRegion) = "O" AND m.toRegion.BaseName == "RectangleF"
-				m.loRegion.GetExtent(@lnX, @lnY, @lnWidth, @lnHeight)
+				m.toRegion.GetExtent(@lnX, @lnY, @lnWidth, @lnHeight)
 				This.SetStatus(xfcGdipSetClipRect(This.Handle, m.lnX, m.lnY, m.lnWidth, m.lnHeight, m.tiCombineMode))
-				
+			
 			CASE VARTYPE(m.toRegion) = "O" AND m.toRegion.BaseName == "Rectangle"
-				m.loRegion.GetExtent(@lnX, @lnY, @lnWidth, @lnHeight)
+				m.toRegion.GetExtent(@lnX, @lnY, @lnWidth, @lnHeight)
 				This.SetStatus(xfcGdipSetClipRectI(This.Handle, m.lnX, m.lnY, m.lnWidth, m.lnHeight, m.tiCombineMode))
-				
+			
 			CASE VARTYPE(m.toRegion) = "O" AND m.toRegion.BaseName == "Region"
 				This.SetStatus(xfcGdipSetClipRegion(This.Handle, m.toRegion.Handle, m.tiCombineMode))
-				
+			
 			CASE VARTYPE(m.toRegion) = "O" AND m.toRegion.BaseName == "GraphicsPath"
 				This.SetStatus(xfcGdipSetClipPath(This.Handle, m.toRegion.Handle, m.tiCombineMode))
-				
+			
 		*!*	CASE m.lnFunctionType = 5
 		*!*		This.SetStatus(xfcGdipSetClipHrgn(This.Handle, m.lHRgn, m.tiCombineMode))
 			ENDCASE
-		
+	
 		CATCH TO loExc
 			THROW_EXCEPTION
 		ENDTRY
@@ -10968,7 +11014,7 @@ DEFINE CLASS xfcGraphics AS xfcgpobject
 		RETURN NULL
 	ENDFUNC
 
-
+				
 	*********************************************************************
 	FUNCTION SmoothingMode_ACCESS
 	*********************************************************************
@@ -11199,6 +11245,7 @@ DEFINE CLASS xfcGraphics AS xfcgpobject
 	** History:
 	**  2006/03/07: Auto Generated
 	**	2006/03/28: BDurban - Coded
+	**  2013/03/12: Christian Ehlscheidt (posted as patch in Codeplex in April 2010)
 	**
 	** .NET Help ********************************************************
 	** http://msdn2.microsoft.com/en-us/library/System.Drawing.Graphics.Transform%28vs.80%29.aspx
@@ -11206,17 +11253,13 @@ DEFINE CLASS xfcGraphics AS xfcgpobject
 	*********************************************************************
 	#IFDEF USECLASS_XFCMATRIX
 		*!ToDo: Test this function
-		LOCAL loMatrix, lhMatrix
-		m.lhMatrix = 0
+		LOCAL loMatrix
 		m.loMatrix = NULL
-		
+	
 		LOCAL loExc AS Exception
 		TRY
-			This.SetStatus(xfcGdipGetWorldTransform(This.Handle, @lhMatrix))
-				IF(m.lhMatrix <> 0)
-					m.loMatrix = NEWOBJECT("xfcMatrix", XFCCLASS_DRAWING2D)
-					m.loMatrix.Handle = m.lhMatrix
-				ENDIF
+			m.loMatrix = NEWOBJECT("xfcMatrix", XFCCLASS_DRAWING2D)
+			This.SetStatus(xfcGdipGetWorldTransform(This.Handle, m.loMatrix.Handle))
 		CATCH TO loExc
 			THROW_EXCEPTION
 		ENDTRY
@@ -12438,6 +12481,7 @@ DEFINE CLASS xfcImage AS xfcgpobject
 	**	2006/03/08: BDurban - Coded
 	**  2006/12/09: CChalom - Fixed CreateNew(This.Class)
 	**	2007/08/31: BDurban - Added support for embedded reource files
+	**  2013/03/10: Daveaswj - http://vfpx.codeplex.com/workitem/30616
 	**
 	** .NET Help ********************************************************
 	** http://msdn2.microsoft.com/en-us/library/System.Drawing.Image.FromFile%28vs.80%29.aspx
@@ -12464,7 +12508,10 @@ DEFINE CLASS xfcImage AS xfcgpobject
 			IF FILE(m.tcFileName) AND EMPTY(SYS(2000,m.tcFileName))
 				** File is an embedded resource
 				m.loStream = NEWOBJECT("xfcMemoryStream", XFCCLASS_IO, "", FILETOSTR(m.tcFileName), .T.)
-				m.loImage = This.FromStream(m.loStream, m.tlUseEmbeddedColorManagement)
+				* m.loImage = This.FromStream(m.loStream, m.tlUseEmbeddedColorManagement)
+				This._oStream = m.loStream
+				m.loImage = This.FromStream(m.loStream.Handle, m.tlUseEmbeddedColorManagement)
+
 				EXIT
 			ENDIF
 			
@@ -12746,7 +12793,6 @@ DEFINE CLASS xfcImage AS xfcgpobject
 	** Returns a monochrome bitmap (1bpp) of this Image object.
 	**
 	** Remarks:
-	**
 	**
 	** History:
 	**	2006/08/22: CChalom - Coded as PRG
@@ -14776,9 +14822,10 @@ DEFINE CLASS _xfcknowncolortable AS xfcdrawingbase
 
 	*********************************************************************
 	PROTECTED FUNCTION _initcolornametable
-	** 20081210 : CChalom - fixed, checking for "SET COMPATIBLE"
+	** 2008/12/10 : CChalom - fixed, checking for "SET COMPATIBLE"
+	** 2013/03/10 : Rick Schummer - fixed DarkSalmon color issue - http://vfpx.codeplex.com/workitem/32673
 	*********************************************************************
-		
+
 			LOCAL lcSetCompatible
 			m.lcSetCompatible = SET("Compatible")
 			SET COMPATIBLE OFF
@@ -14851,7 +14898,7 @@ DEFINE CLASS _xfcknowncolortable AS xfcdrawingbase
 			m.laColorNameTable[0x39] = "DarkOrange"
 			m.laColorNameTable[0x3a] = "DarkOrchid"
 			m.laColorNameTable[0x3b] = "DarkRed"
-			m.laColorNameTable[0x3e] = "DarkSalmon"
+			m.laColorNameTable[0x3c] = "DarkSalmon"
 			m.laColorNameTable[0x3d] = "DarkSeaGreen"
 			m.laColorNameTable[0x3e] = "DarkSlateBlue"
 			m.laColorNameTable[0x3f] = "DarkSlateGray"
@@ -18272,13 +18319,14 @@ DEFINE CLASS xfcRectangle AS xfcdrawingbase
 	** History:
 	**  2006/03/07: Auto Generated
 	**	2006/03/07: BDurban - Coded
+	**  2013/03/12: Christian Ehlscheidt (posted as patch in Codeplex in April 2010)
 	**
 	** .NET Help ********************************************************
 	** http://msdn2.microsoft.com/en-us/library/System.Drawing.Rectangle.Bottom%28vs.80%29.aspx
 	** Returns: int
 	*********************************************************************
 		
-		RETURN This.X + This._height
+		RETURN This.Y + This._height
 	ENDFUNC
 
 
@@ -18885,6 +18933,7 @@ DEFINE CLASS xfcRectangle AS xfcdrawingbase
 	** History:
 	**  2006/03/07: Auto Generated
 	**	2006/03/07: BDurban - Coded
+	**  2013/03/12: Christian Ehlscheidt (posted as patch in Codeplex in April 2010)
 	**
 	** .NET Help ********************************************************
 	** http://msdn2.microsoft.com/en-us/library/System.Drawing.Rectangle.Right%28vs.80%29.aspx
@@ -18893,7 +18942,7 @@ DEFINE CLASS xfcRectangle AS xfcdrawingbase
 		
 		*!ToDo: Test this function
 		
-		RETURN This.Y + This._width
+		RETURN This.X + This._width
 	ENDFUNC
 
 
@@ -19178,6 +19227,7 @@ DEFINE CLASS xfcRectangle AS xfcdrawingbase
 	** History:
 	**  2006/03/07: Auto Generated
 	**  2006/07/08: BDurban - Coded
+	**  2013/03/10: Doug Hennig - Fixed - http://vfpx.codeplex.com/workitem/32677
 	**
 	** .NET Help ********************************************************
 	** http://msdn2.microsoft.com/en-us/library/System.Drawing.Rectangle.Union%28vs.80%29.aspx
@@ -19199,7 +19249,7 @@ DEFINE CLASS xfcRectangle AS xfcdrawingbase
 			m.lnTop = MIN(m.toRectA.Y, m.toRectB.Y)
 			m.lnBottom = MAX(m.toRectA.Y+m.toRectA.Height, m.toRectB.Y+m.toRectB.Height)
 			
-			m.loRect = CREATEOBJECT("xfcRectangleF", m.tnLeft, m.tnTop, (m.tnRight-m.lnLeft), (m.tnBottom-m.tnTop))
+			m.loRect = CREATEOBJECT("xfcRectangleF", m.lnLeft, m.lnTop, (m.lnRight-m.lnLeft), (m.lnBottom-m.lnTop))
 			
 		CATCH TO loExc
 			THROW_EXCEPTION
@@ -19514,13 +19564,14 @@ DEFINE CLASS xfcRectangleF AS xfcdrawingbase
 	** History:
 	**  2006/03/07: Auto Generated
 	**	2006/03/07: BDurban - Coded
+	**  2013/03/12: Christian Ehlscheidt (posted as patch in Codeplex in April 2010)
 	**
 	** .NET Help ********************************************************
 	** http://msdn2.microsoft.com/en-us/library/System.Drawing.RectangleF.Bottom%28vs.80%29.aspx
 	** Returns: float
 	*********************************************************************
 		
-		RETURN This.X + This._height
+		RETURN This.Y + This._height
 	ENDFUNC
 
 
@@ -20104,6 +20155,7 @@ DEFINE CLASS xfcRectangleF AS xfcdrawingbase
 	** History:
 	**  2006/03/07: Auto Generated
 	**	2006/03/07: BDurban - Coded
+	**  2013/03/12: Christian Ehlscheidt (posted as patch in Codeplex in April 2010)
 	**
 	** .NET Help ********************************************************
 	** http://msdn2.microsoft.com/en-us/library/System.Drawing.RectangleF.Right%28vs.80%29.aspx
@@ -20112,7 +20164,7 @@ DEFINE CLASS xfcRectangleF AS xfcdrawingbase
 		
 		*!ToDo: Test this function
 		
-		RETURN This.Y + This._width
+		RETURN This.X + This._width
 	ENDFUNC
 
 
@@ -20307,6 +20359,7 @@ DEFINE CLASS xfcRectangleF AS xfcdrawingbase
 	** History:
 	**  2006/03/07: Auto Generated
 	**  2006/07/08: BDurban - Coded (to match .NET)
+	**  2013/03/10: Doug Hennig - Fixed - http://vfpx.codeplex.com/workitem/32677
 	**
 	** .NET Help ********************************************************
 	** http://msdn2.microsoft.com/en-us/library/System.Drawing.RectangleF.Union%28vs.80%29.aspx
@@ -20328,7 +20381,7 @@ DEFINE CLASS xfcRectangleF AS xfcdrawingbase
 			m.lnTop = MIN(m.toRectA.Y, m.toRectB.Y)
 			m.lnBottom = MAX(m.toRectA.Y+m.toRectA.Height, m.toRectB.Y+m.toRectB.Height)
 			
-			m.loRect = CREATEOBJECT("xfcRectangleF", m.tnLeft, m.tnTop, (m.tnRight-m.lnLeft), (m.tnBottom-m.tnTop))
+			m.loRect = CREATEOBJECT("xfcRectangleF", m.lnLeft, m.lnTop, (m.lnRight-m.lnLeft), (m.lnBottom-m.lnTop))
 			
 		CATCH TO loExc
 			THROW_EXCEPTION
@@ -20810,7 +20863,6 @@ DEFINE CLASS xfcRegion AS xfcgpobject
 		RETURN m.loRegion
 	ENDFUNC
 
-
 	*********************************************************************
 	FUNCTION GetBounds
 	*********************************************************************
@@ -20822,6 +20874,7 @@ DEFINE CLASS xfcRegion AS xfcgpobject
 	** History:
 	**  2006/03/07: Auto Generated
 	**	2006/05/03: BDurban - Coded
+	**  2013/03/12: Christian Ehlscheidt (posted as patch in Codeplex in April 2010)
 	**
 	** .NET Help ********************************************************
 	** http://msdn2.microsoft.com/en-us/library/System.Drawing.Region.GetBounds%28vs.80%29.aspx
@@ -20830,20 +20883,22 @@ DEFINE CLASS xfcRegion AS xfcgpobject
 	** Returns: RectangleF
 	*********************************************************************
 	LPARAMETERS toG AS xfcGraphics
-		
+	
 		*!ToDo: Test this function
-		
+	
 		LOCAL loExc AS Exception
 		TRY
-			LOCAL loRectF
+			LOCAL loRectF, lqRect
 			m.loRectF = NULL
+			m.lqRect = REPLICATE(EMPTY_FLOAT, 4)
 			This.SetStatus(xfcGdipGetRegionBounds(This.Handle, m.toG.Handle, @lqRect))
 			*!*	This.SetStatus(xfcGdipGetRegionBoundsI(This.Handle, m.toG.Handle, @lqRect))
+
 			m.loRectF = CREATEOBJECT("xfcRectangleF", m.lqRect)
 		CATCH TO loExc
 			THROW_EXCEPTION
 		ENDTRY
-		
+	
 		RETURN m.loRectF
 	ENDFUNC
 
@@ -20935,6 +20990,7 @@ DEFINE CLASS xfcRegion AS xfcgpobject
 	** History:
 	**  2006/03/07: Auto Generated
 	**	2007/09/01: BDurban - Coded
+	**  2013/03/12: Christian Ehlscheidt (posted as patch in Codeplex in April 2010)
 	**
 	** .NET Help ********************************************************
 	** http://msdn2.microsoft.com/en-us/library/System.Drawing.Region.GetRegionScans%28vs.80%29.aspx
@@ -20946,17 +21002,17 @@ DEFINE CLASS xfcRegion AS xfcgpobject
 	#IFDEF USECLASS_XFCMATRIX
 		*!ToDo: Test this function
 		LOCAL liCount, liLoop, lqRects
-		
+	
 		LOCAL loExc AS Exception
 		TRY
 			m.liCount = 0
 			This.SetStatus(xfcGdipGetRegionScansCount(This.Handle, @m.liCount, m.toMatrix.Handle))
-			
+		
 			IF m.liCount > 0
 				DIMENSION This._InternalArray[m.liCount]
 				m.lqRects = 0h+REPLICATE(EMPTY_RECTANGLEF, m.liCount) 
-				This.SetStatus(xfcGdipGetRegionScans(This.Handle, @m.lqRects, m.liCount, m.toMatrix.Handle))
-				
+				This.SetStatus(xfcGdipGetRegionScans(This.Handle, @m.lqRects, @m.liCount, m.toMatrix.Handle))
+			
 				FOR m.liLoop = 1 TO m.liCount
 					This._InternalArray[m.liLoop] = ;
 							CREATEOBJECT("xfcRectangleF", ;
@@ -20966,7 +21022,7 @@ DEFINE CLASS xfcRegion AS xfcgpobject
 		CATCH TO loExc
 			THROW_EXCEPTION
 		ENDTRY
-		
+	
 		IF m.liCount = 0
 			RETURN NULL
 		ELSE
@@ -21666,27 +21722,28 @@ DEFINE CLASS xfcSize AS xfcdrawingbase
 
 
 	*********************************************************************
-	FUNCTION ToRectangle
+	FUNCTION ToRectangleF
 	*********************************************************************
-	** Method: xfcSize.ToRectangle
+	** Method: xfcSize.ToRectangleF
 	**
 	** History:
 	**	2007/11/27: CChalom - Coded
+	**	2013/03/19: CChalom - Coded - Thanks to MJindru - http://vfpx.codeplex.com/workitem/30995
 	*********************************************************************
 		
 		*!ToDo: Test this function
 		
-		LOCAL loRect AS xfcRectangle
-		LOCAL liWidth, liHeight
+		LOCAL loRect AS xfcRectangleF
+		LOCAL lnWidth, lnHeight
 		
 		m.loRect = NULL
 		STORE 0 TO m.liWidth, m.liHeight
 		
 		LOCAL loExc AS Exception
 		TRY
-			m.liWidth   = This.Width
-			m.liHeight  = This.Height
-			m.loRect = CREATEOBJECT("xfcRectangle", 0, 0, m.liWidth, m.liHeight)
+			m.lnWidth   = This.Width
+			m.lnHeight  = This.Height
+			m.loRect = CREATEOBJECT("xfcRectangleF", 0, 0, m.lnWidth, m.lnHeight)
 		CATCH TO loExc
 			THROW_EXCEPTION
 		ENDTRY
@@ -22189,17 +22246,18 @@ DEFINE CLASS xfcSizeF AS xfcdrawingbase
 
 
 	*********************************************************************
-	FUNCTION ToRectangleF
+	FUNCTION ToRectangle
 	*********************************************************************
-	** Method: xfcSizeF.ToRectangleF
+	** Method: xfcSizeF.ToRectangle
 	**
 	** History:
 	**	2007/11/28: CChalom - Coded
+	**	2013/03/19: CChalom - Coded - Thanks to MJindru - http://vfpx.codeplex.com/workitem/30995
 	*********************************************************************
 		
 		*!ToDo: Test this function
 		
-		LOCAL loRect AS xfcRectangleF
+		LOCAL loRect AS xfcRectangle
 		LOCAL lnWidth, lnHeight
 		
 		m.loRect = NULL
@@ -22207,9 +22265,9 @@ DEFINE CLASS xfcSizeF AS xfcdrawingbase
 		
 		LOCAL loExc AS Exception
 		TRY
-			m.liWidth   = This.Width
-			m.liHeight  = This.Height
-			m.loRect = CREATEOBJECT("xfcRectangleF", 0, 0, m.lnWidth, m.lnHeight)
+			m.lnWidth   = This.Width
+			m.lnHeight  = This.Height
+			m.loRect = CREATEOBJECT("xfcRectangle", 0, 0, m.lnWidth, m.lnHeight)
 		CATCH TO loExc
 			THROW m.loExc
 		ENDTRY
@@ -22237,8 +22295,8 @@ DEFINE CLASS xfcSizeF AS xfcdrawingbase
 		
 		LOCAL loExc AS Exception
 		TRY
-			m.liWidth   = This.Width
-			m.liHeight  = This.Height
+			m.lnWidth   = This.Width
+			m.lnHeight  = This.Height
 			m.loRect = CREATEOBJECT("xfcRectangleF", 0, 0, m.lnWidth, m.lnHeight)
 		CATCH TO loExc
 			THROW_EXCEPTION
@@ -23375,7 +23433,8 @@ DEFINE CLASS xfcStringFormat AS xfcgpobject
 	** History:
 	**  2006/03/07: Auto Generated
 	**	2007/09/01: BDurban - Coded
-	**
+	**  2013/03/12: Christian Ehlscheidt (posted as patch in Codeplex in April 2010)
+	** 
 	** .NET Help ********************************************************
 	** http://msdn2.microsoft.com/en-us/library/System.Drawing.StringFormat.SetMeasurableCharacterRanges%28vs.80%29.aspx
 	** Parameters:
@@ -23386,20 +23445,21 @@ DEFINE CLASS xfcStringFormat AS xfcgpobject
 
 		*!ToDo: Test this function
 		LOCAL m.loCharRange AS xfcCharacterRange, lqRanges, liRangeCount
-		
+	
 		LOCAL loExc AS Exception
 		TRY
 			m.lqRanges = 0h
+			m.liRangeCount = 0
 			FOR EACH m.loCharRange IN m.taoRanges 
 				m.lqRanges = m.lqRanges + m.loCharRange.ToVarbinary()
 				m.liRangeCount = m.liRangeCount + 1
 			ENDFOR
 			This.SetStatus(xfcGdipSetStringFormatMeasurableCharacterRanges(This.Handle, m.liRangeCount, m.lqRanges))
-		
+	
 		CATCH TO loExc
 			THROW_EXCEPTION
 		ENDTRY
-		
+	
 		RETURN NULL
 	ENDFUNC
 
@@ -27632,9 +27692,10 @@ ENDFUNC
 
 *********************************************************************
 FUNCTION xfcGdipGetWorldTransform(graphics, matrix)
+	**  2013/03/12: Christian Ehlscheidt (posted as patch in Codeplex in April 2010)
 *********************************************************************
-	DECLARE Long GdipGetWorldTransform IN GDIPLUS.DLL AS xfcGdipGetWorldTransform Long graphics, Long @matrix
-	RETURN xfcGdipGetWorldTransform(m.graphics, @m.matrix)
+	DECLARE Long GdipGetWorldTransform IN GDIPLUS.DLL AS xfcGdipGetWorldTransform Long graphics, Long matrix
+	RETURN xfcGdipGetWorldTransform(m.graphics, m.matrix)
 ENDFUNC
 
 *********************************************************************
@@ -27688,8 +27749,9 @@ ENDFUNC
 
 *********************************************************************
 FUNCTION xfcGdipMeasureCharacterRanges(graphics, str, length, thefont, layoutRect, StringFormat, regionCount, regions)
+** 2013/04/12 CEhlscheidt fixed API declaration for the 'regions' parameter to string
 *********************************************************************
-	DECLARE Long GdipMeasureCharacterRanges IN GDIPLUS.DLL AS xfcGdipMeasureCharacterRanges Long graphics, String str, Long length, Long thefont, String @layoutRect, Long StringFormat, Long regionCount, Long @regions
+	DECLARE Long GdipMeasureCharacterRanges IN GDIPLUS.DLL AS xfcGdipMeasureCharacterRanges Long graphics, String str, Long length, Long thefont, String @layoutRect, Long StringFormat, Long regionCount, String @regions
 	RETURN xfcGdipMeasureCharacterRanges(m.graphics, m.str, m.length, m.thefont, @m.layoutRect, m.StringFormat, m.regionCount, @m.regions)
 ENDFUNC
 
@@ -28761,9 +28823,10 @@ ENDFUNC
 
 *********************************************************************
 FUNCTION xfcGdipGetRegionScans(region, rects, Count, matrix)
+	**  2013/03/12: Christian Ehlscheidt (posted as patch in Codeplex in April 2010)
 *********************************************************************
-	DECLARE Long GdipGetRegionScans IN GDIPLUS.DLL AS xfcGdipGetRegionScans Long region, String @rects, Long Count, Long matrix
-	RETURN xfcGdipGetRegionScans(m.region, @m.rects, m.Count, m.matrix)
+	DECLARE Long GdipGetRegionScans IN GDIPLUS.DLL AS xfcGdipGetRegionScans Long region, String @rects, Long @Count, Long matrix
+	RETURN xfcGdipGetRegionScans(m.region, @m.rects, @m.Count, m.matrix)
 ENDFUNC
 
 *********************************************************************
@@ -29295,3 +29358,40 @@ FUNCTION xfcLoadIcon(hInstance, lpIconName)
 	DECLARE Long LoadIcon IN WIN32API AS xfcLoadIcon INTEGER hInstance, INTEGER lpIconName
 	RETURN xfcLoadIcon(m.hInstance, m.lpIconName)
 ENDFUNC
+
+* 2013/03/11 - CChalom - Xfc functions used for the 'FloodFill' method
+*********************************************************************
+FUNCTION xfcGdiFlush
+*********************************************************************
+	DECLARE INTEGER GdiFlush IN gdi32 AS xfcGdiFlush
+	RETURN xfcGdiFlush()
+ENDFUNC
+
+*********************************************************************
+FUNCTION xfcCreateSolidBrush(crColor)
+*********************************************************************
+	DECLARE INTEGER CreateSolidBrush IN WIN32API AS xfcCreateSolidBrush LONG crColor
+	RETURN xfcCreateSolidBrush(m.crColor)
+ENDFUNC
+
+*********************************************************************
+FUNCTION xfcGetPixel(hdc, nXPos, nYPos)
+*********************************************************************
+	DECLARE INTEGER GetPixel         IN win32API AS xfcGetPixel integer hdc, Integer nXPos, Integer nYPos
+	RETURN xfcGetPixel(m.hdc, m.nXPos, m.nYPos)
+ENDFUNC
+
+*********************************************************************
+FUNCTION xfcExtFloodFill(hdc, x, y, crColor, wFillType)
+*********************************************************************
+	DECLARE LONG    ExtFloodFill     IN gdi32    AS xfcExtFloodFill LONG hdc, LONG x, LONG y, LONG crColor, LONG wFillType
+	RETURN xfcExtFloodFill(hdc, x, y, crColor, wFillType)
+ENDFUNC
+
+*********************************************************************
+FUNCTION xfcCreateDIBSection(hdc, pbmi, iUsage, ppvBits, hSection, dwOffset)
+*********************************************************************
+	DECLARE INTEGER CreateDIBSection IN gdi32 AS xfcCreateDIBSection INTEGER hdc, STRING @pbmi, LONG iUsage, INTEGER @ppvBits, INTEGER hSection, LONG dwOffset
+	RETURN xfcCreateDIBSection(m.hdc, @pbmi, m.iUsage, @ppvBits, m.hSection, m.dwOffset)
+ENDFUNC
+
