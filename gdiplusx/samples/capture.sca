@@ -48,7 +48,7 @@ Name = "Form1"
 [END PROPERTIES]
 [START METHODS]
 PROCEDURE Init
-DO (LOCFILE("System.prg"))
+DO (LOCFILE("System.app"))
 
 
 LOCAL lcFile
