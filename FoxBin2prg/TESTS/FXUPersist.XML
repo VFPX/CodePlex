@@ -167,7 +167,7 @@
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
-		<setting>=SEEK("UT__FOXBIN2PRG                                                                                                DEBERIA_EJECUTAR_FOXBIN2PRG_PARALALIBRERIA_CLASSLIB_METHOD_ORDER_BUG_TEST_VCX_YVALIDAREL_BUG_DELORDENDEMETODOSDECLASES_V1_19_29   ",THIS.icGridRS,"TCLName")</setting>
+		<setting>=SEEK("FT__FOXBIN2PRG__C_CONVERSOR_PRG_A_DBC                                                                         EVALUATE_RESULTS                                                                                                                  ",THIS.icGridRS,"TCLName")</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
