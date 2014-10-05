@@ -67,7 +67,7 @@
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
-		<setting>THIS.pgfDetails.ActivePage = 2</setting>
+		<setting>THIS.pgfDetails.ActivePage = 1</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
@@ -167,7 +167,7 @@
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
-		<setting>=SEEK("UT__FOXBIN2PRG__C_CONVERSOR_BASE__IDENTIFICARBLOQUESDEEXCLUSION                                               DEBERIA_NOENCONTRARBLOQUE_TEXT_ENDTEXT_CUANDOEXISTEUNAPROPIEDADLLAMADA_TEXT                                                       ",THIS.icGridRS,"TCLName")</setting>
+		<setting>=SEEK("FT__FOXBIN2PRG__C_CONVERSOR_PRG_A_DBC                                                                         EVALUATE_RESULTS                                                                                                                  ",THIS.icGridRS,"TCLName")</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
@@ -191,6 +191,6 @@
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
-		<setting>THIS.nSplitterPosition = 397</setting>
+		<setting>THIS.nSplitterPosition = 399</setting>
 	</foxunitpersist>
 </VFPData>
