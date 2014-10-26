@@ -27,9 +27,12 @@
 *-*  Pass 0 to lnMessage to unbind all messages from hWnd/Delegate.
 *-*
 *-***********************************************************************************************
+#define GWL_WNDPROC         (-4)
+
 DEFINE CLASS VFPxWin32EventHandler AS Collection 
 	bDebug   = .F.
 	hdlDebug = -1
+	PrevWndFunc = 0
 
 	PROCEDURE BindEvent
 		LPARAMETERS thWnd, tnMessage, toEventHandler, tcDelegate, tnFlags
@@ -41,6 +44,7 @@ DEFINE CLASS VFPxWin32EventHandler AS Collection
 			loBind = NewObject("WinEvent", "VFPxWin32EventHandler.prg")
 			loBind.hWnd = thWnd
 			loBind.nMessage = tnMessage
+			loBind.PrevWndFunc = This.PrevWndFunc 
 			this.Add(loBind,lcKey) 
 			* Bind Win event to collection
 			BindEvent(thWnd, tnMessage, loBind, "EventFired")
@@ -65,6 +69,14 @@ DEFINE CLASS VFPxWin32EventHandler AS Collection
 		IF this.bDebug
 			this.hdlDebug = FCREATE("GKKWin32EventHandler.log",0)
 		ENDIF
+		
+		IF !('FoxTabsDeclareAPI' $ SET( 'Procedure' ))
+			SET PROCEDURE TO FoxTabsDeclareAPI ADDITIVE
+		ENDIF
+
+		* Store handle for use in CallWindowProc
+		This.PrevWndFunc = GetWindowLong(_Vfp.hWnd, GWL_WNDPROC)
+
 	ENDPROC
 
 
@@ -158,10 +170,16 @@ DEFINE CLASS WinEvent AS Custom
 
 	hWnd = 0
 	nMessage = 0
+	PrevWndFunc = 0
 
+	* Bind events to this method
 	PROCEDURE EventFired
 		LPARAMETERS thWnd, tnMessage, twParam, tnParam
-		* Bind events to this method
+		Local lnReturn
+		* Pass message on. Must do here or VFP will crash in some scenarios.
+		* See https://vfpx.codeplex.com/workitem/33260
+		lnReturn = CallWindowProc(This.PrevWndFunc, thWnd, tnMessage, twParam, tnParam)
+		Return lnReturn		
 	ENDPROC
 
 ENDDEFINE
