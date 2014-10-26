@@ -2273,6 +2273,12 @@ Do Case
 	Case "code references" $ Lower(lpcFoxWindowName) And Type("_oFoxRef") = "O"
 		lcWindowName = _oFoxRef.Name
 		
+	Case Lower(lpcFoxWindowName) = "document view"
+		* Document View title/name changes when each code window is activated
+		* But VFP still expects "Document View"
+		* See https://vfpx.codeplex.com/workitem/31281
+		lcWindowName = "Document View"
+		
 	Otherwise
 
 		* Try to find Fox window with matching title
