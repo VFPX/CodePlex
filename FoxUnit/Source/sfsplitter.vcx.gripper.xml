@@ -154,14 +154,6 @@
 										</xsd:restriction>
 									</xsd:simpleType>
 								</xsd:element>
-								<xsd:element name="nrecno">
-									<xsd:simpleType>
-										<xsd:restriction base="xsd:decimal">
-											<xsd:totalDigits value="10"/>
-											<xsd:fractionDigits value="0"/>
-										</xsd:restriction>
-									</xsd:simpleType>
-								</xsd:element>
 							</xsd:sequence>
 						</xsd:complexType>
 					</xsd:element>
@@ -330,7 +322,6 @@ _memberdata XML Metadata for customizable properties
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>11</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -364,7 +355,6 @@ ShapeMiddle.Name = "ShapeMiddle"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>12</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -398,7 +388,6 @@ ShapeMiddle.Name = "ShapeMiddle"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>13</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -432,7 +421,6 @@ ShapeMiddle.Name = "ShapeMiddle"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>14</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -466,7 +454,6 @@ ShapeMiddle.Name = "ShapeMiddle"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>15</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -500,7 +487,6 @@ ShapeMiddle.Name = "ShapeMiddle"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>16</nrecno>
 	</class>
 	<class>
 		<platform>COMMENT</platform>
@@ -524,6 +510,5 @@ ShapeMiddle.Name = "ShapeMiddle"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>17</nrecno>
 	</class>
 </VFPData>

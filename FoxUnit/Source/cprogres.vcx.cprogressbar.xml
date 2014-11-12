@@ -154,14 +154,6 @@
 										</xsd:restriction>
 									</xsd:simpleType>
 								</xsd:element>
-								<xsd:element name="nrecno">
-									<xsd:simpleType>
-										<xsd:restriction base="xsd:decimal">
-											<xsd:totalDigits value="10"/>
-											<xsd:fractionDigits value="0"/>
-										</xsd:restriction>
-									</xsd:simpleType>
-								</xsd:element>
 							</xsd:sequence>
 						</xsd:complexType>
 					</xsd:element>
@@ -288,41 +280,6 @@ version The version of this class.
 		<reserved7><![CDATA[A basic progress bar]]></reserved7>
 		<reserved8/>
 		<user/>
-		<nrecno>16</nrecno>
-	</class>
-	<class>
-		<platform>WINDOWS</platform>
-		<uniqueid>_ROM0P94SS</uniqueid>
-		<class><![CDATA[label]]></class>
-		<classloc/>
-		<baseclass><![CDATA[label]]></baseclass>
-		<objname><![CDATA[lblPercent]]></objname>
-		<parent><![CDATA[cprogressbar]]></parent>
-		<properties><![CDATA[AutoSize = .T.
-FontName = "Century Gothic"
-FontSize = 12
-BackStyle = 0
-Caption = "0%"
-Height = 24
-Left = 96
-Top = 0
-ForeColor = 255,255,255
-Name = "lblPercent"
-]]></properties>
-		<protected/>
-		<methods/>
-		<ole/>
-		<ole2/>
-		<reserved1/>
-		<reserved2/>
-		<reserved3/>
-		<reserved4/>
-		<reserved5/>
-		<reserved6/>
-		<reserved7/>
-		<reserved8/>
-		<user/>
-		<nrecno>18</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -359,7 +316,39 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>17</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid>_ROM0P94SS</uniqueid>
+		<class><![CDATA[label]]></class>
+		<classloc/>
+		<baseclass><![CDATA[label]]></baseclass>
+		<objname><![CDATA[lblPercent]]></objname>
+		<parent><![CDATA[cprogressbar]]></parent>
+		<properties><![CDATA[AutoSize = .T.
+FontName = "Century Gothic"
+FontSize = 12
+BackStyle = 0
+Caption = "0%"
+Height = 24
+Left = 96
+Top = 0
+ForeColor = 255,255,255
+Name = "lblPercent"
+]]></properties>
+		<protected/>
+		<methods/>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
 	</class>
 	<class>
 		<platform>COMMENT</platform>
@@ -383,6 +372,5 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>19</nrecno>
 	</class>
 </VFPData>

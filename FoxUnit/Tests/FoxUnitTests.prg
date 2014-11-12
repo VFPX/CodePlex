@@ -230,6 +230,16 @@ this.assertequals(o1,o2,"These objects are not equal.")
   FUNCTION testAssertIsNotObject
 	This.assertIsNotObject(DATETIME(), "This is an object")
 
+
+
+
+  FUNCTION testNewTest
+	* 1. Change the name of the test to reflect its purpose. Test one thing only.
+	* 2. Implement the test by removing these comments and the default assertion and writing your own test code.
+  RETURN This.AssertNotImplemented()
+
+  ENDFUNC
+
 **********************************************************************
 ENDDEFINE
 **********************************************************************

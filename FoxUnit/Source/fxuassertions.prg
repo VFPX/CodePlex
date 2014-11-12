@@ -84,6 +84,17 @@ EXTERNAL ARRAY taArray1, taArray2
 ********************************************************************
 *******************     A S S E R T I O N S    *********************
 ********************************************************************
+ 	FUNCTION AssertNotImplemented(tcMessage AS STRING) AS Boolean
+* tcMessage <byVal> [optional]! (default=""):= assertion message that gets logged
+*
+	tcMessage=EVL(tcMessage,"This test has not been implemented yet")
+	THIS.ReportNotImplemented(m.tcMessage)
+	THIS.ilSuccess = .f.
+	RETURN THIS.ilSuccess 
+	ENDFUNC
+********************************************************************
+
+********************************************************************
  	FUNCTION AssertEquals(tcMessage AS STRING, teItem1 AS Variant, teItem2 AS Variant, tlNonCaseSensitiveStringCompare AS Boolean) AS Boolean
 * tcMessage <byVal> [optional]! (default=""):= assertion message that gets logged
 * teItem1 <byVal/Ref>/<objRef> [optional]!	:= first item to compare
@@ -446,6 +457,12 @@ EXTERNAL ARRAY taArray1, taArray2
 ********************************************************************
  	PROCEDURE ClearAssert() AS Void
 	THIS.icFailureMessage = ''
+	ENDPROC
+********************************************************************
+********************************************************************
+ 	PROCEDURE ReportNotImplemented(tcMessage) AS Void
+	THIS.NewMessageDivider(.T.)
+	THIS.AddMessage(m.tcMessage)
 	ENDPROC
 ********************************************************************
 ********************************************************************

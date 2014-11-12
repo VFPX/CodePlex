@@ -154,14 +154,6 @@
 										</xsd:restriction>
 									</xsd:simpleType>
 								</xsd:element>
-								<xsd:element name="nrecno">
-									<xsd:simpleType>
-										<xsd:restriction base="xsd:decimal">
-											<xsd:totalDigits value="10"/>
-											<xsd:fractionDigits value="0"/>
-										</xsd:restriction>
-									</xsd:simpleType>
-								</xsd:element>
 							</xsd:sequence>
 						</xsd:complexType>
 					</xsd:element>
@@ -546,75 +538,6 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>2</nrecno>
-	</class>
-	<class>
-		<platform>WINDOWS</platform>
-		<uniqueid/>
-		<class><![CDATA[commandbutton]]></class>
-		<classloc/>
-		<baseclass><![CDATA[commandbutton]]></baseclass>
-		<objname><![CDATA[cmdOK]]></objname>
-		<parent><![CDATA[frmshowinfo]]></parent>
-		<properties><![CDATA[Top = 320
-Left = 484
-Height = 27
-Cancel = .T.
-Caption = "\<OK"
-Default = .T.
-TabIndex = 1
-Name = "cmdOK"
-]]></properties>
-		<protected/>
-		<methods><![CDATA[PROCEDURE Click
-THISFORM.Release()
-ENDPROC
-]]></methods>
-		<ole/>
-		<ole2/>
-		<reserved1/>
-		<reserved2/>
-		<reserved3/>
-		<reserved4/>
-		<reserved5/>
-		<reserved6/>
-		<reserved7/>
-		<reserved8/>
-		<user/>
-		<nrecno>4</nrecno>
-	</class>
-	<class>
-		<platform>WINDOWS</platform>
-		<uniqueid/>
-		<class><![CDATA[commandbutton]]></class>
-		<classloc/>
-		<baseclass><![CDATA[commandbutton]]></baseclass>
-		<objname><![CDATA[cmdPrint]]></objname>
-		<parent><![CDATA[frmshowinfo]]></parent>
-		<properties><![CDATA[Top = 320
-Left = 376
-Height = 27
-Caption = "\<Print..."
-TabIndex = 4
-Name = "cmdPrint"
-]]></properties>
-		<protected/>
-		<methods><![CDATA[PROCEDURE Click
-THISFORM.PrintInfo()
-ENDPROC
-]]></methods>
-		<ole/>
-		<ole2/>
-		<reserved1/>
-		<reserved2/>
-		<reserved3/>
-		<reserved4/>
-		<reserved5/>
-		<reserved6/>
-		<reserved7/>
-		<reserved8/>
-		<user/>
-		<nrecno>5</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -650,7 +573,72 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>3</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid/>
+		<class><![CDATA[commandbutton]]></class>
+		<classloc/>
+		<baseclass><![CDATA[commandbutton]]></baseclass>
+		<objname><![CDATA[cmdOK]]></objname>
+		<parent><![CDATA[frmshowinfo]]></parent>
+		<properties><![CDATA[Top = 320
+Left = 484
+Height = 27
+Cancel = .T.
+Caption = "\<OK"
+Default = .T.
+TabIndex = 1
+Name = "cmdOK"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Click
+THISFORM.Release()
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid/>
+		<class><![CDATA[commandbutton]]></class>
+		<classloc/>
+		<baseclass><![CDATA[commandbutton]]></baseclass>
+		<objname><![CDATA[cmdPrint]]></objname>
+		<parent><![CDATA[frmshowinfo]]></parent>
+		<properties><![CDATA[Top = 320
+Left = 376
+Height = 27
+Caption = "\<Print..."
+TabIndex = 4
+Name = "cmdPrint"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Click
+THISFORM.PrintInfo()
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
 	</class>
 	<class>
 		<platform>COMMENT</platform>
@@ -674,6 +662,5 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>6</nrecno>
 	</class>
 </VFPData>
