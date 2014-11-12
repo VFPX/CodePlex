@@ -154,14 +154,6 @@
 										</xsd:restriction>
 									</xsd:simpleType>
 								</xsd:element>
-								<xsd:element name="nrecno">
-									<xsd:simpleType>
-										<xsd:restriction base="xsd:decimal">
-											<xsd:totalDigits value="10"/>
-											<xsd:fractionDigits value="0"/>
-										</xsd:restriction>
-									</xsd:simpleType>
-								</xsd:element>
 							</xsd:sequence>
 						</xsd:complexType>
 					</xsd:element>
@@ -209,7 +201,6 @@ ENDPROC
 		<reserved7><![CDATA[A form with progressbar examples.]]></reserved7>
 		<reserved8/>
 		<user/>
-		<nrecno>11</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -277,7 +268,6 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>12</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -344,7 +334,6 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>13</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -374,7 +363,6 @@ Name = "edtInfo"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>14</nrecno>
 	</class>
 	<class>
 		<platform>COMMENT</platform>
@@ -398,6 +386,5 @@ Name = "edtInfo"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>15</nrecno>
 	</class>
 </VFPData>

@@ -1,5 +1,10 @@
 (See the FoxUnit Wiki page on the VFPX CodePlex page https://vfpx.codeplex.com/wikipage?title=FoxUnit&referringTitle=Documentation for complete information)
 
+VFPX Release 1.41 - November 11, 2014
+Added a new assertion, AssertNotImplemented()
+Made that the default function call on new tests
+Changed name of new tests to testNewTest to conform with standard of test names beginning with 'test'
+
 VFPX Release 1.4 - August 1, 2014
 Added an Options button to the main screen.
 Added a filter on failed tests (per VFPX request by Tamar Granor)

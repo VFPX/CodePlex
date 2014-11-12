@@ -154,14 +154,6 @@
 										</xsd:restriction>
 									</xsd:simpleType>
 								</xsd:element>
-								<xsd:element name="nrecno">
-									<xsd:simpleType>
-										<xsd:restriction base="xsd:decimal">
-											<xsd:totalDigits value="10"/>
-											<xsd:fractionDigits value="0"/>
-										</xsd:restriction>
-									</xsd:simpleType>
-								</xsd:element>
 							</xsd:sequence>
 						</xsd:complexType>
 					</xsd:element>
@@ -2187,44 +2179,6 @@ lfailedonly Filter to show failed tests only
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>75</nrecno>
-	</class>
-	<class>
-		<platform>WINDOWS</platform>
-		<uniqueid>_44L0ILG50</uniqueid>
-		<class><![CDATA[checkbox]]></class>
-		<classloc/>
-		<baseclass><![CDATA[checkbox]]></baseclass>
-		<objname><![CDATA[Check1]]></objname>
-		<parent><![CDATA[frmfoxunit]]></parent>
-		<properties><![CDATA[Top = 52
-Left = 564
-Height = 17
-Width = 79
-Anchor = 8
-AutoSize = .T.
-Alignment = 0
-Caption = "Failed Only"
-ControlSource = "ThisForm.lFailedOnly"
-Name = "Check1"
-]]></properties>
-		<protected/>
-		<methods><![CDATA[PROCEDURE Click
-THISFORM.ApplyFilter()
-ENDPROC
-]]></methods>
-		<ole/>
-		<ole2/>
-		<reserved1/>
-		<reserved2/>
-		<reserved3/>
-		<reserved4/>
-		<reserved5/>
-		<reserved6/>
-		<reserved7/>
-		<reserved8/>
-		<user/>
-		<nrecno>107</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -2285,611 +2239,6 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>76</nrecno>
-	</class>
-	<class>
-		<platform>WINDOWS</platform>
-		<uniqueid>_44L0JXZUR</uniqueid>
-		<class><![CDATA[shape]]></class>
-		<classloc/>
-		<baseclass><![CDATA[shape]]></baseclass>
-		<objname><![CDATA[Shape3]]></objname>
-		<parent><![CDATA[frmfoxunit]]></parent>
-		<properties><![CDATA[Top = 9
-Left = 721
-Height = 28
-Width = 2
-Anchor = 8
-SpecialEffect = 0
-Name = "Shape3"
-]]></properties>
-		<protected/>
-		<methods><![CDATA[PROCEDURE Init
-IF NOT DODEFAULT()
-  RETURN .F.
-ENDIF
-
-THIS.Top = 1
-THIS.Height = 44
-ENDPROC
-]]></methods>
-		<ole/>
-		<ole2/>
-		<reserved1/>
-		<reserved2/>
-		<reserved3/>
-		<reserved4/>
-		<reserved5/>
-		<reserved6/>
-		<reserved7/>
-		<reserved8/>
-		<user/>
-		<nrecno>108</nrecno>
-	</class>
-	<class>
-		<platform>WINDOWS</platform>
-		<uniqueid/>
-		<class><![CDATA[commandbutton]]></class>
-		<classloc/>
-		<baseclass><![CDATA[commandbutton]]></baseclass>
-		<objname><![CDATA[cmdAddNewTest]]></objname>
-		<parent><![CDATA[frmfoxunit]]></parent>
-		<properties><![CDATA[Top = 3
-Left = 328
-Height = 40
-Width = 76
-FontName = "Tahoma"
-Picture = ("fxuclassaddtestto.bmp")
-Caption = "Add \<Test"
-TabIndex = 6
-TabStop = .F.
-ToolTipText = "Add a new test (method) to the test class (.PRG) currently selected in the grid."
-SpecialEffect = 2
-Name = "cmdAddNewTest"
-]]></properties>
-		<protected/>
-		<methods><![CDATA[PROCEDURE Click
-THISFORM.ioResultData.AddNewTest( ;
-     ALLTRIM(EVALUATE(THISFORM.icGridRS+".TClass")), ;
-     THISFORM, ;
-     ALLTRIM(EVALUATE(THISFORM.icGridRS+".TPath")) ;
-     ) && Added Path parameter to call. HAS
-
-*
-*  no THISFORM.Refresh() here, because AddNewTest()
-*  calls the EDITSOURCE() function, which doesn't
-*  pause program execution the way MODIFY COMMAND
-*  does
-*
-*  rather, FXUResultData::AddNewTest() sets a custom
-*  THISFORM.ilReloadCurrentClassOnActivate flag property
-*  that is checked in THISFORM.Activate
-*
-
-
-
-
-ENDPROC
-]]></methods>
-		<ole/>
-		<ole2/>
-		<reserved1/>
-		<reserved2/>
-		<reserved3/>
-		<reserved4/>
-		<reserved5/>
-		<reserved6/>
-		<reserved7/>
-		<reserved8/>
-		<user/>
-		<nrecno>95</nrecno>
-	</class>
-	<class>
-		<platform>WINDOWS</platform>
-		<uniqueid/>
-		<class><![CDATA[commandbutton]]></class>
-		<classloc/>
-		<baseclass><![CDATA[commandbutton]]></baseclass>
-		<objname><![CDATA[cmdClearFilter]]></objname>
-		<parent><![CDATA[frmfoxunit]]></parent>
-		<properties><![CDATA[AutoSize = .T.
-Top = 48
-Left = 750
-Height = 27
-Width = 48
-Caption = "Clear"
-TabIndex = 22
-Name = "cmdClearFilter"
-]]></properties>
-		<protected/>
-		<methods><![CDATA[PROCEDURE Click
-THIS.Parent.txtClassFilter.Value = SPACE(0)
-THIS.Parent.txtNameFilter.Value = SPACE(0)
-This.Parent.lFailedOnly = .f.
-
-THISFORM.ApplyFilter()
-
-
-ENDPROC
-PROCEDURE Init
-IF VERSION(5) >= 900
-	THIS.Anchor = 8	&& FDBOZZO
-ENDIF
-THIS.ToolTipText = THISFORM.GetFilterToolTipText()
-ENDPROC
-PROCEDURE Refresh
-THIS.Enabled = NOT EMPTY(FILTER(THISFORM.icGridRS))
-
-
-ENDPROC
-]]></methods>
-		<ole/>
-		<ole2/>
-		<reserved1/>
-		<reserved2/>
-		<reserved3/>
-		<reserved4/>
-		<reserved5/>
-		<reserved6/>
-		<reserved7/>
-		<reserved8/>
-		<user/>
-		<nrecno>105</nrecno>
-	</class>
-	<class>
-		<platform>WINDOWS</platform>
-		<uniqueid/>
-		<class><![CDATA[commandbutton]]></class>
-		<classloc/>
-		<baseclass><![CDATA[commandbutton]]></baseclass>
-		<objname><![CDATA[cmdCreateNewTestClass]]></objname>
-		<parent><![CDATA[frmfoxunit]]></parent>
-		<properties><![CDATA[Top = 3
-Left = 176
-Height = 40
-Width = 76
-FontName = "Tahoma"
-Picture = ("fxuclasscreate.bmp")
-Caption = "\<New Class"
-TabIndex = 4
-TabStop = .F.
-ToolTipText = "Create a new test class (.PRG) that inherits from FxuTestCase"
-SpecialEffect = 2
-Name = "cmdCreateNewTestClass"
-]]></properties>
-		<protected/>
-		<methods><![CDATA[PROCEDURE Click
-LOCAL lcNewClassPRG
-lcNewClassPRG = SPACE(0)
-
-*
-*  MODIFY COMMAND FXUResultData
-*    XXDTES("FXURESULTDATA.PRG","FUNCTION CreateNewTestCaseClass(tcTestsPath,tcTestClassPRG)    ")
-*
-
-THISFORM.ioResultData.CreateNewTestCaseClass( ;
-    ADDBS(JUSTPATH(FULLPATH(DBF(THISFORM.icGridRS)))), ;
-    @m.lcNewClassPRG ;
-    )
-
-THISFORM.AfterRunTests()
-
-THISFORM.Refresh()
-
-
-ENDPROC
-]]></methods>
-		<ole/>
-		<ole2/>
-		<reserved1/>
-		<reserved2/>
-		<reserved3/>
-		<reserved4/>
-		<reserved5/>
-		<reserved6/>
-		<reserved7/>
-		<reserved8/>
-		<user/>
-		<nrecno>92</nrecno>
-	</class>
-	<class>
-		<platform>WINDOWS</platform>
-		<uniqueid/>
-		<class><![CDATA[commandbutton]]></class>
-		<classloc/>
-		<baseclass><![CDATA[commandbutton]]></baseclass>
-		<objname><![CDATA[cmdLoadNewTestClass]]></objname>
-		<parent><![CDATA[frmfoxunit]]></parent>
-		<properties><![CDATA[Top = 3
-Left = 252
-Height = 40
-Width = 76
-FontName = "Tahoma"
-Picture = ("fxuclassload.bmp")
-Caption = "\<Load Class"
-TabIndex = 5
-TabStop = .F.
-ToolTipText = "Load a test class (.PRG) that inherits from FxuTestCase that is not already in the list"
-SpecialEffect = 2
-Name = "cmdLoadNewTestClass"
-]]></properties>
-		<protected/>
-		<methods><![CDATA[PROCEDURE Click
-
-THISFORM.ioResultData.LoadTestCaseClass()
-
-THISFORM.AfterRunTests()
-
-THISFORM.Refresh()
-
-ENDPROC
-]]></methods>
-		<ole/>
-		<ole2/>
-		<reserved1/>
-		<reserved2/>
-		<reserved3/>
-		<reserved4/>
-		<reserved5/>
-		<reserved6/>
-		<reserved7/>
-		<reserved8/>
-		<user/>
-		<nrecno>86</nrecno>
-	</class>
-	<class>
-		<platform>WINDOWS</platform>
-		<uniqueid/>
-		<class><![CDATA[commandbutton]]></class>
-		<classloc/>
-		<baseclass><![CDATA[commandbutton]]></baseclass>
-		<objname><![CDATA[cmdModifySelected]]></objname>
-		<parent><![CDATA[frmfoxunit]]></parent>
-		<properties><![CDATA[Top = 3
-Left = 616
-Height = 40
-Width = 104
-FontName = "Tahoma"
-Picture = ("fxuclassmodify.bmp")
-Caption = "\<Modify Selected"
-TabIndex = 9
-TabStop = .F.
-ToolTipText = "Modify the currently-selected test (method)"
-SpecialEffect = 2
-Name = "cmdModifySelected"
-]]></properties>
-		<protected/>
-		<methods><![CDATA[PROCEDURE Click
-THISFORM.ioResultData.ModifyExistingTest( ;
-     ALLTRIM(EVALUATE(THISFORM.icGridRS+".TClass")), ;
-     ALLTRIM(EVALUATE(THISFORM.icGridRS+".TName")), ;
-     THISFORM, ;
-     ALLTRIM(EVALUATE(THISFORM.icGridRS+".TPath")) ;
-     ) && Added Path parameter to call. HAS
-
-*
-*  no THISFORM.Refresh() here, because ModifyTest()
-*  calls the EDITSOURCE() function, which doesn't
-*  pause program execution the way MODIFY COMMAND
-*  does
-*
-*  rather, FXUResultData::ModifyTest() sets a custom
-*  THISFORM.ilReloadCurrentClassOnActivate flag property
-*  that is checked in THISFORM.Activate
-*
-
-
-
-
-ENDPROC
-]]></methods>
-		<ole/>
-		<ole2/>
-		<reserved1/>
-		<reserved2/>
-		<reserved3/>
-		<reserved4/>
-		<reserved5/>
-		<reserved6/>
-		<reserved7/>
-		<reserved8/>
-		<user/>
-		<nrecno>98</nrecno>
-	</class>
-	<class>
-		<platform>WINDOWS</platform>
-		<uniqueid>_44L0JXZUU</uniqueid>
-		<class><![CDATA[commandbutton]]></class>
-		<classloc/>
-		<baseclass><![CDATA[commandbutton]]></baseclass>
-		<objname><![CDATA[cmdOptions]]></objname>
-		<parent><![CDATA[frmfoxunit]]></parent>
-		<properties><![CDATA[Top = 3
-Left = 724
-Height = 40
-Width = 76
-FontName = "Tahoma"
-Anchor = 8
-Picture = ..\graphics\foxunit.bmp
-Caption = "Options"
-TabIndex = 6
-TabStop = .F.
-ToolTipText = "Add a new test (method) to the test class (.PRG) currently selected in the grid."
-SpecialEffect = 2
-Name = "cmdOptions"
-]]></properties>
-		<protected/>
-		<methods><![CDATA[PROCEDURE Click
-_Screen.ActiveForm.Options()
-ENDPROC
-]]></methods>
-		<ole/>
-		<ole2/>
-		<reserved1/>
-		<reserved2/>
-		<reserved3/>
-		<reserved4/>
-		<reserved5/>
-		<reserved6/>
-		<reserved7/>
-		<reserved8/>
-		<user/>
-		<nrecno>109</nrecno>
-	</class>
-	<class>
-		<platform>WINDOWS</platform>
-		<uniqueid/>
-		<class><![CDATA[commandbutton]]></class>
-		<classloc/>
-		<baseclass><![CDATA[commandbutton]]></baseclass>
-		<objname><![CDATA[cmdReloadSelectedTestClass]]></objname>
-		<parent><![CDATA[frmfoxunit]]></parent>
-		<properties><![CDATA[Top = 3
-Left = 512
-Height = 40
-Width = 104
-FontName = "Tahoma"
-Picture = ("fxuclassreload.bmp")
-Caption = "Rel\<oad Selected"
-TabIndex = 8
-TabStop = .F.
-ToolTipText = "Re-load (refresh) the FoxUnit results table records for the Test Class (.PRG) containing the currently-selected Test"
-SpecialEffect = 2
-Name = "cmdReloadSelectedTestClass"
-]]></properties>
-		<protected/>
-		<methods><![CDATA[PROCEDURE Click
-THISFORM.ioResultData.ReloadTestCaseClass( ;
-     EVALUATE(THISFORM.icGridRS+".TCLass"), ;
-     EVALUATE(THISFORM.icGridRS+".TPath") ;
-     )
-
-THISFORM.AfterRunTests()
-
-THISFORM.Refresh()
-
-ENDPROC
-]]></methods>
-		<ole/>
-		<ole2/>
-		<reserved1/>
-		<reserved2/>
-		<reserved3/>
-		<reserved4/>
-		<reserved5/>
-		<reserved6/>
-		<reserved7/>
-		<reserved8/>
-		<user/>
-		<nrecno>90</nrecno>
-	</class>
-	<class>
-		<platform>WINDOWS</platform>
-		<uniqueid/>
-		<class><![CDATA[commandbutton]]></class>
-		<classloc/>
-		<baseclass><![CDATA[commandbutton]]></baseclass>
-		<objname><![CDATA[cmdRemoveTestClass]]></objname>
-		<parent><![CDATA[frmfoxunit]]></parent>
-		<properties><![CDATA[Top = 3
-Left = 408
-Height = 40
-Width = 104
-Picture = ("fxuclassremove.bmp")
-Caption = "\<Remove Selected"
-TabIndex = 7
-TabStop = .F.
-ToolTipText = "See THIS.Init()"
-SpecialEffect = 2
-Name = "cmdRemoveTestClass"
-]]></properties>
-		<protected/>
-		<methods><![CDATA[PROCEDURE Click
-IF this.Caption = "\<Remove All"
-	
-	IF MESSAGEBOX("Remove all test classes?", 4+48+256, "Remove all test classes?") = 7
-	*  get focus off this button
-	  KEYBOARD "{123}TAB}" PLAIN CLEAR 
-	  RETURN
-	ENDIF 
-	
-	thisform.ioREsultData.RemoveAllTestCaseClasses()
-	
-else
-
-	IF MESSAGEBOX("Remove the entire .PRG/Class containing the currently-selected " + ;
-	              ALLTRIM(EVALUATE(THISFORM.icGridRS+".TName")) + " test?", ;
-	              4+48+256,"Remove this .PRG?") = 7
-	  *  get focus off this button
-	  KEYBOARD "{123}TAB}" PLAIN CLEAR 
-	  RETURN 
-	ENDIF
-
-	THISFORM.ioResultData.RemoveTestCaseClass(EVALUATE(THISFORM.icGridRS+".TClass"))
-	
-ENDIF 
-
-*THISFORM.grdTests.Refresh()
-THISFORM.AfterRunTests()
-
-ENDPROC
-PROCEDURE Init
-THIS.ToolTipText = ;
-     "Remove the  entire Test Class (.PRG) containing " + ;
-     "the currently-selected Test" + ;
-     CHR(13) + CHR(13) + ;
-     "Note that the Test Class (.PRG) is NOT deleted " + ;
-     "from disk; rather just its entries in the FoxUnit " + ;
-     "results table in the list below are deleted."
-     
-ENDPROC
-PROCEDURE MouseEnter
-LPARAMETERS nButton, nShift, nXCoord, nYCoord
-
-IF nShift = 1
-	this.Caption = "\<Remove All"
-ENDIF 
-ENDPROC
-PROCEDURE MouseLeave
-LPARAMETERS nButton, nShift, nXCoord, nYCoord
-
-this.Caption = "\<Remove Selected"
-ENDPROC
-]]></methods>
-		<ole/>
-		<ole2/>
-		<reserved1/>
-		<reserved2/>
-		<reserved3/>
-		<reserved4/>
-		<reserved5/>
-		<reserved6/>
-		<reserved7/>
-		<reserved8/>
-		<user/>
-		<nrecno>91</nrecno>
-	</class>
-	<class>
-		<platform>WINDOWS</platform>
-		<uniqueid/>
-		<class><![CDATA[commandbutton]]></class>
-		<classloc/>
-		<baseclass><![CDATA[commandbutton]]></baseclass>
-		<objname><![CDATA[cmdRunTestsAll]]></objname>
-		<parent><![CDATA[frmfoxunit]]></parent>
-		<properties><![CDATA[Top = 3
-Left = 4
-Height = 40
-Width = 56
-FontName = "Tahoma"
-Picture = ("fxurunalltests.bmp")
-Caption = "\<All"
-TabIndex = 1
-TabStop = .F.
-ToolTipText = "Run ALL the tests in the list"
-SpecialEffect = 2
-Name = "cmdRunTestsAll"
-]]></properties>
-		<protected/>
-		<methods><![CDATA[PROCEDURE Click
-THISFORM.RunAllTests()
-ENDPROC
-]]></methods>
-		<ole/>
-		<ole2/>
-		<reserved1/>
-		<reserved2/>
-		<reserved3/>
-		<reserved4/>
-		<reserved5/>
-		<reserved6/>
-		<reserved7/>
-		<reserved8/>
-		<user/>
-		<nrecno>87</nrecno>
-	</class>
-	<class>
-		<platform>WINDOWS</platform>
-		<uniqueid/>
-		<class><![CDATA[commandbutton]]></class>
-		<classloc/>
-		<baseclass><![CDATA[commandbutton]]></baseclass>
-		<objname><![CDATA[cmdRunTestsOne]]></objname>
-		<parent><![CDATA[frmfoxunit]]></parent>
-		<properties><![CDATA[Top = 3
-Left = 116
-Height = 40
-Width = 56
-FontName = "Tahoma"
-Picture = ("fxurunsingletest.bmp")
-Caption = "\<Selected"
-TabIndex = 3
-TabStop = .F.
-ToolTipText = "Run only the currently-selected Test"
-SpecialEffect = 2
-Name = "cmdRunTestsOne"
-]]></properties>
-		<protected/>
-		<methods><![CDATA[PROCEDURE Click
-THISFORM.RunOneTest( ;
-                    ALLTRIM(EVALUATE(THISFORM.icGridRS+".TClass")), ;
-                    ALLTRIM(EVALUATE(THISFORM.icGridRS+".TName")), ;
-                    ALLTRIM(EVALUATE(THISFORM.icGridRS+".TPath")) ;
-                    ) && Added path to call. HAS
-                    
-ENDPROC
-]]></methods>
-		<ole/>
-		<ole2/>
-		<reserved1/>
-		<reserved2/>
-		<reserved3/>
-		<reserved4/>
-		<reserved5/>
-		<reserved6/>
-		<reserved7/>
-		<reserved8/>
-		<user/>
-		<nrecno>93</nrecno>
-	</class>
-	<class>
-		<platform>WINDOWS</platform>
-		<uniqueid/>
-		<class><![CDATA[commandbutton]]></class>
-		<classloc/>
-		<baseclass><![CDATA[commandbutton]]></baseclass>
-		<objname><![CDATA[cmdRunTestsOneClass]]></objname>
-		<parent><![CDATA[frmfoxunit]]></parent>
-		<properties><![CDATA[Top = 3
-Left = 60
-Height = 40
-Width = 56
-FontName = "Tahoma"
-Picture = ("fxurunclasstests.bmp")
-Caption = "\<Class"
-TabIndex = 2
-TabStop = .F.
-ToolTipText = "Run all the tests in the currently-selected Test Class (.PRG)"
-SpecialEffect = 2
-Name = "cmdRunTestsOneClass"
-]]></properties>
-		<protected/>
-		<methods><![CDATA[PROCEDURE Click
-THISFORM.RunClassTests(EVALUATE(THISFORM.icGridRS+".TClass"))
-ENDPROC
-]]></methods>
-		<ole/>
-		<ole2/>
-		<reserved1/>
-		<reserved2/>
-		<reserved3/>
-		<reserved4/>
-		<reserved5/>
-		<reserved6/>
-		<reserved7/>
-		<reserved8/>
-		<user/>
-		<nrecno>88</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -3094,214 +2443,22 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>77</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
 		<uniqueid/>
-		<class><![CDATA[label]]></class>
+		<class><![CDATA[header]]></class>
 		<classloc/>
-		<baseclass><![CDATA[label]]></baseclass>
-		<objname><![CDATA[lblClassFilter]]></objname>
-		<parent><![CDATA[frmfoxunit]]></parent>
-		<properties><![CDATA[AutoSize = .F.
-Alignment = 1
-BackStyle = 0
-Caption = "Class"
-Height = 17
-Left = 253
-Top = 54
-Width = 35
-TabIndex = 12
-Name = "lblClassFilter"
-]]></properties>
-		<protected/>
-		<methods><![CDATA[PROCEDURE Init
-THIS.ToolTipText = THISFORM.GetFilterToolTipText()
-ENDPROC
-PROCEDURE RightClick
-THISFORM.RightClick()
-ENDPROC
-]]></methods>
-		<ole/>
-		<ole2/>
-		<reserved1/>
-		<reserved2/>
-		<reserved3/>
-		<reserved4/>
-		<reserved5/>
-		<reserved6/>
-		<reserved7/>
-		<reserved8/>
-		<user/>
-		<nrecno>103</nrecno>
-	</class>
-	<class>
-		<platform>WINDOWS</platform>
-		<uniqueid/>
-		<class><![CDATA[label]]></class>
-		<classloc/>
-		<baseclass><![CDATA[label]]></baseclass>
-		<objname><![CDATA[lblElapsedTime]]></objname>
-		<parent><![CDATA[frmfoxunit]]></parent>
-		<properties><![CDATA[FontName = "Tahoma"
-BackStyle = 0
-Caption = "Elapsed Time:"
-Height = 18
-Left = 360
-Top = 435
-Visible = .F.
-Width = 84
-TabIndex = 16
-Name = "lblElapsedTime"
-]]></properties>
-		<protected/>
-		<methods><![CDATA[PROCEDURE Init
-IF NOT DODEFAULT()
-  RETURN .F.
-ENDIF
-
-IF VERSION(5)>=900
-  *
-  *    4 = Bottom Absolute
-  *    2 = Left Absolute
-  *
-  THIS.Anchor = 4 + 2  
-ENDIF
-ENDPROC
-]]></methods>
-		<ole/>
-		<ole2/>
-		<reserved1/>
-		<reserved2/>
-		<reserved3/>
-		<reserved4/>
-		<reserved5/>
-		<reserved6/>
-		<reserved7/>
-		<reserved8/>
-		<user/>
-		<nrecno>96</nrecno>
-	</class>
-	<class>
-		<platform>WINDOWS</platform>
-		<uniqueid/>
-		<class><![CDATA[label]]></class>
-		<classloc/>
-		<baseclass><![CDATA[label]]></baseclass>
-		<objname><![CDATA[lblFilterInfo]]></objname>
-		<parent><![CDATA[frmfoxunit]]></parent>
-		<properties><![CDATA[AutoSize = .F.
-FontSize = 8
-WordWrap = .T.
-BackStyle = 0
-Caption = "Filter the list to include Classes, Names containing: "
-Height = 16
-Left = 8
-Top = 55
-Width = 245
-TabIndex = 13
-Name = "lblFilterInfo"
-]]></properties>
-		<protected/>
-		<methods><![CDATA[PROCEDURE Init
-THIS.ToolTipText = THISFORM.GetFilterToolTipText()
-ENDPROC
-PROCEDURE RightClick
-THISFORM.RightClick()
-ENDPROC
-]]></methods>
-		<ole/>
-		<ole2/>
-		<reserved1/>
-		<reserved2/>
-		<reserved3/>
-		<reserved4/>
-		<reserved5/>
-		<reserved6/>
-		<reserved7/>
-		<reserved8/>
-		<user/>
-		<nrecno>106</nrecno>
-	</class>
-	<class>
-		<platform>WINDOWS</platform>
-		<uniqueid/>
-		<class><![CDATA[label]]></class>
-		<classloc/>
-		<baseclass><![CDATA[label]]></baseclass>
-		<objname><![CDATA[lblNameFilter]]></objname>
-		<parent><![CDATA[frmfoxunit]]></parent>
-		<properties><![CDATA[Alignment = 1
-BackStyle = 0
-Caption = "Name"
-Height = 17
-Left = 403
-Top = 54
-Width = 40
-TabIndex = 14
-Name = "lblNameFilter"
-]]></properties>
-		<protected/>
-		<methods><![CDATA[PROCEDURE Init
-IF VERSION(5) >= 900
-	THIS.Anchor = 160	&& FDBOZZO
-ENDIF
-THIS.ToolTipText = THISFORM.GetFilterToolTipText()
-ENDPROC
-PROCEDURE RightClick
-THISFORM.RightClick()
-ENDPROC
-]]></methods>
-		<ole/>
-		<ole2/>
-		<reserved1/>
-		<reserved2/>
-		<reserved3/>
-		<reserved4/>
-		<reserved5/>
-		<reserved6/>
-		<reserved7/>
-		<reserved8/>
-		<user/>
-		<nrecno>104</nrecno>
-	</class>
-	<class>
-		<platform>WINDOWS</platform>
-		<uniqueid/>
-		<class><![CDATA[label]]></class>
-		<classloc/>
-		<baseclass><![CDATA[label]]></baseclass>
-		<objname><![CDATA[lblTestsRunTestsFailed]]></objname>
-		<parent><![CDATA[frmfoxunit]]></parent>
-		<properties><![CDATA[AutoSize = .T.
+		<baseclass><![CDATA[header]]></baseclass>
+		<objname><![CDATA[Header1]]></objname>
+		<parent><![CDATA[frmfoxunit.grdTests.Column1]]></parent>
+		<properties><![CDATA[FontBold = .F.
 FontName = "Tahoma"
-BackStyle = 0
-Caption = "Test results"
-Height = 16
-Left = 24
-Top = 435
-Width = 66
-TabIndex = 15
-Name = "lblTestsRunTestsFailed"
+Caption = " Test Class (.PRG)"
+Name = "Header1"
 ]]></properties>
 		<protected/>
-		<methods><![CDATA[PROCEDURE Init
-IF NOT DODEFAULT()
-  RETURN .F.
-ENDIF
-
-IF VERSION(5)>=900
-  *
-  *    4 = Bottom Absolute
-  *    2 = Left Absolute
-  *
-  THIS.Anchor = 4 + 2  
-ENDIF
-
-THIS.Caption = SPACE(0)
-ENDPROC
-]]></methods>
+		<methods/>
 		<ole/>
 		<ole2/>
 		<reserved1/>
@@ -3313,43 +2470,27 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>94</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
 		<uniqueid/>
-		<class><![CDATA[label]]></class>
+		<class><![CDATA[textbox]]></class>
 		<classloc/>
-		<baseclass><![CDATA[label]]></baseclass>
-		<objname><![CDATA[lblTimeElapsed]]></objname>
-		<parent><![CDATA[frmfoxunit]]></parent>
-		<properties><![CDATA[FontName = "Tahoma"
-BackStyle = 0
-Caption = ""
-Height = 18
-Left = 440
-Top = 432
-Width = 114
-TabIndex = 17
-Name = "lblTimeElapsed"
+		<baseclass><![CDATA[textbox]]></baseclass>
+		<objname><![CDATA[Text1]]></objname>
+		<parent><![CDATA[frmfoxunit.grdTests.Column1]]></parent>
+		<properties><![CDATA[FontBold = .F.
+FontName = "Tahoma"
+BorderStyle = 0
+ControlSource = "tresult.tclass"
+Margin = 0
+ReadOnly = .T.
+ForeColor = 0,0,0
+BackColor = 255,255,255
+Name = "Text1"
 ]]></properties>
 		<protected/>
-		<methods><![CDATA[PROCEDURE Init
-IF NOT DODEFAULT()
-  RETURN .F.
-ENDIF
-
-IF VERSION(5)>=900
-  *
-  *    4 = Bottom Absolute
-  *    2 = Left Absolute
-  *
-  THIS.Anchor = 4 + 2  
-ENDIF
-
-THIS.Caption = SPACE(0)
-ENDPROC
-]]></methods>
+		<methods/>
 		<ole/>
 		<ole2/>
 		<reserved1/>
@@ -3361,62 +2502,22 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>97</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
 		<uniqueid/>
-		<class><![CDATA[cprogressbar]]></class>
-		<classloc><![CDATA[cprogres.vcx]]></classloc>
-		<baseclass><![CDATA[container]]></baseclass>
-		<objname><![CDATA[pbProgress]]></objname>
-		<parent><![CDATA[frmfoxunit]]></parent>
-		<properties><![CDATA[Top = 451
-Left = 20
-Width = 759
-Height = 23
-TabIndex = 18
-Name = "pbProgress"
-shpBar.BackColor = 0,255,0
-shpBar.Name = "shpBar"
-lblPercent.Name = "lblPercent"
+		<class><![CDATA[header]]></class>
+		<classloc/>
+		<baseclass><![CDATA[header]]></baseclass>
+		<objname><![CDATA[Header1]]></objname>
+		<parent><![CDATA[frmfoxunit.grdTests.Column2]]></parent>
+		<properties><![CDATA[FontBold = .F.
+FontName = "Tahoma"
+Caption = " Test name (method of...)"
+Name = "Header1"
 ]]></properties>
 		<protected/>
-		<methods><![CDATA[PROCEDURE Init
-LPARAMETERS tnMin, tnMax, tlCenter
-
-IF NOT DODEFAULT(tnMin, tnMax, tlCenter)
-  RETURN .F.
-ENDIF
-
-IF VERSION(5)>=900
-  *
-  *    4 = Bottom Absolute
-  *    2 = Left Absolute
-  *    8 = Right Absolute
-  *
-  THIS.Anchor = 4 + 2 + 8
-ENDIF
-ENDPROC
-PROCEDURE lblPercent.Init
-IF NOT DODEFAULT()
-  RETURN .F.
-ENDIF
-
-IF VERSION(5)>=900
-  THIS.Anchor = THIS.Parent.Anchor
-ENDIF
-ENDPROC
-PROCEDURE shpBar.Init
-IF NOT DODEFAULT()
-  RETURN .F.
-ENDIF
-
-IF VERSION(5)>=900
-  THIS.Anchor = THIS.Parent.Anchor
-ENDIF
-ENDPROC
-]]></methods>
+		<methods/>
 		<ole/>
 		<ole2/>
 		<reserved1/>
@@ -3428,7 +2529,38 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>89</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid/>
+		<class><![CDATA[textbox]]></class>
+		<classloc/>
+		<baseclass><![CDATA[textbox]]></baseclass>
+		<objname><![CDATA[Text1]]></objname>
+		<parent><![CDATA[frmfoxunit.grdTests.Column2]]></parent>
+		<properties><![CDATA[FontBold = .F.
+FontName = "Tahoma"
+BorderStyle = 0
+ControlSource = "tresult.tname"
+Margin = 0
+ReadOnly = .T.
+ForeColor = 0,0,0
+BackColor = 255,255,255
+Name = "Text1"
+]]></properties>
+		<protected/>
+		<methods/>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -3481,358 +2613,6 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>82</nrecno>
-	</class>
-	<class>
-		<platform>WINDOWS</platform>
-		<uniqueid/>
-		<class><![CDATA[shape]]></class>
-		<classloc/>
-		<baseclass><![CDATA[shape]]></baseclass>
-		<objname><![CDATA[shpButtons]]></objname>
-		<parent><![CDATA[frmfoxunit]]></parent>
-		<properties><![CDATA[Top = 0
-Left = 0
-Height = 45
-Width = 804
-Anchor = 10
-BackStyle = 0
-SpecialEffect = 0
-Name = "shpButtons"
-]]></properties>
-		<protected/>
-		<methods><![CDATA[PROCEDURE Init
-IF NOT DODEFAULT()
-  RETURN .F.
-ENDIF
-
-THIS.Top = 1
-THIS.Left = 1
-THIS.Width = THISFORM.Width-1
-THIS.Height = 44
-
-ENDPROC
-]]></methods>
-		<ole/>
-		<ole2/>
-		<reserved1/>
-		<reserved2/>
-		<reserved3/>
-		<reserved4/>
-		<reserved5/>
-		<reserved6/>
-		<reserved7/>
-		<reserved8/>
-		<user/>
-		<nrecno>85</nrecno>
-	</class>
-	<class>
-		<platform>WINDOWS</platform>
-		<uniqueid/>
-		<class><![CDATA[shape]]></class>
-		<classloc/>
-		<baseclass><![CDATA[shape]]></baseclass>
-		<objname><![CDATA[shpSeparator1]]></objname>
-		<parent><![CDATA[frmfoxunit]]></parent>
-		<properties><![CDATA[Top = 8
-Left = 173
-Height = 28
-Width = 2
-SpecialEffect = 0
-Name = "shpSeparator1"
-]]></properties>
-		<protected/>
-		<methods><![CDATA[PROCEDURE Init
-IF NOT DODEFAULT()
-  RETURN .F.
-ENDIF
-
-THIS.Top = 1
-THIS.Height = 44
-ENDPROC
-]]></methods>
-		<ole/>
-		<ole2/>
-		<reserved1/>
-		<reserved2/>
-		<reserved3/>
-		<reserved4/>
-		<reserved5/>
-		<reserved6/>
-		<reserved7/>
-		<reserved8/>
-		<user/>
-		<nrecno>99</nrecno>
-	</class>
-	<class>
-		<platform>WINDOWS</platform>
-		<uniqueid/>
-		<class><![CDATA[shape]]></class>
-		<classloc/>
-		<baseclass><![CDATA[shape]]></baseclass>
-		<objname><![CDATA[shpSeparator2]]></objname>
-		<parent><![CDATA[frmfoxunit]]></parent>
-		<properties><![CDATA[Top = 8
-Left = 405
-Height = 28
-Width = 2
-SpecialEffect = 0
-Name = "shpSeparator2"
-]]></properties>
-		<protected/>
-		<methods><![CDATA[PROCEDURE Init
-IF NOT DODEFAULT()
-  RETURN .F.
-ENDIF
-
-THIS.Top = 1
-THIS.Height = 44
-ENDPROC
-]]></methods>
-		<ole/>
-		<ole2/>
-		<reserved1/>
-		<reserved2/>
-		<reserved3/>
-		<reserved4/>
-		<reserved5/>
-		<reserved6/>
-		<reserved7/>
-		<reserved8/>
-		<user/>
-		<nrecno>100</nrecno>
-	</class>
-	<class>
-		<platform>WINDOWS</platform>
-		<uniqueid/>
-		<class><![CDATA[textbox]]></class>
-		<classloc/>
-		<baseclass><![CDATA[textbox]]></baseclass>
-		<objname><![CDATA[txtClassFilter]]></objname>
-		<parent><![CDATA[frmfoxunit]]></parent>
-		<properties><![CDATA[ControlSource = "THISFORM.icClassFilter"
-Height = 23
-Left = 292
-TabIndex = 20
-Top = 50
-Width = 108
-Name = "txtClassFilter"
-]]></properties>
-		<protected/>
-		<methods><![CDATA[PROCEDURE GotFocus
-THIS.AddProperty("icValueOnGotFocus",THIS.Value)
-
-ENDPROC
-PROCEDURE Init
-IF VERSION(5) >= 900
-	THIS.Anchor = 130	&& FDBOZZO
-ENDIF
-THIS.InputMask = REPLICATE("X",60)
-THIS.ToolTipText = THISFORM.GetFilterToolTipText()
-ENDPROC
-PROCEDURE LostFocus
-IF UPPER(ALLTRIM(THIS.icValueOnGotFocus)) == UPPER(ALLTRIM(THIS.Value))
-  *
-  *  no change/update
-  *
- ELSE 
-  THISFORM.ApplyFilter()
-ENDIF
-  
-ENDPROC
-PROCEDURE RightClick
-THISFORM.RightClick()
-ENDPROC
-]]></methods>
-		<ole/>
-		<ole2/>
-		<reserved1/>
-		<reserved2/>
-		<reserved3/>
-		<reserved4/>
-		<reserved5/>
-		<reserved6/>
-		<reserved7/>
-		<reserved8/>
-		<user/>
-		<nrecno>101</nrecno>
-	</class>
-	<class>
-		<platform>WINDOWS</platform>
-		<uniqueid/>
-		<class><![CDATA[textbox]]></class>
-		<classloc/>
-		<baseclass><![CDATA[textbox]]></baseclass>
-		<objname><![CDATA[txtNameFilter]]></objname>
-		<parent><![CDATA[frmfoxunit]]></parent>
-		<properties><![CDATA[ControlSource = "THISFORM.icNameFilter"
-Height = 23
-Left = 447
-TabIndex = 21
-Top = 50
-Width = 108
-Name = "txtNameFilter"
-]]></properties>
-		<protected/>
-		<methods><![CDATA[PROCEDURE GotFocus
-THIS.AddProperty("icValueOnGotFocus",THIS.Value)
-
-ENDPROC
-PROCEDURE Init
-IF VERSION(5) >= 900
-	THIS.Anchor = 40	&& FDBOZZO
-ENDIF
-THIS.InputMask = REPLICATE("X",60)
-THIS.ToolTipText = THISFORM.GetFilterToolTipText()
-ENDPROC
-PROCEDURE LostFocus
-IF UPPER(ALLTRIM(THIS.icValueOnGotFocus)) == UPPER(ALLTRIM(THIS.Value))
-  *
-  *  no change/update
-  *
- ELSE 
-  THISFORM.ApplyFilter()
-ENDIF
-
-ENDPROC
-PROCEDURE RightClick
-THISFORM.RightClick()
-ENDPROC
-]]></methods>
-		<ole/>
-		<ole2/>
-		<reserved1/>
-		<reserved2/>
-		<reserved3/>
-		<reserved4/>
-		<reserved5/>
-		<reserved6/>
-		<reserved7/>
-		<reserved8/>
-		<user/>
-		<nrecno>102</nrecno>
-	</class>
-	<class>
-		<platform>WINDOWS</platform>
-		<uniqueid/>
-		<class><![CDATA[header]]></class>
-		<classloc/>
-		<baseclass><![CDATA[header]]></baseclass>
-		<objname><![CDATA[Header1]]></objname>
-		<parent><![CDATA[frmfoxunit.grdTests.Column1]]></parent>
-		<properties><![CDATA[FontBold = .F.
-FontName = "Tahoma"
-Caption = " Test Class (.PRG)"
-Name = "Header1"
-]]></properties>
-		<protected/>
-		<methods/>
-		<ole/>
-		<ole2/>
-		<reserved1/>
-		<reserved2/>
-		<reserved3/>
-		<reserved4/>
-		<reserved5/>
-		<reserved6/>
-		<reserved7/>
-		<reserved8/>
-		<user/>
-		<nrecno>78</nrecno>
-	</class>
-	<class>
-		<platform>WINDOWS</platform>
-		<uniqueid/>
-		<class><![CDATA[textbox]]></class>
-		<classloc/>
-		<baseclass><![CDATA[textbox]]></baseclass>
-		<objname><![CDATA[Text1]]></objname>
-		<parent><![CDATA[frmfoxunit.grdTests.Column1]]></parent>
-		<properties><![CDATA[FontBold = .F.
-FontName = "Tahoma"
-BorderStyle = 0
-ControlSource = "tresult.tclass"
-Margin = 0
-ReadOnly = .T.
-ForeColor = 0,0,0
-BackColor = 255,255,255
-Name = "Text1"
-]]></properties>
-		<protected/>
-		<methods/>
-		<ole/>
-		<ole2/>
-		<reserved1/>
-		<reserved2/>
-		<reserved3/>
-		<reserved4/>
-		<reserved5/>
-		<reserved6/>
-		<reserved7/>
-		<reserved8/>
-		<user/>
-		<nrecno>79</nrecno>
-	</class>
-	<class>
-		<platform>WINDOWS</platform>
-		<uniqueid/>
-		<class><![CDATA[header]]></class>
-		<classloc/>
-		<baseclass><![CDATA[header]]></baseclass>
-		<objname><![CDATA[Header1]]></objname>
-		<parent><![CDATA[frmfoxunit.grdTests.Column2]]></parent>
-		<properties><![CDATA[FontBold = .F.
-FontName = "Tahoma"
-Caption = " Test name (method of...)"
-Name = "Header1"
-]]></properties>
-		<protected/>
-		<methods/>
-		<ole/>
-		<ole2/>
-		<reserved1/>
-		<reserved2/>
-		<reserved3/>
-		<reserved4/>
-		<reserved5/>
-		<reserved6/>
-		<reserved7/>
-		<reserved8/>
-		<user/>
-		<nrecno>80</nrecno>
-	</class>
-	<class>
-		<platform>WINDOWS</platform>
-		<uniqueid/>
-		<class><![CDATA[textbox]]></class>
-		<classloc/>
-		<baseclass><![CDATA[textbox]]></baseclass>
-		<objname><![CDATA[Text1]]></objname>
-		<parent><![CDATA[frmfoxunit.grdTests.Column2]]></parent>
-		<properties><![CDATA[FontBold = .F.
-FontName = "Tahoma"
-BorderStyle = 0
-ControlSource = "tresult.tname"
-Margin = 0
-ReadOnly = .T.
-ForeColor = 0,0,0
-BackColor = 255,255,255
-Name = "Text1"
-]]></properties>
-		<protected/>
-		<methods/>
-		<ole/>
-		<ole2/>
-		<reserved1/>
-		<reserved2/>
-		<reserved3/>
-		<reserved4/>
-		<reserved5/>
-		<reserved6/>
-		<reserved7/>
-		<reserved8/>
-		<user/>
-		<nrecno>81</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -3899,7 +2679,6 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>83</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -3966,7 +2745,1185 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>84</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid/>
+		<class><![CDATA[shape]]></class>
+		<classloc/>
+		<baseclass><![CDATA[shape]]></baseclass>
+		<objname><![CDATA[shpButtons]]></objname>
+		<parent><![CDATA[frmfoxunit]]></parent>
+		<properties><![CDATA[Top = 0
+Left = 0
+Height = 45
+Width = 804
+Anchor = 10
+BackStyle = 0
+SpecialEffect = 0
+Name = "shpButtons"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Init
+IF NOT DODEFAULT()
+  RETURN .F.
+ENDIF
+
+THIS.Top = 1
+THIS.Left = 1
+THIS.Width = THISFORM.Width-1
+THIS.Height = 44
+
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid/>
+		<class><![CDATA[commandbutton]]></class>
+		<classloc/>
+		<baseclass><![CDATA[commandbutton]]></baseclass>
+		<objname><![CDATA[cmdLoadNewTestClass]]></objname>
+		<parent><![CDATA[frmfoxunit]]></parent>
+		<properties><![CDATA[Top = 3
+Left = 252
+Height = 40
+Width = 76
+FontName = "Tahoma"
+Picture = ("fxuclassload.bmp")
+Caption = "\<Load Class"
+TabIndex = 5
+TabStop = .F.
+ToolTipText = "Load a test class (.PRG) that inherits from FxuTestCase that is not already in the list"
+SpecialEffect = 2
+Name = "cmdLoadNewTestClass"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Click
+
+THISFORM.ioResultData.LoadTestCaseClass()
+
+THISFORM.AfterRunTests()
+
+THISFORM.Refresh()
+
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid/>
+		<class><![CDATA[commandbutton]]></class>
+		<classloc/>
+		<baseclass><![CDATA[commandbutton]]></baseclass>
+		<objname><![CDATA[cmdRunTestsAll]]></objname>
+		<parent><![CDATA[frmfoxunit]]></parent>
+		<properties><![CDATA[Top = 3
+Left = 4
+Height = 40
+Width = 56
+FontName = "Tahoma"
+Picture = ("fxurunalltests.bmp")
+Caption = "\<All"
+TabIndex = 1
+TabStop = .F.
+ToolTipText = "Run ALL the tests in the list"
+SpecialEffect = 2
+Name = "cmdRunTestsAll"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Click
+THISFORM.RunAllTests()
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid/>
+		<class><![CDATA[commandbutton]]></class>
+		<classloc/>
+		<baseclass><![CDATA[commandbutton]]></baseclass>
+		<objname><![CDATA[cmdRunTestsOneClass]]></objname>
+		<parent><![CDATA[frmfoxunit]]></parent>
+		<properties><![CDATA[Top = 3
+Left = 60
+Height = 40
+Width = 56
+FontName = "Tahoma"
+Picture = ("fxurunclasstests.bmp")
+Caption = "\<Class"
+TabIndex = 2
+TabStop = .F.
+ToolTipText = "Run all the tests in the currently-selected Test Class (.PRG)"
+SpecialEffect = 2
+Name = "cmdRunTestsOneClass"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Click
+THISFORM.RunClassTests(EVALUATE(THISFORM.icGridRS+".TClass"))
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid/>
+		<class><![CDATA[cprogressbar]]></class>
+		<classloc><![CDATA[cprogres.vcx]]></classloc>
+		<baseclass><![CDATA[container]]></baseclass>
+		<objname><![CDATA[pbProgress]]></objname>
+		<parent><![CDATA[frmfoxunit]]></parent>
+		<properties><![CDATA[Top = 451
+Left = 20
+Width = 759
+Height = 23
+TabIndex = 18
+Name = "pbProgress"
+shpBar.BackColor = 0,255,0
+shpBar.Name = "shpBar"
+lblPercent.Name = "lblPercent"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Init
+LPARAMETERS tnMin, tnMax, tlCenter
+
+IF NOT DODEFAULT(tnMin, tnMax, tlCenter)
+  RETURN .F.
+ENDIF
+
+IF VERSION(5)>=900
+  *
+  *    4 = Bottom Absolute
+  *    2 = Left Absolute
+  *    8 = Right Absolute
+  *
+  THIS.Anchor = 4 + 2 + 8
+ENDIF
+ENDPROC
+PROCEDURE lblPercent.Init
+IF NOT DODEFAULT()
+  RETURN .F.
+ENDIF
+
+IF VERSION(5)>=900
+  THIS.Anchor = THIS.Parent.Anchor
+ENDIF
+ENDPROC
+PROCEDURE shpBar.Init
+IF NOT DODEFAULT()
+  RETURN .F.
+ENDIF
+
+IF VERSION(5)>=900
+  THIS.Anchor = THIS.Parent.Anchor
+ENDIF
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid/>
+		<class><![CDATA[commandbutton]]></class>
+		<classloc/>
+		<baseclass><![CDATA[commandbutton]]></baseclass>
+		<objname><![CDATA[cmdReloadSelectedTestClass]]></objname>
+		<parent><![CDATA[frmfoxunit]]></parent>
+		<properties><![CDATA[Top = 3
+Left = 512
+Height = 40
+Width = 104
+FontName = "Tahoma"
+Picture = ("fxuclassreload.bmp")
+Caption = "Rel\<oad Selected"
+TabIndex = 8
+TabStop = .F.
+ToolTipText = "Re-load (refresh) the FoxUnit results table records for the Test Class (.PRG) containing the currently-selected Test"
+SpecialEffect = 2
+Name = "cmdReloadSelectedTestClass"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Click
+THISFORM.ioResultData.ReloadTestCaseClass( ;
+     EVALUATE(THISFORM.icGridRS+".TCLass"), ;
+     EVALUATE(THISFORM.icGridRS+".TPath") ;
+     )
+
+THISFORM.AfterRunTests()
+
+THISFORM.Refresh()
+
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid/>
+		<class><![CDATA[commandbutton]]></class>
+		<classloc/>
+		<baseclass><![CDATA[commandbutton]]></baseclass>
+		<objname><![CDATA[cmdRemoveTestClass]]></objname>
+		<parent><![CDATA[frmfoxunit]]></parent>
+		<properties><![CDATA[Top = 3
+Left = 408
+Height = 40
+Width = 104
+Picture = ("fxuclassremove.bmp")
+Caption = "\<Remove Selected"
+TabIndex = 7
+TabStop = .F.
+ToolTipText = "See THIS.Init()"
+SpecialEffect = 2
+Name = "cmdRemoveTestClass"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Click
+IF this.Caption = "\<Remove All"
+	
+	IF MESSAGEBOX("Remove all test classes?", 4+48+256, "Remove all test classes?") = 7
+	*  get focus off this button
+	  KEYBOARD "{123}TAB}" PLAIN CLEAR 
+	  RETURN
+	ENDIF 
+	
+	thisform.ioREsultData.RemoveAllTestCaseClasses()
+	
+else
+
+	IF MESSAGEBOX("Remove the entire .PRG/Class containing the currently-selected " + ;
+	              ALLTRIM(EVALUATE(THISFORM.icGridRS+".TName")) + " test?", ;
+	              4+48+256,"Remove this .PRG?") = 7
+	  *  get focus off this button
+	  KEYBOARD "{123}TAB}" PLAIN CLEAR 
+	  RETURN 
+	ENDIF
+
+	THISFORM.ioResultData.RemoveTestCaseClass(EVALUATE(THISFORM.icGridRS+".TClass"))
+	
+ENDIF 
+
+*THISFORM.grdTests.Refresh()
+THISFORM.AfterRunTests()
+
+ENDPROC
+PROCEDURE Init
+THIS.ToolTipText = ;
+     "Remove the  entire Test Class (.PRG) containing " + ;
+     "the currently-selected Test" + ;
+     CHR(13) + CHR(13) + ;
+     "Note that the Test Class (.PRG) is NOT deleted " + ;
+     "from disk; rather just its entries in the FoxUnit " + ;
+     "results table in the list below are deleted."
+     
+ENDPROC
+PROCEDURE MouseEnter
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+
+IF nShift = 1
+	this.Caption = "\<Remove All"
+ENDIF 
+ENDPROC
+PROCEDURE MouseLeave
+LPARAMETERS nButton, nShift, nXCoord, nYCoord
+
+this.Caption = "\<Remove Selected"
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid/>
+		<class><![CDATA[commandbutton]]></class>
+		<classloc/>
+		<baseclass><![CDATA[commandbutton]]></baseclass>
+		<objname><![CDATA[cmdCreateNewTestClass]]></objname>
+		<parent><![CDATA[frmfoxunit]]></parent>
+		<properties><![CDATA[Top = 3
+Left = 176
+Height = 40
+Width = 76
+FontName = "Tahoma"
+Picture = ("fxuclasscreate.bmp")
+Caption = "\<New Class"
+TabIndex = 4
+TabStop = .F.
+ToolTipText = "Create a new test class (.PRG) that inherits from FxuTestCase"
+SpecialEffect = 2
+Name = "cmdCreateNewTestClass"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Click
+LOCAL lcNewClassPRG
+lcNewClassPRG = SPACE(0)
+
+*
+*  MODIFY COMMAND FXUResultData
+*    XXDTES("FXURESULTDATA.PRG","FUNCTION CreateNewTestCaseClass(tcTestsPath,tcTestClassPRG)    ")
+*
+
+THISFORM.ioResultData.CreateNewTestCaseClass( ;
+    ADDBS(JUSTPATH(FULLPATH(DBF(THISFORM.icGridRS)))), ;
+    @m.lcNewClassPRG ;
+    )
+
+THISFORM.AfterRunTests()
+
+THISFORM.Refresh()
+
+
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid/>
+		<class><![CDATA[commandbutton]]></class>
+		<classloc/>
+		<baseclass><![CDATA[commandbutton]]></baseclass>
+		<objname><![CDATA[cmdRunTestsOne]]></objname>
+		<parent><![CDATA[frmfoxunit]]></parent>
+		<properties><![CDATA[Top = 3
+Left = 116
+Height = 40
+Width = 56
+FontName = "Tahoma"
+Picture = ("fxurunsingletest.bmp")
+Caption = "\<Selected"
+TabIndex = 3
+TabStop = .F.
+ToolTipText = "Run only the currently-selected Test"
+SpecialEffect = 2
+Name = "cmdRunTestsOne"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Click
+THISFORM.RunOneTest( ;
+                    ALLTRIM(EVALUATE(THISFORM.icGridRS+".TClass")), ;
+                    ALLTRIM(EVALUATE(THISFORM.icGridRS+".TName")), ;
+                    ALLTRIM(EVALUATE(THISFORM.icGridRS+".TPath")) ;
+                    ) && Added path to call. HAS
+                    
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid/>
+		<class><![CDATA[label]]></class>
+		<classloc/>
+		<baseclass><![CDATA[label]]></baseclass>
+		<objname><![CDATA[lblTestsRunTestsFailed]]></objname>
+		<parent><![CDATA[frmfoxunit]]></parent>
+		<properties><![CDATA[AutoSize = .T.
+FontName = "Tahoma"
+BackStyle = 0
+Caption = "Test results"
+Height = 16
+Left = 24
+Top = 435
+Width = 66
+TabIndex = 15
+Name = "lblTestsRunTestsFailed"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Init
+IF NOT DODEFAULT()
+  RETURN .F.
+ENDIF
+
+IF VERSION(5)>=900
+  *
+  *    4 = Bottom Absolute
+  *    2 = Left Absolute
+  *
+  THIS.Anchor = 4 + 2  
+ENDIF
+
+THIS.Caption = SPACE(0)
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid/>
+		<class><![CDATA[commandbutton]]></class>
+		<classloc/>
+		<baseclass><![CDATA[commandbutton]]></baseclass>
+		<objname><![CDATA[cmdAddNewTest]]></objname>
+		<parent><![CDATA[frmfoxunit]]></parent>
+		<properties><![CDATA[Top = 3
+Left = 328
+Height = 40
+Width = 76
+FontName = "Tahoma"
+Picture = ("fxuclassaddtestto.bmp")
+Caption = "Add \<Test"
+TabIndex = 6
+TabStop = .F.
+ToolTipText = "Add a new test (method) to the test class (.PRG) currently selected in the grid."
+SpecialEffect = 2
+Name = "cmdAddNewTest"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Click
+THISFORM.ioResultData.AddNewTest( ;
+     ALLTRIM(EVALUATE(THISFORM.icGridRS+".TClass")), ;
+     THISFORM, ;
+     ALLTRIM(EVALUATE(THISFORM.icGridRS+".TPath")) ;
+     ) && Added Path parameter to call. HAS
+
+*
+*  no THISFORM.Refresh() here, because AddNewTest()
+*  calls the EDITSOURCE() function, which doesn't
+*  pause program execution the way MODIFY COMMAND
+*  does
+*
+*  rather, FXUResultData::AddNewTest() sets a custom
+*  THISFORM.ilReloadCurrentClassOnActivate flag property
+*  that is checked in THISFORM.Activate
+*
+
+
+
+
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid/>
+		<class><![CDATA[label]]></class>
+		<classloc/>
+		<baseclass><![CDATA[label]]></baseclass>
+		<objname><![CDATA[lblElapsedTime]]></objname>
+		<parent><![CDATA[frmfoxunit]]></parent>
+		<properties><![CDATA[FontName = "Tahoma"
+BackStyle = 0
+Caption = "Elapsed Time:"
+Height = 18
+Left = 360
+Top = 435
+Visible = .F.
+Width = 84
+TabIndex = 16
+Name = "lblElapsedTime"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Init
+IF NOT DODEFAULT()
+  RETURN .F.
+ENDIF
+
+IF VERSION(5)>=900
+  *
+  *    4 = Bottom Absolute
+  *    2 = Left Absolute
+  *
+  THIS.Anchor = 4 + 2  
+ENDIF
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid/>
+		<class><![CDATA[label]]></class>
+		<classloc/>
+		<baseclass><![CDATA[label]]></baseclass>
+		<objname><![CDATA[lblTimeElapsed]]></objname>
+		<parent><![CDATA[frmfoxunit]]></parent>
+		<properties><![CDATA[FontName = "Tahoma"
+BackStyle = 0
+Caption = ""
+Height = 18
+Left = 440
+Top = 432
+Width = 114
+TabIndex = 17
+Name = "lblTimeElapsed"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Init
+IF NOT DODEFAULT()
+  RETURN .F.
+ENDIF
+
+IF VERSION(5)>=900
+  *
+  *    4 = Bottom Absolute
+  *    2 = Left Absolute
+  *
+  THIS.Anchor = 4 + 2  
+ENDIF
+
+THIS.Caption = SPACE(0)
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid/>
+		<class><![CDATA[commandbutton]]></class>
+		<classloc/>
+		<baseclass><![CDATA[commandbutton]]></baseclass>
+		<objname><![CDATA[cmdModifySelected]]></objname>
+		<parent><![CDATA[frmfoxunit]]></parent>
+		<properties><![CDATA[Top = 3
+Left = 616
+Height = 40
+Width = 104
+FontName = "Tahoma"
+Picture = ("fxuclassmodify.bmp")
+Caption = "\<Modify Selected"
+TabIndex = 9
+TabStop = .F.
+ToolTipText = "Modify the currently-selected test (method)"
+SpecialEffect = 2
+Name = "cmdModifySelected"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Click
+THISFORM.ioResultData.ModifyExistingTest( ;
+     ALLTRIM(EVALUATE(THISFORM.icGridRS+".TClass")), ;
+     ALLTRIM(EVALUATE(THISFORM.icGridRS+".TName")), ;
+     THISFORM, ;
+     ALLTRIM(EVALUATE(THISFORM.icGridRS+".TPath")) ;
+     ) && Added Path parameter to call. HAS
+
+*
+*  no THISFORM.Refresh() here, because ModifyTest()
+*  calls the EDITSOURCE() function, which doesn't
+*  pause program execution the way MODIFY COMMAND
+*  does
+*
+*  rather, FXUResultData::ModifyTest() sets a custom
+*  THISFORM.ilReloadCurrentClassOnActivate flag property
+*  that is checked in THISFORM.Activate
+*
+
+
+
+
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid/>
+		<class><![CDATA[shape]]></class>
+		<classloc/>
+		<baseclass><![CDATA[shape]]></baseclass>
+		<objname><![CDATA[shpSeparator1]]></objname>
+		<parent><![CDATA[frmfoxunit]]></parent>
+		<properties><![CDATA[Top = 8
+Left = 173
+Height = 28
+Width = 2
+SpecialEffect = 0
+Name = "shpSeparator1"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Init
+IF NOT DODEFAULT()
+  RETURN .F.
+ENDIF
+
+THIS.Top = 1
+THIS.Height = 44
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid/>
+		<class><![CDATA[shape]]></class>
+		<classloc/>
+		<baseclass><![CDATA[shape]]></baseclass>
+		<objname><![CDATA[shpSeparator2]]></objname>
+		<parent><![CDATA[frmfoxunit]]></parent>
+		<properties><![CDATA[Top = 8
+Left = 405
+Height = 28
+Width = 2
+SpecialEffect = 0
+Name = "shpSeparator2"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Init
+IF NOT DODEFAULT()
+  RETURN .F.
+ENDIF
+
+THIS.Top = 1
+THIS.Height = 44
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid/>
+		<class><![CDATA[textbox]]></class>
+		<classloc/>
+		<baseclass><![CDATA[textbox]]></baseclass>
+		<objname><![CDATA[txtClassFilter]]></objname>
+		<parent><![CDATA[frmfoxunit]]></parent>
+		<properties><![CDATA[ControlSource = "THISFORM.icClassFilter"
+Height = 23
+Left = 292
+TabIndex = 20
+Top = 50
+Width = 108
+Name = "txtClassFilter"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE GotFocus
+THIS.AddProperty("icValueOnGotFocus",THIS.Value)
+
+ENDPROC
+PROCEDURE Init
+IF VERSION(5) >= 900
+	THIS.Anchor = 130	&& FDBOZZO
+ENDIF
+THIS.InputMask = REPLICATE("X",60)
+THIS.ToolTipText = THISFORM.GetFilterToolTipText()
+ENDPROC
+PROCEDURE LostFocus
+IF UPPER(ALLTRIM(THIS.icValueOnGotFocus)) == UPPER(ALLTRIM(THIS.Value))
+  *
+  *  no change/update
+  *
+ ELSE 
+  THISFORM.ApplyFilter()
+ENDIF
+  
+ENDPROC
+PROCEDURE RightClick
+THISFORM.RightClick()
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid/>
+		<class><![CDATA[textbox]]></class>
+		<classloc/>
+		<baseclass><![CDATA[textbox]]></baseclass>
+		<objname><![CDATA[txtNameFilter]]></objname>
+		<parent><![CDATA[frmfoxunit]]></parent>
+		<properties><![CDATA[ControlSource = "THISFORM.icNameFilter"
+Height = 23
+Left = 447
+TabIndex = 21
+Top = 50
+Width = 108
+Name = "txtNameFilter"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE GotFocus
+THIS.AddProperty("icValueOnGotFocus",THIS.Value)
+
+ENDPROC
+PROCEDURE Init
+IF VERSION(5) >= 900
+	THIS.Anchor = 40	&& FDBOZZO
+ENDIF
+THIS.InputMask = REPLICATE("X",60)
+THIS.ToolTipText = THISFORM.GetFilterToolTipText()
+ENDPROC
+PROCEDURE LostFocus
+IF UPPER(ALLTRIM(THIS.icValueOnGotFocus)) == UPPER(ALLTRIM(THIS.Value))
+  *
+  *  no change/update
+  *
+ ELSE 
+  THISFORM.ApplyFilter()
+ENDIF
+
+ENDPROC
+PROCEDURE RightClick
+THISFORM.RightClick()
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid/>
+		<class><![CDATA[label]]></class>
+		<classloc/>
+		<baseclass><![CDATA[label]]></baseclass>
+		<objname><![CDATA[lblClassFilter]]></objname>
+		<parent><![CDATA[frmfoxunit]]></parent>
+		<properties><![CDATA[AutoSize = .F.
+Alignment = 1
+BackStyle = 0
+Caption = "Class"
+Height = 17
+Left = 253
+Top = 54
+Width = 35
+TabIndex = 12
+Name = "lblClassFilter"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Init
+THIS.ToolTipText = THISFORM.GetFilterToolTipText()
+ENDPROC
+PROCEDURE RightClick
+THISFORM.RightClick()
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid/>
+		<class><![CDATA[label]]></class>
+		<classloc/>
+		<baseclass><![CDATA[label]]></baseclass>
+		<objname><![CDATA[lblNameFilter]]></objname>
+		<parent><![CDATA[frmfoxunit]]></parent>
+		<properties><![CDATA[Alignment = 1
+BackStyle = 0
+Caption = "Name"
+Height = 17
+Left = 403
+Top = 54
+Width = 40
+TabIndex = 14
+Name = "lblNameFilter"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Init
+IF VERSION(5) >= 900
+	THIS.Anchor = 160	&& FDBOZZO
+ENDIF
+THIS.ToolTipText = THISFORM.GetFilterToolTipText()
+ENDPROC
+PROCEDURE RightClick
+THISFORM.RightClick()
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid/>
+		<class><![CDATA[commandbutton]]></class>
+		<classloc/>
+		<baseclass><![CDATA[commandbutton]]></baseclass>
+		<objname><![CDATA[cmdClearFilter]]></objname>
+		<parent><![CDATA[frmfoxunit]]></parent>
+		<properties><![CDATA[AutoSize = .T.
+Top = 48
+Left = 750
+Height = 27
+Width = 48
+Caption = "Clear"
+TabIndex = 22
+Name = "cmdClearFilter"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Click
+THIS.Parent.txtClassFilter.Value = SPACE(0)
+THIS.Parent.txtNameFilter.Value = SPACE(0)
+This.Parent.lFailedOnly = .f.
+
+THISFORM.ApplyFilter()
+
+
+ENDPROC
+PROCEDURE Init
+IF VERSION(5) >= 900
+	THIS.Anchor = 8	&& FDBOZZO
+ENDIF
+THIS.ToolTipText = THISFORM.GetFilterToolTipText()
+ENDPROC
+PROCEDURE Refresh
+THIS.Enabled = NOT EMPTY(FILTER(THISFORM.icGridRS))
+
+
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid/>
+		<class><![CDATA[label]]></class>
+		<classloc/>
+		<baseclass><![CDATA[label]]></baseclass>
+		<objname><![CDATA[lblFilterInfo]]></objname>
+		<parent><![CDATA[frmfoxunit]]></parent>
+		<properties><![CDATA[AutoSize = .F.
+FontSize = 8
+WordWrap = .T.
+BackStyle = 0
+Caption = "Filter the list to include Classes, Names containing: "
+Height = 16
+Left = 8
+Top = 55
+Width = 245
+TabIndex = 13
+Name = "lblFilterInfo"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Init
+THIS.ToolTipText = THISFORM.GetFilterToolTipText()
+ENDPROC
+PROCEDURE RightClick
+THISFORM.RightClick()
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid>_44L0ILG50</uniqueid>
+		<class><![CDATA[checkbox]]></class>
+		<classloc/>
+		<baseclass><![CDATA[checkbox]]></baseclass>
+		<objname><![CDATA[Check1]]></objname>
+		<parent><![CDATA[frmfoxunit]]></parent>
+		<properties><![CDATA[Top = 52
+Left = 564
+Height = 17
+Width = 79
+Anchor = 8
+AutoSize = .T.
+Alignment = 0
+Caption = "Failed Only"
+ControlSource = "ThisForm.lFailedOnly"
+Name = "Check1"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Click
+THISFORM.ApplyFilter()
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid>_44L0JXZUR</uniqueid>
+		<class><![CDATA[shape]]></class>
+		<classloc/>
+		<baseclass><![CDATA[shape]]></baseclass>
+		<objname><![CDATA[Shape3]]></objname>
+		<parent><![CDATA[frmfoxunit]]></parent>
+		<properties><![CDATA[Top = 9
+Left = 721
+Height = 28
+Width = 2
+Anchor = 8
+SpecialEffect = 0
+Name = "Shape3"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Init
+IF NOT DODEFAULT()
+  RETURN .F.
+ENDIF
+
+THIS.Top = 1
+THIS.Height = 44
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid>_44L0JXZUU</uniqueid>
+		<class><![CDATA[commandbutton]]></class>
+		<classloc/>
+		<baseclass><![CDATA[commandbutton]]></baseclass>
+		<objname><![CDATA[cmdOptions]]></objname>
+		<parent><![CDATA[frmfoxunit]]></parent>
+		<properties><![CDATA[Top = 3
+Left = 724
+Height = 40
+Width = 76
+FontName = "Tahoma"
+Anchor = 8
+Picture = ..\graphics\foxunit.bmp
+Caption = "Options"
+TabIndex = 6
+TabStop = .F.
+ToolTipText = "Add a new test (method) to the test class (.PRG) currently selected in the grid."
+SpecialEffect = 2
+Name = "cmdOptions"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Click
+_Screen.ActiveForm.Options()
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
 	</class>
 	<class>
 		<platform>COMMENT</platform>
@@ -3990,6 +3947,5 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>110</nrecno>
 	</class>
 </VFPData>
