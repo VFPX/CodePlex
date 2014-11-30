@@ -67,7 +67,7 @@
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
-		<setting>THIS.pgfDetails.ActivePage = 1</setting>
+		<setting>THIS.pgfDetails.ActivePage = 2</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
@@ -167,7 +167,7 @@
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
-		<setting>=SEEK("FT__FOXBIN2PRG__C_CONVERSOR_PRG_A_DBC                                                                         EVALUATE_RESULTS                                                                                                                  ",THIS.icGridRS,"TCLName")</setting>
+		<setting>=SEEK("UT__FOXBIN2PRG                                                                                                DEBERIA_EJECUTAR_FOXBIN2PRG_PARALALIBRERIA_FB2P_TEST_VCX_YVALIDAREL_BUG_DEL_PROCEDURE_SIN_ENDPROC                                 ",THIS.icGridRS,"TCLName")</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
@@ -191,6 +191,6 @@
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
-		<setting>THIS.nSplitterPosition = 399</setting>
+		<setting>THIS.nSplitterPosition = 404</setting>
 	</foxunitpersist>
 </VFPData>
