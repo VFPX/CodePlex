@@ -103,7 +103,7 @@
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
-		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontName = "Courier New"</setting>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontName = "courier new"</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
@@ -127,7 +127,7 @@
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
-		<setting>THIS.pgfDetails.pgMessages.FontBold = .T.</setting>
+		<setting>THIS.pgfDetails.pgMessages.FontBold = .F.</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
@@ -135,7 +135,7 @@
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
-		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontName = "Courier New"</setting>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontName = "courier new"</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
@@ -167,7 +167,7 @@
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
-		<setting>=SEEK("UT__FOXBIN2PRG                                                                                                DEBERIA_EJECUTAR_FOXBIN2PRG_PARALALIBRERIA_FB2P_TEST_VCX_YVALIDAREL_BUG_DEL_PROCEDURE_SIN_ENDPROC                                 ",THIS.icGridRS,"TCLName")</setting>
+		<setting>=SEEK("                                                                                                                                                                                                                                                ",THIS.icGridRS,"TCLName")</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
