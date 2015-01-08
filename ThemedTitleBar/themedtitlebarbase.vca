@@ -43,6 +43,10 @@ IF m.Thisform.MaxButton
 ENDIF
 
 ENDPROC
+PROCEDURE Destroy
+UNBINDEVENTS( This )
+
+ENDPROC
 PROCEDURE Init
 *--------------------------------------------
 * Prevent this class form beeing instantiated
@@ -54,7 +58,7 @@ ENDIF
 *--------------------------------------------
 * Setup.
 *--------------------------------------------
-LOCAL lcFormComment, lnFormMinHeight, lnFormMaxHeight, lcDescription
+LOCAL lcFormComment, lnFormMinHeight, lnFormMaxHeight
 *
 WITH Thisform
 	*--------------------------------------------
@@ -89,6 +93,12 @@ WITH Thisform
 		.BorderStyle = 1
 	ENDIF
 ENDWITH
+*--------------------------------------------
+* Make sure that our settings object exists.
+*--------------------------------------------
+IF NOT VARTYPE( _Screen.ThemedTitleBarSettings ) == "O"
+	_Screen.NewObject( "ThemedTitleBarSettings", m.This.cSettingsClass, m.This.cSettingsClassLib )
+ENDIF
 *--------------------------------------------
 * Set colors and fonts.
 *--------------------------------------------
@@ -152,6 +162,26 @@ ASSERT m.lnResult > 0 MESSAGE m.This.Name + ": BindEvent to Closable did not wor
 lnResult = BINDEVENT( Thisform, "Resize", This, "Refresh", 1 )
 ASSERT m.lnResult > 0 MESSAGE m.This.Name + ": BindEvent to Resize did not work"
 *--------------------------------------------
+* Forward changes to form caption or title to
+* the caption label.
+*--------------------------------------------
+lnResult = BINDEVENT( Thisform, "Caption", This, "RefreshCaption", 1 )
+ASSERT m.lnResult > 0 MESSAGE m.This.Name + ": BindEvent to Caption did not work"
+IF NOT EMPTY( m.This.cTitleProperty ) ;
+		AND TYPE( "m.Thisform." + m.This.cTitleProperty ) == "C"
+	lnResult = BINDEVENT( Thisform, m.This.cTitleProperty, This, "RefreshCaption", 1 )
+	ASSERT m.lnResult > 0 MESSAGE m.This.Name + ": BindEvent to title property did not work"
+ENDIF
+*--------------------------------------------
+* As only the Refresh() event is
+* automatically triggered at form start, we
+* have to trigger the RefreshCaption() event
+* ourselves.
+* As lblCaption.Caption initially is not
+* empty, we have to do this unconditionally.
+*--------------------------------------------
+m.This.RefreshCaption()
+*--------------------------------------------
 * Forward title bar image name changes to the
 * image control.
 *--------------------------------------------
@@ -166,8 +196,7 @@ IF TYPE( "m.Thisform." + m.This.cImageProperty ) == "C"
 	* As RefreshImage() positions edtDescription
 	* we have to do this unconditionally.
 	*--------------------------------------------
-	STORE EVALUATE( "m.Thisform." + m.This.cImageProperty ) ;
-		TO ("m.Thisform." + m.This.cImageProperty)
+	m.This.RefreshImage()
 ENDIF
 *--------------------------------------------
 * Forward title bar description changes to
@@ -182,9 +211,8 @@ IF TYPE( "m.Thisform." + m.This.cDescriptionProperty ) == "C"
 	* have to trigger the RefreshDescription()
 	* event ourselves.
 	*--------------------------------------------
-	lcDescription = EVALUATE( "m.Thisform." + m.This.cDescriptionProperty )
-	IF NOT EMPTY( m.lcDescription )
-		STORE m.lcDescription TO ("m.Thisform." + m.This.cDescriptionProperty)
+	IF NOT EMPTY(EVALUATE( "m.Thisform." + m.This.cDescriptionProperty ))
+		m.This.RefreshDescription()
 	ENDIF
 ENDIF
 *--------------------------------------------
@@ -392,6 +420,23 @@ loControl = .NULL.
 RELEASE loControl, laControls
 
 ENDPROC
+PROCEDURE refreshcaption
+*--------------------------------------------
+* Setup.
+*--------------------------------------------
+LOCAL lcCaption
+*--------------------------------------------
+* Inherit form caption.
+*--------------------------------------------
+IF NOT EMPTY( m.This.cTitleProperty ) ;
+		AND TYPE( "m.Thisform." + m.This.cTitleProperty ) == "C"
+	lcCaption = EVALUATE( "m.Thisform." + m.This.cTitleProperty )
+ELSE
+	lcCaption = ""
+ENDIF	
+This.lblCaption.Caption = EVL( m.lcCaption, m.Thisform.Caption )
+
+ENDPROC
 PROCEDURE refreshdescription
 *--------------------------------------------
 * Setup.
@@ -488,6 +533,7 @@ Class[END RESERVED1]
 *_isabstract (internal)
 *automoveformcontrols 
 *moveformcontrols 
+*refreshcaption 
 *refreshdescription 
 *refreshimage 
 cdescriptionproperty Name of the form property that holds the text for edtDescription (optional)
@@ -902,29 +948,6 @@ PROCEDURE DblClick
 m.This.Parent.DblClick()
 
 ENDPROC
-PROCEDURE Init
-*--------------------------------------------
-* As this is the first control's Init() we
-* have to make sure that our settings object
-* exists.
-*--------------------------------------------
-IF NOT VARTYPE( _Screen.ThemedTitleBarSettings ) == "O"
-	_Screen.NewObject( "ThemedTitleBarSettings", m.This.Parent.cSettingsClass, m.This.Parent.cSettingsClassLib )
-ENDIF
-*--------------------------------------------
-* Forward changes to form caption or title
-* to this label.
-*--------------------------------------------
-LOCAL lnResult
-lnResult = BINDEVENT( Thisform, "Caption", This, "Refresh", 1 )
-ASSERT m.lnResult > 0 MESSAGE m.This.Name + ": BindEvent to Caption did not work"
-IF NOT EMPTY( m.This.Parent.cTitleProperty ) ;
-		AND TYPE( "m.Thisform." + m.This.Parent.cTitleProperty ) == "C"
-	lnResult = BINDEVENT( Thisform, m.This.Parent.cTitleProperty, This, "Refresh", 1 )
-	ASSERT m.lnResult > 0 MESSAGE m.This.Name + ": BindEvent to title property did not work"
-ENDIF
-
-ENDPROC
 PROCEDURE MouseDown
 LPARAMETERS tnButton, tnShift, tnXCoord, tnYCoord
 *--------------------------------------------
@@ -932,21 +955,6 @@ LPARAMETERS tnButton, tnShift, tnXCoord, tnYCoord
 * because there is the code to move the form.
 *--------------------------------------------
 m.This.Parent.MouseDown( m.tnButton, m.tnShift, m.tnXCoord, m.tnYCoord )
-
-ENDPROC
-PROCEDURE Refresh
-*--------------------------------------------
-* Setup.
-*--------------------------------------------
-LOCAL lcCaption
-*--------------------------------------------
-* Inherit form caption.
-*--------------------------------------------
-IF NOT EMPTY( m.This.Parent.cTitleProperty ) ;
-		AND TYPE( "m.Thisform." + m.This.Parent.cTitleProperty ) == "C"
-	lcCaption = EVALUATE( "m.Thisform." + m.This.Parent.cTitleProperty )
-ENDIF	
-This.Caption = EVL( m.lcCaption, m.Thisform.Caption )
 
 ENDPROC
 [END METHODS]
@@ -972,7 +980,7 @@ Name = "themedtitlebarsettingsbase"
 Width = 140
 ccaptionfontfamily = Segoe UI, Tahoma, Arial
 cdescriptionfontfamily = Segoe UI, Tahoma, Arial
-ntitlebarbackcolor = (RGB(0,0,0))
+ntitlebarbackcolor = (RGB(122,122,122))
 ntitlebarforecolor = (RGB(255,255,255))
 [END PROPERTIES]
 [START METHODS]
