@@ -63,8 +63,8 @@ LOCAL lcFormComment, lnFormMinHeight, lnFormMaxHeight
 WITH Thisform
 	*--------------------------------------------
 	* Some form properties must have certain
-	* values, thus shutting off the TitleBar has
-	* no adverse side effects.
+	* values, thus removing the default TitleBar
+	* has no adverse side effects.
 	*--------------------------------------------
 	lcFormComment = .Comment
 	lnFormMinHeight = .MinHeight
@@ -114,7 +114,7 @@ ENDWITH
 *--------------------------------------------
 This.Anchor = 0
 m.This.Move( 0, 0, m.Thisform.Width, m.This.Height )
-This.Anchor = 11
+This.Anchor = 10
 *--------------------------------------------
 * Position and anchor system buttons.
 *--------------------------------------------
@@ -128,13 +128,6 @@ STORE 9 TO This.cmdClose.Anchor, This.cmdMaximize.Anchor, This.cmdMinimize.Ancho
 *--------------------------------------------
 This.edtDescription.Width = m.This.Width - m.This.edtDescription.Left - 5
 This.edtDescription.Anchor = 11
-*--------------------------------------------
-* Windows API functions to move the form
-* dragging our own title bar.
-*--------------------------------------------
-DECLARE LONG ReleaseCapture IN Win32API AS ThemedTitleBar_ReleaseCapture
-DECLARE LONG SendMessage IN Win32API AS ThemedTitleBar_SendMessage ;
-	LONG hWnd, LONG wMsg, LONG wParam, LONG lParam
 *--------------------------------------------
 * Bind all form properties influencing the
 * system buttons' state to the Refresh event
@@ -216,13 +209,13 @@ IF TYPE( "m.Thisform." + m.This.cDescriptionProperty ) == "C"
 	ENDIF
 ENDIF
 *--------------------------------------------
-* Move all controls on the form downward by
-* title bar height at first Form.Show().
+* Always call This.AutoMoveFormControls() at
+* first Form.Show(). It decides if the other
+* controls on the form have to by moved
+* downward by TitleBar height.
 *--------------------------------------------
-IF m.This.lAutoMoveFormControls
-	lnResult = BINDEVENT( Thisform, "Show", This, "AutoMoveFormControls" )
-	ASSERT m.lnResult > 0 MESSAGE m.This.Name + ": BindEvent to Show did not work"
-ENDIF
+lnResult = BINDEVENT( Thisform, "Show", This, "AutoMoveFormControls" )
+ASSERT m.lnResult > 0 MESSAGE m.This.Name + ": BindEvent to Show did not work"
 
 ENDPROC
 PROCEDURE MouseDown
@@ -242,6 +235,13 @@ ENDIF
 #DEFINE WM_SYSCOMMAND 0x112
 #DEFINE WM_LBUTTONUP 0x202
 #DEFINE MOUSE_MOVE 0xf012
+*--------------------------------------------
+* Windows API functions to move the form
+* dragging our own title bar.
+*--------------------------------------------
+DECLARE LONG ReleaseCapture IN Win32API AS ThemedTitleBar_ReleaseCapture
+DECLARE LONG SendMessage IN Win32API AS ThemedTitleBar_SendMessage ;
+	LONG hWnd, LONG wMsg, LONG wParam, LONG lParam
 *--------------------------------------------
 * No idea what this API call really does...
 *--------------------------------------------
@@ -298,7 +298,9 @@ ENDPROC
 PROCEDURE automoveformcontrols
 LPARAMETERS tnShow
 UNBINDEVENTS( Thisform, "Show", This, "AutoMoveFormControls" )
-m.This.MoveFormControls()
+IF m.This.lAutoMoveFormControls
+	m.This.MoveFormControls()
+ENDIF
 
 ENDPROC
 PROCEDURE moveformcontrols
@@ -312,99 +314,119 @@ ENDIF
 *--------------------------------------------
 * Setup.
 *--------------------------------------------
-LOCAL lnPixel, i, loControl, laControls[1], lnControls, lnAnchor, lnFormHeight
-*
-WITH This
+LOCAL lnPixel, i, loControl, lnAnchor, lnFormHeight, lcFormComment
+lnFormHeight = m.Thisform.Height
+*--------------------------------------------
+* Move all form controls below a certain Top
+* downward by n pixels.
+*--------------------------------------------
+lnPixel = m.This.Height	
+FOR i = 1 TO m.Thisform.ControlCount
+	loControl = .NULL.
+	loControl = m.Thisform.Controls[ i ]
 	*--------------------------------------------
-	* Move all form controls below a certain Top
-	* downward by n n pixels.
+	* Ignore controls without a Top property
+	* (e.g. Collections).
 	*--------------------------------------------
-	lnPixel = .Height
-	lnControls = 0
-	FOR i = 1 TO m.Thisform.ControlCount
-		loControl = .NULL.
-		loControl = m.Thisform.Controls[ i ]
-		*--------------------------------------------
-		* Ignore controls without a Top property
-		* (e.g. Collections).
-		*--------------------------------------------
-		IF NOT PEMSTATUS( m.loControl, "Top", 5 )
-			LOOP
-		ENDIF
-		*--------------------------------------------
-		* Do we have to move this control?
-		*--------------------------------------------
-		IF m.loControl.Top < m.tnTop
-			LOOP
-		ENDIF
-		*--------------------------------------------
-		* Remember what we want to do.
-		*--------------------------------------------
-		lnControls = m.lnControls + 1
-		DIMENSION laControls[ m.lnControls, 3 ]
-		laControls[ m.lnControls, 1 ] = m.loControl
-		laControls[ m.lnControls, 2 ] = m.loControl.Top + m.lnPixel
-		IF PEMSTATUS( m.loControl, "Anchor", 5 )	&& Timers don't have an Anchor property.
-			laControls[ m.lnControls, 3 ] = m.loControl.Anchor
-			IF m.loControl.Anchor > 0
-				*--------------------------------------------
-				* Cancel anchoring to make moving possible.
-				*--------------------------------------------
-				loControl.Anchor = 0
-			ENDIF
-		ELSE
-			laControls[ m.lnControls, 3 ] = 0
-		ENDIF
-	ENDFOR
-	*--------------------------------------------
-	* Increase MinHeight by title bar height.
-	*--------------------------------------------
-	lnFormHeight = m.Thisform.Height
-	IF NOT m.Thisform.MinHeight == -1
-		Thisform.MinHeight = m.Thisform.MinHeight + m.lnPixel
+	IF NOT PEMSTATUS( m.loControl, "Top", 5 )
+		LOOP
 	ENDIF
 	*--------------------------------------------
-	* MaxHeight must allow the new height.
+	* Do we have to move this control?
 	*--------------------------------------------
-	IF NOT m.Thisform.MaxHeight == -1 ;
-			AND m.Thisform.MaxHeight < m.lnFormHeight
-		Thisform.MaxHeight = m.lnFormHeight
+	IF m.loControl.Top < m.tnTop
+		LOOP
 	ENDIF
 	*--------------------------------------------
-	* Increase form height by title bar height.
+	* Remember and cancel anchoring.
 	*--------------------------------------------
-	Thisform.Height = m.lnFormHeight + m.lnPixel
+	IF PEMSTATUS( m.loControl, "Anchor", 5 )	&& Timers don't have an Anchor property.
+		lnAnchor = m.loControl.Anchor
+		IF m.lnAnchor > 0
+			*--------------------------------------------
+			* Cancel anchoring to make moving possible.
+			*--------------------------------------------
+			loControl.Anchor = 0
+		ENDIF
+	ELSE
+		lnAnchor = 0
+	ENDIF
 	*--------------------------------------------
 	* If this form uses mwResize we have to
-	* inform it about the new height.
+	* inform mwResize that the control is moved.
 	*--------------------------------------------
-	IF PEMSTATUS( m.Thisform, "_nOriginalHeight", 5 )
-		Thisform._nOriginalHeight = m.Thisform._nOriginalHeight + m.lnPixel
+	IF PEMSTATUS( m.loControl, "_nOriginalTop", 5 )		&& Present only after first run of mwResize.Resize().
+		loControl._nOriginalTop = m.loControl._nOriginalTop + m.lnPixel
 	ENDIF
 	*--------------------------------------------
-	* Move controls and restore anchoring.
+	* Move control.
 	*--------------------------------------------
-	FOR i = 1 TO m.lnControls
-		laControls[ i, 1 ].Top = laControls[ i, 2 ]
-		IF laControls[ i, 3 ] > 0
-			laControls[ i, 1 ].Anchor = laControls[ i, 3 ]
-		ENDIF
-		laControls[ i, 1 ] = .NULL.
-	ENDFOR
+	loControl.Top = m.loControl.Top + m.lnPixel
 	*--------------------------------------------
-	* While moving controls we moved this
-	* control, too. So we have to move it back to
-	* the upper edge of the form.
+	* Restore anchoring.
 	*--------------------------------------------
-	IF .Anchor = 0
-		.Top = 0
-	ELSE
-		lnAnchor = .Anchor
-		.Anchor = 0
-		.Top = 0
-		.Anchor = m.lnAnchor
+	IF m.lnAnchor > 0
+		loControl.Anchor = m.lnAnchor
 	ENDIF
-ENDWITH
+ENDFOR
+*--------------------------------------------
+* While moving controls we moved this
+* control, too. So we have to move it back to
+* the upper edge of the form.
+*--------------------------------------------
+IF m.This.Anchor == 0
+	This.Top = 0
+ELSE
+	lnAnchor = m.This.Anchor
+	This.Anchor = 0
+	This.Top = 0
+	This.Anchor = m.lnAnchor
+ENDIF
+IF PEMSTATUS( m.This, "_nOriginalTop", 5 )
+	This._nOriginalTop = 0
+ENDIF
+*--------------------------------------------
+* Check if mwResize is present.
+*--------------------------------------------
+IF NOT PEMSTATUS( m.Thisform, "_nOriginalHeight", 5 )
+	*--------------------------------------------
+	* In case mwResize is present but didn't run
+	* up to now, trigger it once to create the
+	* above property.
+	*--------------------------------------------
+	lcFormComment = m.Thisform.Comment
+	Thisform.Comment = "*NORESIZE*"		&& Switch off mwResize temporary.
+	m.Thisform.Resize()					&& Force mwResize to save form size.
+	Thisform.Comment = m.lcFormComment
+ENDIF
+*--------------------------------------------
+* If this form uses mwResize we have to
+* inform it about the new height.
+*--------------------------------------------
+IF PEMSTATUS( m.Thisform, "_nOriginalHeight", 5 )
+	Thisform._nOriginalHeight = m.Thisform._nOriginalHeight + m.lnPixel
+ENDIF
+*--------------------------------------------
+* MaxHeight must allow the new height.
+*--------------------------------------------
+IF NOT m.Thisform.MaxHeight == -1 ;
+		AND m.Thisform.MaxHeight < m.lnFormHeight
+	Thisform.MaxHeight = m.lnFormHeight
+ENDIF
+*--------------------------------------------
+* Increase form height by title bar height.
+* This may trigger a run of mwResize.Resize()
+* if this form uses mwResize.
+*--------------------------------------------
+Thisform.Height = m.lnFormHeight + m.lnPixel
+*--------------------------------------------
+* Increase MinHeight by title bar height.
+* This may trigger a run of mwResize.Resize()
+* if this form uses mwResize.
+*--------------------------------------------
+IF NOT m.Thisform.MinHeight == -1
+	Thisform.MinHeight = m.Thisform.MinHeight + m.lnPixel
+ENDIF
 *--------------------------------------------
 * As we changed the form's height we have to
 * center it again if it was centered before.
@@ -417,7 +439,7 @@ ENDIF
 * Cleanup.
 *--------------------------------------------
 loControl = .NULL.
-RELEASE loControl, laControls
+RELEASE loControl
 
 ENDPROC
 PROCEDURE refreshcaption
@@ -747,6 +769,7 @@ ENDPROC
 Alignment = 1
 BackStyle = 0
 Caption = "1"
+FontBold = .T.
 FontName = "Marlett"
 Height = 14
 Left = 4
