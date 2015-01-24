@@ -314,13 +314,15 @@ ENDIF
 *--------------------------------------------
 * Setup.
 *--------------------------------------------
-LOCAL lnPixel, i, loControl, lnAnchor, lnFormHeight, lcFormComment
+LOCAL lnPixel, i, loControl, laControls[1], lnControls, ;
+	lnAnchor, lnFormHeight, lcFormComment
 lnFormHeight = m.Thisform.Height
 *--------------------------------------------
 * Move all form controls below a certain Top
 * downward by n pixels.
 *--------------------------------------------
 lnPixel = m.This.Height	
+lnControls = 0
 FOR i = 1 TO m.Thisform.ControlCount
 	loControl = .NULL.
 	loControl = m.Thisform.Controls[ i ]
@@ -338,53 +340,38 @@ FOR i = 1 TO m.Thisform.ControlCount
 		LOOP
 	ENDIF
 	*--------------------------------------------
-	* Remember and cancel anchoring.
+	* Remember what we want to do.
+	* laControls[] has three columns:
+	*  1 - control's object reference.
+	*  2 - control's Top value.
+	*  3 - control's Anchor value.
+	*  4 - control's _nOriginalTop value
+	*      (this is a mwResize property) or
+	*      .NULL. if this property doesn't exist.
 	*--------------------------------------------
+	lnControls = m.lnControls + 1
+	DIMENSION laControls[ m.lnControls, 4 ]
+	laControls[ m.lnControls, 1 ] = m.loControl
+	laControls[ m.lnControls, 2 ] = m.loControl.Top + m.lnPixel
+	*
 	IF PEMSTATUS( m.loControl, "Anchor", 5 )	&& Timers don't have an Anchor property.
-		lnAnchor = m.loControl.Anchor
-		IF m.lnAnchor > 0
+		laControls[ m.lnControls, 3 ] = m.loControl.Anchor
+		IF m.loControl.Anchor > 0
 			*--------------------------------------------
 			* Cancel anchoring to make moving possible.
 			*--------------------------------------------
 			loControl.Anchor = 0
 		ENDIF
 	ELSE
-		lnAnchor = 0
+		laControls[ m.lnControls, 3 ] = 0
 	ENDIF
-	*--------------------------------------------
-	* If this form uses mwResize we have to
-	* inform mwResize that the control is moved.
-	*--------------------------------------------
+	*
 	IF PEMSTATUS( m.loControl, "_nOriginalTop", 5 )		&& Present only after first run of mwResize.Resize().
-		loControl._nOriginalTop = m.loControl._nOriginalTop + m.lnPixel
-	ENDIF
-	*--------------------------------------------
-	* Move control.
-	*--------------------------------------------
-	loControl.Top = m.loControl.Top + m.lnPixel
-	*--------------------------------------------
-	* Restore anchoring.
-	*--------------------------------------------
-	IF m.lnAnchor > 0
-		loControl.Anchor = m.lnAnchor
+		laControls[ m.lnControls, 4 ] = m.loControl._nOriginalTop + m.lnPixel
+	ELSE
+		laControls[ m.lnControls, 4 ] = m.loControl.Top + m.lnPixel
 	ENDIF
 ENDFOR
-*--------------------------------------------
-* While moving controls we moved this
-* control, too. So we have to move it back to
-* the upper edge of the form.
-*--------------------------------------------
-IF m.This.Anchor == 0
-	This.Top = 0
-ELSE
-	lnAnchor = m.This.Anchor
-	This.Anchor = 0
-	This.Top = 0
-	This.Anchor = m.lnAnchor
-ENDIF
-IF PEMSTATUS( m.This, "_nOriginalTop", 5 )
-	This._nOriginalTop = 0
-ENDIF
 *--------------------------------------------
 * Check if mwResize is present.
 *--------------------------------------------
@@ -428,6 +415,36 @@ IF NOT m.Thisform.MinHeight == -1
 	Thisform.MinHeight = m.Thisform.MinHeight + m.lnPixel
 ENDIF
 *--------------------------------------------
+* Move controls. Restore anchoring and
+* mwResize _nOriginalTop.
+*--------------------------------------------
+FOR i = 1 TO m.lnControls
+	laControls[ i, 1 ].Top = laControls[ i, 2 ]
+	IF laControls[ i, 3 ] > 0
+		laControls[ i, 1 ].Anchor = laControls[ i, 3 ]
+	ENDIF
+	IF PEMSTATUS( laControls[ i, 1 ], "_nOriginalTop", 5 )		&& Present only after first run of mwResize.Resize().
+		laControls[ i, 1 ]._nOriginalTop = laControls[ i, 4 ]
+	ENDIF
+	laControls[ i, 1 ] = .NULL.
+ENDFOR
+*--------------------------------------------
+* While moving controls we moved this
+* control, too. So we have to move it back to
+* the upper edge of the form.
+*--------------------------------------------
+IF m.This.Anchor == 0
+	This.Top = 0
+ELSE
+	lnAnchor = m.This.Anchor
+	This.Anchor = 0
+	This.Top = 0
+	This.Anchor = m.lnAnchor
+ENDIF
+IF PEMSTATUS( m.This, "_nOriginalTop", 5 )
+	This._nOriginalTop = 0
+ENDIF
+*--------------------------------------------
 * As we changed the form's height we have to
 * center it again if it was centered before.
 *--------------------------------------------
@@ -439,7 +456,7 @@ ENDIF
 * Cleanup.
 *--------------------------------------------
 loControl = .NULL.
-RELEASE loControl
+RELEASE loControl, laControls
 
 ENDPROC
 PROCEDURE refreshcaption
