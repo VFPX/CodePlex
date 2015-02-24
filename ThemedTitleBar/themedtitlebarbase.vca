@@ -297,8 +297,40 @@ ENDIF
 ENDPROC
 PROCEDURE automoveformcontrols
 LPARAMETERS tnShow
+*--------------------------------------------
+* Make sure this method is called only once.
+*--------------------------------------------
 UNBINDEVENTS( Thisform, "Show", This, "AutoMoveFormControls" )
+*
 IF m.This.lAutoMoveFormControls
+	*--------------------------------------------
+	* Check if Form.Show() was called from
+	* Form.Init().
+	*--------------------------------------------
+	IF NOT m.Thisform.Visible
+		LOCAL laStackInfo[1], lnStackSize
+		lnStackSize = ASTACKINFO( laStackInfo )
+		IF m.lnStackSize > 1 ;
+				AND ".show" $ LOWER( laStackInfo[ m.lnStackSize - 1, 6 ] ) ;
+				AND LOWER(GETWORDNUM( laStackInfo[ m.lnStackSize, 3 ], 1, "." )) == LOWER(GETWORDNUM( laStackInfo[ m.lnStackSize - 1, 3 ], 1, "." ))
+			*--------------------------------------------
+			* By calling Form.Show() from Form.Init() the
+			* programmer changed the internal order of
+			* VFP's form events. If she also changed
+			* Form.Height within Form.Init(), anchoring
+			* didn't fire yet. I.e., the controls' Height
+			* and/or Top don't reflect the changed
+			* Form.Height.
+			* So let's make sure anchoring has fired at
+			* least once before MoveFormControls() is
+			* called. Making the form visible triggers
+			* VFP's anchoring.
+			*--------------------------------------------
+			Thisform.Visible = .T.
+			Thisform.Visible = .F.
+		ENDIF
+	ENDIF
+	*
 	m.This.MoveFormControls()
 ENDIF
 
@@ -341,7 +373,7 @@ FOR i = 1 TO m.Thisform.ControlCount
 	ENDIF
 	*--------------------------------------------
 	* Remember what we want to do.
-	* laControls[] has three columns:
+	* laControls[] has four columns:
 	*  1 - control's object reference.
 	*  2 - control's Top value.
 	*  3 - control's Anchor value.
