@@ -31,19 +31,19 @@
 	</xsd:schema>
 	<fxupersistgettemplate>
 		<userid>windows</userid>
-		<setting>THIS.Top = 43</setting>
+		<setting>THIS.Top = 244</setting>
 	</fxupersistgettemplate>
 	<fxupersistgettemplate>
 		<userid>windows</userid>
-		<setting>THIS.Left = 289</setting>
+		<setting>THIS.Left = 270</setting>
 	</fxupersistgettemplate>
 	<fxupersistgettemplate>
 		<userid>windows</userid>
-		<setting>THIS.Height = IIF(VERSION(5)&gt;=900,440,440)</setting>
+		<setting>THIS.Height = IIF(VERSION(5)&gt;=900,440,431)</setting>
 	</fxupersistgettemplate>
 	<fxupersistgettemplate>
 		<userid>windows</userid>
-		<setting>THIS.Width = IIF(VERSION(5)&gt;=900,640,640)</setting>
+		<setting>THIS.Width = IIF(VERSION(5)&gt;=900,640,638)</setting>
 	</fxupersistgettemplate>
 	<fxupersistgettemplate>
 		<userid>windows</userid>

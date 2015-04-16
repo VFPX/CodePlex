@@ -67,7 +67,7 @@
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
-		<setting>THIS.pgfDetails.ActivePage = 1</setting>
+		<setting>THIS.pgfDetails.ActivePage = 2</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
@@ -191,6 +191,6 @@
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
-		<setting>THIS.nSplitterPosition = 404</setting>
+		<setting>THIS.nSplitterPosition = 413</setting>
 	</foxunitpersist>
 </VFPData>
