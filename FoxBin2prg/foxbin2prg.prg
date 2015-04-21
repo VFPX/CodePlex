@@ -145,7 +145,7 @@
 * 05/03/2015	FDBOZZO		v1.19.42	Mejora: Permitir procesar los archivos de un proyecto sin convertir el PJX/2, usando *- (Lutz Scheffler)
 * 06/03/2015	FDBOZZO		v1.19.42	Bug Fix pjx: Permitir usar fin de linea (CR/LF) en los atributos de versión del PJX
 * 10/03/2015	FDBOZZO		v1.19.42	Mejora API: Agregado soporte de errOut e implementado en writeErrorLog
-* 10/03/2015	FDBOZZO		v1.19.42	Mejora: Agregado soporte total de comodines *? en nombres de archivo para procesar múltiples archivos de la misma extensión
+* 10/03/2015	FDBOZZO		v1.19.42	Mejora: Agregado soporte total de comodines *? en nombres de archivo para procesar múltiples archivos de la misma extensión (Lutz Scheffler)
 * 10/03/2015	FDBOZZO		v1.19.42	Mejora API: Nuevo parámetro para permitir un CFG alternativo (Lutz Scheffler)
 * 10/03/2015	FDBOZZO		v1.19.42	Mejora API: Nuevo método get_Processed() para obtener información de los archivos procesados (Lutz Scheffler)
 * 10/03/2015	FDBOZZO		v1.19.42	Mejora: Nueva salida de archivos procesados a stdOut (Lutz Scheffler)
@@ -2781,7 +2781,8 @@ DEFINE CLASS c_foxbin2prg AS Session
 			CD (JUSTPATH(THIS.c_CurDir))
 
 			DO CASE
-			CASE ATC('-SHOWMSG', ('-' + tcType)) >= 1 OR THIS.l_ShowErrors
+			CASE EVL( lcInputFile_Type, C_FILETYPE_QUERYSUPPORT ) <> C_FILETYPE_QUERYSUPPORT ;
+					AND ( ATC('-SHOWMSG', ('-' + tcType)) >= 1 OR THIS.l_ShowErrors )
 				THIS.writeErrorLog_Flush()
 
 				DO CASE
@@ -3439,10 +3440,23 @@ DEFINE CLASS c_foxbin2prg AS Session
 		* RETORNO					(@?    OUT) Objeto CFG
 		*---------------------------------------------------------------------------------------------------
 		LPARAMETERS tcDir
+
 		IF NOT EMPTY(tcDir)
 			THIS.evaluateConfiguration( '', '', '', '', '', '', '', '', tcDir, 'D' )
 		ENDIF
-		RETURN THIS.o_Configuration(THIS.n_CFG_Actual)
+
+		IF THIS.n_CFG_Actual = 0 THEN
+			loCFG = NULL
+		ELSE
+			loCFG = THIS.o_Configuration(THIS.n_CFG_Actual)
+		ENDIF
+
+		IF ISNULL(loCFG) THEN
+			lo_CFG	= CREATEOBJECT('CL_CFG')
+			lo_CFG.CopyFrom(THIS)
+		ENDIF
+
+		RETURN loCFG
 	ENDPROC
 
 
@@ -13473,7 +13487,7 @@ DEFINE CLASS c_conversor_vcx_a_prg AS c_conversor_bin_a_prg
 				lnStepCount	= 7
 				USE IN (SELECT("_TABLAORIG"))
 
-				INDEX ON PADR(LOWER(PLATFORM + IIF(EMPTY(PARENT),'',ALLTRIM(PARENT)+'.')+OBJNAME),240) TAG PARENT_OBJ OF TABLABIN ADDITIVE
+				INDEX ON PADR(LOWER(PLATFORM + IIF(EMPTY(PARENT),'',ALLTRIM(PARENT)+'.')+OBJNAME),240) TAG PARENT_OBJ ADDITIVE
 				SET ORDER TO 0 IN TABLABIN
 
 				.get_OLEPublicObjectName( @la_NombresObjsOle )
@@ -13803,7 +13817,7 @@ DEFINE CLASS c_conversor_scx_a_prg AS c_conversor_bin_a_prg
 				SELECT _TABLAORIG.*,RECNO() regnum FROM _TABLAORIG INTO CURSOR TABLABIN
 				USE IN (SELECT("_TABLAORIG"))
 
-				INDEX ON PADR(LOWER(PLATFORM + IIF(EMPTY(PARENT),'',ALLTRIM(PARENT)+'.')+OBJNAME),240) TAG PARENT_OBJ OF TABLABIN ADDITIVE
+				INDEX ON PADR(LOWER(PLATFORM + IIF(EMPTY(PARENT),'',ALLTRIM(PARENT)+'.')+OBJNAME),240) TAG PARENT_OBJ ADDITIVE
 				SET ORDER TO 0 IN TABLABIN
 
 				.get_OLEPublicObjectName( @la_NombresObjsOle )
@@ -22499,8 +22513,8 @@ DEFINE CLASS CL_MENU_COL_BASE AS CL_COL_BASE
 
 			FOR I = 1 TO lnLine_Count
 				*-- Si existe el snippet #NAME, lo usa
-				IF EMPTY(tcProcName) AND UPPER( LEFT( ALLTRIM(laProcLines(I)), 6 ) ) == '#NAME '
-					tcProcName	= ALLTRIM( SUBSTR( ALLTRIM(laProcLines(I)), 7 ) )
+				IF EMPTY(tcProcName) AND UPPER( LEFT( CHRTRAN( ALLTRIM(laProcLines(I)), C_TAB, ' ' ), 6 ) ) == '#NAME '
+					tcProcName	= ALLTRIM( SUBSTR( ALLTRIM( CHRTRAN( laProcLines(I), C_TAB, ' ' ) ), 7 ) )
 					EXIT
 				ENDIF
 			ENDFOR
@@ -23417,6 +23431,10 @@ DEFINE CLASS CL_MENU_BARPOP AS CL_MENU_COL_BASE
 						loReg.SCHEME			= IIF( loReg.OBJCODE = C_OBJCODE_MENUBARPOPUP_MENUBAR, 3, 4 )
 						loOption	= NULL
 
+						IF I = lnLast_I	&& No avanzó, debe salir.
+							EXIT
+						ENDIF
+
 					OTHERWISE	&& Otro valor
 						I	= I - 1
 						EXIT
@@ -23602,7 +23620,7 @@ DEFINE CLASS CL_MENU_OPTION AS CL_MENU_COL_BASE
 						loReg.OBJCODE = C_OBJCODE_MENUBARPOPUP_MENUBAR
 
 					CASE .analyzeCodeBlock_DefinePAD( @tcLine, @taCodeLines, @I, tnCodeLines, toConversor )
-						IF EMPTY(loReg.PROMPT)
+						IF loReg.PROMPT == ''
 							*-- Esta opción no corresponde a este nivel. Debe subir.
 							llBloqueEncontrado = .F.
 							EXIT
@@ -23612,7 +23630,7 @@ DEFINE CLASS CL_MENU_OPTION AS CL_MENU_COL_BASE
 						ENDIF
 
 					CASE .analyzeCodeBlock_DefineBAR( @tcLine, @taCodeLines, @I, tnCodeLines, toConversor )
-						IF EMPTY(loReg.PROMPT)
+						IF loReg.PROMPT == ''
 							*-- Esta opción no corresponde a este nivel. Debe subir.
 							llBloqueEncontrado = .F.
 							EXIT
@@ -23893,7 +23911,10 @@ DEFINE CLASS CL_MENU_OPTION AS CL_MENU_COL_BASE
 					loReg.ObjType		= C_OBJTYPE_MENUTYPE_OPTION
 					lcBarName			= ALLTRIM( STREXTRACT( tcLine, 'BAR ' , ' OF' ) )
 
-					IF NOT ISDIGIT(lcBarName)
+					IF ISDIGIT(lcBarName)
+						*-- Bar#
+						loReg.OBJCODE		= C_OBJCODE_MENUOPTION_BARNUM
+					ELSE
 						*-- Es un BAR del sistema
 						loReg.NAME	= lcBarName
 					ENDIF
@@ -24022,6 +24043,9 @@ DEFINE CLASS CL_MENU_OPTION AS CL_MENU_COL_BASE
 							ENDCASE
 
 							I = I + 1
+							EXIT
+
+						CASE LEFT( tcLine, 19 ) == 'ON SELECTION POPUP '
 							EXIT
 
 						OTHERWISE
