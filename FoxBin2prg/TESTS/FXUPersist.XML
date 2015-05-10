@@ -67,7 +67,7 @@
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
-		<setting>THIS.pgfDetails.ActivePage = 2</setting>
+		<setting>THIS.pgfDetails.ActivePage = 1</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
@@ -127,7 +127,7 @@
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
-		<setting>THIS.pgfDetails.pgMessages.FontBold = .T.</setting>
+		<setting>THIS.pgfDetails.pgMessages.FontBold = .F.</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
@@ -155,11 +155,11 @@
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
-		<setting>THIS.grdTests.COLUMN1.Width = 488</setting>
+		<setting>THIS.grdTests.Column1.Width = 488</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
-		<setting>THIS.grdTests.COLUMN2.Width = 1303</setting>
+		<setting>THIS.grdTests.Column2.Width = 1303</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
@@ -167,7 +167,7 @@
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
-		<setting>=SEEK("FT__FOXBIN2PRG__C_CONVERSOR_BIN_A_PRG                                                                         EVALUATE_RESULTS                                                                                                                  ",THIS.icGridRS,"TCLName")</setting>
+		<setting>=SEEK("                                                                                                                                                                                                                                                ",THIS.icGridRS,"TCLName")</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>windows</userid>
