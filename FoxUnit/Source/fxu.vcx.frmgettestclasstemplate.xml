@@ -154,6 +154,14 @@
 										</xsd:restriction>
 									</xsd:simpleType>
 								</xsd:element>
+								<xsd:element name="nrecno">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:decimal">
+											<xsd:totalDigits value="10"/>
+											<xsd:fractionDigits value="0"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
 							</xsd:sequence>
 						</xsd:complexType>
 					</xsd:element>
@@ -909,6 +917,270 @@ _memberdata XML Metadata for customizable properties
 		<reserved7/>
 		<reserved8/>
 		<user/>
+		<nrecno>21</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid/>
+		<class><![CDATA[checkbox]]></class>
+		<classloc/>
+		<baseclass><![CDATA[checkbox]]></baseclass>
+		<objname><![CDATA[chkProcedure]]></objname>
+		<parent><![CDATA[frmgettestclasstemplate]]></parent>
+		<properties><![CDATA[Top = 164
+Left = 32
+Height = 17
+Width = 540
+Alignment = 0
+BackStyle = 0
+Caption = 'Use "PROCEDURE MethodName" rather than "FUNCTION MethodName" for method names?'
+Value = .F.
+Enabled = .F.
+TabIndex = 2
+Name = "chkProcedure"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Init
+IF VERSION(5)>=900
+  *
+  *  2 = Left Absolute
+  *  4 = Bottom Absolute
+  *
+  THIS.Anchor = 2 + 4
+ENDIF
+ENDPROC
+PROCEDURE Refresh
+THIS.Enabled = THISFORM.lstTemplates.Value < 3
+
+
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>25</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid/>
+		<class><![CDATA[checkbox]]></class>
+		<classloc/>
+		<baseclass><![CDATA[checkbox]]></baseclass>
+		<objname><![CDATA[chkTab]]></objname>
+		<parent><![CDATA[frmgettestclasstemplate]]></parent>
+		<properties><![CDATA[Top = 180
+Left = 32
+Height = 17
+Width = 180
+Alignment = 0
+BackStyle = 0
+Caption = "Indent methods by one TAB?"
+Value = .T.
+Enabled = .F.
+TabIndex = 3
+Name = "chkTab"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Init
+IF VERSION(5)>=900
+  *
+  *  2 = Left Absolute
+  *  4 = Bottom Absolute
+  *
+  THIS.Anchor = 2 + 4
+ENDIF
+ENDPROC
+PROCEDURE Refresh
+THIS.Enabled = THISFORM.lstTemplates.Value < 3
+
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>26</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid/>
+		<class><![CDATA[commandbutton]]></class>
+		<classloc/>
+		<baseclass><![CDATA[commandbutton]]></baseclass>
+		<objname><![CDATA[cmdCancel]]></objname>
+		<parent><![CDATA[frmgettestclasstemplate]]></parent>
+		<properties><![CDATA[Top = 384
+Left = 544
+Height = 39
+Width = 84
+FontName = "Tahoma"
+Picture = ("FXUCancel.BMP")
+Cancel = .T.
+Caption = "\<Cancel"
+TabIndex = 7
+Name = "cmdCancel"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Click
+THISFORM.Release()
+ENDPROC
+PROCEDURE Init
+IF VERSION(5)>=900
+  *
+  *  4 = Bottom Absolute
+  *  8 = Right Absolute
+  *
+  THIS.Anchor = 8 + 4
+ENDIF
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>23</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid/>
+		<class><![CDATA[commandbutton]]></class>
+		<classloc/>
+		<baseclass><![CDATA[commandbutton]]></baseclass>
+		<objname><![CDATA[cmdCopyExistingPRG]]></objname>
+		<parent><![CDATA[frmgettestclasstemplate]]></parent>
+		<properties><![CDATA[Top = 328
+Left = 52
+Height = 40
+Width = 576
+FontName = "Tahoma"
+WordWrap = .T.
+Caption = "Copy an existing FoxUnit test case class (.PRG) to the new test case class"
+Default = .T.
+TabIndex = 6
+Name = "cmdCopyExistingPRG"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Click
+LOCAL lcTemplateFile
+
+lcTemplateFile = THISFORM.GetYourFXUTestToCopy()
+
+IF NOT VARTYPE(m.lcTemplateFile) = "C" OR EMPTY(m.lcTemplateFile)
+  RETURN
+ENDIF
+
+THISFORM.iuRetVal = m.lcTemplateFile + ",.NULL.,.NULL."
+
+THISFORM.Release()
+
+
+ENDPROC
+PROCEDURE Init
+IF VERSION(5)>=900
+  *
+  *  4 = Bottom Absolute
+  *  8 = Right Absolute
+  *  2 = Left Absolute
+  *
+  THIS.Anchor = 2 + 8 + 4
+ENDIF
+
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>28</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid/>
+		<class><![CDATA[commandbutton]]></class>
+		<classloc/>
+		<baseclass><![CDATA[commandbutton]]></baseclass>
+		<objname><![CDATA[cmdSelectCustomTemplate]]></objname>
+		<parent><![CDATA[frmgettestclasstemplate]]></parent>
+		<properties><![CDATA[Top = 264
+Left = 52
+Height = 40
+Width = 576
+FontName = "Tahoma"
+WordWrap = .T.
+Caption = "Select a custom FoxUnit template of your own.  If you select one that is not in the list above, it will be automatically added to the list the next time you invoke this dialog."
+Default = .F.
+TabIndex = 5
+Name = "cmdSelectCustomTemplate"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Click
+LOCAL lcTemplateFile
+
+lcTemplateFile = THISFORM.GetYourFXUTemplate()
+
+IF NOT VARTYPE(m.lcTemplateFile) = "C" OR EMPTY(m.lcTemplateFile)
+  RETURN
+ENDIF
+
+THISFORM.iuRetVal = m.lcTemplateFile + ",.NULL.,.NULL."
+
+THISFORM.Release()
+
+
+ENDPROC
+PROCEDURE Init
+IF VERSION(5)>=900
+  *
+  *  4 = Bottom Absolute
+  *  8 = Right Absolute
+  *  2 = Left Absolute
+  *
+  THIS.Anchor = 2 + 8 + 4
+ENDIF
+
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>27</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -987,31 +1259,28 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
+		<nrecno>22</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
 		<uniqueid/>
-		<class><![CDATA[commandbutton]]></class>
+		<class><![CDATA[label]]></class>
 		<classloc/>
-		<baseclass><![CDATA[commandbutton]]></baseclass>
-		<objname><![CDATA[cmdCancel]]></objname>
+		<baseclass><![CDATA[label]]></baseclass>
+		<objname><![CDATA[lblCancel]]></objname>
 		<parent><![CDATA[frmgettestclasstemplate]]></parent>
-		<properties><![CDATA[Top = 384
-Left = 544
-Height = 39
-Width = 84
-FontName = "Tahoma"
-Picture = ("FXUCancel.BMP")
-Cancel = .T.
-Caption = "\<Cancel"
-TabIndex = 7
-Name = "cmdCancel"
+		<properties><![CDATA[FontName = "Tahoma"
+WordWrap = .T.
+BackStyle = 0
+Caption = "(or Cancel/close this form if you have changed your mind and don't want to create a new FoxUnit test case class)"
+Height = 32
+Left = 220
+Top = 388
+Width = 316
+Name = "lblCancel"
 ]]></properties>
 		<protected/>
-		<methods><![CDATA[PROCEDURE Click
-THISFORM.Release()
-ENDPROC
-PROCEDURE Init
+		<methods><![CDATA[PROCEDURE Init
 IF VERSION(5)>=900
   *
   *  4 = Bottom Absolute
@@ -1032,6 +1301,93 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
+		<nrecno>31</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid/>
+		<class><![CDATA[label]]></class>
+		<classloc/>
+		<baseclass><![CDATA[label]]></baseclass>
+		<objname><![CDATA[lblOR1]]></objname>
+		<parent><![CDATA[frmgettestclasstemplate]]></parent>
+		<properties><![CDATA[FontBold = .T.
+FontName = "Tahoma"
+FontSize = 12
+BackStyle = 0
+Caption = "-OR-"
+Height = 17
+Left = 12
+Top = 272
+Width = 40
+Name = "lblOR1"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Init
+IF VERSION(5)>=900
+  *
+  *  4 = Bottom Absolute
+  *  2 = Left Absolute
+  *
+  THIS.Anchor = 4 + 2
+ENDIF
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>29</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid/>
+		<class><![CDATA[label]]></class>
+		<classloc/>
+		<baseclass><![CDATA[label]]></baseclass>
+		<objname><![CDATA[lblOR2]]></objname>
+		<parent><![CDATA[frmgettestclasstemplate]]></parent>
+		<properties><![CDATA[FontBold = .T.
+FontName = "Tahoma"
+FontSize = 12
+BackStyle = 0
+Caption = "-OR-"
+Height = 17
+Left = 12
+Top = 340
+Width = 40
+Name = "lblOR2"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Init
+IF VERSION(5)>=900
+  *
+  *  4 = Bottom Absolute
+  *  2 = Left Absolute
+  *
+  THIS.Anchor = 4 + 2
+ENDIF
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>30</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -1124,344 +1480,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-	</class>
-	<class>
-		<platform>WINDOWS</platform>
-		<uniqueid/>
-		<class><![CDATA[checkbox]]></class>
-		<classloc/>
-		<baseclass><![CDATA[checkbox]]></baseclass>
-		<objname><![CDATA[chkProcedure]]></objname>
-		<parent><![CDATA[frmgettestclasstemplate]]></parent>
-		<properties><![CDATA[Top = 164
-Left = 32
-Height = 17
-Width = 540
-Alignment = 0
-BackStyle = 0
-Caption = 'Use "PROCEDURE MethodName" rather than "FUNCTION MethodName" for method names?'
-Value = .F.
-Enabled = .F.
-TabIndex = 2
-Name = "chkProcedure"
-]]></properties>
-		<protected/>
-		<methods><![CDATA[PROCEDURE Init
-IF VERSION(5)>=900
-  *
-  *  2 = Left Absolute
-  *  4 = Bottom Absolute
-  *
-  THIS.Anchor = 2 + 4
-ENDIF
-ENDPROC
-PROCEDURE Refresh
-THIS.Enabled = THISFORM.lstTemplates.Value < 3
-
-
-ENDPROC
-]]></methods>
-		<ole/>
-		<ole2/>
-		<reserved1/>
-		<reserved2/>
-		<reserved3/>
-		<reserved4/>
-		<reserved5/>
-		<reserved6/>
-		<reserved7/>
-		<reserved8/>
-		<user/>
-	</class>
-	<class>
-		<platform>WINDOWS</platform>
-		<uniqueid/>
-		<class><![CDATA[checkbox]]></class>
-		<classloc/>
-		<baseclass><![CDATA[checkbox]]></baseclass>
-		<objname><![CDATA[chkTab]]></objname>
-		<parent><![CDATA[frmgettestclasstemplate]]></parent>
-		<properties><![CDATA[Top = 180
-Left = 32
-Height = 17
-Width = 180
-Alignment = 0
-BackStyle = 0
-Caption = "Indent methods by one TAB?"
-Value = .T.
-Enabled = .F.
-TabIndex = 3
-Name = "chkTab"
-]]></properties>
-		<protected/>
-		<methods><![CDATA[PROCEDURE Init
-IF VERSION(5)>=900
-  *
-  *  2 = Left Absolute
-  *  4 = Bottom Absolute
-  *
-  THIS.Anchor = 2 + 4
-ENDIF
-ENDPROC
-PROCEDURE Refresh
-THIS.Enabled = THISFORM.lstTemplates.Value < 3
-
-ENDPROC
-]]></methods>
-		<ole/>
-		<ole2/>
-		<reserved1/>
-		<reserved2/>
-		<reserved3/>
-		<reserved4/>
-		<reserved5/>
-		<reserved6/>
-		<reserved7/>
-		<reserved8/>
-		<user/>
-	</class>
-	<class>
-		<platform>WINDOWS</platform>
-		<uniqueid/>
-		<class><![CDATA[commandbutton]]></class>
-		<classloc/>
-		<baseclass><![CDATA[commandbutton]]></baseclass>
-		<objname><![CDATA[cmdSelectCustomTemplate]]></objname>
-		<parent><![CDATA[frmgettestclasstemplate]]></parent>
-		<properties><![CDATA[Top = 264
-Left = 52
-Height = 40
-Width = 576
-FontName = "Tahoma"
-WordWrap = .T.
-Caption = "Select a custom FoxUnit template of your own.  If you select one that is not in the list above, it will be automatically added to the list the next time you invoke this dialog."
-Default = .F.
-TabIndex = 5
-Name = "cmdSelectCustomTemplate"
-]]></properties>
-		<protected/>
-		<methods><![CDATA[PROCEDURE Click
-LOCAL lcTemplateFile
-
-lcTemplateFile = THISFORM.GetYourFXUTemplate()
-
-IF NOT VARTYPE(m.lcTemplateFile) = "C" OR EMPTY(m.lcTemplateFile)
-  RETURN
-ENDIF
-
-THISFORM.iuRetVal = m.lcTemplateFile + ",.NULL.,.NULL."
-
-THISFORM.Release()
-
-
-ENDPROC
-PROCEDURE Init
-IF VERSION(5)>=900
-  *
-  *  4 = Bottom Absolute
-  *  8 = Right Absolute
-  *  2 = Left Absolute
-  *
-  THIS.Anchor = 2 + 8 + 4
-ENDIF
-
-ENDPROC
-]]></methods>
-		<ole/>
-		<ole2/>
-		<reserved1/>
-		<reserved2/>
-		<reserved3/>
-		<reserved4/>
-		<reserved5/>
-		<reserved6/>
-		<reserved7/>
-		<reserved8/>
-		<user/>
-	</class>
-	<class>
-		<platform>WINDOWS</platform>
-		<uniqueid/>
-		<class><![CDATA[commandbutton]]></class>
-		<classloc/>
-		<baseclass><![CDATA[commandbutton]]></baseclass>
-		<objname><![CDATA[cmdCopyExistingPRG]]></objname>
-		<parent><![CDATA[frmgettestclasstemplate]]></parent>
-		<properties><![CDATA[Top = 328
-Left = 52
-Height = 40
-Width = 576
-FontName = "Tahoma"
-WordWrap = .T.
-Caption = "Copy an existing FoxUnit test case class (.PRG) to the new test case class"
-Default = .T.
-TabIndex = 6
-Name = "cmdCopyExistingPRG"
-]]></properties>
-		<protected/>
-		<methods><![CDATA[PROCEDURE Click
-LOCAL lcTemplateFile
-
-lcTemplateFile = THISFORM.GetYourFXUTestToCopy()
-
-IF NOT VARTYPE(m.lcTemplateFile) = "C" OR EMPTY(m.lcTemplateFile)
-  RETURN
-ENDIF
-
-THISFORM.iuRetVal = m.lcTemplateFile + ",.NULL.,.NULL."
-
-THISFORM.Release()
-
-
-ENDPROC
-PROCEDURE Init
-IF VERSION(5)>=900
-  *
-  *  4 = Bottom Absolute
-  *  8 = Right Absolute
-  *  2 = Left Absolute
-  *
-  THIS.Anchor = 2 + 8 + 4
-ENDIF
-
-ENDPROC
-]]></methods>
-		<ole/>
-		<ole2/>
-		<reserved1/>
-		<reserved2/>
-		<reserved3/>
-		<reserved4/>
-		<reserved5/>
-		<reserved6/>
-		<reserved7/>
-		<reserved8/>
-		<user/>
-	</class>
-	<class>
-		<platform>WINDOWS</platform>
-		<uniqueid/>
-		<class><![CDATA[label]]></class>
-		<classloc/>
-		<baseclass><![CDATA[label]]></baseclass>
-		<objname><![CDATA[lblOR1]]></objname>
-		<parent><![CDATA[frmgettestclasstemplate]]></parent>
-		<properties><![CDATA[FontBold = .T.
-FontName = "Tahoma"
-FontSize = 12
-BackStyle = 0
-Caption = "-OR-"
-Height = 17
-Left = 12
-Top = 272
-Width = 40
-Name = "lblOR1"
-]]></properties>
-		<protected/>
-		<methods><![CDATA[PROCEDURE Init
-IF VERSION(5)>=900
-  *
-  *  4 = Bottom Absolute
-  *  2 = Left Absolute
-  *
-  THIS.Anchor = 4 + 2
-ENDIF
-ENDPROC
-]]></methods>
-		<ole/>
-		<ole2/>
-		<reserved1/>
-		<reserved2/>
-		<reserved3/>
-		<reserved4/>
-		<reserved5/>
-		<reserved6/>
-		<reserved7/>
-		<reserved8/>
-		<user/>
-	</class>
-	<class>
-		<platform>WINDOWS</platform>
-		<uniqueid/>
-		<class><![CDATA[label]]></class>
-		<classloc/>
-		<baseclass><![CDATA[label]]></baseclass>
-		<objname><![CDATA[lblOR2]]></objname>
-		<parent><![CDATA[frmgettestclasstemplate]]></parent>
-		<properties><![CDATA[FontBold = .T.
-FontName = "Tahoma"
-FontSize = 12
-BackStyle = 0
-Caption = "-OR-"
-Height = 17
-Left = 12
-Top = 340
-Width = 40
-Name = "lblOR2"
-]]></properties>
-		<protected/>
-		<methods><![CDATA[PROCEDURE Init
-IF VERSION(5)>=900
-  *
-  *  4 = Bottom Absolute
-  *  2 = Left Absolute
-  *
-  THIS.Anchor = 4 + 2
-ENDIF
-ENDPROC
-]]></methods>
-		<ole/>
-		<ole2/>
-		<reserved1/>
-		<reserved2/>
-		<reserved3/>
-		<reserved4/>
-		<reserved5/>
-		<reserved6/>
-		<reserved7/>
-		<reserved8/>
-		<user/>
-	</class>
-	<class>
-		<platform>WINDOWS</platform>
-		<uniqueid/>
-		<class><![CDATA[label]]></class>
-		<classloc/>
-		<baseclass><![CDATA[label]]></baseclass>
-		<objname><![CDATA[lblCancel]]></objname>
-		<parent><![CDATA[frmgettestclasstemplate]]></parent>
-		<properties><![CDATA[FontName = "Tahoma"
-WordWrap = .T.
-BackStyle = 0
-Caption = "(or Cancel/close this form if you have changed your mind and don't want to create a new FoxUnit test case class)"
-Height = 32
-Left = 220
-Top = 388
-Width = 316
-Name = "lblCancel"
-]]></properties>
-		<protected/>
-		<methods><![CDATA[PROCEDURE Init
-IF VERSION(5)>=900
-  *
-  *  4 = Bottom Absolute
-  *  8 = Right Absolute
-  *
-  THIS.Anchor = 8 + 4
-ENDIF
-ENDPROC
-]]></methods>
-		<ole/>
-		<ole2/>
-		<reserved1/>
-		<reserved2/>
-		<reserved3/>
-		<reserved4/>
-		<reserved5/>
-		<reserved6/>
-		<reserved7/>
-		<reserved8/>
-		<user/>
+		<nrecno>24</nrecno>
 	</class>
 	<class>
 		<platform>COMMENT</platform>
@@ -1485,5 +1504,6 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
+		<nrecno>32</nrecno>
 	</class>
 </VFPData>

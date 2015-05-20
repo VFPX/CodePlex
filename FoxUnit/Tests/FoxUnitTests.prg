@@ -238,6 +238,10 @@ this.assertequals(o1,o2,"These objects are not equal.")
 	* 2. Implement the test by removing these comments and the default assertion and writing your own test code.
   RETURN This.AssertNotImplemented()
 
+  
+
+
+
   ENDFUNC
 
 **********************************************************************

@@ -154,6 +154,14 @@
 										</xsd:restriction>
 									</xsd:simpleType>
 								</xsd:element>
+								<xsd:element name="nrecno">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:decimal">
+											<xsd:totalDigits value="10"/>
+											<xsd:fractionDigits value="0"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
 							</xsd:sequence>
 						</xsd:complexType>
 					</xsd:element>
@@ -266,37 +274,7 @@ _memberdata XML Metadata for customizable properties
 		<reserved7/>
 		<reserved8/>
 		<user/>
-	</class>
-	<class>
-		<platform>WINDOWS</platform>
-		<uniqueid/>
-		<class><![CDATA[label]]></class>
-		<classloc/>
-		<baseclass><![CDATA[label]]></baseclass>
-		<objname><![CDATA[Label3]]></objname>
-		<parent><![CDATA[frmfxunewtestclass]]></parent>
-		<properties><![CDATA[Caption = ""
-Height = 25
-Left = 12
-Top = 4
-Width = 625
-ForeColor = 255,0,0
-ZOrderSet = 0
-Name = "Label3"
-]]></properties>
-		<protected/>
-		<methods/>
-		<ole/>
-		<ole2/>
-		<reserved1/>
-		<reserved2/>
-		<reserved3/>
-		<reserved4/>
-		<reserved5/>
-		<reserved6/>
-		<reserved7/>
-		<reserved8/>
-		<user/>
+		<nrecno>33</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -329,6 +307,157 @@ Name = "Label1"
 		<reserved7/>
 		<reserved8/>
 		<user/>
+		<nrecno>35</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid/>
+		<class><![CDATA[label]]></class>
+		<classloc/>
+		<baseclass><![CDATA[label]]></baseclass>
+		<objname><![CDATA[Label2]]></objname>
+		<parent><![CDATA[frmfxunewtestclass]]></parent>
+		<properties><![CDATA[FontBold = .T.
+FontName = "Verdana"
+Caption = "Test Class/File Name:"
+Height = 24
+Left = 12
+Top = 71
+Width = 156
+ZOrderSet = 3
+Name = "Label2"
+]]></properties>
+		<protected/>
+		<methods/>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>37</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid/>
+		<class><![CDATA[label]]></class>
+		<classloc/>
+		<baseclass><![CDATA[label]]></baseclass>
+		<objname><![CDATA[Label3]]></objname>
+		<parent><![CDATA[frmfxunewtestclass]]></parent>
+		<properties><![CDATA[Caption = ""
+Height = 25
+Left = 12
+Top = 4
+Width = 625
+ForeColor = 255,0,0
+ZOrderSet = 0
+Name = "Label3"
+]]></properties>
+		<protected/>
+		<methods/>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>34</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid/>
+		<class><![CDATA[commandbutton]]></class>
+		<classloc/>
+		<baseclass><![CDATA[commandbutton]]></baseclass>
+		<objname><![CDATA[cmdCancel]]></objname>
+		<parent><![CDATA[frmfxunewtestclass]]></parent>
+		<properties><![CDATA[Top = 103
+Left = 552
+Height = 39
+Width = 84
+Picture = ("FXUCancel.BMP")
+Cancel = .T.
+Caption = "\<Cancel"
+TabIndex = 3
+ZOrderSet = 5
+Name = "cmdCancel"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Click
+thisform.CancelAction()
+
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>39</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid/>
+		<class><![CDATA[commandbutton]]></class>
+		<classloc/>
+		<baseclass><![CDATA[commandbutton]]></baseclass>
+		<objname><![CDATA[cmdCreate]]></objname>
+		<parent><![CDATA[frmfxunewtestclass]]></parent>
+		<properties><![CDATA[Top = 103
+Left = 456
+Height = 39
+Width = 84
+Picture = ("FXUFormClose.BMP")
+Caption = "\<OK"
+Default = .T.
+Enabled = .F.
+TabIndex = 2
+ZOrderSet = 4
+Name = "cmdCreate"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Click
+thisform.OKAction()
+
+
+
+*	thisform.icCurrentTestFolder = ADDBS(ALLTRIM(thisform.txtCurrentTestFolder.Value))
+*	thisform.icNewTestClass = ALLTRIM(thisform.txtTestClassName.Value)
+*	pcNewTestClass = ADDBS(thisform.icCurrentTestFolder) + FORCEEXT(thisform.icNewTestClass,".prg")
+
+*	thisform.Release
+
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>38</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -388,121 +517,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-	</class>
-	<class>
-		<platform>WINDOWS</platform>
-		<uniqueid/>
-		<class><![CDATA[label]]></class>
-		<classloc/>
-		<baseclass><![CDATA[label]]></baseclass>
-		<objname><![CDATA[Label2]]></objname>
-		<parent><![CDATA[frmfxunewtestclass]]></parent>
-		<properties><![CDATA[FontBold = .T.
-FontName = "Verdana"
-Caption = "Test Class/File Name:"
-Height = 24
-Left = 12
-Top = 71
-Width = 156
-ZOrderSet = 3
-Name = "Label2"
-]]></properties>
-		<protected/>
-		<methods/>
-		<ole/>
-		<ole2/>
-		<reserved1/>
-		<reserved2/>
-		<reserved3/>
-		<reserved4/>
-		<reserved5/>
-		<reserved6/>
-		<reserved7/>
-		<reserved8/>
-		<user/>
-	</class>
-	<class>
-		<platform>WINDOWS</platform>
-		<uniqueid/>
-		<class><![CDATA[commandbutton]]></class>
-		<classloc/>
-		<baseclass><![CDATA[commandbutton]]></baseclass>
-		<objname><![CDATA[cmdCreate]]></objname>
-		<parent><![CDATA[frmfxunewtestclass]]></parent>
-		<properties><![CDATA[Top = 103
-Left = 456
-Height = 39
-Width = 84
-Picture = ("FXUFormClose.BMP")
-Caption = "\<OK"
-Default = .T.
-Enabled = .F.
-TabIndex = 2
-ZOrderSet = 4
-Name = "cmdCreate"
-]]></properties>
-		<protected/>
-		<methods><![CDATA[PROCEDURE Click
-thisform.OKAction()
-
-
-
-*	thisform.icCurrentTestFolder = ADDBS(ALLTRIM(thisform.txtCurrentTestFolder.Value))
-*	thisform.icNewTestClass = ALLTRIM(thisform.txtTestClassName.Value)
-*	pcNewTestClass = ADDBS(thisform.icCurrentTestFolder) + FORCEEXT(thisform.icNewTestClass,".prg")
-
-*	thisform.Release
-
-ENDPROC
-]]></methods>
-		<ole/>
-		<ole2/>
-		<reserved1/>
-		<reserved2/>
-		<reserved3/>
-		<reserved4/>
-		<reserved5/>
-		<reserved6/>
-		<reserved7/>
-		<reserved8/>
-		<user/>
-	</class>
-	<class>
-		<platform>WINDOWS</platform>
-		<uniqueid/>
-		<class><![CDATA[commandbutton]]></class>
-		<classloc/>
-		<baseclass><![CDATA[commandbutton]]></baseclass>
-		<objname><![CDATA[cmdCancel]]></objname>
-		<parent><![CDATA[frmfxunewtestclass]]></parent>
-		<properties><![CDATA[Top = 103
-Left = 552
-Height = 39
-Width = 84
-Picture = ("FXUCancel.BMP")
-Cancel = .T.
-Caption = "\<Cancel"
-TabIndex = 3
-ZOrderSet = 5
-Name = "cmdCancel"
-]]></properties>
-		<protected/>
-		<methods><![CDATA[PROCEDURE Click
-thisform.CancelAction()
-
-ENDPROC
-]]></methods>
-		<ole/>
-		<ole2/>
-		<reserved1/>
-		<reserved2/>
-		<reserved3/>
-		<reserved4/>
-		<reserved5/>
-		<reserved6/>
-		<reserved7/>
-		<reserved8/>
-		<user/>
+		<nrecno>36</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -534,6 +549,7 @@ Name = "txtCurrentTestFolder"
 		<reserved7/>
 		<reserved8/>
 		<user/>
+		<nrecno>40</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -571,6 +587,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
+		<nrecno>41</nrecno>
 	</class>
 	<class>
 		<platform>COMMENT</platform>
@@ -594,5 +611,6 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
+		<nrecno>42</nrecno>
 	</class>
 </VFPData>

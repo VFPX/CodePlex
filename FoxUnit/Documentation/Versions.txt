@@ -1,5 +1,8 @@
 (See the FoxUnit Wiki page on the VFPX CodePlex page https://vfpx.codeplex.com/wikipage?title=FoxUnit&referringTitle=Documentation for complete information)
 
+VFPX Release 1.42 - May 20, 2015
+Added an option to keep the visual results from previous tests intact when running new tests.
+
 VFPX Release 1.41 - November 11, 2014
 Added a new assertion, AssertNotImplemented()
 Made that the default function call on new tests
