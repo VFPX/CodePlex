@@ -154,6 +154,14 @@
 										</xsd:restriction>
 									</xsd:simpleType>
 								</xsd:element>
+								<xsd:element name="nrecno">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:decimal">
+											<xsd:totalDigits value="10"/>
+											<xsd:fractionDigits value="0"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
 							</xsd:sequence>
 						</xsd:complexType>
 					</xsd:element>
@@ -224,6 +232,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
+		<nrecno>9</nrecno>
 	</class>
 	<class>
 		<platform>COMMENT</platform>
@@ -247,5 +256,6 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
+		<nrecno>10</nrecno>
 	</class>
 </VFPData>

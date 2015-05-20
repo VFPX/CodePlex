@@ -154,6 +154,14 @@
 										</xsd:restriction>
 									</xsd:simpleType>
 								</xsd:element>
+								<xsd:element name="nrecno">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:decimal">
+											<xsd:totalDigits value="10"/>
+											<xsd:fractionDigits value="0"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
 							</xsd:sequence>
 						</xsd:complexType>
 					</xsd:element>
@@ -362,144 +370,7 @@ _memberdata XML Metadata for customizable properties
 		<reserved7/>
 		<reserved8/>
 		<user/>
-	</class>
-	<class>
-		<platform>WINDOWS</platform>
-		<uniqueid/>
-		<class><![CDATA[listbox]]></class>
-		<classloc/>
-		<baseclass><![CDATA[listbox]]></baseclass>
-		<objname><![CDATA[lstFiles]]></objname>
-		<parent><![CDATA[fxufrmloadclass]]></parent>
-		<properties><![CDATA[RowSourceType = 5
-RowSource = "thisform.iaFiles"
-Height = 333
-Left = 8
-MultiSelect = .T.
-Top = 12
-Width = 648
-Name = "lstFiles"
-]]></properties>
-		<protected/>
-		<methods><![CDATA[PROCEDURE DblClick
-thisform.OkAction()
-ENDPROC
-]]></methods>
-		<ole/>
-		<ole2/>
-		<reserved1/>
-		<reserved2/>
-		<reserved3/>
-		<reserved4/>
-		<reserved5/>
-		<reserved6/>
-		<reserved7/>
-		<reserved8/>
-		<user/>
-	</class>
-	<class>
-		<platform>WINDOWS</platform>
-		<uniqueid/>
-		<class><![CDATA[commandbutton]]></class>
-		<classloc/>
-		<baseclass><![CDATA[commandbutton]]></baseclass>
-		<objname><![CDATA[cmdLoad]]></objname>
-		<parent><![CDATA[fxufrmloadclass]]></parent>
-		<properties><![CDATA[Top = 236
-Left = 665
-Height = 48
-Width = 84
-Picture = (("fxuclassload.bmp"))
-Caption = "\<Load"
-Default = .F.
-Name = "cmdLoad"
-]]></properties>
-		<protected/>
-		<methods><![CDATA[PROCEDURE Click
-thisform.okAction()
-
-ENDPROC
-]]></methods>
-		<ole/>
-		<ole2/>
-		<reserved1/>
-		<reserved2/>
-		<reserved3/>
-		<reserved4/>
-		<reserved5/>
-		<reserved6/>
-		<reserved7/>
-		<reserved8/>
-		<user/>
-	</class>
-	<class>
-		<platform>WINDOWS</platform>
-		<uniqueid/>
-		<class><![CDATA[commandbutton]]></class>
-		<classloc/>
-		<baseclass><![CDATA[commandbutton]]></baseclass>
-		<objname><![CDATA[cmdCancel]]></objname>
-		<parent><![CDATA[fxufrmloadclass]]></parent>
-		<properties><![CDATA[Top = 297
-Left = 665
-Height = 48
-Width = 84
-Picture = ('fxucancel.bmp')
-Cancel = .T.
-Caption = "\<Cancel"
-Name = "cmdCancel"
-]]></properties>
-		<protected/>
-		<methods><![CDATA[PROCEDURE Click
-thisform.cancelaction()
-ENDPROC
-]]></methods>
-		<ole/>
-		<ole2/>
-		<reserved1/>
-		<reserved2/>
-		<reserved3/>
-		<reserved4/>
-		<reserved5/>
-		<reserved6/>
-		<reserved7/>
-		<reserved8/>
-		<user/>
-	</class>
-	<class>
-		<platform>WINDOWS</platform>
-		<uniqueid/>
-		<class><![CDATA[checkbox]]></class>
-		<classloc/>
-		<baseclass><![CDATA[checkbox]]></baseclass>
-		<objname><![CDATA[chkTestCasesOnly]]></objname>
-		<parent><![CDATA[fxufrmloadclass]]></parent>
-		<properties><![CDATA[Top = 354
-Left = 8
-Height = 17
-Width = 112
-Alignment = 0
-Caption = "Test Cases Only"
-Value = .T.
-ToolTipText = "Only list programs that are a test case class."
-Name = "chkTestCasesOnly"
-]]></properties>
-		<protected/>
-		<methods><![CDATA[PROCEDURE Click
-thisform.getTestCases()
-ENDPROC
-]]></methods>
-		<ole/>
-		<ole2/>
-		<reserved1/>
-		<reserved2/>
-		<reserved3/>
-		<reserved4/>
-		<reserved5/>
-		<reserved6/>
-		<reserved7/>
-		<reserved8/>
-		<user/>
+		<nrecno>11</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -535,6 +406,43 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
+		<nrecno>16</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid/>
+		<class><![CDATA[checkbox]]></class>
+		<classloc/>
+		<baseclass><![CDATA[checkbox]]></baseclass>
+		<objname><![CDATA[chkTestCasesOnly]]></objname>
+		<parent><![CDATA[fxufrmloadclass]]></parent>
+		<properties><![CDATA[Top = 354
+Left = 8
+Height = 17
+Width = 112
+Alignment = 0
+Caption = "Test Cases Only"
+Value = .T.
+ToolTipText = "Only list programs that are a test case class."
+Name = "chkTestCasesOnly"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Click
+thisform.getTestCases()
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>15</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -570,6 +478,42 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
+		<nrecno>17</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid/>
+		<class><![CDATA[commandbutton]]></class>
+		<classloc/>
+		<baseclass><![CDATA[commandbutton]]></baseclass>
+		<objname><![CDATA[cmdCancel]]></objname>
+		<parent><![CDATA[fxufrmloadclass]]></parent>
+		<properties><![CDATA[Top = 297
+Left = 665
+Height = 48
+Width = 84
+Picture = ('fxucancel.bmp')
+Cancel = .T.
+Caption = "\<Cancel"
+Name = "cmdCancel"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Click
+thisform.cancelaction()
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>14</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -604,6 +548,43 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
+		<nrecno>18</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid/>
+		<class><![CDATA[commandbutton]]></class>
+		<classloc/>
+		<baseclass><![CDATA[commandbutton]]></baseclass>
+		<objname><![CDATA[cmdLoad]]></objname>
+		<parent><![CDATA[fxufrmloadclass]]></parent>
+		<properties><![CDATA[Top = 236
+Left = 665
+Height = 48
+Width = 84
+Picture = (("fxuclassload.bmp"))
+Caption = "\<Load"
+Default = .F.
+Name = "cmdLoad"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Click
+thisform.okAction()
+
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>13</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -638,6 +619,42 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
+		<nrecno>19</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid/>
+		<class><![CDATA[listbox]]></class>
+		<classloc/>
+		<baseclass><![CDATA[listbox]]></baseclass>
+		<objname><![CDATA[lstFiles]]></objname>
+		<parent><![CDATA[fxufrmloadclass]]></parent>
+		<properties><![CDATA[RowSourceType = 5
+RowSource = "thisform.iaFiles"
+Height = 333
+Left = 8
+MultiSelect = .T.
+Top = 12
+Width = 648
+Name = "lstFiles"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE DblClick
+thisform.OkAction()
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>12</nrecno>
 	</class>
 	<class>
 		<platform>COMMENT</platform>
@@ -661,5 +678,6 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
+		<nrecno>20</nrecno>
 	</class>
 </VFPData>

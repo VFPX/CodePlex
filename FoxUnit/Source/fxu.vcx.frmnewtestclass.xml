@@ -154,6 +154,14 @@
 										</xsd:restriction>
 									</xsd:simpleType>
 								</xsd:element>
+								<xsd:element name="nrecno">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:decimal">
+											<xsd:totalDigits value="10"/>
+											<xsd:fractionDigits value="0"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
 							</xsd:sequence>
 						</xsd:complexType>
 					</xsd:element>
@@ -1037,121 +1045,7 @@ iclasterrormessage Error messages
 		<reserved7/>
 		<reserved8/>
 		<user/>
-	</class>
-	<class>
-		<platform>WINDOWS</platform>
-		<uniqueid>_44L0ZDGSS</uniqueid>
-		<class><![CDATA[label]]></class>
-		<classloc/>
-		<baseclass><![CDATA[label]]></baseclass>
-		<objname><![CDATA[lblValidationMsg]]></objname>
-		<parent><![CDATA[frmnewtestclass]]></parent>
-		<properties><![CDATA[FontName = "Verdana"
-FontSize = 9
-Caption = ""
-Height = 25
-Left = 12
-Top = 341
-Width = 625
-TabIndex = 3
-ForeColor = 255,0,0
-ZOrderSet = 0
-Name = "lblValidationMsg"
-]]></properties>
-		<protected/>
-		<methods/>
-		<ole/>
-		<ole2/>
-		<reserved1/>
-		<reserved2/>
-		<reserved3/>
-		<reserved4/>
-		<reserved5/>
-		<reserved6/>
-		<reserved7/>
-		<reserved8/>
-		<user/>
-	</class>
-	<class>
-		<platform>WINDOWS</platform>
-		<uniqueid>_44L0ZDGS6</uniqueid>
-		<class><![CDATA[label]]></class>
-		<classloc/>
-		<baseclass><![CDATA[label]]></baseclass>
-		<objname><![CDATA[lblTestFolder]]></objname>
-		<parent><![CDATA[frmnewtestclass]]></parent>
-		<properties><![CDATA[AutoSize = .T.
-FontBold = .F.
-FontName = "Verdana"
-FontSize = 9
-Caption = "Test Folder:"
-Height = 16
-Left = 12
-Top = 288
-Width = 77
-TabIndex = 19
-ZOrderSet = 1
-Name = "lblTestFolder"
-]]></properties>
-		<protected/>
-		<methods/>
-		<ole/>
-		<ole2/>
-		<reserved1/>
-		<reserved2/>
-		<reserved3/>
-		<reserved4/>
-		<reserved5/>
-		<reserved6/>
-		<reserved7/>
-		<reserved8/>
-		<user/>
-	</class>
-	<class>
-		<platform>WINDOWS</platform>
-		<uniqueid>_44L0ZDGSP</uniqueid>
-		<class><![CDATA[commandbutton]]></class>
-		<classloc/>
-		<baseclass><![CDATA[commandbutton]]></baseclass>
-		<objname><![CDATA[cmdPickTestFolder]]></objname>
-		<parent><![CDATA[frmnewtestclass]]></parent>
-		<properties><![CDATA[Top = 284
-Left = 594
-Height = 25
-Width = 24
-FontName = "Verdana"
-FontSize = 9
-Caption = "..."
-TabIndex = 21
-ZOrderSet = 2
-Name = "cmdPickTestFolder"
-]]></properties>
-		<protected/>
-		<methods><![CDATA[PROCEDURE Click
-ThisForm.pickTestFolder()
-
- 
-ENDPROC
-PROCEDURE LostFocus
-IF !EMPTY(thisform.icclassvalidationmessage)
-	thisform.txtTestClassName.SetFocus()
-ELSE
-	thisform.cmdSelectCustomTemplate.SetFocus()
-ENDIF
-
-ENDPROC
-]]></methods>
-		<ole/>
-		<ole2/>
-		<reserved1/>
-		<reserved2/>
-		<reserved3/>
-		<reserved4/>
-		<reserved5/>
-		<reserved6/>
-		<reserved7/>
-		<reserved8/>
-		<user/>
+		<nrecno>43</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -1187,6 +1081,153 @@ Name = "Label2"
 		<reserved7/>
 		<reserved8/>
 		<user/>
+		<nrecno>47</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid/>
+		<class><![CDATA[checkbox]]></class>
+		<classloc/>
+		<baseclass><![CDATA[checkbox]]></baseclass>
+		<objname><![CDATA[chkProcedure]]></objname>
+		<parent><![CDATA[frmnewtestclass]]></parent>
+		<properties><![CDATA[Top = 235
+Left = 13
+Height = 16
+Width = 471
+FontName = "Verdana"
+FontSize = 9
+WordWrap = .F.
+AutoSize = .F.
+Alignment = 6
+BackStyle = 0
+Caption = 'Use "PROCEDURE MethodName" rather than "FUNCTION MethodName" '
+Value = .F.
+ControlSource = "w"
+Enabled = .F.
+TabIndex = 17
+Name = "chkProcedure"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Init
+IF VERSION(5)>=900
+  *
+  *  2 = Left Absolute
+  *  4 = Bottom Absolute
+  *
+  THIS.Anchor = 2 + 4
+ENDIF
+ENDPROC
+PROCEDURE Refresh
+THIS.Enabled = THISFORM.lstTemplates.Value < 3
+
+
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>53</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid/>
+		<class><![CDATA[checkbox]]></class>
+		<classloc/>
+		<baseclass><![CDATA[checkbox]]></baseclass>
+		<objname><![CDATA[chkTab]]></objname>
+		<parent><![CDATA[frmnewtestclass]]></parent>
+		<properties><![CDATA[Top = 219
+Left = 13
+Height = 16
+Width = 194
+FontName = "Verdana"
+FontSize = 9
+AutoSize = .F.
+Alignment = 0
+BackStyle = 0
+Caption = "Indent methods by one TAB"
+Value = .T.
+ControlSource = "ThisForm.lUseTabs"
+Enabled = .F.
+TabIndex = 16
+Name = "chkTab"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Init
+IF VERSION(5)>=900
+  *
+  *  2 = Left Absolute
+  *  4 = Bottom Absolute
+  *
+  THIS.Anchor = 2 + 4
+ENDIF
+ENDPROC
+PROCEDURE Refresh
+THIS.Enabled = THISFORM.lstTemplates.Value < 3
+
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>54</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid/>
+		<class><![CDATA[commandbutton]]></class>
+		<classloc/>
+		<baseclass><![CDATA[commandbutton]]></baseclass>
+		<objname><![CDATA[cmdAdd]]></objname>
+		<parent><![CDATA[frmnewtestclass]]></parent>
+		<properties><![CDATA[AutoSize = .F.
+Top = 33
+Left = 594
+Height = 27
+Width = 27
+FontName = "Verdana"
+FontSize = 9
+Picture = ..\graphics\list2_add.png
+Caption = "+"
+TabIndex = 8
+ToolTipText = "Add a template file to this list"
+PicturePosition = 14
+Name = "cmdAdd"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Click
+_Screen.ActiveForm.AddTemplate()
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>59</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -1243,6 +1284,484 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
+		<nrecno>48</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid>_44L0ZDGS3</uniqueid>
+		<class><![CDATA[commandbutton]]></class>
+		<classloc/>
+		<baseclass><![CDATA[commandbutton]]></baseclass>
+		<objname><![CDATA[cmdEditTemplate]]></objname>
+		<parent><![CDATA[frmnewtestclass]]></parent>
+		<properties><![CDATA[AutoSize = .F.
+Top = 87
+Left = 594
+Height = 27
+Width = 27
+FontName = "Verdana"
+FontSize = 9
+Picture = ..\graphics\list_information.png
+Caption = "M"
+TabIndex = 10
+ToolTipText = "Modify the Selected Template"
+PicturePosition = 14
+Name = "cmdEditTemplate"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Click
+_Screen.ActiveForm.ModifyTemplate()
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>61</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid>_44L0ZDGSP</uniqueid>
+		<class><![CDATA[commandbutton]]></class>
+		<classloc/>
+		<baseclass><![CDATA[commandbutton]]></baseclass>
+		<objname><![CDATA[cmdPickTestFolder]]></objname>
+		<parent><![CDATA[frmnewtestclass]]></parent>
+		<properties><![CDATA[Top = 284
+Left = 594
+Height = 25
+Width = 24
+FontName = "Verdana"
+FontSize = 9
+Caption = "..."
+TabIndex = 21
+ZOrderSet = 2
+Name = "cmdPickTestFolder"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Click
+ThisForm.pickTestFolder()
+
+ 
+ENDPROC
+PROCEDURE LostFocus
+IF !EMPTY(thisform.icclassvalidationmessage)
+	thisform.txtTestClassName.SetFocus()
+ELSE
+	thisform.cmdSelectCustomTemplate.SetFocus()
+ENDIF
+
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>46</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid/>
+		<class><![CDATA[commandbutton]]></class>
+		<classloc/>
+		<baseclass><![CDATA[commandbutton]]></baseclass>
+		<objname><![CDATA[cmdRemoveTemplate]]></objname>
+		<parent><![CDATA[frmnewtestclass]]></parent>
+		<properties><![CDATA[AutoSize = .F.
+Top = 60
+Left = 594
+Height = 27
+Width = 27
+FontName = "Verdana"
+FontSize = 9
+Picture = ..\graphics\list1_delete.png
+Caption = "-"
+TabIndex = 9
+ToolTipText = "Remove the selected template file from this list"
+PicturePosition = 14
+Name = "cmdRemoveTemplate"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Click
+_Screen.ActiveForm.RemoveTemplate()
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>60</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid/>
+		<class><![CDATA[commandbutton]]></class>
+		<classloc/>
+		<baseclass><![CDATA[commandbutton]]></baseclass>
+		<objname><![CDATA[cmdSelectCustomTemplate]]></objname>
+		<parent><![CDATA[frmnewtestclass]]></parent>
+		<properties><![CDATA[Top = 114
+Left = 594
+Height = 28
+Width = 27
+FontName = "Verdana"
+FontSize = 9
+WordWrap = .T.
+Picture = ..\graphics\list_go.png
+Caption = "C"
+Default = .F.
+TabIndex = 11
+ToolTipText = "Select a custom FoxUnit template of your own.  If you select one that is not in the list above, it will be automatically added to the list the next time you invoke this dialog."
+PicturePosition = 14
+Name = "cmdSelectCustomTemplate"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Click
+LOCAL lcTemplateFile
+
+lcTemplateFile = THISFORM.GetYourFXUTemplate()
+
+IF NOT VARTYPE(m.lcTemplateFile) = "C" OR EMPTY(m.lcTemplateFile)
+  RETURN
+ENDIF
+
+THISFORM.iuRetVal = m.lcTemplateFile + ",.NULL.,.NULL."
+
+* THISFORM.Release()
+
+
+ENDPROC
+PROCEDURE Init
+IF VERSION(5)>=900
+  *
+  *  4 = Bottom Absolute
+  *  8 = Right Absolute
+  *  2 = Left Absolute
+  *
+  THIS.Anchor = 2 + 8 + 4
+ENDIF
+
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>55</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid/>
+		<class><![CDATA[commandbutton]]></class>
+		<classloc/>
+		<baseclass><![CDATA[commandbutton]]></baseclass>
+		<objname><![CDATA[cmdSelectFile]]></objname>
+		<parent><![CDATA[frmnewtestclass]]></parent>
+		<properties><![CDATA[AutoSize = .F.
+Top = 151
+Left = 225
+Height = 25
+Width = 64
+FontName = "Verdana"
+FontSize = 9
+WordWrap = .T.
+Caption = "Select..."
+Default = .T.
+TabIndex = 13
+Visible = .F.
+Name = "cmdSelectFile"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Click
+ThisForm.SelectFile()
+
+
+ENDPROC
+PROCEDURE Init
+IF VERSION(5)>=900
+  *
+  *  4 = Bottom Absolute
+  *  8 = Right Absolute
+  *  2 = Left Absolute
+  *
+  THIS.Anchor = 2 + 8 + 4
+ENDIF
+
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>56</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid/>
+		<class><![CDATA[label]]></class>
+		<classloc/>
+		<baseclass><![CDATA[label]]></baseclass>
+		<objname><![CDATA[lblCopyExisting]]></objname>
+		<parent><![CDATA[frmnewtestclass]]></parent>
+		<properties><![CDATA[AutoSize = .T.
+FontBold = .F.
+FontName = "Verdana"
+FontSize = 9
+BackStyle = 0
+Caption = ""
+Height = 16
+Left = 36
+Top = 155
+Width = 2
+TabIndex = 12
+Name = "lblCopyExisting"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Init
+IF VERSION(5)>=900
+  *
+  *  4 = Bottom Absolute
+  *  2 = Left Absolute
+  *
+  THIS.Anchor = 4 + 2
+ENDIF
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>62</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid/>
+		<class><![CDATA[label]]></class>
+		<classloc/>
+		<baseclass><![CDATA[label]]></baseclass>
+		<objname><![CDATA[lblOptions]]></objname>
+		<parent><![CDATA[frmnewtestclass]]></parent>
+		<properties><![CDATA[AutoSize = .T.
+FontName = "Verdana"
+FontSize = 9
+Caption = "Code Options:"
+Height = 16
+Left = 12
+Top = 203
+Width = 93
+TabIndex = 15
+ForeColor = 128,0,0
+Name = "lblOptions"
+]]></properties>
+		<protected/>
+		<methods/>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>58</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid>_44L0ZDGT8</uniqueid>
+		<class><![CDATA[label]]></class>
+		<classloc/>
+		<baseclass><![CDATA[label]]></baseclass>
+		<objname><![CDATA[lblSaveAs]]></objname>
+		<parent><![CDATA[frmnewtestclass]]></parent>
+		<properties><![CDATA[AutoSize = .T.
+FontName = "Verdana"
+FontSize = 9
+Caption = "Save as:"
+Height = 16
+Left = 12
+Top = 264
+Width = 57
+TabIndex = 18
+ForeColor = 128,0,0
+Name = "lblSaveAs"
+]]></properties>
+		<protected/>
+		<methods/>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>64</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid/>
+		<class><![CDATA[label]]></class>
+		<classloc/>
+		<baseclass><![CDATA[label]]></baseclass>
+		<objname><![CDATA[lblTemplate]]></objname>
+		<parent><![CDATA[frmnewtestclass]]></parent>
+		<properties><![CDATA[AutoSize = .T.
+FontBold = .F.
+FontName = "Tahoma"
+FontSize = 12
+Anchor = 3
+BackStyle = 0
+Caption = "Template"
+Height = 21
+Left = 12
+Top = 10
+Width = 68
+TabIndex = 5
+ForeColor = 128,0,0
+Name = "lblTemplate"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Init
+IF VERSION(5)>=900
+  *
+  *  4 = Bottom Absolute
+  *  2 = Left Absolute
+  *
+  THIS.Anchor = 4 + 2
+ENDIF
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>57</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid>_44L0ZDGS6</uniqueid>
+		<class><![CDATA[label]]></class>
+		<classloc/>
+		<baseclass><![CDATA[label]]></baseclass>
+		<objname><![CDATA[lblTestFolder]]></objname>
+		<parent><![CDATA[frmnewtestclass]]></parent>
+		<properties><![CDATA[AutoSize = .T.
+FontBold = .F.
+FontName = "Verdana"
+FontSize = 9
+Caption = "Test Folder:"
+Height = 16
+Left = 12
+Top = 288
+Width = 77
+TabIndex = 19
+ZOrderSet = 1
+Name = "lblTestFolder"
+]]></properties>
+		<protected/>
+		<methods/>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>45</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid>_44L0ZDGSS</uniqueid>
+		<class><![CDATA[label]]></class>
+		<classloc/>
+		<baseclass><![CDATA[label]]></baseclass>
+		<objname><![CDATA[lblValidationMsg]]></objname>
+		<parent><![CDATA[frmnewtestclass]]></parent>
+		<properties><![CDATA[FontName = "Verdana"
+FontSize = 9
+Caption = ""
+Height = 25
+Left = 12
+Top = 341
+Width = 625
+TabIndex = 3
+ForeColor = 255,0,0
+ZOrderSet = 0
+Name = "lblValidationMsg"
+]]></properties>
+		<protected/>
+		<methods/>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>44</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -1336,575 +1855,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-	</class>
-	<class>
-		<platform>WINDOWS</platform>
-		<uniqueid>_44L0ZDGS9</uniqueid>
-		<class><![CDATA[textbox]]></class>
-		<classloc/>
-		<baseclass><![CDATA[textbox]]></baseclass>
-		<objname><![CDATA[txtCurrentTestFolder]]></objname>
-		<parent><![CDATA[frmnewtestclass]]></parent>
-		<properties><![CDATA[FontName = "Verdana"
-FontSize = 9
-ControlSource = "ThisForm.cTestFolder"
-Height = 25
-Left = 152
-ReadOnly = .T.
-TabIndex = 20
-Top = 284
-Width = 438
-ZOrderSet = 6
-Name = "txtCurrentTestFolder"
-]]></properties>
-		<protected/>
-		<methods/>
-		<ole/>
-		<ole2/>
-		<reserved1/>
-		<reserved2/>
-		<reserved3/>
-		<reserved4/>
-		<reserved5/>
-		<reserved6/>
-		<reserved7/>
-		<reserved8/>
-		<user/>
-	</class>
-	<class>
-		<platform>WINDOWS</platform>
-		<uniqueid/>
-		<class><![CDATA[textbox]]></class>
-		<classloc/>
-		<baseclass><![CDATA[textbox]]></baseclass>
-		<objname><![CDATA[txtExistingFile]]></objname>
-		<parent><![CDATA[frmnewtestclass]]></parent>
-		<properties><![CDATA[FontName = "Verdana"
-FontSize = 9
-ControlSource = "ThisForm.cExistingFile"
-Height = 25
-Left = 290
-TabIndex = 14
-TabStop = .F.
-Top = 151
-Visible = .F.
-Width = 298
-ZOrderSet = 7
-Name = "txtExistingFile"
-]]></properties>
-		<protected/>
-		<methods><![CDATA[PROCEDURE InteractiveChange
-thisform.ValidateTestClass()
-ENDPROC
-]]></methods>
-		<ole/>
-		<ole2/>
-		<reserved1/>
-		<reserved2/>
-		<reserved3/>
-		<reserved4/>
-		<reserved5/>
-		<reserved6/>
-		<reserved7/>
-		<reserved8/>
-		<user/>
-	</class>
-	<class>
-		<platform>WINDOWS</platform>
-		<uniqueid/>
-		<class><![CDATA[textbox]]></class>
-		<classloc/>
-		<baseclass><![CDATA[textbox]]></baseclass>
-		<objname><![CDATA[txtTestClassName]]></objname>
-		<parent><![CDATA[frmnewtestclass]]></parent>
-		<properties><![CDATA[FontName = "Verdana"
-FontSize = 9
-ControlSource = "ThisForm.cClassName"
-Height = 25
-Left = 152
-TabIndex = 2
-Top = 314
-Width = 437
-ZOrderSet = 7
-Name = "txtTestClassName"
-]]></properties>
-		<protected/>
-		<methods><![CDATA[PROCEDURE Valid
-RETURN thisform.ValidateTestClass()
-
-ENDPROC
-]]></methods>
-		<ole/>
-		<ole2/>
-		<reserved1/>
-		<reserved2/>
-		<reserved3/>
-		<reserved4/>
-		<reserved5/>
-		<reserved6/>
-		<reserved7/>
-		<reserved8/>
-		<user/>
-	</class>
-	<class>
-		<platform>WINDOWS</platform>
-		<uniqueid/>
-		<class><![CDATA[checkbox]]></class>
-		<classloc/>
-		<baseclass><![CDATA[checkbox]]></baseclass>
-		<objname><![CDATA[chkProcedure]]></objname>
-		<parent><![CDATA[frmnewtestclass]]></parent>
-		<properties><![CDATA[Top = 235
-Left = 13
-Height = 16
-Width = 471
-FontName = "Verdana"
-FontSize = 9
-WordWrap = .F.
-AutoSize = .F.
-Alignment = 6
-BackStyle = 0
-Caption = 'Use "PROCEDURE MethodName" rather than "FUNCTION MethodName" '
-Value = .F.
-ControlSource = "w"
-Enabled = .F.
-TabIndex = 17
-Name = "chkProcedure"
-]]></properties>
-		<protected/>
-		<methods><![CDATA[PROCEDURE Init
-IF VERSION(5)>=900
-  *
-  *  2 = Left Absolute
-  *  4 = Bottom Absolute
-  *
-  THIS.Anchor = 2 + 4
-ENDIF
-ENDPROC
-PROCEDURE Refresh
-THIS.Enabled = THISFORM.lstTemplates.Value < 3
-
-
-ENDPROC
-]]></methods>
-		<ole/>
-		<ole2/>
-		<reserved1/>
-		<reserved2/>
-		<reserved3/>
-		<reserved4/>
-		<reserved5/>
-		<reserved6/>
-		<reserved7/>
-		<reserved8/>
-		<user/>
-	</class>
-	<class>
-		<platform>WINDOWS</platform>
-		<uniqueid/>
-		<class><![CDATA[checkbox]]></class>
-		<classloc/>
-		<baseclass><![CDATA[checkbox]]></baseclass>
-		<objname><![CDATA[chkTab]]></objname>
-		<parent><![CDATA[frmnewtestclass]]></parent>
-		<properties><![CDATA[Top = 219
-Left = 13
-Height = 16
-Width = 194
-FontName = "Verdana"
-FontSize = 9
-AutoSize = .F.
-Alignment = 0
-BackStyle = 0
-Caption = "Indent methods by one TAB"
-Value = .T.
-ControlSource = "ThisForm.lUseTabs"
-Enabled = .F.
-TabIndex = 16
-Name = "chkTab"
-]]></properties>
-		<protected/>
-		<methods><![CDATA[PROCEDURE Init
-IF VERSION(5)>=900
-  *
-  *  2 = Left Absolute
-  *  4 = Bottom Absolute
-  *
-  THIS.Anchor = 2 + 4
-ENDIF
-ENDPROC
-PROCEDURE Refresh
-THIS.Enabled = THISFORM.lstTemplates.Value < 3
-
-ENDPROC
-]]></methods>
-		<ole/>
-		<ole2/>
-		<reserved1/>
-		<reserved2/>
-		<reserved3/>
-		<reserved4/>
-		<reserved5/>
-		<reserved6/>
-		<reserved7/>
-		<reserved8/>
-		<user/>
-	</class>
-	<class>
-		<platform>WINDOWS</platform>
-		<uniqueid/>
-		<class><![CDATA[commandbutton]]></class>
-		<classloc/>
-		<baseclass><![CDATA[commandbutton]]></baseclass>
-		<objname><![CDATA[cmdSelectCustomTemplate]]></objname>
-		<parent><![CDATA[frmnewtestclass]]></parent>
-		<properties><![CDATA[Top = 114
-Left = 594
-Height = 28
-Width = 27
-FontName = "Verdana"
-FontSize = 9
-WordWrap = .T.
-Picture = ..\graphics\list_go.png
-Caption = "C"
-Default = .F.
-TabIndex = 11
-ToolTipText = "Select a custom FoxUnit template of your own.  If you select one that is not in the list above, it will be automatically added to the list the next time you invoke this dialog."
-PicturePosition = 14
-Name = "cmdSelectCustomTemplate"
-]]></properties>
-		<protected/>
-		<methods><![CDATA[PROCEDURE Click
-LOCAL lcTemplateFile
-
-lcTemplateFile = THISFORM.GetYourFXUTemplate()
-
-IF NOT VARTYPE(m.lcTemplateFile) = "C" OR EMPTY(m.lcTemplateFile)
-  RETURN
-ENDIF
-
-THISFORM.iuRetVal = m.lcTemplateFile + ",.NULL.,.NULL."
-
-* THISFORM.Release()
-
-
-ENDPROC
-PROCEDURE Init
-IF VERSION(5)>=900
-  *
-  *  4 = Bottom Absolute
-  *  8 = Right Absolute
-  *  2 = Left Absolute
-  *
-  THIS.Anchor = 2 + 8 + 4
-ENDIF
-
-ENDPROC
-]]></methods>
-		<ole/>
-		<ole2/>
-		<reserved1/>
-		<reserved2/>
-		<reserved3/>
-		<reserved4/>
-		<reserved5/>
-		<reserved6/>
-		<reserved7/>
-		<reserved8/>
-		<user/>
-	</class>
-	<class>
-		<platform>WINDOWS</platform>
-		<uniqueid/>
-		<class><![CDATA[commandbutton]]></class>
-		<classloc/>
-		<baseclass><![CDATA[commandbutton]]></baseclass>
-		<objname><![CDATA[cmdSelectFile]]></objname>
-		<parent><![CDATA[frmnewtestclass]]></parent>
-		<properties><![CDATA[AutoSize = .F.
-Top = 151
-Left = 225
-Height = 25
-Width = 64
-FontName = "Verdana"
-FontSize = 9
-WordWrap = .T.
-Caption = "Select..."
-Default = .T.
-TabIndex = 13
-Visible = .F.
-Name = "cmdSelectFile"
-]]></properties>
-		<protected/>
-		<methods><![CDATA[PROCEDURE Click
-ThisForm.SelectFile()
-
-
-ENDPROC
-PROCEDURE Init
-IF VERSION(5)>=900
-  *
-  *  4 = Bottom Absolute
-  *  8 = Right Absolute
-  *  2 = Left Absolute
-  *
-  THIS.Anchor = 2 + 8 + 4
-ENDIF
-
-ENDPROC
-]]></methods>
-		<ole/>
-		<ole2/>
-		<reserved1/>
-		<reserved2/>
-		<reserved3/>
-		<reserved4/>
-		<reserved5/>
-		<reserved6/>
-		<reserved7/>
-		<reserved8/>
-		<user/>
-	</class>
-	<class>
-		<platform>WINDOWS</platform>
-		<uniqueid/>
-		<class><![CDATA[label]]></class>
-		<classloc/>
-		<baseclass><![CDATA[label]]></baseclass>
-		<objname><![CDATA[lblTemplate]]></objname>
-		<parent><![CDATA[frmnewtestclass]]></parent>
-		<properties><![CDATA[AutoSize = .T.
-FontBold = .F.
-FontName = "Tahoma"
-FontSize = 12
-Anchor = 3
-BackStyle = 0
-Caption = "Template"
-Height = 21
-Left = 12
-Top = 10
-Width = 68
-TabIndex = 5
-ForeColor = 128,0,0
-Name = "lblTemplate"
-]]></properties>
-		<protected/>
-		<methods><![CDATA[PROCEDURE Init
-IF VERSION(5)>=900
-  *
-  *  4 = Bottom Absolute
-  *  2 = Left Absolute
-  *
-  THIS.Anchor = 4 + 2
-ENDIF
-ENDPROC
-]]></methods>
-		<ole/>
-		<ole2/>
-		<reserved1/>
-		<reserved2/>
-		<reserved3/>
-		<reserved4/>
-		<reserved5/>
-		<reserved6/>
-		<reserved7/>
-		<reserved8/>
-		<user/>
-	</class>
-	<class>
-		<platform>WINDOWS</platform>
-		<uniqueid/>
-		<class><![CDATA[label]]></class>
-		<classloc/>
-		<baseclass><![CDATA[label]]></baseclass>
-		<objname><![CDATA[lblOptions]]></objname>
-		<parent><![CDATA[frmnewtestclass]]></parent>
-		<properties><![CDATA[AutoSize = .T.
-FontName = "Verdana"
-FontSize = 9
-Caption = "Code Options:"
-Height = 16
-Left = 12
-Top = 203
-Width = 93
-TabIndex = 15
-ForeColor = 128,0,0
-Name = "lblOptions"
-]]></properties>
-		<protected/>
-		<methods/>
-		<ole/>
-		<ole2/>
-		<reserved1/>
-		<reserved2/>
-		<reserved3/>
-		<reserved4/>
-		<reserved5/>
-		<reserved6/>
-		<reserved7/>
-		<reserved8/>
-		<user/>
-	</class>
-	<class>
-		<platform>WINDOWS</platform>
-		<uniqueid/>
-		<class><![CDATA[commandbutton]]></class>
-		<classloc/>
-		<baseclass><![CDATA[commandbutton]]></baseclass>
-		<objname><![CDATA[cmdAdd]]></objname>
-		<parent><![CDATA[frmnewtestclass]]></parent>
-		<properties><![CDATA[AutoSize = .F.
-Top = 33
-Left = 594
-Height = 27
-Width = 27
-FontName = "Verdana"
-FontSize = 9
-Picture = ..\graphics\list2_add.png
-Caption = "+"
-TabIndex = 8
-ToolTipText = "Add a template file to this list"
-PicturePosition = 14
-Name = "cmdAdd"
-]]></properties>
-		<protected/>
-		<methods><![CDATA[PROCEDURE Click
-_Screen.ActiveForm.AddTemplate()
-ENDPROC
-]]></methods>
-		<ole/>
-		<ole2/>
-		<reserved1/>
-		<reserved2/>
-		<reserved3/>
-		<reserved4/>
-		<reserved5/>
-		<reserved6/>
-		<reserved7/>
-		<reserved8/>
-		<user/>
-	</class>
-	<class>
-		<platform>WINDOWS</platform>
-		<uniqueid/>
-		<class><![CDATA[commandbutton]]></class>
-		<classloc/>
-		<baseclass><![CDATA[commandbutton]]></baseclass>
-		<objname><![CDATA[cmdRemoveTemplate]]></objname>
-		<parent><![CDATA[frmnewtestclass]]></parent>
-		<properties><![CDATA[AutoSize = .F.
-Top = 60
-Left = 594
-Height = 27
-Width = 27
-FontName = "Verdana"
-FontSize = 9
-Picture = ..\graphics\list1_delete.png
-Caption = "-"
-TabIndex = 9
-ToolTipText = "Remove the selected template file from this list"
-PicturePosition = 14
-Name = "cmdRemoveTemplate"
-]]></properties>
-		<protected/>
-		<methods><![CDATA[PROCEDURE Click
-_Screen.ActiveForm.RemoveTemplate()
-ENDPROC
-]]></methods>
-		<ole/>
-		<ole2/>
-		<reserved1/>
-		<reserved2/>
-		<reserved3/>
-		<reserved4/>
-		<reserved5/>
-		<reserved6/>
-		<reserved7/>
-		<reserved8/>
-		<user/>
-	</class>
-	<class>
-		<platform>WINDOWS</platform>
-		<uniqueid>_44L0ZDGS3</uniqueid>
-		<class><![CDATA[commandbutton]]></class>
-		<classloc/>
-		<baseclass><![CDATA[commandbutton]]></baseclass>
-		<objname><![CDATA[cmdEditTemplate]]></objname>
-		<parent><![CDATA[frmnewtestclass]]></parent>
-		<properties><![CDATA[AutoSize = .F.
-Top = 87
-Left = 594
-Height = 27
-Width = 27
-FontName = "Verdana"
-FontSize = 9
-Picture = ..\graphics\list_information.png
-Caption = "M"
-TabIndex = 10
-ToolTipText = "Modify the Selected Template"
-PicturePosition = 14
-Name = "cmdEditTemplate"
-]]></properties>
-		<protected/>
-		<methods><![CDATA[PROCEDURE Click
-_Screen.ActiveForm.ModifyTemplate()
-ENDPROC
-]]></methods>
-		<ole/>
-		<ole2/>
-		<reserved1/>
-		<reserved2/>
-		<reserved3/>
-		<reserved4/>
-		<reserved5/>
-		<reserved6/>
-		<reserved7/>
-		<reserved8/>
-		<user/>
-	</class>
-	<class>
-		<platform>WINDOWS</platform>
-		<uniqueid/>
-		<class><![CDATA[label]]></class>
-		<classloc/>
-		<baseclass><![CDATA[label]]></baseclass>
-		<objname><![CDATA[lblCopyExisting]]></objname>
-		<parent><![CDATA[frmnewtestclass]]></parent>
-		<properties><![CDATA[AutoSize = .T.
-FontBold = .F.
-FontName = "Verdana"
-FontSize = 9
-BackStyle = 0
-Caption = ""
-Height = 16
-Left = 36
-Top = 155
-Width = 2
-TabIndex = 12
-Name = "lblCopyExisting"
-]]></properties>
-		<protected/>
-		<methods><![CDATA[PROCEDURE Init
-IF VERSION(5)>=900
-  *
-  *  4 = Bottom Absolute
-  *  2 = Left Absolute
-  *
-  THIS.Anchor = 4 + 2
-ENDIF
-ENDPROC
-]]></methods>
-		<ole/>
-		<ole2/>
-		<reserved1/>
-		<reserved2/>
-		<reserved3/>
-		<reserved4/>
-		<reserved5/>
-		<reserved6/>
-		<reserved7/>
-		<reserved8/>
-		<user/>
+		<nrecno>49</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -1981,26 +1932,27 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
+		<nrecno>63</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
-		<uniqueid>_44L0ZDGT8</uniqueid>
-		<class><![CDATA[label]]></class>
+		<uniqueid>_44L0ZDGS9</uniqueid>
+		<class><![CDATA[textbox]]></class>
 		<classloc/>
-		<baseclass><![CDATA[label]]></baseclass>
-		<objname><![CDATA[lblSaveAs]]></objname>
+		<baseclass><![CDATA[textbox]]></baseclass>
+		<objname><![CDATA[txtCurrentTestFolder]]></objname>
 		<parent><![CDATA[frmnewtestclass]]></parent>
-		<properties><![CDATA[AutoSize = .T.
-FontName = "Verdana"
+		<properties><![CDATA[FontName = "Verdana"
 FontSize = 9
-Caption = "Save as:"
-Height = 16
-Left = 12
-Top = 264
-Width = 57
-TabIndex = 18
-ForeColor = 128,0,0
-Name = "lblSaveAs"
+ControlSource = "ThisForm.cTestFolder"
+Height = 25
+Left = 152
+ReadOnly = .T.
+TabIndex = 20
+Top = 284
+Width = 438
+ZOrderSet = 6
+Name = "txtCurrentTestFolder"
 ]]></properties>
 		<protected/>
 		<methods/>
@@ -2015,6 +1967,84 @@ Name = "lblSaveAs"
 		<reserved7/>
 		<reserved8/>
 		<user/>
+		<nrecno>50</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid/>
+		<class><![CDATA[textbox]]></class>
+		<classloc/>
+		<baseclass><![CDATA[textbox]]></baseclass>
+		<objname><![CDATA[txtExistingFile]]></objname>
+		<parent><![CDATA[frmnewtestclass]]></parent>
+		<properties><![CDATA[FontName = "Verdana"
+FontSize = 9
+ControlSource = "ThisForm.cExistingFile"
+Height = 25
+Left = 290
+TabIndex = 14
+TabStop = .F.
+Top = 151
+Visible = .F.
+Width = 298
+ZOrderSet = 7
+Name = "txtExistingFile"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE InteractiveChange
+thisform.ValidateTestClass()
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>51</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid/>
+		<class><![CDATA[textbox]]></class>
+		<classloc/>
+		<baseclass><![CDATA[textbox]]></baseclass>
+		<objname><![CDATA[txtTestClassName]]></objname>
+		<parent><![CDATA[frmnewtestclass]]></parent>
+		<properties><![CDATA[FontName = "Verdana"
+FontSize = 9
+ControlSource = "ThisForm.cClassName"
+Height = 25
+Left = 152
+TabIndex = 2
+Top = 314
+Width = 437
+ZOrderSet = 7
+Name = "txtTestClassName"
+]]></properties>
+		<protected/>
+		<methods><![CDATA[PROCEDURE Valid
+RETURN thisform.ValidateTestClass()
+
+ENDPROC
+]]></methods>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>52</nrecno>
 	</class>
 	<class>
 		<platform>COMMENT</platform>
@@ -2038,5 +2068,6 @@ Name = "lblSaveAs"
 		<reserved7/>
 		<reserved8/>
 		<user/>
+		<nrecno>65</nrecno>
 	</class>
 </VFPData>
