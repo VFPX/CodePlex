@@ -49,6 +49,7 @@ DEFINE CLASS FxuTestCase As FxuTest OF FxuTest.Prg
 	
 	icCurrentTest = ""
 	ioTestResult = .NULL.
+	ioFxuInstance = .NULL.
 	ilAllowDebug = .f.
 	ilQueryTests = .f.
 	ilSuccess = .t.
@@ -58,8 +59,14 @@ DEFINE CLASS FxuTestCase As FxuTest OF FxuTest.Prg
 	HIDDEN ilTestingModalForm 
 
 	********************************************************************
-	FUNCTION INIT(toTestResult)
+	FUNCTION INIT(toTestResult, toFxuInstance)
 	********************************************************************
+		
+		IF VARTYPE(m.toFxuInstance)!="O" OR ISNULL(m.toFxuInstance)
+			ERROR 1924, "m.toFxuInstance"
+			RETURN .F.
+		ENDIF
+		this.ioFxuInstance=m.toFxuInstance
 		
 		ilTestingModalForm = .f.
 		
@@ -107,7 +114,7 @@ DEFINE CLASS FxuTestCase As FxuTest OF FxuTest.Prg
 		
 		this.ioAssert = .f.		
 
-		this.ioAssert = FxuNewObject("FxuAssertions")
+		this.ioAssert = this.ioFxuInstance.FxuNewObject("FxuAssertions", this.ioFxuInstance)
 		this.ioAssert.ioTestResult = this.ioTestResult
 		
 *		this.ioTestResult.icCurrentStartTime = timestamp()
@@ -260,7 +267,7 @@ DEFINE CLASS FxuTestCase As FxuTest OF FxuTest.Prg
 	********************************************************************
 	
 		this.ioTestResult.ilCurrentResult = tlSuccess
-		this.ilSuccess = tlSuccess
+		this.ilSuccess = this.ilSuccess AND tlSuccess
 	
 	********************************************************************
 	ENDFUNC
@@ -439,7 +446,7 @@ DEFINE CLASS FxuTestCase As FxuTest OF FxuTest.Prg
 	********************************************************************
 	
 		LOCAL loExceptionInfo as FxuResultExceptionInfo OF FxuResultExceptionInfo.prg
-		loExceptionInfo = FxuNewObject('FxuResultExceptionInfo')
+		loExceptionInfo = this.ioFxuInstance.FxuNewObject('FxuResultExceptionInfo')
 		loExceptionInfo.SetExceptionInfo(toEx,@taStackInfo)
 		*this.ioTestResult.ioException = toEx
 		*this.ioTestResult.LogException(toEx)

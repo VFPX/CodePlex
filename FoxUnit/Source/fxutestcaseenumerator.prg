@@ -45,7 +45,19 @@ DEFINE CLASS FxuTestCaseEnumerator as FxuCustom OF FxuCustom.prg
 	#if .f.
 		LOCAL this as FxuTestCaseEnumerator OF FxuTestCaseEnumerator.prg
 	#endif
-
+	
+	ioFxuInstance = .NULL.
+	
+	PROCEDURE Init
+		PARAMETERS toFxuInstance
+		
+		IF VARTYPE(m.toFxuInstance)!="O" OR ISNULL(m.toFxuInstance)
+			ERROR 1924, "m.toFxuInstance"
+			RETURN .F.
+		ENDIF
+		this.ioFxuInstance=m.toFxuInstance
+	ENDPROC
+	
 	********************************************************************
 	FUNCTION ReadTestNames(tcProgramFile, tcClass)
 	********************************************************************
@@ -95,7 +107,7 @@ DEFINE CLASS FxuTestCaseEnumerator as FxuCustom OF FxuCustom.prg
 		
 		IF llHonorTestPrefix 
 		
-			loTestResult = FxuNewObject("FxuTestREsult")
+			loTestResult = this.ioFxuinstance.FxuNewObject("FxuTestResult")
 			loTestCase = NEWOBJECT(tcClass,tcProgramFile,.NULL.,loTestResult)
 			
 			lcTestPrefix = ALLTRIM(UPPER(loTestCase.icTestPrefix))
@@ -259,9 +271,9 @@ DEFINE CLASS FxuTestCaseEnumerator as FxuCustom OF FxuCustom.prg
 
 			* Instantiate a test result to be passed to the creation
 			* the TestCase superclass specified
-			loTestResult = FxuNewObject("FxuTestResult")
+			loTestResult = this.ioFxuInstance.FxuNewObject("FxuTestResult")
 			* Instantiate the TestCase SuperClass in order to enumerate members
-			loTestCase = NEWOBJECT(lcSuperClass,lcSuperClassFile,.NULL.,loTestResult)
+			loTestCase = NEWOBJECT(lcSuperClass,lcSuperClassFile,.NULL., m.loTestResult, this.ioFxuInstance)
 			
 			* Enumerate the members of the TestCase SuperClass
 			lnMembers = AMEMBERS(laMembers,loTestCase,1)

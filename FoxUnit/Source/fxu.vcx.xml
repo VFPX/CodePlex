@@ -49,4 +49,7 @@
 	<classlist>
 		<objname>fxufrmtestbroker</objname>
 	</classlist>
+	<classlist>
+		<objname>fxuinstance</objname>
+	</classlist>
 </VFPData>

@@ -38,7 +38,14 @@
 LPARAMETERS tcMethodToAutoRun, tcParam1
 
 
-#DEFINE C_Version "1.4"
+#DEFINE C_Version "1.42"
+EXTERNAL CLASS "fxu.vcx"
+EXTERNAL PROCEDURE "DOCUMENTATION\FOXUNITLICENSE.TXT"
+EXTERNAL PROCEDURE "DOCUMENTATION\FOXUNITACKNOWLEDGEMENTS.TXT"
+EXTERNAL PROCEDURE "DOCUMENTATION\README.TXT"
+EXTERNAL PROCEDURE "DOCUMENTATION\VERSIONS.TXT"
+EXTERNAL PROCEDURE "TEXT\FXUTESTCASETEMPLATE.TXT"
+EXTERNAL PROCEDURE "TEXT\FXUTESTCASETEMPLATE_MINIMAL.TXT"
 
 SET CENTURY ON
 SET CENTURY TO
@@ -59,29 +66,22 @@ IF NOT EMPTY(tcMethodToAutoRun)
 	QUIT
 ENDIF
 
-LOCAL loFXUForm
-
-loFXUForm = GetFoxUnitForm()
-IF VARTYPE(m.loFXUForm) = "O"
-  *!*    IF MESSAGEBOX("The FoxUnit interface is already running, make it the active form?", ;
-  *!*                  4+48, ;
-  *!*                  "FoxUnit is already running!") = 6
-  *!*      *
-  *!*      *  MODIFY COMMAND FXUShowForm
-  *!*      *
-  *!*      FXUShowForm()
-  *!*    ENDIF
-  *!*    RETURN
-  FXUShowForm()
-  RETURN
+IF FXUShowForm()
+	RETURN
 ENDIF
 
-CheckPath()
+* Enable asserts for initial, interactive startup
+IF INLIST(_VFP.Startmode, 0, 4)
+	SET ASSERTS ON
+&&	ELSE	&&	is it useful to turn them off otherwise?
+&&		SET ASSERTS OFF
+ENDIF
 
-* FXU/JDE 08/21/2004
-* Now adding call to ManageFxuClassFactory
-
-DO ManageFxuClassFactory
+LOCAL loFxuInstance as fxuinstance OF "fxu.vcx"
+m.loFxuInstance=NEWOBJECT("fxuinstance", "fxu.vcx", "", C_Version, GetFoxUnitPath())
+IF VARTYPE(m.loFxuInstance)!="O" OR ISNULL(m.loFxuInstance)
+	RETURN .F.
+ENDIF
 
 * FXU/JDE 07/01/2004
 * Included goFoxUnitTestBroker as public in
@@ -89,13 +89,11 @@ DO ManageFxuClassFactory
 * a unit test from being a child of the
 * top-level FoxUnit form.
 
-*DO FORM FoxUnit
 RELEASE goFoxUnitForm, goFoxUnitTestBroker
 PUBLIC goFoxUnitForm, goFoxUnitTestBroker
-goFoxUnitTestBroker = FXUNewObject("FxuTestBroker")
-goFoxUnitForm = FXUNewObject("FoxUnitForm")
+goFoxUnitTestBroker = m.loFxuInstance.FxuNewObject("FxuTestBroker", m.loFxuInstance)
+goFoxUnitForm = m.loFxuInstance.FxuNewObject("FoxUnitForm", m.goFoxUnitTestBroker)
 IF VARTYPE(m.goFoxUnitForm) = "O"
-	goFoxUnitForm.ioTestBroker = goFoxUnitTestBroker
 	goFoxUnitForm.SHOW()
 ENDIF
 
@@ -113,6 +111,7 @@ DEFINE CLASS fxu AS SESSION OLEPUBLIC
 	cDebugFile				= ''
 	oFoxUnitTestBroker		= .NULL.
 	oFoxUnitForm			= .NULL.
+	oFoxUnitInstance		= .NULL.
 	oTestResult				= .NULL.
 	lLogOnlyFailingTests	= .T.
 
@@ -128,8 +127,9 @@ DEFINE CLASS fxu AS SESSION OLEPUBLIC
 
 		*RELEASE goFoxUnitForm, goFoxUnitTestBroker
 		*PUBLIC goFoxUnitForm as frmFoxUnit OF 'FXU.VCX', goFoxUnitTestBroker
-		THIS.oFoxUnitTestBroker	= FXUNewObject("FxuTestBroker")
-		THIS.oTestResult		= FXUNewObject("FxuTestResult")
+		THIS.oFoxUnitInstance	= NEWOBJECT("FxuInstance", "fxu.vcx", "", C_Version, GetFoxUnitPath())
+		THIS.oFoxUnitTestBroker	= THIS.oFoxUnitInstance.FxuNewObject("FxuTestBroker", THIS.oFoxUnitInstance)
+		THIS.oTestResult		= THIS.oFoxUnitInstance.FxuNewObject("FxuTestResult")
 
 		* Your paths may differ
 		LOCAL lcPath, lcFileName, lcDetailedResultsFile
@@ -225,11 +225,6 @@ DEFINE CLASS fxu AS SESSION OLEPUBLIC
 			ERROR "Source Directory not found"
 		ENDIF
 
-		*CD ( tcSourcePath )
-
-		* Your paths may differ
-		*SET PATH TO UnitTests,c:\foxpro_utils\foxunit
-
 		* Write to debug log
    \
    \Directory:      << sys(5) + sys(2003) >>
@@ -237,14 +232,11 @@ DEFINE CLASS fxu AS SESSION OLEPUBLIC
    \_vfp.StartMode: << _vfp.StartMode >>
    \FoxUnitSetup    << datetime() >>
 
-		*DO ManageFxuClassFactory
-
 		LOCAL goFoxUnitTestBroker
 
    \Create goFoxUnitTestBroker
 
 		* The test broker runs the test
-		*fdb*goFoxUnitTestBroker = FXUNewObject("FxuTestBroker")
 		goFoxUnitTestBroker = THIS.oFoxUnitTestBroker
 
 		LOCAL oTestResult
@@ -253,7 +245,6 @@ DEFINE CLASS fxu AS SESSION OLEPUBLIC
    \Create oTestResult
 
 		* The test result encapsulates the results
-		*fdb*oTestResult = FXUNewObject("FxuTestResult")
 		oTestResult = THIS.oTestResult
 
 		* Write to debug log
@@ -436,6 +427,36 @@ ENDDEFINE
 
 
 *************************************************
+PROCEDURE GetFoxUnitPath
+	*************************************************
+	*
+	*	RETURNs the path of either
+	*	- The FoxUnit 'executable' (if running as APP or EXE)
+	*	- The FoxUnit project file (PJX, if run through DO fxp)
+	*
+	*	Adapted code originally written by HAS.
+	LOCAL lnLevels, lcResult
+	LOCAL ARRAY laProgChain[1,1]
+
+	m.lnLevels = ASTACKINFO(m.laProgChain)
+	ASSERT m.lnLevels>0 MESSAGE "ASTACKINFO() failed!"
+	
+	IF INLIST(UPPER(JUSTEXT(m.laProgChain[m.lnLevels, 2])), "APP", "EXE")
+		DEBUGOUT "fxu.prg/GetFoxUnitPath()", "Found compiled module ", m.laProgChain[m.lnLevels, 2]
+		m.lcResult = ADDBS(JUSTPATH(m.laProgChain[m.lnLevels, 2]))
+	ELSE
+		DEBUGOUT "fxu.prg/GetFoxUnitPath()", "Found source module ", m.laProgChain[m.lnLevels, 2]
+		m.lcResult = ADDBS(JUSTPATH(JUSTPATH(m.laProgChain[m.lnLevels, 2])))
+	ENDIF
+	DEBUGOUT "fxu.prg/GetFoxUnitPath()", "m.lcResult evaluated to", m.lcResult
+	
+	ASSERT DIRECTORY(m.lcResult, 1) MESSAGE "FoxUnit Path {" + m.lcResult + "} doesn't exist!"
+	
+	RETURN m.lcResult
+ENDPROC
+
+
+*************************************************
 PROCEDURE GetFoxUnitForm
 	*************************************************
 	*
@@ -475,63 +496,7 @@ PROCEDURE GetFoxUnitVersion
 	RETURN C_Version
 ENDPROC
 
-********************************************************************
-PROCEDURE ManageFxuClassFactory
-	********************************************************************
-
-	LOCAL lcFxuClassFactoryLocation, lcFxuClassFactoryFolder, nLevel, cSys16
-
-	TRY
-		USE FxuClassFactoryBase IN 0 SHARED
-	CATCH TO loEx
-
-	ENDTRY
-
-	* If FoxUnit is launched from a method, this line doesn't work.  HAS
-	*lcFxuClassFactoryFolder = ADDBS(JUSTPATH(SYS(16,1)))
-
-	* We'll use this prg, or a binary if we can find one. HAS
-	*---------------------------------------------------------
-	LOCAL ARRAY aProgChain[1,1]
-	nLevels = ASTACKINFO(aProgChain)
-
-	IF INLIST(JUSTEXT(aProgChain[m.nlevels, 3]), "APP", "EXE")
-
-		lcFxuClassFactoryFolder = ADDBS(JUSTPATH(aProgChain[m.nlevels, 3]))
-
-	ELSE
-
-		lcFxuClassFactoryFolder = ADDBS(JUSTPATH(aProgChain[m.nlevels - 1, 2]))
-
-	ENDIF
-
-	ASSERT DIRECTORY(m.lcFxuClassFactoryFolder) MESSAGE "Specified Class Factory folder does not exist!"
-	*----------------------------------------------------------
-
-	SET PATH TO (["] + m.lcFxuClassFactoryFolder + ["]) ADDITIVE && HAS
-
-	lcFxuClassFactoryLocation = lcFxuClassFactoryFolder + "FxuClassFactory.dbf"
-
-	IF !FILE(lcFxuClassFactoryLocation)
-		SELECT FxuClassFactoryBase
-		COPY TO (lcFxuClassFactoryLocation )
-	ELSE
-		USE FxuClassFactory IN 0 EXCLUSIVE
-		INSERT INTO FxuClassFactory ;
-			SELECT * FROM FxuClassFactoryBase WHERE UPPER(ClassID) NOT IN ;
-			(SELECT UPPER(ClassID) FROM FxuClassFactory)
-	ENDIF
-
-	USE IN SELECT('FxuClassFactory')
-	USE IN SELECT('FxuClassFactoryBase')
-
-	RETURN
-
-
-	********************************************************************
-ENDPROC
-********************************************************************
-
+&&	ManageFxuClassFactory() has been moved to fxu.vcx/FxuInstance.ManageFxuClassFactory()
 
 ********************************************************************
 * EHW/02/27/2005
@@ -731,69 +696,20 @@ ENDFUNC
 * EHW/02/27/2005 END
 ********************************************************************
 
+&&	CheckPath() was moved to fxu.vcx/FxuInstance.Init()
 
-FUNCTION CHECKPATH()
+&&	GetTestsDir() has been replaced by the FxuInstance.DataPath property
 
-	LOCAL lcScxPath AS STRING
-
-	* Get the current path of this program
-	lcScxPath = STRTRAN(SYS(16),'PROCEDURE CHECKPATH')
-	lcScxPath = JUSTPATH(m.lcScxPath)
-
-	* If there is a path then check it
-	IF LEN(ALLTRIM(m.lcScxPath)) > 0 AND DIRECTORY(m.lcScxPath)
-
-		IF OCCURS(m.lcScxPath,SYS(2001,'PATH')) = 0
-
-			* If the path does not exist in the set path then add it
-			SET PATH TO SYS(2001,'PATH') + '; ' + m.lcScxPath
-
-		ENDIF
+FUNCTION FXUShowForm
+	LOCAL loFXUForm
+	loFXUForm = GetFoxUnitForm()
+	IF VARTYPE(m.loFXUForm) = "O"
+	  loFXUForm.Show()
+	  loFXUForm.WindowState = 0
+	  RETURN .T.
 	ENDIF
-
+	RETURN .F.
 ENDFUNC
-
-
-* Function GetTestsDir added by HAS
-FUNCTION GetTestsDir() AS STRING
-
-	LOCAL cTestDir AS STRING
-
-	* Default to <HomeDir>\Tests HAS
-	*-------------------------------
-	TRY
-
-		cTestDir  = ADDBS(_VFP.ACTIVEPROJECT.HOMEDIR) + "Tests"
-
-	CATCH
-
-		*!*      cTestDir  = ADDBS(SET("Default"))
-
-		*!*        cTestDir  = GETDIR(FULLPATH(CURDIR()), ;
-		*!*          "Specify the folder for your unit tests.", ;
-		*!*          "Specify the folder for your unit tests", ;
-		*!*          1+2+8+16+32+64)
-
-	ENDTRY
-
-	IF EMPTY(m.cTestDir)
-
-		cTestDir  = ADDBS(SET("DIRECTORY")) + "Tests"
-
-	ENDIF
-
-	IF NOT DIRECTORY(m.cTestDir )
-
-		MD (m.cTestDir )
-
-	ENDIF
-
-	SET PATH TO (["] + m.cTestDir + ["]) ADDITIVE
-
-	RETURN m.cTestDir
-
-ENDFUNC
-
 
 PROCEDURE createFxuResultsAddAllTestsAndRun
 	*-- FDBOZZO. 06/11/2011. New method to automate the running of all tests from a CI server.
@@ -807,18 +723,22 @@ PROCEDURE createFxuResultsAddAllTestsAndRun
 
 	TRY
 		LOCAL lcFXUDataPath, loCovEng, lcCovFile, lcUT_ErrFile, llTestFailed, llTerminate, lcCovStats ;
-			, lnTests, lnTestsOK, lnTestsFailed, lcTestStats, lcTestFile ;
+			, lnTest, lnTests, lnTestsOK, lnTestsFailed, lcTestStats, lcTestFile ;
 			, loFxu as fxu OF 'Fxu.prg' ;
 			, oTestResult as "FxuTestResult" ;
-			, loEx as Exception
+			, loEx as Exception ;
+			, loFxuInstance as fxuinstance OF "fxu.vcx"
+		
+		m.loFxuInstance=NEWOBJECT("fxuinstance", "fxu.vcx", "", C_Version, GetFoxUnitPath())
+		IF VARTYPE(m.loFxuInstance)!="O"
+			RETURN .F.
+		ENDIF
 		
 		STORE .NULL. TO loFxu, goFoxUnitForm, goFoxUnitTestBroker
-		_SCREEN.AlwaysOnTop= .T.
-		ZOOM window screen MAX
+		*_SCREEN.AlwaysOnTop= .T.
+		*ZOOM WINDOW SCREEN MAX
 		
-		lcFXUDataPath	= GetTestsDir() 
-		lcFXUDataPath	= ADDBS(m.lcFXUDataPath)
-		CheckPath()
+		lcFXUDataPath	= ADDBS(m.loFxuInstance.DataPath)
 		IF NOT EMPTY(tcLogsPath) AND DIRECTORY(tcLogsPath)
 			tcLogsPath	= ADDBS(tcLogsPath)
 		ELSE
@@ -841,12 +761,10 @@ PROCEDURE createFxuResultsAddAllTestsAndRun
 		ERASE (lcCovFile)
 		ERASE (lcUT_ErrFile)
 
-		DO ManageFxuClassFactory
-
 		RELEASE goFoxUnitForm, goFoxUnitTestBroker
 		PUBLIC goFoxUnitForm as frmFoxUnit OF 'FXU.VCX', goFoxUnitTestBroker
-		goFoxUnitTestBroker = FXUNewObject("FxuTestBroker")
-		goFoxUnitForm = FXUNewObject("FoxUnitForm")
+		goFoxUnitTestBroker = m.loFxuInstance.FxuNewObject("FxuTestBroker", m.loFxuInstance)
+		goFoxUnitForm = m.loFxuInstance.FxuNewObject("FoxUnitForm", m.goFoxUnitTestBroker)
 
 		IF VARTYPE(m.goFoxUnitForm) = "O"
 			goFoxUnitForm.ioTestBroker = goFoxUnitTestBroker
@@ -898,8 +816,8 @@ PROCEDURE createFxuResultsAddAllTestsAndRun
 			lnTests = 0
 		ENDIF
 		
-		FOR I = 1 TO lnTests
-			IF loFxu.runtest( ALLTRIM(laTests(I,1)), ALLTRIM(laTests(I,2)), ALLTRIM(laTests(I,3)) ) = 0
+		FOR m.lnTest = 1 TO lnTests
+			IF loFxu.runtest( ALLTRIM(laTests(m.lnTest,1)), ALLTRIM(laTests(m.lnTest,2)), ALLTRIM(laTests(m.lnTest,3)) ) = 0
 				*-- Test OK
 				lnTestsOK	= lnTestsOK + 1
 			ELSE

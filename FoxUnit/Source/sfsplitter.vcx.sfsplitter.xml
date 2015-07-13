@@ -154,6 +154,14 @@
 										</xsd:restriction>
 									</xsd:simpleType>
 								</xsd:element>
+								<xsd:element name="nrecno">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:decimal">
+											<xsd:totalDigits value="10"/>
+											<xsd:fractionDigits value="0"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
 							</xsd:sequence>
 						</xsd:complexType>
 					</xsd:element>
@@ -410,6 +418,7 @@ ndots Enter a value between 0 and 5 for the number of dots to be shown on the gr
 		<reserved7/>
 		<reserved8/>
 		<user/>
+		<nrecno>18</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -458,6 +467,7 @@ Gripperdot5.Name = "Gripperdot5"
 		<reserved7/>
 		<reserved8/>
 		<user/>
+		<nrecno>19</nrecno>
 	</class>
 	<class>
 		<platform>COMMENT</platform>
@@ -481,5 +491,6 @@ Gripperdot5.Name = "Gripperdot5"
 		<reserved7/>
 		<reserved8/>
 		<user/>
+		<nrecno>20</nrecno>
 	</class>
 </VFPData>

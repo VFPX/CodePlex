@@ -57,6 +57,7 @@ DEFINE CLASS FxuTestResult as Collection
 	inCurrentStartSeconds = 0
 	inCurrentEndSeconds = 0
 	icMessages = ''	
+	HIDDEN ilCurrentResult_Allow
 	
 	********************************************************************
 	FUNCTION ResetCurrentResult
@@ -66,7 +67,9 @@ DEFINE CLASS FxuTestResult as Collection
 
 			.icFailureErrorDetails = ''
 			.icMessages = ''
+			.ilCurrentResult_Allow = .T.
 			.ilCurrentResult = .t.
+			.ilCurrentResult_Allow = .F.
 			.icCurrentTestClass = ''
 			.icCurrentTestName = ''
 			.inFailedTests = 0
@@ -231,7 +234,15 @@ DEFINE CLASS FxuTestResult as Collection
 	ENDFUNC
 	********************************************************************
 	
-	
+	PROTECTED PROCEDURE ilCurrentResult_Assign
+		PARAMETERS vNewVal
+		
+		IF this.ilCurrentResult_Allow
+			this.ilCURRENTRESULT = m.vNewVal
+		ELSE
+			this.ilCURRENTRESULT = this.ilCURRENTRESULT AND m.vNewVal
+		ENDIF
+	ENDPROC
 
 **********************************************************************
 ENDDEFINE && CLASS

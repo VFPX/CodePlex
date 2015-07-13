@@ -178,14 +178,14 @@
 		<baseclass><![CDATA[form]]></baseclass>
 		<objname><![CDATA[frmnewtestclass]]></objname>
 		<parent/>
-		<properties><![CDATA[BorderStyle = 1
-Height = 431
+		<properties><![CDATA[Height = 431
 Width = 638
 ShowWindow = 1
 ShowInTaskBar = .F.
 DoCreate = .T.
 ShowTips = .T.
 AutoCenter = .T.
+BorderStyle = 1
 Caption = "New Test Class"
 FontName = "Verdana"
 FontSize = 10
@@ -207,6 +207,7 @@ lcreated = .F.
 luseprocedure = .F.
 lusetabs = .T.
 iclasterrormessage = ("")
+iofxuinstance = .NULL.
 Name = "frmnewtestclass"
 ]]></properties>
 		<protected/>
@@ -354,10 +355,10 @@ LOCAL loTestClassCreator AS FxuNewTestClass OF FxuNewTestClass.prg
 LOCAL loTestClassCreator 
 
 This.lCreated =.f.
-loTestClassCreator = FxuNewObject("FxuNewTestClass")
+loTestClassCreator = thisform.ioFxuInstance.FxuNewObject("FxuNewTestClass")
 lcNewTestClassName= This.ClassFullName() 
 
-SET PATH TO (["] + JUSTPATH(m.lcNewTestClassName) + ["]) ADDITIVE && Add new location to path. HAS
+*SET PATH TO (["] + JUSTPATH(m.lcNewTestClassName) + ["]) ADDITIVE && Add new location to path. HAS
 
 DO CASE
 	CASE EMPTY(This.cClassName)	 && This shouldn't ever happen, as the button won't be enabled via showControls() unless there's a value there
@@ -453,9 +454,15 @@ THIS.icclassvalidationmessage = m.vNewVal
 
 ENDPROC
 PROCEDURE Init
-LPARAMETERS tcCurrentTestFolder, tcNewTestClass, tcResultVariable
+LPARAMETERS toFxuInstance, tcNewTestClass, tcResultVariable
 
-This.cTestFolder=EVL(tcCurrentTestFolder,"")
+IF VARTYPE(m.toFxuInstance)!="O" OR ISNULL(m.toFxuInstance)
+	ERROR 1924, "m.toFxuInstance"
+	RETURN .F.
+ENDIF
+
+This.ioFxuInstance=m.toFxuInstance
+This.cTestFolder=m.toFxuInstance.DataPath
 THIS.icNewTestClass = EVL(m.tcNewTestClass,"")
 THIS.icResultVariable = m.tcResultVariable
 This.Icon="foxunit.ico"
@@ -466,6 +473,12 @@ THIS.MinWidth = THIS.Width
 IF VERSION(5) < 900
   THIS.BorderStyle = 2
 ENDIF
+
+*
+*  Save these for use in THIS.SaveSettings()/THIS.RestoreSettings()
+*
+THIS.AddProperty("inDesignHeight",THIS.Height)
+THIS.AddProperty("inDesignWidth",THIS.Width)
 
 THIS.RestoreSettings()
 THIS.RemoveMissingTemplates()
@@ -485,57 +498,6 @@ If nKeyCode=27
    Thisform.Hide()
 Endif 
 
-ENDPROC
-PROCEDURE Load
-*
-*  grab these settings from the calling FXU.VCX/frmFoxUnit form
-*
-
-THIS.AddProperty("icPersistFile",SPACE(0))
-THIS.AddProperty("icUserID",SPACE(0))
-
-IF TYPE("_Screen.ActiveForm.icPersistFile") = "C" ;
-     AND NOT EMPTY(_Screen.ActiveForm.icPersistFile)
-
-  *
-  *  this should always be true, because this dialog
-  *  is expected to only be called from the main
-  *  FXU.VCX/frmFoxUnit form
-  *
-
-  THIS.icPersistFile = ;
-       ADDBS(JUSTPATH(_Screen.ActiveForm.icPersistFile)) + ;
-       "FXUPersistGetTemplate.XML"
-
-  THIS.icUserID = _Screen.ActiveForm.icUserID
-
- ELSE
-  *
-  *  this should never really happen, except perhaps
-  *  for when Drew is testing standalone 
-  *
-
-  THIS.icPersistFile = ADDBS(JUSTPATH(FULLPATH("FXUResults.DBF"))) + ;
-       "FXUPersistGetTemplate.XML"
-  
-  THIS.icUserID = ALLTRIM(TRANSFORM(SYS(0)))
-  IF LENC(THIS.icUserID) < 15 OR NOT "#" $ THIS.icUserID
-    *  machine information not assigned by the network,
-    *  or network shell not loaded, or standalone machine
-    THIS.icUserID = SPACE(0)
-   ELSE
-    THIS.icUserID = ALLTRIM(SUBSTRC(THIS.icUserID,AT_C("#",THIS.icUserID)+1))
-  ENDIF
-
-ENDIF
-    
-     
-*
-*  save these for use in THIS.SaveSettings
-*
-THIS.AddProperty("inDesignHeight",THIS.Height)
-THIS.AddProperty("inDesignWidth",THIS.Width)
-     
 ENDPROC
 PROCEDURE modifytemplate
 *
@@ -659,37 +621,40 @@ THIS.lstTemplates.ROWSOURCE = THIS.lstTemplates.ROWSOURCE
 ENDPROC
 PROCEDURE restoresettings
 *
-*  restore settings from the last time this
-*  form was run
+*  restore settings from the last time this form was run
 *
 *  this method is called from THIS.Init()
 *
-LOCAL lcUserID, lcCommand, lcAlias
+LOCAL lcPersistFile
+m.lcPersistFile=ADDBS(this.ioFxuInstance.DataPath) + "FXUPersistGetTemplate.XML"
+IF !FILE(m.lcPersistFile, 1)
+	RETURN .F.
+ENDIF
 
-m.lcUserID = THIS.icUserID
-m.lcAlias = SYS(2015)
+LOCAL lcAlias, lcCommand, loException as Exception
+m.lcAlias = JUSTSTEM(m.lcPersistFile)+SYS(2015)
+TRY
+	XMLTOCURSOR(m.lcPersistFile, m.lcAlias, 512)
+CATCH TO m.loException
+	This.ioFxuInstance.WriteDebug("fxu.vcx/frmNewTestClass.RestoreSettings()", m.loException.Message)
+ENDTRY
+IF !USED(m.lcAlias)
+	RETURN .F.
+ENDIF
 
-IF FILE(THIS.icPersistFile)
-	TRY
-		XMLTOCURSOR(THIS.icPersistFile, m.lcAlias, 512)
 *
 *  apply settings for this user/developer
 *
-		SELECT (m.lcAlias)
-		LOCATE
-		SCAN FOR UPPER(ALLTRIM(USERID)) == UPPER(ALLTRIM(THIS.icUserID))
-			m.lcCommand = ALLTRIM(Setting)
-			&lcCommand
-			SELECT (m.lcAlias)
-		ENDSCAN
+SELECT (m.lcAlias)
+SCAN FOR UPPER(ALLTRIM(USERID)) == UPPER(ALLTRIM(THIS.ioFxuInstance.UserId))
+	m.lcCommand = ALLTRIM(Setting)
+	TRY
+		&lcCommand
 	CATCH TO m.loException
+		This.ioFxuInstance.WriteDebug("fxu.vcx/frmNewTestClass.RestoreSettings()", m.loException.Message)
 	ENDTRY
-	USE IN SELECT(m.lcAlias)
-ENDIF
-
-RETURN
-
-
+ENDSCAN
+USE IN SELECT(m.lcAlias)
 ENDPROC
 PROCEDURE savesettings
 *
@@ -700,91 +665,103 @@ PROCEDURE savesettings
 *  this method is called from THIS.Destroy()
 *
 
-LOCAL lcAlias
-m.lcAlias = "FXUPersistGetTemplate"   &&& SYS(2015)
+LOCAL lcPersistFile, lcAlias, loException as Exception
+m.lcPersistFile=ADDBS(This.ioFxuInstance.DataPath) + "FXUPersistGetTemplate.XML"
+m.lcAlias = JUSTSTEM(m.lcPersistFile)+SYS(2015)
+CREATE CURSOR (m.lcAlias) (USERID C(15), Setting M)
 
-TRY
-
-	IF FILE(THIS.icPersistFile)
-		XMLTOCURSOR(THIS.icPersistFile, m.lcAlias, 512)
-	ELSE
-		CREATE CURSOR (m.lcAlias) (USERID C(10), Setting M)
+IF FILE(m.lcPersistFile)
+	LOCAL lcAliasOld
+	m.lcAliasOld=SYS(2015)
+	TRY 
+		XMLTOCURSOR(m.lcPersistFile, m.lcAliasOld, 512)
+	CATCH TO m.loException
+		This.ioFxuInstance.WriteDebug("fxu.vcx/frmNewTestClass.SaveSettings()", m.loException.Message)
+	ENDTRY
+	IF USED(m.lcAliasOld)
+		SELECT * FROM (m.lcAlias) ;
+		UNION ALL ;
+		SELECT * FROM (m.lcAliasOld) ;
+		INTO CURSOR (m.lcAlias) READWRITE
+		USE IN SELECT(m.lcAliasOld)
 	ENDIF
-	SELECT (m.lcAlias)
+ENDIF
+
+SELECT (m.lcAlias)
+SCATTER MEMVAR
+m.UserID = THIS.ioFxuInstance.UserId
+
 *
 *  delete all the existing settings for this user
 *
-	DELETE ALL FOR UPPER(ALLTRIM(USERID)) == UPPER(ALLTRIM(THIS.icUserID))
-	SCATTER MEMVAR
-	m.UserID = THIS.icUserID
+DELETE ALL FOR UPPER(ALLTRIM(USERID)) == UPPER(ALLTRIM(THIS.ioFxuInstance.UserId)) IN (m.lcAlias)
+
 
 *
 *  THISFORM settings
 *
-	m.Setting = "THIS.Top = " + TRANSFORM(THIS.TOP)
-	INSERT INTO (m.lcAlias) FROM MEMVAR
-	m.Setting = "THIS.Left = " + TRANSFORM(THIS.LEFT)
-	INSERT INTO (m.lcAlias) FROM MEMVAR
-	m.Setting = "THIS.Height = IIF(VERSION(5)>=900," + TRANSFORM(THIS.HEIGHT) + "," + TRANSFORM(THIS.inDesignHeight) + ")"
-	INSERT INTO (m.lcAlias) FROM MEMVAR
-	m.Setting = "THIS.Width = IIF(VERSION(5)>=900," + TRANSFORM(THIS.WIDTH) + "," + TRANSFORM(THIS.inDesignWidth) + ")"
-	INSERT INTO (m.lcAlias) FROM MEMVAR
+m.Setting = "THIS.Top = " + TRANSFORM(THIS.TOP)
+INSERT INTO (m.lcAlias) FROM MEMVAR
+m.Setting = "THIS.Left = " + TRANSFORM(THIS.LEFT)
+INSERT INTO (m.lcAlias) FROM MEMVAR
+m.Setting = "THIS.Height = IIF(VERSION(5)>=900," + TRANSFORM(THIS.HEIGHT) + "," + TRANSFORM(THIS.inDesignHeight) + ")"
+INSERT INTO (m.lcAlias) FROM MEMVAR
+m.Setting = "THIS.Width = IIF(VERSION(5)>=900," + TRANSFORM(THIS.WIDTH) + "," + TRANSFORM(THIS.inDesignWidth) + ")"
+INSERT INTO (m.lcAlias) FROM MEMVAR
 
 *
 *  THISFORM checkbox values
 *
-	m.Setting = "THIS.chkProcedure.Value = " + TRANSFORM(THIS.chkProcedure.VALUE)
-	INSERT INTO (m.lcAlias) FROM MEMVAR
-	m.Setting = "THIS.chkTab.Value = " + TRANSFORM(THIS.chkTab.VALUE)
-	INSERT INTO (m.lcAlias) FROM MEMVAR
+m.Setting = "THIS.chkProcedure.Value = " + TRANSFORM(THIS.chkProcedure.VALUE)
+INSERT INTO (m.lcAlias) FROM MEMVAR
+m.Setting = "THIS.chkTab.Value = " + TRANSFORM(THIS.chkTab.VALUE)
+INSERT INTO (m.lcAlias) FROM MEMVAR
 
 *
 *  THIS.lstTemplates.Value
 *
-	m.Setting = "THIS.lstTemplates.Value = " + TRANSFORM(THIS.lstTemplates.VALUE)
-	INSERT INTO (m.lcAlias) FROM MEMVAR
+m.Setting = "THIS.lstTemplates.Value = " + TRANSFORM(THIS.lstTemplates.VALUE)
+INSERT INTO (m.lcAlias) FROM MEMVAR
 
 *
 *  all templates after the permanent templates
 *
 
-	IF ALEN(THIS.iaTemplates, 1) > THIS.inPermanentTemplates
-		m.Setting = 'DIMENSION THIS.iaTemplates[' + TRANSFORM(ALEN(THIS.iaTemplates, 1)) + ',' + TRANSFORM(ALEN(THIS.iaTemplates, 2)) + ']'
-		INSERT INTO (m.lcAlias) FROM MEMVAR
-		LOCAL xx, yy
-		FOR m.xx = THIS.inPermanentTemplates + 1 TO ALEN(THIS.iaTemplates, 1)
-			IF EMPTY(THIS.iaTemplates[m.xx, 2]) OR NOT FILE(THIS.iaTemplates[m.xx, 3])
-				LOOP
-			ENDIF
-			FOR m.yy = 1 TO ALEN(THIS.iaTemplates, 2) - 1
-				m.Setting = 'THIS.iaTemplates[' + TRANSFORM(m.xx) + ',' + TRANSFORM(m.yy) + '] = "' + TRANSFORM(THIS.iaTemplates[m.xx, m.yy]) + ["]
-				INSERT INTO (m.lcAlias) FROM MEMVAR
-			ENDFOR
-			m.Setting = 'THIS.iaTemplates[' + TRANSFORM(m.xx) + ',' + TRANSFORM(ALEN(THIS.iaTemplates, 2)) + '] = ' + TRANSFORM(THIS.iaTemplates[m.xx, m.yy])
+IF ALEN(THIS.iaTemplates, 1) > THIS.inPermanentTemplates
+	m.Setting = 'DIMENSION THIS.iaTemplates[' + TRANSFORM(ALEN(THIS.iaTemplates, 1)) + ',' + TRANSFORM(ALEN(THIS.iaTemplates, 2)) + ']'
+	INSERT INTO (m.lcAlias) FROM MEMVAR
+	LOCAL xx, yy
+	FOR m.xx = THIS.inPermanentTemplates + 1 TO ALEN(THIS.iaTemplates, 1)
+		IF EMPTY(THIS.iaTemplates[m.xx, 2]) OR NOT FILE(THIS.iaTemplates[m.xx, 3])
+			LOOP
+		ENDIF
+		FOR m.yy = 1 TO ALEN(THIS.iaTemplates, 2) - 1
+			m.Setting = 'THIS.iaTemplates[' + TRANSFORM(m.xx) + ',' + TRANSFORM(m.yy) + '] = "' + TRANSFORM(THIS.iaTemplates[m.xx, m.yy]) + ["]
 			INSERT INTO (m.lcAlias) FROM MEMVAR
 		ENDFOR
-		m.Setting = "THIS.lstTemplates.RowSource = THIS.lstTemplates.RowSource"
+		m.Setting = 'THIS.iaTemplates[' + TRANSFORM(m.xx) + ',' + TRANSFORM(ALEN(THIS.iaTemplates, 2)) + '] = ' + TRANSFORM(THIS.iaTemplates[m.xx, m.yy])
 		INSERT INTO (m.lcAlias) FROM MEMVAR
-	ENDIF
+	ENDFOR
+	m.Setting = "THIS.lstTemplates.RowSource = THIS.lstTemplates.RowSource"
+	INSERT INTO (m.lcAlias) FROM MEMVAR
+ENDIF
 
-	CURSORTOXML(m.lcAlias, THIS.icPersistFile, 1, 512, 0, "1")
-
+TRY
+	CURSORTOXML(m.lcAlias, m.lcPersistFile, 1, 512, 0, "1")
 CATCH TO m.loException
 ENDTRY
 
 USE IN SELECT(m.lcAlias)
 
 IF VARTYPE(m.loException) = "O"
+	This.ioFxuInstance.WriteDebug("fxu.vcx/frmNewTestClass.SaveSettings()", m.loException.Message)
 	MESSAGEBOX("Unable to save user settings because " + ;
 		  CHR(13) + ;
 		  m.loException.MESSAGE, ;
 		  48, ;
 		  "Please Note")
+	RETURN .F.
 ENDIF
-
-RETURN
-
-
 ENDPROC
 PROCEDURE selectfile
 *  
@@ -896,14 +873,13 @@ RETURN  FXUInheritsFromFxuTestCase( m.lcTestCaseClass, m.lcTestCaseClassProgramF
  
 ENDPROC
 PROCEDURE Unload
-LOCAL lcResultVariable
 IF NOT EMPTY(THIS.icResultVariable)
-	lcResultVariable = THIS.icResultVariable
+	LOCAL lcResultVariable
+	m.lcResultVariable = THIS.icResultVariable
 	STORE THIS.iuRetVal TO &lcResultVariable
 ENDIF
 
 RETURN THIS.iuRetVal
-
 ENDPROC
 PROCEDURE validatederivedtestcasetemplate
 LPARAMETERS tcTestCaseTemplate
@@ -1014,6 +990,7 @@ lcreated Was a new test class created?
 luseprocedure Use the word PROCEDURE instead of METHOD
 lusetabs Use TABS rather than spaces
 iclasterrormessage Error messages
+iofxuinstance
 ^iatemplates[1,0] 
 *addcustomtemplates 
 *addtemplate 
@@ -1045,7 +1022,7 @@ iclasterrormessage Error messages
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>43</nrecno>
+		<nrecno>74</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -1081,7 +1058,7 @@ Name = "Label2"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>47</nrecno>
+		<nrecno>78</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -1135,7 +1112,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>53</nrecno>
+		<nrecno>84</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -1187,7 +1164,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>54</nrecno>
+		<nrecno>85</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -1227,7 +1204,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>59</nrecno>
+		<nrecno>90</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -1284,7 +1261,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>48</nrecno>
+		<nrecno>79</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -1324,7 +1301,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>61</nrecno>
+		<nrecno>92</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -1371,7 +1348,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>46</nrecno>
+		<nrecno>77</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -1411,7 +1388,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>60</nrecno>
+		<nrecno>91</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -1475,7 +1452,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>55</nrecno>
+		<nrecno>86</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -1528,7 +1505,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>56</nrecno>
+		<nrecno>87</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -1573,7 +1550,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>62</nrecno>
+		<nrecno>93</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -1608,7 +1585,7 @@ Name = "lblOptions"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>58</nrecno>
+		<nrecno>89</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -1643,7 +1620,7 @@ Name = "lblSaveAs"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>64</nrecno>
+		<nrecno>95</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -1690,7 +1667,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>57</nrecno>
+		<nrecno>88</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -1726,7 +1703,7 @@ Name = "lblTestFolder"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>45</nrecno>
+		<nrecno>76</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -1761,7 +1738,7 @@ Name = "lblValidationMsg"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>44</nrecno>
+		<nrecno>75</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -1855,7 +1832,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>49</nrecno>
+		<nrecno>80</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -1932,7 +1909,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>63</nrecno>
+		<nrecno>94</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -1967,7 +1944,7 @@ Name = "txtCurrentTestFolder"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>50</nrecno>
+		<nrecno>81</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -2006,7 +1983,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>51</nrecno>
+		<nrecno>83</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -2029,8 +2006,7 @@ Name = "txtTestClassName"
 ]]></properties>
 		<protected/>
 		<methods><![CDATA[PROCEDURE Valid
-RETURN thisform.ValidateTestClass()
-
+thisform.cmdCreate.Enabled=thisform.ValidateTestClass()
 ENDPROC
 ]]></methods>
 		<ole/>
@@ -2044,7 +2020,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>52</nrecno>
+		<nrecno>82</nrecno>
 	</class>
 	<class>
 		<platform>COMMENT</platform>
@@ -2068,6 +2044,6 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>65</nrecno>
+		<nrecno>96</nrecno>
 	</class>
 </VFPData>

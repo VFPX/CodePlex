@@ -48,10 +48,20 @@ EXTERNAL ARRAY taArray1, taArray2
 	#ENDIF
 
 	ioTestResult = .NULL.
+	ioFxuInstance = .NULL.
 	icFailureMessage = ''
 	ilNotifyListener = .F.
 	ilSuccess = .T.
 
+	PROCEDURE Init
+		PARAMETERS toFxuInstance
+		
+		IF VARTYPE(m.toFxuInstance)!="O" OR ISNULL(m.toFxuInstance)
+			ERROR 1924, "m.toFxuInstance"
+			RETURN .F.
+		ENDIF
+		this.ioFxuInstance=m.toFxuInstance
+	ENDPROC
 ********************************************************************
 ********************************************************************
 	PROCEDURE ilSuccess_Assign(tlSuccess AS Booelan) AS Void
@@ -369,7 +379,7 @@ EXTERNAL ARRAY taArray1, taArray2
 		m.llAssertHasError = .T.
 *\\ create exception info object and populate its properties
 		LOCAL loExceptionInfo AS FxuResultExceptionInfo OF FxuResultExceptionInfo.prg
-		m.loExceptionInfo = FxuNewObject('FxuResultExceptionInfo')
+		m.loExceptionInfo = this.ioFxuInstance.FxuNewObject('FxuResultExceptionInfo')
 		m.loExceptionInfo.SetExceptionInfo(m.toException, @m.taStackInfo)
 *\\ log
 		THIS.ioTestResult.LogMessage(m.loExceptionInfo.ToString())
@@ -393,7 +403,7 @@ EXTERNAL ARRAY taArray1, taArray2
 		m.llAssertHasErrorNo = .T.
 *\\ create exception info object and populate its properties
 		LOCAL loExceptionInfo AS FxuResultExceptionInfo OF FxuResultExceptionInfo.prg
-		m.loExceptionInfo = FxuNewObject('FxuResultExceptionInfo')
+		m.loExceptionInfo = this.ioFxuInstance.FxuNewObject('FxuResultExceptionInfo')
 		m.loExceptionInfo.SetExceptionInfo(m.toException, @m.taStackInfo)
 *\\ log
 		THIS.ioTestResult.LogMessage(m.loExceptionInfo.ToString())

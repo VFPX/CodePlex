@@ -50,25 +50,27 @@ DEFINE CLASS FxuResultData AS FxuCustom OF FxuCustom.prg
 	icDataPath		  = CURDIR()
 	icResultsTable	  = "FXUResults"
 	ioFileIO		  = .NULL.
+	ioFxuInstance	  = .NULL.
 
 ********************************************************************
-	FUNCTION INIT(tcDataPath, tcResultsTable)
+	FUNCTION INIT(toFxuInstance, tcResultsTable)
 ********************************************************************
+
+	IF VARTYPE(m.toFxuInstance)!="O" OR ISNULL(m.toFxuInstance)
+		ERROR 1924, "m.toFxuInstance"
+		RETURN .F.
+	ENDIF
 
 	THIS.icResultsTable	= EVL(m.tcResultsTable, THIS.icResultsTable)
 	THIS.icResultsTable	= JUSTSTEM(THIS.icResultsTable)
-
-	IF !EMPTY(m.tcDataPath)
-		IF DIRECTORY(m.tcDataPath)
-			THIS.icDataPath = ADDBS(m.tcDataPath)
-		ENDIF
-	ENDIF
-
+	THIS.ioFxuInstance	= m.toFxuInstance
+	THIS.icDataPath = ADDBS(m.toFxuInstance.DataPath)
+	
 	SET DELETED ON
-	THIS.ioDataMaintenance = FxuNewObject("FxuDataMaintenance", THIS.icResultsTable, THIS.icDataPath)	&& FDBOZZO
+	THIS.ioDataMaintenance = THIS.ioFxuInstance.FxuNewObject("FxuDataMaintenance", THIS.icResultsTable, THIS.icDataPath)	&& FDBOZZO
 	THIS.OpenDataInit()
 
-	THIS.ioFileIO = FxuNewObject("FXUFileIO")
+	THIS.ioFileIO = THIS.ioFxuInstance.FxuNewObject("FXUFileIO")
 
 ********************************************************************
 	ENDFUNC
@@ -184,14 +186,15 @@ DEFINE CLASS FxuResultData AS FxuCustom OF FxuCustom.prg
 	m.lnTClass	   = LENC(EVALUATE(THIS.icResultsTable + ".TCLass"))
 	m.lnTName	   = LENC(EVALUATE(THIS.icResultsTable + ".TName"))
 	m.lcFilter	   = FILTER(THIS.icResultsTable)	&& Save FILTER expression. FDBOZZO. 2014.06.19
-	m.loEnumerator = FxuNewObject("FxuTestCaseEnumerator")
+	m.loEnumerator = this.ioFxuInstance.FxuNewObject("FxuTestCaseEnumerator", this.ioFxuInstance)
 
 	IF EMPTY(m.tcTestClassFile)
 		LOCAL lcTestsFolder
 		IF USED(THIS.icResultsTable)
 			m.lcTestsFolder = ADDBS(JUSTPATH(DBF(THIS.icResultsTable)))
 		ELSE
-			m.lcTestsFolder = GetTestsDir() && HAS
+			SET STEP ON
+			m.lcTestsFolder = this.icDATAPATH
 		ENDIF
 		m.lcCurdir = FULLPATH(CURDIR())
 
@@ -397,7 +400,7 @@ DEFINE CLASS FxuResultData AS FxuCustom OF FxuCustom.prg
 	m.tcTestClassPRG = SPACE(0)
 
 *	m.loTestClassNamer = NEWOBJECT("frmFxuNewTestClass", "Fxu.vcx", .NULL., m.tcTestsPath)
-	m.loTestClassCreator = NEWOBJECT("frmNewTestClass", "Fxu.vcx", .NULL., m.tcTestsPath)
+	m.loTestClassCreator = NEWOBJECT("frmNewTestClass", "Fxu.vcx", .NULL., this.iofxuinstance)
 	m.loTestClassCreator.SHOW(1)
 	m.lcNewTestClassName = m.loTestClassCreator.ClassFullName()
 	m.llClassCreated	 = m.loTestClassCreator.lCreated
