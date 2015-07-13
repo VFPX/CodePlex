@@ -1,5 +1,10 @@
 (See the FoxUnit Wiki page on the VFPX CodePlex page https://vfpx.codeplex.com/wikipage?title=FoxUnit&referringTitle=Documentation for complete information)
 
+VFPX Release 1.5
+Introduced class FxuInstance - see http://vfpx.codeplex.com/wikipage?title=FoxUnit_Changes for further information.
+Removed FXUShowForm.prg
+Removed FXUNewObject.prg
+
 VFPX Release 1.42 - May 20, 2015
 Added an option to keep the visual results from previous tests intact when running new tests.
 

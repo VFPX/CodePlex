@@ -179,17 +179,26 @@
 		<objname><![CDATA[fxufrmtestbroker]]></objname>
 		<parent/>
 		<properties><![CDATA[DataSession = 2
-DoCreate = .T.
 Top = 0
 Left = 0
 Height = 35
 Width = 115
+DoCreate = .T.
 Visible = .F.
 _memberdata = <VFPData></VFPData>
+fxuinstance = .NULL.
 Name = "fxufrmtestbroker"
 ]]></properties>
 		<protected/>
 		<methods><![CDATA[PROCEDURE Init
+PARAMETERS toFxuInstance
+
+IF VARTYPE(m.toFxuInstance)!="O" OR ISNULL(m.toFxuInstance)
+	ERROR 1924, "m.toFxuInstance"
+	RETURN .F.
+ENDIF
+this.FxuInstance=m.toFxuInstance
+
 DODEFAULT()
 
 this.DataSessionId = 1
@@ -210,7 +219,7 @@ lcClass = JUSTSTEM(m.tcTestClass) && Stripped path from class name. HAS
 
 lcTestClassProgFile = FORCEEXT(tcTestClass, "prg")
 
-loTestCase = NEWOBJECT(lcClass, lcTestClassProgFile,.NULL.,toResult)
+loTestCase = NEWOBJECT(lcClass, lcTestClassProgFile,.NULL.,toResult, this.FxuInstance)
 
 loTestCase.ilAllowDebug = tlAllowDebug
 
@@ -224,6 +233,7 @@ ENDPROC
 		<reserved1><![CDATA[Class]]></reserved1>
 		<reserved2><![CDATA[1]]></reserved2>
 		<reserved3><![CDATA[_memberdata XML Metadata for customizable properties
+fxuinstance
 *runtest 
 ]]></reserved3>
 		<reserved4/>
@@ -232,7 +242,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>9</nrecno>
+		<nrecno>107</nrecno>
 	</class>
 	<class>
 		<platform>COMMENT</platform>
@@ -256,6 +266,6 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>10</nrecno>
+		<nrecno>108</nrecno>
 	</class>
 </VFPData>

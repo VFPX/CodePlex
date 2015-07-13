@@ -55,11 +55,18 @@ DEFINE CLASS FxuTestSuite as FxuTest OF FxuTest.prg
 	ioTestResult = .f.
 	ilNotifyListener = .f.
 	ioListener = .f.
+	ioFxuInstance = .NULL.
 
 	********************************************************************
 	FUNCTION Init
 	********************************************************************
-	
+		PARAMETERS toFxuInstance
+		
+		IF VARTYPE(m.toFxuInstance)!="O" OR ISNULL(m.toFxuInstance)
+			ERROR 1924, "m.toFxuInstance"
+			RETURN .F.
+		ENDIF
+		this.ioFxuInstance=m.toFxuInstance
 		this.iaTests[1,1] = ''
 	
 	********************************************************************
@@ -98,7 +105,7 @@ DEFINE CLASS FxuTestSuite as FxuTest OF FxuTest.prg
 	********************************************************************
 		LOCAL loTestBroker as FxuTestBroker OF FxuTestBroker.prg
 		
-		loTestBroker = FxuNewObject("FxuTestBroker")
+		loTestBroker = this.ioFxuInstance.FxuNewObject("FxuTestBroker", this.ioFxuInstance)
 		
 		this.ioTestResult.NewResult(JUSTSTEM(tcTestClass),tcTestMethod) && Stripped path. HAS
 		loTestBroker.RunTest(tcTestClass,tcTestMethod,this.ioTestResult,this.ilAllowDebug)

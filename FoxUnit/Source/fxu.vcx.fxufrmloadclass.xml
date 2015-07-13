@@ -187,7 +187,7 @@ ControlBox = .T.
 Closable = .F.
 MaxButton = .F.
 MinButton = .F.
-Icon = (("FoxUnit.ico"))
+Icon = ..\graphics\foxunit.ico
 WindowType = 1
 icfxudefaulttestdirectory = .F.
 icfxuselectedtestdirectory = 
@@ -370,7 +370,7 @@ _memberdata XML Metadata for customizable properties
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>11</nrecno>
+		<nrecno>97</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -406,7 +406,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>16</nrecno>
+		<nrecno>102</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -442,7 +442,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>15</nrecno>
+		<nrecno>101</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -456,7 +456,7 @@ ENDPROC
 Left = 665
 Height = 48
 Width = 84
-Picture = (("fxubrowseforfolder.bmp"))
+Picture = ..\graphics\fxubrowseforfolder.bmp
 Caption = "\<Browse"
 Default = .F.
 Name = "cmdBrowse"
@@ -478,7 +478,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>17</nrecno>
+		<nrecno>103</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -513,7 +513,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>14</nrecno>
+		<nrecno>100</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -527,7 +527,7 @@ ENDPROC
 Left = 666
 Height = 48
 Width = 84
-Picture = (("fxuselectnone.bmp"))
+Picture = ..\graphics\fxuselectnone.bmp
 Caption = "\<Deselect All"
 Default = .F.
 Name = "cmdDeselectAll"
@@ -548,7 +548,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>18</nrecno>
+		<nrecno>104</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -562,7 +562,7 @@ ENDPROC
 Left = 665
 Height = 48
 Width = 84
-Picture = (("fxuclassload.bmp"))
+Picture = ..\graphics\fxuclassload.bmp
 Caption = "\<Load"
 Default = .F.
 Name = "cmdLoad"
@@ -584,7 +584,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>13</nrecno>
+		<nrecno>99</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -598,7 +598,7 @@ ENDPROC
 Left = 668
 Height = 48
 Width = 84
-Picture = (("fxuselectall.bmp"))
+Picture = ..\graphics\fxuselectall.bmp
 Caption = "\<Select All"
 Default = .T.
 Name = "cmdSelectAll"
@@ -619,7 +619,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>19</nrecno>
+		<nrecno>105</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -654,7 +654,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>12</nrecno>
+		<nrecno>98</nrecno>
 	</class>
 	<class>
 		<platform>COMMENT</platform>
@@ -678,6 +678,6 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>20</nrecno>
+		<nrecno>106</nrecno>
 	</class>
 </VFPData>

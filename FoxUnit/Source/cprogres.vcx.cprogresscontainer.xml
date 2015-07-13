@@ -154,6 +154,14 @@
 										</xsd:restriction>
 									</xsd:simpleType>
 								</xsd:element>
+								<xsd:element name="nrecno">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:decimal">
+											<xsd:totalDigits value="10"/>
+											<xsd:fractionDigits value="0"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
 							</xsd:sequence>
 						</xsd:complexType>
 					</xsd:element>
@@ -275,6 +283,7 @@ version The version of this class.
 		<reserved7><![CDATA[A container class for the progressbar class. Adds funtionality such as a status bar and title bar.]]></reserved7>
 		<reserved8/>
 		<user/>
+		<nrecno>2</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -305,6 +314,36 @@ lblPercent.Name = "lblPercent"
 		<reserved7/>
 		<reserved8/>
 		<user/>
+		<nrecno>3</nrecno>
+	</class>
+	<class>
+		<platform>WINDOWS</platform>
+		<uniqueid>_ROP0KVUY1</uniqueid>
+		<class><![CDATA[cstatusbar]]></class>
+		<classloc><![CDATA[cprogres.vcx]]></classloc>
+		<baseclass><![CDATA[container]]></baseclass>
+		<objname><![CDATA[cntStatus]]></objname>
+		<parent><![CDATA[cprogresscontainer]]></parent>
+		<properties><![CDATA[Top = 73
+Left = 5
+Name = "cntStatus"
+lblStatus.Name = "lblStatus"
+lblStatusText.Name = "lblStatusText"
+]]></properties>
+		<protected/>
+		<methods/>
+		<ole/>
+		<ole2/>
+		<reserved1/>
+		<reserved2/>
+		<reserved3/>
+		<reserved4/>
+		<reserved5/>
+		<reserved6/>
+		<reserved7/>
+		<reserved8/>
+		<user/>
+		<nrecno>5</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -336,34 +375,7 @@ Name = "lblTitle"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-	</class>
-	<class>
-		<platform>WINDOWS</platform>
-		<uniqueid>_ROP0KVUY1</uniqueid>
-		<class><![CDATA[cstatusbar]]></class>
-		<classloc><![CDATA[cprogres.vcx]]></classloc>
-		<baseclass><![CDATA[container]]></baseclass>
-		<objname><![CDATA[cntStatus]]></objname>
-		<parent><![CDATA[cprogresscontainer]]></parent>
-		<properties><![CDATA[Top = 73
-Left = 5
-Name = "cntStatus"
-lblStatus.Name = "lblStatus"
-lblStatusText.Name = "lblStatusText"
-]]></properties>
-		<protected/>
-		<methods/>
-		<ole/>
-		<ole2/>
-		<reserved1/>
-		<reserved2/>
-		<reserved3/>
-		<reserved4/>
-		<reserved5/>
-		<reserved6/>
-		<reserved7/>
-		<reserved8/>
-		<user/>
+		<nrecno>4</nrecno>
 	</class>
 	<class>
 		<platform>COMMENT</platform>
@@ -387,5 +399,6 @@ lblStatusText.Name = "lblStatusText"
 		<reserved7/>
 		<reserved8/>
 		<user/>
+		<nrecno>6</nrecno>
 	</class>
 </VFPData>

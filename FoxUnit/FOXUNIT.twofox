@@ -217,62 +217,6 @@
 		<user/>
 	</project>
 	<project>
-		<name><![CDATA[source\fxushowform.prg]]></name>
-		<type>P</type>
-		<id>862213211</id>
-		<outfile/>
-		<homedir/>
-		<exclude>false</exclude>
-		<mainprog>false</mainprog>
-		<savecode>false</savecode>
-		<debug>false</debug>
-		<encrypt>false</encrypt>
-		<nologo>false</nologo>
-		<cmntstyle>0</cmntstyle>
-		<objrev>544</objrev>
-		<devinfo/>
-		<object/>
-		<ckval>0</ckval>
-		<cpid>1252</cpid>
-		<ostype/>
-		<oscreator/>
-		<comments/>
-		<reserved1/>
-		<reserved2/>
-		<sccdata/>
-		<local>true</local>
-		<key>FXUSHOWFORM</key>
-		<user/>
-	</project>
-	<project>
-		<name><![CDATA[source\fxunewobject.prg]]></name>
-		<type>P</type>
-		<id>862213211</id>
-		<outfile/>
-		<homedir/>
-		<exclude>false</exclude>
-		<mainprog>false</mainprog>
-		<savecode>false</savecode>
-		<debug>false</debug>
-		<encrypt>false</encrypt>
-		<nologo>false</nologo>
-		<cmntstyle>0</cmntstyle>
-		<objrev>544</objrev>
-		<devinfo/>
-		<object/>
-		<ckval>0</ckval>
-		<cpid>1252</cpid>
-		<ostype/>
-		<oscreator/>
-		<comments/>
-		<reserved1/>
-		<reserved2/>
-		<sccdata/>
-		<local>true</local>
-		<key>FXUNEWOBJECT</key>
-		<user/>
-	</project>
-	<project>
 		<name><![CDATA[source\fxuinheritsfromfxutestcase.prg]]></name>
 		<type>P</type>
 		<id>862213211</id>

@@ -274,7 +274,7 @@ _memberdata XML Metadata for customizable properties
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>33</nrecno>
+		<nrecno>21</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -307,7 +307,7 @@ Name = "Label1"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>35</nrecno>
+		<nrecno>23</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -340,7 +340,7 @@ Name = "Label2"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>37</nrecno>
+		<nrecno>25</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -372,7 +372,7 @@ Name = "Label3"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>34</nrecno>
+		<nrecno>22</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -410,7 +410,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>39</nrecno>
+		<nrecno>27</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -457,7 +457,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>38</nrecno>
+		<nrecno>26</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -517,7 +517,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>36</nrecno>
+		<nrecno>24</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -549,7 +549,7 @@ Name = "txtCurrentTestFolder"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>40</nrecno>
+		<nrecno>28</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -587,7 +587,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>41</nrecno>
+		<nrecno>29</nrecno>
 	</class>
 	<class>
 		<platform>COMMENT</platform>
@@ -611,6 +611,6 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>42</nrecno>
+		<nrecno>30</nrecno>
 	</class>
 </VFPData>

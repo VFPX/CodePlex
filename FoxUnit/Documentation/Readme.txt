@@ -22,12 +22,12 @@ Steps to getting up and running with FoxUnit:
 
 As a best practice, add a \Tests folder underneath your project root and add it to your path as well. You should include your tests folder to your project in whatever source control repository you are using for your project. It is vital to the test-driven process that your tests should always stay with your source both for refactoring, and to document the intent of the code that is being tested.
 
-2. Do FXU.prg or FoxUnit.app from a command window. If using Thor's custom menus, assign a keystroke to invoke FoxUnit.app.
+2. Do FXU.prg or FoxUnit.app from a command window. If using Thor's custom menus, assign a keystroke to invoke FoxUnit.app (eg. Ctrl+Alt_U).
 
 3. To add your first test class, click the [Create New Test Class] button in the toolbar. If you are putting your test in the tests folder, then include the path in the inputbox (e.g., Tests\MyFirstTestClass) and click the [OK] button.
 
 A test class will load into code editing window for you. Any method name that is not already declared in the FxuTestCase superclass will be recognized by the FoxUnit form when it's loaded in. Add a method to the class, add an assert or several asserts to the method in addition to the functionality you want to test drive. Remember... little (baby) steps.
 
-There are three important methods to use at this point. AssertEquals, AssertTrue, and AssertNotNull. We may add others in the future, but this is what we are starting with. Use these methods to show the intent of, and then test, the code to be tested. Intellisense should bring up this methods along with their arguments. An example would be this.AssertEquals(1,1,'Does one equal one?'). This assertion would be successful (and give us the green bar!!!). 
+There are three important methods to use at this point. AssertEquals, AssertTrue, and AssertNotNull. There are many others, but these are good starting assertions. Use these methods to show the intent of, and then test, the code to be tested. Intellisense should bring up this methods along with their arguments. An example would be this.AssertEquals(1,1,'Does one equal one?'). This assertion would be successful (and give us the green bar!!!). 
 
-It is a good idea to add a class level object to your class in order to test an object using many test methods, and then instantiate it in the Setup() method of your test class. If you have cleanup that needs to be performed after the test, do this in the TearDown() method of your test class.
+It is a good idea to create one "test class" (.prg) for every FoxPro class (object), and write multiple assertions for every method of that class. Instantiate the object once in the Setup() method of your test class. If you have cleanup that needs to be performed after the test, do this in the TearDown() method of your test class.

@@ -207,6 +207,7 @@ nsplitterposition = 0
 _memberdata = <VFPData><memberdata name="nsplitterposition" display="nSplitterPosition"/></VFPData>
 lfailedonly = .F.
 iresetresults = .T.
+iofxuinstance = .NULL.
 Name = "frmfoxunit"
 ]]></properties>
 		<protected/>
@@ -591,7 +592,7 @@ ENDIF
 DEFINE PAD pFoxUnit OF _MSYSMENU PROMPT "Fox\<Unit" 
 ON SELECTION PAD pFoxUnit OF _MSYSMENU FXUShowForm()
 *
-*  MODIFY COMMAND FXUShowForm
+*  MODIFY COMMAND FXU
 *  
 
 IF RECCOUNT(THIS.icGridRS) > 1
@@ -646,25 +647,25 @@ SET CLASSLIB TO FXU
 
 loEditBox = THIS.ActiveControl
 
-LOCAL loParameter
-loParameter = CREATEOBJECT("Empty")
-ADDPROPERTY(loParameter,"iaCode[1]")
-loParameter.iaCode[1] = "THIS.WindowState = " + TRANSFORM(THIS.inZoomWindowState)
+&&	LOCAL loParameter
+&&	loParameter = CREATEOBJECT("Empty")
+&&	ADDPROPERTY(loParameter,"iaCode[1]")
+&&	loParameter.iaCode[1] = "THIS.WindowState = " + TRANSFORM(THIS.inZoomWindowState)
 
-loForm = CREATEOBJECT("frmShowInfo", ;
-                      loEditbox.Text, ;
-                      m.loParameter, ;
-                      loEditBox.Parent.Caption, ;
-                      THIS.inZoomTop, ;
-                      THIS.inZoomLeft, ;
-                      THIS.inZoomHeight, ;
-                      THIS.inZoomWidth, ;
-                      loEditBox.FontName, ;
-                      loEditBox.FontSize, ;
-                      loEditBox.FontBold, ;
-                      loEditBox.FontItalic)
-loForm.Show()          
- 
+&&	loForm = CREATEOBJECT("frmShowInfo", ;
+&&	                      loEditbox.Text, ;
+&&	                      m.loParameter, ;
+&&	                      loEditBox.Parent.Caption, ;
+&&	                      THIS.inZoomTop, ;
+&&	                      THIS.inZoomLeft, ;
+&&	                      THIS.inZoomHeight, ;
+&&	                      THIS.inZoomWidth, ;
+&&	                      loEditBox.FontName, ;
+&&	                      loEditBox.FontSize, ;
+&&	                      loEditBox.FontBold, ;
+&&	                      loEditBox.FontItalic)
+&&	loForm.Show()          
+MODIFY MEMO (m.loEditBox.ControlSource) NOEDIT NOWAIT WINDOW (thisform.Name)
 ENDPROC
 PROCEDURE formatsecondselapsed
 LPARAMETERS tnSecondsElapsed
@@ -885,18 +886,51 @@ THIS.LockScreen = .f.
 
 ENDPROC
 PROCEDURE Init
-THIS.ioTestResult = FxuNewObject("FxuTestResult")
+PARAMETERS toTestBroker
 
-* FXU/JDE 07/01/2004
-* Now setting ioTestBroker from Fxu.prg
-* test broker is now instantiated prior to the
-* Fox Unit form and passed to it. This is to de-couple
-* any UI code tested by FoxUnit so that it runs
-* in the main VFP window (or as a top-level form in
-* it's own right if warranted) instead of as
-* a child of the FoxUnit form
+IF VARTYPE(m.toTestBroker)!="O" OR ISNULL(m.toTestBroker)
+	ERROR 1924, "m.toTestBroker"
+	RETURN .F.
+ENDIF
 
-*THIS.ioTestBroker = FxuNewObject("FxuTestBroker")
+THIS.ioTestBroker =m.toTestBroker
+THIS.iofxuinstance=m.toTestBroker.FxuInstance
+
+LOCAL loFxuInstance as fxuinstance OF "fxu.vcx"
+m.loFxuInstance=THIS.ioFxuInstance
+m.loFxuInstance.datasessionid=thisform.DataSessionId
+
+THIS.ioResultData = m.loFxuInstance.FxuNewObject("FXUResultData", m.loFxuInstance, "FXUResults.DBF")
+*
+*  make sure FXUResults.DBF/THIS.icGridRS exists and is 
+*  opened
+*    MODIFY COMMAND FXUResultData
+*
+IF NOT VARTYPE(THIS.ioResultData) = "O"
+  MESSAGEBOX("Unable to locate/initialize the FXUResults.DBF " + ;
+             "FoxUnit results table.", ;
+             16, ;
+             "Please Note")
+  RETURN .f.
+ENDIF
+IF NOT USED("FXUResults")
+  MESSAGEBOX("Unable to open the FXUResults.DBF FoxUnit " + ;
+             "results table",16,"Please Note")
+  RETURN .f.
+ENDIF
+
+*
+*  add the version to THIS.Caption 
+*
+THIS.Caption = THIS.Caption + " - v" + m.loFxuInstance.Version
+
+thisform.grdTests.Init()	&&	... again
+thisform.pgfDetails.pgMessages.edtMessages.ControlSource = THISFORM.icGridRS + ".Messages"
+thisform.pgfDetails.PgFailuresAndErrors.edtFailuresAndErrors.ControlSource = THISFORM.icGridRS + ".Fail_Error"
+*****
+
+
+THIS.ioTestResult = m.loFxuInstance.FxuNewObject("FxuTestResult")
 
 SET ORDER TO TAG TCLoc IN (THIS.icGridRS)
 
@@ -941,11 +975,6 @@ This.Show() && Matt Slay 2013-12-17
 Thisform.sfsplitterv1.MoveSplitterToPosition(This.nSplitterPosition) && Matt Slay 2013-12-17
 
 THIS.LockScreen = .f.
-
-
-
-
-
 ENDPROC
 PROCEDURE KeyPress
 LPARAMETERS nKeyCode, nShiftAltCtrl
@@ -1052,60 +1081,6 @@ SET NOTIFY OFF
 SET SAFETY OFF 
 SET TALK OFF 
 
-LOCAL lcFXUDataPath, cHomeDir as String
-
-* The message boxes below were killing my "flow".
-* I created this function for defaulting the tests
-* folder to _VFP.CurrentProject.HomeDir + "Tests" HAS
-lcFXUDataPath = GetTestsDir() 
-  
-lcFXUDataPath = ADDBS(m.lcFXUDataPath)
-
-IF FILE(m.lcFXUDataPath + "FXUResults.DBF")
-	*
-	*  FXUResults.DBF already exists -- the -OR- condition
-	*  above has apparently been met, so add m.lcFXUDataPath
-	*  to the VFP path
-	*
-	LOCAL lcPath
-	#IF VERSION(5) >= 900    &&& VFP 9
-		*  all these work:
-		*SET PATH TO (lcFXUDataPath) ADDITIVE 
-		*
-		*SET PATH TO "&lcFXUDataPath" ADDITIVE
-		*
-		*lcFXUDataPath = ["] + m.lcFXUDataPath + ["]
-		*SET PATH TO &lcFXUDataPath ADDITIVE 
-		*
-		lcPath = ["] + m.lcFXUDataPath + ["]
-		SET PATH TO &lcPath ADDITIVE 
-	#ELSE   &&& VFP 8
-		lcPath = SET("PATH") + "; " + m.lcFXUDataPath
-		SET PATH TO &lcPath
-	#ENDIF
-ENDIF
-
-*
-*  make sure FXUResults.DBF/THIS.icGridRS exists and is 
-*  opened
-*    MODIFY COMMAND FXUResultData
-*
-THIS.ioResultData = FxuNewObject("FXUResultData", ;
-                              m.lcFXUDataPath, ;
-                              "FXUResults.DBF")
-IF NOT VARTYPE(THIS.ioResultData) = "O"
-  MESSAGEBOX("Unable to locate/initialize the FXUResults.DBF " + ;
-             "FoxUnit results table.", ;
-             16, ;
-             "Please Note")
-  RETURN .f.
-ENDIF
-IF NOT USED("FXUResults")
-  MESSAGEBOX("Unable to open the FXUResults.DBF FoxUnit " + ;
-             "results table",16,"Please Note")
-  RETURN .f.
-ENDIF
-
 *
 *  save these for use in THIS.SaveSettings
 *
@@ -1117,16 +1092,6 @@ THIS.AddProperty("inDesignWidth",THIS.Width)
 *
 
 *THIS.Icon = "FoxUnit.Ico"
-
-*
-*  add the version to THIS.Caption 
-*
-LOCAL lcVersion
-DO GetFoxUnitVersion IN FXU WITH lcVersion
-*
-*  MODIFY COMMAND FXU
-*
-THIS.Caption = THIS.Caption + " - v" + m.lcVersion
 
 THIS.LockScreen = .t.
 
@@ -1189,15 +1154,13 @@ PROCEDURE options
 *
 
 LOCAL loForm
-loForm = FXUNewObject("FXUOptionsDialog")
+loForm = thisform.iofxuinstance.FxuNewObject("FXUOptionsDialog")
 loForm.Show()
-
-
-
-
 ENDPROC
 PROCEDURE receivecompletenotification
 LPARAMETERS tnTestCount, tnFailedTests, tnSuiteSuccess, tnSecondsElapsed
+
+SET DATASESSION TO thisform.iofxuinstance.datasessionid
 
 IF NOT USED(THIS.grdTests.RecordSource)
   *  see THIS.ReceiveResultsNotification()
@@ -1228,11 +1191,11 @@ SCAN FOR TRun
 	ENDIF 
 ENDSCAN
 This.lblAllResults.Caption = "All Tests: ("+TRANSFORM(iSuccess)+" / " + TRANSFORM(iRun)+")"
-
-
 ENDPROC
 PROCEDURE receiveresultnotification
 LPARAMETERS toTestResult as FxuTestResult of FxuTestResult.prg
+
+SET DATASESSION TO thisform.iofxuinstance.datasessionid
 
 IF NOT USED(THIS.grdTests.RecordSource)
   LOCAL lcText
@@ -1269,7 +1232,6 @@ THIS.ShowProgress(toTestResult.inRunTests, toTestResult.ilCurrentResult)
 =SEEK(UPPER(ALLTRIM(toTestResult.icCurrentTeSTCLASS)) + UPPER(ALLTRIM(toTestREsult.icCurrentTestName)),THIS.icGridRS,'tclname')
 
 THIS.Refresh()
-
 ENDPROC
 PROCEDURE restoresettings
 *
@@ -1360,7 +1322,7 @@ THIS.grdTests.Refresh()
 
 * Declare and Insantiate TestSuite
 LOCAL loTestSuite as FxuTestSuite OF FxuTestSuite.prg
-loTestSuite = FxuNewObject("FxuTestSuite")
+loTestSuite = thisform.iofxuinstance.FxuNewObject("FxuTestSuite", thisform.ioFxuInstance)
 loTestSuite.ilAllowDebug = thisform.IlAllowDebug
 
 * Load the tests into the testsuite
@@ -1442,7 +1404,7 @@ tcTestClass = ALLTRIM(tcTestClass)
 
 * Declare and Insantiate TestSuite
 LOCAL loTestSuite as FxuTestSuite OF FxuTestSuite.prg
-loTestSuite = FxuNewObject("FxuTestSuite")
+loTestSuite = thisform.iofxuinstance.FxuNewObject("FxuTestSuite", thisform.ioFxuInstance)
 loTestSuite.ilAllowDebug = thisform.IlAllowDebug
 
 * Load the tests into the testsuite
@@ -1501,7 +1463,7 @@ ENDIF
 
 * Declare and Insantiate TestSuite
 LOCAL loTestSuite as FxuTestSuite OF FxuTestSuite.prg
-loTestSuite = FxuNewObject("FxuTestSuite")
+loTestSuite = thisform.iofxuinstance.FxuNewObject("FxuTestSuite", thisform.ioFxuInstance)
 loTestSuite.ilAllowDebug = thisform.IlAllowDebug
 
 * Add this one test to the test suite
@@ -2039,7 +2001,7 @@ REPLACE ClassName, ClassLib WITH ;
 ...whereupon your subclass of this form is instantiated
 rather than this form when this line of code in FXU.PRG
 executes: 
-	goFoxUnitForm = FXUNewObject("FoxUnitForm")
+	goFoxUnitForm = m.loFxuInstance.FxuNewObject("FoxUnitForm")
 
 
 
@@ -2136,6 +2098,7 @@ nsplitterposition
 _memberdata XML Metadata for customizable properties
 lfailedonly Filter to show failed tests only
 iresetresults Clear the background grid when running tests
+iofxuinstance
 *acknowledgements 
 *addshortcutoption_classaddtest 
 *addshortcutoption_classload 
@@ -2204,7 +2167,7 @@ iresetresults Clear the background grid when running tests
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>109</nrecno>
+		<nrecno>111</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -2241,7 +2204,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>141</nrecno>
+		<nrecno>143</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -2304,7 +2267,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>110</nrecno>
+		<nrecno>112</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -2343,7 +2306,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>142</nrecno>
+		<nrecno>144</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -2358,7 +2321,7 @@ Left = 328
 Height = 40
 Width = 76
 FontName = "Tahoma"
-Picture = ("fxuclassaddtestto.bmp")
+Picture = ..\graphics\fxuclassaddtestto.bmp
 Caption = "Add \<Test"
 TabIndex = 6
 TabStop = .F.
@@ -2401,7 +2364,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>129</nrecno>
+		<nrecno>131</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -2453,7 +2416,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>139</nrecno>
+		<nrecno>141</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -2468,7 +2431,7 @@ Left = 176
 Height = 40
 Width = 76
 FontName = "Tahoma"
-Picture = ("fxuclasscreate.bmp")
+Picture = ..\graphics\fxuclasscreate.bmp
 Caption = "\<New Class"
 TabIndex = 4
 TabStop = .F.
@@ -2509,7 +2472,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>126</nrecno>
+		<nrecno>128</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -2524,7 +2487,7 @@ Left = 252
 Height = 40
 Width = 76
 FontName = "Tahoma"
-Picture = ("fxuclassload.bmp")
+Picture = ..\graphics\fxuclassload.bmp
 Caption = "\<Load Class"
 TabIndex = 5
 TabStop = .F.
@@ -2554,7 +2517,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>120</nrecno>
+		<nrecno>122</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -2569,7 +2532,7 @@ Left = 616
 Height = 40
 Width = 104
 FontName = "Tahoma"
-Picture = ("fxuclassmodify.bmp")
+Picture = ..\graphics\fxuclassmodify.bmp
 Caption = "\<Modify Selected"
 TabIndex = 9
 TabStop = .F.
@@ -2613,7 +2576,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>132</nrecno>
+		<nrecno>134</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -2653,7 +2616,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>143</nrecno>
+		<nrecno>145</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -2668,7 +2631,7 @@ Left = 512
 Height = 40
 Width = 104
 FontName = "Tahoma"
-Picture = ("fxuclassreload.bmp")
+Picture = ..\graphics\fxuclassreload.bmp
 Caption = "Rel\<oad Selected"
 TabIndex = 8
 TabStop = .F.
@@ -2700,7 +2663,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>124</nrecno>
+		<nrecno>126</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -2714,7 +2677,7 @@ ENDPROC
 Left = 408
 Height = 40
 Width = 104
-Picture = ("fxuclassremove.bmp")
+Picture = ..\graphics\fxuclassremove.bmp
 Caption = "\<Remove Selected"
 TabIndex = 7
 TabStop = .F.
@@ -2786,7 +2749,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>125</nrecno>
+		<nrecno>127</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -2801,7 +2764,7 @@ Left = 4
 Height = 40
 Width = 56
 FontName = "Tahoma"
-Picture = ("fxurunalltests.bmp")
+Picture = ..\graphics\fxurunalltests.bmp
 Caption = "\<All"
 TabIndex = 1
 TabStop = .F.
@@ -2825,7 +2788,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>121</nrecno>
+		<nrecno>123</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -2840,7 +2803,7 @@ Left = 116
 Height = 40
 Width = 56
 FontName = "Tahoma"
-Picture = ("fxurunsingletest.bmp")
+Picture = ..\graphics\fxurunsingletest.bmp
 Caption = "\<Selected"
 TabIndex = 3
 TabStop = .F.
@@ -2869,7 +2832,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>127</nrecno>
+		<nrecno>129</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -2884,7 +2847,7 @@ Left = 60
 Height = 40
 Width = 56
 FontName = "Tahoma"
-Picture = ("fxurunclasstests.bmp")
+Picture = ..\graphics\fxurunclasstests.bmp
 Caption = "\<Class"
 TabIndex = 2
 TabStop = .F.
@@ -2908,7 +2871,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>122</nrecno>
+		<nrecno>124</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -2966,6 +2929,10 @@ PROCEDURE DblClick
 THISFORM.cmdModifySelected.Click()
 ENDPROC
 PROCEDURE Init
+IF !USED(thisform.icgridrs)
+	RETURN
+ENDIF
+
 *
 *  set THIS.HighlightBackColor to the SelectedItems
 *  color set in Windows on this machine
@@ -3113,7 +3080,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>111</nrecno>
+		<nrecno>113</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -3163,7 +3130,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>144</nrecno>
+		<nrecno>146</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -3203,7 +3170,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>137</nrecno>
+		<nrecno>139</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -3250,7 +3217,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>130</nrecno>
+		<nrecno>132</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -3291,7 +3258,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>140</nrecno>
+		<nrecno>142</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -3333,7 +3300,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>138</nrecno>
+		<nrecno>140</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -3382,7 +3349,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>128</nrecno>
+		<nrecno>130</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -3430,7 +3397,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>131</nrecno>
+		<nrecno>133</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -3497,7 +3464,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>123</nrecno>
+		<nrecno>125</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -3550,7 +3517,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>116</nrecno>
+		<nrecno>118</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -3593,7 +3560,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>119</nrecno>
+		<nrecno>121</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -3631,7 +3598,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>133</nrecno>
+		<nrecno>135</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -3669,7 +3636,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>134</nrecno>
+		<nrecno>136</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -3724,7 +3691,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>135</nrecno>
+		<nrecno>137</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -3779,7 +3746,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>136</nrecno>
+		<nrecno>138</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -3807,7 +3774,7 @@ Name = "Header1"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>112</nrecno>
+		<nrecno>114</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -3840,7 +3807,7 @@ Name = "Text1"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>113</nrecno>
+		<nrecno>115</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -3868,7 +3835,7 @@ Name = "Header1"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>114</nrecno>
+		<nrecno>116</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -3901,7 +3868,7 @@ Name = "Text1"
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>115</nrecno>
+		<nrecno>117</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -3928,7 +3895,7 @@ IF NOT DODEFAULT()
   RETURN .F.
 ENDIF
 
-THIS.ControlSource = THISFORM.icGridRS + ".Fail_Error"
+&&	THIS.ControlSource = THISFORM.icGridRS + ".Fail_Error"
 
 IF VERSION(5)>=900
   *
@@ -3968,7 +3935,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>117</nrecno>
+		<nrecno>119</nrecno>
 	</class>
 	<class>
 		<platform>WINDOWS</platform>
@@ -3995,7 +3962,7 @@ IF NOT DODEFAULT()
   RETURN .f.
 ENDIF
 
-THIS.ControlSource = THISFORM.icGridRS + ".Messages"
+&&	THIS.ControlSource = THISFORM.icGridRS + ".Messages"
 
 IF VERSION(5)>=900
   *
@@ -4035,7 +4002,7 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>118</nrecno>
+		<nrecno>120</nrecno>
 	</class>
 	<class>
 		<platform>COMMENT</platform>
@@ -4059,6 +4026,6 @@ ENDPROC
 		<reserved7/>
 		<reserved8/>
 		<user/>
-		<nrecno>145</nrecno>
+		<nrecno>147</nrecno>
 	</class>
 </VFPData>
