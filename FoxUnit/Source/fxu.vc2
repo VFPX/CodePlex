@@ -5,7 +5,7 @@
 *< FOXBIN2PRG: Version="1.19" SourceFile="fxu.vcx" /> (Solo para binarios VFP 9 / Only for VFP 9 binaries)
 *
 *
-DEFINE CLASS frmfoxunit AS form 
+DEFINE CLASS frmfoxunit AS fxufrmuser OF "fxu.vcx" 
  	*< CLASSDATA: Baseclass="form" Timestamp="" Scale="Pixels" Uniqueid="" />
 
 	*-- OBJECTDATA items order determines ZOrder / El orden de los items OBJECTDATA determina el ZOrder 
@@ -40,9 +40,12 @@ DEFINE CLASS frmfoxunit AS form
 	*< OBJECTDATA: ObjPath="lblNameFilter" UniqueID="" Timestamp="" />
 	*< OBJECTDATA: ObjPath="cmdClearFilter" UniqueID="" Timestamp="" />
 	*< OBJECTDATA: ObjPath="lblFilterInfo" UniqueID="" Timestamp="" />
+	*< OBJECTDATA: ObjPath="Check1" UniqueID="" Timestamp="" />
+	*< OBJECTDATA: ObjPath="Shape3" UniqueID="" Timestamp="" />
+	*< OBJECTDATA: ObjPath="cmdOptions" UniqueID="" Timestamp="" />
+	*< OBJECTDATA: ObjPath="lblAllResults" UniqueID="" Timestamp="" />
 
 	*<DefinedPropArrayMethod>
-		*m: acknowledgements
 		*m: addshortcutoption_classaddtest
 		*m: addshortcutoption_classload
 		*m: addshortcutoption_classnew
@@ -78,17 +81,14 @@ DEFINE CLASS frmfoxunit AS form
 		*m: gridsize
 		*m: gridsortbylocation
 		*m: gridsortbyname
-		*m: license
 		*m: modifyclassatlinenumber
 		*m: movetofirsttestofnextclass
 		*m: options
 		*m: receivecompletenotification
 		*m: receiveresultnotification		&& Recieves results of the current test
-		*m: restoresettings
 		*m: runalltests		&& runs all tests in all test classes that are currently loaded into the thisform.icGridRs table
 		*m: runclasstests		&& Runs all tests for the class specified
 		*m: runonetest		&& Runs the one test who's row is currently selected in the grid
-		*m: savesettings
 		*m: seeiftestclassprgexists
 		*m: setallowdebug
 		*m: setprogress		&& sets progress bar back to no tests run status
@@ -125,8 +125,9 @@ DEFINE CLASS frmfoxunit AS form
 		*p: ioresultdata		&& Results Data Object, controls the test results table and allows update loggin to the table
 		*p: iotestbroker		&& Object That decouples the test data session from the foxUnit datasession, enabling tests to run without conflicting with the datasession storing the results.
 		*p: iotestresult		&& Class level test result object. Passed to testbroker when running tests. Instantiated when the form is instantiated.
+		*p: iresetresults		&& Clear the background grid when running tests
+		*p: lfailedonly		&& Filter to show failed tests only
 		*p: nsplitterposition
-		*p: _memberdata		&& XML Metadata for customizable properties
 	*</DefinedPropArrayMethod>
 
 	AllowOutput = .F.
@@ -139,7 +140,6 @@ DEFINE CLASS frmfoxunit AS form
 	icclassfilter = 
 	icgridrs = FXUResults		&& THIS.grdTests.RecordSource
 	icnamefilter = 
-	Icon = (("FoxUnit.ico"))
 	ilallowdebug = .F.
 	ilclosedebuggeratendoftestsrun = .F.
 	ilhonortestprefix = .F.
@@ -150,15 +150,31 @@ DEFINE CLASS frmfoxunit AS form
 	incolorpass = (rgb(0,220,0))		&& Green color property used for setting green "pass" color to grid rows and test running status bar
 	inmostrecentselectedrow = 1
 	inzoomwindowstate = 0
+	iofxuinstance = .NULL.
+	iresetresults = .T.		&& Clear the background grid when running tests
+	lfailedonly = .F.		&& Filter to show failed tests only
 	Name = "frmfoxunit"
 	nsplitterposition = 0
 	ShowTips = .T.
 	ShowWindow = 2
 	Visible = .T.
-	Width = 724
+	Width = 803
 	_memberdata = <VFPData>
 		<memberdata name="nsplitterposition" display="nSplitterPosition"/>
-		</VFPData>		&& XML Metadata for customizable properties
+		</VFPData>
+
+	ADD OBJECT 'Check1' AS checkbox WITH ;
+		Alignment = 0, ;
+		Anchor = 8, ;
+		AutoSize = .T., ;
+		Caption = "Failed Only", ;
+		ControlSource = "ThisForm.lFailedOnly", ;
+		Height = 17, ;
+		Left = 564, ;
+		Name = "Check1", ;
+		Top = 52, ;
+		Width = 79
+		*< END OBJECT: BaseClass="checkbox" />
 
 	ADD OBJECT 'cmdAddNewTest' AS commandbutton WITH ;
 		Caption = "Add \<Test", ;
@@ -166,7 +182,7 @@ DEFINE CLASS frmfoxunit AS form
 		Height = 40, ;
 		Left = 328, ;
 		Name = "cmdAddNewTest", ;
-		Picture = ("fxuclassaddtestto.bmp"), ;
+		Picture = ..\graphics\fxuclassaddtestto.bmp, ;
 		SpecialEffect = 2, ;
 		TabIndex = 6, ;
 		TabStop = .F., ;
@@ -176,13 +192,14 @@ DEFINE CLASS frmfoxunit AS form
 		*< END OBJECT: BaseClass="commandbutton" />
 
 	ADD OBJECT 'cmdClearFilter' AS commandbutton WITH ;
-		Caption = "Clear filter", ;
-		Height = 23, ;
-		Left = 636, ;
+		AutoSize = .T., ;
+		Caption = "Clear", ;
+		Height = 27, ;
+		Left = 750, ;
 		Name = "cmdClearFilter", ;
 		TabIndex = 22, ;
-		Top = 50, ;
-		Width = 84
+		Top = 48, ;
+		Width = 48
 		*< END OBJECT: BaseClass="commandbutton" />
 
 	ADD OBJECT 'cmdCreateNewTestClass' AS commandbutton WITH ;
@@ -191,7 +208,7 @@ DEFINE CLASS frmfoxunit AS form
 		Height = 40, ;
 		Left = 176, ;
 		Name = "cmdCreateNewTestClass", ;
-		Picture = ("fxuclasscreate.bmp"), ;
+		Picture = ..\graphics\fxuclasscreate.bmp, ;
 		SpecialEffect = 2, ;
 		TabIndex = 4, ;
 		TabStop = .F., ;
@@ -206,7 +223,7 @@ DEFINE CLASS frmfoxunit AS form
 		Height = 40, ;
 		Left = 252, ;
 		Name = "cmdLoadNewTestClass", ;
-		Picture = ("fxuclassload.bmp"), ;
+		Picture = ..\graphics\fxuclassload.bmp, ;
 		SpecialEffect = 2, ;
 		TabIndex = 5, ;
 		TabStop = .F., ;
@@ -221,7 +238,7 @@ DEFINE CLASS frmfoxunit AS form
 		Height = 40, ;
 		Left = 616, ;
 		Name = "cmdModifySelected", ;
-		Picture = ("fxuclassmodify.bmp"), ;
+		Picture = ..\graphics\fxuclassmodify.bmp, ;
 		SpecialEffect = 2, ;
 		TabIndex = 9, ;
 		TabStop = .F., ;
@@ -230,13 +247,29 @@ DEFINE CLASS frmfoxunit AS form
 		Width = 104
 		*< END OBJECT: BaseClass="commandbutton" />
 
+	ADD OBJECT 'cmdOptions' AS commandbutton WITH ;
+		Anchor = 8, ;
+		Caption = "Options", ;
+		FontName = "Tahoma", ;
+		Height = 40, ;
+		Left = 724, ;
+		Name = "cmdOptions", ;
+		Picture = ..\graphics\foxunit.bmp, ;
+		SpecialEffect = 2, ;
+		TabIndex = 6, ;
+		TabStop = .F., ;
+		ToolTipText = "Add a new test (method) to the test class (.PRG) currently selected in the grid.", ;
+		Top = 3, ;
+		Width = 76
+		*< END OBJECT: BaseClass="commandbutton" />
+
 	ADD OBJECT 'cmdReloadSelectedTestClass' AS commandbutton WITH ;
 		Caption = "Rel\<oad Selected", ;
 		FontName = "Tahoma", ;
 		Height = 40, ;
 		Left = 512, ;
 		Name = "cmdReloadSelectedTestClass", ;
-		Picture = ("fxuclassreload.bmp"), ;
+		Picture = ..\graphics\fxuclassreload.bmp, ;
 		SpecialEffect = 2, ;
 		TabIndex = 8, ;
 		TabStop = .F., ;
@@ -250,7 +283,7 @@ DEFINE CLASS frmfoxunit AS form
 		Height = 40, ;
 		Left = 408, ;
 		Name = "cmdRemoveTestClass", ;
-		Picture = ("fxuclassremove.bmp"), ;
+		Picture = ..\graphics\fxuclassremove.bmp, ;
 		SpecialEffect = 2, ;
 		TabIndex = 7, ;
 		TabStop = .F., ;
@@ -265,7 +298,7 @@ DEFINE CLASS frmfoxunit AS form
 		Height = 40, ;
 		Left = 4, ;
 		Name = "cmdRunTestsAll", ;
-		Picture = ("fxurunalltests.bmp"), ;
+		Picture = ..\graphics\fxurunalltests.bmp, ;
 		SpecialEffect = 2, ;
 		TabIndex = 1, ;
 		TabStop = .F., ;
@@ -280,7 +313,7 @@ DEFINE CLASS frmfoxunit AS form
 		Height = 40, ;
 		Left = 116, ;
 		Name = "cmdRunTestsOne", ;
-		Picture = ("fxurunsingletest.bmp"), ;
+		Picture = ..\graphics\fxurunsingletest.bmp, ;
 		SpecialEffect = 2, ;
 		TabIndex = 3, ;
 		TabStop = .F., ;
@@ -295,7 +328,7 @@ DEFINE CLASS frmfoxunit AS form
 		Height = 40, ;
 		Left = 60, ;
 		Name = "cmdRunTestsOneClass", ;
-		Picture = ("fxurunclasstests.bmp"), ;
+		Picture = ..\graphics\fxurunclasstests.bmp, ;
 		SpecialEffect = 2, ;
 		TabIndex = 2, ;
 		TabStop = .F., ;
@@ -317,7 +350,7 @@ DEFINE CLASS frmfoxunit AS form
 		ScrollBars = 2, ;
 		TabIndex = 10, ;
 		Top = 76, ;
-		Width = 710, ;
+		Width = 789, ;
 		Column1.BackColor = 255,255,255, ;
 		Column1.FontBold = .F., ;
 		Column1.FontName = "Tahoma", ;
@@ -329,7 +362,7 @@ DEFINE CLASS frmfoxunit AS form
 		Column2.FontName = "Tahoma", ;
 		Column2.Name = "Column2", ;
 		Column2.ReadOnly = .T., ;
-		Column2.Width = 466
+		Column2.Width = 550
 		*< END OBJECT: BaseClass="grid" />
 
 	ADD OBJECT 'grdTests.Column1.Header1' AS header WITH ;
@@ -370,16 +403,31 @@ DEFINE CLASS frmfoxunit AS form
 		ReadOnly = .T.
 		*< END OBJECT: BaseClass="textbox" />
 
+	ADD OBJECT 'lblAllResults' AS label WITH ;
+		Alignment = 1, ;
+		AutoSize = .T., ;
+		BackStyle = 0, ;
+		Caption = "Test results", ;
+		FontName = "Tahoma", ;
+		Height = 16, ;
+		Left = 732, ;
+		Name = "lblAllResults", ;
+		TabIndex = 15, ;
+		Top = 432, ;
+		Width = 66
+		*< END OBJECT: BaseClass="label" />
+
 	ADD OBJECT 'lblClassFilter' AS label WITH ;
 		Alignment = 1, ;
+		AutoSize = .F., ;
 		BackStyle = 0, ;
 		Caption = "Class", ;
 		Height = 17, ;
-		Left = 316, ;
+		Left = 253, ;
 		Name = "lblClassFilter", ;
 		TabIndex = 12, ;
 		Top = 54, ;
-		Width = 44
+		Width = 35
 		*< END OBJECT: BaseClass="label" />
 
 	ADD OBJECT 'lblElapsedTime' AS label WITH ;
@@ -396,15 +444,16 @@ DEFINE CLASS frmfoxunit AS form
 		*< END OBJECT: BaseClass="label" />
 
 	ADD OBJECT 'lblFilterInfo' AS label WITH ;
+		AutoSize = .F., ;
 		BackStyle = 0, ;
-		Caption = "Filter the list to include Classes, Names containing these strings: ", ;
+		Caption = "Filter the list to include Classes, Names containing: ", ;
 		FontSize = 8, ;
-		Height = 17, ;
+		Height = 16, ;
 		Left = 8, ;
 		Name = "lblFilterInfo", ;
 		TabIndex = 13, ;
 		Top = 55, ;
-		Width = 312, ;
+		Width = 245, ;
 		WordWrap = .T.
 		*< END OBJECT: BaseClass="label" />
 
@@ -413,7 +462,7 @@ DEFINE CLASS frmfoxunit AS form
 		BackStyle = 0, ;
 		Caption = "Name", ;
 		Height = 17, ;
-		Left = 476, ;
+		Left = 403, ;
 		Name = "lblNameFilter", ;
 		TabIndex = 14, ;
 		Top = 54, ;
@@ -451,7 +500,7 @@ DEFINE CLASS frmfoxunit AS form
 		Name = "pbProgress", ;
 		TabIndex = 18, ;
 		Top = 451, ;
-		Width = 680, ;
+		Width = 759, ;
 		lblPercent.Name = "lblPercent", ;
 		shpBar.BackColor = 0,255,0, ;
 		shpBar.Name = "shpBar"
@@ -465,7 +514,7 @@ DEFINE CLASS frmfoxunit AS form
 		PageCount = 2, ;
 		TabIndex = 11, ;
 		Top = 260, ;
-		Width = 713, ;
+		Width = 792, ;
 		Page1.Caption = "\<Failures and Errors", ;
 		Page1.Name = "pgFailuresAndErrors", ;
 		Page2.Caption = "Messa\<ges", ;
@@ -482,7 +531,7 @@ DEFINE CLASS frmfoxunit AS form
 		ReadOnly = .T., ;
 		TabIndex = 2, ;
 		Top = 3, ;
-		Width = 698
+		Width = 779
 		*< END OBJECT: BaseClass="editbox" />
 
 	ADD OBJECT 'pgfDetails.pgMessages.edtMessages' AS editbox WITH ;
@@ -495,18 +544,19 @@ DEFINE CLASS frmfoxunit AS form
 		ReadOnly = .T., ;
 		TabIndex = 3, ;
 		Top = 3, ;
-		Width = 698
+		Width = 779
 		*< END OBJECT: BaseClass="editbox" />
 
 	ADD OBJECT 'Sfsplitterv1' AS sfsplitterv WITH ;
 		Anchor = 0, ;
 		cobject1name = grdTests, ;
 		cobject2name = pgfDetails, ;
+		DefWidth = , ;
 		Height = 7, ;
 		Left = 8, ;
 		Name = "Sfsplitterv1", ;
 		Top = 257, ;
-		Width = 710, ;
+		Width = (ThisForm.width-14), ;
 		gripper.GripperDot1.Name = "GripperDot1", ;
 		gripper.GripperDot1.ShapeDark.Name = "ShapeDark", ;
 		gripper.GripperDot1.ShapeLight.Name = "ShapeLight", ;
@@ -530,14 +580,25 @@ DEFINE CLASS frmfoxunit AS form
 		gripper.Name = "gripper"
 		*< END OBJECT: ClassLib="sfsplitter.vcx" BaseClass="control" />
 
+	ADD OBJECT 'Shape3' AS shape WITH ;
+		Anchor = 8, ;
+		Height = 28, ;
+		Left = 721, ;
+		Name = "Shape3", ;
+		SpecialEffect = 0, ;
+		Top = 9, ;
+		Width = 2
+		*< END OBJECT: BaseClass="shape" />
+
 	ADD OBJECT 'shpButtons' AS shape WITH ;
+		Anchor = 10, ;
 		BackStyle = 0, ;
-		Height = 44, ;
+		Height = 45, ;
 		Left = 0, ;
 		Name = "shpButtons", ;
 		SpecialEffect = 0, ;
 		Top = 0, ;
-		Width = 724
+		Width = 804
 		*< END OBJECT: BaseClass="shape" />
 
 	ADD OBJECT 'shpSeparator1' AS shape WITH ;
@@ -561,7 +622,8 @@ DEFINE CLASS frmfoxunit AS form
 	ADD OBJECT 'txtClassFilter' AS textbox WITH ;
 		ControlSource = "THISFORM.icClassFilter", ;
 		Height = 23, ;
-		Left = 364, ;
+		Left = 292, ;
+		MaxLength = 110, ;
 		Name = "txtClassFilter", ;
 		TabIndex = 20, ;
 		Top = 50, ;
@@ -571,34 +633,14 @@ DEFINE CLASS frmfoxunit AS form
 	ADD OBJECT 'txtNameFilter' AS textbox WITH ;
 		ControlSource = "THISFORM.icNameFilter", ;
 		Height = 23, ;
-		Left = 520, ;
+		Left = 447, ;
+		MaxLength = 130, ;
 		Name = "txtNameFilter", ;
 		TabIndex = 21, ;
 		Top = 50, ;
 		Width = 108
 		*< END OBJECT: BaseClass="textbox" />
 	
-	PROCEDURE acknowledgements
-		*
-		*  this method is called from the form-level shortcut menu
-		*
-		
-		LOCAL lcSetClassLib, loForm
-		lcSetClassLib = SET("CLASSLIB")
-		SET CLASSLIB TO FXU 
-		
-		loForm = CREATEOBJECT("frmShowInfo", ;
-		                      FILETOSTR("FoxUnitAcknowledgements.TXT"), ;
-		                      .f., ;					
-		                      "FoxUnit Acknowledgements", ;
-		                      40, ;
-		                      .f., ;
-		                      SYSMETRIC(2)-160)
-		loForm.Show()          
-		
-		SET CLASSLIB TO &lcSetClassLib
-	ENDPROC
-
 	PROCEDURE Activate
 		IF THIS.ilInitialEntry ;
 		     AND RECCOUNT(THIS.icGridRS) = 0
@@ -619,7 +661,7 @@ DEFINE CLASS frmfoxunit AS form
 		ENDIF
 		
 		IF THIS.ilInitialEntry
-		  IF THIS.ilLargeGrid   &&& set in THIS.RestoreSettings()
+		  IF THIS.ilLargeGrid   &&& set in THIS.SettingsRestore()
 		    *
 		    *  I couldn't get this to work properly in
 		    *  THIS.Init
@@ -896,59 +938,62 @@ DEFINE CLASS frmfoxunit AS form
 		*  this method is called from the LostFocus of
 		*  the two filter textboxes above the grid
 		*
-		
 		IF EMPTY(THIS.icClassFilter) ;
-		     AND EMPTY(THIS.icNameFilter) ;
-		     AND EMPTY(FILTER(THIS.icGridRS))
-		  *
-		  *  nothing to do
-		  *
-		  RETURN
+				AND EMPTY(THIS.icNameFilter) ;
+				AND NOT THIS.lFailedonly ;
+				AND EMPTY(FILTER(THIS.icGridRS))
+		*
+		*  nothing to do
+		*
+			RETURN
 		ENDIF
 		
 		LOCAL lcFilter
-		lcFilter = UPPER(ALLTRIM(THIS.icClassFilter))
+		m.lcFilter = UPPER(ALLTRIM(THIS.icClassFilter))
 		IF NOT EMPTY(m.lcFilter)
-		  lcFilter = ['] + m.lcFilter + [' $ UPPER(TClass)]
+			m.lcFilter = ['] + m.lcFilter + [' $ UPPER(TClass)]
 		ENDIF
-		IF NOT EMPTY(UPPER(THIS.icNameFilter))
-		  IF NOT EMPTY(m.lcFilter)
-		    lcFilter = m.lcFilter + " AND "
-		  ENDIF
-		  lcFilter = m.lcFilter + ['] + UPPER(ALLTRIM(THIS.icNameFilter)) + [' $ UPPER(TName)]
+		IF NOT EMPTY(THIS.icNameFilter)
+			IF NOT EMPTY(m.lcFilter)
+				m.lcFilter = m.lcFilter + " AND "
+			ENDIF
+			m.lcFilter = m.lcFilter + ['] + UPPER(ALLTRIM(THIS.icNameFilter)) + [' $ UPPER(TName)]
+		ENDIF
+		IF THIS.lFailedonly
+			IF NOT EMPTY(m.lcFilter)
+				m.lcFilter = m.lcFilter + " AND "
+			ENDIF
+			m.lcFilter = m.lcFilter + " not success "
 		ENDIF
 		
 		LOCAL lnSelect
-		lnSelect = SELECT(0)
+		m.lnSelect = SELECT(0)
 		SELECT (THIS.icGridRS)
 		
 		IF EMPTY(m.lcFilter)
-		  SET FILTER TO 
-		 ELSE
-		  SET FILTER TO &lcFilter
-		  IF NOT EVALUATE(m.lcFilter)
-		    *
-		    *  current record does not meet the new
-		    *  filter condition
-		    *
-		    LOCATE 
-		  ENDIF
+			SET FILTER TO
+		ELSE
+			SET FILTER TO &lcFilter
+			IF NOT EVALUATE(m.lcFilter)
+		*
+		*  current record does not meet the new
+		*  filter condition
+		*
+				LOCATE
+			ENDIF
 		ENDIF
 		
-		THIS.LockScreen = .t.
-		
-		THIS.grdTests.Refresh()
-		
+		THIS.LOCKSCREEN = .T.
+		THIS.grdTests.REFRESH()
 		*
 		*  scroll PageUp, so that if the filter includes more
 		*  records above the first/top one showing in the grid,
 		*  we can see at least some of them 
 		*
-		THIS.grdTests.DoScroll(2)
-		
-		THIS.cmdClearFilter.Refresh()
-		
-		THIS.LockScreen = .f.
+		THIS.grdTests.DOSCROLL(2)
+		THIS.cmdClearFilter.REFRESH()
+		This.Refresh()
+		THIS.LOCKSCREEN = .F.
 	ENDPROC
 
 	PROCEDURE calculaterowcolor		&& Calculates the correct RGB value row color for a test row (grey = not tested, red = falied, green = succeeded)
@@ -976,33 +1021,18 @@ DEFINE CLASS frmfoxunit AS form
 		  RETURN
 		ENDIF
 		
-		*
+		* % This should be an optional setting, but with Thor this is even easier.
 		*  install a FoxUnit menu pad whenever this form is
 		*  deactivated/minimized, etc.
 		*
-		DEFINE PAD pFoxUnit OF _MSYSMENU PROMPT "Fox\<Unit" 
-		ON SELECTION PAD pFoxUnit OF _MSYSMENU FXUShowForm()
-		*
-		*  MODIFY COMMAND FXUShowForm
-		*  
-		
-		IF RECCOUNT(THIS.icGridRS) > 1
-		  *
-		  *  don't bother with this info if you've been
-		  *  here a few times
-		  *
-		 ELSE  
-		*!*	  ACTIVATE SCREEN
-		*!*	  ? "The FoxUnit form interface is a Top-Level form, and can be re-activated via:"
-		*!*	  ? "  - The FoxUnit pad on the VFP system menu"
-		*!*	  ? "  - The FoxUnit item in the Windows Taskbar"
-		ENDIF
+		*!*	DEFINE PAD pFoxUnit OF _MSYSMENU PROMPT "Fox\<Unit" 
+		*!*	ON SELECTION PAD pFoxUnit OF _MSYSMENU FXUShowForm()
 		
 		
 	ENDPROC
 
 	PROCEDURE Destroy
-		THIS.SaveSettings()
+		THIS.SettingsSave(".\FXUPersist.XML")
 		
 		THIS.ioTestResult = .f.
 		THIS.ioTestBroker = .f.
@@ -1041,25 +1071,25 @@ DEFINE CLASS frmfoxunit AS form
 		
 		loEditBox = THIS.ActiveControl
 		
-		LOCAL loParameter
-		loParameter = CREATEOBJECT("Empty")
-		ADDPROPERTY(loParameter,"iaCode[1]")
-		loParameter.iaCode[1] = "THIS.WindowState = " + TRANSFORM(THIS.inZoomWindowState)
+		&&	LOCAL loParameter
+		&&	loParameter = CREATEOBJECT("Empty")
+		&&	ADDPROPERTY(loParameter,"iaCode[1]")
+		&&	loParameter.iaCode[1] = "THIS.WindowState = " + TRANSFORM(THIS.inZoomWindowState)
 		
-		loForm = CREATEOBJECT("frmShowInfo", ;
-		                      loEditbox.Text, ;
-		                      m.loParameter, ;
-		                      loEditBox.Parent.Caption, ;
-		                      THIS.inZoomTop, ;
-		                      THIS.inZoomLeft, ;
-		                      THIS.inZoomHeight, ;
-		                      THIS.inZoomWidth, ;
-		                      loEditBox.FontName, ;
-		                      loEditBox.FontSize, ;
-		                      loEditBox.FontBold, ;
-		                      loEditBox.FontItalic)
-		loForm.Show()          
-		 
+		&&	loForm = CREATEOBJECT("frmShowInfo", ;
+		&&	                      loEditbox.Text, ;
+		&&	                      m.loParameter, ;
+		&&	                      loEditBox.Parent.Caption, ;
+		&&	                      THIS.inZoomTop, ;
+		&&	                      THIS.inZoomLeft, ;
+		&&	                      THIS.inZoomHeight, ;
+		&&	                      THIS.inZoomWidth, ;
+		&&	                      loEditBox.FontName, ;
+		&&	                      loEditBox.FontSize, ;
+		&&	                      loEditBox.FontBold, ;
+		&&	                      loEditBox.FontItalic)
+		&&	loForm.Show()          
+		MODIFY MEMO (m.loEditBox.ControlSource) NOEDIT NOWAIT WINDOW (thisform.Name)
 	ENDPROC
 
 	PROCEDURE formatsecondselapsed
@@ -1289,18 +1319,54 @@ DEFINE CLASS frmfoxunit AS form
 	ENDPROC
 
 	PROCEDURE Init
-		THIS.ioTestResult = FxuNewObject("FxuTestResult")
+		PARAMETERS toTestBroker
 		
-		* FXU/JDE 07/01/2004
-		* Now setting ioTestBroker from Fxu.prg
-		* test broker is now instantiated prior to the
-		* Fox Unit form and passed to it. This is to de-couple
-		* any UI code tested by FoxUnit so that it runs
-		* in the main VFP window (or as a top-level form in
-		* it's own right if warranted) instead of as
-		* a child of the FoxUnit form
+		IF VARTYPE(m.toTestBroker)!="O" OR ISNULL(m.toTestBroker)
+			ERROR 1924, "m.toTestBroker"
+			RETURN .F.
+		ENDIF
 		
-		*THIS.ioTestBroker = FxuNewObject("FxuTestBroker")
+		THIS.ioTestBroker =m.toTestBroker
+		*THIS.ioFxuInstance=m.toTestBroker.ioFxuInstance
+		IF !DODEFAULT(m.toTestBroker.ioFxuInstance)
+			RETURN .F.
+		ENDIF
+		
+		LOCAL loFxuInstance as fxuinstance OF "fxu.vcx"
+		m.loFxuInstance=THIS.ioFxuInstance
+		m.loFxuInstance.datasessionid=thisform.DataSessionId
+		
+		THIS.ioResultData = m.loFxuInstance.FxuNewObject("FXUResultData", m.loFxuInstance, "FXUResults.DBF")
+		*
+		*  make sure FXUResults.DBF/THIS.icGridRS exists and is 
+		*  opened
+		*    MODIFY COMMAND FXUResultData
+		*
+		IF NOT VARTYPE(THIS.ioResultData) = "O"
+		  MESSAGEBOX("Unable to locate/initialize the FXUResults.DBF " + ;
+		             "FoxUnit results table.", ;
+		             16, ;
+		             "Please Note")
+		  RETURN .f.
+		ENDIF
+		IF NOT USED("FXUResults")
+		  MESSAGEBOX("Unable to open the FXUResults.DBF FoxUnit " + ;
+		             "results table",16,"Please Note")
+		  RETURN .f.
+		ENDIF
+		
+		*
+		*  add the version to THIS.Caption 
+		*
+		THIS.Caption = THIS.Caption + " - v" + m.loFxuInstance.Version
+		
+		thisform.grdTests.Init()	&&	... again
+		thisform.pgfDetails.pgMessages.edtMessages.ControlSource = THISFORM.icGridRS + ".Messages"
+		thisform.pgfDetails.PgFailuresAndErrors.edtFailuresAndErrors.ControlSource = THISFORM.icGridRS + ".Fail_Error"
+		*****
+		
+		
+		THIS.ioTestResult = m.loFxuInstance.FxuNewObject("FxuTestResult")
 		
 		SET ORDER TO TAG TCLoc IN (THIS.icGridRS)
 		
@@ -1327,11 +1393,11 @@ DEFINE CLASS frmfoxunit AS form
 		THISFORM.AddProperty("ilLargeGrid",.f.)
 		
 		*
-		*  apply settings saved last time in THIS.SaveSettings(),
+		*  apply settings saved last time in THIS.SettingsSave(),
 		*  called from THIS.Destroy()
 		*
 		
-		THIS.RestoreSettings()
+		THIS.SettingsRestore(".\FXUPersist.XML")
 		
 		*
 		*  THIS.inColorNotRun is now ignored -- I've set it
@@ -1345,11 +1411,6 @@ DEFINE CLASS frmfoxunit AS form
 		Thisform.sfsplitterv1.MoveSplitterToPosition(This.nSplitterPosition) && Matt Slay 2013-12-17
 		
 		THIS.LockScreen = .f.
-		
-		
-		
-		
-		
 	ENDPROC
 
 	PROCEDURE KeyPress
@@ -1406,27 +1467,6 @@ DEFINE CLASS frmfoxunit AS form
 		ENDIF
 	ENDPROC
 
-	PROCEDURE license
-		*
-		*  this method is called from the form-level shortcut menu
-		*
-		
-		LOCAL lcSetClassLib, loForm
-		lcSetClassLib = SET("CLASSLIB")
-		SET CLASSLIB TO FXU 
-		
-		loForm = CREATEOBJECT("frmShowInfo", ;
-		                      FILETOSTR("FoxUnitLicense.TXT"), ;
-		                      .f., ;				
-		                      "FoxUnit Open Source License", ;
-		                      40, ;
-		                      .f., ;
-		                      SYSMETRIC(2)-160)
-		loForm.Show()          
-		
-		SET CLASSLIB TO &lcSetClassLib
-	ENDPROC
-
 	PROCEDURE Load
 		IF UPPER(JUSTSTEM(SYS(16,0))) == "FXU" ;
 		     OR UPPER(PROGRAM(PROGRAM(-1)-2)) == "FXU" ;
@@ -1459,62 +1499,8 @@ DEFINE CLASS frmfoxunit AS form
 		SET SAFETY OFF 
 		SET TALK OFF 
 		
-		LOCAL lcFXUDataPath, cHomeDir as String
-		
-		* The message boxes below were killing my "flow".
-		* I created this function for defaulting the tests
-		* folder to _VFP.CurrentProject.HomeDir + "Tests" HAS
-		lcFXUDataPath = GetTestsDir() 
-		  
-		lcFXUDataPath = ADDBS(m.lcFXUDataPath)
-		
-		IF FILE(m.lcFXUDataPath + "FXUResults.DBF")
-			*
-			*  FXUResults.DBF already exists -- the -OR- condition
-			*  above has apparently been met, so add m.lcFXUDataPath
-			*  to the VFP path
-			*
-			LOCAL lcPath
-			#IF VERSION(5) >= 900    &&& VFP 9
-				*  all these work:
-				*SET PATH TO (lcFXUDataPath) ADDITIVE 
-				*
-				*SET PATH TO "&lcFXUDataPath" ADDITIVE
-				*
-				*lcFXUDataPath = ["] + m.lcFXUDataPath + ["]
-				*SET PATH TO &lcFXUDataPath ADDITIVE 
-				*
-				lcPath = ["] + m.lcFXUDataPath + ["]
-				SET PATH TO &lcPath ADDITIVE 
-			#ELSE   &&& VFP 8
-				lcPath = SET("PATH") + "; " + m.lcFXUDataPath
-				SET PATH TO &lcPath
-			#ENDIF
-		ENDIF
-		
 		*
-		*  make sure FXUResults.DBF/THIS.icGridRS exists and is 
-		*  opened
-		*    MODIFY COMMAND FXUResultData
-		*
-		THIS.ioResultData = FxuNewObject("FXUResultData", ;
-		                              m.lcFXUDataPath, ;
-		                              "FXUResults.DBF")
-		IF NOT VARTYPE(THIS.ioResultData) = "O"
-		  MESSAGEBOX("Unable to locate/initialize the FXUResults.DBF " + ;
-		             "FoxUnit results table.", ;
-		             16, ;
-		             "Please Note")
-		  RETURN .f.
-		ENDIF
-		IF NOT USED("FXUResults")
-		  MESSAGEBOX("Unable to open the FXUResults.DBF FoxUnit " + ;
-		             "results table",16,"Please Note")
-		  RETURN .f.
-		ENDIF
-		
-		*
-		*  save these for use in THIS.SaveSettings
+		*  save these for use in THIS.SettingsSave()
 		*
 		THIS.AddProperty("inDesignHeight",THIS.Height)
 		THIS.AddProperty("inDesignWidth",THIS.Width)
@@ -1524,16 +1510,6 @@ DEFINE CLASS frmfoxunit AS form
 		*
 		
 		*THIS.Icon = "FoxUnit.Ico"
-		
-		*
-		*  add the version to THIS.Caption 
-		*
-		LOCAL lcVersion
-		DO GetFoxUnitVersion IN FXU WITH lcVersion
-		*
-		*  MODIFY COMMAND FXU
-		*
-		THIS.Caption = THIS.Caption + " - v" + m.lcVersion
 		
 		THIS.LockScreen = .t.
 		
@@ -1593,38 +1569,163 @@ DEFINE CLASS frmfoxunit AS form
 		
 	ENDPROC
 
+	PROCEDURE onsettingssave
+		PARAMETERS tcAlias
+		
+		IF VARTYPE(m.tcAlias)!="C" OR !USED(m.tcAlias)
+			RETURN .F.
+		ENDIF
+		
+		SELECT (m.tcAlias)
+		SCATTER NAME loPersistVariables MEMO
+		loPersistVariables.UserID = THIS.ioFxuInstance.UserId
+		
+		loPersistVariables.Setting = "THIS.Top = " + TRANSFORM(THIS.Top)
+		INSERT INTO (m.tcAlias) FROM NAME loPersistVariables 
+		loPersistVariables.Setting = "THIS.Left = " + TRANSFORM(THIS.Left) 
+		INSERT INTO (m.tcAlias) FROM NAME loPersistVariables 
+		loPersistVariables.Setting = "THIS.Height = IIF(VERSION(5)>=900," + TRANSFORM(THIS.Height) + "," + TRANSFORM(THIS.inDesignHeight) + ")"
+		INSERT INTO (m.tcAlias) FROM NAME loPersistVariables 
+		loPersistVariables.Setting = "THIS.Width = IIF(VERSION(5)>=900," + TRANSFORM(THIS.Width) + "," + TRANSFORM(THIS.inDesignWidth) + ")"
+		INSERT INTO (m.tcAlias) FROM NAME loPersistVariables 
+		
+		loPersistVariables.Setting = "THIS.inZoomTop = " + TRANSFORM(THIS.inZoomTop) 
+		INSERT INTO (m.tcAlias) FROM NAME loPersistVariables 
+		loPersistVariables.Setting = "THIS.inZoomLeft = " + TRANSFORM(THIS.inZoomLeft) 
+		INSERT INTO (m.tcAlias) FROM NAME loPersistVariables 
+		loPersistVariables.Setting = "THIS.inZoomHeight = " + TRANSFORM(THIS.inZoomHeight) 
+		INSERT INTO (m.tcAlias) FROM NAME loPersistVariables 
+		loPersistVariables.Setting = "THIS.inZoomWidth = " + TRANSFORM(THIS.inZoomWidth) 
+		INSERT INTO (m.tcAlias) FROM NAME loPersistVariables 
+		loPersistVariables.Setting = "THIS.inZoomWindowState = " + TRANSFORM(THIS.inZoomWindowState) 
+		INSERT INTO (m.tcAlias) FROM NAME loPersistVariables 
+		
+		loPersistVariables.Setting = "THIS.pgfDetails.ActivePage = " + TRANSFORM(THIS.pgfDetails.ActivePage)
+		INSERT INTO (m.tcAlias) FROM NAME loPersistVariables 
+		
+		*
+		*  font settings
+		*
+		loPersistVariables.Setting = [THIS.grdTests.FontName = "] + TRANSFORM(THIS.grdTests.FontName) + ["]
+		INSERT INTO (m.tcAlias) FROM NAME loPersistVariables 
+		loPersistVariables.Setting = "THIS.grdTests.FontSize = " + TRANSFORM(THIS.grdTests.FontSize)
+		INSERT INTO (m.tcAlias) FROM NAME loPersistVariables 
+		loPersistVariables.Setting = "THIS.grdTests.FontBold = " + TRANSFORM(THIS.grdTests.FontBold)
+		INSERT INTO (m.tcAlias) FROM NAME loPersistVariables 
+		loPersistVariables.Setting = "THIS.grdTests.FontItalic = " + TRANSFORM(THIS.grdTests.FontItalic)
+		INSERT INTO (m.tcAlias) FROM NAME loPersistVariables 
+		LOCAL loPage, loControl
+		FOR EACH loPage IN THIS.pgfDetails.Pages
+		  loPersistVariables.Setting = [THIS.pgfDetails.] + loPage.Name + [.FontName = "] + TRANSFORM(loPage.FontName) + ["]
+		  INSERT INTO (m.tcAlias) FROM NAME loPersistVariables 
+		  loPersistVariables.Setting = "THIS.pgfDetails." + loPage.Name + ".FontSize = " + TRANSFORM(loPage.FontSize)
+		  INSERT INTO (m.tcAlias) FROM NAME loPersistVariables 
+		  loPersistVariables.Setting = "THIS.pgfDetails." + loPage.Name + ".FontBold = " + TRANSFORM(loPage.FontBold)
+		  INSERT INTO (m.tcAlias) FROM NAME loPersistVariables 
+		  loPersistVariables.Setting = "THIS.pgfDetails." + loPage.Name + ".FontItalic = " + TRANSFORM(loPage.FontItalic)
+		  INSERT INTO (m.tcAlias) FROM NAME loPersistVariables 
+		  FOR EACH loControl IN loPage.Controls
+		    loPersistVariables.Setting = [THIS.pgfDetails.] + loPage.Name + "." + loControl.Name + [.FontName = "] + TRANSFORM(loControl.FontName) + ["]
+		    INSERT INTO (m.tcAlias) FROM NAME loPersistVariables 
+		    loPersistVariables.Setting = "THIS.pgfDetails." + loPage.Name + "." + loControl.Name + ".FontSize = " + TRANSFORM(loControl.FontSize)
+		    INSERT INTO (m.tcAlias) FROM NAME loPersistVariables 
+		    loPersistVariables.Setting = "THIS.pgfDetails." + loPage.Name + "." + loControl.Name + ".FontBold = " + TRANSFORM(loControl.FontBold)
+		    INSERT INTO (m.tcAlias) FROM NAME loPersistVariables 
+		    loPersistVariables.Setting = "THIS.pgfDetails." + loPage.Name + "." + loControl.Name + ".FontItalic = " + TRANSFORM(loControl.FontItalic)
+		    INSERT INTO (m.tcAlias) FROM NAME loPersistVariables 
+		  ENDFOR    
+		ENDFOR
+		loPage = .NULL.
+		loControl = .NULL.
+		
+		*
+		*  grid.Height
+		*
+		loPersistVariables.Setting = "THIS.ilLargeGrid=" + TRANSFORM(THIS.ilLargeGrid) 
+		INSERT INTO (m.tcAlias) FROM NAME loPersistVariables 
+		
+		*
+		*  each grid.Column.Width
+		*
+		LOCAL loColumn
+		FOR EACH loColumn IN THIS.grdTests.Columns
+		  loPersistVariables.Setting = ;
+		       "THIS.grdTests." + loColumn.Name + ".Width = " + ;
+		       TRANSFORM(loColumn.Width)  
+		  INSERT INTO (m.tcAlias) FROM NAME loPersistVariables 
+		ENDFOR
+		
+		*
+		*  indeg tag for the grid cursor
+		*
+		loPersistVariables.Setting = "SET ORDER TO TAG " + ORDER(THIS.icGridRS) + " IN (THIS.icGridRS)"
+		INSERT INTO (m.tcAlias) FROM NAME loPersistVariables 
+		
+		*
+		*  record pointer in the grid
+		*
+		loPersistVariables.Setting = [=SEEK("] + ;
+		             UPPER(EVALUATE(THIS.icGridRS+".TClass")) + ;
+		             UPPER(EVALUATE(THIS.icGridRS+".TName")) + ;
+		            [",THIS.icGridRS,"TCLName")]
+		INSERT INTO (m.tcAlias) FROM NAME loPersistVariables 
+		
+		
+		*********************************************************
+		*
+		*  Options... settings
+		*
+		*********************************************************
+		loPersistVariables.Setting = "THIS.ilAllowDebug = " + TRANSFORM(THIS.ilAllowDebug)
+		INSERT INTO (m.tcAlias) FROM NAME loPersistVariables 
+		
+		loPersistVariables.Setting = "THIS.ShowTips = " + TRANSFORM(THIS.ShowTips)
+		INSERT INTO (m.tcAlias) FROM NAME loPersistVariables 
+		
+		loPersistVariables.Setting = "THIS.ilHonorTestPrefix = " + TRANSFORM(this.ilHonorTestPrefix)
+		INSERT INTO (m.tcAlias) FROM NAME loPersistVariables 
+		
+		loPersistVariables.Setting = "THIS.ilReloadTestsOnRun = " + TRANSFORM(THIS.ilReloadTestsOnRun)
+		INSERT INTO (m.tcAlias) FROM NAME loPersistVariables 
+		
+		loPersistVariables.Setting = "THIS.ilCloseDebuggerAtEndOfTestsRun = " + TRANSFORM(THIS.ilCloseDebuggerAtEndOfTestsRun)
+		INSERT INTO (m.tcAlias) FROM NAME loPersistVariables
+		
+		loPersistVariables.Setting = "THIS.nSplitterPosition = " + TRANSFORM(THIS.sfsplitterv1.Top)
+		INSERT INTO (m.tcAlias) FROM NAME loPersistVariables
+		
+		*EJS New setting to reset results 5/15/2015
+		loPersistVariables.Setting = "THIS.iResetResults = " + TRANSFORM(This.iResetResults)
+		INSERT INTO (m.tcAlias) FROM NAME loPersistVariables
+		
+	ENDPROC
+
 	PROCEDURE options
 		*
 		*  this method is called from the form-level shortcut menu
 		*
 		
 		LOCAL loForm
-		loForm = FXUNewObject("FXUOptionsDialog")
+		loForm = thisform.iofxuinstance.FxuNewObject("FXUOptionsDialog")
 		loForm.Show()
-		
-		
-		
-		
 	ENDPROC
 
 	PROCEDURE receivecompletenotification
 		LPARAMETERS tnTestCount, tnFailedTests, tnSuiteSuccess, tnSecondsElapsed
+		
+		SET DATASESSION TO thisform.iofxuinstance.datasessionid
 		
 		IF NOT USED(THIS.grdTests.RecordSource)
 		  *  see THIS.ReceiveResultsNotification()
 		  RETURN
 		ENDIF
 		
-		thisform.settestsruntestsfailedlabel(tnTestcount, tnFailedTests, this.FormatSecondsElapsed(tnSecondsElapsed))
+		thisform.setTestsRunTestsFailedLabel(tnTestcount, tnFailedTests, this.FormatSecondsElapsed(tnSecondsElapsed))
 		
 		* Added so that when we run frmFxuFoxUnit::AfterRunTests() we can
 		* seek the first failed test in the run and set the focus on that row
 		* showing the failure and/or exception immediately for feedback
-		IF tnFailedTests > 0
-			this.ilTestsFailed = .t.
-		ELSE
-			this.ilTestsFailed = .f.
-		ENDIF 
+		this.ilTestsFailed = (tnFailedTests > 0)
 		
 		THISFORM.grdTests.Refresh()
 		THISFORM.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.Refresh()
@@ -1633,10 +1734,22 @@ DEFINE CLASS frmfoxunit AS form
 		*THISFORM.edtMessages.Refresh()
 		
 		
+		SELECT (THIS.grdTests.RecordSource)
+		iRun = 0
+		iSuccess = 0
+		SCAN FOR TRun
+			iRun = iRun + 1 
+			IF Success
+				iSuccess = iSuccess + 1 
+			ENDIF 
+		ENDSCAN
+		This.lblAllResults.Caption = "All Tests: ("+TRANSFORM(iSuccess)+" / " + TRANSFORM(iRun)+")"
 	ENDPROC
 
 	PROCEDURE receiveresultnotification		&& Recieves results of the current test
 		LPARAMETERS toTestResult as FxuTestResult of FxuTestResult.prg
+		
+		SET DATASESSION TO thisform.iofxuinstance.datasessionid
 		
 		IF NOT USED(THIS.grdTests.RecordSource)
 		  LOCAL lcText
@@ -1673,65 +1786,6 @@ DEFINE CLASS frmfoxunit AS form
 		=SEEK(UPPER(ALLTRIM(toTestResult.icCurrentTeSTCLASS)) + UPPER(ALLTRIM(toTestREsult.icCurrentTestName)),THIS.icGridRS,'tclname')
 		
 		THIS.Refresh()
-		
-	ENDPROC
-
-	PROCEDURE restoresettings
-		*
-		*  restore settings from the last time this
-		*  form was run
-		*
-		*  this method is called from THIS.Init()
-		*
-		THIS.AddProperty("icPersistFile",ADDBS(JUSTPATH(DBF(THIS.icGridRS)))+"FXUPersist.XML")
-		
-		LOCAL lcUserID, lcCommand
-		
-		lcUserID = ALLTRIM(TRANSFORM(SYS(0)))
-		IF LENC(m.lcUserID) < 15 OR NOT "#" $ m.lcUserID
-		  *  machine information not assigned by the network,
-		  *  or network shell not loaded, or standalone machine
-		  lcUserID = SPACE(0)
-		 ELSE
-		  *  get a user-specific filename, so each user 
-		  *  can have THEIR settings saved/restored
-		  lcUserID = ALLTRIM(SUBSTRC(m.lcUserID,AT_C("#",m.lcUserID)+1))
-		ENDIF
-		THIS.AddProperty("icUserID",m.lcUserID)
-		
-		IF FILE(THIS.icPersistFile)
-		  TRY 
-		  XMLTOCURSOR(THIS.icPersistFile,"FoxUnitPersist",512)
-		  *
-		  *  apply settings for this user/developer
-		  *
-		  SELECT FoxUnitPersist
-		  LOCATE
-		  SCAN FOR UPPER(ALLTRIM(UserID)) == UPPER(ALLTRIM(THIS.icUserID))
-		    lcCommand = ALLTRIM(Setting)
-		    &lcCommand
-		    SELECT FoxUnitPersist
-		  ENDSCAN
-		  CATCH TO loException
-		  ENDTRY
-		  USE IN SELECT("FoxUnitPersist")
-		ENDIF
-		
-		* 
-		*  just in case one of the persisted settings
-		*  sent the grid record pointer to EOF(), or there
-		*  are no settings and the grid record pointer is
-		*  EOF() -- go to the first/top record in the
-		*  grid
-		*
-		IF RECCOUNT(THIS.icGridRS)>0 AND EOF(THIS.icGridRS)
-		  SELECT (THIS.icGridRS)
-		  LOCATE 
-		ENDIF
-		
-		RETURN 
-		
-		 
 	ENDPROC
 
 	PROCEDURE RightClick
@@ -1767,7 +1821,7 @@ DEFINE CLASS frmfoxunit AS form
 		
 		* Declare and Insantiate TestSuite
 		LOCAL loTestSuite as FxuTestSuite OF FxuTestSuite.prg
-		loTestSuite = FxuNewObject("FxuTestSuite")
+		loTestSuite = thisform.iofxuinstance.FxuNewObject("FxuTestSuite", thisform.ioFxuInstance)
 		loTestSuite.ilAllowDebug = thisform.IlAllowDebug
 		
 		* Load the tests into the testsuite
@@ -1850,7 +1904,7 @@ DEFINE CLASS frmfoxunit AS form
 		
 		* Declare and Insantiate TestSuite
 		LOCAL loTestSuite as FxuTestSuite OF FxuTestSuite.prg
-		loTestSuite = FxuNewObject("FxuTestSuite")
+		loTestSuite = thisform.iofxuinstance.FxuNewObject("FxuTestSuite", thisform.ioFxuInstance)
 		loTestSuite.ilAllowDebug = thisform.IlAllowDebug
 		
 		* Load the tests into the testsuite
@@ -1910,7 +1964,7 @@ DEFINE CLASS frmfoxunit AS form
 		
 		* Declare and Insantiate TestSuite
 		LOCAL loTestSuite as FxuTestSuite OF FxuTestSuite.prg
-		loTestSuite = FxuNewObject("FxuTestSuite")
+		loTestSuite = thisform.iofxuinstance.FxuNewObject("FxuTestSuite", thisform.ioFxuInstance)
 		loTestSuite.ilAllowDebug = thisform.IlAllowDebug
 		
 		* Add this one test to the test suite
@@ -1959,170 +2013,6 @@ DEFINE CLASS frmfoxunit AS form
 		
 	ENDPROC
 
-	PROCEDURE savesettings
-		*
-		*  save settings so they can be restored the next
-		*  time this form is run (see THIS.Init() call to
-		*  THIS.RestoreSettings() method)
-		*
-		*  this method is called from THIS.Destroy()
-		*
-		
-		LOCAL loPersistVariables
-		
-		IF NOT USED(THIS.grdTests.RecordSource)
-		  *  see THIS.ReceiveResultsNotification()
-		  RETURN 
-		ENDIF
-		
-		TRY
-		
-		IF FILE(THIS.icPersistFile)
-		  XMLTOCURSOR(THIS.icPersistFile,"FoxUnitPersist",512)
-		 ELSE
-		  CREATE CURSOR FoxUnitPersist (UserID C(10), Setting M)
-		ENDIF
-		SELECT FoxUnitPersist
-		*
-		*  delete all the existing settings for this user
-		*
-		DELETE ALL FOR UPPER(ALLTRIM(UserID)) == UPPER(ALLTRIM(THIS.icUserID))
-		SCATTER NAME loPersistVariables MEMO
-		loPersistVariables.UserID = THIS.icUserID
-		
-		loPersistVariables.Setting = "THIS.Top = " + TRANSFORM(THIS.Top)
-		INSERT INTO FoxUnitPersist FROM NAME loPersistVariables 
-		loPersistVariables.Setting = "THIS.Left = " + TRANSFORM(THIS.Left) 
-		INSERT INTO FoxUnitPersist FROM NAME loPersistVariables 
-		loPersistVariables.Setting = "THIS.Height = IIF(VERSION(5)>=900," + TRANSFORM(THIS.Height) + "," + TRANSFORM(THIS.inDesignHeight) + ")"
-		INSERT INTO FoxUnitPersist FROM NAME loPersistVariables 
-		loPersistVariables.Setting = "THIS.Width = IIF(VERSION(5)>=900," + TRANSFORM(THIS.Width) + "," + TRANSFORM(THIS.inDesignWidth) + ")"
-		INSERT INTO FoxUnitPersist FROM NAME loPersistVariables 
-		
-		loPersistVariables.Setting = "THIS.inZoomTop = " + TRANSFORM(THIS.inZoomTop) 
-		INSERT INTO FoxUnitPersist FROM NAME loPersistVariables 
-		loPersistVariables.Setting = "THIS.inZoomLeft = " + TRANSFORM(THIS.inZoomLeft) 
-		INSERT INTO FoxUnitPersist FROM NAME loPersistVariables 
-		loPersistVariables.Setting = "THIS.inZoomHeight = " + TRANSFORM(THIS.inZoomHeight) 
-		INSERT INTO FoxUnitPersist FROM NAME loPersistVariables 
-		loPersistVariables.Setting = "THIS.inZoomWidth = " + TRANSFORM(THIS.inZoomWidth) 
-		INSERT INTO FoxUnitPersist FROM NAME loPersistVariables 
-		loPersistVariables.Setting = "THIS.inZoomWindowState = " + TRANSFORM(THIS.inZoomWindowState) 
-		INSERT INTO FoxUnitPersist FROM NAME loPersistVariables 
-		
-		loPersistVariables.Setting = "THIS.pgfDetails.ActivePage = " + TRANSFORM(THIS.pgfDetails.ActivePage)
-		INSERT INTO FoxUnitPersist FROM NAME loPersistVariables 
-		
-		*
-		*  font settings
-		*
-		loPersistVariables.Setting = [THIS.grdTests.FontName = "] + TRANSFORM(THIS.grdTests.FontName) + ["]
-		INSERT INTO FoxUnitPersist FROM NAME loPersistVariables 
-		loPersistVariables.Setting = "THIS.grdTests.FontSize = " + TRANSFORM(THIS.grdTests.FontSize)
-		INSERT INTO FoxUnitPersist FROM NAME loPersistVariables 
-		loPersistVariables.Setting = "THIS.grdTests.FontBold = " + TRANSFORM(THIS.grdTests.FontBold)
-		INSERT INTO FoxUnitPersist FROM NAME loPersistVariables 
-		loPersistVariables.Setting = "THIS.grdTests.FontItalic = " + TRANSFORM(THIS.grdTests.FontItalic)
-		INSERT INTO FoxUnitPersist FROM NAME loPersistVariables 
-		LOCAL loPage, loControl
-		FOR EACH loPage IN THIS.pgfDetails.Pages
-		  loPersistVariables.Setting = [THIS.pgfDetails.] + loPage.Name + [.FontName = "] + TRANSFORM(loPage.FontName) + ["]
-		  INSERT INTO FoxUnitPersist FROM NAME loPersistVariables 
-		  loPersistVariables.Setting = "THIS.pgfDetails." + loPage.Name + ".FontSize = " + TRANSFORM(loPage.FontSize)
-		  INSERT INTO FoxUnitPersist FROM NAME loPersistVariables 
-		  loPersistVariables.Setting = "THIS.pgfDetails." + loPage.Name + ".FontBold = " + TRANSFORM(loPage.FontBold)
-		  INSERT INTO FoxUnitPersist FROM NAME loPersistVariables 
-		  loPersistVariables.Setting = "THIS.pgfDetails." + loPage.Name + ".FontItalic = " + TRANSFORM(loPage.FontItalic)
-		  INSERT INTO FoxUnitPersist FROM NAME loPersistVariables 
-		  FOR EACH loControl IN loPage.Controls
-		    loPersistVariables.Setting = [THIS.pgfDetails.] + loPage.Name + "." + loControl.Name + [.FontName = "] + TRANSFORM(loControl.FontName) + ["]
-		    INSERT INTO FoxUnitPersist FROM NAME loPersistVariables 
-		    loPersistVariables.Setting = "THIS.pgfDetails." + loPage.Name + "." + loControl.Name + ".FontSize = " + TRANSFORM(loControl.FontSize)
-		    INSERT INTO FoxUnitPersist FROM NAME loPersistVariables 
-		    loPersistVariables.Setting = "THIS.pgfDetails." + loPage.Name + "." + loControl.Name + ".FontBold = " + TRANSFORM(loControl.FontBold)
-		    INSERT INTO FoxUnitPersist FROM NAME loPersistVariables 
-		    loPersistVariables.Setting = "THIS.pgfDetails." + loPage.Name + "." + loControl.Name + ".FontItalic = " + TRANSFORM(loControl.FontItalic)
-		    INSERT INTO FoxUnitPersist FROM NAME loPersistVariables 
-		  ENDFOR    
-		ENDFOR
-		loPage = .NULL.
-		loControl = .NULL.
-		
-		*
-		*  grid.Height
-		*
-		loPersistVariables.Setting = "THIS.ilLargeGrid=" + TRANSFORM(THIS.ilLargeGrid) 
-		INSERT INTO FoxUnitPersist FROM NAME loPersistVariables 
-		
-		*
-		*  each grid.Column.Width
-		*
-		LOCAL loColumn
-		FOR EACH loColumn IN THIS.grdTests.Columns
-		  loPersistVariables.Setting = ;
-		       "THIS.grdTests." + loColumn.Name + ".Width = " + ;
-		       TRANSFORM(loColumn.Width)  
-		  INSERT INTO FoxUnitPersist FROM NAME loPersistVariables 
-		ENDFOR
-		
-		*
-		*  indeg tag for the grid cursor
-		*
-		loPersistVariables.Setting = "SET ORDER TO TAG " + ORDER(THIS.icGridRS) + " IN (THIS.icGridRS)"
-		INSERT INTO FoxUnitPersist FROM NAME loPersistVariables 
-		
-		*
-		*  record pointer in the grid
-		*
-		loPersistVariables.Setting = [=SEEK("] + ;
-		             UPPER(EVALUATE(THIS.icGridRS+".TClass")) + ;
-		             UPPER(EVALUATE(THIS.icGridRS+".TName")) + ;
-		            [",THIS.icGridRS,"TCLName")]
-		INSERT INTO FoxUnitPersist FROM NAME loPersistVariables 
-		
-		
-		*********************************************************
-		*
-		*  Options... settings
-		*
-		*********************************************************
-		loPersistVariables.Setting = "THIS.ilAllowDebug = " + TRANSFORM(THIS.ilAllowDebug)
-		INSERT INTO FoxUnitPersist FROM NAME loPersistVariables 
-		
-		loPersistVariables.Setting = "THIS.ShowTips = " + TRANSFORM(THIS.ShowTips)
-		INSERT INTO FoxUnitPersist FROM NAME loPersistVariables 
-		
-		loPersistVariables.Setting = "THIS.ilHonorTestPrefix = " + TRANSFORM(this.ilHonorTestPrefix)
-		INSERT INTO FoxUnitPersist FROM NAME loPersistVariables 
-		
-		loPersistVariables.Setting = "THIS.ilReloadTestsOnRun = " + TRANSFORM(THIS.ilReloadTestsOnRun)
-		INSERT INTO FoxUnitPersist FROM NAME loPersistVariables 
-		
-		loPersistVariables.Setting = "THIS.ilCloseDebuggerAtEndOfTestsRun = " + TRANSFORM(THIS.ilCloseDebuggerAtEndOfTestsRun)
-		INSERT INTO FoxUnitPersist FROM NAME loPersistVariables
-		
-		loPersistVariables.Setting = "THIS.nSplitterPosition = " + TRANSFORM(THIS.sfsplitterv1.Top)
-		INSERT INTO FoxUnitPersist FROM NAME loPersistVariables
-		
-		CURSORTOXML("FoxUnitPersist",THIS.icPersistFile,1,512,0,"1")
-		
-		CATCH TO loException
-		ENDTRY
-		
-		USE IN SELECT("FoxUnitPersist")
-		
-		IF VARTYPE(m.loException) = "O"
-		  MESSAGEBOX("Unable to save user settings because " + ;
-		             CHR(13) + ;
-		             loException.Message, ;
-		             48, ;
-		             "Please Note")
-		ENDIF
-		
-		RETURN
-		
-	ENDPROC
-
 	PROCEDURE seeiftestclassprgexists
 		LPARAMETERS tcTClass
 		
@@ -2156,7 +2046,9 @@ DEFINE CLASS frmfoxunit AS form
 	PROCEDURE setprogress		&& sets progress bar back to no tests run status
 		LPARAMETERS tnMaxValue
 		
-		UPDATE (THIS.icGridRS) SET trun = .f.
+		*% EJS
+		UPDATE (THIS.icGridRS) SET trun = (! ThisForm.iResetResults)
+		
 		
 		thisform.pbProgress.SetRange(0,tnMaxValue)
 		thisform.pbProgress.SetValue(0)
@@ -2457,7 +2349,7 @@ DEFINE CLASS frmfoxunit AS form
 		...whereupon your subclass of this form is instantiated
 		rather than this form when this line of code in FXU.PRG
 		executes: 
-			goFoxUnitForm = FXUNewObject("FoxUnitForm")
+			goFoxUnitForm = m.loFxuInstance.FxuNewObject("FoxUnitForm")
 		
 		
 		
@@ -2524,6 +2416,10 @@ DEFINE CLASS frmfoxunit AS form
 		
 	ENDPROC
 
+	PROCEDURE Check1.Click
+		THISFORM.ApplyFilter()
+	ENDPROC
+
 	PROCEDURE cmdAddNewTest.Click
 		THISFORM.ioResultData.AddNewTest( ;
 		     ALLTRIM(EVALUATE(THISFORM.icGridRS+".TClass")), ;
@@ -2550,6 +2446,8 @@ DEFINE CLASS frmfoxunit AS form
 	PROCEDURE cmdClearFilter.Click
 		THIS.Parent.txtClassFilter.Value = SPACE(0)
 		THIS.Parent.txtNameFilter.Value = SPACE(0)
+		This.Parent.lFailedOnly = .f.
+		
 		THISFORM.ApplyFilter()
 		
 		
@@ -2564,6 +2462,7 @@ DEFINE CLASS frmfoxunit AS form
 
 	PROCEDURE cmdClearFilter.Refresh
 		THIS.Enabled = NOT EMPTY(FILTER(THISFORM.icGridRS))
+		
 		
 	ENDPROC
 
@@ -2620,6 +2519,10 @@ DEFINE CLASS frmfoxunit AS form
 		
 		
 		
+	ENDPROC
+
+	PROCEDURE cmdOptions.Click
+		_Screen.ActiveForm.Options()
 	ENDPROC
 
 	PROCEDURE cmdReloadSelectedTestClass.Click
@@ -2710,7 +2613,7 @@ DEFINE CLASS frmfoxunit AS form
 		LPARAMETERS nColIndex
 		
 		THIS.Column2.Header1.Caption = ;
-		     "Test name (" + ALLTRIM(EVALUATE(THIS.RecordSource+".TClass")) + "::" + ALLTRIM(EVALUATE(this.RecordSource+".TName") +")")
+		     "Test name (" + ALLTRIM(EVALUATE(THIS.RecordSource+".TClass")) + "::" + ALLTRIM(EVALUATE(this.RecordSource+".TName")) +")"
 		
 		THISFORM.AfterRunTests(.t.)
 		
@@ -2730,6 +2633,10 @@ DEFINE CLASS frmfoxunit AS form
 	ENDPROC
 
 	PROCEDURE grdTests.Init
+		IF !USED(thisform.icgridrs)
+			RETURN
+		ENDIF
+		
 		*
 		*  set THIS.HighlightBackColor to the SelectedItems
 		*  color set in Windows on this machine
@@ -2870,6 +2777,22 @@ DEFINE CLASS frmfoxunit AS form
 		
 	ENDPROC
 
+	PROCEDURE lblAllResults.Init
+		IF NOT DODEFAULT()
+		  RETURN .F.
+		ENDIF
+		
+		IF VERSION(5)>=900
+		  *
+		  *    4 = Bottom Absolute
+		  *    2 = Left Absolute
+		  *
+		  THIS.Anchor = 4 + 2  
+		ENDIF
+		
+		THIS.Caption = SPACE(0)
+	ENDPROC
+
 	PROCEDURE lblClassFilter.Init
 		THIS.ToolTipText = THISFORM.GetFilterToolTipText()
 	ENDPROC
@@ -3003,7 +2926,7 @@ DEFINE CLASS frmfoxunit AS form
 		  RETURN .F.
 		ENDIF
 		
-		THIS.ControlSource = THISFORM.icGridRS + ".Fail_Error"
+		&&	THIS.ControlSource = THISFORM.icGridRS + ".Fail_Error"
 		
 		IF VERSION(5)>=900
 		  *
@@ -3039,7 +2962,7 @@ DEFINE CLASS frmfoxunit AS form
 		  RETURN .f.
 		ENDIF
 		
-		THIS.ControlSource = THISFORM.icGridRS + ".Messages"
+		&&	THIS.ControlSource = THISFORM.icGridRS + ".Messages"
 		
 		IF VERSION(5)>=900
 		  *
@@ -3073,10 +2996,20 @@ DEFINE CLASS frmfoxunit AS form
 	PROCEDURE Sfsplitterv1.Init
 		DoDefault()
 		
+		
 		** Matt Slay 2013-12-16
 		IF VERSION(5) >= 900
 		  THIS.Anchor = 10 
 		ENDIF
+	ENDPROC
+
+	PROCEDURE Shape3.Init
+		IF NOT DODEFAULT()
+		  RETURN .F.
+		ENDIF
+		
+		THIS.Top = 1
+		THIS.Height = 44
 	ENDPROC
 
 	PROCEDURE shpButtons.Init
@@ -3167,268 +3100,6 @@ DEFINE CLASS frmfoxunit AS form
 
 ENDDEFINE
 
-DEFINE CLASS frmfxunewtestclass AS fxufrmbase OF "fxu.vcx" 
- 	*< CLASSDATA: Baseclass="form" Timestamp="" Scale="Pixels" Uniqueid="" />
-
-	*-- OBJECTDATA items order determines ZOrder / El orden de los items OBJECTDATA determina el ZOrder 
-	*< OBJECTDATA: ObjPath="Label3" UniqueID="" Timestamp="" />
-	*< OBJECTDATA: ObjPath="Label1" UniqueID="" Timestamp="" />
-	*< OBJECTDATA: ObjPath="cmdPickTestFolder" UniqueID="" Timestamp="" />
-	*< OBJECTDATA: ObjPath="Label2" UniqueID="" Timestamp="" />
-	*< OBJECTDATA: ObjPath="cmdCreate" UniqueID="" Timestamp="" />
-	*< OBJECTDATA: ObjPath="cmdCancel" UniqueID="" Timestamp="" />
-	*< OBJECTDATA: ObjPath="txtCurrentTestFolder" UniqueID="" Timestamp="" />
-	*< OBJECTDATA: ObjPath="txtTestClassName" UniqueID="" Timestamp="" />
-
-	*<DefinedPropArrayMethod>
-		*m: cancelaction
-		*m: icclassvalidationmessage_assign
-		*m: okaction
-		*m: validatetestclass
-		*p: icclassvalidationmessage
-		*p: iccurrenttestfolder
-		*p: icnewtestclass
-		*p: _memberdata		&& XML Metadata for customizable properties
-	*</DefinedPropArrayMethod>
-
-	AutoCenter = .T.
-	Caption = "Select name and location of your new test class"
-	Closable = .F.
-	ControlBox = .T.
-	DoCreate = .T.
-	Height = 154
-	iccurrenttestfolder = 
-	Icon = ..\
-	MaxButton = .F.
-	MinButton = .F.
-	Name = "frmfxunewtestclass"
-	ShowWindow = 1
-	Width = 649
-	WindowType = 1
-	_memberdata = <VFPData>
-
-		</VFPData>		&& XML Metadata for customizable properties
-
-	ADD OBJECT 'cmdCancel' AS commandbutton WITH ;
-		Cancel = .T., ;
-		Caption = "\<Cancel", ;
-		Height = 39, ;
-		Left = 552, ;
-		Name = "cmdCancel", ;
-		Picture = ("FXUCancel.BMP"), ;
-		TabIndex = 3, ;
-		Top = 103, ;
-		Width = 84, ;
-		ZOrderSet = 5
-		*< END OBJECT: BaseClass="commandbutton" />
-
-	ADD OBJECT 'cmdCreate' AS commandbutton WITH ;
-		Caption = "\<OK", ;
-		Default = .T., ;
-		Enabled = .F., ;
-		Height = 39, ;
-		Left = 456, ;
-		Name = "cmdCreate", ;
-		Picture = ("FXUFormClose.BMP"), ;
-		TabIndex = 2, ;
-		Top = 103, ;
-		Width = 84, ;
-		ZOrderSet = 4
-		*< END OBJECT: BaseClass="commandbutton" />
-
-	ADD OBJECT 'cmdPickTestFolder' AS commandbutton WITH ;
-		Caption = "...", ;
-		Height = 25, ;
-		Left = 612, ;
-		Name = "cmdPickTestFolder", ;
-		TabIndex = 4, ;
-		Top = 35, ;
-		Width = 24, ;
-		ZOrderSet = 2
-		*< END OBJECT: BaseClass="commandbutton" />
-
-	ADD OBJECT 'Label1' AS label WITH ;
-		Caption = "Current Test Folder:", ;
-		FontBold = .T., ;
-		FontName = "Verdana", ;
-		Height = 24, ;
-		Left = 12, ;
-		Name = "Label1", ;
-		Top = 39, ;
-		Width = 132, ;
-		ZOrderSet = 1
-		*< END OBJECT: BaseClass="label" />
-
-	ADD OBJECT 'Label2' AS label WITH ;
-		Caption = "Test Class/File Name:", ;
-		FontBold = .T., ;
-		FontName = "Verdana", ;
-		Height = 24, ;
-		Left = 12, ;
-		Name = "Label2", ;
-		Top = 71, ;
-		Width = 156, ;
-		ZOrderSet = 3
-		*< END OBJECT: BaseClass="label" />
-
-	ADD OBJECT 'Label3' AS label WITH ;
-		Caption = "", ;
-		ForeColor = 255,0,0, ;
-		Height = 25, ;
-		Left = 12, ;
-		Name = "Label3", ;
-		Top = 4, ;
-		Width = 625, ;
-		ZOrderSet = 0
-		*< END OBJECT: BaseClass="label" />
-
-	ADD OBJECT 'txtCurrentTestFolder' AS textbox WITH ;
-		ControlSource = "", ;
-		Height = 25, ;
-		Left = 168, ;
-		Name = "txtCurrentTestFolder", ;
-		ReadOnly = .T., ;
-		Top = 35, ;
-		Width = 445, ;
-		ZOrderSet = 6
-		*< END OBJECT: BaseClass="textbox" />
-
-	ADD OBJECT 'txtTestClassName' AS textbox WITH ;
-		Height = 25, ;
-		Left = 168, ;
-		Name = "txtTestClassName", ;
-		TabIndex = 1, ;
-		Top = 65, ;
-		Width = 468, ;
-		ZOrderSet = 7
-		*< END OBJECT: BaseClass="textbox" />
-	
-	PROCEDURE cancelaction
-		thisform.icCurrenttestfolder = ""
-		thisform.icNewtestclass = ""
-		pcNewTestClass = ""
-		
-		thisform.Release()
-		
-	ENDPROC
-
-	PROCEDURE icclassvalidationmessage_assign
-		LPARAMETERS vNewVal
-		*To do: Modify this routine for the Assign method
-		IF EMPTY(vNewVal)
-			this.cmdCreate.Enabled = .t.
-		ELSE
-			this.cmdCreate.enabled = .f.
-		ENDIF
-		
-		
-		this.label3.Caption = vNewVal
-		thisform.cmdCreate.Refresh()
-		thisform.label3.Refresh()
-		THIS.icclassvalidationmessage = m.vNewVal
-		
-	ENDPROC
-
-	PROCEDURE Init
-		LPARAMETERS tcCurrentTestFolder
-		
-		Thisform.MinHeight	= thisform.Height	&& FDBOZZO
-		thisform.MaxHeight	= thisform.Height	&& FDBOZZO
-		thisform.MinWidth	= thisform.Width	&& FDBOZZO
-		
-		thisform.txtCurrentTestFolder.value = tcCurrentTestFolder 
-		thisform.Icon = "FoxUnit.ico"
-		
-		thisform.ValidateTestClass()
-	ENDPROC
-
-	PROCEDURE okaction
-		thisform.icCurrentTestFolder = ADDBS(ALLTRIM(thisform.txtCurrentTestFolder.Value))
-		thisform.icNewTestClass = ALLTRIM(thisform.txtTestClassName.Value)
-		pcNewTestClass = ADDBS(thisform.icCurrentTestFolder) + FORCEEXT(thisform.icNewTestClass,".prg")
-		
-		thisform.Release()
-		
-	ENDPROC
-
-	PROCEDURE validatetestclass
-		LOCAL lcTestClassFile
-		
-		lcTestClassFile = ADDBS(ALLTRIM(thisform.txtCurrentTEstFolder.Value)) + ALLTRIM(thisform.txtTestClassName.value) + ".prg"
-		
-		DO CASE 
-			CASE EMPTY(ALLTRIM(this.txtTestClassName.Value))
-				this.icClassValidationMessage = "Test class name is blank"
-			CASE !DIRECTORY(thisform.txtCurrentTestFolder.Value)
-				this.icClassValidationMessage = "Directory " + this.txtCurrentTestFolder.value + " does not exist."
-			CASE FILE(lcTestClassFile)
-				this.icClassValidationMessage = "Test class file already exists."
-			OTHERWISE
-				this.icClassValidationMessage = ""
-		ENDCASE 
-		
-		RETURN 
-	ENDPROC
-
-	PROCEDURE cmdCancel.Click
-		thisform.CancelAction()
-		
-	ENDPROC
-
-	PROCEDURE cmdCreate.Click
-		thisform.OKAction()
-		
-		
-		
-		*	thisform.icCurrentTestFolder = ADDBS(ALLTRIM(thisform.txtCurrentTestFolder.Value))
-		*	thisform.icNewTestClass = ALLTRIM(thisform.txtTestClassName.Value)
-		*	pcNewTestClass = ADDBS(thisform.icCurrentTestFolder) + FORCEEXT(thisform.icNewTestClass,".prg")
-		
-		*	thisform.Release
-		
-	ENDPROC
-
-	PROCEDURE cmdPickTestFolder.Click
-		LOCAL lcChangedTestFolder
-		
-		lcChangedTestFolder = ""
-		
-		lcChangedTestFolder = GETDIR(thisform.txtCurrentTestFolder.value,"Select test class folder","Select test class folder", 1+2+8+16+32+64) && Added nFlag parameter. HAS
-		
-		IF DIRECTORY(lcChangedTEstFolder)
-			thisform.txtCurrentTestFolder.Value = lcChangedTestFolder
-			thisform.Validatetestclass()
-			IF !EMPTY(thisform.icClassValidationMessage)
-				thisform.txtTestClassName.SetFocus()
-			ELSE
-				thisform.cmdCreate.SetFocus()
-			ENDIF
-			
-		ENDIF
-		
-		 
-	ENDPROC
-
-	PROCEDURE cmdPickTestFolder.LostFocus
-		IF !EMPTY(thisform.icclassvalidationmessage)
-			thisform.txtTestClassName.SetFocus()
-		ELSE
-			thisform.cmdCreate.SetFocus()
-		ENDIF
-		
-	ENDPROC
-
-	PROCEDURE txtTestClassName.Init
-		this.SetFocus()
-		
-	ENDPROC
-
-	PROCEDURE txtTestClassName.InteractiveChange
-		thisform.ValidateTestClass()
-	ENDPROC
-
-ENDDEFINE
-
 DEFINE CLASS frmgettestclasstemplate AS form 
  	*< CLASSDATA: Baseclass="form" Timestamp="" Scale="Pixels" Uniqueid="" />
 
@@ -3471,9 +3142,9 @@ DEFINE CLASS frmgettestclasstemplate AS form
 	AllowOutput = .F.
 	AutoCenter = .T.
 	Caption = "Specify the FoxUnit test class template "
+	ControlBox = .F.
 	DoCreate = .T.
 	Height = 440
-	Icon = ("foxunit.ico")
 	inpermanenttemplates = 0
 	iuretval = .NULL.
 	MaxButton = .F.
@@ -4605,12 +4276,19 @@ DEFINE CLASS frmoptions AS form
 	*< OBJECTDATA: ObjPath="pgfOptions.Page2.chkShowTips" UniqueID="" Timestamp="" />
 	*< OBJECTDATA: ObjPath="pgfOptions.Page2.chkReloadAll" UniqueID="" Timestamp="" />
 	*< OBJECTDATA: ObjPath="pgfOptions.Page2.chkHonorTestPrefix" UniqueID="" Timestamp="" />
+	*< OBJECTDATA: ObjPath="pgfOptions.Page2.chkResetColors" UniqueID="" Timestamp="" />
+	*< OBJECTDATA: ObjPath="pgfOptions.pagAbout.Check1" UniqueID="" Timestamp="" />
+	*< OBJECTDATA: ObjPath="pgfOptions.pagAbout.Check2" UniqueID="" Timestamp="" />
+	*< OBJECTDATA: ObjPath="pgfOptions.pagAbout.Check3" UniqueID="" Timestamp="" />
+	*< OBJECTDATA: ObjPath="pgfOptions.pagAbout.Check4" UniqueID="" Timestamp="" />
+	*< OBJECTDATA: ObjPath="pgfOptions.pagAbout.edtDocument" UniqueID="" Timestamp="" />
 	*< OBJECTDATA: ObjPath="cmdCancel" UniqueID="" Timestamp="" />
 	*< OBJECTDATA: ObjPath="cmdOK" UniqueID="" Timestamp="" />
 	*< OBJECTDATA: ObjPath="Label1" UniqueID="" Timestamp="" />
 
 	*<DefinedPropArrayMethod>
 		*m: okaction
+		*m: showdocument
 		*m: zreadme
 		*p: ilinitialhonortestprefix
 		*p: iomainform
@@ -4620,9 +4298,10 @@ DEFINE CLASS frmoptions AS form
 	AllowOutput = .F.
 	AutoCenter = .T.
 	Caption = "Customize FoxUnit options"
+	ControlBox = .F.
 	DoCreate = .T.
 	Height = 421
-	Icon = ("foxunit.ico")
+	Icon = ..\
 	iomainform = .NULL.
 	MaxButton = .F.
 	MinButton = .F.
@@ -4632,7 +4311,7 @@ DEFINE CLASS frmoptions AS form
 	Width = 664
 	WindowType = 1
 	_memberdata = <VFPData>
-
+		<memberdata name="showdocument" display="showDocument"/>
 		</VFPData>		&& XML Metadata for customizable properties
 
 	ADD OBJECT 'cmdCancel' AS commandbutton WITH ;
@@ -4665,12 +4344,12 @@ DEFINE CLASS frmoptions AS form
 
 	ADD OBJECT 'Label1' AS label WITH ;
 		BackStyle = 0, ;
-		Caption = "Select OK to make permanent any changes you make here.  The settings are peristed in FXUPersist.XML, located in the same folder as the FXUResults.DBF", ;
+		Caption = "Select OK to make permanent any changes you make here.  The settings are persisted in FXUPersist.XML, located in the same folder as the FXUResults.DBF", ;
 		Height = 32, ;
-		Left = 20, ;
+		Left = 8, ;
 		Name = "Label1", ;
 		Top = 375, ;
-		Width = 432, ;
+		Width = 444, ;
 		WordWrap = .T.
 		*< END OBJECT: BaseClass="label" />
 
@@ -4679,15 +4358,88 @@ DEFINE CLASS frmoptions AS form
 		Height = 352, ;
 		Left = 8, ;
 		Name = "pgfOptions", ;
-		PageCount = 2, ;
+		PageCount = 3, ;
 		Themes = .F., ;
 		Top = 8, ;
 		Width = 652, ;
 		Page1.Caption = "Debugging", ;
 		Page1.Name = "Page1", ;
 		Page2.Caption = "Interface", ;
-		Page2.Name = "Page2"
+		Page2.Name = "Page2", ;
+		Page3.Caption = "About", ;
+		Page3.Name = "pagAbout"
 		*< END OBJECT: BaseClass="pageframe" />
+
+	ADD OBJECT 'pgfOptions.pagAbout.Check1' AS checkbox WITH ;
+		Alignment = 0, ;
+		AutoSize = .F., ;
+		Caption = "Getting Started", ;
+		Comment = "readme.txt", ;
+		Height = 43, ;
+		Left = 2, ;
+		Name = "Check1", ;
+		Picture = ..\graphics\foxunit.bmp, ;
+		PicturePosition = 0, ;
+		Style = 1, ;
+		Top = 12, ;
+		Width = 142
+		*< END OBJECT: BaseClass="checkbox" />
+
+	ADD OBJECT 'pgfOptions.pagAbout.Check2' AS checkbox WITH ;
+		Alignment = 0, ;
+		AutoSize = .F., ;
+		Caption = "Version History", ;
+		Comment = "versions.txt", ;
+		Height = 43, ;
+		Left = 2, ;
+		Name = "Check2", ;
+		Picture = ..\graphics\foxunit.bmp, ;
+		PicturePosition = 0, ;
+		Style = 1, ;
+		Top = 53, ;
+		Width = 142
+		*< END OBJECT: BaseClass="checkbox" />
+
+	ADD OBJECT 'pgfOptions.pagAbout.Check3' AS checkbox WITH ;
+		Alignment = 0, ;
+		AutoSize = .F., ;
+		Caption = "Acknowledgements", ;
+		Comment = "foxunitacknowledgements.txt", ;
+		Height = 43, ;
+		Left = 2, ;
+		Name = "Check3", ;
+		Picture = ..\graphics\foxunit.bmp, ;
+		PicturePosition = 0, ;
+		Style = 1, ;
+		Top = 95, ;
+		Width = 142
+		*< END OBJECT: BaseClass="checkbox" />
+
+	ADD OBJECT 'pgfOptions.pagAbout.Check4' AS checkbox WITH ;
+		Alignment = 0, ;
+		AutoSize = .F., ;
+		Caption = "License", ;
+		Comment = "foxunitlicense.txt", ;
+		Height = 43, ;
+		Left = 2, ;
+		Name = "Check4", ;
+		Picture = ..\graphics\foxunit.bmp, ;
+		PicturePosition = 0, ;
+		Style = 1, ;
+		Top = 136, ;
+		Width = 142
+		*< END OBJECT: BaseClass="checkbox" />
+
+	ADD OBJECT 'pgfOptions.pagAbout.edtDocument' AS editbox WITH ;
+		BackColor = 255,255,255, ;
+		DisabledBackColor = 255,255,255, ;
+		Height = 301, ;
+		Left = 147, ;
+		Name = "edtDocument", ;
+		ReadOnly = .T., ;
+		Top = 12, ;
+		Width = 493
+		*< END OBJECT: BaseClass="editbox" />
 
 	ADD OBJECT 'pgfOptions.Page1.chkAllowDebug' AS checkbox WITH ;
 		Alignment = 0, ;
@@ -5024,6 +4776,19 @@ DEFINE CLASS frmoptions AS form
 		Width = 428
 		*< END OBJECT: BaseClass="checkbox" />
 
+	ADD OBJECT 'pgfOptions.Page2.chkResetColors' AS checkbox WITH ;
+		Alignment = 0, ;
+		BackStyle = 0, ;
+		Caption = "Clear colors showing results from previous test runs on new run", ;
+		Height = 17, ;
+		Left = 31, ;
+		Name = "chkResetColors", ;
+		ToolTipText = "If checked, background color showing previous test result runs will be reset when any new test(s) is run", ;
+		Top = 81, ;
+		Value = .T., ;
+		Width = 428
+		*< END OBJECT: BaseClass="checkbox" />
+
 	ADD OBJECT 'pgfOptions.Page2.chkShowTips' AS checkbox WITH ;
 		Alignment = 0, ;
 		BackStyle = 0, ;
@@ -5050,6 +4815,9 @@ DEFINE CLASS frmoptions AS form
 		thisform.MinWidth	= thisform.Width	&& FDBOZZO
 		
 		this.ilInitialHonorTestPrefix = this.ioMainForm.ilHonorTestPrefix
+		
+		
+		This.showDocument(ThisForm.pgfOptions.pagAbout.Check1)
 	ENDPROC
 
 	PROCEDURE Load
@@ -5071,6 +4839,7 @@ DEFINE CLASS frmoptions AS form
 		THISFORM.ioMainForm.ShowTips = THIS.pgfOptions.Page2.chkShowTips.Value
 		thisform.ioMainForm.ilHonorTestPrefix = this.pgfOptions.Page2.chkHonorTestPrefix.value
 		thisform.ioMainForm.ilReloadTestsOnRun = this.pgfOptions.Page2.chkReloadAll.Value
+		thisform.ioMainForm.iResetResults = this.pgfOptions.Page2.chkResetColors.Value
 		
 		* If we've changed the value of ilHonorTestPrefix, 
 		* we need to reload all test case classes
@@ -5081,6 +4850,14 @@ DEFINE CLASS frmoptions AS form
 		
 		
 		
+	ENDPROC
+
+	PROCEDURE showdocument
+		LPARAMETERS oCheckBox
+		ThisForm.pgfOptions.pagAbout.SetAll("value",0,"checkbox")
+		oCheckBox.value=1
+		ThisForm.pgfOptions.pagAbout.edtDocument.Value=FILETOSTR(oCheckBox.comment)
+			
 	ENDPROC
 
 	PROCEDURE zreadme
@@ -5100,6 +4877,23 @@ DEFINE CLASS frmoptions AS form
 		THISFORM.Release()
 	ENDPROC
 
+	PROCEDURE pgfOptions.pagAbout.Check1.Click
+		ThisForm.showDocument(This)
+	ENDPROC
+
+	PROCEDURE pgfOptions.pagAbout.Check2.Click
+		ThisForm.showDocument(This)
+	ENDPROC
+
+	PROCEDURE pgfOptions.pagAbout.Check3.Click
+		ThisForm.showDocument(This)
+	ENDPROC
+
+	PROCEDURE pgfOptions.pagAbout.Check4.Click
+		ThisForm.showDocument(This)
+		
+	ENDPROC
+
 	PROCEDURE pgfOptions.Page1.chkAllowDebug.Init
 		THIS.Value = THISFORM.ioMainForm.ilAllowDebug
 	ENDPROC
@@ -5116,428 +4910,13 @@ DEFINE CLASS frmoptions AS form
 		THIS.Value = THISFORM.ioMainForm.ilReloadTestsOnRun
 	ENDPROC
 
+	PROCEDURE pgfOptions.Page2.chkResetColors.Init
+		THIS.Value = THISFORM.ioMainForm.iResetResults
+		
+	ENDPROC
+
 	PROCEDURE pgfOptions.Page2.chkShowTips.Init
 		THIS.Value = THISFORM.ioMainForm.ShowTips
-	ENDPROC
-
-ENDDEFINE
-
-DEFINE CLASS frmshowinfo AS form 
- 	*< CLASSDATA: Baseclass="form" Timestamp="" Scale="Pixels" Uniqueid="" />
-
-	*-- OBJECTDATA items order determines ZOrder / El orden de los items OBJECTDATA determina el ZOrder 
-	*< OBJECTDATA: ObjPath="edtShowInfo" UniqueID="" Timestamp="" />
-	*< OBJECTDATA: ObjPath="cmdOK" UniqueID="" Timestamp="" />
-	*< OBJECTDATA: ObjPath="cmdPrint" UniqueID="" Timestamp="" />
-
-	*<DefinedPropArrayMethod>
-		*m: printinfo
-		*p: _memberdata		&& XML Metadata for customizable properties
-	*</DefinedPropArrayMethod>
-
-	AllowOutput = .F.
-	AutoCenter = .T.
-	Caption = "Please Note"
-	Desktop = .T.
-	DoCreate = .T.
-	Height = 360
-	MinButton = .F.
-	MinHeight = 180
-	MinWidth = 300
-	Name = "frmshowinfo"
-	ShowWindow = 1
-	Width = 600
-	WindowType = 1
-	_memberdata = <VFPData>
-
-		</VFPData>		&& XML Metadata for customizable properties
-
-	ADD OBJECT 'cmdOK' AS commandbutton WITH ;
-		Cancel = .T., ;
-		Caption = "\<OK", ;
-		Default = .T., ;
-		Height = 27, ;
-		Left = 484, ;
-		Name = "cmdOK", ;
-		TabIndex = 1, ;
-		Top = 320
-		*< END OBJECT: BaseClass="commandbutton" />
-
-	ADD OBJECT 'cmdPrint' AS commandbutton WITH ;
-		Caption = "\<Print...", ;
-		Height = 27, ;
-		Left = 376, ;
-		Name = "cmdPrint", ;
-		TabIndex = 4, ;
-		Top = 320
-		*< END OBJECT: BaseClass="commandbutton" />
-
-	ADD OBJECT 'edtShowInfo' AS editbox WITH ;
-		DisabledBackColor = 255,255,255, ;
-		Height = 293, ;
-		IntegralHeight = .T., ;
-		Left = 16, ;
-		Name = "edtShowInfo", ;
-		ReadOnly = .T., ;
-		TabIndex = 2, ;
-		Top = 16, ;
-		Width = 569
-		*< END OBJECT: BaseClass="editbox" />
-	
-	PROCEDURE Destroy
-		*
-		*  a possible BINDEVENT() to this method 
-		*  requires at least one line of code here
-		*
-		DODEFAULT()
-		
-		LOCAL lcSetProc
-		lcSetProc = SET("PROCEDURE")
-		SET PROCEDURE TO FXU
-		
-		LOCAL loFoxUnitForm
-		loFoxUnitForm = GetFoxUnitForm()
-		IF VARTYPE(m.loFoxUnitForm) = "O"
-		  loFoxUnitForm.inZoomTop = THIS.Top
-		  loFoxUnitForm.inZoomLeft = THIS.Left
-		  loFoxUnitForm.inZoomHeight = THIS.Height
-		  loFoxUnitForm.inZoomWidth = THIS.Width
-		  loFoxUnitForm.inZoomWindowState = THIS.WindowState
-		ENDIF
-		
-		SET PROCEDURE TO &lcSetProc 
-		
-	ENDPROC
-
-	PROCEDURE Init
-		*
-		*  FXU.VCX/frmShowInfo::Init()
-		*
-		*
-		*  typically, pass tcText (REQUIRED) and then
-		*  EITHER toParameter OR one or more of the other parameters 
-		*  -- if you pass toParameter, you might as well take
-		*  all the actions the individual parameters would
-		*
-		*
-		*
-		*  if toParameter is passed, it is assumed to have either
-		*    toParameter.icScriptCode
-		*  and if so, that block of code is executed via
-		*  EXECSCRIPT(), or
-		*    toParameter.iaCode 
-		*  array of individual lines of code, and if so, each line
-		*  of code is executed here via macro expansion
-		*  ...or both...
-		*
-		*  toParameter.iaCode lines can use THIS, THIS.edtShowInfo,
-		*  etc.
-		*
-		*  toParameter.icScriptCode CANNOT use THIS, THIS.edtShowInfo,
-		*  etc., because the code executes as a standalone .FXP;
-		*  however, the script code can accept ONE optional toForm
-		*  parameter, an object reference to THISFORM
-		*
-		*  since THISFORM is modal, you can also update anything
-		*  you want from the calling code, after instantiating
-		*  THISFORM and before Show()ing it
-		*
-		LPARAMETERS tcText, ; 
-		            toParameter, ;
-				    tcCaption, ;   &&& "Please Note"
-				    tnTop, ;       &&& AutoCenter/move upward 1/4
-				    tnLeft, ;      &&& AutoCenter
-				    tnHeight, ;    &&& based on LENC(tcText), _Screen size
-				    tnWidth, ;     &&& based on LENC(teText), _Screen size
-				    tcFontName, ;  &&& editbox 
-				    tnFontSize,;   &&& editbox
-				    tlFontBold, ;  &&& editbox
-				    tlFontItalic, ;   &&& editbox
-				    tnDataSessionID, ;
-				    tlNoImage
-		
-		Thisform.MinHeight	= thisform.Height	&& FDBOZZO
-		thisform.MinWidth	= thisform.Width	&& FDBOZZO
-		
-		IF NOT DODEFAULT()
-		  RETURN .F.
-		ENDIF
-		
-		IF PCOUNT() = 0 OR NOT VARTYPE(tcText) = "C" 
-		  ASSERT .f. message PROGRAM() + ;
-		        " has not been passed the required tcText parameter"  
-		  THIS.Destroy()
-		  RETURN .f.
-		ENDIF     
-		
-		IF FILE("FoxUnit.ICO")
-		  THIS.Icon = "FoxUnit.ICO"
-		  EXTERNAL FILE FoxUnit.ICO
-		ENDIF
-		
-		LOCAL lcCode, llError, laJunk[1], lcFontName, lnFontSize, ;
-		      llFontBold, llFontItalic, ;
-		      lnTextHeight, lnTextWidth, lnEditboxHeight
-		
-		THIS.AddProperty("DesignedMargin",THIS.edtShowInfo.Left)
-		THIS.AddProperty("DesignedOKButtonBottomMargin",THIS.Height-THIS.cmdOK.Top-THIS.cmdOK.Height)
-		
-		IF VARTYPE(tcFontName) = "C" ;
-		     AND NOT EMPTY(tcFontName) ;
-		     AND AFONT(laJunk,tcFontName)
-		  THIS.edtShowInfo.FontName = tcFontName
-		ENDIF
-		lcFontName = THIS.edtShowInfo.FontName
-		IF VARTYPE(tnFontSize) = "N" 
-		  lnFontSize = tnFontSize
-		 ELSE
-		  lnFontSize = THIS.edtShowInfo.FontSize
-		ENDIF
-		IF VARTYPE(tlFontBold) = "L"
-		  llFontBold = tlFontBold
-		 ELSE
-		  llFontBold = THIS.edtShowInfo.FontBold
-		ENDIF
-		IF VARTYPE(tlFontItalic) = "L"
-		  llFontItalic = tlFontItalic
-		 ELSE
-		  llFontItalic = THIS.edtShowInfo.FontItalic
-		ENDIF
-		lnEditboxHeight = THIS.edtShowInfo.Height
-		
-		RELEASE laJunk
-		DIMENSION laJunk[1]
-		IF AFONT(laJunk,lcFontName,lnFontSize)
-		  THIS.edtShowInfo.FontSize = lnFontSize
-		  THIS.edtShowInfo.FontBold = llFontBold
-		  THIS.edtShowInfo.FontItalic = llFontItalic
-		ENDIF
-		IF THIS.edtShowInfo.Height > lnEditboxHeight
-		  *
-		  *  THIS.edtShowInfo.IntegralHeight = .t.
-		  *
-		  THIS.Height = THIS.Height + (lnEditboxHeight-THIS.edtShowInfo.Height)
-		  THIS.cmdOK.Top = THIS.Height-THIS.DesignedOKButtonBottomMargin - THIS.cmdOK.Height
-		ENDIF
-		
-		*
-		*  in the Designer, THIS.Height = 360 and THIS.Width = 600,
-		*  Height is 60% of Width
-		*
-		*  establish default Top/Height
-		THIS.AutoCenter = .t.
-		THIS.Top = (_Screen.Height-THIS.Height)/4
-		*
-		*  store information about how this form is designed,
-		*  for use in dynamic resizing, etc.
-		*
-		THIS.AddProperty("DesignedTop",THIS.Top)
-		THIS.AddProperty("DesignedLeft",THIS.Left)
-		THIS.AddProperty("DesignedHeight",THIS.Height)
-		THIS.AddProperty("DesignedWidth",THIS.Width)
-		
-		IF VARTYPE(toParameter) = "O" ;
-		     AND VARTYPE(toParameter.icScriptCode) = "C" ;
-		     AND NOT EMPTY(toParameter.icScriptCode)
-		  llError = .f.
-		  TRY 
-		  EXECSCRIPT(toParameter.icScriptCode,THIS)
-		  CATCH
-		  llError = .t.
-		  ENDTRY
-		  IF llError
-		    *
-		    *  maybe your script doesn't accept the THIS
-		    *  parameter
-		    *
-		    llError = .f.
-		    TRY 
-		    EXECSCRIPT(toParameter.icScriptCode)
-		    CATCH
-		    llError = .t.
-		    ENDTRY
-		  ENDIF
-		ENDIF
-		
-		IF VARTYPE(toParameter) = "O" ;
-		     AND VARTYPE(toParameter.iaCode[1]) = "C" ;
-		     AND NOT EMPTY(toParameter.iaCode[1])
-		  FOR EACH lcCode IN toParameter.iaCode
-		    TRY
-		    &lcCode
-		    CATCH
-		    ENDTRY
-		  ENDFOR  
-		ENDIF     
-		
-		IF VARTYPE(tcCaption) = "C" AND NOT EMPTY(tcCaption)
-		  tcCaption = STRTRAN(tcCaption, "\<", "")
-		  THIS.Caption = tcCaption
-		ENDIF
-		
-		IF VARTYPE(tnTop) = "N" AND tnTop >= 0
-		  THIS.Top = tnTop
-		ENDIF
-		IF VARTYPE(tnLeft) = "N" AND tnLeft >=0
-		  THIS.Left = tnLeft
-		ENDIF
-		IF VARTYPE(tnHeight) = "N" 
-		  IF tnHeight >= THIS.MinHeight
-		    THIS.Height = tnHeight
-		   ELSE
-		    THIS.Height = THIS.MinHeight
-		  ENDIF
-		ENDIF
-		IF VARTYPE(tnWidth) = "N" 
-		  IF tnWidth >= THIS.MinWidth
-		    THIS.Width = tnWidth
-		   ELSE
-		    THIS.Width = THIS.MinWidth
-		  ENDIF
-		ENDIF
-		
-		*
-		*  tcText can be passed as
-		*  - a string
-		*  - a filename (SomeFile.TXT)
-		*  - an Alias.FieldName, when the tnDataSessionID
-		*    is passed
-		* 
-		IF VARTYPE(tnDataSessionID) = "N" AND NOT tnDataSessionID=SET("DATASESSION")
-		  THIS.DataSessionID = tnDataSessionID
-		ENDIF
-		
-		DO CASE
-		  CASE FILE(tcText)
-		    *
-		    *  filename
-		    *
-		    THIS.edtShowInfo.Value = FILETOSTR(tcText)
-		  CASE OCCURS(".",tcText)=1 AND INLIST(TYPE(tcText),"M","C")
-		    *
-		    *  Alias.FieldName 
-		    *
-		    THIS.edtShowInfo.Value = EVALUATE(tcText)
-		  OTHERWISE
-		    *
-		    *  string
-		    *
-		    THIS.edtShowInfo.Value = tcText
-		ENDCASE
-		
-		THIS.FontName = THIS.edtShowInfo.FontName
-		THIS.FontSize = THIS.edtShowInfo.FontSize
-		THIS.FontBold = THIS.edtShowInfo.FontBold
-		THIS.FontItalic = THIS.edtShowInfo.FontItalic
-		
-		THIS.Resize()
-		IF THIS.Top = THIS.DesignedTop AND THIS.Left = THIS.DesignedLeft
-		  THIS.AutoCenter = .t.
-		  THIS.Top = (_Screen.Height-THIS.Height)/4
-		  THIS.DesignedTop = THIS.Top
-		  THIS.DesignedLeft = THIS.Left
-		ENDIF
-		
-		
-		
-	ENDPROC
-
-	PROCEDURE Load
-		SET TALK OFF 
-	ENDPROC
-
-	PROCEDURE printinfo
-		LOCAL lcSetProc
-		lcSetProc = SET("PROCEDURE")
-		*
-		*  MODIFY COMM FXU
-		*
-		SET PROCEDURE TO FXU.PRG ADDITIVE 
-		
-		*!*	CREATEOBJECT("sesTextBlockReport", ;
-		*!*	             THIS.edtShowInfo.Text, ;
-		*!*	             THIS.Caption, ;
-		*!*	             THIS.edtShowInfo.FontName, ;
-		*!*	             THIS.edtShowInfo.FontSize, ;
-		*!*	             THIS.edtShowInfo.FontBold, ;
-		*!*	             THIS.edtShowInfo.FontItalic)
-		CREATEOBJECT("sesTextBlockReport", ;
-		             THIS.edtShowInfo.Text, ;
-		             THIS.Caption, ;
-		             "Tahoma", ;
-		             9)
-		
-		SET PROCEDURE TO &lcSetProc
-		
-	ENDPROC
-
-	PROCEDURE Resize
-		THIS.edtShowInfo.Move(THIS.DesignedMargin, ;
-		                      THIS.DesignedMargin, ;
-		                      THIS.Width-(THIS.DesignedMargin*2), ;
-		                      THIS.Height-(THIS.DesignedMargin*2)-THIS.cmdOK.Height)
-		
-		THIS.cmdOK.Move(THIS.Width-THIS.cmdOK.Width-THIS.DesignedMargin, ;
-		                THIS.Height-THIS.cmdOK.Height-THIS.DesignedOKButtonBottomMargin, ;
-		                THIS.cmdOK.Width, ;
-		                THIS.cmdOK.Height)
-		                                      
-		THIS.cmdPrint.Move(THIS.cmdOK.Left - THIS.DesignedMargin - THIS.cmdPrint.Width, ;
-		                   THIS.cmdOK.Top, ;
-		                   THIS.cmdPrint.Width, ;
-		                   THIS.cmdPrint.Height)
-		
-		IF THIS.edtShowInfo.Top + THIS.edtShowInfo.Height > ;
-		     THIS.cmdOK.Top - 4
-		  *
-		  *  because THIS.edtShowInfo.IntegralHeight is set to .T.,
-		  *  the editbox may overlap or crowd the buttons too much
-		  *  -- this code sets THIS.edtShowInfo.Height to the next 
-		  *  smaller size respecting THIS.edtShowInfo.IntegralHeight
-		  *
-		  LOCAL lnHeight, lnNewHeight
-		  lnHeight = THIS.edtShowInfo.Height
-		  lnNewHeight = THIS.edtShowInfo.Height-1
-		  DO WHILE .t.
-		    lnHeight = THIS.edtShowInfo.Height
-		    THIS.edtShowInfo.IntegralHeight = .f.
-		    THIS.edtShowInfo.Height = lnNewHeight
-		    THIS.edtShowInfo.IntegralHeight = .t.
-		    IF THIS.edtShowInfo.Height = lnNewHeight ;
-		         OR THIS.edtShowInfo.Height < lnHeight
-		      EXIT
-		    ENDIF
-		    lnNewHeight = lnNewHeight - 1    
-		  ENDDO
-		ENDIF
-		
-		
-		             
-		                                      
-	ENDPROC
-
-	PROCEDURE RightClick
-		DEFINE POPUP pShortcut SHORTCUT RELATIVE FROM MROW(),MCOL()
-		
-		DEFINE BAR 1 OF pShortcut PROMPT "Font..."
-		ON SELECTION BAR 1 OF pShortcut _Screen.ActiveForm.SetFont()
-		
-		DEFINE BAR 2 OF pShortcut PROMPT "Print..."
-		ON SELECTION BAR 2 OF pShortcut _Screen.ActiveForm.PrintInfo()
-		
-		ACTIVATE POPUP pShortcut
-	ENDPROC
-
-	PROCEDURE cmdOK.Click
-		THISFORM.Release()
-	ENDPROC
-
-	PROCEDURE cmdPrint.Click
-		THISFORM.PrintInfo()
-	ENDPROC
-
-	PROCEDURE edtShowInfo.RightClick
-		THISFORM.RightClick()
 	ENDPROC
 
 ENDDEFINE
@@ -5547,6 +4926,7 @@ DEFINE CLASS fxufrmbase AS form
 
 	Caption = "Form"
 	DoCreate = .T.
+	Icon = ..\graphics\foxunit.ico
 	Name = "fxufrmbase"
 
 ENDDEFINE
@@ -5582,12 +4962,11 @@ DEFINE CLASS fxufrmloadclass AS fxufrmbase OF "fxu.vcx"
 	AutoCenter = .T.
 	Caption = "Load Class"
 	Closable = .F.
-	ControlBox = .T.
+	ControlBox = .F.
 	DoCreate = .T.
 	Height = 397
 	icfxudefaulttestdirectory = .F.
 	icfxuselectedtestdirectory = 
-	Icon = (("FoxUnit.ico"))
 	ilcancel = .F.
 	MaxButton = .F.
 	MinButton = .F.
@@ -5628,7 +5007,7 @@ DEFINE CLASS fxufrmloadclass AS fxufrmbase OF "fxu.vcx"
 		Height = 48, ;
 		Left = 665, ;
 		Name = "cmdBrowse", ;
-		Picture = (("fxubrowseforfolder.bmp")), ;
+		Picture = ..\graphics\fxubrowseforfolder.bmp, ;
 		Top = 171, ;
 		Width = 84
 		*< END OBJECT: BaseClass="commandbutton" />
@@ -5650,7 +5029,7 @@ DEFINE CLASS fxufrmloadclass AS fxufrmbase OF "fxu.vcx"
 		Height = 48, ;
 		Left = 666, ;
 		Name = "cmdDeselectAll", ;
-		Picture = (("fxuselectnone.bmp")), ;
+		Picture = ..\graphics\fxuselectnone.bmp, ;
 		Top = 108, ;
 		Width = 84
 		*< END OBJECT: BaseClass="commandbutton" />
@@ -5661,7 +5040,7 @@ DEFINE CLASS fxufrmloadclass AS fxufrmbase OF "fxu.vcx"
 		Height = 48, ;
 		Left = 665, ;
 		Name = "cmdLoad", ;
-		Picture = (("fxuclassload.bmp")), ;
+		Picture = ..\graphics\fxuclassload.bmp, ;
 		Top = 236, ;
 		Width = 84
 		*< END OBJECT: BaseClass="commandbutton" />
@@ -5672,7 +5051,7 @@ DEFINE CLASS fxufrmloadclass AS fxufrmbase OF "fxu.vcx"
 		Height = 48, ;
 		Left = 668, ;
 		Name = "cmdSelectAll", ;
-		Picture = (("fxuselectall.bmp")), ;
+		Picture = ..\graphics\fxuselectall.bmp, ;
 		Top = 48, ;
 		Width = 84
 		*< END OBJECT: BaseClass="commandbutton" />
@@ -5881,28 +5260,1424 @@ DEFINE CLASS fxufrmloadclass AS fxufrmbase OF "fxu.vcx"
 
 ENDDEFINE
 
-DEFINE CLASS fxufrmtestbroker AS fxufrmbase OF "fxu.vcx" 
+DEFINE CLASS fxufrmnewtestclass AS fxufrmuser OF "fxu.vcx" 
+ 	*< CLASSDATA: Baseclass="form" Timestamp="" Scale="Pixels" Uniqueid="" />
+
+	*-- OBJECTDATA items order determines ZOrder / El orden de los items OBJECTDATA determina el ZOrder 
+	*< OBJECTDATA: ObjPath="lblValidationMsg" UniqueID="" Timestamp="" />
+	*< OBJECTDATA: ObjPath="lblTestFolder" UniqueID="" Timestamp="" />
+	*< OBJECTDATA: ObjPath="cmdPickTestFolder" UniqueID="" Timestamp="" />
+	*< OBJECTDATA: ObjPath="Label2" UniqueID="" Timestamp="" />
+	*< OBJECTDATA: ObjPath="cmdCreate" UniqueID="" Timestamp="" />
+	*< OBJECTDATA: ObjPath="lstTemplates" UniqueID="" Timestamp="" />
+	*< OBJECTDATA: ObjPath="txtCurrentTestFolder" UniqueID="" Timestamp="" />
+	*< OBJECTDATA: ObjPath="txtTestClassName" UniqueID="" Timestamp="" />
+	*< OBJECTDATA: ObjPath="txtExistingFile" UniqueID="" Timestamp="" />
+	*< OBJECTDATA: ObjPath="chkProcedure" UniqueID="" Timestamp="" />
+	*< OBJECTDATA: ObjPath="chkTab" UniqueID="" Timestamp="" />
+	*< OBJECTDATA: ObjPath="cmdSelectCustomTemplate" UniqueID="" Timestamp="" />
+	*< OBJECTDATA: ObjPath="cmdSelectFile" UniqueID="" Timestamp="" />
+	*< OBJECTDATA: ObjPath="lblTemplate" UniqueID="" Timestamp="" />
+	*< OBJECTDATA: ObjPath="lblOptions" UniqueID="" Timestamp="" />
+	*< OBJECTDATA: ObjPath="cmdAdd" UniqueID="" Timestamp="" />
+	*< OBJECTDATA: ObjPath="cmdRemoveTemplate" UniqueID="" Timestamp="" />
+	*< OBJECTDATA: ObjPath="cmdEditTemplate" UniqueID="" Timestamp="" />
+	*< OBJECTDATA: ObjPath="lblCopyExisting" UniqueID="" Timestamp="" />
+	*< OBJECTDATA: ObjPath="opgTemplateSource" UniqueID="" Timestamp="" />
+	*< OBJECTDATA: ObjPath="lblSaveAs" UniqueID="" Timestamp="" />
+
+	*<DefinedPropArrayMethod>
+		*m: addcustomtemplates
+		*m: addtemplate
+		*m: addvmptemplates
+		*m: classfullname
+		*m: createtestclass
+		*m: createtestforclasslib		&& Create mockunit tests for every class in a classlib
+		*m: getyourfxutemplate		&& Select template file to copy
+		*m: icclassvalidationmessage_assign
+		*m: modifytemplate
+		*m: picktestfolder
+		*m: removemissingtemplates
+		*m: removetemplate
+		*m: selectfile		&& Get filename of test class to copy or classlib to mock
+		*m: showcontrols
+		*m: sortoptionaltemplates
+		*m: templateclassinheritsfromfxutestcase
+		*m: txtclassname
+		*m: validatederivedtestcasetemplate
+		*m: validatetestclass
+		*m: validtemplatefile
+		*m: zreadme
+		*p: cclassname
+		*p: cexistingfile
+		*p: ctestfolder
+		*p: icclassvalidationmessage
+		*p: iclasterrormessage		&& Error messages
+		*p: icnewtestclass
+		*p: icresultvariable
+		*p: inpermanenttemplates
+		*p: iuretval
+		*p: lcreated		&& Was a new test class created?
+		*p: luseprocedure		&& Use the word PROCEDURE instead of METHOD
+		*p: lusetabs		&& Use TABS rather than spaces
+		*p: lvalidclassname
+		*p: ntemplatesource
+		*a: iatemplates[1,0]
+	*</DefinedPropArrayMethod>
+
+	AllowOutput = .F.
+	AutoCenter = .T.
+	BorderStyle = 1
+	Caption = "New Test Class"
+	cclassname = ("")
+	cexistingfile = ("")
+	ctestfolder = ("")
+	DoCreate = .T.
+	FontName = "Verdana"
+	FontSize = 10
+	Height = 431
+	icclassvalidationmessage = ("")
+	iclasterrormessage = ("")		&& Error messages
+	inpermanenttemplates = 0
+	iofxuinstance = .NULL.
+	iuretval = .NULL.
+	lcreated = .F.		&& Was a new test class created?
+	luseprocedure = .F.		&& Use the word PROCEDURE instead of METHOD
+	lusetabs = .T.		&& Use TABS rather than spaces
+	lvalidclassname = .F.
+	MaxButton = .F.
+	MinButton = .F.
+	Name = "fxufrmnewtestclass"
+	ntemplatesource = 1
+	ShowInTaskBar = .F.
+	ShowTips = .T.
+	ShowWindow = 1
+	Width = 638
+	WindowType = 1
+	_memberdata = <VFPData>
+		<memberdata name="validatetestclass" display="ValidateTestClass"/>
+		<memberdata name="picktestfolder" display="pickTestFolder"/>
+		<memberdata name="showcontrols" display="showControls"/>
+		</VFPData>
+
+	ADD OBJECT 'chkProcedure' AS checkbox WITH ;
+		Alignment = 6, ;
+		AutoSize = .F., ;
+		BackStyle = 0, ;
+		Caption = 'Use "PROCEDURE MethodName" rather than "FUNCTION MethodName" ', ;
+		ControlSource = "w", ;
+		Enabled = .F., ;
+		FontName = "Verdana", ;
+		FontSize = 9, ;
+		Height = 16, ;
+		Left = 13, ;
+		Name = "chkProcedure", ;
+		TabIndex = 17, ;
+		Top = 235, ;
+		Value = .F., ;
+		Width = 471, ;
+		WordWrap = .F.
+		*< END OBJECT: BaseClass="checkbox" />
+
+	ADD OBJECT 'chkTab' AS checkbox WITH ;
+		Alignment = 0, ;
+		AutoSize = .F., ;
+		BackStyle = 0, ;
+		Caption = "Indent methods by one TAB", ;
+		ControlSource = "ThisForm.lUseTabs", ;
+		Enabled = .F., ;
+		FontName = "Verdana", ;
+		FontSize = 9, ;
+		Height = 16, ;
+		Left = 13, ;
+		Name = "chkTab", ;
+		TabIndex = 16, ;
+		Top = 219, ;
+		Value = .T., ;
+		Width = 194
+		*< END OBJECT: BaseClass="checkbox" />
+
+	ADD OBJECT 'cmdAdd' AS commandbutton WITH ;
+		AutoSize = .F., ;
+		Caption = "+", ;
+		FontName = "Verdana", ;
+		FontSize = 9, ;
+		Height = 27, ;
+		Left = 594, ;
+		Name = "cmdAdd", ;
+		Picture = ..\graphics\list2_add.png, ;
+		PicturePosition = 14, ;
+		TabIndex = 8, ;
+		ToolTipText = "Add a template file to this list", ;
+		Top = 33, ;
+		Width = 27
+		*< END OBJECT: BaseClass="commandbutton" />
+
+	ADD OBJECT 'cmdCreate' AS commandbutton WITH ;
+		Caption = "Create Test Class", ;
+		Default = .F., ;
+		FontName = "Verdana", ;
+		FontSize = 9, ;
+		Height = 40, ;
+		Left = 474, ;
+		Name = "cmdCreate", ;
+		TabIndex = 4, ;
+		Top = 383, ;
+		Width = 144, ;
+		WordWrap = .T.
+		*< END OBJECT: BaseClass="commandbutton" />
+
+	ADD OBJECT 'cmdEditTemplate' AS commandbutton WITH ;
+		AutoSize = .F., ;
+		Caption = "M", ;
+		FontName = "Verdana", ;
+		FontSize = 9, ;
+		Height = 27, ;
+		Left = 594, ;
+		Name = "cmdEditTemplate", ;
+		Picture = ..\graphics\list_information.png, ;
+		PicturePosition = 14, ;
+		TabIndex = 10, ;
+		ToolTipText = "Modify the Selected Template", ;
+		Top = 87, ;
+		Width = 27
+		*< END OBJECT: BaseClass="commandbutton" />
+
+	ADD OBJECT 'cmdPickTestFolder' AS commandbutton WITH ;
+		Caption = "...", ;
+		FontName = "Verdana", ;
+		FontSize = 9, ;
+		Height = 25, ;
+		Left = 594, ;
+		Name = "cmdPickTestFolder", ;
+		TabIndex = 21, ;
+		Top = 284, ;
+		Width = 24, ;
+		ZOrderSet = 2
+		*< END OBJECT: BaseClass="commandbutton" />
+
+	ADD OBJECT 'cmdRemoveTemplate' AS commandbutton WITH ;
+		AutoSize = .F., ;
+		Caption = "-", ;
+		FontName = "Verdana", ;
+		FontSize = 9, ;
+		Height = 27, ;
+		Left = 594, ;
+		Name = "cmdRemoveTemplate", ;
+		Picture = ..\graphics\list1_delete.png, ;
+		PicturePosition = 14, ;
+		TabIndex = 9, ;
+		ToolTipText = "Remove the selected template file from this list", ;
+		Top = 60, ;
+		Width = 27
+		*< END OBJECT: BaseClass="commandbutton" />
+
+	ADD OBJECT 'cmdSelectCustomTemplate' AS commandbutton WITH ;
+		Caption = "C", ;
+		Default = .F., ;
+		FontName = "Verdana", ;
+		FontSize = 9, ;
+		Height = 28, ;
+		Left = 594, ;
+		Name = "cmdSelectCustomTemplate", ;
+		Picture = ..\graphics\list_go.png, ;
+		PicturePosition = 14, ;
+		TabIndex = 11, ;
+		ToolTipText = "Select a custom FoxUnit template of your own.  If you select one that is not in the list above, it will be automatically added to the list the next time you invoke this dialog.", ;
+		Top = 114, ;
+		Width = 27, ;
+		WordWrap = .T.
+		*< END OBJECT: BaseClass="commandbutton" />
+
+	ADD OBJECT 'cmdSelectFile' AS commandbutton WITH ;
+		AutoSize = .F., ;
+		Caption = "Select...", ;
+		Default = .T., ;
+		FontName = "Verdana", ;
+		FontSize = 9, ;
+		Height = 25, ;
+		Left = 225, ;
+		Name = "cmdSelectFile", ;
+		TabIndex = 13, ;
+		Top = 151, ;
+		Visible = .F., ;
+		Width = 64, ;
+		WordWrap = .T.
+		*< END OBJECT: BaseClass="commandbutton" />
+
+	ADD OBJECT 'Label2' AS label WITH ;
+		AutoSize = .T., ;
+		Caption = "Test Class/File Name:", ;
+		FontBold = .F., ;
+		FontName = "Verdana", ;
+		FontSize = 9, ;
+		Height = 16, ;
+		Left = 12, ;
+		Name = "Label2", ;
+		TabIndex = 1, ;
+		Top = 320, ;
+		Width = 138, ;
+		ZOrderSet = 3
+		*< END OBJECT: BaseClass="label" />
+
+	ADD OBJECT 'lblCopyExisting' AS label WITH ;
+		AutoSize = .T., ;
+		BackStyle = 0, ;
+		Caption = "", ;
+		FontBold = .F., ;
+		FontName = "Verdana", ;
+		FontSize = 9, ;
+		Height = 16, ;
+		Left = 36, ;
+		Name = "lblCopyExisting", ;
+		TabIndex = 12, ;
+		Top = 155, ;
+		Width = 2
+		*< END OBJECT: BaseClass="label" />
+
+	ADD OBJECT 'lblOptions' AS label WITH ;
+		AutoSize = .T., ;
+		Caption = "Code Options:", ;
+		FontName = "Verdana", ;
+		FontSize = 9, ;
+		ForeColor = 128,0,0, ;
+		Height = 16, ;
+		Left = 12, ;
+		Name = "lblOptions", ;
+		TabIndex = 15, ;
+		Top = 203, ;
+		Width = 93
+		*< END OBJECT: BaseClass="label" />
+
+	ADD OBJECT 'lblSaveAs' AS label WITH ;
+		AutoSize = .T., ;
+		Caption = "Save as:", ;
+		FontName = "Verdana", ;
+		FontSize = 9, ;
+		ForeColor = 128,0,0, ;
+		Height = 16, ;
+		Left = 12, ;
+		Name = "lblSaveAs", ;
+		TabIndex = 18, ;
+		Top = 264, ;
+		Width = 57
+		*< END OBJECT: BaseClass="label" />
+
+	ADD OBJECT 'lblTemplate' AS label WITH ;
+		Anchor = 3, ;
+		AutoSize = .T., ;
+		BackStyle = 0, ;
+		Caption = "Template", ;
+		FontBold = .F., ;
+		FontName = "Tahoma", ;
+		FontSize = 12, ;
+		ForeColor = 128,0,0, ;
+		Height = 21, ;
+		Left = 12, ;
+		Name = "lblTemplate", ;
+		TabIndex = 5, ;
+		Top = 10, ;
+		Width = 68
+		*< END OBJECT: BaseClass="label" />
+
+	ADD OBJECT 'lblTestFolder' AS label WITH ;
+		AutoSize = .T., ;
+		Caption = "Test Folder:", ;
+		FontBold = .F., ;
+		FontName = "Verdana", ;
+		FontSize = 9, ;
+		Height = 16, ;
+		Left = 12, ;
+		Name = "lblTestFolder", ;
+		TabIndex = 19, ;
+		Top = 288, ;
+		Width = 77, ;
+		ZOrderSet = 1
+		*< END OBJECT: BaseClass="label" />
+
+	ADD OBJECT 'lblValidationMsg' AS label WITH ;
+		Caption = "", ;
+		FontName = "Verdana", ;
+		FontSize = 9, ;
+		ForeColor = 255,0,0, ;
+		Height = 25, ;
+		Left = 12, ;
+		Name = "lblValidationMsg", ;
+		TabIndex = 3, ;
+		Top = 341, ;
+		Width = 625, ;
+		ZOrderSet = 0
+		*< END OBJECT: BaseClass="label" />
+
+	ADD OBJECT 'lstTemplates' AS listbox WITH ;
+		ColumnCount = 2, ;
+		ColumnLines = .F., ;
+		ColumnWidths = "304,336", ;
+		FontName = "Verdana", ;
+		FontSize = 9, ;
+		Height = 116, ;
+		IntegralHeight = .T., ;
+		ItemTips = .T., ;
+		Left = 36, ;
+		Name = "lstTemplates", ;
+		TabIndex = 7, ;
+		Top = 33, ;
+		Width = 552
+		*< END OBJECT: BaseClass="listbox" />
+
+	ADD OBJECT 'opgTemplateSource' AS optiongroup WITH ;
+		Anchor = 3, ;
+		AutoSize = .T., ;
+		BackStyle = 0, ;
+		BorderStyle = 0, ;
+		ButtonCount = 3, ;
+		ControlSource = "ThisForm.nTemplateSource", ;
+		Height = 168, ;
+		Left = 13, ;
+		Name = "opgTemplateSource", ;
+		TabIndex = 6, ;
+		Top = 33, ;
+		Value = 1, ;
+		Width = 211, ;
+		Option1.Caption = "", ;
+		Option1.Height = 17, ;
+		Option1.Left = 5, ;
+		Option1.Name = "Option1", ;
+		Option1.Top = 5, ;
+		Option1.Value = 1, ;
+		Option1.Width = 61, ;
+		Option2.AutoSize = .T., ;
+		Option2.Caption = "\<Copy an existing Test Class", ;
+		Option2.Height = 17, ;
+		Option2.Left = 5, ;
+		Option2.Name = "Option2", ;
+		Option2.ToolTipText = "This option copies an existing test class PRG to a new test class PRG.", ;
+		Option2.Top = 124, ;
+		Option2.Width = 171, ;
+		Option3.AutoSize = .T., ;
+		Option3.Caption = "\<Mock tests for an existing classlib", ;
+		Option3.Enabled = .F., ;
+		Option3.Height = 17, ;
+		Option3.Left = 5, ;
+		Option3.Name = "Option3", ;
+		Option3.ToolTipText = "This option will create stub tests for every method in a class library.", ;
+		Option3.Top = 146, ;
+		Option3.Width = 201
+		*< END OBJECT: BaseClass="optiongroup" />
+
+	ADD OBJECT 'txtCurrentTestFolder' AS textbox WITH ;
+		ControlSource = "ThisForm.cTestFolder", ;
+		FontName = "Verdana", ;
+		FontSize = 9, ;
+		Height = 25, ;
+		Left = 152, ;
+		Name = "txtCurrentTestFolder", ;
+		ReadOnly = .T., ;
+		TabIndex = 20, ;
+		Top = 284, ;
+		Width = 438, ;
+		ZOrderSet = 6
+		*< END OBJECT: BaseClass="textbox" />
+
+	ADD OBJECT 'txtExistingFile' AS textbox WITH ;
+		ControlSource = "ThisForm.cExistingFile", ;
+		FontName = "Verdana", ;
+		FontSize = 9, ;
+		Height = 25, ;
+		Left = 290, ;
+		Name = "txtExistingFile", ;
+		TabIndex = 14, ;
+		TabStop = .F., ;
+		Top = 151, ;
+		Visible = .F., ;
+		Width = 298, ;
+		ZOrderSet = 7
+		*< END OBJECT: BaseClass="textbox" />
+
+	ADD OBJECT 'txtTestClassName' AS textbox WITH ;
+		ControlSource = "ThisForm.cClassName", ;
+		FontName = "Verdana", ;
+		FontSize = 9, ;
+		Height = 25, ;
+		Left = 152, ;
+		MaxLength = 110, ;
+		Name = "txtTestClassName", ;
+		TabIndex = 2, ;
+		Top = 314, ;
+		Width = 437, ;
+		ZOrderSet = 7
+		*< END OBJECT: BaseClass="textbox" />
+	
+	PROCEDURE addcustomtemplates
+	ENDPROC
+
+	PROCEDURE addtemplate
+		*
+		*  called from THIS.lstTemplates.RightClick() 
+		*  and from THIS.GetYourFXUTemplate()
+		*
+		LPARAMETERS tcFileName
+		
+		LOCAL lcFileName, xx, lcDescription, lnRow, yy, llAlready
+		
+		IF PCOUNT() = 0
+		  lcFileName = GETFILE("TXT","FoxUnit template","Select",0,"Select a FoxUnit test class .TXT template")
+		 ELSE
+		  lcFileName = m.tcFileName
+		ENDIF
+		IF EMPTY(m.lcFileName)
+		  RETURN
+		ENDIF
+		
+		lcFileName = UPPER(ALLTRIM(m.lcFileName))
+		
+		FOR xx = 1 TO ALEN(THIS.iaTemplates,1)
+		  IF UPPER(ALLTRIM(THIS.iaTemplates[m.xx,3])) == m.lcFileName
+		    llAlready = .t.
+		    EXIT
+		  ENDIF
+		ENDFOR
+		IF m.llAlready
+		  MESSAGEBOX(m.lcFileName + " is already in the list!", ;
+		             16, ;
+		             "Please Note")
+		  RETURN
+		ENDIF
+		
+		IF NOT THIS.ValidTemplateFile(m.lcFileName)
+		  MESSAGEBOX(JUSTFNAME(m.lcFileName) + ;
+		             " is not a FoxUnit test case class inheriting from FXUTestCase.PRG", ;
+		             48, ;
+		             "Please Note")
+		  RETURN
+		ENDIF
+		
+		IF PCOUNT() = 0
+		  lcDescription = INPUTBOX("Description", ;
+		                           "Enter a short description")
+		ENDIF
+		IF EMPTY(m.lcDescription)
+		  lcDescription = "Custom FoxUnit template"
+		ENDIF
+		
+		*
+		*  add it
+		*
+		lnRow = ALEN(THIS.iaTemplates,1)+1
+		DIMENSION THIS.iaTemplates[m.lnRow,ALEN(THIS.iaTemplates,2)]
+		THIS.iaTemplates[m.lnRow,1] = m.lcDescription
+		THIS.iaTemplates[m.lnRow,2] = JUSTFNAME(m.lcFileName)
+		THIS.iaTemplates[m.lnRow,3] = m.lcFileName
+		
+		THIS.SortOptionalTemplates()
+		
+		THIS.lstTemplates.Value = m.lnRow
+		THIS.lstTemplates.RowSource = THIS.lstTemplates.RowSource
+		
+		                         
+		                         
+		
+		
+	ENDPROC
+
+	PROCEDURE addvmptemplates
+		*
+		*  FXU.VCX/frmGetTestClassTemplate::AddVMPTemplates()  
+		*
+		*
+		*  add VMP-specific (Visual MaxFrame Professional) templates
+		*
+		IF NOT FILE("XXFW.VCX")
+			RETURN
+		ENDIF
+		
+		LOCAL lnRow, lnCols, lcCurDir, lcXLIB, laFiles[1], lnFiles, xx, ;
+			lcFileName, lcDesc, lcDescText, laLines[1]
+		m.lnRow = ALEN(THIS.iaTemplates, 1)
+		m.lnCols = ALEN(THIS.iaTemplates, 2)
+		m.lcCurDir = FULLPATH(CURDIR())
+		m.lcXLIB = JUSTPATH(FULLPATH("XXFW.VCX"))
+		
+		CD (m.lcXLIB)
+		
+		m.lnFiles = ADIR(laFiles, "VMPFXU*.TXT")
+		
+		CD (m.lcCurDir)
+		
+		IF m.lnFiles = 0
+			RETURN
+		ENDIF
+		
+		FOR m.xx = 1 TO m.lnFiles
+			m.lcFileName = UPPER(m.laFiles[m.xx, 1])
+			IF NOT "TEMPLATE" $ m.lcFileName
+				LOOP
+			ENDIF
+			IF ASCAN(THIS.iaTemplates, m.lcFileName, -1, -1, 2, 15) > 0
+		*  already in the list
+				LOOP
+			ENDIF
+			m.lnRow = m.lnRow + 1
+			DIMENSION THIS.iaTemplates[m.lnRow, m.lnCols]
+			ALINES(laLines, FILETOSTR(m.lcFileName))
+			m.lcDescText = m.laLines[2]   &&& description is on the 2nd line of the .TXT template file
+			m.lcDescText = ALLTRIM(SUBSTRC(m.lcDescText, 2))   &&& remove leading asterisk
+		
+		*!*	  DO CASE
+		*!*	    CASE RIGHTC(m.lcFileName,7) = "_DS.TXT"
+		*!*	      lcDescText = "VMP DataSource test case template"
+		*!*	    CASE RIGHTC(m.lcFileName,7) = "_BO.TXT"
+		*!*	      lcDescText = "VMP Business Object test case template"
+		*!*	    CASE RIGHTC(m.lcFileName,16) = "_BO_ONE2MANY.TXT"
+		*!*	      lcDescText = "VMP One2Many Business Object test case template"
+		*!*	    CASE RIGHTC(m.lcFileName,21) = "_BO_ONE2MANY2MANY.TXT"
+		*!*	      lcDescText = "VMP One2Many2Many Business Object test case template"
+		*!*	    OTHERWISE
+		*!*	      lcDescText = "VMP test case template"
+		*!*	  ENDCASE
+		
+			THIS.iaTemplates[m.lnRow, 1] = m.lcDescText
+			THIS.iaTemplates[m.lnRow, 2] = m.laFiles[m.xx, 1]
+			THIS.iaTemplates[m.lnRow, 3] = FULLPATH(m.lcFileName)
+			THIS.iaTemplates[m.lnRow, 4] = .T.   &&& permanent
+		NEXT
+		
+		THIS.lstTemplates.ROWSOURCE = THIS.lstTemplates.ROWSOURCE
+		
+		
+	ENDPROC
+
+	PROCEDURE classfullname
+		RETURN FORCEEXT(ADDBS(ALLTRIM(This.cTestFolder)) + ALLTRIM(This.cClassName),"prg")
+		
+	ENDPROC
+
+	PROCEDURE createtestclass
+		LOCAL lcTemplateFile, lcNewTestClassName
+		LOCAL loTestClassCreator AS FxuNewTestClass OF FxuNewTestClass.prg
+		LOCAL loTestClassCreator 
+		
+		This.lCreated =.f.
+		loTestClassCreator = thisform.ioFxuInstance.FxuNewObject("FxuNewTestClass")
+		lcNewTestClassName= This.ClassFullName() 
+		
+		*SET PATH TO (["] + JUSTPATH(m.lcNewTestClassName) + ["]) ADDITIVE && Add new location to path. HAS
+		
+		DO CASE
+			CASE EMPTY(This.cClassName)	 && This shouldn't ever happen, as the button won't be enabled via showControls() unless there's a value there
+		
+			CASE This.nTemplatesource=1	&& Template
+				* Verify template exists
+				IF FILE(THISFORM.iaTemplates[THISFORM.lstTemplates.Value, 3])
+					m.lcTemplateFile = THISFORM.iaTemplates[THISFORM.lstTemplates.Value, 3]
+				ELSE
+					IF MESSAGEBOX("Unable to locate " + ;
+							  CHR(13) + ;
+							  THISFORM.iaTemplates[THISFORM.lstTemplates.Value, 3] + ;
+							  CHR(13) + CHR(13) + ;
+							  "Remove it from the list?", ;
+							  16 + 4, ;
+							  "Please Note") = 6
+						THISFORM.RemoveTemplate()
+					ENDIF
+				ENDIF
+				This.lCreated = loTestClassCreator.CreateNewTestClass(m.lcNewTestClassName, m.lcTemplateFile, This.lUseTabs, This.lUseProcedure)
+		
+			CASE This.nTemplatesource=2	&& Copy existing class
+				IF loTestClassCreator.LoadExistingClassProgram(This.cExistingFile)
+					loTestClassCreator.MergeClassName(JUSTSTEM(lcNewTestClassName))
+					STRTOFILE(loTestClassCreator.icTemplateContents, lcNewTestClassName)
+					This.lCreated = FILE(lcNewTestClassName)
+				ENDIF	
+		
+			CASE This.nTemplatesource=3	&& Create mock tests for an existing classlib
+				* TODO
+		ENDCASE
+		
+		
+	ENDPROC
+
+	PROCEDURE createtestforclasslib		&& Create mockunit tests for every class in a classlib
+	ENDPROC
+
+	PROCEDURE Destroy
+		THIS.SettingsSave(".\FXUPersistGetTemplate.XML")
+		
+	ENDPROC
+
+	PROCEDURE getyourfxutemplate		&& Select template file to copy
+		*  
+		*  called from THIS.cmdSelectCustomTemplate.Click()
+		*
+		
+		
+		LOCAL lcFileName, xx, llAlready
+		
+		lcFileName = GETFILE("TXT","FoxUnit template","Select",0,"Select a FoxUnit test class .TXT template")
+		
+		IF EMPTY(m.lcFileName)
+		  RETURN
+		ENDIF
+		
+		IF NOT THIS.ValidTemplateFile(m.lcFileName)
+		  IF MESSAGEBOX(JUSTFNAME(m.lcFileName) + ;
+		             " is not a FoxUnit test case class inheriting from FXUTestCase.PRG." + ;
+		             CHR(10) + "Do you wish to load this test case template anyway?", ;
+		             4+48,  ;
+		             "Please Note") = 7
+		  	RETURN
+		  ENDIF
+		ENDIF
+		
+		*
+		*  if the selected template isn't already in the list,
+		*  put it in the list so it's there from now on
+		*
+		FOR xx = 1 TO ALEN(THIS.iaTemplates,1)
+		  IF UPPER(ALLTRIM(THIS.iaTemplates[m.xx,3])) == m.lcFileName
+		    llAlready = .t.
+		    EXIT
+		  ENDIF
+		ENDFOR
+		
+		IF m.llAlready
+		  RETURN m.lcFileName
+		ENDIF  
+		
+		THIS.AddTemplate(m.lcFileName)
+		
+		RETURN m.lcFileName
+		          
+	ENDPROC
+
+	PROCEDURE icclassvalidationmessage_assign
+		LPARAMETERS vNewVal
+		*To do: Modify this routine for the Assign method
+		
+		this.cmdCreate.Enabled = EMPTY(vNewVal)
+		
+		this.lblValidationMsg.Caption = vNewVal
+		thisform.cmdCreate.Refresh()
+		thisform.lblValidationMsg.Refresh()
+		THIS.icclassvalidationmessage = m.vNewVal
+		
+	ENDPROC
+
+	PROCEDURE Init
+		LPARAMETERS toFxuInstance, tcNewTestClass, tcResultVariable
+		
+		IF !DODEFAULT(@m.toFxuInstance)
+			RETURN .F.
+		ENDIF
+		
+		This.cTestFolder=m.toFxuInstance.DataPath
+		THIS.icNewTestClass = EVL(m.tcNewTestClass,"")
+		THIS.icResultVariable = m.tcResultVariable
+		This.Icon="foxunit.ico"
+		
+		THIS.MinHeight = THIS.Height
+		THIS.MinWidth = THIS.Width
+		
+		IF VERSION(5) < 900
+		  THIS.BorderStyle = 2
+		ENDIF
+		
+		*
+		*  Save these for use in THIS.OnSettingsSave()
+		*
+		THIS.AddProperty("inDesignHeight",THIS.Height)
+		THIS.AddProperty("inDesignWidth",THIS.Width)
+		
+		THIS.SettingsRestore(".\FXUPersistGetTemplate.XML")
+		THIS.RemoveMissingTemplates()
+		THIS.AddVMPTemplates()
+		*
+		*  if you subclass this form, you can add code here
+		*  to add your own custom templates
+		*
+		THIS.AddCustomTemplates()
+		This.ValidateTestClass()
+		
+		
+	ENDPROC
+
+	PROCEDURE KeyPress
+		LPARAMETERS nKeyCode, nShiftAltCtrl
+		If nKeyCode=27
+		   Thisform.Hide()
+		Endif 
+		
+	ENDPROC
+
+	PROCEDURE modifytemplate
+		*
+		*  called from THIS.lstTemplates.RightClick()
+		*
+		
+		LOCAL lcFileName
+		m.lcFileName = THIS.iaTemplates[THIS.lstTemplates.Value, 3]
+		IF EMPTY(m.lcFileName)
+			MESSAGEBOX("This feature is only available for those " + ;
+				  "items for which a filename has been specified.", ;
+				  48, ;
+				  "Please Note")
+			RETURN
+		ENDIF
+		
+		MODIFY COMMAND (m.lcFileName)
+		
+	ENDPROC
+
+	PROCEDURE onsettingssave
+		PARAMETERS tcAlias
+		
+		IF VARTYPE(m.tcAlias)!="C" OR !USED(m.tcAlias)
+			RETURN .F.
+		ENDIF
+		
+		SELECT (m.tcAlias)
+		SCATTER MEMVAR
+		m.UserID = THIS.ioFxuInstance.UserId
+		
+		*
+		*  THISFORM settings
+		*
+		m.Setting = "THIS.Top = " + TRANSFORM(THIS.TOP)
+		INSERT INTO (m.tcAlias) FROM MEMVAR
+		m.Setting = "THIS.Left = " + TRANSFORM(THIS.LEFT)
+		INSERT INTO (m.tcAlias) FROM MEMVAR
+		m.Setting = "THIS.Height = IIF(VERSION(5)>=900," + TRANSFORM(THIS.HEIGHT) + "," + TRANSFORM(THIS.inDesignHeight) + ")"
+		INSERT INTO (m.tcAlias) FROM MEMVAR
+		m.Setting = "THIS.Width = IIF(VERSION(5)>=900," + TRANSFORM(THIS.WIDTH) + "," + TRANSFORM(THIS.inDesignWidth) + ")"
+		INSERT INTO (m.tcAlias) FROM MEMVAR
+		
+		*
+		*  THISFORM checkbox values
+		*
+		m.Setting = "THIS.chkProcedure.Value = " + TRANSFORM(THIS.chkProcedure.VALUE)
+		INSERT INTO (m.tcAlias) FROM MEMVAR
+		m.Setting = "THIS.chkTab.Value = " + TRANSFORM(THIS.chkTab.VALUE)
+		INSERT INTO (m.tcAlias) FROM MEMVAR
+		
+		*
+		*  THIS.lstTemplates.Value
+		*
+		m.Setting = "THIS.lstTemplates.Value = " + TRANSFORM(THIS.lstTemplates.VALUE)
+		INSERT INTO (m.tcAlias) FROM MEMVAR
+		
+		*
+		*  all templates after the permanent templates
+		*
+		
+		IF ALEN(THIS.iaTemplates, 1) > THIS.inPermanentTemplates
+			m.Setting = 'DIMENSION THIS.iaTemplates[' + TRANSFORM(ALEN(THIS.iaTemplates, 1)) + ',' + TRANSFORM(ALEN(THIS.iaTemplates, 2)) + ']'
+			INSERT INTO (m.tcAlias) FROM MEMVAR
+			LOCAL xx, yy
+			FOR m.xx = THIS.inPermanentTemplates + 1 TO ALEN(THIS.iaTemplates, 1)
+				IF EMPTY(THIS.iaTemplates[m.xx, 2]) OR NOT FILE(THIS.iaTemplates[m.xx, 3])
+					LOOP
+				ENDIF
+				FOR m.yy = 1 TO ALEN(THIS.iaTemplates, 2) - 1
+					m.Setting = 'THIS.iaTemplates[' + TRANSFORM(m.xx) + ',' + TRANSFORM(m.yy) + '] = "' + TRANSFORM(THIS.iaTemplates[m.xx, m.yy]) + ["]
+					INSERT INTO (m.tcAlias) FROM MEMVAR
+				ENDFOR
+				m.Setting = 'THIS.iaTemplates[' + TRANSFORM(m.xx) + ',' + TRANSFORM(ALEN(THIS.iaTemplates, 2)) + '] = ' + TRANSFORM(THIS.iaTemplates[m.xx, m.yy])
+				INSERT INTO (m.tcAlias) FROM MEMVAR
+			ENDFOR
+			m.Setting = "THIS.lstTemplates.RowSource = THIS.lstTemplates.RowSource"
+			INSERT INTO (m.tcAlias) FROM MEMVAR
+		ENDIF
+	ENDPROC
+
+	PROCEDURE picktestfolder
+		LOCAL lcChangedTestFolder
+		
+		m.lcChangedTestFolder = ""
+		
+		m.lcChangedTestFolder = GETDIR(THISFORM.txtCurrentTestFolder.VALUE, "Select test class folder", "Select test class folder", 1 + 2 + 8 + 16 + 32 + 64) && Added nFlag parameter. HAS
+		
+		IF DIRECTORY(m.lcChangedTestFolder)
+			THISFORM.txtCurrentTestFolder.VALUE = m.lcChangedTestFolder
+			THISFORM.Validatetestclass()
+			IF !EMPTY(THISFORM.icClassValidationMessage)
+				THISFORM.txtTestClassName.SETFOCUS()
+			ELSE
+				THISFORM.cmdCreate.SETFOCUS()
+			ENDIF
+		
+		ENDIF
+	ENDPROC
+
+	PROCEDURE QueryUnload
+		IF This.ReleaseType=1
+			nodefault
+			This.Hide()
+		ENDIF
+		
+	ENDPROC
+
+	PROCEDURE Release
+		IF This.ReleaseType=1
+			This.Hide()
+		ENDIF
+		
+	ENDPROC
+
+	PROCEDURE removemissingtemplates
+		*
+		*  remove any rows of THIS.lstTemplates that have
+		*  been added by THIS.RestoreSettings(), but which
+		*  templates are now missing
+		*
+		
+		LOCAL xx, lnRows, lnRemoved, lnValue
+		m.lnRows = ALEN(THIS.iaTemplates, 1)
+		m.lnValue = THIS.lstTemplates.VALUE
+		
+		IF m.lnRows < 5
+		*  nothing to do
+			RETURN
+		ENDIF
+		
+		m.lnRemoved = 0
+		FOR m.xx = m.lnRows TO 5 STEP - 1
+			IF NOT FILE(THIS.iaTemplates[m.xx, 3])
+				m.lnRemoved = m.lnRemoved + 1
+				ADEL(THIS.iaTemplates, m.xx)
+			ENDIF
+		ENDFOR
+		IF m.lnRemoved > 0
+			DIMENSION THIS.iaTemplates[m.lnRows - m.lnRemoved, ALEN(THIS.iaTemplates, 2)]
+			THIS.lstTemplates.ROWSOURCE = THIS.lstTemplates.ROWSOURCE
+			THIS.lstTemplates.VALUE = 1
+		ENDIF
+		
+		
+		
+		
+	ENDPROC
+
+	PROCEDURE removetemplate
+		*
+		*  called from THIS.lstTemplates.RightClick()
+		*
+		
+		IF THIS.iaTemplates[THIS.lstTemplates.Value, 4]
+			MESSAGEBOX("This is a permanent item and may not be removed." + ;
+				  CHR(13) + CHR(13) + ;
+				  "You may only remove any custom templates of your own.", ;
+				  48, ;
+				  "Please Note")
+			RETURN
+		ENDIF
+		
+		IF MESSAGEBOX("Are you sure you want to remove " + THIS.iaTemplates[THIS.lstTemplates.Value, 2] + "?", ;
+				  4 + 48, ;
+				  "Please confirm") = 7
+			RETURN
+		ENDIF
+		
+		LOCAL lnRow
+		m.lnRow = THIS.lstTemplates.VALUE
+		ADEL(THIS.iaTemplates, m.lnRow)
+		DIMENSION THIS.iaTemplates[ALEN(THIS.iaTemplates, 1) - 1, ALEN(THIS.iaTemplates, 2)]
+		IF m.lnRow > ALEN(THIS.iaTemplates, 1)
+			THIS.lstTemplates.VALUE = THIS.lstTemplates.VALUE - 1
+		ENDIF
+		THIS.lstTemplates.ROWSOURCE = THIS.lstTemplates.ROWSOURCE
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	ENDPROC
+
+	PROCEDURE selectfile		&& Get filename of test class to copy or classlib to mock
+		*  
+		*  called from THIS.cmdCopyExistingPRG.Click()
+		*
+		LOCAL lcFileName, llReturn
+		
+		IF This.nTemplatesource = 2
+			m.lcFileName = GETFILE("PRG", "FoxUnit test class", "Select", 0, "Select an existing FoxUnit test class .PRG")
+			IF NOT EMPTY(m.lcFileName)
+				llReturn = THIS.ValidTemplateFile(m.lcFileName)
+				IF NOT llReturn
+					MESSAGEBOX(JUSTFNAME(m.lcFileName) + ;
+						  " is not a FoxUnit test case class inheriting from FXUTestCase.PRG", ;
+						  48, ;
+						  "Please Note")
+				ENDIF
+			ENDIF
+		ELSE
+			m.lcFileName = GETFILE("VCX,PRG", "FoxUnit test class", "Select", 0, "Select a VFP Class Library")
+		ENDIF
+		IF llReturn
+			This.cExistingFile = lcFileName
+		ENDIF
+		This.showControls()
+		RETURN llReturn
+		
+	ENDPROC
+
+	PROCEDURE showcontrols
+		
+		THISFORM.lstTemplates.ENABLED = (THIS.nTemplatesource = 1)
+		THIS.cmdAdd.ENABLED = (THIS.nTemplatesource = 1)
+		THIS.cmdRemoveTemplate.ENABLED = (THIS.nTemplatesource = 1)
+		THIS.cmdEditTemplate.ENABLED = (THIS.nTemplatesource = 1)
+		THIS.cmdselectCustomTemplate.ENABLED = (THIS.nTemplatesource = 1)
+		
+		THIS.cmdSelectFile.Visible = (THIS.nTemplatesource > 1)
+		THIS.txtExistingFile.Visible = (THIS.nTemplatesource > 1)
+		
+		DO CASE 
+			CASE This.nTemplatesource = 1
+			* Normal Template
+		
+			CASE This.nTemplateSource = 2	
+				This.cmdCreate.Enabled = not EMPTY(This.cExistingFile) and FILE(This.cExistingFile) ;
+					AND This.lValidClassName
+		
+			CASE This.nTemplateSource = 3
+				This.cmdCreate.Enabled = not EMPTY(This.cExistingFile) and FILE(This.cExistingFile) ;
+					AND This.lValidClassName
+		ENDCASE
+		This.Refresh()
+		
+	ENDPROC
+
+	PROCEDURE sortoptionaltemplates
+		*
+		*  re-sort the optional templates, in alphabetical order
+		*  
+		
+		IF ALEN(THIS.iaTemplates, 1) = THIS.inPermanentTemplates
+		*  nothing to do
+			RETURN
+		ENDIF
+		
+		LOCAL lnRows, lnCols, lnPermanentRows, xx, yy, lnRow
+		m.lnRows = ALEN(THIS.iaTemplates, 1)
+		m.lnCols = ALEN(THIS.iaTemplates, 2)
+		m.lnPermanentRows = THIS.inPermanentTemplates
+		
+		LOCAL laItems[m.lnRows - THIS.inPermanentTemplates, m.lnCols]
+		
+		FOR m.xx = m.lnPermanentRows + 1 TO m.lnRows
+			FOR m.yy = 1 TO m.lnCols
+				m.laItems[m.xx - m.lnPermanentRows, m.yy] = THIS.iaTemplates[m.xx, m.yy]
+			ENDFOR
+		ENDFOR
+		
+		ASORT(m.laItems)
+		
+		FOR m.xx = m.lnPermanentRows + 1 TO m.lnRows
+			FOR m.yy = 1 TO m.lnCols
+				THIS.iaTemplates[m.xx, m.yy] = m.laItems[m.xx - m.lnPermanentRows, m.yy]
+			ENDFOR
+		ENDFOR
+		
+		*lnRow = ASCAN(THISFORM.iaTemplates,m.lcFileName,3,-1,3,15)
+		
+		
+		
+	ENDPROC
+
+	PROCEDURE templateclassinheritsfromfxutestcase
+		LPARAMETERS tcDefineClassStatement
+		
+		LOCAL lcTestCaseClass, lcTestCaseClassProgramFile
+		
+		m.tcDefineClassStatement = UPPER(ALLTRIM( m.tcDefineClassStatement ))
+		
+		m.tcDefineClassStatement = SUBSTR( m.tcDefineClassStatement, ;
+			ATC( " AS", m.tcDefineClassStatement ) + 3)
+			
+		m.lcTestCaseClass = ALLTRIM(LEFT(m.tcDefineClassStatement, ;
+			ATC("OF", m.tcDefineClassStatement) - 1)) 
+		
+		m.lcTestCaseClassProgramFile = ALLTRIM(SUBSTR(m.tcDefineClassStatement, ;
+			RATC(SPACE(1), m.tcDefineClassStatement))) 	
+			
+		RETURN  FXUInheritsFromFxuTestCase( m.lcTestCaseClass, m.lcTestCaseClassProgramFile )  
+			
+		 
+	ENDPROC
+
+	PROCEDURE txtclassname
+	ENDPROC
+
+	PROCEDURE Unload
+		IF NOT EMPTY(THIS.icResultVariable)
+			LOCAL lcResultVariable
+			m.lcResultVariable = THIS.icResultVariable
+			STORE THIS.iuRetVal TO &lcResultVariable
+		ENDIF
+		
+		RETURN THIS.iuRetVal
+	ENDPROC
+
+	PROCEDURE validatederivedtestcasetemplate
+		LPARAMETERS tcTestCaseTemplate
+		
+		LOCAL llValidDerivedTestCaseTemplate
+		LOCAL lcValidatePrg, lnLInes
+		LOCAL ARRAY laLines[1]
+		
+		m.llValidDerivedTestCaseTemplate = .F.
+		
+		DO WHILE .T.
+			IF !FILE(m.tcTestCaseTemplate)
+				EXIT
+			ENDIF
+			EXIT
+		ENDDO
+		RETURN m.llValidDerivedTestCaseTemplate
+	ENDPROC
+
+	PROCEDURE validatetestclass
+		LOCAL lcTestClassFile
+		lcTestClassFile = This.classFullName()
+		This.lValidclassname=.f.
+		DO CASE 
+			CASE !DIRECTORY(This.cTestFolder)
+				this.icClassValidationMessage = "Directory " + This.cTestFolder + " does not exist."
+			CASE EMPTY(ALLTRIM(This.cClassName))
+				this.icClassValidationMessage = "Test class name is blank"
+			CASE FILE(lcTestClassFile)
+				this.icClassValidationMessage = "Test class file already exists."
+			CASE AT(' ',ALLTRIM(This.cClassName))>0
+				this.icClassValidationMessage = "Test class name cannot contain spaces."	
+			OTHERWISE
+				this.icClassValidationMessage = ""
+				This.lValidclassname=.t.
+		ENDCASE
+		This.showControls()
+		RETURN This.lValidClassname
+		
+	ENDPROC
+
+	PROCEDURE validtemplatefile
+		*
+		*  RETURNs a logical value indicating whether the
+		*  passed tcFileName is a valid FXUTestCase template
+		*
+		LPARAMETERS tcFileName
+		
+		LOCAL laLines[1], lcLine, llValid
+		=ALINES(laLines,FILETOSTR(m.tcFileName),.t.)
+		FOR EACH lcLine IN laLines
+		*  IF UPPER(ALLTRIM(m.lcLine)) = "DEFINE CLASS " ;
+		*      AND UPPER(" AS FXUTestCase OF FXUTestCase") $ UPPER(m.lcLine)
+		
+		  IF UPPER(ALLTRIM(m.lcLine)) = "DEFINE CLASS " ;
+		  	AND (UPPER(" AS FXUTestCase OF FXUTestCase") $ UPPER(m.lcLine) ;
+			OR this.TemplateClassInheritsFromFxuTestCase(m.lcLine))
+		
+		    *
+		    *  MODIFY COMMAND FXUTestCase 
+		    *  MODIFY COMMAND FXUTestCaseTemplate.TXT
+		    *    XXDTES("FXUTESTCASETEMPLATE.TXT","DEFINE CLASS")
+		    *
+		    IF UPPER(JUSTEXT(m.tcFileName)) = "TXT"
+		      *  make sure it has the <<test class>> text
+		      llValid = "<<" $ m.lcLine ;
+		                AND ">>" $ m.lcLine ;
+		                AND AT_C("<<",m.lcLine) < AT_C(">>",m.lcLine)
+		     ELSE
+		      *  PRG
+		      llValid = .t.
+		    ENDIF
+		    IF m.llValid
+		      EXIT
+		    ENDIF
+		  ENDIF         
+		ENDFOR
+		
+		RETURN m.llValid
+		
+		
+		
+		
+	ENDPROC
+
+	PROCEDURE zreadme
+		#IF .f.
+		
+		Class:  FXU.VCX/frmGetTestClassTemplate
+		
+		
+		#ENDIF
+	ENDPROC
+
+	PROCEDURE chkProcedure.Init
+		IF VERSION(5)>=900
+		  *
+		  *  2 = Left Absolute
+		  *  4 = Bottom Absolute
+		  *
+		  THIS.Anchor = 2 + 4
+		ENDIF
+	ENDPROC
+
+	PROCEDURE chkProcedure.Refresh
+		THIS.Enabled = THISFORM.lstTemplates.Value < 3
+		
+		
+	ENDPROC
+
+	PROCEDURE chkTab.Init
+		IF VERSION(5)>=900
+		  *
+		  *  2 = Left Absolute
+		  *  4 = Bottom Absolute
+		  *
+		  THIS.Anchor = 2 + 4
+		ENDIF
+	ENDPROC
+
+	PROCEDURE chkTab.Refresh
+		THIS.Enabled = THISFORM.lstTemplates.Value < 3
+		
+	ENDPROC
+
+	PROCEDURE cmdAdd.Click
+		_Screen.ActiveForm.AddTemplate()
+	ENDPROC
+
+	PROCEDURE cmdCreate.Click
+		
+		ThisForm.createTestClass()
+		THISFORM.Hide()
+		
+		
+		
+		
+		
+	ENDPROC
+
+	PROCEDURE cmdCreate.Init
+		IF VERSION(5)>=900
+		  *
+		  *  4 = Bottom Absolute
+		  *  8 = Right Absolute
+		  *  2 = Left Absolute
+		  *
+		  THIS.Anchor = 2 + 8 + 4
+		ENDIF
+		
+		
+	ENDPROC
+
+	PROCEDURE cmdEditTemplate.Click
+		_Screen.ActiveForm.ModifyTemplate()
+	ENDPROC
+
+	PROCEDURE cmdPickTestFolder.Click
+		ThisForm.pickTestFolder()
+		
+		 
+	ENDPROC
+
+	PROCEDURE cmdPickTestFolder.LostFocus
+		IF !EMPTY(thisform.icclassvalidationmessage)
+			thisform.txtTestClassName.SetFocus()
+		ELSE
+			thisform.cmdSelectCustomTemplate.SetFocus()
+		ENDIF
+		
+	ENDPROC
+
+	PROCEDURE cmdRemoveTemplate.Click
+		_Screen.ActiveForm.RemoveTemplate()
+	ENDPROC
+
+	PROCEDURE cmdSelectCustomTemplate.Click
+		LOCAL lcTemplateFile
+		
+		lcTemplateFile = THISFORM.GetYourFXUTemplate()
+		
+		IF NOT VARTYPE(m.lcTemplateFile) = "C" OR EMPTY(m.lcTemplateFile)
+		  RETURN
+		ENDIF
+		
+		THISFORM.iuRetVal = m.lcTemplateFile + ",.NULL.,.NULL."
+		
+		* THISFORM.Release()
+		
+		
+	ENDPROC
+
+	PROCEDURE cmdSelectCustomTemplate.Init
+		IF VERSION(5)>=900
+		  *
+		  *  4 = Bottom Absolute
+		  *  8 = Right Absolute
+		  *  2 = Left Absolute
+		  *
+		  THIS.Anchor = 2 + 8 + 4
+		ENDIF
+		
+	ENDPROC
+
+	PROCEDURE cmdSelectFile.Click
+		ThisForm.SelectFile()
+		
+		
+	ENDPROC
+
+	PROCEDURE cmdSelectFile.Init
+		IF VERSION(5)>=900
+		  *
+		  *  4 = Bottom Absolute
+		  *  8 = Right Absolute
+		  *  2 = Left Absolute
+		  *
+		  THIS.Anchor = 2 + 8 + 4
+		ENDIF
+		
+	ENDPROC
+
+	PROCEDURE lblCopyExisting.Init
+		IF VERSION(5)>=900
+		  *
+		  *  4 = Bottom Absolute
+		  *  2 = Left Absolute
+		  *
+		  THIS.Anchor = 4 + 2
+		ENDIF
+	ENDPROC
+
+	PROCEDURE lblTemplate.Init
+		IF VERSION(5)>=900
+		  *
+		  *  4 = Bottom Absolute
+		  *  2 = Left Absolute
+		  *
+		  THIS.Anchor = 4 + 2
+		ENDIF
+	ENDPROC
+
+	PROCEDURE lstTemplates.Init
+		LOCAL lnRow, lnCols
+		lnRow = 0
+		lnCols = 4
+		
+		lnRow = m.lnRow + 1
+		DIMENSION THISFORM.iaTemplates[m.lnRow,m.lnCols]
+		THISFORM.iaTemplates[m.lnRow,1] = "Standard FoxUnit test case template"
+		THISFORM.iaTemplates[m.lnRow,2] = "FXUTestCaseTemplate.TXT"
+		THISFORM.iaTemplates[m.lnRow,3] = FULLPATH(THISFORM.iaTemplates[m.lnRow,2])
+		THISFORM.iaTemplates[m.lnRow,4] = .t.   &&& permanent
+		
+		lnRow = m.lnRow + 1
+		DIMENSION THISFORM.iaTemplates[m.lnRow,m.lnCols]
+		THISFORM.iaTemplates[m.lnRow,1] = "Minimal FoxUnit test case template"
+		THISFORM.iaTemplates[m.lnRow,2] = "FXUTestCaseTemplate_Minimal.TXT"
+		THISFORM.iaTemplates[m.lnRow,3] = FULLPATH(THISFORM.iaTemplates[m.lnRow,2])
+		THISFORM.iaTemplates[m.lnRow,4] = .t.   &&& permanent
+		
+		THISFORM.inPermanentTemplates = ALEN(THISFORM.iaTemplates,1)
+		
+		THIS.RowSourceType = 5
+		THIS.RowSource = "THISFORM.iaTemplates"
+		
+		THIS.Value = 1
+		
+		IF VERSION(5)>=900
+		  *
+		  *    1 = Top Absolute
+		  *    2 = Left Absolute
+		  *  128 = Right Relative
+		  *    4 = Bottom Absolute
+		  *
+		  THIS.Anchor = 1 + 2 + 128 + 4
+		ENDIF
+		
+		
+	ENDPROC
+
+	PROCEDURE lstTemplates.InteractiveChange
+		THISFORM.Refresh()
+		
+	ENDPROC
+
+	PROCEDURE lstTemplates.RightClick
+		DEFINE POPUP pShortCut IN WINDOW (THISFORM.Name) SHORTCUT RELATIVE FROM MROW(THISFORM.Name),MCOL(THISFORM.Name)
+		
+		DEFINE BAR 1 OF pShortCut PROMPT "MODIFY COMMAND the indicated template" 
+		ON SELECTION BAR 1 OF pShortCut _Screen.ActiveForm.ModifyTemplate() 
+		
+		DEFINE BAR 2 OF pShortCut PROMPT "Add a template file to this list" 
+		ON SELECTION BAR 2 OF pShortCut _Screen.ActiveForm.AddTemplate() 
+		
+		DEFINE BAR 3 OF pShortCut PROMPT "Remove this template from the list" 
+		ON SELECTION BAR 3 OF pShortCut _Screen.ActiveForm.RemoveTemplate() 
+		
+		ACTIVATE POPUP pShortCut
+		
+	ENDPROC
+
+	PROCEDURE opgTemplateSource.Click
+		ThisForm.showControls()
+	ENDPROC
+
+	PROCEDURE opgTemplateSource.Option2.Click
+		DODEFAULT()
+		ThisForm.selectFile()
+		
+	ENDPROC
+
+	PROCEDURE opgTemplateSource.Option3.Click
+		DODEFAULT()
+		ThisForm.selectFile()
+		
+	ENDPROC
+
+	PROCEDURE opgTemplateSource.Valid
+		ThisForm.showControls()
+	ENDPROC
+
+	PROCEDURE txtExistingFile.InteractiveChange
+		thisform.ValidateTestClass()
+	ENDPROC
+
+	PROCEDURE txtTestClassName.Valid
+		thisform.cmdCreate.Enabled=thisform.ValidateTestClass()
+	ENDPROC
+
+ENDDEFINE
+
+DEFINE CLASS fxufrmtestbroker AS fxufrmuser OF "fxu.vcx" 
  	*< CLASSDATA: Baseclass="form" Timestamp="" Scale="Pixels" Uniqueid="" />
 
 	*<DefinedPropArrayMethod>
 		*m: runtest
-		*p: _memberdata		&& XML Metadata for customizable properties
 	*</DefinedPropArrayMethod>
 
 	DataSession = 2
 	DoCreate = .T.
-	Height = 35
+	Height = 71
 	Left = 0
 	Name = "fxufrmtestbroker"
 	Top = 0
 	Visible = .F.
-	Width = 115
+	Width = 359
 	_memberdata = <VFPData>
 
-		</VFPData>		&& XML Metadata for customizable properties
+		</VFPData>
 	
 	PROCEDURE Init
-		DODEFAULT()
+		PARAMETERS toFxuInstance
+		
+		IF !DODEFAULT(@m.toFxuInstance)
+			RETURN .F.
+		ENDIF
 		
 		this.DataSessionId = 1
 	ENDPROC
@@ -5923,13 +6698,663 @@ DEFINE CLASS fxufrmtestbroker AS fxufrmbase OF "fxu.vcx"
 		
 		lcTestClassProgFile = FORCEEXT(tcTestClass, "prg")
 		
-		loTestCase = NEWOBJECT(lcClass, lcTestClassProgFile,.NULL.,toResult)
+		loTestCase = NEWOBJECT(lcClass, lcTestClassProgFile,.NULL.,toResult, this.ioFxuInstance)
 		
 		loTestCase.ilAllowDebug = tlAllowDebug
 		
 		loTestCase.Run()
 		
 		RETURN 
+	ENDPROC
+
+ENDDEFINE
+
+DEFINE CLASS fxufrmuser AS fxufrmbase OF "fxu.vcx" 
+ 	*< CLASSDATA: Baseclass="form" Timestamp="" Scale="Pixels" Uniqueid="" />
+
+	*<DefinedPropArrayMethod>
+		*m: iofxuinstance_assign
+		*m: onsettingssave		&& Is called from within SettingsSave() and provides the opportunity to write settings to a cursor which will be saved to an FXUPersist*.xml file.
+		*m: settingsrestore		&& Restores a set of name value pairs from an FXUPersist*.xml file.
+		*m: settingssave		&& Stores a set of name value pairs into an FXUPersist*.xml file.
+		*p: iofxuinstance		&& A reference to an FxuInstance object that must be passed to Init().
+		*p: iofxuinstance_allow
+		*p: _memberdata		&& XML Metadata for customizable properties
+	*</DefinedPropArrayMethod>
+
+	HIDDEN iofxuinstance_allow
+	Caption = "Form"
+	DoCreate = .T.
+	iofxuinstance = .NULL.		&& A reference to an FxuInstance object that must be passed to Init().
+	iofxuinstance_allow = .F.
+	Name = "fxufrmuser"
+	_memberdata = <VFPData>
+		<memberdata name="settingsrestore" type="method" display="SettingsRestore"/>
+		<memberdata name="settingssave" type="method" display="SettingsSave"/>
+		<memberdata name="iofxuinstance" type="property" display="ioFxuInstance"/>
+		<memberdata name="onsettingssave" type="method" display="OnSettingsSave"/>
+		<memberdata name="iofxuinstance_allow" type="property" display="ioFxuInstance_Allow"/>
+		<memberdata name="iofxuinstance_assign" type="method" display="ioFxuInstance_Assign"/>
+		</VFPData>		&& XML Metadata for customizable properties
+	
+	PROCEDURE Init
+		PARAMETERS toFXUInstance
+		
+		IF VARTYPE(m.toFXUInstance)!="O" OR ISNULL(m.toFXUInstance)
+			ERROR 1924, "m.toFXUInstance"
+			RETURN .F.
+		ENDIF
+		
+		this.ioFxuInstance_Allow=.T.
+		this.ioFxuInstance=m.toFXUInstance
+		this.ioFxuInstance_Allow=.F.
+	ENDPROC
+
+	HIDDEN PROCEDURE iofxuinstance_assign
+		LPARAMETERS vNewVal
+		
+		IF THIS.ioFxuInstance_Allow OR ISNULL(m.vNewVal)
+			THIS.ioFxuInstance = m.vNewVal
+		ELSE
+			ERROR 1740, "ioFxuInstance"
+		ENDIF
+	ENDPROC
+
+	PROTECTED PROCEDURE onsettingssave		&& Is called from within SettingsSave() and provides the opportunity to write settings to a cursor which will be saved to an FXUPersist*.xml file.
+		PARAMETERS tcAlias
+		
+		IF VARTYPE(m.tcAlias)!="C" OR !USED(m.tcAlias)
+			RETURN .F.
+		ENDIF
+		
+		SELECT (m.tcAlias)
+		SCATTER MEMVAR
+		m.UserID = THIS.ioFxuInstance.UserId
+		
+		m.Setting = "THIS.Top = " + TRANSFORM(THIS.TOP)
+		INSERT INTO (m.tcAlias) FROM MEMVAR
+		m.Setting = "THIS.Left = " + TRANSFORM(THIS.LEFT)
+		INSERT INTO (m.tcAlias) FROM MEMVAR
+		m.Setting = "THIS.Height = " + TRANSFORM(THIS.HEIGHT)
+		INSERT INTO (m.tcAlias) FROM MEMVAR
+		m.Setting = "THIS.Width = " + TRANSFORM(THIS.WIDTH)
+		INSERT INTO (m.tcAlias) FROM MEMVAR
+	ENDPROC
+
+	PROCEDURE settingsrestore		&& Restores a set of name value pairs from an FXUPersist*.xml file.
+		PARAMETERS tcFile
+		
+		IF VARTYPE(m.tcFile)!="C" OR EMPTY(m.tcFile)
+			m.tcFile = ".\FXUPersist" + this.Class + ".XML"
+		ENDIF
+		
+		IF LEFT(m.tcFile, 1)=="."
+			m.tcFile=FULLPATH(ADDBS(This.ioFxuInstance.DataPath) + m.tcFile)
+		ELSE
+			m.tcFile=FULLPATH(m.tcFile)
+		ENDIF
+		
+		IF !FILE(m.tcFile, 1)
+			This.ioFxuInstance.WriteDebug("fxu.vcx/fxufrmuser.SettingsRestore()", "File {" + m.tcFile + "} could not be found.")
+			RETURN .F.
+		ENDIF
+		
+		LOCAL lcAlias, lcCommand, loException as Exception
+		m.lcAlias = JUSTSTEM(m.tcFile)+SYS(2015)
+		TRY
+			XMLTOCURSOR(m.tcFile, m.lcAlias, 512)
+		CATCH TO m.loException
+			This.ioFxuInstance.WriteDebug("fxu.vcx/fxufrmuser.SettingsRestore()", m.loException.Message)
+		ENDTRY
+		IF !USED(m.lcAlias)
+			RETURN .F.
+		ENDIF
+		
+		SELECT (m.lcAlias)
+		SCAN FOR UPPER(ALLTRIM(USERID)) == UPPER(ALLTRIM(THIS.ioFxuInstance.UserId))
+			m.lcCommand = ALLTRIM(Setting)
+			TRY
+				&lcCommand
+			CATCH TO m.loException
+				This.ioFxuInstance.WriteDebug("fxu.vcx/fxufrmuser.SettingsRestore()", m.loException.Message)
+			ENDTRY
+		ENDSCAN
+		USE IN SELECT(m.lcAlias)
+	ENDPROC
+
+	PROCEDURE settingssave		&& Stores a set of name value pairs into an FXUPersist*.xml file.
+		PARAMETERS tcFile
+		
+		IF VARTYPE(m.tcFile)!="C" OR EMPTY(m.tcFile)
+			m.tcFile = ".\FXUPersist" + this.Class + ".XML"
+		ENDIF
+		
+		IF LEFT(m.tcFile, 1)=="."
+			m.tcFile=FULLPATH(ADDBS(This.ioFxuInstance.DataPath) + m.tcFile)
+		ELSE
+			m.tcFile=FULLPATH(m.tcFile)
+		ENDIF
+		
+		LOCAL lcAlias, loException as Exception
+		m.lcAlias = JUSTSTEM(m.tcFile)+SYS(2015)
+		CREATE CURSOR (m.lcAlias) (USERID C(15), Setting M)
+		
+		IF FILE(m.tcFile)
+			LOCAL lcAliasOld
+			m.lcAliasOld=SYS(2015)
+			TRY 
+				XMLTOCURSOR(m.tcFile, m.lcAliasOld, 512)
+			CATCH TO m.loException
+				This.ioFxuInstance.WriteDebug("fxu.vcx/fxufrmuser.SettingsSave()", m.loException.Message)
+			ENDTRY
+			IF USED(m.lcAliasOld)
+				SELECT * FROM (m.lcAlias) ;
+				UNION ALL ;
+				SELECT * FROM (m.lcAliasOld) ;
+				INTO CURSOR (m.lcAlias) READWRITE
+				USE IN SELECT(m.lcAliasOld)
+			ENDIF
+		ENDIF
+		
+		
+		*
+		*  delete all the existing settings for this user
+		*
+		DELETE ALL FOR UPPER(ALLTRIM(USERID)) == UPPER(ALLTRIM(THIS.ioFxuInstance.UserId)) IN (m.lcAlias)
+		
+		IF !this.OnSettingsSave(m.lcAlias)
+			IF USED(m.lcAlias)
+				USE IN SELECT(m.lcAlias)
+				RETURN .F.
+			ENDIF
+		ENDIF
+		
+		TRY
+			CURSORTOXML(m.lcAlias, m.tcFile, 1, 512, 0, "1")
+		CATCH TO m.loException
+		ENDTRY
+		
+		USE IN SELECT(m.lcAlias)
+		
+		IF VARTYPE(m.loException) = "O"
+			This.ioFxuInstance.WriteDebug("fxu.vcx/fxufrmuser.SettingsSave()", m.loException.Message)
+			MESSAGEBOX("Unable to save user settings because " + ;
+				  CHR(13) + ;
+				  m.loException.MESSAGE, ;
+				  48, ;
+				  "Please Note")
+			RETURN .F.
+		ENDIF
+	ENDPROC
+
+ENDDEFINE
+
+DEFINE CLASS fxuinstance AS custom 
+ 	*< CLASSDATA: Baseclass="custom" Timestamp="" Scale="Pixels" Uniqueid="" />
+
+	*<DefinedPropArrayMethod>
+		*m: datapath_access
+		*m: datapath_assign
+		*m: foxunitpath_assign
+		*m: fxunewobject		&& Creates and returns an object by class id, or .NULL. on failure.
+		*m: isinpathconfig		&& Checks if a path specification occurs in the path configuration (SET("Path")) and returns a logical expression indicating success.
+		*m: managefxuclasslibrary		&& Creates / updates the FoxUnit class factory table and returns a logical expression indicating success.
+		*m: project_assign
+		*m: userid_access
+		*m: userid_assign
+		*m: version_assign
+		*m: writedebug		&& Writes debug information to the debug output window.
+		*p: datapath		&& Returns the FoxUnit Data Path.
+		*p: datasessionid		&& Sets or returns the data session ID operations performed by this object should run in.
+		*p: foxunitpath		&& Returns the FoxUnit Path.
+		*p: foxunitpath_allow
+		*p: project		&& Returns the project object this instance is bound to.
+		*p: project_allow
+		*p: userid		&& Returns the current user name.
+		*p: userid_allow
+		*p: version		&& Returns the version of the currently running instance of FoxUnit.
+		*p: version_allow
+		*p: _memberdata		&& XML Metadata for customizable properties
+	*</DefinedPropArrayMethod>
+
+	HIDDEN foxunitpath_allow,project_allow,userid_allow,version_allow
+	datapath = 		&& Returns the FoxUnit Data Path.
+	datasessionid = 1		&& Sets or returns the data session ID operations performed by this object should run in.
+	foxunitpath = 		&& Returns the FoxUnit Path.
+	foxunitpath_allow = .F.
+	Name = "fxuinstance"
+	project = .NULL.		&& Returns the project object this instance is bound to.
+	project_allow = .F.
+	userid = .NULL.		&& Returns the current user name.
+	userid_allow = .F.
+	version = 0.0		&& Returns the version of the currently running instance of FoxUnit.
+	version_allow = .F.
+	Width = 17
+	_memberdata = <VFPData>
+		<memberdata name="datapath" type="property" display="DataPath"/>
+		<memberdata name="foxunitpath" type="property" display="FoxUnitPath"/>
+		<memberdata name="foxunitpath_allow" type="property" display="FoxUnitPath_Allow"/>
+		<memberdata name="foxunitpath_assign" type="method" display="FoxUnitPath_Assign"/>
+		<memberdata name="version" type="property" display="Version"/>
+		<memberdata name="project" type="property" display="Project"/>
+		<memberdata name="project_assign" type="method" display="Project_Assign"/>
+		<memberdata name="version_allow" type="property" display="Version_Allow"/>
+		<memberdata name="version_assign" type="method" display="Version_Assign"/>
+		<memberdata name="datapath_access" type="method" display="DataPath_Access"/>
+		<memberdata name="datapath_assign" type="method" display="DataPath_Assign"/>
+		<memberdata name="isinpathconfig" type="method" display="IsInPathConfig"/>
+		<memberdata name="managefxuclasslibrary" type="method" display="ManageFxuClassLibrary"/>
+		<memberdata name="writedebug" type="method" display="WriteDebug"/>
+		<memberdata name="fxunewobject" type="method" display="FxuNewObject"/>
+		<memberdata name="datasessionid" type="property" display="DataSessionId"/>
+		<memberdata name="userid" type="property" display="UserId"/>
+		<memberdata name="userid_access" type="method" display="UserId_Access"/>
+		<memberdata name="userid_assign" type="method" display="UserId_Assign"/>
+		<memberdata name="userid_allow" type="property" display="UserId_Allow"/>
+		<memberdata name="project_allow" type="property" display="Project_Allow"/>
+		</VFPData>		&& XML Metadata for customizable properties
+	
+	HIDDEN PROCEDURE datapath_access
+		*To do: Modify this routine for the Access method
+		LOCAL lcResult
+		IF !ISNULL(this.Project)
+			m.lcResult=JUSTPATH(this.Project.Name)
+		ELSE
+			m.lcResult=SYS(5)+SYS(2003)
+		ENDIF
+		
+		IF !DIRECTORY(m.lcResult, 1)
+			ERROR 2145, "DataPath"
+		ENDIF
+		
+		m.lcResult=ADDBS(m.lcResult)+"Tests"
+		IF !DIRECTORY(m.lcResult, 1)
+			MKDIR (m.lcResult)
+		ENDIF
+		
+		RETURN m.lcResult
+	ENDPROC
+
+	HIDDEN PROCEDURE datapath_assign
+		LPARAMETERS vNewVal
+		*To do: Modify this routine for the Assign method
+		ERROR 1740, "DataPath"
+	ENDPROC
+
+	HIDDEN PROCEDURE foxunitpath_assign
+		LPARAMETERS vNewVal
+		*To do: Modify this routine for the Assign method
+		IF this.FoxUnitPath_Allow
+			THIS.FoxUnitPath = m.vNewVal
+		ELSE
+			ERROR 1740, "FoxUnitPath"
+		ENDIF
+		
+	ENDPROC
+
+	PROCEDURE fxunewobject		&& Creates and returns an object by class id, or .NULL. on failure.
+		*  This wrapper to the NEWOBJECT() function is a class
+		*  factory based on \FoxUnit\FXUClassFactory.DBF, called 
+		*  to instantiate one of the following:
+		*    - The indicated class in the indicated .VCX
+		*    - The indicated class in the indicated .PRG
+		*    - The indicated .SCX
+		*  and RETURNs an object reference to the indicated
+		*  object (or .NULL. if something goes wrong)
+		*
+		*  The idea here is that, rather than hardcode the class
+		*  and class library for the objects used in FoxUnit,
+		*  the class name and class library are instead specified
+		*  in the \FoxUnit\FXUClassFactory.DBF records.  So, if
+		*  you decide to modify FoxUnit to meet your needs, rather
+		*  than modifying the "official" FoxUnit code, you can
+		*  just subclass any FoxUnit classes and specify your 
+		*  subclass in the corresponding record of the
+		*  \FoxUnit\FXUClassFactory.DBF table.
+		*  To review this implementation in the FoxUnit code,
+		*  just use the VFP Code References tool to do a search
+		*  for "FXUNewObject" on the files in the \FoxUnit folder.
+		*  
+		*  The tcClassID parameter is REQUIRED, and specifies
+		*  the FXUClassFactory.ClassID field value -- the
+		*  class/.SCX in that FXUClassFactory record is 
+		*  instantiated here:
+		*    FXUClassFactory.DBF
+		*        ClassID - specifies a unique string identifier
+		*                  for the object to be instantiated
+		*      ClassName - specifies the name of the class to 
+		*                  be instantiated (if ClassLib is an
+		*                  .SCX filename, leave ClassName blank)
+		*       ClassLib - specifies the class library (.PRG or
+		*                  .VCX) to be instantiated -- we STRONGLY
+		*                  recommend that this class library be
+		*                  in your VFP path, but you can specify
+		*                  the full path if you want
+		*
+		*  NOTE that if the FXUClassFactory.ClassLib is an
+		*  .SCX filename (and FXUClassFactory.ClassName is
+		*  therefore blank/empty), the indicated form is
+		*  instantiated but then goes immediately out of
+		*  scope, so you should do something like this:
+		*    PUBLIC goForm
+		*    goForm = FXUNewObject("ClassID")
+		*    goForm.Show()
+		*
+		*  
+		*  USAGE
+		*  =============================================
+		*  LOCAL SomeObject
+		*  SomeObject = FXUNewObject("ClassID")
+		*  -OR-
+		*  LOCAL SomeObject
+		*  SomeObject = FXUNewObject("ClassID",InitParameter)
+		*  -OR-
+		*  LOCAL SomeObject
+		*  SomeObject = FXUNewObject("ClassID",InitParameter1,InitParameter2)
+		*
+		*
+		*  lParameters
+		*         tcClassID (R) FXUClassFactory.ClassID value, indicating
+		*                         the class/form to instantiate
+		*  tuInitParameter1 (O) First parameter passed to the Init of
+		*                         the class/form to instantiate
+		*  tuInitParameter2 (O) Second parameter passed to the Init of
+		*                         the class/form to instantiate
+		*
+		PARAMETERS tcClassID as String, tuInitParameter1 as Variant, tuInitParameter2 as Variant
+		
+		IF VARTYPE(m.tcClassID)!="C" OR EMPTY(m.tcClassID) 
+			MESSAGEBOX("The required tcClassID parameter has not been passed!", 16, "FxuInstance.FxuNewObject()")
+			RETURN .NULL.
+		ENDIF
+		
+		SET DATASESSION TO this.DataSessionId
+		
+		&&	Get the FXUClassFactory.DBF open
+		LOCAL lcFxuClassFactoryLocation, loException as Exception
+		m.lcFxuClassFactoryLocation = ADDBS(this.FoxUnitPath) + "FXUClassFactory.dbf"
+		
+		this.WriteDebug("fxu.vcx/FxuInstance.FxuNewObject()", "Attempting to get class factory from {" + m.lcFxuClassFactoryLocation + "}.")
+		USE IN SELECT("FXUClassFactory")
+		TRY
+			USE (m.lcFxuClassFactoryLocation) IN 0 SHARED NOUPDATE
+		CATCH TO loException
+		ENDTRY
+		IF NOT USED("FXUClassFactory")
+			IF VARTYPE(m.loException)=="O"
+				MESSAGEBOX("Unable to open the FXUClassFactory.DBF table because " + CHR(13) + m.loException.Message, 16, "FxuInstance.FxuNewObject()")
+			ELSE
+				MESSAGEBOX("Unable to open the FXUClassFactory.DBF table for unknown reason.", 16, "FxuInstance.FxuNewObject()")
+			ENDIF
+		ENDIF
+		IF NOT USED("FXUClassFactory")
+			RETURN .NULL.
+		ENDIF
+		
+		&&	Find the indicated record in FXUClassFactory.DBF
+		LOCAL lcClassName, lcClassLib, lcSelect
+		m.lcSelect=SELECT(0)
+		SELECT FXUClassFactory
+			LOCATE FOR UPPER(ALLTRIM(ClassID)) == UPPER(ALLTRIM(m.tcClassID))
+			IF NOT FOUND()
+				MESSAGEBOX("Unable to locate the class id {" + m.tcClassID + "} in the FXUClassFactory table.", 16, "FxuInstance.FxuNewObject()")
+			ELSE
+				lcClassName = UPPER(ALLTRIM(EVALUATE("FXUClassFactory.ClassName")))
+				lcClassLib = UPPER(ALLTRIM(EVALUATE("FXUClassFactory.ClassLib")))
+			ENDIF
+		SELECT (m.lcSelect)
+		USE IN SELECT("FXUClassFactory")
+		IF EMPTY(m.lcClassLib)
+			RETURN .NULL.
+		ENDIF
+		
+		&&	instantiate the indicated object
+		
+		LOCAL loReturn, lnPCount
+		loReturn = .NULL.
+		lnPCount = PCOUNT()
+		IF EMPTY(m.lcClassName) 
+			&&	ClassLib is expected to be an .SCX file
+			TRY
+				DO CASE
+					CASE m.lnPCount = 3
+						DO FORM (m.lcClassLib) WITH m.tuInitParameter1, m.tuInitParameter2
+					CASE m.lnPCount = 2
+						DO FORM (m.lcClassLib) WITH m.tuInitParameter1
+					OTHERWISE
+						DO FORM (m.lcClassLib)
+				ENDCASE
+			CATCH TO loException
+				loReturn = .NULL.
+			ENDTRY
+			IF VARTYPE(m.lcClassName) = "O"
+				loReturn = m.lcClassName
+			ENDIF
+		ELSE
+			&&	ClassLib is expected to be an .VCX file
+			TRY
+				DO CASE
+					CASE m.lnPCount = 3
+						loReturn = NEWOBJECT(m.lcClassName, m.lcClassLib, "", m.tuInitParameter1, m.tuInitParameter2)
+					CASE m.lnPCount = 2
+						loReturn = NEWOBJECT(m.lcClassName,m.lcClassLib,"", m.tuInitParameter1)
+					OTHERWISE
+						loReturn = NEWOBJECT(m.lcClassName,m.lcClassLib)
+				ENDCASE
+			CATCH TO loException
+				loReturn = .NULL.
+			ENDTRY
+		ENDIF 
+		
+		IF VARTYPE(m.loException)=="O"
+			ASSERT .F. MESSAGE "Unable to instantiate the requested {" + m.tcClassID + "} object because " + CHR(13) + loException.Message
+		&&		MESSAGEBOX("Unable to instantiate the requested {" + m.tcClassID + "} object because " + CHR(13) + loException.Message, 16, "FxuInstance.FxuNewObject()")
+		ENDIF
+		
+		RETURN m.loReturn
+	ENDPROC
+
+	PROCEDURE Init
+		PARAMETERS tcVersion, tcFoxUnitPath, toProject
+		
+		IF VARTYPE(m.tcVersion)!="C" OR EMPTY(m.tcVersion)
+			ASSERT .F. MESSAGE "fxu.vcx/FxuInstance.Init(): m.tcVersion is empty or invalid."
+			RETURN .F.
+		ENDIF
+		
+		IF VARTYPE(m.tcFoxUnitPath)!="C"
+			ERROR 1759, "FoxUnitPath"
+			RETURN .F.
+		ENDIF
+		
+		IF !DIRECTORY(m.tcFoxUnitPath, 1)
+			ERROR 1963
+			RETURN .F.
+		ENDIF
+		
+		*!*	* Check if path requirements mentioned in readme.txt are met
+		*!*	IF !this.IsInPathConfig(m.tcFoxUnitPath)
+		*!*		ASSERT .F. MESSAGE	"fxu.vcx/FxuInstance.Init(): m.tcFoxUnitPath {" + TRANSFORM(m.tcFoxUnitPath) + "} wasn't found in your path configuration - " + ;
+		*!*							"please check your settings (see also step 1. of FoxUnit QuickStart in 'readme.txt')!"
+		*!*	ENDIF
+		
+		this.Version_Allow=.T.
+		this.Version=m.tcVersion
+		this.Version_Allow=.F.
+		
+		this.FoxUnitPath_Allow=.T.
+		this.FoxUnitPath=m.tcFoxUnitPath
+		this.FoxUnitPath_Allow=.F.
+		
+		IF VARTYPE(m.toProject)=="O" AND !ISNULL(m.toProject)
+			this.Project_Allow=.T.
+			this.Project=m.toProject
+			this.Project_Allow=.F.
+		ENDIF
+		
+		RETURN this.ManageFxuClassLibrary()
+	ENDPROC
+
+	PROCEDURE isinpathconfig		&& Checks if a path specification occurs in the path configuration (SET("Path")) and returns a logical expression indicating success.
+		PARAMETERS tcPath
+		
+		IF VARTYPE(m.tcPath)!="C" OR EMPTY(m.tcPath)
+			ASSERT .F. MESSAGE "fxu.vcx/FxuInstance.IsInPathConfig(): m.tcPath {" + TRANSFORM(m.tcPath) + "} is empty or invalid!"
+			RETURN .F.
+		ENDIF
+		
+		m.tcPath=ADDBS(UPPER(ALLTRIM(m.tcPath)))
+		
+		LOCAL lnPath, lnPaths
+		LOCAL ARRAY laPath[1]
+		m.lnPath=0
+		m.lnPaths=ALINES(m.laPath, SET("Path"), 9, ";")
+		FOR m.lnPath = 1 TO m.lnPaths
+			IF m.tcPath==UPPER(ADDBS(m.laPath[m.lnPath]))
+				EXIT
+			ENDIF
+		ENDFOR
+		
+		RETURN BETWEEN(m.lnPath, 1, m.lnPaths)
+	ENDPROC
+
+	PROCEDURE managefxuclasslibrary		&& Creates / updates the FoxUnit class factory table and returns a logical expression indicating success.
+		PARAMETERS tnOptions
+		
+		&&	m.tnOptions		Bitmasked options value:
+		&&	0	(default)	None.
+		&&	1	(Bit 0)		Only apply new class ids found in
+		&&					FxuClassFactoryBase.dbf to FxuClassFactory.dbf
+		
+		IF VARTYPE(m.tnOptions)!="N"
+			m.tnOptions=0
+		ENDIF
+		
+		USE IN SELECT('FxuClassFactory')
+		USE IN SELECT('FxuClassFactoryBase')
+		
+		LOCAL lcFxuClassFactoryLocation, loException as Exception
+		
+		lcFxuClassFactoryLocation = ADDBS(this.FoxUnitPath) + "FxuClassFactoryBase.dbf"
+		this.WriteDebug("fxu.vcx/FxuInstance.ManageFxuClassFactory()", "Attempting to get class factory base from {" + m.lcFxuClassFactoryLocation + "}.")
+		TRY
+			USE (m.lcFxuClassFactoryLocation) IN 0 SHARED
+		CATCH TO m.loException
+		ENDTRY
+		IF VARTYPE(m.loException)=="O" AND !USED("FxuClassFactoryBase")
+			ASSERT .F. MESSAGE "Unable to open FxuClassFactoryBase because " + m.loException.Message + "!"
+			RETURN .F.
+		ENDIF
+		
+		lcFxuClassFactoryLocation = ADDBS(this.FoxUnitPath) + "FxuClassFactory.dbf"
+		this.WriteDebug("fxu.vcx/FxuInstance.ManageFxuClassFactory()", "Attempting to get class factory from {" + m.lcFxuClassFactoryLocation + "}.")
+		IF !FILE(lcFxuClassFactoryLocation, 1)
+			SELECT FxuClassFactoryBase
+			COPY TO (m.lcFxuClassFactoryLocation)
+		ELSE
+			USE (m.lcFxuClassFactoryLocation) IN 0 EXCLUSIVE
+			
+			IF BITTEST(m.tnOptions, 0)
+				this.WriteDebug("fxu.vcx/FxuInstance.ManageFxuClassFactory()", "Applying only new class ids.")
+				INSERT INTO FxuClassFactory ;
+					SELECT * FROM FxuClassFactoryBase WHERE UPPER(ClassID) NOT IN ;
+					(SELECT UPPER(ClassID) FROM FxuClassFactory)
+			ELSE
+				&& Create temp index
+				LOCAL lcIdxFile
+				m.lcIdxFile=FORCEEXT(m.lcFxuClassFactoryLocation, "idx")
+				IF FILE(m.lcIdxFile, 1)
+					DELETE FILE (m.lcIdxFile)
+				ENDIF
+				SELECT ('FxuClassFactory')
+				INDEX ON UPPER(classid) TO (m.lcIdxFile)
+				
+				&&	Use temp index with relation
+				SET RELATION TO UPPER(classid) INTO 'FxuClassFactory' IN 'FxuClassFactoryBase'
+				
+				&&	Update (add or replace) class factory working table
+				SELECT ('FxuClassFactoryBase')
+				SCAN
+					IF EOF('FxuClassFactory')
+						INSERT INTO FxuClassFactory	(classid,									classname,									classlib) ;
+											VALUES	(EVALUATE("FxuClassFactoryBase.Classid"),	EVALUATE("FxuClassFactoryBase.classname"),	EVALUATE("FxuClassFactoryBase.classlib"))
+					ELSE
+						REPLACE	classname	WITH EVALUATE("FxuClassFactoryBase.classname") ;
+							  , classlib	WITH EVALUATE("FxuClassFactoryBase.classlib") ;
+						NEXT 1 IN 'FxuClassFactory'
+					ENDIF
+				ENDSCAN
+				
+				&&	Clean up
+				SET RELATION TO
+				SELECT ('FxuClassFactory')
+				SET INDEX TO
+				DELETE FILE (m.lcIdxFile)
+			ENDIF
+		ENDIF
+		
+		USE IN SELECT('FxuClassFactory')
+		USE IN SELECT('FxuClassFactoryBase')
+	ENDPROC
+
+	HIDDEN PROCEDURE project_assign
+		LPARAMETERS vNewVal
+		*To do: Modify this routine for the Assign method
+		IF this.Project_Allow
+			THIS.Project = m.vNewVal
+		ELSE
+			ERROR 1740, "Project"
+		ENDIF
+		
+	ENDPROC
+
+	HIDDEN PROCEDURE userid_access
+		*To do: Modify this routine for the Access method
+		IF ISNULL(this.UserId)
+			this.UserId_Allow=.T.
+			this.UserId = ALLTRIM(TRANSFORM(SYS(0)))
+			IF !("#" $ this.UserId)
+				*  machine information not assigned by the network,
+				*  or network shell not loaded, or standalone machine
+				this.UserId = SPACE(0)
+			ELSE
+				this.UserId = ALLTRIM(SUBSTRC(this.UserId, AT_C("#", this.UserId) + 1))
+			ENDIF
+			this.UserId_Allow=.F.
+		ENDIF
+		
+		RETURN this.UserId
+	ENDPROC
+
+	HIDDEN PROCEDURE userid_assign
+		LPARAMETERS vNewVal
+		*To do: Modify this routine for the Assign method
+		IF this.UserId_Allow
+			this.UserId=m.vNewVal
+		ELSE
+			ERROR 1740, "UserId"
+		ENDIF
+	ENDPROC
+
+	HIDDEN PROCEDURE version_assign
+		LPARAMETERS vNewVal
+		*To do: Modify this routine for the Assign method
+		IF this.Version_Allow
+			THIS.Version = m.vNewVal
+		ELSE
+			ERROR 1740, "Version"
+		ENDIF
+		
+	ENDPROC
+
+	PROCEDURE writedebug		&& Writes debug information to the debug output window.
+		PARAMETERS tcLocation, tcMessage
+		
+		IF VARTYPE(m.tcLocation)!="C" OR EMPTY(m.tcLocation)
+			m.tcLocation="<Unknown location>"
+		ENDIF
+		
+		DEBUGOUT DATETIME(), m.tcLocation, m.tcMessage
 	ENDPROC
 
 ENDDEFINE

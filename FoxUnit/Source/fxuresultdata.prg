@@ -393,15 +393,19 @@ DEFINE CLASS FxuResultData AS FxuCustom OF FxuCustom.prg
 *
 ********************************************************************
 
-
-	LOCAL lcNewTestClassName, llClassCreated
-	LOCAL loTestClassCreator AS FrmNewTestClass OF fxu.vcx
-	m.llClassCreated = .F.
 	m.tcTestClassPRG = SPACE(0)
 
-*	m.loTestClassNamer = NEWOBJECT("frmFxuNewTestClass", "Fxu.vcx", .NULL., m.tcTestsPath)
-	m.loTestClassCreator = NEWOBJECT("frmNewTestClass", "Fxu.vcx", .NULL., this.iofxuinstance)
+	LOCAL	loFxuInstance AS fxuinstance OF "fxu.vcx", ;
+			loTestClassCreator AS FxuFrmNewTestClass OF "fxu.vcx"
+	m.loFxuInstance = this.iofxuinstance
+	m.loTestClassCreator = m.loFxuInstance.FxuNewObject("FxuFrmNewTestClass", m.loFxuInstance)
+	IF VARTYPE(m.loTestClassCreator)!="O" OR ISNULL(m.loTestClassCreator)
+		RETURN .F.
+	ENDIF
 	m.loTestClassCreator.SHOW(1)
+
+	LOCAL lcNewTestClassName, llClassCreated
+	m.llClassCreated = .F.
 	m.lcNewTestClassName = m.loTestClassCreator.ClassFullName()
 	m.llClassCreated	 = m.loTestClassCreator.lCreated
 
