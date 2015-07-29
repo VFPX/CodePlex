@@ -1,6 +1,13 @@
 (See the FoxUnit Wiki page on the VFPX CodePlex page https://vfpx.codeplex.com/wikipage?title=FoxUnit&referringTitle=Documentation for complete information)
 
-VFPX Release 1.5
+VFPX Release 1.51 - July 29, 2015
+Refactored many forms to be subclasses of new fxuFrmUser, which holds the ioFxuInstance object and the SettingsSave() and SettingsRestore() functions.
+Removed check whether tests are in path
+Added more unit tests for the forms in fxu_fxuFrmUserTests.prg
+Misc U/I Cleanup
+Switched to FoxBin2Prg for SCM
+
+VFPX Release 1.5 - July 11, 2015
 Introduced class FxuInstance - see http://vfpx.codeplex.com/wikipage?title=FoxUnit_Changes for further information.
 Removed FXUShowForm.prg
 Removed FXUNewObject.prg
