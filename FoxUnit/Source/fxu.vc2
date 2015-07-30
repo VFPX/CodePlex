@@ -5264,6 +5264,7 @@ DEFINE CLASS fxufrmnewtestclass AS fxufrmuser OF "fxu.vcx"
  	*< CLASSDATA: Baseclass="form" Timestamp="" Scale="Pixels" Uniqueid="" />
 
 	*-- OBJECTDATA items order determines ZOrder / El orden de los items OBJECTDATA determina el ZOrder 
+	*< OBJECTDATA: ObjPath="opgTemplateSource" UniqueID="" Timestamp="" />
 	*< OBJECTDATA: ObjPath="lblValidationMsg" UniqueID="" Timestamp="" />
 	*< OBJECTDATA: ObjPath="lblTestFolder" UniqueID="" Timestamp="" />
 	*< OBJECTDATA: ObjPath="cmdPickTestFolder" UniqueID="" Timestamp="" />
@@ -5283,7 +5284,6 @@ DEFINE CLASS fxufrmnewtestclass AS fxufrmuser OF "fxu.vcx"
 	*< OBJECTDATA: ObjPath="cmdRemoveTemplate" UniqueID="" Timestamp="" />
 	*< OBJECTDATA: ObjPath="cmdEditTemplate" UniqueID="" Timestamp="" />
 	*< OBJECTDATA: ObjPath="lblCopyExisting" UniqueID="" Timestamp="" />
-	*< OBJECTDATA: ObjPath="opgTemplateSource" UniqueID="" Timestamp="" />
 	*< OBJECTDATA: ObjPath="lblSaveAs" UniqueID="" Timestamp="" />
 
 	*<DefinedPropArrayMethod>
@@ -5352,7 +5352,7 @@ DEFINE CLASS fxufrmnewtestclass AS fxufrmuser OF "fxu.vcx"
 	ShowInTaskBar = .F.
 	ShowTips = .T.
 	ShowWindow = 1
-	Width = 638
+	Width = 804
 	WindowType = 1
 	_memberdata = <VFPData>
 		<memberdata name="validatetestclass" display="ValidateTestClass"/>
@@ -5376,7 +5376,8 @@ DEFINE CLASS fxufrmnewtestclass AS fxufrmuser OF "fxu.vcx"
 		Top = 235, ;
 		Value = .F., ;
 		Width = 471, ;
-		WordWrap = .F.
+		WordWrap = .F., ;
+		ZOrderSet = 10
 		*< END OBJECT: BaseClass="checkbox" />
 
 	ADD OBJECT 'chkTab' AS checkbox WITH ;
@@ -5394,7 +5395,8 @@ DEFINE CLASS fxufrmnewtestclass AS fxufrmuser OF "fxu.vcx"
 		TabIndex = 16, ;
 		Top = 219, ;
 		Value = .T., ;
-		Width = 194
+		Width = 194, ;
+		ZOrderSet = 11
 		*< END OBJECT: BaseClass="checkbox" />
 
 	ADD OBJECT 'cmdAdd' AS commandbutton WITH ;
@@ -5403,14 +5405,15 @@ DEFINE CLASS fxufrmnewtestclass AS fxufrmuser OF "fxu.vcx"
 		FontName = "Verdana", ;
 		FontSize = 9, ;
 		Height = 27, ;
-		Left = 594, ;
+		Left = 764, ;
 		Name = "cmdAdd", ;
 		Picture = ..\graphics\list2_add.png, ;
 		PicturePosition = 14, ;
 		TabIndex = 8, ;
 		ToolTipText = "Add a template file to this list", ;
-		Top = 33, ;
-		Width = 27
+		Top = 32, ;
+		Width = 27, ;
+		ZOrderSet = 16
 		*< END OBJECT: BaseClass="commandbutton" />
 
 	ADD OBJECT 'cmdCreate' AS commandbutton WITH ;
@@ -5419,12 +5422,13 @@ DEFINE CLASS fxufrmnewtestclass AS fxufrmuser OF "fxu.vcx"
 		FontName = "Verdana", ;
 		FontSize = 9, ;
 		Height = 40, ;
-		Left = 474, ;
+		Left = 648, ;
 		Name = "cmdCreate", ;
 		TabIndex = 4, ;
-		Top = 383, ;
+		Top = 384, ;
 		Width = 144, ;
-		WordWrap = .T.
+		WordWrap = .T., ;
+		ZOrderSet = 5
 		*< END OBJECT: BaseClass="commandbutton" />
 
 	ADD OBJECT 'cmdEditTemplate' AS commandbutton WITH ;
@@ -5433,14 +5437,15 @@ DEFINE CLASS fxufrmnewtestclass AS fxufrmuser OF "fxu.vcx"
 		FontName = "Verdana", ;
 		FontSize = 9, ;
 		Height = 27, ;
-		Left = 594, ;
+		Left = 764, ;
 		Name = "cmdEditTemplate", ;
 		Picture = ..\graphics\list_information.png, ;
 		PicturePosition = 14, ;
 		TabIndex = 10, ;
 		ToolTipText = "Modify the Selected Template", ;
-		Top = 87, ;
-		Width = 27
+		Top = 86, ;
+		Width = 27, ;
+		ZOrderSet = 18
 		*< END OBJECT: BaseClass="commandbutton" />
 
 	ADD OBJECT 'cmdPickTestFolder' AS commandbutton WITH ;
@@ -5448,12 +5453,12 @@ DEFINE CLASS fxufrmnewtestclass AS fxufrmuser OF "fxu.vcx"
 		FontName = "Verdana", ;
 		FontSize = 9, ;
 		Height = 25, ;
-		Left = 594, ;
+		Left = 768, ;
 		Name = "cmdPickTestFolder", ;
 		TabIndex = 21, ;
 		Top = 284, ;
 		Width = 24, ;
-		ZOrderSet = 2
+		ZOrderSet = 3
 		*< END OBJECT: BaseClass="commandbutton" />
 
 	ADD OBJECT 'cmdRemoveTemplate' AS commandbutton WITH ;
@@ -5462,14 +5467,15 @@ DEFINE CLASS fxufrmnewtestclass AS fxufrmuser OF "fxu.vcx"
 		FontName = "Verdana", ;
 		FontSize = 9, ;
 		Height = 27, ;
-		Left = 594, ;
+		Left = 764, ;
 		Name = "cmdRemoveTemplate", ;
 		Picture = ..\graphics\list1_delete.png, ;
 		PicturePosition = 14, ;
 		TabIndex = 9, ;
 		ToolTipText = "Remove the selected template file from this list", ;
-		Top = 60, ;
-		Width = 27
+		Top = 59, ;
+		Width = 27, ;
+		ZOrderSet = 17
 		*< END OBJECT: BaseClass="commandbutton" />
 
 	ADD OBJECT 'cmdSelectCustomTemplate' AS commandbutton WITH ;
@@ -5478,15 +5484,16 @@ DEFINE CLASS fxufrmnewtestclass AS fxufrmuser OF "fxu.vcx"
 		FontName = "Verdana", ;
 		FontSize = 9, ;
 		Height = 28, ;
-		Left = 594, ;
+		Left = 764, ;
 		Name = "cmdSelectCustomTemplate", ;
 		Picture = ..\graphics\list_go.png, ;
 		PicturePosition = 14, ;
 		TabIndex = 11, ;
 		ToolTipText = "Select a custom FoxUnit template of your own.  If you select one that is not in the list above, it will be automatically added to the list the next time you invoke this dialog.", ;
-		Top = 114, ;
+		Top = 113, ;
 		Width = 27, ;
-		WordWrap = .T.
+		WordWrap = .T., ;
+		ZOrderSet = 12
 		*< END OBJECT: BaseClass="commandbutton" />
 
 	ADD OBJECT 'cmdSelectFile' AS commandbutton WITH ;
@@ -5502,7 +5509,8 @@ DEFINE CLASS fxufrmnewtestclass AS fxufrmuser OF "fxu.vcx"
 		Top = 151, ;
 		Visible = .F., ;
 		Width = 64, ;
-		WordWrap = .T.
+		WordWrap = .T., ;
+		ZOrderSet = 13
 		*< END OBJECT: BaseClass="commandbutton" />
 
 	ADD OBJECT 'Label2' AS label WITH ;
@@ -5517,7 +5525,7 @@ DEFINE CLASS fxufrmnewtestclass AS fxufrmuser OF "fxu.vcx"
 		TabIndex = 1, ;
 		Top = 320, ;
 		Width = 138, ;
-		ZOrderSet = 3
+		ZOrderSet = 4
 		*< END OBJECT: BaseClass="label" />
 
 	ADD OBJECT 'lblCopyExisting' AS label WITH ;
@@ -5532,7 +5540,8 @@ DEFINE CLASS fxufrmnewtestclass AS fxufrmuser OF "fxu.vcx"
 		Name = "lblCopyExisting", ;
 		TabIndex = 12, ;
 		Top = 155, ;
-		Width = 2
+		Width = 2, ;
+		ZOrderSet = 19
 		*< END OBJECT: BaseClass="label" />
 
 	ADD OBJECT 'lblOptions' AS label WITH ;
@@ -5546,7 +5555,8 @@ DEFINE CLASS fxufrmnewtestclass AS fxufrmuser OF "fxu.vcx"
 		Name = "lblOptions", ;
 		TabIndex = 15, ;
 		Top = 203, ;
-		Width = 93
+		Width = 93, ;
+		ZOrderSet = 15
 		*< END OBJECT: BaseClass="label" />
 
 	ADD OBJECT 'lblSaveAs' AS label WITH ;
@@ -5560,7 +5570,8 @@ DEFINE CLASS fxufrmnewtestclass AS fxufrmuser OF "fxu.vcx"
 		Name = "lblSaveAs", ;
 		TabIndex = 18, ;
 		Top = 264, ;
-		Width = 57
+		Width = 57, ;
+		ZOrderSet = 20
 		*< END OBJECT: BaseClass="label" />
 
 	ADD OBJECT 'lblTemplate' AS label WITH ;
@@ -5577,7 +5588,8 @@ DEFINE CLASS fxufrmnewtestclass AS fxufrmuser OF "fxu.vcx"
 		Name = "lblTemplate", ;
 		TabIndex = 5, ;
 		Top = 10, ;
-		Width = 68
+		Width = 68, ;
+		ZOrderSet = 14
 		*< END OBJECT: BaseClass="label" />
 
 	ADD OBJECT 'lblTestFolder' AS label WITH ;
@@ -5592,7 +5604,7 @@ DEFINE CLASS fxufrmnewtestclass AS fxufrmuser OF "fxu.vcx"
 		TabIndex = 19, ;
 		Top = 288, ;
 		Width = 77, ;
-		ZOrderSet = 1
+		ZOrderSet = 2
 		*< END OBJECT: BaseClass="label" />
 
 	ADD OBJECT 'lblValidationMsg' AS label WITH ;
@@ -5606,7 +5618,7 @@ DEFINE CLASS fxufrmnewtestclass AS fxufrmuser OF "fxu.vcx"
 		TabIndex = 3, ;
 		Top = 341, ;
 		Width = 625, ;
-		ZOrderSet = 0
+		ZOrderSet = 1
 		*< END OBJECT: BaseClass="label" />
 
 	ADD OBJECT 'lstTemplates' AS listbox WITH ;
@@ -5622,7 +5634,8 @@ DEFINE CLASS fxufrmnewtestclass AS fxufrmuser OF "fxu.vcx"
 		Name = "lstTemplates", ;
 		TabIndex = 7, ;
 		Top = 33, ;
-		Width = 552
+		Width = 724, ;
+		ZOrderSet = 6
 		*< END OBJECT: BaseClass="listbox" />
 
 	ADD OBJECT 'opgTemplateSource' AS optiongroup WITH ;
@@ -5639,6 +5652,7 @@ DEFINE CLASS fxufrmnewtestclass AS fxufrmuser OF "fxu.vcx"
 		Top = 33, ;
 		Value = 1, ;
 		Width = 211, ;
+		ZOrderSet = 0, ;
 		Option1.Caption = "", ;
 		Option1.Height = 17, ;
 		Option1.Left = 5, ;
@@ -5675,8 +5689,8 @@ DEFINE CLASS fxufrmnewtestclass AS fxufrmuser OF "fxu.vcx"
 		ReadOnly = .T., ;
 		TabIndex = 20, ;
 		Top = 284, ;
-		Width = 438, ;
-		ZOrderSet = 6
+		Width = 616, ;
+		ZOrderSet = 7
 		*< END OBJECT: BaseClass="textbox" />
 
 	ADD OBJECT 'txtExistingFile' AS textbox WITH ;
@@ -5690,8 +5704,8 @@ DEFINE CLASS fxufrmnewtestclass AS fxufrmuser OF "fxu.vcx"
 		TabStop = .F., ;
 		Top = 151, ;
 		Visible = .F., ;
-		Width = 298, ;
-		ZOrderSet = 7
+		Width = 470, ;
+		ZOrderSet = 9
 		*< END OBJECT: BaseClass="textbox" />
 
 	ADD OBJECT 'txtTestClassName' AS textbox WITH ;
@@ -5704,8 +5718,8 @@ DEFINE CLASS fxufrmnewtestclass AS fxufrmuser OF "fxu.vcx"
 		Name = "txtTestClassName", ;
 		TabIndex = 2, ;
 		Top = 314, ;
-		Width = 437, ;
-		ZOrderSet = 7
+		Width = 640, ;
+		ZOrderSet = 8
 		*< END OBJECT: BaseClass="textbox" />
 	
 	PROCEDURE addcustomtemplates
@@ -6649,6 +6663,7 @@ DEFINE CLASS fxufrmnewtestclass AS fxufrmuser OF "fxu.vcx"
 
 	PROCEDURE txtTestClassName.Valid
 		thisform.cmdCreate.Enabled=thisform.ValidateTestClass()
+		
 	ENDPROC
 
 ENDDEFINE
