@@ -57,6 +57,7 @@ DEFINE CLASS FxuTestResult as Collection
 	inCurrentStartSeconds = 0
 	inCurrentEndSeconds = 0
 	icMessages = ''	
+	inLastKey = 0
 	HIDDEN ilCurrentResult_Allow
 	
 	********************************************************************

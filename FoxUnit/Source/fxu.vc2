@@ -86,6 +86,7 @@ DEFINE CLASS frmfoxunit AS fxufrmuser OF "fxu.vcx"
 		*m: options
 		*m: receivecompletenotification
 		*m: receiveresultnotification		&& Recieves results of the current test
+		*m: reloadselectedtestclass
 		*m: runalltests		&& runs all tests in all test classes that are currently loaded into the thisform.icGridRs table
 		*m: runclasstests		&& Runs all tests for the class specified
 		*m: runonetest		&& Runs the one test who's row is currently selected in the grid
@@ -161,6 +162,7 @@ DEFINE CLASS frmfoxunit AS fxufrmuser OF "fxu.vcx"
 	Width = 803
 	_memberdata = <VFPData>
 		<memberdata name="nsplitterposition" display="nSplitterPosition"/>
+		<memberdata name="reloadselectedtestclass" display="ReloadSelectedTestClass"/>
 		</VFPData>
 
 	ADD OBJECT 'Check1' AS checkbox WITH ;
@@ -1752,25 +1754,20 @@ DEFINE CLASS frmfoxunit AS fxufrmuser OF "fxu.vcx"
 		SET DATASESSION TO thisform.iofxuinstance.datasessionid
 		
 		IF NOT USED(THIS.grdTests.RecordSource)
-		  LOCAL lcText
-		  lcText = ;
-		  "The FXUResults.DBF table drives the grid in the " + ;
-		  "FoxUnit form interface AND logs Failure/Error/Message " + ;
-		  "results." + ;
-		  CHR(13) + CHR(13) + ;
-		  "HOWEVER, the FXUResults table has been CLOSED sometime " + ;
-		  "during the execution of your last test!  Most likely, " + ;
-		  "you have some code in the TearDown method that closes " + ;
-		  "work areas indiscriminately or otherwise issues command(s) " + ;
-		  "like CLEAR ALL/CLOSE ALL/etc." + ;
-		  CHR(13) + CHR(13) + ;
-		  "You need to determine where/when/why you are closing the " + ;
-		  "FXUResults.DBF table during the execution of your test(s), " + ;
-		  "and rememdy that behavior." + ;
-		  CHR(13) + CHR(13) + ;
-		  "In the meantime, the FoxUnit test harness has to shutdown " + ;
-		  "because the grid.RecordSource cannot be 'restored' once " + ;
-		  "it has been closed."
+		TEXT TO lcText NOSHOW PRETEXT 3 FLAGS 1
+		The FXUResults.DBF table drives the grid in the FoxUnit form interface AND logs Failure/Error/Message results.
+		
+		HOWEVER, the FXUResults table has been CLOSED sometime during the execution of your last test!  
+		Most likely, you have some code in the TearDown method that closes work areas indiscriminately 
+		or otherwise issues command(s) like CLEAR ALL/CLOSE ALL/etc.
+		
+		You need to determine where/when/why you are closing the FXUResults.DBF table during the execution of your test(s), 
+		and rememdy that behavior.
+		
+		In the meantime, the FoxUnit test harness has to shutdown because the grid.RecordSource cannot be 'restored' once 
+		it has been closed.
+		ENDTEXT
+		
 		  MESSAGEBOX(m.lcText,16,"FXUResults.DBF table is closed!")
 		  THISFORM.Release()
 		  RETURN 
@@ -1782,10 +1779,19 @@ DEFINE CLASS frmfoxunit AS fxufrmuser OF "fxu.vcx"
 		
 		loResultData.LogResult(toTestResult)
 		
+		
 		THIS.ShowProgress(toTestResult.inRunTests, toTestResult.ilCurrentResult)
 		=SEEK(UPPER(ALLTRIM(toTestResult.icCurrentTeSTCLASS)) + UPPER(ALLTRIM(toTestREsult.icCurrentTestName)),THIS.icGridRS,'tclname')
 		
 		THIS.Refresh()
+	ENDPROC
+
+	PROCEDURE reloadselectedtestclass
+		
+		This.ioResultData.ReloadTestCaseClass(EVALUATE(This.icGridRS+".TCLass"), EVALUATE(This.icGridRS+".TPath") )
+		This.AfterRunTests()
+		This.Refresh()
+		
 	ENDPROC
 
 	PROCEDURE RightClick
@@ -2526,15 +2532,7 @@ DEFINE CLASS frmfoxunit AS fxufrmuser OF "fxu.vcx"
 	ENDPROC
 
 	PROCEDURE cmdReloadSelectedTestClass.Click
-		THISFORM.ioResultData.ReloadTestCaseClass( ;
-		     EVALUATE(THISFORM.icGridRS+".TCLass"), ;
-		     EVALUATE(THISFORM.icGridRS+".TPath") ;
-		     )
-		
-		THISFORM.AfterRunTests()
-		
-		THISFORM.Refresh()
-		
+		ThisForm.ReloadSelectedTestClass()
 	ENDPROC
 
 	PROCEDURE cmdRemoveTestClass.Click

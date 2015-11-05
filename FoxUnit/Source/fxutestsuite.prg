@@ -56,6 +56,7 @@ DEFINE CLASS FxuTestSuite as FxuTest OF FxuTest.prg
 	ilNotifyListener = .f.
 	ioListener = .f.
 	ioFxuInstance = .NULL.
+	llStopped = .f.
 
 	********************************************************************
 	FUNCTION Init
@@ -121,10 +122,14 @@ DEFINE CLASS FxuTestSuite as FxuTest OF FxuTest.prg
 	********************************************************************
 		
 		LOCAL lnCurrentTest, lnStartSeconds
-		LOCAL lcTestClass, lcTestMethod
-		
+		LOCAL lcTestClass, lcTestMethod, lcEscSetting
+		PRIVATE llStopped 
+		llStopped=.f.
 		this.ioTestResult.inTotalTests = this.inTestCount
 		this.ioTestResult.inRunTests = this.inTestsRun
+		lcEscSetting = SET("Escape")
+		SET ESCAPE ON 
+		ON Escape StopTests()
 		
 		lnStartSeconds = SECONDS()
 		
@@ -135,21 +140,24 @@ DEFINE CLASS FxuTestSuite as FxuTest OF FxuTest.prg
 			this.RunTest(lcTestClass,lcTestMethod)
 			IF this.ioTestResult.ilCurrentResult
 				this.inTestsSuccessfull = this.inTestsSuccessfull + 1
-			ENDIF
-			
+			ENDIF		
 			this.NotifyListener()
-			
+			IF llStopped
+				EXIT 
+			ENDIF
 		
 		ENDFOR
 		
-		
-		this.NotifyListenerAllTestsComplete(SECONDS() - lnStartSeconds)
-		
-		
-	
+		IF NOT llStopped
+			this.NotifyListenerAllTestsComplete(SECONDS() - lnStartSeconds)
+		ENDIF 
+		SET ESCAPE &lcEscSetting
 	********************************************************************
 	ENDFUNC
 	********************************************************************
+	
+	
+	
 	
 	********************************************************************
 	FUNCTION NotifyListener()
@@ -199,3 +207,6 @@ DEFINE CLASS FxuTestSuite as FxuTest OF FxuTest.prg
 **********************************************************************
 ENDDEFINE && CLASS
 **********************************************************************
+
+	FUNCTION StopTests
+	llStopped = .t.

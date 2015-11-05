@@ -154,7 +154,7 @@ DEFINE CLASS FxuTestCase As FxuTest OF FxuTest.Prg
 
 		ENDIF
 		
-		
+		this.ioTestResult.inLastKey = LASTKEY()		
 		this.ioTestResult.inCurrentEndSeconds = SECONDS()
 		this.ioTestResult.LogResult()
 		this.PostTearDown()
