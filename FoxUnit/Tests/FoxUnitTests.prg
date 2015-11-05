@@ -149,8 +149,11 @@ DEFINE CLASS FoxUnitTests as FxuTestCase OF FxuTestCase.prg
 *!*		ENDFUNC
 *!*		*********************************************************************
 
+
+
 FUNCTION testAssertTrue
 this.AssertTrue(.t., "This is not true.")
+
 
 FUNCTION testAssertFalse
 this.AssertFalse(.f., "This is not false.")
@@ -167,6 +170,18 @@ This.AssertNotNullOrEmpty(1, "This is null or empty")
 FUNCTION testAssertEquals
 this.assertequals("Test String 1","Test String 1","These strings don't match")
 
+  FUNCTION testEscapeWorks
+	* 1. Change the name of the test to reflect its purpose. Test one thing only.
+	* 2. Implement the test by removing these comments and the default assertion and writing your own test code.
+	* Give time to hit Escape
+	* Long running test
+	FOR x = 1 TO 10000000
+		x = x + 1 
+	NEXT
+	
+  RETURN This.AssertFalse(.f. , "Escape Key was Hit")
+  
+  
 FUNCTION testAssertEqualsCaseInsensitive
 this.assertequals("Test String 1", "TEST STRING 1","These strings don't match", .t.)
 
@@ -229,20 +244,17 @@ this.assertequals(o1,o2,"These objects are not equal.")
 
   FUNCTION testAssertIsNotObject
 	This.assertIsNotObject(DATETIME(), "This is an object")
+  ENDFUNC
 
 
 
-
-  FUNCTION testNewTest
+  FUNCTION testNewTest1
 	* 1. Change the name of the test to reflect its purpose. Test one thing only.
 	* 2. Implement the test by removing these comments and the default assertion and writing your own test code.
   RETURN This.AssertNotImplemented()
 
-  
-
-
-
   ENDFUNC
+
 
 **********************************************************************
 ENDDEFINE

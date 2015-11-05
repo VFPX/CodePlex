@@ -370,7 +370,7 @@ DEFINE CLASS FxuResultData AS FxuCustom OF FxuCustom.prg
 	SELECT (THIS.icResultsTable)
 	m.lcTestClass = TClass
 	m.lcTestName  = TName
-	THIS.LoadTestCaseClass(THIS.ioFileIO.GetCaseSensitiveFileName(m.lcFullPath))
+	THIS.LoadTestCaseClass(THIS.ioFileIO.GetCaseSensitiveFileName(m.lcFullPath, .T.))
 
 	SELECT (THIS.icResultsTable)
 	LOCATE FOR TClass == m.lcTestClass AND TName == m.lcTestName
