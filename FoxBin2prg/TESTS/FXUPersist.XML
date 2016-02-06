@@ -4,13 +4,13 @@
 		<xsd:element name="VFPData" msdata:IsDataSet="true">
 			<xsd:complexType>
 				<xsd:choice maxOccurs="unbounded">
-					<xsd:element name="foxunitpersist" minOccurs="0" maxOccurs="unbounded">
+					<xsd:element name="fxupersist_4fp0nge1b" minOccurs="0" maxOccurs="unbounded">
 						<xsd:complexType>
 							<xsd:sequence>
 								<xsd:element name="userid">
 									<xsd:simpleType>
 										<xsd:restriction base="xsd:string">
-											<xsd:maxLength value="10"/>
+											<xsd:maxLength value="15"/>
 										</xsd:restriction>
 									</xsd:simpleType>
 								</xsd:element>
@@ -29,168 +29,172 @@
 			</xsd:complexType>
 		</xsd:element>
 	</xsd:schema>
-	<foxunitpersist>
+	<fxupersist_4fp0nge1b>
 		<userid>windows</userid>
-		<setting>THIS.Top = 49</setting>
-	</foxunitpersist>
-	<foxunitpersist>
+		<setting>THIS.Top = 69</setting>
+	</fxupersist_4fp0nge1b>
+	<fxupersist_4fp0nge1b>
 		<userid>windows</userid>
-		<setting>THIS.Left = 45</setting>
-	</foxunitpersist>
-	<foxunitpersist>
+		<setting>THIS.Left = 29</setting>
+	</fxupersist_4fp0nge1b>
+	<fxupersist_4fp0nge1b>
 		<userid>windows</userid>
 		<setting>THIS.Height = IIF(VERSION(5)&gt;=900,770,480)</setting>
-	</foxunitpersist>
-	<foxunitpersist>
+	</fxupersist_4fp0nge1b>
+	<fxupersist_4fp0nge1b>
 		<userid>windows</userid>
 		<setting>THIS.Width = IIF(VERSION(5)&gt;=900,1836,803)</setting>
-	</foxunitpersist>
-	<foxunitpersist>
+	</fxupersist_4fp0nge1b>
+	<fxupersist_4fp0nge1b>
 		<userid>windows</userid>
 		<setting>THIS.inZoomTop = .F.</setting>
-	</foxunitpersist>
-	<foxunitpersist>
+	</fxupersist_4fp0nge1b>
+	<fxupersist_4fp0nge1b>
 		<userid>windows</userid>
 		<setting>THIS.inZoomLeft = .F.</setting>
-	</foxunitpersist>
-	<foxunitpersist>
+	</fxupersist_4fp0nge1b>
+	<fxupersist_4fp0nge1b>
 		<userid>windows</userid>
 		<setting>THIS.inZoomHeight = .F.</setting>
-	</foxunitpersist>
-	<foxunitpersist>
+	</fxupersist_4fp0nge1b>
+	<fxupersist_4fp0nge1b>
 		<userid>windows</userid>
 		<setting>THIS.inZoomWidth = .F.</setting>
-	</foxunitpersist>
-	<foxunitpersist>
+	</fxupersist_4fp0nge1b>
+	<fxupersist_4fp0nge1b>
 		<userid>windows</userid>
 		<setting>THIS.inZoomWindowState = 0</setting>
-	</foxunitpersist>
-	<foxunitpersist>
+	</fxupersist_4fp0nge1b>
+	<fxupersist_4fp0nge1b>
 		<userid>windows</userid>
 		<setting>THIS.pgfDetails.ActivePage = 2</setting>
-	</foxunitpersist>
-	<foxunitpersist>
+	</fxupersist_4fp0nge1b>
+	<fxupersist_4fp0nge1b>
 		<userid>windows</userid>
 		<setting>THIS.grdTests.FontName = "Tahoma"</setting>
-	</foxunitpersist>
-	<foxunitpersist>
+	</fxupersist_4fp0nge1b>
+	<fxupersist_4fp0nge1b>
 		<userid>windows</userid>
 		<setting>THIS.grdTests.FontSize = 9</setting>
-	</foxunitpersist>
-	<foxunitpersist>
+	</fxupersist_4fp0nge1b>
+	<fxupersist_4fp0nge1b>
 		<userid>windows</userid>
 		<setting>THIS.grdTests.FontBold = .F.</setting>
-	</foxunitpersist>
-	<foxunitpersist>
+	</fxupersist_4fp0nge1b>
+	<fxupersist_4fp0nge1b>
 		<userid>windows</userid>
 		<setting>THIS.grdTests.FontItalic = .F.</setting>
-	</foxunitpersist>
-	<foxunitpersist>
+	</fxupersist_4fp0nge1b>
+	<fxupersist_4fp0nge1b>
 		<userid>windows</userid>
 		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontName = "Arial"</setting>
-	</foxunitpersist>
-	<foxunitpersist>
+	</fxupersist_4fp0nge1b>
+	<fxupersist_4fp0nge1b>
 		<userid>windows</userid>
 		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontSize = 9</setting>
-	</foxunitpersist>
-	<foxunitpersist>
+	</fxupersist_4fp0nge1b>
+	<fxupersist_4fp0nge1b>
 		<userid>windows</userid>
 		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontBold = .F.</setting>
-	</foxunitpersist>
-	<foxunitpersist>
+	</fxupersist_4fp0nge1b>
+	<fxupersist_4fp0nge1b>
 		<userid>windows</userid>
 		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontItalic = .F.</setting>
-	</foxunitpersist>
-	<foxunitpersist>
+	</fxupersist_4fp0nge1b>
+	<fxupersist_4fp0nge1b>
 		<userid>windows</userid>
 		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontName = "Courier New"</setting>
-	</foxunitpersist>
-	<foxunitpersist>
+	</fxupersist_4fp0nge1b>
+	<fxupersist_4fp0nge1b>
 		<userid>windows</userid>
 		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontSize = 9</setting>
-	</foxunitpersist>
-	<foxunitpersist>
+	</fxupersist_4fp0nge1b>
+	<fxupersist_4fp0nge1b>
 		<userid>windows</userid>
 		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontBold = .F.</setting>
-	</foxunitpersist>
-	<foxunitpersist>
+	</fxupersist_4fp0nge1b>
+	<fxupersist_4fp0nge1b>
 		<userid>windows</userid>
 		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontItalic = .F.</setting>
-	</foxunitpersist>
-	<foxunitpersist>
+	</fxupersist_4fp0nge1b>
+	<fxupersist_4fp0nge1b>
 		<userid>windows</userid>
 		<setting>THIS.pgfDetails.pgMessages.FontName = "Arial"</setting>
-	</foxunitpersist>
-	<foxunitpersist>
+	</fxupersist_4fp0nge1b>
+	<fxupersist_4fp0nge1b>
 		<userid>windows</userid>
 		<setting>THIS.pgfDetails.pgMessages.FontSize = 9</setting>
-	</foxunitpersist>
-	<foxunitpersist>
+	</fxupersist_4fp0nge1b>
+	<fxupersist_4fp0nge1b>
 		<userid>windows</userid>
 		<setting>THIS.pgfDetails.pgMessages.FontBold = .T.</setting>
-	</foxunitpersist>
-	<foxunitpersist>
+	</fxupersist_4fp0nge1b>
+	<fxupersist_4fp0nge1b>
 		<userid>windows</userid>
 		<setting>THIS.pgfDetails.pgMessages.FontItalic = .F.</setting>
-	</foxunitpersist>
-	<foxunitpersist>
+	</fxupersist_4fp0nge1b>
+	<fxupersist_4fp0nge1b>
 		<userid>windows</userid>
 		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontName = "Courier New"</setting>
-	</foxunitpersist>
-	<foxunitpersist>
+	</fxupersist_4fp0nge1b>
+	<fxupersist_4fp0nge1b>
 		<userid>windows</userid>
 		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontSize = 9</setting>
-	</foxunitpersist>
-	<foxunitpersist>
+	</fxupersist_4fp0nge1b>
+	<fxupersist_4fp0nge1b>
 		<userid>windows</userid>
 		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontBold = .F.</setting>
-	</foxunitpersist>
-	<foxunitpersist>
+	</fxupersist_4fp0nge1b>
+	<fxupersist_4fp0nge1b>
 		<userid>windows</userid>
 		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontItalic = .F.</setting>
-	</foxunitpersist>
-	<foxunitpersist>
+	</fxupersist_4fp0nge1b>
+	<fxupersist_4fp0nge1b>
 		<userid>windows</userid>
 		<setting>THIS.ilLargeGrid=.F.</setting>
-	</foxunitpersist>
-	<foxunitpersist>
+	</fxupersist_4fp0nge1b>
+	<fxupersist_4fp0nge1b>
 		<userid>windows</userid>
-		<setting>THIS.grdTests.Column1.Width = 488</setting>
-	</foxunitpersist>
-	<foxunitpersist>
+		<setting>THIS.grdTests.COLUMN1.Width = 488</setting>
+	</fxupersist_4fp0nge1b>
+	<fxupersist_4fp0nge1b>
 		<userid>windows</userid>
-		<setting>THIS.grdTests.Column2.Width = 1303</setting>
-	</foxunitpersist>
-	<foxunitpersist>
+		<setting>THIS.grdTests.COLUMN2.Width = 1303</setting>
+	</fxupersist_4fp0nge1b>
+	<fxupersist_4fp0nge1b>
 		<userid>windows</userid>
 		<setting>SET ORDER TO TAG TCLOC IN (THIS.icGridRS)</setting>
-	</foxunitpersist>
-	<foxunitpersist>
+	</fxupersist_4fp0nge1b>
+	<fxupersist_4fp0nge1b>
 		<userid>windows</userid>
-		<setting>=SEEK("FT__FOXBIN2PRG__C_CONVERSOR_BIN_A_PRG                                                                         EVALUATE_RESULTS                                                                                                                  ",THIS.icGridRS,"TCLName")</setting>
-	</foxunitpersist>
-	<foxunitpersist>
+		<setting>=SEEK("UT__FOXBIN2PRG__C_CONVERSOR_BASE__LINEISONLYCOMMENTANDNOMETADATA                                              DEBERIA_DEVOLVERSEPARADOS_LINEADECODIGOQUEINCLUYE_DOBLEAMPERSAND_Y_VALOR_Y_RETORNAR_FALSE                                         ",THIS.icGridRS,"TCLName")</setting>
+	</fxupersist_4fp0nge1b>
+	<fxupersist_4fp0nge1b>
 		<userid>windows</userid>
 		<setting>THIS.ilAllowDebug = .F.</setting>
-	</foxunitpersist>
-	<foxunitpersist>
+	</fxupersist_4fp0nge1b>
+	<fxupersist_4fp0nge1b>
 		<userid>windows</userid>
 		<setting>THIS.ShowTips = .F.</setting>
-	</foxunitpersist>
-	<foxunitpersist>
+	</fxupersist_4fp0nge1b>
+	<fxupersist_4fp0nge1b>
 		<userid>windows</userid>
 		<setting>THIS.ilHonorTestPrefix = .F.</setting>
-	</foxunitpersist>
-	<foxunitpersist>
+	</fxupersist_4fp0nge1b>
+	<fxupersist_4fp0nge1b>
 		<userid>windows</userid>
 		<setting>THIS.ilReloadTestsOnRun = .F.</setting>
-	</foxunitpersist>
-	<foxunitpersist>
+	</fxupersist_4fp0nge1b>
+	<fxupersist_4fp0nge1b>
 		<userid>windows</userid>
 		<setting>THIS.ilCloseDebuggerAtEndOfTestsRun = .F.</setting>
-	</foxunitpersist>
-	<foxunitpersist>
+	</fxupersist_4fp0nge1b>
+	<fxupersist_4fp0nge1b>
 		<userid>windows</userid>
 		<setting>THIS.nSplitterPosition = 413</setting>
-	</foxunitpersist>
+	</fxupersist_4fp0nge1b>
+	<fxupersist_4fp0nge1b>
+		<userid>windows</userid>
+		<setting>THIS.iResetResults = .T.</setting>
+	</fxupersist_4fp0nge1b>
 </VFPData>
