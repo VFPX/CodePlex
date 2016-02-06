@@ -1,12 +1,12 @@
 *       *********************************************************
 *       *                                                         
-*       * 30/12/2013             MENU1.MPR              20:07:17  
+*       * 2015/08/28             MENU1.MPR              20:01:19  
 *       *                                                         
 *       *********************************************************
 *       *                                                         
 *       * Author's Name                                           
 *       *                                                         
-*       * Copyright (C) 2013 Company Name                         
+*       * Copyright (C) 2015 Company Name                         
 *       * Address                                                 
 *       * City,     Zip                                           
 *       *                                                         
@@ -34,7 +34,7 @@
 *
 
 
-DEFINE PAD _3yn0p4pbz OF _MSYSMENU PROMPT "Opción A con submenú" COLOR SCHEME 3 ;
+DEFINE PAD _4fl16ww8i OF _MSYSMENU PROMPT "Opción A && submenú" COLOR SCHEME 3 ;
 	NEGOTIATE  NONE, LEFT ;
 	KEY DEL, "Pulsar <DEL>" ;
 	SKIP FOR SKIP_FOR() ;
@@ -43,20 +43,20 @@ DEFINE PAD opc_b OF _MSYSMENU PROMPT "Opción B con comando" COLOR SCHEME 3 ;
 	KEY CTRL+B, "Pulse CTRL+B" ;
 	SKIP FOR NOT glEnabled_Opc_B ;
 	MESSAGE "Mensaje para Opción B con Command"
-ON PAD _3yn0p4pbz OF _MSYSMENU ACTIVATE POPUP opcióna_cs
+ON PAD _4fl16ww8i OF _MSYSMENU ACTIVATE POPUP opciónasub
 ON SELECTION PAD opc_b OF _MSYSMENU WAIT WINDOW "Opción B"
 
-DEFINE POPUP opcióna_cs MARGIN RELATIVE SHADOW COLOR SCHEME 4
-DEFINE BAR 1 OF opcióna_cs PROMPT "Opción A-1" ;
+DEFINE POPUP opciónasub MARGIN RELATIVE SHADOW COLOR SCHEME 4
+DEFINE BAR 1 OF opciónasub PROMPT "Opción A-&&-1" ;
 	PICTURE "..\..\foxunit\fxuacknowledgements.bmp"
-DEFINE BAR 2 OF opcióna_cs PROMPT "Opción A-2"
-ON BAR 1 OF opcióna_cs ACTIVATE POPUP opcióna1
-ON BAR 2 OF opcióna_cs ACTIVATE POPUP opcióna2su
+DEFINE BAR 2 OF opciónasub PROMPT "Opción A-2"
+ON BAR 1 OF opciónasub ACTIVATE POPUP opcióna1
+ON BAR 2 OF opciónasub ACTIVATE POPUP opcióna2su
 
 DEFINE POPUP opcióna1 MARGIN RELATIVE SHADOW COLOR SCHEME 4
-DEFINE BAR Shortcut_Menu_Title OF opcióna1 PROMPT "OpciónA-1-Sub" ;
+DEFINE BAR Shortcut_Menu_Title OF opcióna1 PROMPT "OpciónA-1-&&-Sub" ;
 	PICTURE "..\..\foxunit\fxuacknowledgements.bmp"
-ON SELECTION BAR Shortcut_Menu_Title OF opcióna1 wait window "Ejecuta Comando o función para Opción A-1"
+ON SELECTION BAR Shortcut_Menu_Title OF opcióna1 wait window "Ejecuta Comando o función para Opción A-&&-1"
 
 DEFINE POPUP opcióna2su MARGIN RELATIVE SHADOW COLOR SCHEME 4
 DEFINE BAR 1 OF opcióna2su PROMPT "Opción A-2-Sub.1" ;
@@ -84,12 +84,12 @@ DEFINE BAR 1 OF _3yl0d68e0 PROMPT "FIN!" ;
 ON SELECTION BAR 1 OF _3yl0d68e0 QUIT
 
 ON SELECTION MENU _MSYSMENU ;
-	DO _3yn0p4pc0 ;
+	DO _4fl16ww8m ;
 	IN LOCFILE("FOXBIN2PRG\TESTS\DATOS_READONLY\MENU1" ,"MPX;MPR|FXP;PRG" ,"WHERE is MENU1?")
 ON SELECTION POPUP ALL ;
 	DO MENUBARPROC ;
 	IN LOCFILE("FOXBIN2PRG\TESTS\DATOS_READONLY\MENU1" ,"MPX;MPR|FXP;PRG" ,"WHERE is MENU1?")
-ON SELECTION POPUP opcióna_cs *-- PROCEDURE Le cambié el nombre!
+ON SELECTION POPUP opciónasub *-- PROCEDURE Le cambié el nombre!
 ON SELECTION POPUP _3yl0d68e0 *-- Sin procedure, pero podria ir aquí
 
 *       *********************************************************
@@ -124,7 +124,7 @@ PROCEDURE MENU1_OPCIÓN_A_2_SUB_SNIPPET
 
 *       *********************************************************
 *       *                                                         
-*       * _3YN0P4PC0  ON SELECTION MENU _MSYSMENU                 
+*       * _4FL16WW8M  ON SELECTION MENU _MSYSMENU                 
 *       *                                                         
 *       * Procedure Origin:                                       
 *       *                                                         
@@ -134,7 +134,7 @@ PROCEDURE MENU1_OPCIÓN_A_2_SUB_SNIPPET
 *       *                                                         
 *       *********************************************************
 *
-PROCEDURE _3yn0p4pc0
+PROCEDURE _4fl16ww8m
 *-- Menu Procedure
 wait window "Y ahora es Procedure!"
 
