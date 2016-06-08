@@ -1,5 +1,5 @@
 ****************************************************************************************************
-* FOXBIN2PRG v1.19.43
+* FOXBIN2PRG v1.19.47
 * CONFIGURATION FILE / ARCHIVO DE CONFIGURACIÓN
 ****************************************************************************************************
 
@@ -24,6 +24,7 @@
 * RemoveNullCharsFromCode: 1	&& 1=Drop NULL chars from source code / 0=Leave Nulls in code, if any
 * RemoveZOrderSetFromProps: 0	&& 0=Do not remove ZOrderSet property from object, 1=Remove ZOrderSet property from object / 0=No quitar la propiedad ZOrderSet de los objetos, 1=Quitar la propiedad ZOrderSet de los objetos
 * Language: (auto)				&& Language of shown messages and LOGs. EN=English, FR=French, ES=Español, DE=German, Not defined = AUTOMATIC [DEFAULT]
+* ExcludeDBFAutoincNextval: 0	&& [0=Do not exclude this value from db2], 1=Exclude this value from db2
 
 *-- CONVERTION OPTIONS / OPCIONES DE CONVERSIÓN
 * PJX_Conversion_Support: 2		&& 0=No support, 1=Generate TXT only (Diff), 2=Generate TXT and BIN (Merge)
@@ -33,7 +34,7 @@
 * LBX_Conversion_Support: 2		&& 0=No support, 1=Generate TXT only (Diff), 2=Generate TXT and BIN (Merge)
 * MNX_Conversion_Support: 2		&& 0=No support, 1=Generate TXT only (Diff), 2=Generate TXT and BIN (Merge)
 * DBC_Conversion_Support: 2		&& 0=No support, 1=Generate TXT only (Diff), 2=Generate TXT and BIN (Merge)
-* DBF_Conversion_Support: 1		&& 0=No support, 1=Generate TXT only (Diff), 2=Generate TXT and BIN (Merge), 4=Generate TXT with DATA for DIFF (No Bidirectional!)
+* DBF_Conversion_Support: 1		&& 0=No support, 1=Generate TXT only (Diff), 2=Generate TXT and BIN (Merge/Only Structure!), 4=Generate TXT with DATA (Diff), 8=Export and Import DATA (Merge/Structure & Data)
 * >>DBF_Conversion_Support NOTE:	>> EN: FoxBin2Prg support bi-directional convertion of DBFs, but does not keep data. Use with care.
 *									>> ES: FoxBin2Prg tiene soporte bi-direccional para convertir DBF, pero no mantiene los datos. Usar con cuidado.
 * DBF_Conversion_Included: *	&& If DBF_Conversion_Support:4, you can specify multiple filemasks: www,fb2p_free.dbf / Si DBF_Conversion_Support:4, se pueden indicar múltiples máscaras de archivo: www,fb2p_free.dbf
