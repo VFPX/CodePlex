@@ -65,7 +65,7 @@ DEFINE CLASS FxuResultData AS FxuCustom OF FxuCustom.prg
 	THIS.icResultsTable	= JUSTSTEM(THIS.icResultsTable)
 	THIS.ioFxuInstance	= m.toFxuInstance
 	THIS.icDataPath = ADDBS(m.toFxuInstance.DataPath)
-	
+
 	SET DELETED ON
 	THIS.ioDataMaintenance = THIS.ioFxuInstance.FxuNewObject("FxuDataMaintenance", THIS.icResultsTable, THIS.icDataPath)	&& FDBOZZO
 	THIS.OpenDataInit()
@@ -77,7 +77,7 @@ DEFINE CLASS FxuResultData AS FxuCustom OF FxuCustom.prg
 ********************************************************************
 
 ********************************************************************
- 	FUNCTION OpenDataInit
+	FUNCTION OpenDataInit
 ********************************************************************
 
 	LOCAL loDataMaintenance AS FxuDataMaintenance OF FxuDataMaintenance.prg
@@ -100,7 +100,7 @@ DEFINE CLASS FxuResultData AS FxuCustom OF FxuCustom.prg
 ********************************************************************
 
 ********************************************************************
- 	FUNCTION LogResult(toTestResult AS FxuTestResult OF FxuTestResult.prg)
+	FUNCTION LogResult(toTestResult AS FxuTestResult OF FxuTestResult.prg)
 ********************************************************************
 
 	LOCAL lcPkExpression, lnSecondsElapsed
@@ -117,12 +117,12 @@ DEFINE CLASS FxuResultData AS FxuCustom OF FxuCustom.prg
 
 	UPDATE  (THIS.icResultsTable) ;
 		SET ;
-			  Success = m.toTestResult.ilCurrentResult, ;
-			TLastRun = DATETIME(), ;
-			TElapsed = m.lnSecondsElapsed,  ;
-			Fail_Error = m.lcFailureErrorDetails, ;
-			MESSAGES = m.lcMessages, ;
-			TRUN = .T. ;
+		Success = m.toTestResult.ilCurrentResult, ;
+		TLastRun = DATETIME(), ;
+		TElapsed = m.lnSecondsElapsed,  ;
+		Fail_Error = m.lcFailureErrorDetails, ;
+		MESSAGES = m.lcMessages, ;
+		TRUN = .T. ;
 		WHERE UPPER(TClass) + UPPER(TName) == m.lcPkExpression
 
 
@@ -131,7 +131,7 @@ DEFINE CLASS FxuResultData AS FxuCustom OF FxuCustom.prg
 ********************************************************************
 
 ********************************************************************
- 	FUNCTION OpenResults
+	FUNCTION OpenResults
 ********************************************************************
 
 	IF !USED(THIS.icResultsTable)
@@ -144,7 +144,7 @@ DEFINE CLASS FxuResultData AS FxuCustom OF FxuCustom.prg
 ********************************************************************
 
 ********************************************************************
- 	FUNCTION LoadTestCaseClass(tcTestClassFile)
+	FUNCTION LoadTestCaseClass(tcTestClassFile)
 ********************************************************************
 * EHW/02/27/2005
 	IF EMPTY(m.tcTestClassFile)
@@ -169,7 +169,7 @@ DEFINE CLASS FxuResultData AS FxuCustom OF FxuCustom.prg
 	ENDFUNC
 
 ********************************************************************
- 	FUNCTION LoadTestCaseClassStep2(tcTestClassFile, tlNew)
+	FUNCTION LoadTestCaseClassStep2(tcTestClassFile, tlNew)
 ********************************************************************
 
 	LOCAL loEnumerator AS FxuTestCaseEnumerator OF FxuTestCaseEnumerator.prg
@@ -186,7 +186,7 @@ DEFINE CLASS FxuResultData AS FxuCustom OF FxuCustom.prg
 	m.lnTClass	   = LENC(EVALUATE(THIS.icResultsTable + ".TCLass"))
 	m.lnTName	   = LENC(EVALUATE(THIS.icResultsTable + ".TName"))
 	m.lcFilter	   = FILTER(THIS.icResultsTable)	&& Save FILTER expression. FDBOZZO. 2014.06.19
-	m.loEnumerator = this.ioFxuInstance.FxuNewObject("FxuTestCaseEnumerator", this.ioFxuInstance)
+	m.loEnumerator = THIS.ioFxuInstance.FxuNewObject("FxuTestCaseEnumerator", THIS.ioFxuInstance)
 
 	IF EMPTY(m.tcTestClassFile)
 		LOCAL lcTestsFolder
@@ -194,16 +194,16 @@ DEFINE CLASS FxuResultData AS FxuCustom OF FxuCustom.prg
 			m.lcTestsFolder = ADDBS(JUSTPATH(DBF(THIS.icResultsTable)))
 		ELSE
 			SET STEP ON
-			m.lcTestsFolder = this.icDATAPATH
+			m.lcTestsFolder = THIS.icDataPath
 		ENDIF
 		m.lcCurdir = FULLPATH(CURDIR())
 
 		CD (m.lcTestsFolder)
 		m.lcTestClassFile = GETFILE("PRG", ;
-			    "Test Class .PRG", ;
-			    "", ;
-			    0, ;
-			    "Select the Test Class .PRG whose tests (methods) you want to load into the list.")
+			"Test Class .PRG", ;
+			"", ;
+			0, ;
+			"Select the Test Class .PRG whose tests (methods) you want to load into the list.")
 		CD (m.lcCurdir)
 
 		m.llNew = .T.  &&& as opposed to re-loading an existing .PRG
@@ -237,8 +237,8 @@ DEFINE CLASS FxuResultData AS FxuCustom OF FxuCustom.prg
 				m.lcTestName = TestCase_Curs.TName
 
 				IF SEEK(PADR(UPPER(m.lcTestClass), m.lnTClass) + PADR(UPPER(m.lcTestName), m.lnTName), ;
-						    THIS.icResultsTable, ;
-						    "TCLName")
+						THIS.icResultsTable, ;
+						"TCLName")
 					REPLACE Location WITH m.lnLocation ;
 						IN (THIS.icResultsTable)
 				ELSE
@@ -258,10 +258,10 @@ DEFINE CLASS FxuResultData AS FxuCustom OF FxuCustom.prg
 			DELETE  ;
 				FROM (THIS.icResultsTable) ;
 				WHERE UPPER(ALLTRIM(TClass)) == UPPER(ALLTRIM(m.lcTestClass)) ;
-					AND UPPER(TName) NOT IN ;
-					(SELECT  UPPER(TName) AS CurrentTests;
-						 FROM TestCase_Curs ;
-						 WHERE UPPER(ALLTRIM(TClass)) == UPPER(ALLTRIM(m.lcTestClass)))
+				AND UPPER(TName) NOT IN ;
+				(SELECT  UPPER(TName) AS CurrentTests;
+				FROM TestCase_Curs ;
+				WHERE UPPER(ALLTRIM(TClass)) == UPPER(ALLTRIM(m.lcTestClass)))
 
 *-- Restore FILTER, if any. FDBOZZO. 2014.06.19
 			IF NOT EMPTY(m.lcFilter)
@@ -301,7 +301,7 @@ DEFINE CLASS FxuResultData AS FxuCustom OF FxuCustom.prg
 
 
 ********************************************************************
- 	FUNCTION LoadUpTestCasesToCursor
+	FUNCTION LoadUpTestCasesToCursor
 ********************************************************************
 
 	LPARAMETERS lcTestClass, lcTestCases
@@ -329,7 +329,7 @@ DEFINE CLASS FxuResultData AS FxuCustom OF FxuCustom.prg
 ********************************************************************
 
 ********************************************************************
- 	FUNCTION ReloadTestCaseClasses
+	FUNCTION ReloadTestCaseClasses
 ********************************************************************
 
 	LOCAL lnTestClasses, lnX
@@ -337,7 +337,7 @@ DEFINE CLASS FxuResultData AS FxuCustom OF FxuCustom.prg
 	m.laTestClasses[1] = .F.
 
 	SELECT  DISTINCT TClass,;
-			TPath ;
+		TPath ;
 		FROM (THIS.icResultsTable) ;
 		INTO ARRAY laTestClasses && Added TPath to query. HAS
 	IF VARTYPE(m.laTestClasses[1]) == "C"
@@ -353,7 +353,7 @@ DEFINE CLASS FxuResultData AS FxuCustom OF FxuCustom.prg
 ********************************************************************
 
 ********************************************************************
- 	FUNCTION ReloadTestCaseClass(tcTestClass, tcDirectory) && Added directory parameter. HAS
+	FUNCTION ReloadTestCaseClass(tcTestClass, tcDirectory) && Added directory parameter. HAS
 ********************************************************************
 
 	IF EMPTY(m.tcTestClass)
@@ -363,7 +363,7 @@ DEFINE CLASS FxuResultData AS FxuCustom OF FxuCustom.prg
 	LOCAL lcTestClassFile, lcFullPath
 	m.lcTestClassFile = ALLTRIM(m.tcTestClass) + ".prg"
 	m.lcFullPath = LOCFILE(ADDBS(m.tcDirectory) + m.lcTestClassFile, "prg", ;
-		    "Could Not Locate " + m.lcTestClassFile) && Added directory. HAS
+		"Could Not Locate " + m.lcTestClassFile) && Added directory. HAS
 
 	LOCAL lcTestClass, lcTestName
 	m.lnSelect = SELECT(0)
@@ -386,7 +386,7 @@ DEFINE CLASS FxuResultData AS FxuCustom OF FxuCustom.prg
 ********************************************************************
 
 ********************************************************************
- 	FUNCTION CreateNewTestCaseClass(tcTestsPath, tcTestClassPRG)
+	FUNCTION CreateNewTestCaseClass(tcTestsPath, tcTestClassPRG)
 *
 *  pass tcTestClassPRG BY REFERENCE if you want
 *  it populated with the .PRG filename
@@ -396,8 +396,8 @@ DEFINE CLASS FxuResultData AS FxuCustom OF FxuCustom.prg
 	m.tcTestClassPRG = SPACE(0)
 
 	LOCAL	loFxuInstance AS fxuinstance OF "fxu.vcx", ;
-			loTestClassCreator AS FxuFrmNewTestClass OF "fxu.vcx"
-	m.loFxuInstance = this.iofxuinstance
+		loTestClassCreator AS FxuFrmNewTestClass OF "fxu.vcx"
+	m.loFxuInstance = THIS.ioFxuInstance
 	m.loTestClassCreator = m.loFxuInstance.FxuNewObject("FxuFrmNewTestClass", m.loFxuInstance)
 	IF VARTYPE(m.loTestClassCreator)!="O" OR ISNULL(m.loTestClassCreator)
 		RETURN .F.
@@ -410,18 +410,18 @@ DEFINE CLASS FxuResultData AS FxuCustom OF FxuCustom.prg
 	m.llClassCreated	 = m.loTestClassCreator.lCreated
 
 	DO CASE
-	CASE NOT m.llClassCreated AND EMPTY(m.loTestClassCreator.icLastErrorMessage)
-	CASE NOT m.llClassCreated
-		MESSAGEBOX("Class not created:" + CHR(13) + ;
-			    m.loTestClassCreator.icLastErrorMessage, ;
-			    16, ;
-			    "Class Not Created")
-	OTHERWISE
-		MODIFY COMMAND (m.lcNewTestClassName)
-		THIS.ioFileIO.RenameFile(m.lcNewTestClassName, m.lcNewTestClassName)
-		COMPILE (m.lcNewTestClassName)
-		LOCAL lnTestMethods
-		m.lnTestMethods = THIS.LoadTestCaseClass(m.lcNewTestClassName)
+		CASE NOT m.llClassCreated AND EMPTY(m.loTestClassCreator.icLastErrorMessage)
+		CASE NOT m.llClassCreated
+			MESSAGEBOX("Class not created:" + CHR(13) + ;
+				m.loTestClassCreator.icLastErrorMessage, ;
+				16, ;
+				"Class Not Created")
+		OTHERWISE
+			MODIFY COMMAND (m.lcNewTestClassName)
+			THIS.ioFileIO.RenameFile(m.lcNewTestClassName, m.lcNewTestClassName)
+			COMPILE (m.lcNewTestClassName)
+			LOCAL lnTestMethods
+			m.lnTestMethods = THIS.LoadTestCaseClass(m.lcNewTestClassName)
 	ENDCASE
 
 	m.tcTestClassPRG = m.lcNewTestClassName
@@ -430,7 +430,7 @@ DEFINE CLASS FxuResultData AS FxuCustom OF FxuCustom.prg
 ********************************************************************
 
 ********************************************************************
- 	FUNCTION RemoveTestCaseClass(tcTestClass)
+	FUNCTION RemoveTestCaseClass(tcTestClass)
 ********************************************************************
 
 	DELETE FROM (THIS.icResultsTable) WHERE UPPER(ALLTRIM(TClass)) == UPPER(ALLTRIM(m.tcTestClass))
@@ -440,7 +440,7 @@ DEFINE CLASS FxuResultData AS FxuCustom OF FxuCustom.prg
 ********************************************************************
 
 ********************************************************************
- 	FUNCTION RemoveAllTestCaseClasses()
+	FUNCTION RemoveAllTestCaseClasses()
 ********************************************************************
 	DELETE FROM (THIS.icResultsTable)
 	GO TOP IN (THIS.icResultsTable)
@@ -450,34 +450,38 @@ DEFINE CLASS FxuResultData AS FxuCustom OF FxuCustom.prg
 
 
 ********************************************************************
- 	PROCEDURE AddNewTest(tcTestClass, toFXUForm, tcPath) && Added Path parameter. HAS
+	PROCEDURE AddNewTest(tcTestClass, toFXUForm, tcPath, tcTestCode, tlNoEdit) 
 ********************************************************************
 *
 *  add this new custom test Method at the bottom,
 *  just before the ENDDEFINE, and open the program
 *  editor with the cursor positioned on this new Method
 *
-LOCAL laClasses[1], ;
-	laLines[1], ;
-	laNewLines[1], ;
-	lcLine as String, ;
-	lcTestClass as String, ;
-	lcText as String, ;
-	llFoxUnitForm as Boolean, ;
-	lnInsertLine as Number, ;
-	lnLines as Number, ;
-	lnNewMethodLine as Number, ;
-	xx
-	m.lcTestClass = ADDBS(m.tcPath) + FORCEEXT(m.tcTestClass, "PRG") && Added Path. HAS
+	LOCAL laClasses[1], ;
+		laLines[1], ;
+		laNewLines[1], ;
+		lcLine AS STRING, ;
+		lcTestClass AS STRING, ;
+		lcText AS STRING, ;
+		llFoxUnitForm AS Boolean, ;
+		lnInsertLine AS NUMBER, ;
+		lnLines AS NUMBER, ;
+		lnNewMethodLine AS NUMBER, ;
+		xx
+	IF AT('\', m.tcTestClass)=0
+		m.lcTestClass = ADDBS(m.tcPath) + FORCEEXT(m.tcTestClass, "PRG") && Added Path. HAS
+	ELSE
+		m.lcTestClass=m.tcTestClass
+	ENDIF 
 	IF NOT FILE(m.lcTestClass)
 		MESSAGEBOX("Unable to locate " + CHR(13) + ;
-			    m.tcTestClass + CHR(13) + ;
-			    "typically because it is not in the VFP " + ;
-			    "path at the moment -- you should include " + ;
-			    "the folder containing FoxUnit test classes (.PRGs) " + ;
-			    "in your VFP path before starting FoxUnit.", ;
-			    16, ;
-			    "Please Note")
+			m.tcTestClass + CHR(13) + ;
+			"typically because it is not in the VFP " + ;
+			"path at the moment -- you should include " + ;
+			"the folder containing FoxUnit test classes (.PRGs) " + ;
+			"in your VFP path before starting FoxUnit.", ;
+			16, ;
+			"Please Note")
 		RETURN .F.
 	ELSE
 		m.lcTestClass = THIS.ioFileIO.GetCaseSensitiveFileName(FULLPATH(m.lcTestClass), .T.)
@@ -485,9 +489,9 @@ LOCAL laClasses[1], ;
 
 	IF THIS.IsFileReadOnly(m.lcTestClass)
 		MESSAGEBOX(m.lcTestClass + " is marked ReadOnly, " + ;
-			    "typically because it is currently not " + ;
-			    "checked out of your Source Control provider.", ;
-			    48, "Please Note")
+			"typically because it is currently not " + ;
+			"checked out of your Source Control provider.", ;
+			48, "Please Note")
 		RETURN .F.
 	ENDIF
 
@@ -502,11 +506,11 @@ LOCAL laClasses[1], ;
 	ENDFOR
 	IF m.lnInsertLine < 0
 		MESSAGEBOX("Unable to insert new test method " + ;
-			    "into " + m.tcTestClass + "." + ;
-			    CHR(13) + CHR(13) + ;
-			    m.tcTestClass + " will simply be opened " + ;
-			    "in the program editor.", ;
-			    48, "Please Note")
+			"into " + m.tcTestClass + "." + ;
+			CHR(13) + CHR(13) + ;
+			m.tcTestClass + " will simply be opened " + ;
+			"in the program editor.", ;
+			48, "Please Note")
 		m.lnNewMethodLine = 1
 	ELSE
 * insert these 8 lines:
@@ -525,7 +529,9 @@ LOCAL laClasses[1], ;
 *BUG This line puts the function in the wrong place for me. HAS
 *lnInsertLine = m.lnInsertLine - 2
 		m.lnInsertLine = m.lnInsertLine - 1
-
+		IF NOT EMPTY(tcTestCode)
+			m.lcText = tcTestCode
+		ENDIF
 		m.lcText = CHR(13) + CHR(10) + m.lcText + CHR(13) + CHR(10)
 		ALINES(laNewLines, m.lcText)
 		FOR EACH m.lcLine IN m.laNewLines
@@ -567,17 +573,17 @@ LOCAL laClasses[1], ;
 *  at the spot where the developer needs to specify
 *  the method name
 *
-	EDITSOURCE(m.lcTestClass, m.lnNewMethodLine)
-
-	KEYBOARD "{HOME}{RightArrow}{RightArrow}{RightArrow}{RightArrow}{RightArrow}{RightArrow}{RightArrow}{RightArrow}{RightArrow}{RightArrow}{SHIFT+END}" PLAIN CLEAR
-
+	IF NOT tlNoEdit
+		EDITSOURCE(m.lcTestClass, m.lnNewMethodLine)
+		KEYBOARD "{HOME}{RightArrow}{RightArrow}{RightArrow}{RightArrow}{RightArrow}{RightArrow}{RightArrow}{RightArrow}{RightArrow}{RightArrow}{SHIFT+END}" PLAIN CLEAR
+	ENDIF 
 ********************************************************************
 	ENDPROC
 ********************************************************************
 
 
 ********************************************************************
- 	PROCEDURE ModifyExistingTest(tcTestClass, tcTestName, toFXUForm, tcPath) && Added Path parameter. HAS
+	PROCEDURE ModifyExistingTest(tcTestClass, tcTestName, toFXUForm, tcPath) && Added Path parameter. HAS
 ********************************************************************
 *
 *  do a MODIFY COMMAND with the cursor positioned
@@ -587,13 +593,13 @@ LOCAL laClasses[1], ;
 	m.lcTestClass = ADDBS(m.tcPath) + FORCEEXT(m.tcTestClass, "PRG") && Added Path. HAS
 	IF NOT FILE(m.lcTestClass)
 		MESSAGEBOX("Unable to locate " + CHR(13) + ;
-			    m.tcTestClass + CHR(13) + ;
-			    "typically because it is not in the VFP " + ;
-			    "path at the moment -- you should include " + ;
-			    "the folder containing FoxUnit test classes (.PRGs) " + ;
-			    "in your VFP path before starting FoxUnit.", ;
-			    16, ;
-			    "Please Note")
+			m.tcTestClass + CHR(13) + ;
+			"typically because it is not in the VFP " + ;
+			"path at the moment -- you should include " + ;
+			"the folder containing FoxUnit test classes (.PRGs) " + ;
+			"in your VFP path before starting FoxUnit.", ;
+			16, ;
+			"Please Note")
 		RETURN .F.
 	ELSE
 		m.lcTestClass = THIS.ioFileIO.GetCaseSensitiveFileName(FULLPATH(m.lcTestClass), .T.)
@@ -601,13 +607,13 @@ LOCAL laClasses[1], ;
 	ENDIF
 	IF THIS.IsFileReadOnly(m.lcTestClass)
 		MESSAGEBOX(m.lcTestClass + " is marked ReadOnly, " + ;
-			    "typically because it is currently not " + ;
-			    "checked out of your Source Control provider." + ;
-			    CHR(13) + CHR(13) + ;
-			    m.lcTestClass + " will be opened in the VFP " + ;
-			    "program editor, but it is ReadOnly, and you " + ;
-			    "will not be able to make any changes.", ;
-			    48, "Please Note")
+			"typically because it is currently not " + ;
+			"checked out of your Source Control provider." + ;
+			CHR(13) + CHR(13) + ;
+			m.lcTestClass + " will be opened in the VFP " + ;
+			"program editor, but it is ReadOnly, and you " + ;
+			"will not be able to make any changes.", ;
+			48, "Please Note")
 	ENDIF
 *
 *  find the FUNCTION/PROCEDURE <m.tcTestName> line
@@ -631,11 +637,11 @@ LOCAL laClasses[1], ;
 	RELEASE m.laLines
 	IF m.lnCursorLine < 0
 		MESSAGEBOX("Unable to locate the " + m.lcTestName + ;
-			    "method -- " + m.lcTestClass + " will be " + ;
-			    "opened in the program editor with the " + ;
-			    "cursor positioned whereever it was last " + ;
-			    "time.", ;
-			    48, "Please Note")
+			"method -- " + m.lcTestClass + " will be " + ;
+			"opened in the program editor with the " + ;
+			"cursor positioned whereever it was last " + ;
+			"time.", ;
+			48, "Please Note")
 		m.lnCursorLine = 0
 	ENDIF
 
@@ -647,7 +653,7 @@ LOCAL laClasses[1], ;
 		IF m.llFoxUnitForm
 *
 *  set a flag so that FoxUnit.SCX/Activate  will reload this .PRG when it activates
-*  after you are done in m.lcTestClass 
+*  after you are done in m.lcTestClass
 *    MODIFY CLASS frmFoxUnit OF FXU.VCX METHOD Activate
 *
 			m.toFXUForm.ADDPROPERTY("ilReloadCurrentClassOnActivate", .T.)
@@ -663,13 +669,13 @@ LOCAL laClasses[1], ;
 
 
 ********************************************************************
- 	FUNCTION SetAllTestsNotRun
+	FUNCTION SetAllTestsNotRun
 	UPDATE (THIS.icResultsTable) SET TRUN = .F.
 	ENDFUNC
 ********************************************************************
 
 ********************************************************************
- 	FUNCTION CalculateElapsed(tnStartSeconds, tnEndSeconds)
+	FUNCTION CalculateElapsed(tnStartSeconds, tnEndSeconds)
 ********************************************************************
 
 	IF m.tnEndSeconds < m.tnStartSeconds
@@ -681,7 +687,7 @@ LOCAL laClasses[1], ;
 ********************************************************************
 
 ********************************************************************
- 	FUNCTION DESTROY
+	FUNCTION DESTROY
 ********************************************************************
 	USE IN SELECT(THIS.icResultsTable)
 	THIS.ioDataMaintenance = .NULL.
@@ -689,14 +695,14 @@ LOCAL laClasses[1], ;
 ********************************************************************
 
 ********************************************************************
- 	FUNCTION ReceiveResultsNotification(toTestResult AS TestResult OF TestResult.prg)
+	FUNCTION ReceiveResultsNotification(toTestResult AS TestResult OF TestResult.prg)
 	THIS.LogResult(m.toTestResult)
 	ENDFUNC
 ********************************************************************
 
 
 ********************************************************************
- 	FUNCTION IsFileReadOnly(tcFileName)
+	FUNCTION IsFileReadOnly(tcFileName)
 ********************************************************************
 *
 *  pass tcFileName with a fully-qualified path
@@ -740,7 +746,7 @@ LOCAL laClasses[1], ;
 ********************************************************************
 
 ********************************************************************
- 	FUNCTION GetCaseSensitiveFileName(tcFullPathToFile, tlReturnFullPath)
+	FUNCTION GetCaseSensitiveFileName(tcFullPathToFile, tlReturnFullPath)
 ********************************************************************
 
 	m.tlReturnFullPath = !EMPTY(m.tlReturnFullPath)
@@ -764,7 +770,7 @@ LOCAL laClasses[1], ;
 ********************************************************************
 
 ********************************************************************
- 	FUNCTION RenameFile(tcOldFileName, tcNewFileName)
+	FUNCTION RenameFile(tcOldFileName, tcNewFileName)
 ********************************************************************
 * Note that the file name parameters require the full path
 	LOCAL loFs AS Scripting.FileSystemObject
@@ -773,6 +779,55 @@ LOCAL laClasses[1], ;
 	ENDFUNC
 ********************************************************************
 
+
+
+*% ES 5/23/2008 Add method to go through all classes in a class library and add tests for each class that has code
+********************************************
+PROCEDURE AddTestsFromClassLib ;
+	(tcTestClass, toFXUForm, tcPath, tcClassLib)
+********************************************
+	LOCAL cParams, cLine, nMemoLines, cMethod, iLine, cTestName, cParamsDeclared
+
+	SELECT 0
+	USE (tcClassLib) NOUPDATE ALIAS crsClasses
+	SCAN FOR NOT EMPTY(methods)
+		nMemoLines=MEMLINES(methods)
+		FOR iLine = 1 TO nMemoLines
+			cLine = MLINE(methods,iLine)
+* Start of a function?
+			IF cLine = "PROCEDURE" OR cLine = "FUNCTION"
+* Get function's signature
+				cParams = MLINE(methods,iLine+1)
+* Remove the word 'Parameters'
+				IF "PARAMETERS" $ cParams
+					cParams = STRTRAN(cParams, "LPARAMETERS ","")
+					cParams = STRTRAN(cParams, "PARAMETERS ","")
+					cParametersDeclared= "LOCAL " + cParams
+				ELSE
+					cParams = ""
+					cParametersDeclared=""
+				ENDIF
+* Merge ClassName/FunctionName as TestName
+				cMethod = GETWORDNUM(cLine,2)
+				cTestName = ALLTRIM(PROPER(crsClasses.objName)) +PROPER(cMethod) +"_Test"
+* Create the test template for this method
+				TEXT TO cTestCode TEXTMERGE NOSHOW
+FUNCTION <<cTestName>>
+* This unit test was created automatically from FoxUnit. You need to tweak it.
+LOCAL oToTest AS <<crsClasses.objName>> OF <<tcClassLib>>, xResult, xExpectedValue
+<<cParametersDeclared>>
+This.assertNotImplemented("<<crsClasses.objName>>.<<cMethod>>(<<cParams>>))")
+ENDFUNC
+				ENDTEXT
+				THIS.AddNewTest(tcTestClass, toFXUForm, tcPath, cTestCode, .T.)
+			ENDIF
+		NEXT
+	ENDSCAN
+	USE IN SELECT("crsClasses")
+* Modify the code
+	THIS.ModifyExistingTest(tcTestClass, cTestName, toFXUForm, tcPath)
+ENDPROC
+
 **********************************************************************
- ENDDEFINE && CLASS
+ENDDEFINE && CLASS
 **********************************************************************

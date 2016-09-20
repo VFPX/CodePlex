@@ -102,9 +102,9 @@ DEFINE CLASS <<testclass>> as FxuTestCase OF FxuTestCase.prg
 	*
 	*  the three important inherited methods that you call
 	*  from your test methods are:
-	*    THIS.AssertTrue("Failure message",<Expression>)
-	*    THIS.AssertEquals("Failure message",<ExpectedValue>,<Expression>)
-	*    THIS.AssertNotNull("Failure message",<Expression>)
+	*    THIS.AssertTrue(<Expression>, "Failure message")
+	*    THIS.AssertEquals(<ExpectedValue>, <Expression>, "Failure message")
+	*    THIS.AssertNotNull(<Expression>, "Failure message")
 	*  all test methods either pass or fail -- the assertions
 	*  either succeed or fail
     

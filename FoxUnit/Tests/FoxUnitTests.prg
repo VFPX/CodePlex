@@ -247,14 +247,13 @@ this.assertequals(o1,o2,"These objects are not equal.")
   ENDFUNC
 
 
-
-  FUNCTION testNewTest1
+  FUNCTION testNotImplemented
 	* 1. Change the name of the test to reflect its purpose. Test one thing only.
 	* 2. Implement the test by removing these comments and the default assertion and writing your own test code.
+  This.MessageOut("Getting ready to run this test!")
   RETURN This.AssertNotImplemented()
 
   ENDFUNC
-
 
 **********************************************************************
 ENDDEFINE
