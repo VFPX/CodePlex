@@ -82,6 +82,7 @@ WITH loProject.FILES
 	.ADD('graphics\debugalltests_10483_32.bmp')		&& *< FileMetadata: Type="x" Cpid="1252" Timestamp="0" ID="0" ObjRev="0" />
 	.ADD('graphics\debugcheckedtests_10485_32.bmp')		&& *< FileMetadata: Type="x" Cpid="1252" Timestamp="0" ID="0" ObjRev="0" />
 	.ADD('graphics\debugselection_8607_32.bmp')		&& *< FileMetadata: Type="x" Cpid="1252" Timestamp="0" ID="0" ObjRev="0" />
+	.ADD('graphics\deletefilter_5563_32.bmp')		&& *< FileMetadata: Type="x" Cpid="0" Timestamp="0" ID="0" ObjRev="0" />
 	.ADD('graphics\filteralphabetically_5567_32.bmp')		&& *< FileMetadata: Type="x" Cpid="1252" Timestamp="0" ID="0" ObjRev="0" />
 	.ADD('graphics\foxunit.bmp')		&& *< FileMetadata: Type="x" Cpid="1252" Timestamp="0" ID="0" ObjRev="0" />
 	.ADD('graphics\foxunit.ico')		&& *< FileMetadata: Type="x" Cpid="1252" Timestamp="0" ID="0" ObjRev="0" />
