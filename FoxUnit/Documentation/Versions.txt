@@ -1,5 +1,13 @@
 (See the FoxUnit Wiki page on the VFPX CodePlex page https://vfpx.codeplex.com/wikipage?title=FoxUnit&referringTitle=Documentation for complete information)
 
+
+Version 1.6 - September 20, 2016
+Replaced graphics with icons from Visual Studio Graphics Library
+Grouped icons into a more logical arrangement, with group titles
+Added the ability to create a test class with unimplemented tests from all methods in a class library
+Allow custom colors for pass/fail
+Hide the filter panel unless Filter toggle is switched on
+
 VFPX Release 1.51 - July 29, 2015
 Refactored many forms to be subclasses of new fxuFrmUser, which holds the ioFxuInstance object and the SettingsSave() and SettingsRestore() functions.
 Removed check whether tests are in path
